@@ -52,6 +52,9 @@ class model_Catalog extends Model
               `p8` varchar(250) DEFAULT NULL,
               `p9` varchar(250) DEFAULT NULL,
               `sort_view` tinyint(1) NOT NULL DEFAULT '1',
+              `top` tinyint(1) NOT NULL DEFAULT '0',
+              `byorder` tinyint(1) NOT NULL DEFAULT '0',
+              `absent` tinyint(1) NOT NULL DEFAULT '0',
               `hidden` tinyint(4) NOT NULL DEFAULT '0',
               `protected` tinyint(4) NOT NULL DEFAULT '0',
               `deleted` tinyint(4) NOT NULL DEFAULT '0',
@@ -101,6 +104,23 @@ class model_Catalog extends Model
             "SELECT * FROM ".DBCATALOG.
                     " WHERE deleted = 0 AND hidden = 0".$where.
             " ORDER BY cat DESC, pos", true
+        );
+        $this->all = $data_all;
+        return $data_all;
+    }
+
+
+    /**
+     * Искать все в список по фильтру по артикулу
+     * @param string $filter
+     * @return array
+     */
+    function findAllFiltered($filter)
+    {
+        $data_all = $this->db->fetchAll(
+            "SELECT * FROM ".DBCATALOG.
+                    " WHERE deleted = 0 AND articul LIKE '%{$filter}%'
+            ORDER BY cat DESC, pos", true
         );
         $this->all = $data_all;
         return $data_all;
@@ -388,7 +408,7 @@ class model_Catalog extends Model
             //printVar($chain);
 
             if ( $branch['icon'] ) {
-                $html .= "<li class='cat-{$branch['id']}{$active}' style='background:url( \"/{$branch['icon']}\" ) no-repeat 6px 4px;'>";
+                $html .= "<li class='cat-{$branch['id']}{$active}' style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'>";
             } else {
                 $html .= "<li class='cat-{$branch['id']}{$active}'>";
             }
@@ -396,10 +416,10 @@ class model_Catalog extends Model
             if ( $branch['id'] == $cur_id )
             {
                 //$html .= $branch['name'];
-				$active = true;
+                $active = true;
             }
             //else {
-			$html .= "<a ".href($url, array('cat'=>$branch['id'])).($active?" class='active'":'').">{$branch['name']}</a>";
+            $html .= "<a ".href($url, array('cat'=>$branch['id'])).($active?" class='active'":'').">{$branch['name']}</a>";
             //}
 
             $html .= $this->getMenu( $url, $branch['id'], $levelback - 1, $chain );
@@ -569,11 +589,21 @@ class model_Catalog extends Model
                             'variants'=>array('1'=>'Выводить','0'=>'Не выводить',),
                         ),
 
+                        'top'       => array('type'=>'radio', 'label'=>'Всегда в начале', 'value'=>'0', 'hidden',
+                                             'variants' => array('1'=>'Да','0'=>'Нет',),
+                        ),
+                        'byorder'   => array('type'=>'radio', 'label'=>'Под заказ', 'value'=>'0', 'hidden',
+                                             'variants' => array('1'=>'Да','0'=>'Нет',),
+                        ),
+                        'absent'    => array('type'=>'radio', 'label'=>'Отсутствует', 'value'=>'0', 'hidden',
+                                             'variants' => array('1'=>'Да','0'=>'Нет',),
+                        ),
+
                         'hidden'    => array(
                             'type'      => 'radio',
                             'label'     => 'Скрытое',
                             'value'     => '0',
-                            'variants'  => array('Нет', 'Да'),
+                            'variants'  => array('1'=>'Да','0'=>'Нет',),
                         ),
                         'protected' => array(
                             'type'      => 'radio',

@@ -86,7 +86,15 @@ abstract class Controller
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/reset.css');
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.css');
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/default.css');
-        $this->request->addStyle($this->request->get('tpldata.path.css').'/style.css');
+
+        if ( file_exists( 'themes/'.$theme.'/css/style.css' ) ) {
+            $this->request->addStyle($this->request->get('tpldata.path.css').'/style.css');
+        }
+
+        if ( file_exists( 'themes/'.$theme.'/css/print.css' ) ) {
+            $this->request->addStyle($this->request->get('tpldata.path.css').'/print.css');
+        }
+
 
         $this->request->addScript($this->request->get('tpldata.path.misc').'/jquery.min.js');
         $this->request->addScript($this->request->get('tpldata.path.misc').'/etc/catalog.js');

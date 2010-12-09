@@ -14,7 +14,7 @@ return array(
     // база данных
     'db' => array(
         'login'     => 'root',
-        'password'  => '',
+        'password'  => 's03olx',
         'host'      => 'localhost',
         'database'  => 'siteforever',
     ),
@@ -29,7 +29,7 @@ return array(
         'admin'     => SF_PATH.DS.'themes'.DS.'system', // каталог шаблонов админки
         '404'       => 'error404', // шаблон страницы 404
     ),
-    
+
     // настройки пользователей
     'users' => array(
         'groups' => array(
@@ -40,7 +40,7 @@ return array(
         ),
         'userdir' => DS.'files',
     ),
-    
+
     'catalog' => array(
         'gallery_dir' => DS.'files'.DS.'catalog'.DS.'gallery',
         'gallery_max_file_size' => 1000000,
@@ -80,7 +80,7 @@ return array(
             'ks'        => 'номер кор.счета',
         ),
     ),
-    
+
     'files' => array(
         'include_types' => array( // разрешенные типы файлов
             'application/x-tgz',
@@ -94,5 +94,5 @@ return array(
         // вид для менеджера файлов
         'manager_view'  => 'table', // table || tile
     ),
-    
+
 );

@@ -18,7 +18,7 @@ class model_User extends Model
         'confirm'   => '',
         'basket'    => '[]',
     );
-    
+
     /**
      * Форма входа в систему
      * @var form_Form
@@ -34,7 +34,7 @@ class model_User extends Model
      * @var form_Form
      */
     protected $edit_form;
-    
+
     /**
      * Форма изменения профиля
      * @var form_Form
@@ -46,7 +46,7 @@ class model_User extends Model
      * @var form_Form
      */
     protected $password_form;
-    
+
     function createTables()
     {
         if ( ! $this->isExistTable( DBUSERS ) ) {
@@ -72,15 +72,17 @@ class model_User extends Model
                   `confirm` varchar(32) NOT NULL default '',
                   `basket` text,
                   PRIMARY KEY  (`id`)
-                ) ENGINE=MyISAM CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC            
+                ) ENGINE=MyISAM CHARSET=utf8 CHECKSUM=1 DELAY_KEY_WRITE=1 ROW_FORMAT=DYNAMIC
             ");
 
-            $this->changePassword($this->data['password']);
+            $this->set('login', 'admin');
+            $this->changePassword('admin');
             $this->set('perm', USER_ADMIN);
             $this->set('status', '1');
             $this->set('date',  time());
             $this->set('email', $this->config->get('admin'));
-            $this->db->insert(DBUSERS, $this->data);
+            $id = $this->db->insert(DBUSERS, $this->data);
+            $this->set('id', $id);
         }
     }
 
@@ -100,7 +102,7 @@ class model_User extends Model
             $_SESSION['user_id'] = 0;
         }
     }
-    
+
     /**
      * Поиск профиля по id
      * @param $id
@@ -135,7 +137,7 @@ class model_User extends Model
         }
         return $this->data;
     }
-    
+
     /**
      * Поиск всех юзеров
      * @param string $cond
@@ -153,7 +155,7 @@ class model_User extends Model
         }
         return $this->db->fetchAll("SELECT * FROM ".DBUSERS." {$where} {$order} {$limit}");
     }
-    
+
     /**
      * Запись информации в базу
      * @return mixed
@@ -195,8 +197,8 @@ class model_User extends Model
         }
         return $this->db->fetchOne("SELECT COUNT(*) FROM ".DBUSERS." $where ");
     }
-        
-    
+
+
     /**
      * Права пользователя
      */
@@ -220,7 +222,7 @@ class model_User extends Model
         }
         return array();
     }
-    
+
     /**
      * Установить новые значения для корзины
      * @param array $array
@@ -233,7 +235,7 @@ class model_User extends Model
         $this->update();
         //die( $this->data['basket'] );
     }
-    
+
     /**
      * Регистрация
      * @param array $data
@@ -245,15 +247,15 @@ class model_User extends Model
         $data['perm']   = USER_GUEST;
         $data['status'] = 0;
         $data['confirm'] = md5(microtime());
-        
+
         $data['login']  = $this->db->escape( $data['login'] );
         $data['date']   = time();
         $data['last']   = time();
-        
+
         $user = $this->db->fetch("SELECT * FROM ".DBUSERS." WHERE login = '{$data['login']}' OR email = '{$data['email']}' LIMIT 1");
         if ( $user )
         {
-            App::$request->addFeedback('Такой пользователь уже зарегистрирован');
+            $this->request->addFeedback('Такой пользователь уже зарегистрирован');
             return false;
         }
         // безопастное добавление данных
@@ -262,19 +264,19 @@ class model_User extends Model
                 $this->data[$key] = $data[$key];
             }
         }
-        
+
         if ( $this->update() )
         {
-            App::$tpl->assign('data', $this->data);
-            App::$tpl->assign('sitename', App::$config->get('sitename') );
-            App::$tpl->assign('siteurl', App::$config->get('siteurl') );
-            
-            $msg = App::$tpl->fetch('system:users.register');
-            
+            $this->tpl->assign('data', $this->data);
+            $this->tpl->assign('sitename', App::$config->get('sitename') );
+            $this->tpl->assign('siteurl', App::$config->get('siteurl') );
+
+            $msg = $this->tpl->fetch('system:users.register');
+
             //print $msg;
-            
+
             sendmail(
-                App::$config->get('sitename').' <'.App::$config->get('admin').'>',
+                $this->config->get('sitename').' <'.$this->config->get('admin').'>',
                 $data['email'],
                 'Подтверждение регистрации',
                 $msg
@@ -343,9 +345,9 @@ class model_User extends Model
      */
     function confirm()
     {
-        $user_id = App::$request->get('userid', FILTER_VALIDATE_INT);
+        $user_id = $this->request->get('userid', FILTER_VALIDATE_INT);
         $confirm = $this->db->escape( App::$request->get('confirm') );
-        
+
         if ( $user_id && $confirm )
         {
             $user = $this->db->fetch("SELECT * FROM ".DBUSERS." WHERE id = {$user_id} AND confirm = '{$confirm}' LIMIT 1");
@@ -354,17 +356,17 @@ class model_User extends Model
                 $this->set('perm', USER_USER);
                 $this->set('status', 1);
                 $this->set('last', time());
-                
+
                 $this->active();
                 $this->update();
-                
+
                 $_SESSION['user_id'] = $user['id'];
-                
-                App::$request->addFeedback('Регистрация успешно подтверждена');
+
+                $this->request->addFeedback('Регистрация успешно подтверждена');
                 return true;
             }
         }
-        App::$request->addFeedback('Ваш аккаунт не подвержден, обратитесь к '.
+        $this->request->addFeedback('Ваш аккаунт не подвержден, обратитесь к '.
                 '<a href="mailto:'.App::$config->get('admin').'">администрации сайта</a>');
         return false;
     }
@@ -403,7 +405,7 @@ class model_User extends Model
         $this->set('solt', $solt);
         $this->set('password', $hash);
     }
-    
+
     /**
      * Генерирует случайную строку
      * @param $len
@@ -422,7 +424,7 @@ class model_User extends Model
         }
         return $str;
     }
-    
+
     /**
      * Генерирует хэш пароля
      * @param $password
@@ -432,7 +434,7 @@ class model_User extends Model
     {
         return md5( md5($solt) . md5($password) );
     }
-    
+
     /**
      * Вернет форму для логина
      * @return form_Form
@@ -497,7 +499,7 @@ class model_User extends Model
         }
         return $this->password_form;
     }
-    
+
     function getRegisterForm()
     {
         if ( is_null( $this->register_form ) ) {
@@ -514,7 +516,7 @@ class model_User extends Model
         }
         return $this->register_form;
     }
-    
+
     /**
      * Форма редактирования
      * @return form_Form
@@ -525,7 +527,7 @@ class model_User extends Model
             $this->edit_form = new forms_user_edit();
         }
         return $this->edit_form;
-        
+
     }
-    
+
 }

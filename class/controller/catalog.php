@@ -80,7 +80,7 @@ class controller_Catalog extends controller
             {
                 // количество товаров и подразделов
                 $count  = $catalog->getCountByParent( $catalog->get('id'), 0 );
-                $paging = $this->paging( $count, 20, $this->router->createLink( $this->page['alias'], array('cat'=>$cat_id) ) );
+                $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$cat_id) ) );
 
                 $list   = $catalog->findGoodsByParent( $cat_id, $paging['limit'] );
                 foreach( $list as $key => $item )
@@ -254,6 +254,10 @@ class controller_Catalog extends controller
             $form->price2->show();
             $form->sort_view->hide();
 
+            $form->top->show();
+            $form->byorder->show();
+            $form->absent->show();
+
             $parent = $catalog->find( $parent_id );
             if ( is_array( $parent ) ) {
                 foreach( $parent as $k => $p ) {
@@ -324,7 +328,18 @@ class controller_Catalog extends controller
      */
     function adminAction()
     {
+        /**
+         * @var model_Catalog $catalog
+         */
         $catalog = $this->getModel('catalog');
+
+        $filter = trim( $this->request->get('goods_filter', FILTER_SANITIZE_STRING) );
+        if ( $filter ) {
+            $filter  = preg_replace('/[^\d\wа-яА-Я]+/u', '%', $filter);
+            $filter  = str_replace(array('%34', '&#34;'), '', $filter);
+            $filter  = preg_replace( '/[ %]+/u', '%', $filter );
+            $filter  = trim( $filter, '%' );   
+        }
 
         // пересортировка
         if ( $this->request->get('sort') ) {
@@ -411,19 +426,29 @@ class controller_Catalog extends controller
             redirect('', array('edit'=>$parent['id']));
         }
 
-        $count = $catalog->getCountByParent( $part );
+        if ( ! $filter ) {
 
-        $paging = $this->paging( $count, 25, 'admin/catalog/part='.$part );
+            $count = $catalog->getCountByParent( $part );
 
-        $list = $catalog->findAllByParent( $part, $paging['limit'] );
+            $paging = $this->paging( $count, 25, 'admin/catalog/part='.$part );
+
+            $list = $catalog->findAllByParent( $part, $paging['limit'] );
+
+        }
+        else {
+
+            $list  = $catalog->findAllFiltered( $filter );
+
+        }
 
         $this->tpl->assign(array(
-            'parent'=> $parent,
-            'id'    => $part,
-            'part'  => $part,
+            'filter'    => trim( $this->request->get('goods_filter') ),
+            'parent'    => $parent,
+            'id'        => $part,
+            'part'      => $part,
             'breadcrumbs'    => $this->adminBreadcrumbs($parent['path']),
-            'list'  => $list,
-            'paging'=> $paging,
+            'list'      => $list,
+            'paging'    => $paging,
             'moving_list'=>$catalog->getCategoryList(),
         ));
         $content = $this->tpl->fetch('system:catalog/admin');

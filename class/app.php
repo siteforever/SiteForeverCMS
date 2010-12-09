@@ -140,6 +140,8 @@ class App extends Application_Abstract
         $controller_class   = 'controller_'.self::$request->get('controller');
         $action             = self::$request->get('action').'Action';
 
+	//print $controller_class.'::'.$action;
+
         if ( class_exists( $controller_class ) )
         {
             $reflection_class = new ReflectionClass( $controller_class );

@@ -152,4 +152,46 @@ class controller_catGallery extends Controller
             //redirect('admin/catalog', array('edit'=>$cat));
         }
     }
+
+    /**
+     * Пересоздает миниатюрные изображения
+     */
+    function regenerateAction()
+    {
+        $time   = microtime(1);
+        set_time_limit(0);
+        
+        $catalog_gallery = $this->getModel('CatGallery');
+        
+        $images = $catalog_gallery->findAll();
+        
+        //printVar($images);
+            
+        $thumb_h    = $this->config->get('catalog.gallery_thumb_h');
+        $thumb_w    = $this->config->get('catalog.gallery_thumb_w');
+        $middle_h   = $this->config->get('catalog.gallery_middle_h');
+        $middle_w   = $this->config->get('catalog.gallery_middle_w');
+        $t_method   = $this->config->get('catalog.gallery_thumb_method');
+        $m_method   = $this->config->get('catalog.gallery_middle_method');
+
+        foreach( $images as $img ) {
+        
+            $img_file = SF_PATH.$img['image'];
+            $mid_file = SF_PATH.$img['middle'];
+            $tmb_file = SF_PATH.$img['thumb'];
+
+            if ( file_exists( SF_PATH.$img['image'] ) ) {
+                if ( $img['middle'] && file_exists( SF_PATH.$img['middle'] ) ) {
+                    createThumb( $img_file, $mid_file, $middle_w, $middle_h, $m_method );
+                }
+                if ( $img['thumb'] && file_exists( SF_PATH.$img['thumb'] ) ) {
+                    createThumb( $img_file, $tmb_file, $thumb_w, $thumb_h, $t_method );
+                }
+            }
+        }
+        
+        $this->request->addFeedback('Регенерация изображений закончена');
+        $this->request->addFeedback('Затрачено: '.round(microtime(1) - $time, 4).' сек');
+    }
+
 }

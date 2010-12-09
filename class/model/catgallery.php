@@ -73,6 +73,12 @@ class model_CatGallery extends Model
         }
         return $ret;
     }
+    
+    function findAll()
+    {
+        return $this->db->fetchAll("SELECT * FROM ".DBCATGALLERY);
+    }
+    
 
     function insert()
     {

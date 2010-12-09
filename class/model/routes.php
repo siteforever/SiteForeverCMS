@@ -21,6 +21,34 @@ class model_Routes extends Model
                   PRIMARY KEY  (`id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
             ");
+            $this->db->insert(DBROUTES, array(
+                 'pos'      => '1',
+                 'alias'    => 'admin',
+                 'controller'=>'admin',
+                 'action'   => 'index',
+                 'system'   => '1',
+            ));
+            $this->db->insert(DBROUTES, array(
+                 'pos'      => '2',
+                 'alias'    => 'admin/edit',
+                 'controller'=>'admin',
+                 'action'   => 'edit',
+                 'system'   => '1',
+            ));
+            $this->db->insert(DBROUTES, array(
+                 'pos'      => '4',
+                 'alias'    => 'admin/routes',
+                 'controller'=>'routes',
+                 'action'   => 'admin',
+                 'system'   => '1',
+            ));
+            $this->db->insert(DBROUTES, array(
+                 'pos'      => '6',
+                 'alias'    => 'users/login',
+                 'controller'=>'users',
+                 'action'   => 'login',
+                 'system'   => '0',
+            ));
         }
     }
 
@@ -33,10 +61,10 @@ class model_Routes extends Model
         $this->data = $this->db->fetch("SELECT * FROM ".DBROUTES." WHERE id = '{$id}' LIMIT 1");
         return $this->data;
     }
-    
+
     /**
      * Поиск всех маршрутов
-     * Здесь можно подключить кэширование 
+     * Здесь можно подключить кэширование
      * и не обращаться к БД лишний раз
      * @param $cond
      * @param $order
@@ -50,7 +78,7 @@ class model_Routes extends Model
     	$data_all = $this->db->fetchAll("SELECT * FROM ".DBROUTES." $where ORDER BY pos");
     	return $data_all;
     }
-    
-    
-    
+
+
+
 }

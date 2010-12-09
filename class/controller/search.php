@@ -7,47 +7,38 @@
  */
 class controller_Search extends Controller
 {
-    
+
     function indexAction()
     {
-        $req = urldecode( $_SERVER['REQUEST_URI'] );
-        $req = mb_convert_encoding( $req, 'UTF-8', mb_detect_encoding( $req, 'WINDOWS-1251, UTF-8' ) );
-        
-        //print $req;
-        
-        if ( preg_match('/.*sword=([a-z0-9а-я]+)/ui', $req, $match) )
-        {
-            $search = $match[1];
-            
-            //$search = preg_replace( '/[a-zа-я0-9]+/ui', '%', $search );
-            
-            $search_list = App::$db->fetchAll(
-                "SELECT *
-                FROM ".DBCATALOG."
-                WHERE
-                    ( name LIKE '%{$search}%'
-                    OR  articul LIKE '%{$search}%' )
-                    AND cat = 0 AND hidden = 0 AND deleted = 0 AND protected = 0
-                ORDER BY id DESC
-                LIMIT 50");
-            
-            $_GET['sword'] = $search;
-            
-            App::$tpl->assign(array(
-                'sword'   => $search,
-                'list'    => $search_list,
-            ));
-            App::$request->set(
-                'tpldata.page.content',
-                App::$tpl->fetch('system:search.index')
-            );
-        }
-        else {
-            App::$request->set('tpldata.page.content', 'Поиск');
-        }
-        
-        App::$request->set('tpldata.page.title', 'Поиск');
-        App::$request->set('template', 'inner');
+        $search = filter_var($this->request->get('sword'), FILTER_SANITIZE_STRING);
+
+        $search = preg_replace('/\&\w+?\;/ui', '%', $search); // спецсимволы
+        $search = preg_replace('/[^\wа-я]+/ui', '%', $search);// все, что не буквы и цифры
+        $search = preg_replace('/%+/u', '%', $search); // повторяющиеся
+        $search = str_replace(array('%34', '%39'), '', $search); // хвосты от кавычек
+        $search = '%'.preg_replace('/^%+|%+$/u', '', $search).'%'; // формируем запрос
+        $search  = trim( $search, ' ' );
+
+        $search_list = App::$db->fetchAll(
+            "SELECT *
+            FROM ".DBCATALOG."
+            WHERE
+                ( name LIKE '{$search}'
+                OR  articul LIKE '{$search}' )
+                AND cat = 0 AND hidden = 0 AND deleted = 0 AND protected = 0
+            ORDER BY id DESC
+            LIMIT 50");
+
+        $_GET['sword'] = trim( str_replace('%', ' ', $search) );
+
+        $this->tpl->assign(array(
+            'sword'   => $_GET['sword'],
+            'list'    => $search_list,
+        ));
+        $this->request->setContent( $this->tpl->fetch('system:search.index') );
+
+        $this->request->setTitle('Поиск');
+        $this->request->set('template', 'inner');
     }
-    
+
 }

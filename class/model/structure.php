@@ -18,7 +18,7 @@ class model_Structure extends Model
     protected $all = array();
 
     public $html = array();
-    
+
     /**
      * Форма редактирования
      * @var form_Form
@@ -68,6 +68,21 @@ class model_Structure extends Model
               KEY `request` (`alias`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8 PACK_KEYS=0
             ");
+            $this->db->insert( DBSTRUCTURE, array(
+                'parent'    => '0',
+                'name'      => 'test',
+                'template'  => 'index',
+                'uri'       => 'index',
+                'alias'     => 'index',
+                'date'      => time(),
+                'update'    => time(),
+                'pos'       => '0',
+                'controller'    => 'page',
+                'action'    => 'index',
+                'title'     => 'test',
+                'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a href="/admin">панель управления</a></p>',
+                'author'    => '1',
+            ) );
         }
     }
 

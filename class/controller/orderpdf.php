@@ -51,7 +51,7 @@ class controller_OrderPdf extends Controller
     function outputPdf( array $order, array $rows )
     {
         // подключаем библиотеку
-        require_once('tcpdf/config/lang/rus.php');
+        //require_once('tcpdf/config/lang/rus.php');
         require_once('tcpdf/tcpdf.php');
 
         // верстка
@@ -86,7 +86,7 @@ class controller_OrderPdf extends Controller
         $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
         //set some language-dependent strings
-        $pdf->setLanguageArray($l);
+        //$pdf->setLanguageArray($l);
 
         $pdf->setFont('Myfont', '', 9);
         $pdf->AddPage('P');
@@ -98,36 +98,38 @@ class controller_OrderPdf extends Controller
         //$pdf->SetXY( $x, $y );
 
         $pdf->Cell( 20, 5, "Поставщик");
-        $pdf->SetFont('Myfont', 'B');
+        $pdf->SetFont('', 'B');
         $pdf->Cell( 30, 5, $firm['name'], 0, 1 );
 
-        $pdf->SetFont('Myfont', 'N');
+        $pdf->SetFont('', 'N');
         $pdf->Cell( 9, 5, "ИНН");
-        $pdf->SetFont('Myfont', 'B');
+        $pdf->SetFont('', 'B');
         $pdf->Cell( 30, 5, $firm['inn']);
-        $pdf->SetFont('Myfont', 'N');
+        $pdf->SetFont('', 'N');
         $pdf->Cell( 9, 5, "КПП");
-        $pdf->SetFont('Myfont', 'B');
+        $pdf->SetFont('', 'B');
         $pdf->Cell( 30, 5, $firm['kpp'], 0, 1 );
 
         $pdf->Cell( 100, 5, $firm['address'], 0, 1 );
 
-        $pdf->SetFont('Myfont', 'N');
+        $pdf->SetFont('', 'N');
         $pdf->Cell( 9, 5, "Тел.");
-        $pdf->SetFont('Myfont', 'B');
+        $pdf->SetFont('', 'B');
         $pdf->Cell( 30, 5, $firm['phone']);
-        $pdf->SetFont('Myfont', 'N');
-        $pdf->Cell( 9, 5, "Факс");
-        $pdf->SetFont('Myfont', 'B');
-        $pdf->Cell( 30, 5, $firm['fax'], 0, 1 );
+        $pdf->SetFont('', 'N');
+        $pdf->Cell( 20, 5, "Тел. склада");
+        $pdf->SetFont('', 'B');
+        $pdf->Cell( 30, 5, $firm['stockphone'], 0, 1 );
 
         $pdf->Cell( 30, 5, "", 0, 1);
         $pdf->Cell( 100, 5, "Образец заполнения платёжного поручения", 0, 1 );
-        $pdf->SetFont('Myfont', 'N');
+        $pdf->SetFont('', 'N');
 
         $y = $pdf->GetY();
         $x = $pdf->GetX();
-        $x_max = 118;
+        //$x_max = 118;
+        //$y_max = 33;
+        $x_max = 150;
         $y_max = 33;
         $pdf->Line( $x, $y, $x + $x_max, $y);
         $pdf->Line( $x, $y + $y_max/2, $x + $x_max, $y + $y_max/2);
@@ -142,7 +144,7 @@ class controller_OrderPdf extends Controller
         $pdf->Line( $x+75, $y, $x+75, $y + $y_max);
         $pdf->Line( $x+$x_max, $y, $x+$x_max, $y + $y_max);
 
-        $pdf->SetFont('Myfont', 'N', 7);
+        $pdf->SetFontSize(9);
         $pdf->MultiCell( 64, 3, $firm['bank']['name'], 0, "L", 0, 0, $x, $y );
         $pdf->MultiCell( 64, 3, "<b>Банк получателя</b>", 0, "L", 0, 0, $x, $y+11.5, 0, 1, true );
 
@@ -155,10 +157,15 @@ class controller_OrderPdf extends Controller
         $pdf->SetFont('', 'N');
 
         $pdf->MultiCell( 10.5, 3, "БИК\nСч.№", 0, "L", 0, 0, $x+64, $y );
+        //$pdf->SetFontSize(9);
         $pdf->MultiCell( 42, 3, $firm['bank']['bik']."\n".$firm['bank']['ks'], 0, "L", 0, 0, $x+75, $y );
 
+        //$pdf->SetFontSize(7);
         $pdf->MultiCell( 10.5, 3, "Сч.№", 0, "L", 0, 0, $x+64, $y+16.5 );
+        //$pdf->SetFontSize(9);
         $pdf->MultiCell( 42, 3, $firm['nch'], 0, "L", 0, 0, $x+75, $y+16.5 );
+
+        $pdf->SetFontSize(7);
 
         $pdf->SetXY( $x, $y + $y_max+2 );
 
@@ -168,46 +175,48 @@ class controller_OrderPdf extends Controller
         $date = date('d.m.Y',$order['date']);
 
         $pdf->Cell(150, 4, "Назначение платежа: Оплата по счету № {$order['id']} от ".date('d.m.Y',$order['date']).
-                " за товар, в т.ч. НДС $rub руб. $kop коп.", 0, true);
+                           " за товар, в т.ч. НДС $rub руб. $kop коп.", 0, true);
         //$pdf->Cell(150, 1, "", 0, true);
 
 
-        $pdf->SetFont('Myfont', 'B', 14);
+        $pdf->SetFont('', 'B', 14);
 
-        $doc_name = App::$request->get('contract', FILTER_VALIDATE_INT) === false ? "СЧЁТ" : "ДОГОВОР-СЧЁТ";
+        $doc_name = $this->request->get('contract', FILTER_VALIDATE_INT) === false ? "СЧЁТ" : "ДОГОВОР-СЧЁТ";
 
-        $pdf->Cell(190, 8, "СЧЁТ № {$order['id']} от {$date}", 0, true, "C");
-        $pdf->SetFont('Myfont', 'N', 8);
+        $pdf->Cell(190, 8, $doc_name." № И-{$order['id']} от {$date}", 0, true, "C");
+        $pdf->SetFont('', 'N', 8);
         $pdf->Cell(20, 4, "Покупатель");
-        $pdf->SetFont('Myfont', 'B');
+        $pdf->SetFont('', 'N');
         $user_name  = ( $user['name'] ? $user['name'] : $user['fname'].' '.$user['lname'] );
         $user_name  = $user_name ? $user_name : $user['login'];
         $pdf->Cell(100, 4, $user_name, 0, 1);
-        $pdf->SetFont('Myfont', 'N');
+        $pdf->SetFont('', 'B');
 
         if ( !empty($user['inn']) && !empty($user['kpp']) ) {
             $pdf->Cell(9, 4, "ИНН");
-            $pdf->SetFont('Myfont', 'B');
+            $pdf->SetFont('', 'B');
             $pdf->Cell(20, 4, $user['inn']);
-            $pdf->SetFont('Myfont', 'N');
+            $pdf->SetFont('', 'N');
             $pdf->Cell(9, 4, "КПП");
-            $pdf->SetFont('Myfont', 'B');
+            $pdf->SetFont('', 'B');
             $pdf->Cell(20, 4, $user['kpp'], 0, 1);
         }
 
-        $pdf->SetFont('Myfont', 'N');
-        $pdf->Cell(9, 4, "Факс");
-        $pdf->SetFont('Myfont', 'B');
-        $pdf->Cell(9, 5, $user['fax'] ? $user['fax'] : "—", 0, 1);
+        if ( $user['phone'] ) {
+            $pdf->SetFont('', 'N');
+            $pdf->Cell(9, 4, "Телефон ");
+            $pdf->SetFont('', 'B');
+            $pdf->Cell(9, 5, $user['phone'], 0, 1);
+        }
 
         //$pdf->Cell(9, 4, "", 0, 1);
 
         // шапка таблицы
 
-        $pdf->setFont('Myfont', 'B', 9.5);
+        $pdf->setFont('', 'B', 9.5);
         $pdf->multiCell(11, 15, "№\nп/п", 1, 'C', 0, 0, '', '', true, 3, false, true, 0);
-        $pdf->multiCell(49, 15, "\nНаименование", 1, 'C', 0, 0);
-        $pdf->multiCell(43, 15, "\nОписание", 1, 'C', 0, 0);
+        $pdf->multiCell(49, 15, "\nАртикул", 1, 'C', 0, 0);
+        $pdf->multiCell(43, 15, "\nНаименование", 1, 'C', 0, 0);
         $pdf->multiCell(18, 15, "Кол-во\nшт.", 1, 'C', 0, 0);
         $pdf->multiCell(12, 15, "Ед.\nизм.", 1, 'C', 0, 0);
         $pdf->multiCell(20, 15, "Цена\nбез НДС\nруб.", 1, 'C', 0, 0, '', '', true, 3);
@@ -247,20 +256,13 @@ class controller_OrderPdf extends Controller
 
                 //$pdf->SetCellPadding(0);
                 $pdf->SetAutoPageBreak( false, 0 );
-                $pdf->setFont('Myfont', '', 9);
-                //$pdf->multiCell(11, 4, $i, 1, 'R', 0, 0, '', '', true, 3, false, true, 0);
+                $pdf->setFont('', '', 9);
                 $pdf->Cell(11, 6, $i, 1, 0, 'L', 0, 0, 1);
-                //$pdf->multiCell(49, 4, $g['numb'], 1, 'L', 0, 0);
-                $pdf->Cell(49, 6, $g['name'], 1, 0, 'L', 0, 0, 1);
-                //$pdf->multiCell(43, 4, $g['group'], 1, 'L', 0, 0);
-                $pdf->Cell(43, 6, 'Артикул '.$g['articul'], 1, 0, 'L', 0, 0, 1);
-                //$pdf->multiCell(18, 4, $g['count'], 1, 'R', 0, 0);
+                $pdf->Cell(49, 6, $g['articul'], 1, 0, 'L', 0, 0, 1);
+                $pdf->Cell(43, 6, $g['name'], 1, 0, 'L', 0, 0, 1);
                 $pdf->Cell(18, 6, $g['count'], 1, 0, 'R', 0, 0, 1);
-                //$pdf->multiCell(12, 4, "шт.", 1, 'L', 0, 0);
                 $pdf->Cell(12, 6, $g['item'], 1, 0, 'L', 0, 0, 1);
-                //$pdf->multiCell(20, 4, number_format( $g['price'], 2, ',', ' '), 1, 'R', 0, 0, '', '', true, 3);
                 $pdf->Cell(20, 6, number_format( $g['price'], 2, ',', ' '), 1, 0, 'R', 0, 0, 1);
-                //$pdf->multiCell(24, 4, number_format( $g['summa'], 2, ',', ' '), 1, 'R');
                 $pdf->Cell(24, 6, number_format( $g['summa'], 2, ',', ' '), 1, 1, 'R', 0, 0, 1);
                 $pdf->SetAutoPageBreak( true, 1 );
                 //$pdf->SetCellPadding(1);
@@ -268,13 +270,13 @@ class controller_OrderPdf extends Controller
                 if (  /*( $i % FIRST_PAGE == 0 && $page == 1 )
                        || ( ( $i - FIRST_PAGE ) % NEXT_PAGE == 0 && $page > 1 )
                        ||*/ ( $pdf->GetY() > 130 && $i == $rows_count - 1 ) ||
-                        ( $pdf->GetY() > 250 )
+                            ( $pdf->GetY() > 250 )
                 ) {
 
                     $pdf->AddPage('P');
                     $page ++;
 
-                    $pdf->setFont('Myfont', 'B', 9.5);
+                    $pdf->setFont('', 'B', 9.5);
                     $pdf->multiCell(11, 15, "№\nп/п", 1, 'C', 0, 0, '', '', true, 3, false, true, 0);
                     $pdf->multiCell(49, 15, "\nНаименование", 1, 'C', 0, 0);
                     $pdf->multiCell(43, 15, "\nОписание", 1, 'C', 0, 0);
@@ -310,11 +312,11 @@ class controller_OrderPdf extends Controller
 
         $pdf->SetFont('', 'B');
         $pdf->Cell( 170, 6,
-                "Итого к оплате: ".
-                        $numeric->write( intval( $n ) )." ".
-                        $ruble[ $numeric->num_125( $n ) ]." ".
-                        substr( '00'.round( $k ), -2)." ".
-                        $kop[ $numeric->num_125( $k ) ], 0, 1, "L");
+                    "Итого к оплате: ".
+                    $numeric->write( intval( $n ) )." ".
+                    $ruble[ $numeric->num_125( $n ) ]." ".
+                    substr( '00'.round( $k ), -2)." ".
+                    $kop[ $numeric->num_125( $k ) ], 0, 1, "L");
 
         //$pdf->SetFont('', 'N', 7);
         //$pdf->Cell( 170, 4, "Срок поставки ориентировочно 2 - 3 недели.", 0, 1, 'L' );
@@ -322,105 +324,31 @@ class controller_OrderPdf extends Controller
         //$this->write(8, cp2utf("Итого к оплате: Шесть тысяч пять рублей 33 копейки\n"));
         if ( !App::$request->get( 'contract', FILTER_VALIDATE_INT ) )
         {
-            $pdf->SetFont('Myfont', '', 7);
+            $pdf->SetFont('', '', 7);
             $pdf->write(4, "Счет действителен в течении 5 банковских дней. Датой платежа считается дата поступления денежных средств на расчетный счет Продавца.\n");
         }
 
-        //$pdf->cell(100, 4, $pdf->GetY());
-        /*
-         * ПЕЧАТЬ ПОРЯДКА ОПЛАТЫ И ПОЛУЧЕНИЯ ПРОДУКЦИИ
-         */
-        if (  App::$request->get( 'contract', FILTER_VALIDATE_INT ) ) {
 
-
-            $top = $pdf->GetY();
-            if ( $top > 160 ) {
-                $pdf->AddPage("P");
-            }
-
-            $pdf->Cell( 150, 7, strtoupper( "Порядок оплаты и получения продукции:" ), 0, 1 );
-            $pdf->SetFont( '', 'N', 6 );
-            $pdf->Cell( 4, 4, "1.");
-            $pdf->Cell( 150, 4, "Счет действителен в течение 5 банковских дней. Датой платежа считается дата поступления денежных средств на расчетный счет Поставщика.", 0, 1);
-            $pdf->Cell( 4, 4, "2.");
-            $pdf->Cell( 150, 4, "Данный счет является конкретным предложением (офертой на условиях ст.435,436,438 ГК РФ) и распространяется только на Покупателя указанного счета.", 0, 1);
-            $pdf->Cell( 4, 4, "3.");
-            $pdf->Cell( 150, 4, "Данная оферта действительна в течении пяти банковских дней с момента выставления.", 0, 1);
-            $pdf->Cell( 4, 4, "4.");
-            $pdf->Cell( 150, 4, "Осуществление Покупателем платежа по данному счету является акцептом оферты и согласием со всеми ее условиями.", 0, 1);
-            $pdf->Cell( 4, 4, "5.");
-            $pdf->Cell( 150, 4, "Мы оставляем за собой право изменять цену товара при изменении законов, налогов или таможенных пошлин РФ, при изменении курса доллара по ЦБ РФ", 0, 1);
-            $pdf->Cell( 150, 4, "более, чем на 3%.", 0, 1);
-            $pdf->Cell( 4, 4, "6.");
-            $pdf->Cell( 150, 4, "Для получения товара представителю Покупателя необходимо иметь при себе копию счета (частному лицу — квитанцию об оплате), паспорт, доверенность", 0, 1);
-            $pdf->Cell( 150, 4, "и все реквизиты Покупателя для оформления счет-фактуры.", 0, 1);
-            $pdf->Cell( 4, 4, "7.");
-            $pdf->Cell( 150, 4, "Приемка товара Покупателем осуществляется в соответствии с Инструкциями Госарбитража от 25.04.66г. № П-7 (за исключением п.8)", 0, 1);
-            $pdf->Cell( 150, 4, "и от 15.06.65 г. № П-6 (с изменениями) в части , не противоречащей действующему законодательству. При наличии у Поставщика товаросопроводительного", 0, 1);
-            $pdf->Cell( 150, 4, "документа (накладной), подписанной Покупателем — приемка по количеству, качеству, ассортименту, комплектности приемка считается завершенной.", 0, 1);
-            $pdf->Cell( 4, 4, "8.");
-            $pdf->Cell( 150, 4, "Право собственности на товар, а также риск случайной ее гибели или повреждения переходит от Поставщика к Покупателю с момента фактической", 0, 1);
-            $pdf->Cell( 150, 4, "передачи товара Поставщиком  уполномоченному представителю Покупателя или курьеру по транспортной накладной (квитанции) или организации связи (при", 0, 1);
-            $pdf->Cell( 150, 4, "доставке Покупателю третьими лицами). Документы, вложенные в почтовое отправление (экземпляр ООО \"ИМОТЭК\"), просим надлежащим образом оформить", 0, 1);
-            $pdf->Cell( 25,  4, "и переслать по адресу: ", 0, 0);
-            $pdf->SetFont('', 'B', 8);
-            $pdf->Cell( 125, 4, "199053, Г. САНКТ-ПЕТЕРБУРГ, А/Я 35.", 0, 1);
-            $pdf->SetFont('', 'N', 6);
-            $pdf->Cell( 4, 4, "9.");
-            $pdf->Cell( 150, 4, "Гарантия не распространяется на товар, дефект которых возник вследствие нарушений Покупателем условий транспортировки, хранения и эксплуатации.", 0, 1);
-            $pdf->Cell( 4, 4, "10.");
-            $pdf->Cell( 150, 4, "Акт о скрытых недостатках продукции должен быть составлен в течение 5 дней по обнаружении недостатков, однако не позднее четырех месяцев ", 0, 1);
-            $pdf->Cell( 150, 4, "со дня поступления продукции Покупателю, обнаружившего скрытые недостатки, если иные сроки не установлены договором. Акт о скрытых недостатках ", 0, 1);
-            $pdf->Cell( 150, 4, "продукции составляется в порядке, предусмотренном Инструкцией Госарбитража от 25.04.66 г. № П-7, если иное не предусмотрено договором поставки.", 0, 1);
-            $pdf->Cell( 4, 4, "11.");
-            $pdf->Cell( 150, 4, "Претензия по количеству и качеству поставленного товара принимаются Поставщиком в сроки не позднее 30 дней с момента его передачи Покупателю", 0, 1);
-            $pdf->Cell( 150, 4, "в соответствии с п. 8 настоящих условий.", 0, 1);
-            //$pdf->Cell( 10, 4, $pdf->GetY());
-        }
         /*
          *  /// ПЕЧАТЬ ПОРЯДКА ОПЛАТЫ И ПОЛУЧЕНИЯ ПРОДУКЦИИ
          */
 
-        $need_signature = App::$request->get("signature", FILTER_VALIDATE_INT);
-
         $x = $pdf->GetX();
         $y = $pdf->GetY();
-        if ( $need_signature ) {
 
-            //$pdf->Image($_SERVER['DOCUMENT_ROOT'].'/images/stamp.png', $x, $y, 40, 40);
-            //$pdf->Image($_SERVER['DOCUMENT_ROOT'].'/images/signature.png', $x + 70, $y, 40, 40);
+        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/stamp.png', $x, $y, 40, 40);
+        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 80, $y+8, 20, 20);
+        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 85, $y+17, 20, 20);
 
-            $pdf->SetFont('', '', 8);
-            $pdf->SetXY( $x + 40, $y + 17 );
-            $pdf->Cell( 80, 4, "Генеральный директор" );
-            $pdf->Cell( 40, 4, $firm['gendir'] );
-            $pdf->SetXY( $x + 40, $y + 25 );
-            $pdf->Cell( 80, 4, "Главный бухгалтер" );
-            $pdf->Cell( 40, 4, $firm['buh'] );
+        $pdf->SetFont('', '', 8);
+        $pdf->SetXY( $x + 40, $y + 17 );
+        $pdf->Cell( 80, 4, "Генеральный директор" );
+        $pdf->Cell( 40, 4, $firm['gendir'] );
+        $pdf->SetXY( $x + 40, $y + 25 );
+        $pdf->Cell( 80, 4, "Главный бухгалтер" );
+        $pdf->Cell( 40, 4, $firm['buh'] );
 
-            $pdf->SetY( $y + 40 );
-        }
-        else {
-            $pdf->SetXY( $x + 15, $y + 17 );
-            $pdf->Cell( 20, 4, "М.П." );
-
-            $pdf->SetXY( $x + 40, $y + 12 );
-            $pdf->Cell( 80, 4, "Генеральный директор" );
-            $pdf->Cell( 40, 4, $firm['gendir'] );
-            $pdf->SetXY( $x + 40, $y + 20 );
-            $pdf->Cell( 80, 4, "Главный бухгалтер" );
-            $pdf->Cell( 40, 4, $firm['buh'] );
-
-            $pdf->SetXY( $x + 40, $y + 30 );
-
-            $pdf->SetFontSize( 6 );
-            if ( !empty($manager['signature']) ) {
-                $pdf->Cell( 60, 4, $manager['signature'] );
-            }
-
-            $pdf->SetY( $y + 40 );
-        }
-        //$pdf->cell(100, 4, $pdf->GetY());
+        $pdf->SetY( $y + 40 );
 
         $pdf->SetFontSize( 6 );
         if ( isset( $firm['contact'] ) ) {
