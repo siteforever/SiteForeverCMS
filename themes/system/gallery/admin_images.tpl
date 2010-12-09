@@ -1,0 +1,255 @@
+
+<h2>Галерея: {$category.name} <a {href editcat=$category.id}>{icon name="pencil" title="Править"}</a></h2>
+
+<p>
+    <a {href url="admin/gallery"}>&laquo; Вернуться к списку категорий</a>
+</p>
+<br />
+
+<table>
+<tr>
+    <td>
+
+        <ul id="gallery">
+        {foreach from=$images item="img"}
+        <li class="ui-state-default" rel="{$img.id}">
+
+            <img rel="{$img.id}" src="{$img.thumb}" title="{$img.name}" alt="{$img.name}" width="{$category.thumb_width}" height="{$category.thumb_height}" />
+
+            <div class="gallery_float_layer">
+                <div class="gallery_control">
+                    <a {href editimg=$img.id} class="gallery_picture_edit">{icon name="picture_edit" title="Изменить"}</a>
+                    <a {href switchimg=$img.id} class="gallery_picture_switch">{if $img.hidden}{icon name="lightbulb_off" title="Выкл"}{else}{icon name="lightbulb" title="Вкл"}{/if}</a>
+                    <a {href delimg=$img.id} class="gallery_picture_delete">{icon name="delete" title="Удалить"}</a>
+                </div>
+
+                <div class="gallery_name" rel="{$img.id}">
+                    {$img.name} {icon name="pencil" title="Править"}
+                    <input type="hidden" name="edit_names[{$img.id}]" class="gallery_name_field" value="{$img.name}" />
+                </div>
+            </div>
+        </li>
+        {/foreach}
+        </ul>
+
+
+    </td>
+</tr>
+<tr>
+    <td>
+
+        <form id="load_images" action="{link viewcat=$category.id}" method="post" enctype="multipart/form-data">
+        <div class="newimage">
+            Наименование: <input type="text" name="name[]" />
+            Файл: <input type="file" name="image[]" />
+        </div>
+        </form>
+
+        <br />
+        <p>
+            <button id="add_image">{icon name="picture_add"} Добавить</button> |
+            <button id="send_images">{icon name="picture_save"} Отправить</button>
+        </p>
+
+    </td>
+</tr>
+</table>
+
+<br />
+<p>
+    <a {href url="admin/gallery"}>&laquo; Вернуться к списку категорий</a>
+</p>
+
+
+
+<style type="text/css">
+    #gallery {ldelim}
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    {rdelim}
+    #gallery li.ui-state-default {ldelim}
+        margin: 0 20px 20px 0;
+        padding: 20px 20px 45px 20px;
+        float: left;
+        width: {$category.thumb_width}px;
+        height: {$category.thumb_height}px;
+        font-size: 1em;
+        text-align: center;
+        overflow: hidden;
+    {rdelim}
+    #gallery div.gallery_float_layer {ldelim}
+        position:   relative;
+        width:      {$category.thumb_width}px;
+        height:     {$category.thumb_height}px;
+        margin-top: -{$category.thumb_height}px;
+        /*verflow:   hidden;*/
+        font-size: 100%;
+    {rdelim}
+    #gallery div.gallery_float_layer input {ldelim}
+        width: 80%;
+    {rdelim}
+    #gallery div.gallery_control {ldelim}
+        height:     {$category.thumb_height}px;
+        text-align:right;
+        margin-bottom: 5px;
+    {rdelim}
+    #gallery div.gallery_name {ldelim}
+        cursor: pointer;
+        color: #000;
+        height: 25px;
+    {rdelim}
+</style>
+
+
+<script type="text/javascript">
+{literal}
+    $(function() {
+        // Сортировочность
+        $("#gallery").sortable({
+            stop: function(event, ui) {
+                var positions = [];
+                $(this).find('li').each(function(){
+                    positions.push($(this).attr('rel'));
+                });
+                $.post('/?route=admin/gallery', {positions: positions});
+            }
+        });
+        $("#gallery").disableSelection();
+
+        // Эффекты
+        /*
+        $("#gallery").find('div.gallery_float_layer').css('opacity', '0.4');
+        $("#gallery li").hover(function(){
+            $(this).find('div.gallery_float_layer').fadeTo(200, 1);
+        },function(){
+            $(this).find('div.gallery_float_layer').fadeTo(200, 0.4);
+        });
+        */
+
+        // Редактирование названия
+        $('#gallery').find('div.gallery_name').click(function(){
+            var val  = $(this).find('input').val();
+            var name = $(this).find('input').attr('name');
+            $(this).html("<input type='text' name='"+name+"' value='"+val+"' rel='"+val+"' />")
+                .find('input').focus();
+            $(this).find('input').blur(function(){gallery_edit_name_apply(this);})
+                .keypress(function( event ){
+                    if (event.keyCode == '13') {
+                        gallery_edit_name_apply( this );
+                    }
+                    if (event.keyCode == '27') {
+                        gallery_edit_name_restore( this );
+                    }
+                });
+        });
+
+
+        // Правка данных об изображении
+        $('a.gallery_picture_edit').click(function(){
+            var action = $(this).attr('href');
+            if ( $('#gallery_picture_edit').length == 0 ) {
+                $('<div id="gallery_picture_edit" />').appendTo('div.l-content');
+                $('#gallery_picture_edit').dialog({
+                        autoOpen        : false,
+                        modal           : true,
+                        draggable       : true,
+                        width           : 740,
+                        title           : 'Правка информации',
+                        buttons         : {
+                                'Закрыть'   : function() {
+                                    $(this).dialog('close');
+                                },
+                                'Сохранить' : function() {
+                                    $(this).find('form').ajaxSubmit({
+                                        url     : action,
+                                        target  : '#gallery_picture_edit'
+                                        /*success : function(){
+                                            //$('#gallery_picture_edit').dialog('close');
+                                        }*/
+                                    });
+                                }
+                        }
+                    }).hide();
+            };
+
+            $(window).bind('close', function(){return false;});
+
+            $.showBlock('Загрузка...');
+            $.post($(this).attr('href'), function( data ){
+                $.hideBlock();
+                $('#gallery_picture_edit').html(data).dialog('open');
+            });
+            return false;
+        });
+
+
+        // Удаление изображений
+        $('a.gallery_picture_delete').click(function(){
+
+            if ( confirm('Действительно хотите удалить?') ) {
+
+                var href = $(this).attr('href');
+                $.post( href, function(data){
+                    try {
+                        if ( data.error == '0' ) {
+                            var elem = $('#gallery li[rel='+data.id+']');
+                            $(elem).fadeOut(500);
+                            setTimeout(function(){
+                                $(elem).remove();
+                            }, 1000);
+                        }
+                    } catch(e) { alert(e.message) };
+                }, 'json');
+                return false;
+            }
+        });
+
+        // Переключение активности изображения
+        $('a.gallery_picture_switch').click(function(){
+            $.post($(this).attr('href'), function(data){
+                try {
+                    if ( data.error == '0' ) {
+                        var elem = $('#gallery li[rel='+data.id+'] a.gallery_picture_switch' );
+                        $(elem).html(data.img);
+                    }
+                } catch(e) {alert(e.message);};
+            }, 'json');
+            return false;
+        });
+
+        // Создание мультизагрузки
+        var reserv_img = $("div.newimage:last").clone();
+        $("#add_image").click(function(){
+            $(reserv_img).clone().appendTo("#load_images");
+            return false;
+        });
+        $("#send_images").click(function(){
+            $("#load_images").submit();
+            return false;
+        });
+    });
+
+    // Редактировать название и применить
+    var gallery_edit_name_apply = function( obj )
+    {
+        var val  = $(obj).val();
+        var rel  = $(obj).attr('rel');
+        var name = $(obj).attr('name');
+        var id = $(obj).parent().attr('rel');
+        if ( id && val != rel ) {
+            $.post('/?route=admin/gallery', {editimage: id, name: val});
+        }
+        $(obj).replaceWith(val+"{/literal} {icon name="pencil" title="Править"}{literal}<input type='hidden' name='"+name+"' value='"+val+"' />");
+    }
+
+    // Редактировать название и отменить
+    var gallery_edit_name_restore = function( obj )
+    {
+        var val  = $(obj).attr('rel');
+        var name = $(obj).attr('name');
+        $(obj).replaceWith(val+"{/literal} {icon name="pencil" title="Править"}{literal}<input type='hidden' name='"+name+"' value='"+val+"' />");
+    }
+
+{/literal}
+</script>

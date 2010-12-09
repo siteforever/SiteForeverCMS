@@ -1,0 +1,156 @@
+@CHARSET "UTF-8";
+/**
+ * Стили, применяемые по-умолчанию
+ * @author Ermin Nikolay <nikolay@ermin.ru>
+ * @link http://ermin.ru
+ * @link http://siteforever.ru
+ * Date: 28.05.2010
+ * Time: 15:14:11
+ */
+.float_right {
+    float: right;
+}
+
+.float_left {
+    float: left;
+}
+
+
+.b-catalog-product-noimage {
+    width:100px;
+    height:100px;
+    text-align: center;    
+}
+
+.b-product-details {
+    margin-left: 250px;
+}
+
+    .b-product-details td {
+        font-size: 12px;
+    }
+        .b-product-details td select {
+            font-size: 12px;
+            padding: 0;
+        }
+
+.b-product .b-catalog-articul,
+.b-product .b-catalog-product {
+    font-size: 12px;
+    font-weight: bold;
+    color: #A7A7A7;
+}
+.b-product .b-catalog-price big {
+    font-size: 24px;
+}
+
+.b-product .b-catalog-inbasket {
+    padding-top: 5px;
+}
+
+.b-product .b-description strong {
+    font-size: 12px;
+}
+
+.basket-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 0 0 10px 0;
+}
+    .basket-table td, .basket-table th {
+        padding: 5px;
+        background: #fff;
+        border: 1px solid #ddd;
+    }
+        .basket-table td span {
+            color: #D11414;
+            font-weight: bold;
+            font-size: 11px;
+        }
+    .basket-table th {
+        background: #ddd;
+        color: #333;
+    }
+
+
+.catalog_order {
+    float: right;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #a7a7a7;
+}
+    .catalog_order select:focus { background: #fff; }
+    .catalog_order select, .catalog_order option {
+        text-transform: none;
+        color: #666666;
+    }
+	
+
+.clear {
+    clear: both;
+}
+.clear_right {
+    clear: right;
+}
+.clear_left {
+    clear: left;
+}
+
+
+input, select, textarea {
+    width: 150px;
+    padding: 1px;
+    border: 1px #808080 solid;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size:inherit;
+}
+textarea {
+    width: 200px;
+    height: 100px;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: #000;
+    background: #fff;
+}
+
+input.checkbox, input.radio {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 1px;
+    border: none;
+    background: none;
+}
+
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
+.center {
+    text-align: center;
+}
+.fullWidth {
+	width: 100%;
+}
+.fullHeight {
+	height: 100%;
+}
+div.paging {
+    margin: 0 0 0.5em 0;
+}
+
+.b-request-feedback {
+	padding: 10px;
+	color: red;
+	border: 1px solid #ccc;
+	background: #fff;
+	margin-bottom: 1em;
+}
+
+
+	
