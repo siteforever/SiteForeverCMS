@@ -38,11 +38,11 @@ class db
      */
     private $resource  = null;
 
-    private $time   = 0;
-    private $count  = 0,
-    $insert = 0,
-    $update = 0,
-    $delete = 0;
+    public  $time   = 0;
+    public  $count  = 0,
+            $insert = 0,
+            $update = 0,
+            $delete = 0;
     private $tables = array();
     private $errno  = 0;
     private $error  = "";
