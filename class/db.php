@@ -168,7 +168,7 @@ class db
             throw new dbException( 'Invalid connect to database' );
         }
         $this->resource->query("SET NAMES 'utf8'");
-        $this->resource->query("SET CHARACTER SET 'utf8'");
+        //$this->resource->query("SET CHARACTER SET 'utf8'");
     }
 
     /**

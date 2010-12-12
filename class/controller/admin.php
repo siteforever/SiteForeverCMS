@@ -120,17 +120,25 @@ class controller_Admin extends Controller
         else {
             $edit_form->parent->setValue( $parent_id );
             $edit_form->template->setValue( 'inner' );
-            
-            $edit_form->alias->setValue( $parent['alias'] );
+
+            if ( isset($parent['alias']) ) {
+                $edit_form->alias->setValue( $parent['alias'] );
+            }
             $edit_form->author->setValue( '1' );
 
             $edit_form->date->setValue( time() );
             $edit_form->update->setValue( time() );
 
-            $edit_form->controller->setValue( $parent['controller'] );
-            $edit_form->action->setValue( $parent['action'] );
+            if ( isset($parent['controller']) ) {
+                $edit_form->controller->setValue( $parent['controller'] );
+            }
+            if ( isset($parent['action']) ) {
+                $edit_form->action->setValue( $parent['action'] );
+            }
             $edit_form->pos->setValue( App::$structure->getNextPos($parent_id) );
-            $edit_form->sort->setValue( $parent['sort'] );
+            if ( isset($parent['sort']) ) {
+                $edit_form->sort->setValue( $parent['sort'] );
+            }
         }
         $this->request->setTitle( 'Добавить страницу' );
         $this->request->setContent( $edit_form->html() );
