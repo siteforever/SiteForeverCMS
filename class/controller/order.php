@@ -8,21 +8,21 @@ class controller_Order extends Controller
 {
     function indexAction()
     {
-        App::$request->set('template', 'inner');
-        App::$request->set('tpldata.page.title', 'Мои заказы');
-        App::$request->set('tpldata.page.content', '');
+        $this->request->set('template', 'inner');
+        $this->request->setTitle('Мои заказы');
+        $this->request->setContent('');
+        
+        $order  = $this->getModel('Order');
 
-        $order = Model::getModel('model_Order');
-
-        if ( !App::$user->get('id') || App::$user->getPermission() == USER_GUEST ) {
+        if ( !$this->user->get('id') || $this->user->getPermission() == USER_GUEST ) {
             redirect("users/login");
         }
 
-        if ( $cancel = App::$request->get('cancel') )
+        if ( $cancel = $this->request->get('cancel') )
         {
             //print "cancel:$cancel";
             $can_order = $order->find( $cancel );
-            if( $can_order['user_id'] == App::$user->get('id') )
+            if( $can_order['user_id'] == $this->user->get('id') )
             {
                 $can_order['status'] = '100';
                 $order->update( $can_order );
@@ -31,14 +31,14 @@ class controller_Order extends Controller
         }
 
         // просмотр заказа
-        $item = App::$request->get('item', Request::INT);
+        $item = $this->request->get('item', Request::INT);
         if ( $item )
         {
             $order_data = $order->find( $item );
             if ( $order_data )
             {
-                if ( App::$user->get('id') != $order_data['user_id'] ) {
-                    App::$request->addFeedback('Заказ вам не принадлежит');
+                if ( $this->user->get('id') != $order_data['user_id'] ) {
+                    $this->request->addFeedback('Заказ вам не принадлежит');
                     return;
                 }
 
@@ -52,21 +52,21 @@ class controller_Order extends Controller
                     $all_count += $position['count'];
                     $all_summa += $position['summa'];
                 }
-                App::$tpl->assign(array(
+                $this->tpl->assign(array(
                     'order' => $order_data,
                     'list'  => $list_pos,
                     'all_count' => $all_count,
                     'all_summa' => $all_summa,
                 ));
 
-                App::$request->set('tpldata.page.content', App::$tpl->fetch('system:order.order'));
+                $this->request->set('tpldata.page.content', $this->tpl->fetch('system:order.order'));
                 return;
             }
         }
 
-        $list = $order->findAllByUserId( App::$user->get('id') );
-        App::$tpl->assign('list', $list);
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:order.index'));
+        $list = $order->findAllByUserId( $this->user->get('id') );
+        $this->tpl->assign('list', $list);
+        $this->request->set('tpldata.page.content', $this->tpl->fetch('system:order.index'));
     }
 
     /**
@@ -75,32 +75,26 @@ class controller_Order extends Controller
      */
     function createAction()
     {
-        App::$request->set('template', 'inner');
-        App::$request->set('tpldata.page.title', 'Оформить заказ');
-        App::$request->set('tpldata.page.content', 'Оформить заказ');
+        $this->request->set('template', 'inner');
+        $this->request->setTitle('Оформить заказ');
+        $this->request->setContent('Оформить заказ');
 
         // проверить, зарегистрирован ли клиент
-        if ( App::$user->getPermission() == USER_GUEST )
+        if ( $this->user->getPermission() == USER_GUEST )
         {
-            App::$request->set(
-                'tpldata.page.content',
-                App::$tpl->fetch('system:order.need')
-            );
+            $this->request->setContent( $this->tpl->fetch('system:order.need') );
             return;
         }
 
-        if ( App::$basket->getCount() == 0 ) {
-            App::$request->set(
-                'tpldata.page.content',
-                    'Ваша <a '.href('basket').'>корзина</a> пуста'
-            );
+        if ( $this->basket->getCount() == 0 ) {
+            $this->request->setContent( 'Ваша <a '.href('basket').'>корзина</a> пуста' );
             return;
         }
 
-        $cat = Model::getModel('model_Catalog');
+        $cat = $this->getModel('Catalog');
 
         // готовим список к выводу
-        $all_product = App::$basket->getAll();
+        $all_product = $this->basket->getAll();
 
         $all_keys = array();
         foreach( $all_product as $prod ) {
@@ -113,7 +107,7 @@ class controller_Order extends Controller
             $product['cat_id']  = $product['id'];
             $product['name']    = $goods[$product['id']]['name'];
             $product['price']   =
-                    App::$user->getPermission() == USER_WHOLE ?
+                    $this->user->getPermission() == USER_WHOLE ?
                             $goods[$product['id']]['price2'] :
                             $goods[$product['id']]['price1'];
             $product['summa']   = $product['price'] * $product['count'];
@@ -123,20 +117,20 @@ class controller_Order extends Controller
         //printVar( $all_product );
 
         // Создание заказа
-        $complete = App::$request->get('complete');
+        $complete = $this->request->get('complete');
         if ( $complete && $all_product ) {
-            //App::$request->debug();
-            $ord = Model::getModel('model_Order');
+            //$this->request->debug();
+            $ord = $this->getModel('Order');
             $ord->createOrder( $all_product );
-            App::$basket->clear();
+            $this->basket->clear();
             redirect('order');
         }
 
 
-        App::$tpl->assign(array(
+        $this->tpl->assign(array(
             'products' => $all_product,
         ));
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:order.create'));
+        $this->request->setContent($this->tpl->fetch('system:order.create'));
     }
 
     /**
@@ -145,17 +139,17 @@ class controller_Order extends Controller
      */
     function adminAction()
     {
-        if ( $num = App::$request->get('num', FILTER_VALIDATE_INT) ) {
+        if ( $num = $this->request->get('num', FILTER_VALIDATE_INT) ) {
             return $this->adminEdit( $num );
         }
 
-        $model = model::getModel('model_Order');
+        $model = $this->getModel('Order');
 
-        $conds = array();
-        if ( $number = App::$request->get('number', FILTER_VALIDATE_INT) ) {
+        $cond = array();
+        if ( $number = $this->request->get('number', FILTER_VALIDATE_INT) ) {
             $cond[] = " ord.id = '{$number}' ";
         }
-        if ( $date = App::$request->get('date') ) {
+        if ( $date = $this->request->get('date') ) {
             if ( $tstamp = strtotime( $date ) ) {
                 $mon    = date('n', $tstamp);
                 $day    = date('d', $tstamp);
@@ -165,7 +159,7 @@ class controller_Order extends Controller
                 $cond[] = " ord.date BETWEEN $from AND $to ";
             }
         }
-        if ( $user = App::$request->get('user') ) {
+        if ( $user = $this->request->get('user') ) {
             $cond[] =  " ( u.login LIKE '%{$user}%' OR u.email LIKE '%{$user}%' ".
                         " OR u.lname LIKE '%{$user}%' OR u.name LIKE '%{$user}%' ) ";
         }
@@ -175,13 +169,13 @@ class controller_Order extends Controller
         $paging = $this->paging( $count, 20, 'admin/order' );
         $orders = $model->findAllForAdmin($cond, $paging['offset'].','.$paging['perpage']);
 
-        App::$tpl->assign(array(
+        $this->tpl->assign(array(
             'orders'    => $orders,
             'paging'    => $paging,
         ));
 
-        App::$request->set('tpldata.page.title', 'Заказы');
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:order.admin'));
+        $this->request->setTitle('Заказы');
+        $this->request->setContent($this->tpl->fetch('system:order.admin'));
     }
 
     /**
@@ -191,17 +185,17 @@ class controller_Order extends Controller
      */
     function adminEdit( $num )
     {
-        App::$request->set('tpldata.page.title', 'Править заказ');
+        $this->request->setTitle('Править заказ');
 
-        $model = model::getModel('model_Order');
+        $model = $this->getModel('Order');
 
 
 
         $order      = $model->find( $num );
         $positions  = $model->findPositionsByOrderId( $num );
-        $user       = App::$user->find( $order['user_id'] );
+        $user       = $this->user->find( $order['user_id'] );
 
-        if ( $new_status = App::$request->get('new_status', FILTER_VALIDATE_INT) )
+        if ( $new_status = $this->request->get('new_status', FILTER_VALIDATE_INT) )
         {
             $order['status'] = $new_status;
             $model->update( $order );
@@ -216,7 +210,7 @@ class controller_Order extends Controller
             $count += $pos['count'];
         }
 
-        App::$tpl->assign(array(
+        $this->tpl->assign(array(
             'order'     => $order,
             'positions' => $positions,
             'summa'     => $summa,
@@ -225,6 +219,6 @@ class controller_Order extends Controller
             'user'      => $user,
         ));
 
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:order.admin_edit'));
+        $this->request->setContent($this->tpl->fetch('system:order.admin_edit'));
     }
 }

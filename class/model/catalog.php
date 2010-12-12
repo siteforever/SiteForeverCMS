@@ -61,6 +61,23 @@ class model_Catalog extends Model
               PRIMARY KEY (`id`)
             ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
         }
+        if ( ! $this->isExistTable( DBCATGALLERY ) ) {
+            $this->db->query(
+                "CREATE TABLE `".DBCATGALLERY."` (
+                    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+                      `cat_id` int(11) NOT NULL DEFAULT '0',
+                      `title` varchar(250) DEFAULT NULL,
+                      `descr` varchar(250) DEFAULT NULL,
+                      `image` varchar(250) DEFAULT NULL,
+                      `middle` varchar(250) DEFAULT NULL,
+                      `thumb` varchar(250) DEFAULT NULL,
+                      `hidden` tinyint(4) NOT NULL DEFAULT '0',
+                      `main` tinyint(4) NOT NULL DEFAULT '0',
+                      PRIMARY KEY (`id`)
+                  ) ENGINE=MyISAM DEFAULT CHARSET=utf8"
+            );
+        }
+
     }
 
     /**

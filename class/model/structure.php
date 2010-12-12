@@ -32,6 +32,7 @@ class model_Structure extends Model
     function createTables()
     {
         if ( ! $this->isExistTable( DBSTRUCTURE ) ) {
+            $this->db->query("SET NAMES 'utf8'");
             $this->db->query("
             CREATE TABLE `".DBSTRUCTURE."` (
               `id` int(11) NOT NULL auto_increment,
@@ -66,11 +67,11 @@ class model_Structure extends Model
               KEY `date` (`date`),
               KEY `order` (`parent`,`pos`),
               KEY `request` (`alias`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 PACK_KEYS=0
-            ");
+            ) ENGINE=MyISAM CHARSET=utf8");
+
             $this->db->insert( DBSTRUCTURE, array(
                 'parent'    => '0',
-                'name'      => 'test',
+                'name'      => 'Главная',
                 'template'  => 'index',
                 'uri'       => 'index',
                 'alias'     => 'index',
@@ -79,7 +80,7 @@ class model_Structure extends Model
                 'pos'       => '0',
                 'controller'    => 'page',
                 'action'    => 'index',
-                'title'     => 'test',
+                'title'     => 'Главная',
                 'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a href="/admin">панель управления</a></p>',
                 'author'    => '1',
             ) );
