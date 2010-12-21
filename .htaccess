@@ -1,21 +1,28 @@
 AddDefaultCharset UTF-8
 AddType text/x-component .htc
 
-php_flag  display_errors				on
-php_value error_reporting				15
+php_flag  display_errors            on
+php_value error_reporting           15
 
 php_flag session.cookie_httponly    off
 php_flag session.use_only_cookies   on
 
-php_value session.name    "sfid"
+php_value session.name              "sfid"
 
 
-php_value magic_quotes_gpc off
-php_value register_globals off
+php_value magic_quotes_gpc          off
+php_value register_globals          off
 
 Options +FollowSymlinks
 Options -MultiViews
 Options -Indexes
+
+# Protect build file
+<Files "build.xml">
+    Order allow,deny
+    Deny from all
+</Files>
+
 
 RewriteEngine on
 

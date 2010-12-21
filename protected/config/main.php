@@ -94,5 +94,4 @@ return array(
         // вид для менеджера файлов
         'manager_view'  => 'table', // table || tile
     ),
-
 );

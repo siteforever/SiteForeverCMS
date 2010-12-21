@@ -2,9 +2,9 @@
 class SysConfig
 {
     private $config;
-    
-    
-    
+
+
+
     function __construct()
     {
         $cfg_file = 'protected/config/'.CONFIG.'.php';
@@ -12,10 +12,10 @@ class SysConfig
             $this->config = require $cfg_file;
         }
         else {
-            throw new Exception('Конфиг не найден');
+            throw new Exception('SysConfig not found');
         }
     }
-    
+
     /**
      * Установить значение
      * @param $key
@@ -86,7 +86,7 @@ class SysConfig
      * @param $alias
      * @param $value
      */
-    protected function seti( $path, $value )    
+    protected function seti( $path, $value )
     {
         $data = &$this->config;
         foreach( $path as $part ) {

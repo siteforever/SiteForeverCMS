@@ -15,9 +15,11 @@ $(function(){
             update :
                 function( event, ui ) {
                     var positions = [];
+                    var total = $(this).find('tr[rel]').length;
                     $(this).find('tr[rel]').each(function(i) {
                         positions.push( $(this).attr('rel') );
                     });
+                    positions.reverse();
                     $.post('/admin/catalog', {sort:positions}, function( data ){
                         try {
                             if ( data.error ) alert( data.error );
@@ -25,8 +27,18 @@ $(function(){
                     }, 'json');
                 }
         });
-        $('table.catalog_data').disableSelection();
+        $('table.catalog_data tr.cat').disableSelection();
 
+        $('#catalog_save_position').click(function(){
+            var pos = [];
+            $('input.trade_pos').each(function(){
+                pos.push({key:$(this).attr('rel'), val:$(this).val()});
+            });
+            $.post($('input.trade_pos:gt(0)').attr('href'), { save_pos: pos }, function(){
+                document.location.reload();
+            });
+            //alert(pos);
+        });
 
         $('#catalog_move_to_category').click(function(){
             var move_list = [];
@@ -64,6 +76,23 @@ $(function(){
             return false;
         });
     }
+
+
+    // Фильтрация товаров
+    $('#goods_filter_select').click(function(){
+        var href = window.location.href;
+        href = href.replace(/\/$/, '').replace(/(\/goods_filter=[^\/]+?)*$/, '');
+        if ( $('#goods_filter').val() != '' ) {
+            href += '/' + 'goods_filter=' + $('#goods_filter').val();
+        }
+        window.location.href = href;
+    });
+    // Отмена фильтрации
+    $('#goods_filter_cancel').click(function(){
+        var href = window.location.href;
+        href = href.replace(/\/$/, '').replace(/(\/goods_filter=[^\/]+?)*$/, '');
+        window.location.href = href;
+    });
 
 
     // Галлерея каталога

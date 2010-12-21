@@ -6,7 +6,7 @@
  */
 class controller_News extends Controller
 {
-    
+
     function indexAction()
     {
         $model = $this->getModel('News');
@@ -125,7 +125,7 @@ class controller_News extends Controller
         $this->tpl->assign(array(
             'list'  => $list,
         ));
-        
+
         //$this->request->setContent( $this->tpl->fetch('system:news.admin') );
         $this->request->setContent( $this->tpl->fetch('news.catslist') );
         return;
@@ -195,13 +195,14 @@ class controller_News extends Controller
 
         $edit   = $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT);
 
+        $news   = array();
         if ( $edit ) {
             $news   = $model->find( $edit );
             $form->setData( $news );
         }
 
         $cat = null;
-        if ( $news['cat_id'] ) {
+        if ( isset( $news['cat_id'] ) && $news['cat_id'] ) {
             $cat    = $model->findCat( $news['cat_id'] );
         }
         if ( is_null( $cat ) && $this->request->get('cat', FILTER_VALIDATE_INT) ) {

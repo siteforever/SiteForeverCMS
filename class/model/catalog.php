@@ -119,8 +119,8 @@ class model_Catalog extends Model
 
         $data_all = $this->db->fetchAll(
             "SELECT * FROM ".DBCATALOG.
-                    " WHERE deleted = 0 AND hidden = 0".$where.
-            " ORDER BY cat DESC, pos", true
+                    " WHERE deleted = 0 ".$where.
+            " ORDER BY cat DESC, pos DESC", true
         );
         $this->all = $data_all;
         return $data_all;
@@ -137,7 +137,7 @@ class model_Catalog extends Model
         $data_all = $this->db->fetchAll(
             "SELECT * FROM ".DBCATALOG.
                     " WHERE deleted = 0 AND articul LIKE '%{$filter}%'
-            ORDER BY cat DESC, pos", true
+            ORDER BY cat DESC, pos DESC", true
         );
         $this->all = $data_all;
         return $data_all;
@@ -152,11 +152,12 @@ class model_Catalog extends Model
     function findAllByParent( $parent, $limit = '' )
     {
         $list = App::$db->fetchAll(
-            "SELECT cat.*, COUNT(child.id) child_count FROM ".DBCATALOG." cat
+            "SELECT cat.*, COUNT(child.id) child_count
+            FROM ".DBCATALOG." cat
                 LEFT JOIN ".DBCATALOG." child ON child.parent = cat.id AND child.deleted = 0
             WHERE cat.parent = '$parent' AND cat.deleted = 0
             GROUP BY cat.id
-            ORDER BY  cat.cat DESC, cat.pos
+            ORDER BY  cat.cat DESC, cat.pos DESC
             {$limit}"
         );
         return $list;
@@ -175,13 +176,17 @@ class model_Catalog extends Model
         // Примеряем способ сортировки к списку из конфига
         $order_list = $this->config->get('catalog.order_list');
 
-        //printVar($order_list);
 
         if ( $order_list && is_array($order_list) ) {
             $set = $this->request->get('order');
             if ( $set && $this->config->get('catalog.order_list.'.$set) ) {
                 $order = $set;
             }
+            else {
+                $order  = reset( array_keys($order_list) );
+            }
+            $this->request->set('order', $order);
+            //print $order;
         }
 
         //print "order=$order";

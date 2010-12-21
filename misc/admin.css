@@ -203,15 +203,17 @@ table.dataset {
         color: #fff;
         text-align: left;
     }
-        table.dataset th a {
-            color: #fff200;
-        }
     table.dataset tr.select td {
         background: #e7f2ff;
     }
 
-table.dataset tr.cat {
-    cursor: s-resize;
+
+.catalog_data input.trade_pos {
+    width:50px;
+    text-align:right;
+}
+.catalog_data td.trade_pos {
+    width:50px;
 }
 
 

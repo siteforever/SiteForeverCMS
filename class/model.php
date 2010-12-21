@@ -19,15 +19,17 @@ abstract class Model
      */
     protected $user;
 
+    protected $table;
+
     protected $data = array();
-    
+
     protected static $all_class = array();
     protected static $exists_tables;
 
     function __construct( $fail = true )
     {
         if ( $fail ) {
-            throw new Exception('Это приватный метод. Надо использовать Model::getModel()');
+            throw new Exception('This is private method. Need use Model::getModel()');
         }
         // освобождаем потомков от зависимости от приложения
         $this->db       =& App::$db;
@@ -50,6 +52,10 @@ abstract class Model
         return $this->data['id'];
     }
 
+    /**
+     * Создание таблиц
+     * @return void
+     */
     function createTables()
     {
     }
@@ -78,29 +84,29 @@ abstract class Model
                 self::$all_class[ $class_name ] = new $class_name(false);
             }
             else {
-                throw new Exception('Модель '.$class_name.' не найдена');
+                throw new Exception('Model "'.$class_name.'" not found');
             }
         }
         return self::$all_class[ $class_name ];
     }
-    
+
     function getData()
     {
         return $this->data;
     }
-    
+
     function setData( $data )
     {
         $this->data = $data;
         return $this;
     }
-    
+
     function set( $key, $value )
     {
         $this->data[$key] = $value;
         return $this;
     }
-    
+
     function get( $key )
     {
         if ( isset($this->data[$key]) ) {
@@ -108,8 +114,23 @@ abstract class Model
         }
         return null;
     }
-    
-    abstract function find( $id );
-    
-    
+
+    /**
+     * Finding data by primary key
+     * @throws Exception
+     * @param  $id
+     * @return array
+     */
+    function find( $id )
+    {
+        if ( isset( $this->table ) && $this->isExistTable( $this->table ) ) {
+            return $this->db->fetch(
+                "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1",
+                 db::F_ASSOC,
+                 array(':id'=>$id) );
+        }
+        throw new Exception('Table for model not found');
+    }
+
+
 }

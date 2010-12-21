@@ -14,7 +14,7 @@ abstract class Application_Abstract
     static $ajax = false;
 
     /**
-     * @var Config
+     * @var SysConfig
      */
     static $config;
     /**

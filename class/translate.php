@@ -2,7 +2,7 @@
 /**
  * Переводчик
  */
- 
+
 class translate {
 
     private $lang;
@@ -20,7 +20,7 @@ class translate {
         $dict_file  = 'protected'.DS.'lang'.DS.$this->lang.'.php';
         if ( ! $this->dictionary = @include($dict_file) ) {
             throw new Exception('Dictionary for language '.$this->lang.' not found in file '.$dict_file);
-        }        
+        }
     }
 
     /**
@@ -28,7 +28,7 @@ class translate {
      * @return translate
      */
     static function getInstance()
-    { 
+    {
         if ( is_null( self::$instance ) ) {
             self::$instance = new self();
         }

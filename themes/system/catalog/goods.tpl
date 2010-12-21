@@ -1,6 +1,11 @@
 {$breadcrumbs}
 
+{if $category.text|strip_tags|trim != ""}
+{$category.text}
+{/if}
+
 {if $category.sort_view}
+
 <div class="catalog_order">
     Сортировать
     <select class="catalog_select_order">
@@ -13,30 +18,34 @@
 
 <div class="clear"></div>
 
+<hr class="b-catalog-separator" />
+
 {if $cats}
 <ul class="b-cat-list">
     {foreach from=$cats item="cat"}
-    <li><a {href url="catalog" cat=$cat.id}>{$cat.name} {*({$cat.sub_count})*}</a></li>
+    <li><a {href  cat=$cat.id}>{$cat.name} {*({$cat.sub_count})*}</a></li>
     {/foreach}
 </ul>
+<hr class="b-catalog-separator" />
 {/if}
 
 
+
 {foreach from=$list item="item"}
-<form action="/basket/" method="post">
+<form action="/basket/" method="post" class="catalog_product_form">
     <table class="b-catalog-product fullWidth">
       <tr>
         <td width="110">
             {if $item.image}
-                <a {href cat=$item.id}>
-                    <img class="left" src="{$item.thumb}" alt="{$item.name}" bprder="0" width="100" height="100" />
+                <a {href cat=$item.id page=$page_number}>
+                    <img class="left" src="{$item.thumb}" alt="{$item.name}" bprder="0" width="150" height="150" />
                 </a>
             {else}
                 <div class="b-catalog-product-noimage"><br /><br />Нет изображения</div>
             {/if}
         </td>
         <td width="450">
-            <p class="b-catalog-product-title"><a {href cat=$item.id}>{$item.name}</a></p>
+            <p class="b-catalog-product-title"><a {href cat=$item.id page=$page_number}>{$item.name}</a></p>
             <div class="b-catalog-articul">Артикул <big>{$item.articul}</big></div>
             {* PROPERTIES *}
             {if count($item.properties) > 0}
@@ -62,10 +71,17 @@
                 {else}
                     {$item.price1|string_format:"%.2f"}
                 {/if}</big> {$item.currency}
+                {if $item.byorder}
+                    Под заказ
+                {/if}
             </div>
             <div class="b-catalog-inbasket">
-                {$item.item} <input type="text" name="basket_prod_count" class="b-catalog-buy-count" value="1" />
-                <input type="submit" class="submit" value="В КОРЗИНУ" />
+                {if $item.absent}
+                    Временно<br />отсутствует
+                {else}
+                    {$item.item} <input type="text" name="basket_prod_count" class="b-catalog-buy-count" value="1" />
+                    <input type="submit" class="submit" value="В КОРЗИНУ" />
+                {/if}
             </div>
             <div class="clear"></div>
         </td>

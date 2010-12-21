@@ -74,6 +74,9 @@ class controller_Catalog extends controller
         // отрубаем breadcrumbs основной страницы
         $this->request->set('tpldata.page.path', '');
 
+        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT);
+        $this->tpl->page_number = $page_number ? $page_number : '1';
+
         try {
             // Если открывается раздел каталога
             if ( $cat_item['cat'] )
@@ -254,7 +257,7 @@ class controller_Catalog extends controller
             $form->price2->show();
             $form->sort_view->hide();
 
-            $form->top->show();
+            //$form->top->show();
             $form->byorder->show();
             $form->absent->show();
 
@@ -338,7 +341,7 @@ class controller_Catalog extends controller
             $filter  = preg_replace('/[^\d\wа-яА-Я]+/u', '%', $filter);
             $filter  = str_replace(array('%34', '&#34;'), '', $filter);
             $filter  = preg_replace( '/[ %]+/u', '%', $filter );
-            $filter  = trim( $filter, '%' );   
+            $filter  = trim( $filter, '%' );
         }
 
         // пересортировка
@@ -352,6 +355,16 @@ class controller_Catalog extends controller
                 $this->request->get('target', FILTER_SANITIZE_NUMBER_INT)
             );
             $this->request->setError($catalog->moveList());
+            return;
+        }
+
+        // Сохранение позиций
+        if ( $save_pos = $this->request->get('save_pos') ) {
+            foreach ( $save_pos as $pos ) {
+                $catalog->find($pos['key']);
+                $catalog->set('pos', $pos['val']);
+                $catalog->update();
+            }
             return;
         }
 

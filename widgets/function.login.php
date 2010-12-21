@@ -23,9 +23,9 @@ function smarty_function_login($params, $smarty)
     else {
         App::$tpl->assign('auth', '0');
     }
-    
-    return App::$tpl->fetch('system:users.head_login');;
-    
+
+    return App::$tpl->fetch('users.head_login');;
+
     //printVar(App::$user);
     if ( App::$user->getPermission() == USER_GUEST ) {
         $form = App::$user->getLoginForm();
