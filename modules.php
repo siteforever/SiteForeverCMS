@@ -36,7 +36,7 @@ return array(
         ),
     ),
     array(
-        'name'  => 'Галлерея',
+        'name'  => 'Галерея',
         'url'   => 'admin/gallery',
     ),
     array(
@@ -64,10 +64,10 @@ return array(
         'url'   => '/misc/dumper/dumper.php',
         'class' => 'dumper',
     ),
-    /*array(
+    array(
         'name'  => 'Настройки',
         'url'   => 'admin/settings',
-    ),*/
+    ),
     array(
         'name'  => 'Маршруты',
         'url'   => 'admin/routes',
@@ -76,8 +76,8 @@ return array(
         'name'  => 'Выход',
         'url'   => 'users/logout',
     ),
-    /*array(
+    array(
         'name'  => 'Конфигурация системы',
         'url'   => 'system',
-    ),*/
+    ),
 );

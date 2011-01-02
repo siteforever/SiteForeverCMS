@@ -33,12 +33,12 @@ class controller_Admin extends Controller
                 die('yes');
             }
         }
-        
-        
+
+
         $this->request->setTitle("Структура сайта");
         $do     = $this->request->get( 'do' );
         $part   = $this->request->get( 'part' );
-        
+
         $sort   = $this->request->get('sort');
         if ( $sort ) {
             $sort = array_flip($sort);
@@ -54,7 +54,7 @@ class controller_Admin extends Controller
                 die( json_encode( array('errno'=>1, 'error'=>'Ошибка сохранения' ) ) );
             }
         }
-        
+
         // включить
         if ( $do && $part ) {
             App::$structure->switching( $do, $part );
@@ -63,9 +63,9 @@ class controller_Admin extends Controller
 
         App::$structure->findAll();
         App::$structure->createTree();
-        
+
         App::$structure->createHtmlList();
-        
+
         $this->request->setContent(
             '<div class="b-main-structure">'.join( "\n", App::$structure->html ).'</div>' );
     }
@@ -103,7 +103,7 @@ class controller_Admin extends Controller
                     $this->request->addFeedback(t('The page with this address already exists'));
                     return;
                 }
-                
+
                 if ( $ins = App::$structure->update() )
                 {
                     $this->request->addFeedback(t('Data save successfully'));
@@ -185,13 +185,13 @@ class controller_Admin extends Controller
         else {
             // данные раздела
             $part = App::$structure->find( $part_id );
-            
+
             if ( $part )
             {
                 $edit_form->setData( $part );
             }
         }
-        
+
         $this->request->setContent($edit_form->html());
     }
 
@@ -209,8 +209,8 @@ class controller_Admin extends Controller
         }
         reload('admin');
     }
- 
-    
+
+
     function listAction()
     {
 
