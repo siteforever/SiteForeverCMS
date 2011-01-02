@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!-- build.xml -->
+
+<project name="standart" default="main">
+
+    <property name="basedir" value="${project.basedir}"></property>
+    <property name="destdir" value="${user.home}/www/stdel.ru/site"></property>
+
+    <property name="theme" value="basic"></property>
+
+    <property name="db_login" value="root"></property>
+    <property name="db_password" value="s03olx"></property>
+    <property name="db_server" value="localhost"></property>
+    <property name="db_name" value="stdel_site"></property>
+
+
+    <target name="main">
+        <echo>To start setup use :$ phing setup</echo>
+    </target>
+
+
+    <!-- Setup on this server -->
+    <target name="setup">
+
+        <!-- clear properties and cache -->
+        <echo message="Clear properties and cache"></echo>
+
+        <delete dir="${destdir}/protected"></delete>
+        <delete file="${destdir}/images"></delete>
+        <delete file="${destdir}/misc"></delete>
+        <delete file="${destdir}/themes/basic"></delete>
+
+        <echo message="Create application structure"></echo>
+
+        <mkdir dir="${destdir}/files"></mkdir>
+
+        <mkdir dir="${destdir}/protected"></mkdir>
+        <mkdir dir="${destdir}/protected/_runtime"></mkdir>
+        <mkdir dir="${destdir}/protected/_runtime/_templates_c"></mkdir>
+        <mkdir dir="${destdir}/protected/config"></mkdir>
+
+        <symlink link="${destdir}/images" target="${basedir}/images"></symlink>
+        <symlink link="${destdir}/misc" target="${basedir}/misc"></symlink>
+
+        <mkdir dir="${destdir}/themes"></mkdir>
+        <mkdir dir="${destdir}/themes/${phing.project.name}"></mkdir>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/css"></mkdir>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/images"></mkdir>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/js"></mkdir>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/templates"></mkdir>
+
+        <symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"></symlink>
+
+
+        <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"></copy>
+        <copy file="${basedir}/index-sample.php" tofile="${destdir}/index.php" overwrite="true">
+            <filterchain>
+                <replacetokens>
+                    <token key="config" value="${phing.project.name}"></token>
+                    <token key="sf_path" value="${basedir}"></token>
+                </replacetokens>
+            </filterchain>
+        </copy>
+        <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"></copy>
+        <copy file="${basedir}/bootstrap.php" tofile="${destdir}/bootstrap.php" overwrite="true"></copy>
+
+        <!-- config -->
+        <copy file="${basedir}/protected/config/sample.php"
+              tofile="${destdir}/protected/config/${phing.project.name}.php"
+              overwrite="true">
+            <filterchain>
+                <replacetokens>
+                    <token key="theme"      value="${theme}"></token>
+                    <token key="db_login"   value="${db_login}"></token>
+                    <token key="db_password" value="${db_password}"></token>
+                    <token key="db_server"  value="${db_server}"></token>
+                    <token key="db_name"    value="${db_name}"></token>
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+
+    <!-- Build an autonomous project  -->
+    <target name="build">
+
+    </target>
+
+</project>

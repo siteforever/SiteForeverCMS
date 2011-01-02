@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-09-14 17:46:15
+<?php /* Smarty version 2.6.26, created on 2010-12-24 01:36:03
          compiled from system:system/index.tpl */ ?>
 
 <p>Allow url fopen: <?php echo $this->_tpl_vars['sys']['allow_url_fopen']['local_value']; ?>

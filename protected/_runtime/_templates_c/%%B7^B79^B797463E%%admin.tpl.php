@@ -1,14 +1,23 @@
-<?php /* Smarty version 2.6.26, created on 2010-10-14 18:40:09
+<?php /* Smarty version 2.6.26, created on 2010-12-22 10:58:21
          compiled from system:catalog/admin.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'icon', 'system:catalog/admin.tpl', 16, false),array('function', 'href', 'system:catalog/admin.tpl', 17, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'icon', 'system:catalog/admin.tpl', 24, false),array('function', 'href', 'system:catalog/admin.tpl', 25, false),array('modifier', 'default', 'system:catalog/admin.tpl', 32, false),)), $this); ?>
 
 <?php echo $this->_tpl_vars['breadcrumbs']; ?>
 
 <br />
+<p>
+    Фильтр по артикулу: <input name="goods_filter" id="goods_filter" value="<?php echo $this->_tpl_vars['filter']; ?>
+"
+                               title="Введите часть артикула" />
+    <button id="goods_filter_select">Применить</button>
+    <button id="goods_filter_cancel">Отменить</button>
+</p>
+
 <table class="catalog_data dataset fullWidth">
 <tr>
     <th colspan="3">Наименование</th>
+    <th>Порядок</th>
     <th width="100">Подразделов/Артикул</th>
     <th width="120">Действия</th>
 </tr>
@@ -36,6 +45,11 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'icon', 'sys
 </a>
         <?php endif; ?>
     </td>
+    <td class="trade_pos"><?php if ($this->_tpl_vars['item']['cat'] == 0): ?>
+            <input class="trade_pos" type="text" rel="<?php echo $this->_tpl_vars['item']['id']; ?>
+" value="<?php echo ((is_array($_tmp=@$this->_tpl_vars['item']['pos'])) ? $this->_run_mod_handler('default', true, $_tmp, '0') : smarty_modifier_default($_tmp, '0')); ?>
+" maxlength="3" />
+        <?php endif; ?></td>
     <td><?php if ($this->_tpl_vars['item']['cat'] == 1): ?><?php echo $this->_tpl_vars['item']['child_count']; ?>
 <?php else: ?><?php echo $this->_tpl_vars['item']['articul']; ?>
 <?php endif; ?></td>
@@ -79,7 +93,10 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'icon', 'sys
 </option><?php endforeach; endif; unset($_from); ?>
 </select>
 <button <?php echo smarty_function_href(array('part' => $this->_tpl_vars['parent']['id']), $this);?>
- id="catalog_move_to_category">Переместить</button></p>
+ id="catalog_move_to_category">Переместить</button>
+<button <?php echo smarty_function_href(array('part' => $this->_tpl_vars['parent']['id']), $this);?>
+ id="catalog_save_position">Сохранить порядок</button>
+</p>
 <p><?php echo smarty_function_icon(array('name' => 'folder_add','title' => "Добавить раздел"), $this);?>
  <a <?php echo smarty_function_href(array('add' => $this->_tpl_vars['parent']['id'],'type' => '1'), $this);?>
 >Добавить раздел</a> |
