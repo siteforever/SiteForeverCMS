@@ -13,8 +13,8 @@ return array(
 
     // база данных
     'db' => array(
-        'login'     => 'root',
-        'password'  => 's03olx',
+        'login'     => 'siteforever',
+        'password'  => 'siteforever',
         'host'      => 'localhost',
         'database'  => 'siteforever',
     ),

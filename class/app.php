@@ -15,7 +15,7 @@ class App extends Application_Abstract
      */
     function run()
     {
-        ob_start('ob_gzhandler');
+        ob_start();
         //ob_start();
         self::$start_time = microtime( true );
         $this->init();
@@ -60,9 +60,11 @@ class App extends Application_Abstract
         $this->logger   = new logger();
 
         // база данных
-        self::$db       = db::getInstance(self::$config->get('db'));
-        self::$db->setLoggerClass( $this->logger );
-        
+        if ( self::$config->get('db') ) {
+            self::$db       = db::getInstance(self::$config->get('db'));
+            self::$db->setLoggerClass( $this->logger );
+        }
+
         // канал запросов
         self::$request  = new Request();
         self::$ajax = self::$request->getAjax();

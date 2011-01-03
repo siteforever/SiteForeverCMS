@@ -1,4 +1,7 @@
 <?php
+
+class ModelException extends Exception {};
+
 /**
  * Интерфейс модели
  */
@@ -19,20 +22,36 @@ abstract class Model
      */
     protected $user;
 
-    protected $table;
+    /**
+     * @var Data_Table
+     */
+    protected $table = null;
 
     protected $data = array();
+
+    protected $fields   = null;
 
     protected static $all_class = array();
     protected static $exists_tables;
 
-    function __construct( $fail = true )
+    /**
+     * @var PDO
+     */
+    protected $pdo = null;
+
+    /**
+     * Создание модели
+     */
+    function __construct()
     {
-        if ( $fail ) {
-            throw new Exception('This is private method. Need use Model::getModel()');
-        }
         // освобождаем потомков от зависимости от приложения
-        $this->db       =& App::$db;
+        if ( ! is_null( App::$db ) ) {
+            $this->db       =& App::$db;
+            if ( is_null( $this->pdo ) ) {
+                $this->pdo        = App::$db->getResource();
+            }
+        }
+
         $this->request  =& App::$request;
         $this->user     =& App::$user;
         $this->config   =& App::$config;
@@ -44,12 +63,24 @@ abstract class Model
                 self::$exists_tables[]  = $t[0];
             }
         }
+
         $this->createTables();
+
+        if ( ! is_null( $this->table ) ) {
+            $this->fields   = $this->db->getFields( $this->table );
+        }
     }
 
+    /**
+     * Вернет значение поля id
+     * @return array|null
+     */
     function getId()
     {
-        return $this->data['id'];
+        if ( isset($this->data['id']) ) {
+            return $this->data['id'];
+        }
+        return null;
     }
 
     /**
@@ -90,23 +121,53 @@ abstract class Model
         return self::$all_class[ $class_name ];
     }
 
+    /**
+     * Пакетный возврат данных (например в форму или представление)
+     * @return array
+     */
     function getData()
     {
         return $this->data;
     }
 
+    /**
+     * Пакетная загрузка данных в модель (например из формы)
+     * @param array $data
+     * @return Model
+     */
     function setData( $data )
     {
-        $this->data = $data;
+        if ( ! is_null( $this->fields ) ) {
+            $this->data = array();
+            foreach( $this->fields as $field ) {
+                if ( isset( $data[$field] ) ) {
+                    $this->data[$field] = $data[$field];
+                }
+            }
+        }
+        else {
+            $this->data = $data;
+        }
         return $this;
     }
 
+    /**
+     * Установка значения поля
+     * @param  $key
+     * @param  $value
+     * @return Model
+     */
     function set( $key, $value )
     {
         $this->data[$key] = $value;
         return $this;
     }
 
+    /**
+     * Вернет значение поля
+     * @param  $key
+     * @return array|null
+     */
     function get( $key )
     {
         if ( isset($this->data[$key]) ) {
@@ -118,19 +179,88 @@ abstract class Model
     /**
      * Finding data by primary key
      * @throws Exception
-     * @param  $id
+     * @param int|array $id
      * @return array
      */
     function find( $id )
     {
-        if ( isset( $this->table ) && $this->isExistTable( $this->table ) ) {
-            return $this->db->fetch(
-                "SELECT * FROM {$this->table} WHERE id = :id LIMIT 1",
-                 db::F_ASSOC,
-                 array(':id'=>$id) );
+        if ( is_numeric( $id ) ) {
+            $criteria   = new Data_Criteria($this->table, array(
+                'cond'  => 'id = :id',
+                'params'=> array(':id'=>$id),
+                'limit' => '1',
+            ));
+        } elseif ( is_array( $id ) ) {
+
+            $default = array(
+                'select'    => '*',
+                'cond'      => 'id = :id',
+                'params'    => array(':id'=>1),
+                'limit'     => '1',
+            );
+
+            $criteria   = new Data_Criteria($this->table, array_merge($default,$id));
+        } else {
+            throw new ModelException('Undefined parameter format');
         }
-        throw new Exception('Table for model not found');
+
+        $data = $this->db->fetch(
+            $criteria->getSQL(),
+            db::F_ASSOC,
+            $criteria->getParams()
+        );
+        $this->setData( $data );
+        return $data;
     }
 
+    /**
+     * Поиск по критерию
+     * @param array $crit
+     * @return void
+     */
+    function findAll( $crit = array() )
+    {
+        $criteria   = new Data_Criteria( $this->table, $crit );
+        $raw    = $this->db->fetchAll($criteria->getSQL(), false, DB::F_ASSOC, $criteria->getParams() );
+        if ( $raw ) {
+            return $raw;
+        }
+        return array();
+    }
+
+    /**
+     * Сохраняет данные модели в базе
+     * @return int
+     */
+    function save()
+    {
+        if ( $this->getId() ) {
+            return $this->db->update( $this->table, $this->data, 'id = '.$this->getId() );
+        }
+        else {
+            $ins = $this->db->insert( $this->table, $this->data );
+            if ( $ins ) {
+                $this->set('id', $ins);
+            }
+            return $ins;
+        }
+    }
+
+    /**
+     * Удаляет строку из таблицы
+     * @param null $id
+     * @return bool|mixed
+     */
+    function delete( $id = null )
+    {
+        if ( is_null($id) ) {
+            if ( $this->getId() ) {
+                $id = $this->getId();
+            } else {
+                return false;
+            }
+        }
+        return $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
+    }
 
 }

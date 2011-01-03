@@ -31,45 +31,12 @@ class model_Structure extends Model
 
     function createTables()
     {
-        if ( ! $this->isExistTable( DBSTRUCTURE ) ) {
-            $this->db->query("SET NAMES 'utf8'");
-            $this->db->query("
-            CREATE TABLE `".DBSTRUCTURE."` (
-              `id` int(11) NOT NULL auto_increment,
-              `parent` int(11) NOT NULL default '0',
-              `name` varchar(80) NOT NULL default '',
-              `template` varchar(50) NOT NULL default 'inner',
-              `uri` varchar(100) NOT NULL default '',
-              `alias` varchar(250) NOT NULL default '',
-              `path` varchar(250) NOT NULL default '',
-              `date` int(11) NOT NULL default '0' COMMENT 'time stamp',
-              `update` int(11) NOT NULL default '0' COMMENT 'time stamp',
-              `pos` int(11) NOT NULL default '0',
-              `link` tinyint(1) NOT NULL default '0' COMMENT '1 - there out link',
-              `controller` varchar(20) NOT NULL default 'page',
-              `action` varchar(20) NOT NULL default 'index',
-              `sort` varchar(20) NOT NULL default 'pos ASC',
-              `title` varchar(80) NOT NULL default '',
-              `notice` text,
-              `content` text,
-              `thumb` varchar(250) NOT NULL default '',
-              `image` varchar(250) NOT NULL default '',
-              `keywords` varchar(120) NOT NULL default '',
-              `description` varchar(120) NOT NULL default '',
-              `author` int(11) NOT NULL default '0',
-              `hidden` tinyint(4) NOT NULL default '0',
-              `protected` tinyint(4) NOT NULL default '0',
-              `system` tinyint(4) NOT NULL default '0',
-              `deleted` tinyint(1) NOT NULL default '0',
-              PRIMARY KEY  (`id`),
-              KEY `id_structure` (`parent`),
-              KEY `url` (`uri`),
-              KEY `date` (`date`),
-              KEY `order` (`parent`,`pos`),
-              KEY `request` (`alias`)
-            ) ENGINE=MyISAM CHARSET=utf8");
+        $this->table   = new Data_Table_Structure();
 
-            $this->db->insert( DBSTRUCTURE, array(
+        if ( ! $this->isExistTable( $this->table ) ) {
+            $this->db->query($this->table->getCreateTable());
+
+            $this->db->insert( $this->table, array(
                 'parent'    => '0',
                 'name'      => 'Главная',
                 'template'  => 'index',
@@ -139,7 +106,7 @@ class model_Structure extends Model
             }
         }
         $data = $this->db->fetch(
-            "SELECT * FROM ".DBSTRUCTURE." WHERE alias = :route AND deleted = 0 LIMIT 1",
+            "SELECT * FROM {$this->table} WHERE alias = :route AND deleted = 0 LIMIT 1",
             DB::F_ASSOC,
             array(':route'=>$route)
         );
@@ -148,20 +115,6 @@ class model_Structure extends Model
             return $data;
         }
         return false;
-    }
-
-    /**
-     * Поиск
-     * @param  $id
-     * @return array
-     */
-    function find( $id )
-    {
-        if ( ! isset( $this->all[ $id ] ) ) {
-            $data = $this->db->fetch("SELECT * FROM ".DBSTRUCTURE." WHERE id = '$id' AND deleted = 0 LIMIT 1");
-            $this->all[ $id ] = $data;
-        }
-        return $this->all[ $id ];
     }
 
     /**
@@ -176,25 +129,11 @@ class model_Structure extends Model
             $where .= " AND {$cond} ";
         }
 
-        $data_all = $this->db->fetchAll("SELECT * FROM ".DBSTRUCTURE." {$where} ORDER BY pos ASC");
+        $data_all = $this->db->fetchAll("SELECT * FROM {$this->table} {$where} ORDER BY pos ASC");
 
         $this->all = $data_all;
 
-        /*foreach ( $data_all as $key => $val )
-        {
-            if ( isset( $this->all[ $val['id'] ] ) ) {
-                $data_all[ $key ] = $this->all[ $val['id'] ];
-            }
-            else {
-                $this->all[ $val['id'] ] = $val;
-            }
-        }*/
         return $data_all;
-    }
-
-    function sortAll()
-    {
-
     }
 
     /**
@@ -205,7 +144,7 @@ class model_Structure extends Model
     {
         $path = array();
         while( $id ) {
-            $data = $this->db->fetch("SELECT * FROM ".DBSTRUCTURE." WHERE id = $id LIMIT 1");
+            $data = $this->db->fetch("SELECT * FROM {$this->table} WHERE id = $id LIMIT 1");
             if ( $data ) {
                 $path[] = array( 'id'=>$data['id'], 'name'=>$data['name'], 'url'=>$data['alias']);
                 $id = $data['parent'];
@@ -230,7 +169,7 @@ class model_Structure extends Model
             $this->data['path'] = '';
         }
 
-        $ret = $this->db->insertUpdate( DBSTRUCTURE, $this->data );
+        $ret = $this->db->insertUpdate( $this->table, $this->data );
 
         if ( $ret ) {
             if ( ! $this->data['id'] ) {

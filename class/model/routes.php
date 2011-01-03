@@ -7,175 +7,166 @@ class model_Routes extends Model
 
     function createTables()
     {
-        if ( ! $this->isExistTable(DBROUTES) ) {
-            $this->db->query("
-                CREATE TABLE `".DBROUTES."` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `pos` int(11) NOT NULL default '0',
-                  `alias` varchar(200) NOT NULL default '',
-                  `controller` varchar(50) NOT NULL default 'index',
-                  `action` varchar(50) NOT NULL default 'index',
-                  `active` tinyint(4) NOT NULL default '1' COMMENT 'Вкл/выкл',
-                  `protected` tinyint(4) NOT NULL default '0' COMMENT 'Для зарегистрированных',
-                  `system` tinyint(4) NOT NULL default '0' COMMENT 'Для администраторов',
-                  PRIMARY KEY  (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8
-            ");
-            $this->db->insert(DBROUTES, array(
+        $this->table    = new Data_Table_Routes();
+
+        if ( ! $this->isExistTable($this->table) ) {
+            $this->db->query($this->table->getCreateTable());
+
+            $this->db->insert($this->table, array(
                  'pos'      => '0',
                  'alias'    => 'rss',
                  'controller'=>'rss',
                  'action'   => 'index',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '1',
                  'alias'    => 'admin/users/add',
                  'controller'=>'users',
                  'action'   => 'adminEdit',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '2',
                  'alias'    => 'admin/users/edit',
                  'controller'=>'users',
                  'action'   => 'adminEdit',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '3',
                  'alias'    => 'admin/edit.*',
                  'controller'=>'admin',
                  'action'   => 'edit',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '4',
                  'alias'    => 'admin/add.*',
                  'controller'=>'admin',
                  'action'   => 'add',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '5',
                  'alias'    => 'admin/users',
                  'controller'=>'users',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '7',
                  'alias'    => 'admin/settings',
                  'controller'=>'settings',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '8',
                  'alias'    => 'admin/routes',
                  'controller'=>'routes',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '9',
                  'alias'    => 'elfinder',
                  'controller'=>'elfinder',
                  'action'   => 'index',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '10',
                  'alias'    => 'admin/order',
                  'controller'=>'order',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '11',
                  'alias'    => 'admin/catalog',
                  'controller'=>'catalog',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '12',
                  'alias'    => 'admin/news',
                  'controller'=>'news',
                  'action'   => 'admin',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '13',
                  'alias'    => 'admin',
                  'controller'=>'admin',
                  'action'   => 'index',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '14',
                  'alias'    => 'users/logout',
                  'controller'=>'users',
                  'action'   => 'logout',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '15',
                  'alias'    => 'users/edit',
                  'controller'=>'users',
                  'action'   => 'edit',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '16',
                  'alias'    => 'users/restore',
                  'controller'=>'users',
                  'action'   => 'restore',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '17',
                  'alias'    => 'users/register',
                  'controller'=>'users',
                  'action'   => 'register',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '18',
                  'alias'    => 'users/login',
                  'controller'=>'users',
                  'action'   => 'login',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '19',
                  'alias'    => 'users',
                  'controller'=>'users',
                  'action'   => 'index',
                  'system'   => '0',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '20',
                  'alias'    => 'templates/edit',
                  'controller'=>'templates',
                  'action'   => 'edit',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '21',
                  'alias'    => 'templates',
                  'controller'=>'templates',
                  'action'   => 'index',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '22',
                  'alias'    => 'system',
                  'controller'=>'system',
                  'action'   => 'index',
                  'system'   => '1',
             ));
-            $this->db->insert(DBROUTES, array(
+            $this->db->insert($this->table, array(
                  'pos'      => '23',
                  'alias'    => 'admin/gallery',
                  'controller'=>'gallery',
@@ -183,16 +174,6 @@ class model_Routes extends Model
                  'system'   => '1',
             ));
         }
-    }
-
-	/**
-	 * Поиск по ID
-	 * @param $id
-	 */
-    function find( $id )
-    {
-        $this->data = $this->db->fetch("SELECT * FROM ".DBROUTES." WHERE id = '{$id}' LIMIT 1");
-        return $this->data;
     }
 
     /**
@@ -208,7 +189,7 @@ class model_Routes extends Model
     	if ( $cond ) {
     		$where = " WHERE {$cond} ";
     	}
-    	$data_all = $this->db->fetchAll("SELECT * FROM ".DBROUTES." $where ORDER BY pos");
+    	$data_all = $this->db->fetchAll("SELECT * FROM {$this->table} $where ORDER BY pos");
     	return $data_all;
     }
 

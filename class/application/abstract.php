@@ -35,7 +35,7 @@ abstract class Application_Abstract
     /**
      * @var db
      */
-    static $db;
+    static $db = null;
     /**
      * @var Request
      */

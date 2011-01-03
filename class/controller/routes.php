@@ -18,7 +18,7 @@ class controller_Routes extends Controller
         if ( $recount == 'yes' )
         {
             $router = $this->getModel('Routes');
-            $routes = $router->findAll();
+            $routes = $router->findAll(array('order'=>'pos'));
             $p = 0;
             foreach( $routes as $i => $r ) {
                 $r['pos'] = $p;
@@ -40,7 +40,9 @@ class controller_Routes extends Controller
     {
         // используем шаблон админки
         $this->request->setTitle(t('Routes'));
-    	
+
+        $router = Model::getModel('routers');
+
     	$routes = $this->request->get('routes');
         
         if ( $routes ) {
@@ -56,12 +58,12 @@ class controller_Routes extends Controller
                 }
                 
                 if ( isset( $r['delete'] ) ) {
-                    App::$db->delete(DBROUTES, "id = '{$key}'");
+                    $router->delete( $key );
                     $this->request->addFeedback(t('Deleted route # ').$key);
                     continue;
                 }
-                
-                $update[] = array(
+
+                $router->setData(array(
                     'id'            => $key,
                     'pos'           => $r['pos'],
                     'alias'         => $r['alias'],
@@ -70,20 +72,16 @@ class controller_Routes extends Controller
                     'active'        => isset( $r['active'] ) ? 1 : 0,
                     'protected'     => isset( $r['protected'] ) ? 1 : 0,
                     'system'        => isset( $r['system'] ) ? 1 : 0,
-                );
+                ));
+                $router->save();
             }
-            if ( count( $update ) && App::$db->insertUpdateMulti( DBROUTES, $update ) ) {
-                $this->request->addFeedback(t('Data save successfully'));
-            } else {
-                $this->request->addFeedback(t('Data not saved'));
-            }
+            $this->request->addFeedback(t('Data save successfully'));
             if ( $this->getAjax() ) {
                 return;
             }
         }
         
-        $router = $this->getModel('Routes');
-        $routes = $router->findAll();
+        $routes = $router->findAll(array('order'=>'pos'));
 
         $this->tpl->routes  = $routes;
 
