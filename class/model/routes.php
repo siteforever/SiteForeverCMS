@@ -17,6 +17,7 @@ class model_Routes extends Model
                  'alias'    => 'rss',
                  'controller'=>'rss',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -24,6 +25,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/users/add',
                  'controller'=>'users',
                  'action'   => 'adminEdit',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -31,6 +33,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/users/edit',
                  'controller'=>'users',
                  'action'   => 'adminEdit',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -38,6 +41,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/edit.*',
                  'controller'=>'admin',
                  'action'   => 'edit',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -45,6 +49,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/add.*',
                  'controller'=>'admin',
                  'action'   => 'add',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -52,6 +57,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/users',
                  'controller'=>'users',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -59,6 +65,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/settings',
                  'controller'=>'settings',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -66,6 +73,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/routes',
                  'controller'=>'routes',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -73,6 +81,7 @@ class model_Routes extends Model
                  'alias'    => 'elfinder',
                  'controller'=>'elfinder',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -80,6 +89,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/order',
                  'controller'=>'order',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -87,6 +97,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/catalog',
                  'controller'=>'catalog',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -94,6 +105,7 @@ class model_Routes extends Model
                  'alias'    => 'admin/news',
                  'controller'=>'news',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -101,6 +113,7 @@ class model_Routes extends Model
                  'alias'    => 'admin',
                  'controller'=>'admin',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -108,6 +121,7 @@ class model_Routes extends Model
                  'alias'    => 'users/logout',
                  'controller'=>'users',
                  'action'   => 'logout',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -115,6 +129,7 @@ class model_Routes extends Model
                  'alias'    => 'users/edit',
                  'controller'=>'users',
                  'action'   => 'edit',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -122,6 +137,7 @@ class model_Routes extends Model
                  'alias'    => 'users/restore',
                  'controller'=>'users',
                  'action'   => 'restore',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -129,6 +145,7 @@ class model_Routes extends Model
                  'alias'    => 'users/register',
                  'controller'=>'users',
                  'action'   => 'register',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -136,6 +153,7 @@ class model_Routes extends Model
                  'alias'    => 'users/login',
                  'controller'=>'users',
                  'action'   => 'login',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -143,6 +161,7 @@ class model_Routes extends Model
                  'alias'    => 'users',
                  'controller'=>'users',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '0',
             ));
             $this->db->insert($this->table, array(
@@ -150,6 +169,7 @@ class model_Routes extends Model
                  'alias'    => 'templates/edit',
                  'controller'=>'templates',
                  'action'   => 'edit',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -157,6 +177,7 @@ class model_Routes extends Model
                  'alias'    => 'templates',
                  'controller'=>'templates',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -164,6 +185,7 @@ class model_Routes extends Model
                  'alias'    => 'system',
                  'controller'=>'system',
                  'action'   => 'index',
+                 'active'   => '1',
                  'system'   => '1',
             ));
             $this->db->insert($this->table, array(
@@ -171,28 +193,9 @@ class model_Routes extends Model
                  'alias'    => 'admin/gallery',
                  'controller'=>'gallery',
                  'action'   => 'admin',
+                 'active'   => '1',
                  'system'   => '1',
             ));
         }
     }
-
-    /**
-     * Поиск всех маршрутов
-     * Здесь можно подключить кэширование
-     * и не обращаться к БД лишний раз
-     * @param $cond
-     * @param $order
-     */
-    function findAll( $cond = '' )
-    {
-        $where = '';
-    	if ( $cond ) {
-    		$where = " WHERE {$cond} ";
-    	}
-    	$data_all = $this->db->fetchAll("SELECT * FROM {$this->table} $where ORDER BY pos");
-    	return $data_all;
-    }
-
-
-
 }

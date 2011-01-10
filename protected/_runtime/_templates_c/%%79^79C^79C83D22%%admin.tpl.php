@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-09-24 17:24:17
+<?php /* Smarty version 2.6.26, created on 2011-01-09 01:59:39
          compiled from system:news/admin.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:news/admin.tpl', 1, false),array('function', 'icon', 'system:news/admin.tpl', 17, false),array('modifier', 'truncate', 'system:news/admin.tpl', 14, false),array('modifier', 'date_format', 'system:news/admin.tpl', 15, false),)), $this); ?>
@@ -32,6 +32,9 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'sys
 <?php endif; ?>
         <?php if ($this->_tpl_vars['item']['protected']): ?><?php echo smarty_function_icon(array('name' => 'lock','title' => "Закрыто"), $this);?>
 <?php endif; ?>
+        <a <?php echo smarty_function_href(array('url' => "admin/news",'newsdel' => $this->_tpl_vars['item']['id']), $this);?>
+ class="delete"><?php echo smarty_function_icon(array('name' => 'delete','title' => "Удалить"), $this);?>
+</a>
     </td>
 </tr>
 <?php endforeach; else: ?>

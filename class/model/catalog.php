@@ -17,67 +17,22 @@ class model_Catalog extends Model
      */
     protected $all = array();
 
-    public $html = array();
-
     /**
-     * @var form_Form
+     * @var model_CatGallery
      */
-    protected $form;
+    public  $gallery    = null;
+
+    public $html = array();
 
     function createTables()
     {
-        if ( ! $this->isExistTable( DBCATALOG ) )
-        {
-            $this->db->query("CREATE TABLE `".DBCATALOG."` (
-              `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-              `parent` int(10) unsigned NOT NULL DEFAULT '0',
-              `cat` tinyint(1) NOT NULL DEFAULT '0',
-              `name` varchar(100) NOT NULL DEFAULT '',
-              `url` varchar(100) NOT NULL DEFAULT '',
-              `path` text NOT NULL,
-              `icon` varchar(250) NOT NULL DEFAULT '',
-              `text` text NOT NULL,
-              `articul` varchar(250) NOT NULL DEFAULT '',
-              `price1` decimal(13,2) NOT NULL DEFAULT '0.00',
-              `price2` decimal(13,2) NOT NULL DEFAULT '0.00',
-              `pos` int(11) NOT NULL DEFAULT '0',
-              `p0` varchar(250) DEFAULT NULL,
-              `p1` varchar(250) DEFAULT NULL,
-              `p2` varchar(250) DEFAULT NULL,
-              `p3` varchar(250) DEFAULT NULL,
-              `p4` varchar(250) DEFAULT NULL,
-              `p5` varchar(250) DEFAULT NULL,
-              `p6` varchar(250) DEFAULT NULL,
-              `p7` varchar(250) DEFAULT NULL,
-              `p8` varchar(250) DEFAULT NULL,
-              `p9` varchar(250) DEFAULT NULL,
-              `sort_view` tinyint(1) NOT NULL DEFAULT '1',
-              `top` tinyint(1) NOT NULL DEFAULT '0',
-              `byorder` tinyint(1) NOT NULL DEFAULT '0',
-              `absent` tinyint(1) NOT NULL DEFAULT '0',
-              `hidden` tinyint(4) NOT NULL DEFAULT '0',
-              `protected` tinyint(4) NOT NULL DEFAULT '0',
-              `deleted` tinyint(4) NOT NULL DEFAULT '0',
-              PRIMARY KEY (`id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
-        }
-        if ( ! $this->isExistTable( DBCATGALLERY ) ) {
-            $this->db->query(
-                "CREATE TABLE `".DBCATGALLERY."` (
-                    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                      `cat_id` int(11) NOT NULL DEFAULT '0',
-                      `title` varchar(250) DEFAULT NULL,
-                      `descr` varchar(250) DEFAULT NULL,
-                      `image` varchar(250) DEFAULT NULL,
-                      `middle` varchar(250) DEFAULT NULL,
-                      `thumb` varchar(250) DEFAULT NULL,
-                      `hidden` tinyint(4) NOT NULL DEFAULT '0',
-                      `main` tinyint(4) NOT NULL DEFAULT '0',
-                      PRIMARY KEY (`id`)
-                  ) ENGINE=MyISAM DEFAULT CHARSET=utf8"
-            );
-        }
+        $this->setTable( new Data_Table_Catalog() );
 
+        if ( ! $this->isExistTable( $this->getTable() ) )
+        {
+            $this->db->query($this->getTable()->getCreateTable());
+        }
+        $this->gallery  = self::getModel('model_CatGallery');
     }
 
     /**
@@ -87,45 +42,28 @@ class model_Catalog extends Model
      */
     function find( $id )
     {
-        //printVar($this->data);
-        if ( ! isset($this->data['id']) || ( isset($this->data['id']) && $this->data['id'] != $id ) ) {
-            $data = $this->db->fetch(
-                "SELECT cat.*, cg.image, cg.middle, cg.thumb
-                FROM ".DBCATALOG." cat
-                LEFT JOIN ".DBCATGALLERY." cg ON cg.cat_id = cat.id
-                                         AND cg.hidden = 0
-                                         AND cg.main = 1
-                WHERE cat.id = '{$id}' AND cat.deleted = 0 LIMIT 1");
-            if ( $data ) {
-                $this->data = $data;
-            }
-            else {
-                return false;
-            }
-        }
-        return $this->data;
-    }
+        $data = parent::find(array(
+            'cond'  => 'id = :id AND deleted = 0',
+            'params'=> array(':id'=>$id),
+         ));
 
-    /**
-     * Искать все в список
-     * @return array
-     */
-    function findAll($cond = null)
-    {
-        $where = '';
-        if ( ! is_null( $cond ) ) {
-            $where = ' AND '.$cond;
+        if ( ! $data ) {
+            return null;
         }
 
-        $data_all = $this->db->fetchAll(
-            "SELECT * FROM ".DBCATALOG.
-                    " WHERE deleted = 0 ".$where.
-            " ORDER BY cat DESC, pos DESC", true
-        );
-        $this->all = $data_all;
-        return $data_all;
-    }
+        $image  = $this->gallery->find(array(
+            'cond'      => 'cat_id = :id AND hidden = 0 AND main = 1',
+            'params'    => array(':id'=>$id),
+           ));
 
+        if ( $image ) {
+            $data['image']  = $image['image'];
+            $data['middle'] = $image['middle'];
+            $data['thumb']  = $image['thumb'];
+        }
+        $this->setData( $data ); // для совместимости
+        return $data;
+    }
 
     /**
      * Искать все в список по фильтру по артикулу
@@ -134,13 +72,11 @@ class model_Catalog extends Model
      */
     function findAllFiltered($filter)
     {
-        $data_all = $this->db->fetchAll(
-            "SELECT * FROM ".DBCATALOG.
-                    " WHERE deleted = 0 AND articul LIKE '%{$filter}%'
-            ORDER BY cat DESC, pos DESC", true
-        );
-        $this->all = $data_all;
-        return $data_all;
+        return $this->findAll(array(
+            'cond'      => "deleted = 0 AND articul LIKE :filter",
+            'params'    => array(':filter'=>'%'.$filter.'%'),
+            'order'     => 'cat DECS, pos DESC'
+        ), true);
     }
 
     /**

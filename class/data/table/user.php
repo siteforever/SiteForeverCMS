@@ -21,7 +21,7 @@ class Data_Table_User extends Data_Table
      * Вернет список полей
      * @return array
      */
-    public function getFields()
+    protected function doGetFields()
     {
         return array(
             new Data_Field_Int('id', 11, true, null, true),

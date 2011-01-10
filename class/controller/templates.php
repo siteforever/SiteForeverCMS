@@ -10,9 +10,9 @@ class controller_Templates extends Controller
     function init()
     {
         $this->request->set('template', 'index');
-        $this->request->set('tpldata.page.title', 'Почтовые шаблоны');
         $this->request->set('tpldata.page.name', 'templates');
-        $this->request->set('tpldata.page.content', 'module Templates');
+        $this->request->setTitle('Почтовые шаблоны');
+        $this->request->setContent('module Templates');
     }
 
     function indexAction()
@@ -24,7 +24,7 @@ class controller_Templates extends Controller
         }
 
         $this->tpl->assign('list', $list);
-        $this->request->set('tpldata.page.content', $this->tpl->fetch('templates.index'));
+        $this->request->setContent($this->tpl->fetch('templates.index'));
     }
 
     function editAction()
@@ -40,7 +40,7 @@ class controller_Templates extends Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $this->templates->setData( $form->getData() );
-                if ( $this->templates->update() ) {
+                if ( $this->templates->save() ) {
                     $this->request->addFeedback('Шаблон сохранен успешно');
                 }
                 else {
@@ -53,7 +53,7 @@ class controller_Templates extends Controller
         }
 
         $this->tpl->assign('form', $form);
-        $this->request->set('tpldata.page.content', $this->tpl->fetch('templates.edit') );
+        $this->request->setContent($this->tpl->fetch('templates.edit') );
     }
 
 }

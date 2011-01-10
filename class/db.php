@@ -303,15 +303,12 @@ class db
      */
     function fetch( $sql, $extract = DB::F_ASSOC, array $params = array() )
     {
+        $start  = microtime(1);
+
         $command    = substr($sql, 0, strpos($sql, ' '));
         if ( ! in_array( $command, array('SELECT','SHOW') ) ) {
             throw new Exception('DB: Using FETCH no for SELECT');
         }
-
-        $this->log[]    = $sql;
-
-        //$this->result   = $this->resource->prepare( $sql );
-        //$this->result->execute($params);
 
         $this->prepare( $sql, $params );
 
@@ -328,6 +325,10 @@ class db
                 }
                 $data   = $xml->asXML();
             }
+            
+            $exec = round(microtime(1)-$start, 4);
+            $this->log[]    = $sql." [$exec сек.]";
+            $this->time += $exec;
 
             return $data;
         }
@@ -347,10 +348,9 @@ class db
      */
     function fetchAll( $sql, $index_id = false, $extract = self::F_ASSOC, array $params = array() )
     {
+        $start  = microtime(1);
         $sql    = trim( $sql );
         $command    = substr($sql, 0, strpos($sql, ' '));
-
-        $this->log[]    = $sql;
 
         if ( ! in_array( $command, array('SELECT','SHOW') )) {
             throw new dbException('Использование fetchAll не для SELECT или SHOW');
@@ -390,9 +390,12 @@ class db
                         }
                         $indexed_data[ $index ] = $data;
                     }
-                    return $indexed_data;
+                    $all_data = $indexed_data;
                 }
             }
+            $exec = round(microtime(1)-$start, 4);
+            $this->log[]    = $sql." [$exec сек.]";
+            $this->time += $exec;
             return $all_data;
         }
         return false;
@@ -420,11 +423,10 @@ class db
      */
     function fetchOne( $sql, array $params = array() )
     {
+        $start = microtime(1);
         if (substr(trim($sql), 0, 6) != 'SELECT') {
             throw new dbException('Using fetchOne not for SELECT');
         }
-
-        $this->log[]    = $sql;
 
         $this->prepare( $sql, $params );
 
@@ -433,6 +435,10 @@ class db
         if ( $this->result && $num_rows ) {
             $data = $this->fetchStep( self::F_ARRAY );
             $this->data = $data;
+
+            $exec = round(microtime(1) - $start, 4);
+            $this->time+= $exec;
+            $this->log[]    = $sql." [$exec сек]";
             return $this->data[0];
         } else {
             return false;
@@ -450,12 +456,15 @@ class db
      */
     function count( $table, $where = '' )
     {
+        $start = microtime(1);
         if ( $where != '' ) {
             $where  = ' WHERE '.$where;
         }
         $sql    = 'SELECT COUNT(*) FROM `'.$table.'` '.$where;
-        $this->log[]    = $sql;
         $count = $this->fetchOne($sql);
+        $exec = round(microtime(1) - $start, 4);
+        $this->time+= $exec;
+        $this->log[]    = $sql." [$exec сек]";
         return $count;
     }
 
@@ -660,7 +669,7 @@ class db
 
             $exec = round(microtime(true)-$start, 4);
             $this->time += $exec;
-            $this->log[] = $sql.' '.$exec.' сек';
+            $this->log[] = $sql." [$exec сек]";
             return $fields;
         } else {
             return false;

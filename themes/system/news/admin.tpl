@@ -16,6 +16,7 @@
     <td>
         {if $item.hidden}{icon name="lightbulb_off" title="Выкл"}{else}{icon name="lightbulb" title="Вкл"}{/if}
         {if $item.protected}{icon name="lock" title="Закрыто"}{/if}
+        <a {href url="admin/news" newsdel=$item.id} class="delete">{icon name="delete" title="Удалить"}</a>
     </td>
 </tr>
 {foreachelse}

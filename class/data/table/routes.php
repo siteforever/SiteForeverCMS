@@ -13,7 +13,7 @@ class Data_Table_Routes extends Data_Table
      * Вернет список полей
      * @return array
      */
-    public function getFields()
+    protected function doGetFields()
     {
         return array(
             new Data_Field_Int('id', 11, false, null, true),

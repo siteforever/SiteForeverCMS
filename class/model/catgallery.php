@@ -22,30 +22,11 @@ class model_CatGallery extends Model
 
     function createTables()
     {
-        if ( ! $this->isExistTable(DBCATGALLERY) ) {
-            $this->db->query("CREATE TABLE `".DBCATGALLERY."` (
-              `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-              `cat_id` int(11) NOT NULL DEFAULT '0',
-              `title` varchar(250) NOT NULL DEFAULT '',
-              `descr` varchar(250) NOT NULL DEFAULT '',
-              `image` varchar(250) NOT NULL DEFAULT '',
-              `middle` varchar(250) NOT NULL DEFAULT '',
-              `thumb` varchar(250) NOT NULL DEFAULT '',
-              `hidden` tinyint(4) NOT NULL DEFAULT '0',
-              `main` tinyint(4) NOT NULL DEFAULT '0',
-              PRIMARY KEY (`id`)
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
-        }
-    }
+        $this->setTable(new Data_Table_CatGallery());
 
-    function find( $id )
-    {
-        if ( ! isset( $this->data[$id] ) ) {
-            $query = "SELECT * FROM ".DBCATGALLERY." WHERE id = {$id} LIMIT 1";
-            $data = $this->db->fetch( $query );
-            $this->data[$id] = $data;
+        if ( ! $this->isExistTable($this->getTable()) ) {
+            $this->db->query($this->getTable()->getCreateTable());
         }
-        return $this->data[$id];
     }
 
     /**
@@ -57,11 +38,10 @@ class model_CatGallery extends Model
     function findGalleryByProduct( $prod_id, $hidden = 1 )
     {
         if ( ! isset( $this->data_all[ $prod_id ] ) ) {
-            $query =
-                "SELECT *
-                FROM ".DBCATGALLERY."
-                WHERE cat_id = {$prod_id}";
-            $this->data_all[ $prod_id ] = $this->db->fetchAll( $query, true );
+            $this->data_all[ $prod_id ] = $this->findAll(array(
+                'cond'  => 'cat_id = :cat_id AND hidden = :hidden',
+                'params'=> array(':cat_id'=>$prod_id, ':hidden'=>$hidden),
+            ));
         }
         $ret = array();
         if (is_array($this->data_all[ $prod_id ])) {
@@ -73,24 +53,18 @@ class model_CatGallery extends Model
         }
         return $ret;
     }
-    
-    function findAll()
-    {
-        return $this->db->fetchAll("SELECT * FROM ".DBCATGALLERY);
-    }
-    
 
     function insert()
     {
         unset( $this->data['id'] );
-        $this->data['id'] = $this->db->insert( DBCATGALLERY, $this->data );
+        $this->data['id'] = $this->db->insert( $this->getTable(), $this->data );
         return $this->data['id'];
     }
 
     function update()
     {
         if ( ! empty( $this->data['id'] ) ) {
-            return $this->db->update( DBCATGALLERY, $this->data, " id = {$this->data['id']} " );
+            return $this->db->update( $this->getTable(), $this->data, " id = {$this->data['id']} " );
         }
         return false;
     }
@@ -102,7 +76,8 @@ class model_CatGallery extends Model
      */
     function delete( $id )
     {
-        $data = $this->db->fetch("SELECT * FROM ".DBCATGALLERY." WHERE id = {$id} LIMIT 1");
+        $data   = $this->find( $id );
+        //$data = $this->db->fetch("SELECT * FROM {$this->getTable()} WHERE id = {$id} LIMIT 1");
         if ( $data ) {
             if ( $data['thumb'] && file_exists(ROOT.$data['thumb']) ) {
                 @unlink ( ROOT.$data['thumb'] );
@@ -125,13 +100,17 @@ class model_CatGallery extends Model
      */
     function setDefault( $id, $cat )
     {
-        $data = $this->db->fetch("SELECT * FROM ".DBCATGALLERY." WHERE id = {$id} LIMIT 1");
-        $this->db->update( DBCATGALLERY, array('main'=>0), "cat_id = {$cat}", '' );
+        $data = $this->find( $id );
+        //$this->db->update( DBCATGALLERY, array('main'=>0), "cat_id = {$cat}", '' );
         if ( $data['main'] ) {
+            $this->set('main', 0);
             //$this->db->update( DBCATALOG, array('image'=>'', 'thumb'=>''), "id = {$cat}" );
         } else {
-            $this->db->update( DBCATGALLERY, array('main'=>1), "id = {$id}", 1 );
+            $this->set('main', 1);
+            //$this->db->update( DBCATGALLERY, array('main'=>1), "id = {$id}", 1 );
             //$this->db->update( DBCATALOG, array('image'=>$data['image'], 'thumb'=>$data['thumb']), "id = {$cat}" );
         }
+        $this->set('cat_id', $cat);
+        $this->save();
     }
 }

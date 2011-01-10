@@ -38,6 +38,15 @@ abstract class Data_Field
     }
 
     /**
+     * Имя поля
+     * @return string
+     */
+    function getName()
+    {
+        return $this->name;
+    }
+
+    /**
      * Вернет строку для вставки в SQL запрос
      * @abstract
      * @return string

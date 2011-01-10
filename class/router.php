@@ -133,12 +133,13 @@ class Router
      */
     function findRoute()
     {
-        $where = array();
-        $where[] = "active = 1";
+
 
         $route = Model::getModel('model_Routes');
 
-        $this->route_table = $route->findAll( join(' AND ', $where ) );
+        $this->route_table = $route->findAll( array(
+            'cond' => "active = 1",
+        ));
 
         //Error::dump($this->route_table);
 

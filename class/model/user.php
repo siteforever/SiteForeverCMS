@@ -46,15 +46,18 @@ class model_User extends Model
         }
     }
 
-    function __construct( $fail = true )
+    /**
+     * Инициализация
+     * @return void
+     */
+    function Init()
     {
-        parent::__construct( $fail );
-
         if ( isset( $_SESSION['user_id'] ) && $_SESSION['user_id'] )
         {
             // ищем авторизованного пользователя
             $data = $this->find( $_SESSION['user_id'] );
             $data['last'] = time();
+            $this->save( $data );
             $this->db->update( $this->table, $data, " id = {$data['id']} ", 1 );
             $this->data = $data;
         }
@@ -104,15 +107,15 @@ class model_User extends Model
      */
     function update()
     {
-        $data = $this->data;
-        if ( empty( $data['password'] ) ) {
-            unset( $data['password'] );
+        return $this->save();
+    }
+
+    function save()
+    {
+        if ( empty( $this->data['password'] ) ) {
+            unset( $this->data['password'] );
         }
-        $ins = $this->db->insertUpdate($this->table, $data);
-        if ( $ins ) {
-            $this->set('id', $ins);
-        }
-        return $ins;
+        parent::save();
     }
 
     /**
@@ -179,28 +182,28 @@ class model_User extends Model
         $data['status'] = 0;
         $data['confirm'] = md5(microtime());
 
-        $data['login']  = $this->db->escape( $data['login'] );
+        $data['login']  = $data['login'];
         $data['date']   = time();
         $data['last']   = time();
 
-        $user = $this->db->fetch("SELECT * FROM ".DBUSERS." WHERE login = '{$data['login']}' OR email = '{$data['email']}' LIMIT 1");
+        $user   = $this->find(array(
+             'cond'     => 'login = :login OR email = :email',
+             'params'   => array(':login'=>$data['login'], ':email'=>$data['email']),
+          ));
+
         if ( $user )
         {
             $this->request->addFeedback('Такой пользователь уже зарегистрирован');
             return false;
         }
-        // безопастное добавление данных
-        foreach( $this->data as $key => $item ) {
-            if ( isset( $data[$key] ) ) {
-                $this->data[$key] = $data[$key];
-            }
-        }
+
+        $this->setData( $data );
 
         if ( $this->update() )
         {
-            $this->tpl->assign('data', $this->data);
-            $this->tpl->assign('sitename', App::$config->get('sitename') );
-            $this->tpl->assign('siteurl', App::$config->get('siteurl') );
+            $this->tpl->data    = $this->data;
+            $this->tpl->sitename= $this->config->get('sitename');
+            $this->tpl->siteurl = $this->config->get('siteurl');
 
             $msg = $this->tpl->fetch('system:users.register');
 
@@ -208,11 +211,11 @@ class model_User extends Model
 
             sendmail(
                 $this->config->get('sitename').' <'.$this->config->get('admin').'>',
-                $data['email'],
+                $this->email,
                 'Подтверждение регистрации',
                 $msg
             );
-            App::$request->addFeedback("Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.");
+            $this->request->addFeedback("Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.");
             return true;
         }
         return false;
@@ -226,35 +229,35 @@ class model_User extends Model
     {
         if ( isset($data['login']) && isset($data['password']) )
         {
-            $user = $this->db->fetch(
-                "SELECT * FROM ".DBUSERS." WHERE login = :login LIMIT 1",
-                DB::F_ASSOC,
-                array(':login'=>$data['login'])
-            );
+            $user = $this->find(array(
+                'cond' => 'login = :login',
+                'params'=> array(':login'=>$data['login']),
+            ));
+
             if ( $user )
             {
                 if ( $user['perm'] < USER_USER ) {
-                    $this->request->addFeedback('Не достаточно прав доступа');
+                    $this->request->addFeedback(t('Not enough permissions'));
                     return false;
                 }
                 if ( $user['status'] == 0 ) {
-                    $this->request->addFeedback('Ваша учетная запись отключена');
+                    $this->request->addFeedback(t('Your account has been disabled'));
                     return false;
                 }
 
                 $password = $this->generatePasswordHash( $data['password'], $user['solt'] );
 
                 if ( $password != $user['password'] ) {
-                    $this->request->addFeedback('Ваш пароль не подходит');
+                    $this->request->addFeedback(t('Your password is not suitable'));
                     return false;
                 }
 
                 $_SESSION['user_id'] = $user['id'];
                 $this->setData( $user );
-                $this->request->addFeedback('Авторизация прошла успешно');
+                $this->request->addFeedback(t('Authorization was successful'));
                 return true;
             }
-            $this->request->addFeedback('Ваш логин не зарегистрирован');
+            $this->request->addFeedback(t('Your login is not registered'));
         }
         return false;
     }
@@ -277,19 +280,20 @@ class model_User extends Model
     function confirm()
     {
         $user_id = $this->request->get('userid', FILTER_VALIDATE_INT);
-        $confirm = $this->db->escape( App::$request->get('confirm') );
+        $confirm = $this->request->get('confirm');
 
         if ( $user_id && $confirm )
         {
-            $user = $this->db->fetch("SELECT * FROM ".DBUSERS." WHERE id = {$user_id} AND confirm = '{$confirm}' LIMIT 1");
+            $user   = $this->find( array(
+                    'cond'      => 'id = :id AND confirm = :confirm',
+                    'params'    => array(':id'=>$user_id, ':confirm'=>$confirm),
+               ) );
             if ( $user ) {
-                $this->setData( $user );
                 $this->set('perm', USER_USER);
-                $this->set('status', 1);
                 $this->set('last', time());
 
                 $this->active();
-                $this->update();
+                $this->save();
 
                 $_SESSION['user_id'] = $user['id'];
 
@@ -298,7 +302,7 @@ class model_User extends Model
             }
         }
         $this->request->addFeedback('Ваш аккаунт не подвержден, обратитесь к '.
-                '<a href="mailto:'.App::$config->get('admin').'">администрации сайта</a>');
+                '<a href="mailto:'.$this->config->get('admin').'">администрации сайта</a>');
         return false;
     }
 

@@ -6,8 +6,6 @@
  */
 class App extends Application_Abstract
 {
-    private $logger;
-
     /**
      * Запуск приложения
      * @static
@@ -68,10 +66,11 @@ class App extends Application_Abstract
         // канал запросов
         self::$request  = new Request();
         self::$ajax = self::$request->getAjax();
-        
+
         // модель структуры
+        //self::$structure = Model::getModel('model_Structure');
         self::$structure = Model::getModel('model_Structure');
-        
+
         // маршрутизатор
         self::$router   = new Router( self::$request );
         // Пользователь
@@ -80,11 +79,10 @@ class App extends Application_Abstract
         // корзина
         self::$basket   = basketFactory::createBasket( self::$user );
         //die(__CLASS__.'::'.__FUNCTION__.'('.__LINE__.')');
-        //printVar( self::$basket->getAll() );
-        //die();
 
         // модель для работы с шаблонами из базы
-        self::$templates= Model::getModel('model_Templates');
+        // @TODO Подумать над Lazy Load в model_Templates
+        //self::$templates= Model::getModel('model_Templates');
 
         translate::getInstance()->setLanguage('ru');
     }
@@ -217,4 +215,5 @@ class App extends Application_Abstract
             }
         }
     }
+
 }

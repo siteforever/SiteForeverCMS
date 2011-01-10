@@ -12,6 +12,7 @@
     <td>
         <a {href url="admin/news" catid=$item.id}>{$item.name}</a>
         <a {href url="admin/news" catedit=$item.id}>{icon name="pencil" title="Правка"}</a>
+        <a {href url="admin/news" catdel=$item.id}>{icon name="delete" title="Удалить"}</a>
     </td>
     <td>{$item.description}</td>
     <td>{$item.news_count}</td>

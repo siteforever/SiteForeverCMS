@@ -40,9 +40,9 @@ class controller_Catalog extends controller
         }
 
         $catalog    = $this->getModel('Catalog');
-        $cat_item   = $catalog->find( $cat_id );
+        $item       = $catalog->find( $cat_id );
 
-        if ( ! $cat_item ) {
+        if ( ! $item ) {
             $this->request->addFeedback(t('Catalogue part not found with id ').$cat_id);
             return;
         }
@@ -50,7 +50,7 @@ class controller_Catalog extends controller
 
         // хлебные крошки для каталога
         $html       = array();
-        $patches    = json_decode( $catalog->get('path'), true );
+        $patches    = json_decode( $item->path, true );
 
         if ( is_array($patches) ) {
             foreach( $patches as $key => $path ) {

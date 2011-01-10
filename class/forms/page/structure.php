@@ -23,7 +23,8 @@ class forms_page_structure extends form_Form
                     'date'      => array('type'=>'date','label'=>'Дата создания', 'value'=>time(),),
                     'update'    => array('type'=>'date','label'=>'Дата обновления', 'value'=>time(),),
 
-                    'pos'       => array('type'=>'int','label'=>'Порядок сортировки', 'value'=>'0', 'readonly'),
+                    'pos'       => array('type'=>'int','label'=>'Порядок сортировки', 'value'=>'0',
+                                         'readonly' ,'hidden',),
 
                     'controller'=> array(
                         'type'=>'select','label'=>'Контроллер', 'required',
@@ -32,9 +33,11 @@ class forms_page_structure extends form_Form
                     'link'      => array(
                         'type'=>'int', 'label'=>'Ссылка на раздел', 'value'=>'0',
                     ),
-                    'action'    => array('type'=>'text','label'=>'Действие', 'required', 'readonly'),
+                    'action'    => array('type'=>'text','label'=>'Действие',
+                                         'required', 'readonly', 'hidden'),
 
-                    'sort'      => array('type'=>'text','label'=>'Сортировка', 'required'),
+                    'sort'      => array('type'=>'text','label'=>'Сортировка',
+                                         'required', 'hidden'),
 
                     //'sep1'       => array('type'=>'separator'),
 

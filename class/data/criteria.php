@@ -44,11 +44,11 @@ class Data_Criteria
         else {
             $this->criteria['params'] = array();
         }
-        if ( $this->criteria['limit'] ) {
-            $sql[]  = "LIMIT {$this->criteria['limit']}";
-        }
         if ( ! empty( $this->criteria['order'] ) ) {
             $sql[]  = "ORDER BY {$this->criteria['order']}";
+        }
+        if ( $this->criteria['limit'] ) {
+            $sql[]  = "LIMIT {$this->criteria['limit']}";
         }
         return join("\n", $sql);
     }

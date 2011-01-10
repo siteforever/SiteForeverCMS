@@ -13,6 +13,7 @@ class controller_Routes extends Controller
     
     function init()
     {
+        $model  = $this->getModel('routes');
         // пересчет порядков
         $recount = $this->request->get('recount');
         if ( $recount == 'yes' )
@@ -25,11 +26,10 @@ class controller_Routes extends Controller
                 $p++;
                 $routes[ $i ] = $r;
             }
-            App::$db->insertUpdateMulti( DBROUTES, $routes );
+            App::$db->insertUpdateMulti( $model->getTable(), $routes );
             $this->request->addFeedback(t('Order recount'));
             //redirect('admin/routes');
         }
-        
     }
     
     /**
@@ -41,12 +41,11 @@ class controller_Routes extends Controller
         // используем шаблон админки
         $this->request->setTitle(t('Routes'));
 
-        $router = Model::getModel('routers');
+        $model = $this->getModel('routes');
 
     	$routes = $this->request->get('routes');
         
         if ( $routes ) {
-            $update = array();
             foreach( $routes as $key => $r ) {
                 
                 foreach( $r as $k => $v ) {
@@ -58,12 +57,12 @@ class controller_Routes extends Controller
                 }
                 
                 if ( isset( $r['delete'] ) ) {
-                    $router->delete( $key );
+                    $model->delete( $key );
                     $this->request->addFeedback(t('Deleted route # ').$key);
                     continue;
                 }
 
-                $router->setData(array(
+                $model->setData(array(
                     'id'            => $key,
                     'pos'           => $r['pos'],
                     'alias'         => $r['alias'],
@@ -73,7 +72,7 @@ class controller_Routes extends Controller
                     'protected'     => isset( $r['protected'] ) ? 1 : 0,
                     'system'        => isset( $r['system'] ) ? 1 : 0,
                 ));
-                $router->save();
+                $model->save();
             }
             $this->request->addFeedback(t('Data save successfully'));
             if ( $this->getAjax() ) {
@@ -81,7 +80,7 @@ class controller_Routes extends Controller
             }
         }
         
-        $routes = $router->findAll(array('order'=>'pos'));
+        $routes = $model->findAll(array('order'=>'pos'));
 
         $this->tpl->routes  = $routes;
 

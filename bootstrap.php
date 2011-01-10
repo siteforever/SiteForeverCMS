@@ -32,7 +32,7 @@ define('REWRITEURL', true);
 define('MAX_FILE_SIZE', 2*1024*1024);
 
 define('DBPREFIX', '');
-
+/*
 define('DBSTRUCTURE',   DBPREFIX.'structure'); // таблица структуры
 define('DBROUTES',      DBPREFIX.'routes');    // таблица статей
 define('DBUSERS',       DBPREFIX.'users');     // таблица пользователей
@@ -47,7 +47,7 @@ define('DBNEWSCATS',    DBPREFIX.'news_cats');  // список категори
 define('DBORDER',       DBPREFIX.'order');      // список заказов
 define('DBORDERPOS',    DBPREFIX.'order_positions'); // позиции заказов
 define('DBORDERSTATUS', DBPREFIX.'order_statuses'); // позиции заказов
-
+*/
 // группы пользователей
 define('USER_GUEST', '0'); // гость
 define('USER_USER',  '1'); // юзер

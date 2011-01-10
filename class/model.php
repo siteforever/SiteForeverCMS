@@ -27,9 +27,17 @@ abstract class Model
      */
     protected $table = null;
 
-    protected $data = array();
+    /**
+     * @var form_Form
+     */
+    //protected $form;
 
-    protected $fields   = null;
+    /**
+     * @var Data_Object
+     */
+    protected $data;
+
+    protected static $fields   = array();
 
     protected static $all_class = array();
     protected static $exists_tables;
@@ -42,7 +50,7 @@ abstract class Model
     /**
      * Создание модели
      */
-    function __construct()
+    private function __construct()
     {
         // освобождаем потомков от зависимости от приложения
         if ( ! is_null( App::$db ) ) {
@@ -66,17 +74,20 @@ abstract class Model
 
         $this->createTables();
 
-        if ( ! is_null( $this->table ) ) {
-            $this->fields   = $this->db->getFields( $this->table );
+        if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
+            self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
         }
+
+        $this->Init();
     }
 
     /**
      * Вернет значение поля id
      * @return array|null
      */
-    function getId()
+    public function getId()
     {
+        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
         if ( isset($this->data['id']) ) {
             return $this->data['id'];
         }
@@ -84,11 +95,20 @@ abstract class Model
     }
 
     /**
+     * Инициализация
+     * @return void
+     */
+    protected function Init()
+    {
+    }
+
+    /**
      * Создание таблиц
      * @return void
      */
-    function createTables()
+    public function createTables()
     {
+        return false;
     }
 
     /**
@@ -96,9 +116,9 @@ abstract class Model
      * @param string $table
      * @return bool
      */
-    function isExistTable( $table )
+    public function isExistTable( $table )
     {
-        return in_array( $table, self::$exists_tables );
+        return in_array( (string) $table, self::$exists_tables );
     }
 
     /**
@@ -107,12 +127,12 @@ abstract class Model
      * @param  $class_name
      * @return Model
      */
-    static function getModel( $class_name )
+    static public function getModel( $class_name )
     {
         if ( ! isset( self::$all_class[ $class_name ] ) )
         {
             if ( class_exists($class_name) ) {
-                self::$all_class[ $class_name ] = new $class_name(false);
+                self::$all_class[ $class_name ] = new $class_name();
             }
             else {
                 throw new Exception('Model "'.$class_name.'" not found');
@@ -123,53 +143,68 @@ abstract class Model
 
     /**
      * Пакетный возврат данных (например в форму или представление)
-     * @return array
+     * @deprecated
+     * @return Data_Object
      */
-    function getData()
+    public function getData()
     {
+        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        if ( is_array( $this->data ) ) {
+            $this->data = $this->createObject( $this->data );
+        }
+
         return $this->data;
     }
 
     /**
      * Пакетная загрузка данных в модель (например из формы)
-     * @param array $data
+     * @deprecated
+     * @param array|Data_Object $data
      * @return Model
      */
-    function setData( $data )
+    public function setData( $data )
     {
-        if ( ! is_null( $this->fields ) ) {
-            $this->data = array();
-            foreach( $this->fields as $field ) {
-                if ( isset( $data[$field] ) ) {
-                    $this->data[$field] = $data[$field];
-                }
-            }
-        }
-        else {
+        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        if ( is_array( $data ) )
+            $this->data = $this->createObject( $data );
+        elseif ( $data instanceof Data_Object )
             $this->data = $data;
-        }
         return $this;
     }
 
     /**
+     * Создать объект
+     * @param array $array
+     * @return Data_Object
+     */
+    public function createObject( $array = array() )
+    {
+        return new Data_Object( $this, $array );
+    }
+
+    /**
      * Установка значения поля
+     * @deprecated
      * @param  $key
      * @param  $value
      * @return Model
      */
-    function set( $key, $value )
+    public function set( $key, $value )
     {
+        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
         $this->data[$key] = $value;
         return $this;
     }
 
     /**
      * Вернет значение поля
+     * @deprecated
      * @param  $key
      * @return array|null
      */
-    function get( $key )
+    public function get( $key )
     {
+        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
         if ( isset($this->data[$key]) ) {
             return $this->data[$key];
         }
@@ -177,19 +212,41 @@ abstract class Model
     }
 
     /**
+     * Вернет таблицу модели
+     * @return Data_Table|null
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
+     * Установит активную таблицу
+     * @param Data_Table $table
+     * @return void
+     */
+    public function setTable( Data_Table $table )
+    {
+        $this->table    = $table;
+    }
+
+    /**
      * Finding data by primary key
      * @throws Exception
      * @param int|array $id
-     * @return array
+     * @return Data_Object
      */
-    function find( $id )
+    public function find( $id )
     {
         if ( is_numeric( $id ) ) {
+            if ( $this->getId() == $id ) {
+                return $this->data;
+            }
             $criteria   = new Data_Criteria($this->table, array(
-                'cond'  => 'id = :id',
-                'params'=> array(':id'=>$id),
-                'limit' => '1',
-            ));
+                                                               'cond'  => 'id = :id',
+                                                               'params'=> array(':id'=>$id),
+                                                               'limit' => '1',
+                                                          ));
         } elseif ( is_array( $id ) ) {
 
             $default = array(
@@ -209,39 +266,53 @@ abstract class Model
             db::F_ASSOC,
             $criteria->getParams()
         );
-        $this->setData( $data );
-        return $data;
+
+        if ( $data ) {
+            $obj_data   = $this->createObject( $data );
+            $this->setData( $obj_data );
+            return $obj_data;
+        }
+        return null;
     }
 
     /**
      * Поиск по критерию
      * @param array $crit
-     * @return void
+     * @param bool $do_index
+     * @return array
      */
-    function findAll( $crit = array() )
+    public function findAll( $crit = array(), $do_index   = false )
     {
         $criteria   = new Data_Criteria( $this->table, $crit );
-        $raw    = $this->db->fetchAll($criteria->getSQL(), false, DB::F_ASSOC, $criteria->getParams() );
+        $raw    = $this->db->fetchAll($criteria->getSQL(), $do_index, DB::F_ASSOC, $criteria->getParams() );
+        $collection = array();
         if ( $raw ) {
-            return $raw;
+            foreach ( $raw as $d ) {
+                $collection[]   = $this->createObject( $d );
+            }
         }
-        return array();
+        return $collection;
     }
 
     /**
      * Сохраняет данные модели в базе
+     * @param Data_Object $obj
      * @return int
      */
-    function save()
+    public function save( Data_Object $obj = null )
     {
-        if ( $this->getId() ) {
-            return $this->db->update( $this->table, $this->data, 'id = '.$this->getId() );
+        if ( ! is_null( $obj ) ) {
+            $data   = $obj->getAttributes();
+        } else {
+            $data   = $this->data;
+        }
+
+        if ( $data['id'] ) {
+            return $this->db->update( (string) $this->table, $data, 'id = '.$this->getId() );
         }
         else {
-            $ins = $this->db->insert( $this->table, $this->data );
-            if ( $ins ) {
-                $this->set('id', $ins);
-            }
+            $ins = $this->db->insert( (string) $this->table, $data );
+            $obj['id']  = $ins;
             return $ins;
         }
     }
@@ -251,7 +322,7 @@ abstract class Model
      * @param null $id
      * @return bool|mixed
      */
-    function delete( $id = null )
+    public function delete( $id = null )
     {
         if ( is_null($id) ) {
             if ( $this->getId() ) {
@@ -259,8 +330,34 @@ abstract class Model
             } else {
                 return false;
             }
+        } elseif ( $id instanceof Data_Object ) {
+            $id = $id['id'];
         }
-        return $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
+        if ( $id ) {
+            $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
+        }
+    }
+
+    /**
+     * Вернет количество записей по условию
+     * @param string $cond
+     * @param array $params
+     * @return int
+     */
+    public function count( $cond = '', $params = array() )
+    {
+        $sql    = array();
+        $sql[]  = "SELECT COUNT(*) FROM {$this->table}";
+        if ( $cond )
+            $sql[] = "WHERE {$cond}";
+
+        $count  = $this->db->fetchOne(
+            join("\n", $sql), $params
+        );
+        if ( $count )
+            return $count;
+
+        return 0;
     }
 
 }

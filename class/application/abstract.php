@@ -7,6 +7,8 @@
 abstract class Application_Abstract
 {
 
+    static protected $instance = null;
+
     /**
      * Сигнализирует, как обрабатывать запрос
      * @var bool
@@ -62,10 +64,46 @@ abstract class Application_Abstract
      */
     static $start_time = 0;
 
+
+    protected $logger;
+
     abstract function run();
 
     abstract function init();
 
     abstract function handleRequest();
 
+    function __construct()
+    {
+        self::setInstance( $this );
+    }
+
+    static protected function setInstance( Application_Abstract $app )
+    {
+        if ( ! is_null( self::$instance ) ) {
+            throw new Exception('Application WAS instanced');
+        }
+        self::$instance = $app;
+    }
+
+    /**
+     * @static
+     * @throws Exception
+     * @return Application_Abstract
+     */
+    static public function getInstance()
+    {
+        if ( is_null( self::$instance ) ) {
+            throw new Exception('Application NOT instanced');
+        }
+        return self::$instance;
+    }
+
+    /**
+     * @return logger
+     */
+    function getLogger()
+    {
+        return $this->logger;
+    }
 }

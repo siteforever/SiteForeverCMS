@@ -15,7 +15,7 @@ class model_Structure extends Model
      * Списков разделов в кэше
      * @var array
      */
-    protected $all = array();
+    public $all = array();
 
     public $html = array();
 
@@ -48,7 +48,7 @@ class model_Structure extends Model
                 'controller'    => 'page',
                 'action'    => 'index',
                 'title'     => 'Главная',
-                'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a href="/admin">панель управления</a></p>',
+                'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a '.href('admin').'>панель управления</a></p>',
                 'author'    => '1',
             ) );
         }
@@ -122,7 +122,7 @@ class model_Structure extends Model
      * @param string $cond Условие
      * @return model_Structure
      */
-    function findAll( $cond = '' )
+    /*function findAll( $cond = '' )
     {
         $where = 'WHERE deleted = 0';
         if ( $cond ) {
@@ -134,7 +134,7 @@ class model_Structure extends Model
         $this->all = $data_all;
 
         return $data_all;
-    }
+    }*/
 
     /**
      * Найдет путь для страницы
@@ -144,7 +144,7 @@ class model_Structure extends Model
     {
         $path = array();
         while( $id ) {
-            $data = $this->db->fetch("SELECT * FROM {$this->table} WHERE id = $id LIMIT 1");
+            $data   = $this->find( $id );
             if ( $data ) {
                 $path[] = array( 'id'=>$data['id'], 'name'=>$data['name'], 'url'=>$data['alias']);
                 $id = $data['parent'];
@@ -169,7 +169,7 @@ class model_Structure extends Model
             $this->data['path'] = '';
         }
 
-        $ret = $this->db->insertUpdate( $this->table, $this->data );
+        $ret    = $this->save();
 
         if ( $ret ) {
             if ( ! $this->data['id'] ) {
@@ -187,7 +187,13 @@ class model_Structure extends Model
      */
     function getNextPos( $parent_id )
     {
-        return $this->db->fetchOne("SELECT MAX(pos)+1 FROM ".DBSTRUCTURE." WHERE parent = '{$parent_id}' AND deleted = 0");
+        $max   = $this->db->fetchOne(
+            "SELECT MAX(pos)
+            FROM {$this->table}
+            WHERE parent = :parent AND deleted = 0", array(':parent'=>$parent_id));
+        if ( is_null($max) )
+            return 0;
+        return ++$max;
     }
 
     /**
@@ -218,7 +224,7 @@ class model_Structure extends Model
             case '':
                 break;
         }
-        return (bool) $this->db->insertUpdate( DBSTRUCTURE, $current );
+        return (bool) $this->db->insertUpdate( $this->table, $current );
     }
 
     /**
@@ -229,11 +235,14 @@ class model_Structure extends Model
     function moveUp( $id )
     {
         $current    = $this->find( $id );
-        $some       = $this->db->fetch(
-            "SELECT * FROM ".DBSTRUCTURE."
-            WHERE deleted = 0 AND parent = '{$current['parent']}' AND pos < '{$current['pos']}'
-            ORDER BY pos DESC LIMIT 1"
-        );
+
+        $model  = clone $this;
+        $some   = $model->find(array(
+            'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
+            'params'    => array(':parent'=>$current['parent'], ':pos'=>$current['pos']),
+            'order'     => 'pos DESC',
+        ));
+        
         if ( ! $some ) {
             return true;
         }
@@ -248,11 +257,13 @@ class model_Structure extends Model
     function moveDown( $id )
     {
         $current    = $this->find( $id );
-        $some       = $this->db->fetch(
-            "SELECT * FROM ".DBSTRUCTURE."
-            WHERE deleted = 0 AND parent = '{$current['parent']}' AND pos > '{$current['pos']}'
-            ORDER BY pos LIMIT 1"
-        );
+        
+        $model  = clone $this;
+        $some   = $model->find(array(
+            'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
+            'params'    => array(':parent'=>$current['parent'], ':pos'=>$current['pos']),
+            'order'     => 'pos DESC',
+        ));
         if ( ! $some ) {
             return true;
         }
@@ -270,10 +281,10 @@ class model_Structure extends Model
         $old_pos        = $part2['pos'];
         $part2['pos']   = $part1['pos'];
         $part1['pos']   = $old_pos;
-        if ( $this->db->insertUpdateMulti( DBSTRUCTURE, array( $part2, $part1 ) ) ) {
+        if ( $this->db->insertUpdateMulti( $this->table, array( $part2, $part1 ) ) ) {
             return true;
         }
-        App::$request->addFeedback('Раздел не был перемещен');
+        $this->request->addFeedback('Раздел не был перемещен');
         return false;
     }
 
@@ -285,7 +296,9 @@ class model_Structure extends Model
     function createTree( $parent = 0 )
     {
         $this->parents = array();
-        $this->findAll();
+        if ( count($this->all) == 0 ) {
+            $this->all = $this->findAll(array('cond'=>'deleted = 0'));
+        }
         // создаем массив, индексируемый по родителям
         foreach( $this->all as &$data ) {
             $this->parents[ $data['parent'] ][ $data['id'] ] =& $data;
@@ -320,11 +333,11 @@ class model_Structure extends Model
         foreach( $this->parents[ $parent ] as $branch )
         {
             if (   $branch['hidden'] == 0
-                && $branch['protected'] <= App::$user->getPermission()
+                && $branch['protected'] <= $this->user->getPermission()
                 && $branch['deleted'] == 0
             ) {
                 $html .= "<li class='item-{$branch['id']}".($counter == $total_count?" first":($counter==1?" last":""))."'>";
-                if ( $branch['id'] == App::$request->get('id') || $branch['alias']==$this->request->get('route') ) {
+                if ( $branch['id'] == $this->request->get('id') || $branch['alias']==$this->request->get('route') ) {
                     $html .= '<span>'.$branch['name'].'</span>';
                     //$html .= "<a ".href($branch['alias'])." class='active'>{$branch['name']}</a>";
                 }

@@ -16,9 +16,16 @@
 abstract class Data_Table
 {
     /**
+     * Тип базы
      * @var string
      */
     protected $engine   = 'MyISAM';
+
+    /**
+     * Список полей
+     * @var array
+     */
+    protected $fields   = null;
 
     /**
      * Построение запроса для создания таблицы
@@ -74,12 +81,27 @@ abstract class Data_Table
      */
     abstract protected function getTable();
 
+
+
+    /**
+     * Создаст список полей
+     * @abstract
+     * @return array
+     */
+    abstract protected function doGetFields();
+
     /**
      * Вернет список полей
      * @abstract
      * @return array
      */
-    abstract public function getFields();
+    public function getFields()
+    {
+        if ( is_null( $this->fields ) ) {
+            $this->fields   = $this->doGetFields();
+        }
+        return $this->fields;
+    }
 
     /**
      * Вернет первичный ключ

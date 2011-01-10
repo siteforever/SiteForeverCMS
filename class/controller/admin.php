@@ -20,14 +20,32 @@ class controller_Admin extends Controller
      */
     function indexAction()
     {
+        $model  = $this->getModel('structure');
+
+        // добавление
+        if ( $this->request->get('add') ) {
+            return $this->addAction();
+        }
+
+        // правка
+        if ( $this->request->get('edit') ) {
+            return $this->editAction();
+        }
+
+        // обновление
+        if ( $this->request->get('up') || $this->request->get('down') ) {
+           return $this->moveAction();
+        }
+
         if ( $get_link_add = $this->request->get('get_link_add') ) {
             $this->tpl->id = $get_link_add;
-            die(App::$tpl->fetch('system:get_link_add'));
+            die($this->tpl->fetch('system:get_link_add'));
         }
 
         // проверка на правильность алиаса
         if ( $test_alias = $this->request->get('test_alias') ) {
-            if ( App::$structure->findByRoute( $test_alias ) ) {
+
+            if (  $model->findByRoute( $test_alias ) ) {
                 die('0');
             } else {
                 die('yes');
@@ -36,17 +54,19 @@ class controller_Admin extends Controller
 
 
         $this->request->setTitle("Структура сайта");
+        
         $do     = $this->request->get( 'do' );
         $part   = $this->request->get( 'part' );
 
         $sort   = $this->request->get('sort');
+        
         if ( $sort ) {
             $sort = array_flip($sort);
             $upd = array();
             foreach( $sort as $id => $pos ) {
                 $upd[] = array('id'=>$id, 'pos'=>$pos);
             }
-            if ( App::$db->insertUpdateMulti( DBSTRUCTURE, $upd ) )
+            if ( App::$db->insertUpdateMulti( $model->getTable(), $upd ) )
             {
                 die( json_encode( array('errno'=>0, 'error'=>'ok') ) );
             }
@@ -57,17 +77,20 @@ class controller_Admin extends Controller
 
         // включить
         if ( $do && $part ) {
-            App::$structure->switching( $do, $part );
+            $model->switching( $do, $part );
             redirect('admin');
         }
 
-        App::$structure->findAll();
-        App::$structure->createTree();
+        $model->all = $model->findAll(array(
+            'cond'  => 'deleted = 0',
+            'order' => 'pos',
+        ));
+        $model->createTree();
 
-        App::$structure->createHtmlList();
+        $model->createHtmlList();
 
         $this->request->setContent(
-            '<div class="b-main-structure">'.join( "\n", App::$structure->html ).'</div>' );
+            '<div class="b-main-structure">'.join( "\n", $model->html ).'</div>' );
     }
 
     /**
@@ -76,35 +99,37 @@ class controller_Admin extends Controller
      */
     function addAction()
     {
+        $model  = $this->getModel('structure');
+
         // идентификатор раздела, в который надо добавить
         $parent_id  = $this->request->get('add');
 
         // родительский раздел
         if( $parent_id ) {
-            $parent     = App::$structure->find( $parent_id );
+            $parent     = $model->find( $parent_id );
         }
         else {
             $parent     = array(
-                            'controller'    => 'page',
-                            'action'        => 'index',
-                            'sort'          => 'pos',
-                        );
+                'controller'    => 'page',
+                'action'        => 'index',
+                'sort'          => 'pos',
+            );
         }
 
-        $edit_form  = App::$structure->getForm();
+        $edit_form  = $model->getForm();
 
         if ( $edit_form->getPost() )
         {
             if ( $edit_form->validate() )
             {
-                App::$structure->setData( $edit_form->getData() );
+                $model->setData( $edit_form->getData() );
 
-                if ( App::$structure->findByRoute( App::$structure->get('alias') ) ) {
+                if ( $model->findByRoute( $model->get('alias') ) ) {
                     $this->request->addFeedback(t('The page with this address already exists'));
                     return;
                 }
 
-                if ( $ins = App::$structure->update() )
+                if ( $model->update() )
                 {
                     $this->request->addFeedback(t('Data save successfully'));
                     //reload('admin/edit', array('edit'=>$ins));
@@ -116,30 +141,33 @@ class controller_Admin extends Controller
             } else {
                 $this->request->addFeedback($edit_form->getFeedbackString());
             }
+            return;
         }
-        else {
-            $edit_form->parent->setValue( $parent_id );
-            $edit_form->template->setValue( 'inner' );
 
-            if ( isset($parent['alias']) ) {
-                $edit_form->alias->setValue( $parent['alias'] );
-            }
-            $edit_form->author->setValue( '1' );
+        $edit_form->parent->setValue( $parent_id );
+        $edit_form->template->setValue( 'inner' );
 
-            $edit_form->date->setValue( time() );
-            $edit_form->update->setValue( time() );
-
-            if ( isset($parent['controller']) ) {
-                $edit_form->controller->setValue( $parent['controller'] );
-            }
-            if ( isset($parent['action']) ) {
-                $edit_form->action->setValue( $parent['action'] );
-            }
-            $edit_form->pos->setValue( App::$structure->getNextPos($parent_id) );
-            if ( isset($parent['sort']) ) {
-                $edit_form->sort->setValue( $parent['sort'] );
-            }
+        if ( isset($parent['alias']) ) {
+            $edit_form->alias->setValue( $parent['alias'] );
         }
+        $edit_form->author->setValue( '1' );
+
+        $edit_form->date->setValue( time() );
+        $edit_form->update->setValue( time() );
+
+        if ( isset($parent['controller']) ) {
+            $edit_form->controller->setValue( $parent['controller'] );
+        }
+        if ( isset($parent['action']) ) {
+            $edit_form->action->setValue( $parent['action'] );
+        }
+        $next_pos   = $model->getNextPos($parent_id);
+        $edit_form->pos->setValue( $next_pos );
+
+        if ( isset($parent['sort']) ) {
+            $edit_form->sort->setValue( $parent['sort'] );
+        }
+
         $this->request->setTitle( 'Добавить страницу' );
         $this->request->setContent( $edit_form->html() );
     }
@@ -150,27 +178,29 @@ class controller_Admin extends Controller
      */
     function editAction()
     {
+        $model  = $this->getModel('structure');
+
         // идентификатор раздела, который надо редактировать
         $part_id = $this->request->get('edit');
 
-        $edit_form = App::$structure->getForm();
+        $edit_form = $model->getForm();
 
         if ( $edit_form->getPost() )
         {
             $edit_form->update->setValue(time());
             if ( $edit_form->validate() )
             {
-                App::$structure->setData( $edit_form->getData() );
+                $model->setData( $edit_form->getData() );
 
-                if ( $page = App::$structure->findByRoute( App::$structure->get('alias') ) ) {
-                    if ( $page['id'] != App::$structure->get('id') ) {
+                if ( $page = $model->findByRoute( $model->get('alias') ) ) {
+                    if ( $page['id'] != $model->get('id') ) {
                         $this->request->addFeedback(t('The page with this address already exists'));
                         $this->request->addFeedback(t('Data not saved'));
                         return;
                     }
                 }
 
-                if ( App::$structure->update() )
+                if ( $model->update() )
                 {
                     $this->request->addFeedback(t('Data save successfully'));
                 }
@@ -184,7 +214,7 @@ class controller_Admin extends Controller
         }
         else {
             // данные раздела
-            $part = App::$structure->find( $part_id );
+            $part = $model->find( $part_id );
 
             if ( $part )
             {
@@ -201,11 +231,12 @@ class controller_Admin extends Controller
      */
     function moveAction()
     {
+        $model  = $this->getModel('structure');
         if ( $up = $this->request->get('up') ) {
-            $result = App::$structure->moveUp( $up );
+            $model->moveUp( $up );
         }
         if ( $down = $this->request->get('down') ) {
-            $result = App::$structure->moveDown( $down );
+            $model->moveDown( $down );
         }
         reload('admin');
     }
