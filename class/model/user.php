@@ -36,14 +36,47 @@ class model_User extends Model
         if ( ! $this->isExistTable( $this->table ) ) {
             $this->db->query($this->table->getCreateTable());
 
-            $this->set('login', 'admin');
-            $this->changePassword('admin');
-            $this->set('perm', USER_ADMIN);
-            $this->set('status', '1');
-            $this->set('date',  time());
-            $this->set('email', $this->config->get('admin'));
-            $this->save();
+            $obj    = $this->createObject(array(
+                    'login'     => 'admin',
+                    'perm'      => USER_ADMIN,
+                    'status'    => '1',
+                    'date'      => time(),
+                    'email'     => $this->config->get('admin'),
+              ));
+
+            $this->changePassword('admin', $obj);
+
+            $this->save( $obj );
         }
+    }
+
+    /**
+     * Вернет объект текущего пользователя
+     * @static
+     * @return Data_Object
+     */
+    static public function getCurrentUser()
+    {
+        $model  = self::getModel('model_User');
+        if ( isset( $_SESSION['user_id'] ) && $_SESSION['user_id'] )
+        {
+            // ищем авторизованного пользователя
+            $data = $model->find( (int) $_SESSION['user_id'] );
+            $data['last'] = time();
+            $model->save( $data );
+            //$this->db->update( $this->table, $data, " id = {$data['id']} ", 1 );
+            //$this->data = $data;
+            return $data;
+        }
+        else {
+            $_SESSION['user_id'] = 0;
+            return $model->createObject(array(
+                               'id'     => '0',
+                               'login'  => 'guest',
+                               'perm'   => USER_GUEST,
+                          ));
+        }
+
     }
 
     /**
@@ -52,23 +85,12 @@ class model_User extends Model
      */
     function Init()
     {
-        if ( isset( $_SESSION['user_id'] ) && $_SESSION['user_id'] )
-        {
-            // ищем авторизованного пользователя
-            $data = $this->find( $_SESSION['user_id'] );
-            $data['last'] = time();
-            $this->save( $data );
-            $this->db->update( $this->table, $data, " id = {$data['id']} ", 1 );
-            $this->data = $data;
-        }
-        else {
-            $_SESSION['user_id'] = 0;
-        }
     }
 
     /**
      * Поиск профиля по email
      * @param $email
+     * @return Data_Object
      */
     function findByEmail( $email )
     {
@@ -77,10 +99,10 @@ class model_User extends Model
             'params'    => array(':email'=>$email),
         ));
         if ( $data ) {
-            $this->setData($data);
-            return true;
+            //$this->setData($data);
+            return $data;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -89,7 +111,7 @@ class model_User extends Model
      * @param string $order
      * @param string $limit
      */
-    function findAll( $cond = '', $order = 'login', $limit = '' )
+    /*function findAll( $cond = '', $order = 'login', $limit = '' )
     {
         $where = '';
         if ( $cond ) {
@@ -99,23 +121,27 @@ class model_User extends Model
             $order = " ORDER BY {$order} ";
         }
         return $this->db->fetchAll("SELECT * FROM {$this->table} {$where} {$order} {$limit}");
-    }
+    }*/
 
     /**
      * Запись информации в базу
      * @return mixed
      */
-    function update()
+    function update( Data_Object $obj )
     {
-        return $this->save();
+        return $this->save( $obj );
     }
 
-    function save()
+    /**
+     * @param Data_Object|null $obj
+     * @return void
+     */
+    function save( Data_Object $obj )
     {
-        if ( empty( $this->data['password'] ) ) {
-            unset( $this->data['password'] );
+        if ( empty( $obj->password ) ) {
+            unset( $obj->password );
         }
-        parent::save();
+        parent::save( $obj );
     }
 
     /**
@@ -148,9 +174,9 @@ class model_User extends Model
      * Вернет массив с корзиной
      * @return array
      */
-    function getBasketArray()
+    function getBasketArray( Data_Object $user )
     {
-        $basket = json_decode( $this->data['basket'], true );
+        $basket = json_decode( $user['basket'], true );
         if ( $basket ) {
             return $basket;
         }
@@ -162,33 +188,34 @@ class model_User extends Model
      * @param array $array
      * @return void
      */
-    function setBasketFromArray( $array )
+    function setBasketFromArray( $array, Data_Object $obj )
     {
         $basket = json_encode( $array );
-        $this->data['basket'] = $basket;
-        $this->update();
+        $obj->basket    = $basket;
+        //$this->data['basket'] = $basket;
+        $this->save( $obj );
         //die( $this->data['basket'] );
     }
 
     /**
      * Регистрация
-     * @param array $data
+     * @param Data_Object $obj
      */
-    function register( $data )
+    function register( Data_Object $obj )
     {
-        $data['solt']   = $this->generateString( 8 );
-        $data['password']= $this->generatePasswordHash( $data['password'], $data['solt'] );
-        $data['perm']   = USER_GUEST;
-        $data['status'] = 0;
-        $data['confirm'] = md5(microtime());
+        $obj['solt']   = $this->generateString( 8 );
+        $obj['password']= $this->generatePasswordHash( $obj['password'], $obj['solt'] );
+        $obj['perm']   = USER_GUEST;
+        $obj['status'] = 0;
+        $obj['confirm'] = md5(microtime());
 
-        $data['login']  = $data['login'];
-        $data['date']   = time();
-        $data['last']   = time();
+        //$data['login']  = $data['login'];
+        $obj['date']   = time();
+        $obj['last']   = time();
 
         $user   = $this->find(array(
              'cond'     => 'login = :login OR email = :email',
-             'params'   => array(':login'=>$data['login'], ':email'=>$data['email']),
+             'params'   => array(':login'=>$obj['login'], ':email'=>$obj['email']),
           ));
 
         if ( $user )
@@ -197,11 +224,11 @@ class model_User extends Model
             return false;
         }
 
-        $this->setData( $data );
+        //$this->setData( $data );
 
-        if ( $this->update() )
+        if ( $this->save( $obj ) )
         {
-            $this->tpl->data    = $this->data;
+            $this->tpl->data    = $obj;
             $this->tpl->sitename= $this->config->get('sitename');
             $this->tpl->siteurl = $this->config->get('siteurl');
 
@@ -211,7 +238,7 @@ class model_User extends Model
 
             sendmail(
                 $this->config->get('sitename').' <'.$this->config->get('admin').'>',
-                $this->email,
+                $obj->email,
                 'Подтверждение регистрации',
                 $msg
             );
@@ -223,43 +250,40 @@ class model_User extends Model
 
     /**
      * Логин
-     * @param $data
+     * @param string $login
+     * @param string $password
      */
-    function login( $data )
+    function login( $login, $password )
     {
-        if ( isset($data['login']) && isset($data['password']) )
+        $user = $this->find(array(
+            'cond' => 'login = :login',
+            'params'=> array(':login'=>$login),
+        ));
+
+        if ( $user )
         {
-            $user = $this->find(array(
-                'cond' => 'login = :login',
-                'params'=> array(':login'=>$data['login']),
-            ));
-
-            if ( $user )
-            {
-                if ( $user['perm'] < USER_USER ) {
-                    $this->request->addFeedback(t('Not enough permissions'));
-                    return false;
-                }
-                if ( $user['status'] == 0 ) {
-                    $this->request->addFeedback(t('Your account has been disabled'));
-                    return false;
-                }
-
-                $password = $this->generatePasswordHash( $data['password'], $user['solt'] );
-
-                if ( $password != $user['password'] ) {
-                    $this->request->addFeedback(t('Your password is not suitable'));
-                    return false;
-                }
-
-                $_SESSION['user_id'] = $user['id'];
-                $this->setData( $user );
-                $this->request->addFeedback(t('Authorization was successful'));
-                return true;
+            if ( $user['perm'] < USER_USER ) {
+                $this->request->addFeedback(t('Not enough permissions'));
+                return false;
             }
-            $this->request->addFeedback(t('Your login is not registered'));
+            if ( $user['status'] == 0 ) {
+                $this->request->addFeedback(t('Your account has been disabled'));
+                return false;
+            }
+
+            $password = $this->generatePasswordHash( $password, $user['solt'] );
+
+            if ( $password != $user['password'] ) {
+                $this->request->addFeedback(t('Your password is not suitable'));
+                return false;
+            }
+
+            $_SESSION['user_id'] = $user['id'];
+            //$this->setData( $user );
+            $this->request->addFeedback(t('Authorization was successful'));
+            return true;
         }
-        return false;
+        $this->request->addFeedback(t('Your login is not registered'));
     }
 
     /**
@@ -269,8 +293,8 @@ class model_User extends Model
     function logout()
     {
         $_SESSION['user_id'] = 0;
-        $this->set('id', 0);
-        $this->set('perm', USER_GUEST);
+        App::$user->id      = 0;
+        App::$user->perm    = USER_GUEST;
     }
 
     /**
@@ -289,11 +313,11 @@ class model_User extends Model
                     'params'    => array(':id'=>$user_id, ':confirm'=>$confirm),
                ) );
             if ( $user ) {
-                $this->set('perm', USER_USER);
-                $this->set('last', time());
+                $user->perm = USER_USER;
+                $user->last = time();
 
-                $this->active();
-                $this->save();
+                $this->active( $user );
+                $this->save( $user );
 
                 $_SESSION['user_id'] = $user['id'];
 
@@ -310,10 +334,10 @@ class model_User extends Model
      * Активировать пользователя
      * @return void
      */
-    function active()
+    function active( Data_Object $obj )
     {
-        if ( $this->get('id') ) {
-            $this->set('status', 1);
+        if ( $obj->id ) {
+            $obj->status = 1;
         }
     }
 
@@ -321,24 +345,31 @@ class model_User extends Model
      * Деактивировать пользователя
      * @return void
      */
-    function deactive()
+    function deactive( Data_Object $obj )
     {
-        if ( $this->get('id') ) {
-            $this->set('status', 0);
+        if ( $obj->id ) {
+            $obj->status = 0;
         }
     }
 
     /**
      * Поменять пароль пользователя
-     * @param $password
+     * @param string $password
+     * @param Data_Object $obj
      * @return void
      */
-    function changePassword( $password )
+    function changePassword( $password, Data_Object $obj = null )
     {
         $solt = $this->generateString(8);
         $hash = $this->generatePasswordHash( $password, $solt );
-        $this->set('solt', $solt);
-        $this->set('password', $hash);
+        if ( is_null( $obj ) ) {
+            $this->set('solt', $solt);
+            $this->set('password', $hash);
+        }
+        else {
+            $obj->solt      = $solt;
+            $obj->password  = $hash;
+        }
     }
 
     /**

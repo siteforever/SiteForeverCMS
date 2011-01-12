@@ -13,15 +13,14 @@ class basketFactory
      * @param $user
      * @return basket
      */
-    static function createBasket( model_User $user )
+    static function createBasket( Data_Object $user )
     {
         if ( self::$created ) {
             throw new Exception('Корзина может быть создана только один раз');
         }
         self::$created = true;
 
-        $user_perm = $user->getPermission();
-        if ( $user_perm != USER_GUEST ) {
+        if ( $user->perm != USER_GUEST ) {
             $basket = new UserBasket( $user );
         }
         else {

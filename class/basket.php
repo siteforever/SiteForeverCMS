@@ -10,7 +10,7 @@ abstract class Basket
     protected $data = array();
     protected $user;
 
-    function __construct( model_User $user )
+    function __construct( Data_Object $user )
     {
         $this->user = $user;
         $this->data = array();

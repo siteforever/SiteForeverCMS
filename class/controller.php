@@ -33,7 +33,7 @@ abstract class Controller
      */
     protected $tpl;
     /**
-     * @var model_User
+     * @var Data_Object
      */
     protected $user;
     /**

@@ -1,7 +1,5 @@
 <?php
 /**
- * Класс корзины в сессии
- * Сохраняет корзину в сессию
  * @author Ermin Nikolay
  * @link http://siteforever.ru
  * @link http://ermin.ru

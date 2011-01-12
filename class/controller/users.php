@@ -9,9 +9,11 @@ class controller_Users extends Controller
     
     function indexAction()
     {
+        $model  = $this->getModel('user');
+
         if ( $this->request->get('confirm') && $this->request->get('userid', FILTER_VALIDATE_INT) )
         { // подтверждение регистрации
-           $this->user->confirm();
+           $model->confirm();
         }
 
         $option = $this->request->get('option');
@@ -90,11 +92,12 @@ class controller_Users extends Controller
      */
     function adminEditAction()
     {
-        // для редактирования создаем новый экземпляр
-        // чтобы не забить мусором свой профиль
-        $user = clone $this->user;
-        
-        $user_form = $user->getEditForm();
+        /**
+         * @var model_User
+         */
+        $model  = $this->getModel('user');
+
+        $user_form = $model->getEditForm();
         
         
         $user_id = $this->request->get('userid');
@@ -106,13 +109,14 @@ class controller_Users extends Controller
             
             if ( $user_form->validate() )
             {
-                $user->setData( $user_form->getData() );
-                
-                if ( $user->get('password') ) {
-                    $user->changePassword( $user->get('password') );
+                $user = $model->createObject( $user_form->getData() );
+
+                if ( $user->password ) {
+                    $model->changePassword( $user->password, $user );
+                    //$user->changePassword( $user->get('password') );
                 }
                 
-                if ( $ins = $user->update() )
+                if ( $ins = $model->save( $user ) )
                 {
                     if ( ! $user_id )
                     {
@@ -131,14 +135,14 @@ class controller_Users extends Controller
             return;
         }
         
-        if ( $user_data = $user->find( $user_id ) )
+        if ( $user_data = $model->find( $user_id ) )
         {
-            $user_data['password'] = '';
-            $user_form->setData( $user_data );
+            $user_data->password = '';
+            $user_form->setData( $user_data->getAttributes() );
         }
                
         
-        $this->tpl->assign('user_form', $user_form->html());
+        $this->tpl->user_form   = $user_form->html();
         //$this->tpl->assign('', '');
         $content = $this->tpl->fetch('system:users.edit');
         
@@ -164,15 +168,17 @@ class controller_Users extends Controller
      */
     function loginAction()
     {
+        $model  = $this->getModel('user');
+
         $this->request->setTitle('tpldata.page.name', t('Personal page'));
         
-        if ( ! $this->user->get('id') ) {
+        if ( ! $this->user->id ) {
             // вход в систему
-            $form = $this->user->getLoginForm();
+            $form = $model->getLoginForm();
             
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
-                    if ( $this->user->login( $form->getData() ) ) {
+                    if ( $model->login( $form->login, $form->password ) ) {
                         redirect();
                     }
                 }
@@ -183,7 +189,7 @@ class controller_Users extends Controller
         }
         else {
             // отображаем кабинет
-            $this->tpl->user    = $this->user->getData();
+            $this->tpl->user    = $this->user->getAttributes();
             $this->request->setTitle('Кабинет пользователя');
         }
         
@@ -196,20 +202,21 @@ class controller_Users extends Controller
      */
     function editAction()
     {
+        $model  = $this->getModel('user');
+
         $this->request->set('tpldata.page.name', 'Edit Profile');
         $this->request->setTitle('Редактирование профиля');
         //$this->request->set('tpldata.page.template', 'index');
         
-        
-        $user = clone $this->user;
-        
-        $form = $user->getProfileForm();
-        $form->setData( $user->getData() );
+        $form = $model->getProfileForm();
+
+        $form->setData( App::$user->getAttributes() );
         
         // сохранение профиля
         if ( $form->getPost() && $form->validate() ) {
-            $user->setData( $form->getData() );
-            if ( $user->update() ) {
+            $user   = $model->createObject( $form->getData() );
+
+            if ( $model->save( $user ) ) {
                 $this->request->addFeedback('Профиль успешно сохранен');
             }
             else {
@@ -233,18 +240,17 @@ class controller_Users extends Controller
         $this->request->setTitle('Регистрация');
         $this->request->setContent('');
         
-        
-        $user = $this->user;
-        
-        $form = $user->getRegisterForm();
-        
-        $viewform = true;
+        $model  = $this->getModel('user');
+
+        $form = $model->getRegisterForm();
         
         if ( $form->getPost() )
         {
             if ( $form->validate() )
             {
-                if ( $user->register( $form->getData() ) )
+                $user   = $model->createObject( $form->getData() );
+
+                if ( $model->register( $user ) )
                 {
                     return 1;
                 }
@@ -263,6 +269,7 @@ class controller_Users extends Controller
      */
     function restoreAction()
     {
+        // @TODO Перевести под новую модель
         $this->request->set('tpldata.page.name', 'Restore');
         $this->request->set('tpldata.page.template', 'index');
         $this->request->setTitle('Восстановление пароля');
@@ -365,6 +372,7 @@ class controller_Users extends Controller
      */
     function passwordAction()
     {
+        // @TODO Перевести под новую модель
         $this->request->setTitle('Изменить пароль');
         
         $form = $this->user->getPasswordForm();

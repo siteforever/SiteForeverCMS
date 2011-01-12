@@ -11,12 +11,13 @@ class UserBasket extends Basket
 
     function load()
     {
-        $this->data = $this->user->getBasketArray();
+        $model  = Model::getModel('model_User');
+        $this->data = $model->getBasketArray( $this->user );
 
         // Если были данные в сессии, то сохранить их пользователю
         if ( isset($_SESSION['basket']) && is_array($_SESSION['basket']) )
         {
-            foreach ( $_SESSION['basket'] as $key => $basket ) {
+            foreach ( $_SESSION['basket'] as $basket ) {
                 //printVar($basket);
                 $this->add( $basket['id'], $basket['count'], $basket['price'], $basket['details'] );
             }
@@ -28,7 +29,9 @@ class UserBasket extends Basket
 
     function save()
     {
-        $this->user->setBasketFromArray( $this->getAll() );
+        $model  = Model::getModel('model_User');
+        $model->setBasketFromArray( $this->getAll(), $this->user );
+        //$this->user->setBasketFromArray( $this->getAll() );
     }
 
 }

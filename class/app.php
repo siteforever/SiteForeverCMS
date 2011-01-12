@@ -74,7 +74,8 @@ class App extends Application_Abstract
         // маршрутизатор
         self::$router   = new Router( self::$request );
         // Пользователь
-        self::$user     = Model::getModel('model_User');
+
+        self::$user     = model_User::getCurrentUser();
 
         // корзина
         self::$basket   = basketFactory::createBasket( self::$user );

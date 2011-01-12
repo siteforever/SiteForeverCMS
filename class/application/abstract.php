@@ -54,7 +54,7 @@ abstract class Application_Abstract
     static $basket;
 
     /**
-     * @var model_User
+     * @var Data_Object
      */
     static $user;
 
