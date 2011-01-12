@@ -102,7 +102,7 @@ abstract class Application_Abstract
     /**
      * @return logger
      */
-    function getLogger()
+    public function getLogger()
     {
         return $this->logger;
     }

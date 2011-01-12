@@ -8,6 +8,7 @@ class ModelException extends Exception {};
 abstract class Model
 {
     // @TODO Нужен способ обмена данными между контроллером и моделью
+    // @TODO Тестирование классов Data_Criteria и Data_Object
     /**
      * @var db
      */
@@ -87,8 +88,8 @@ abstract class Model
      */
     public function getId()
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
-        if ( isset($this->data['id']) ) {
+        //App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
+        if ( isset( $this->data ) && isset($this->data['id']) ) {
             return $this->data['id'];
         }
         return null;
@@ -148,7 +149,7 @@ abstract class Model
      */
     public function getData()
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
         if ( is_array( $this->data ) ) {
             $this->data = $this->createObject( $this->data );
         }
@@ -164,7 +165,7 @@ abstract class Model
      */
     public function setData( $data )
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
         if ( is_array( $data ) )
             $this->data = $this->createObject( $data );
         elseif ( $data instanceof Data_Object )
@@ -191,7 +192,7 @@ abstract class Model
      */
     public function set( $key, $value )
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
         $this->data[$key] = $value;
         return $this;
     }
@@ -204,7 +205,7 @@ abstract class Model
      */
     public function get( $key )
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__CLASS__.'::'.__METHOD__);
+        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
         if ( isset($this->data[$key]) ) {
             return $this->data[$key];
         }
@@ -243,10 +244,10 @@ abstract class Model
                 return $this->data;
             }
             $criteria   = new Data_Criteria($this->table, array(
-                                                               'cond'  => 'id = :id',
-                                                               'params'=> array(':id'=>$id),
-                                                               'limit' => '1',
-                                                          ));
+                                   'cond'  => 'id = :id',
+                                   'params'=> array(':id'=>$id),
+                                   'limit' => '1',
+                              ));
         } elseif ( is_array( $id ) ) {
 
             $default = array(
@@ -286,6 +287,7 @@ abstract class Model
         $criteria   = new Data_Criteria( $this->table, $crit );
         $raw    = $this->db->fetchAll($criteria->getSQL(), $do_index, DB::F_ASSOC, $criteria->getParams() );
         $collection = array();
+        //printVar($raw);
         if ( $raw ) {
             foreach ( $raw as $d ) {
                 $collection[]   = $this->createObject( $d );

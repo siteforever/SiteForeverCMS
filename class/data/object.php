@@ -28,16 +28,10 @@ class Data_Object implements ArrayAccess, Iterator
     private $field_names   = array();
 
     /**
-     * Указатель итератора
-     * @var null
-     */
-    private $pointer    = null;
-
-    /**
      * @param Model $model
      * @param array $data
      */
-    public function __construct( Model $model, array $data = array() )
+    public function __construct( $model, $data )
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
@@ -100,7 +94,7 @@ class Data_Object implements ArrayAccess, Iterator
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
      */
-    protected function offsetExists($offset)
+    public function offsetExists($offset)
     {
         return isset( $this->data[ $offset ] );
     }
@@ -114,7 +108,7 @@ class Data_Object implements ArrayAccess, Iterator
      * </p>
      * @return mixed Can return all value types.
      */
-    protected function offsetGet($offset)
+    public function offsetGet($offset)
     {
         if ( $this->offsetExists( $offset ) ) {
             return $this->data[ $offset ];
@@ -134,7 +128,7 @@ class Data_Object implements ArrayAccess, Iterator
      * </p>
      * @return void
      */
-    protected function offsetSet($offset, $value)
+    public function offsetSet($offset, $value)
     {
         if ( isset( $this->field_names[ $offset ] ) )
             if ( $this->field_names[ $offset ]->validate( $value ) )
@@ -150,7 +144,7 @@ class Data_Object implements ArrayAccess, Iterator
      * </p>
      * @return void
      */
-    protected function offsetUnset($offset)
+    public function offsetUnset($offset)
     {
         unset( $this->data[ $offset ] );
     }
@@ -161,7 +155,7 @@ class Data_Object implements ArrayAccess, Iterator
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
      */
-    protected function current()
+    public function current()
     {
         return current( $this->data );
     }
@@ -173,7 +167,7 @@ class Data_Object implements ArrayAccess, Iterator
      * @return scalar scalar on success, integer
      * 0 on failure.
      */
-    protected function key()
+    public function key()
     {
         return key( $this->data );
     }
@@ -184,7 +178,7 @@ class Data_Object implements ArrayAccess, Iterator
      * @link http://php.net/manual/en/iterator.next.php
      * @return void Any returned value is ignored.
      */
-    protected function next()
+    public function next()
     {
         return next( $this->data );
     }
@@ -195,7 +189,7 @@ class Data_Object implements ArrayAccess, Iterator
      * @link http://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
-    protected function rewind()
+    public function rewind()
     {
         return reset( $this->data );
     }
@@ -207,7 +201,7 @@ class Data_Object implements ArrayAccess, Iterator
      * @return boolean The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
-    protected function valid()
+    public function valid()
     {
         return $this->current() ? true : false;
     }
