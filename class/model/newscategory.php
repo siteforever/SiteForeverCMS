@@ -10,15 +10,6 @@ class model_NewsCategory extends Model
 {
     private $form = null;
 
-    function createTables()
-    {
-        $this->table    = new Data_Table_NewsCategory();
-        if ( ! $this->isExistTable( $this->table ) ) {
-            $this->db->query($this->table->getCreateTable());
-        }
-    }
-
-
     /**
      * @return form_Form
      */
@@ -28,5 +19,13 @@ class model_NewsCategory extends Model
             $this->form = new forms_news_Category();
         }
         return $this->form;
+    }
+
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_NewsCategory';
     }
 }

@@ -137,7 +137,6 @@ abstract class Model
 
         if ( ! isset( self::$all_class[ $class_name ] ) )
         {
-            var_dump($class_name);
             if ( class_exists($class_name, true) ) {
                 self::$all_class[ $class_name ] = new $class_name();
             }
@@ -186,7 +185,8 @@ abstract class Model
      */
     public function createObject( $data = array() )
     {
-        return new ${$this->objectClass()}( $this, $data );
+        $class_name = $this->objectClass();
+        return new $class_name( $this, $data );
     }
 
     /**
@@ -240,7 +240,8 @@ abstract class Model
     public function getTable()
     {
         if ( is_null( $this->table ) ) {
-            $this->table    = new ${$this->tableClass()};
+            $class_name = $this->tableClass();
+            $this->table    = new $class_name();
             if ( ! $this->isExistTable( $this->table ) ) {
                 $this->addNewTable( $this->table );
                 $this->onCreateTable();

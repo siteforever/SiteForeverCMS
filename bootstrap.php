@@ -16,7 +16,7 @@ define('ROOT', dirname(__FILE__));
 define('DS', DIRECTORY_SEPARATOR);
 
 // отладка загрузки классов
-define('DEBUG_AUTOLOAD', false);
+define('DEBUG_AUTOLOAD', 1);
 
 // Отладка запросов
 define('DEBUG_SQL', true);

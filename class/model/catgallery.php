@@ -20,15 +20,6 @@ class model_CatGallery extends Model
         'main'      => '0',
     );
 
-    function createTables()
-    {
-        $this->setTable(new Data_Table_CatGallery());
-
-        if ( ! $this->isExistTable($this->getTable()) ) {
-            $this->db->query($this->getTable()->getCreateTable());
-        }
-    }
-
     /**
      * Вернет галлерею для продукта
      * @param $prod_id
@@ -112,5 +103,13 @@ class model_CatGallery extends Model
         }
         $this->set('cat_id', $cat);
         $this->save();
+    }
+
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_CatGallery';
     }
 }

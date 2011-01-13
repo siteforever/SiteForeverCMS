@@ -16,15 +16,9 @@ class model_news extends Model
      */
     public $category;
 
-    function createTables()
+    function Init()
     {
-        $this->table    = new Data_Table_News();
-
-        if ( ! $this->isExistTable( $this->table ) ) {
-            $this->db->query($this->table->getCreateTable());
-        }
-
-        $this->category = self::getModel( 'model_NewsCategory' );
+        $this->category = self::getModel( 'NewsCategory' );
     }
 
     function findAllWithLinks($crit = array())
@@ -66,4 +60,11 @@ class model_news extends Model
         return $this->form;
     }
 
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_News';
+    }
 }

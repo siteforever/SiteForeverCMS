@@ -29,25 +29,19 @@ class model_User extends Model
      */
     protected $password_form;
 
-    function createTables()
+    function onCreateTable()
     {
-        $this->table    = new Data_Table_User();
+        $obj    = $this->createObject(array(
+                'login'     => 'admin',
+                'perm'      => USER_ADMIN,
+                'status'    => '1',
+                'date'      => time(),
+                'email'     => $this->config->get('admin'),
+          ));
 
-        if ( ! $this->isExistTable( $this->table ) ) {
-            $this->db->query($this->table->getCreateTable());
+        $this->changePassword('admin', $obj);
 
-            $obj    = $this->createObject(array(
-                    'login'     => 'admin',
-                    'perm'      => USER_ADMIN,
-                    'status'    => '1',
-                    'date'      => time(),
-                    'email'     => $this->config->get('admin'),
-              ));
-
-            $this->changePassword('admin', $obj);
-
-            $this->save( $obj );
-        }
+        $this->save( $obj );
     }
 
     /**
@@ -496,4 +490,11 @@ class model_User extends Model
 
     }
 
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_User';
+    }
 }

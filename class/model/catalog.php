@@ -24,15 +24,9 @@ class model_Catalog extends Model
 
     public $html = array();
 
-    function createTables()
+    function Init()
     {
-        $this->setTable( new Data_Table_Catalog() );
-
-        if ( ! $this->isExistTable( $this->getTable() ) )
-        {
-            $this->db->query($this->getTable()->getCreateTable());
-        }
-        $this->gallery  = self::getModel('model_CatGallery');
+        $this->gallery  = self::getModel('CatGallery');
     }
 
     /**
@@ -579,8 +573,14 @@ class model_Catalog extends Model
         }
 
 
-
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_Catalog';
     }
+}
 
 
 

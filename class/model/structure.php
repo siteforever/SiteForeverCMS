@@ -29,29 +29,23 @@ class model_Structure extends Model
     protected   $available_modules;
 
 
-    function createTables()
+    function onCreateTable()
     {
-        $this->table   = new Data_Table_Structure();
-
-        if ( ! $this->isExistTable( $this->table ) ) {
-            $this->db->query($this->table->getCreateTable());
-
-            $this->db->insert( $this->table, array(
-                'parent'    => '0',
-                'name'      => 'Главная',
-                'template'  => 'index',
-                'uri'       => 'index',
-                'alias'     => 'index',
-                'date'      => time(),
-                'update'    => time(),
-                'pos'       => '0',
-                'controller'    => 'page',
-                'action'    => 'index',
-                'title'     => 'Главная',
-                'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a '.href('admin').'>панель управления</a></p>',
-                'author'    => '1',
-            ) );
-        }
+        $this->db->insert( $this->table, array(
+            'parent'    => '0',
+            'name'      => 'Главная',
+            'template'  => 'index',
+            'uri'       => 'index',
+            'alias'     => 'index',
+            'date'      => time(),
+            'update'    => time(),
+            'pos'       => '0',
+            'controller'    => 'page',
+            'action'    => 'index',
+            'title'     => 'Главная',
+            'content'   => '<p>Эта страница была создана в автоматическом режиме</p><p>Чтобы перейти к управлению сайтом, зайдите в <a '.href('admin').'>панель управления</a></p>',
+            'author'    => '1',
+        ) );
     }
 
     /**
@@ -459,4 +453,11 @@ class model_Structure extends Model
     }
 
 
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_Structure';
+    }
 }
