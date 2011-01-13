@@ -73,8 +73,6 @@ abstract class Model
             }
         }
 
-        $this->createTables();
-
         if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
             self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
         }
@@ -104,22 +102,24 @@ abstract class Model
     }
 
     /**
-     * Создание таблиц
-     * @return void
+     * Проверяет существование таблицы
+     * @param Data_Table $table
+     * @return bool
      */
-    public function createTables()
+    private function isExistTable( Data_Table $table )
     {
-        return false;
+        return in_array( (string) $table, self::$exists_tables );
     }
 
     /**
-     * Проверяет существование таблицы
-     * @param string $table
-     * @return bool
+     * Добавит созданную таблицу в кэш
+     * @param Data_Table $table
+     * @return void
      */
-    public function isExistTable( $table )
+    private function addNewTable( Data_Table $table )
     {
-        return in_array( (string) $table, self::$exists_tables );
+        $this->db->query($this->table->getCreateTable());
+        self::$exists_tables[]  = (string) $table;
     }
 
     /**
@@ -130,9 +130,15 @@ abstract class Model
      */
     static public function getModel( $class_name )
     {
+        if ( strpos( strtolower( $class_name ), 'model_' ) === false ) {
+            $class_name = 'model_'.$class_name;
+        }
+        //var_dump( isset( self::$all_class[ $class_name ] ) );
+
         if ( ! isset( self::$all_class[ $class_name ] ) )
         {
-            if ( class_exists($class_name) ) {
+            var_dump($class_name);
+            if ( class_exists($class_name, true) ) {
                 self::$all_class[ $class_name ] = new $class_name();
             }
             else {
@@ -175,13 +181,28 @@ abstract class Model
 
     /**
      * Создать объект
-     * @param array $array
+     * @param array $data
      * @return Data_Object
      */
-    public function createObject( $array = array() )
+    public function createObject( $data = array() )
     {
-        return new Data_Object( $this, $array );
+        return new ${$this->objectClass()}( $this, $data );
     }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object';
+    }
+
+    /**
+     * @abstract
+     * @return string
+     */
+    abstract public function tableClass();
 
     /**
      * Установка значения поля
@@ -218,17 +239,32 @@ abstract class Model
      */
     public function getTable()
     {
+        if ( is_null( $this->table ) ) {
+            $this->table    = new ${$this->tableClass()};
+            if ( ! $this->isExistTable( $this->table ) ) {
+                $this->addNewTable( $this->table );
+                $this->onCreateTable();
+            }
+        }
+
         return $this->table;
     }
 
     /**
-     * Установит активную таблицу
-     * @param Data_Table $table
+     * Событие возникает при создании новой таблицы
      * @return void
      */
-    public function setTable( Data_Table $table )
+    protected function onCreateTable()
     {
-        $this->table    = $table;
+    }
+
+    /**
+     * Вернет текстовое имя таблицы
+     * @return string
+     */
+    public function getTableName()
+    {
+        return (string) $this->getTable();
     }
 
     /**
@@ -309,8 +345,8 @@ abstract class Model
             $data   = $this->data;
         }
 
-        if ( $data['id'] ) {
-            return $this->db->update( (string) $this->table, $data, 'id = '.$this->getId() );
+        if ( isset( $data['id'] ) && is_numeric( $data['id'] ) && $data['id'] ) {
+            return $this->db->update( (string) $this->table, $data, 'id = '.$data['id'] );
         }
         else {
             $ins = $this->db->insert( (string) $this->table, $data );

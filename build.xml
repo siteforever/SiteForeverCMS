@@ -8,10 +8,10 @@
 
     <property name="theme" value="basic"></property>
 
-    <property name="db_login" value="root"></property>
-    <property name="db_password" value="s03olx"></property>
+    <property name="db_login" value="siteforever"></property>
+    <property name="db_password" value="siteforever"></property>
     <property name="db_server" value="localhost"></property>
-    <property name="db_name" value="stdel_site"></property>
+    <property name="db_name" value="siteforever"></property>
 
 
     <target name="main">
