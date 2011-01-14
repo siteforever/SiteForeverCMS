@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-10-01 10:33:35
+<?php /* Smarty version 2.6.26, created on 2011-01-14 11:23:29
          compiled from system:index.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 't', 'system:index.tpl', 4, false),array('function', 'icon', 'system:index.tpl', 55, false),array('function', 'href', 'system:index.tpl', 56, false),)), $this); ?>
@@ -20,7 +20,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 't', 'system
 <style type="text/css">@import url("<?php echo $this->_tpl_vars['path']['misc']; ?>
 /reset.css");</style>
 <style type="text/css">@import url("<?php echo $this->_tpl_vars['path']['misc']; ?>
-/default.css");</style>
+/siteforever.css");</style>
 <style type="text/css">@import url("<?php echo $this->_tpl_vars['path']['misc']; ?>
 /smoothness/jquery-ui.css");</style>
 <style type="text/css">@import url("<?php echo $this->_tpl_vars['path']['misc']; ?>
@@ -62,7 +62,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 't', 'system
     <h1><?php echo smarty_function_t(array('text' => 'Control panel'), $this);?>
  :: <?php echo $this->_tpl_vars['page']['title']; ?>
 </h1>
-        
+    
     <div class="l-main-panel">
         <div class="l-panel">
 	        <ul class="b-admin-menu">
@@ -109,20 +109,20 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 't', 'system
 
 	        </ul>
         </div>
-        
+
         <div class="l-content">
             <?php if ($this->_tpl_vars['feedback']): ?><p class="red"><?php echo $this->_tpl_vars['feedback']; ?>
 </p><?php endif; ?>
-            
+
             <?php echo $this->_tpl_vars['page']['content']; ?>
 
 
             <div class="l-content-wrapper"></div>
         </div>
-        
+
         <div class="clear"></div>
     </div>
-    
+
     <div class="l-footer-wrapper"></div>
 
 </div>

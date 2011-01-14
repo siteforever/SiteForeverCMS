@@ -9,7 +9,7 @@ class model_Structure extends Model
      * Массив, индексируемый по $parent
      * @var array
      */
-    protected $parents;
+    public $parents;
 
     /**
      * Списков разделов в кэше
@@ -27,6 +27,12 @@ class model_Structure extends Model
 
 
     protected   $available_modules;
+
+    function Init()
+    {
+        // Кэшируем структуру страниц
+        $this->all = $this->findAll(array('cond'=>'deleted = 0','order' => 'pos',));
+    }
 
 
     function onCreateTable()
@@ -95,40 +101,22 @@ class model_Structure extends Model
     function findByRoute( $route )
     {
         foreach( $this->all as $data ) {
-            if ( $data['alias'] == $route ) {
+            if ( $data->alias == $route ) {
                 return $data;
             }
         }
-        $data = $this->db->fetch(
-            "SELECT * FROM {$this->table} WHERE alias = :route AND deleted = 0 LIMIT 1",
-            DB::F_ASSOC,
-            array(':route'=>$route)
-        );
+
+        $data   = $this->find(array(
+               'cond'       => 'alias = :route AND deleted = 0',
+               'params'     => array(':route'=>$route),
+          ));
+
         if ( $data ) {
             $this->all[ $data['id'] ] = $data;
             return $data;
         }
         return false;
     }
-
-    /**
-     * Поиск всех разделов сайта по условию
-     * @param string $cond Условие
-     * @return model_Structure
-     */
-    /*function findAll( $cond = '' )
-    {
-        $where = 'WHERE deleted = 0';
-        if ( $cond ) {
-            $where .= " AND {$cond} ";
-        }
-
-        $data_all = $this->db->fetchAll("SELECT * FROM {$this->table} {$where} ORDER BY pos ASC");
-
-        $this->all = $data_all;
-
-        return $data_all;
-    }*/
 
     /**
      * Найдет путь для страницы
@@ -152,30 +140,6 @@ class model_Structure extends Model
     }
 
     /**
-     * Обновить или добавить массив в базу
-     * @return bool
-     */
-    function update()
-    {
-        if ( $this->data['id'] ) {
-            $this->data['path'] = $this->findPathJSON( $this->data['id'] );
-        } else {
-            $this->data['path'] = '';
-        }
-
-        $ret    = $this->save();
-
-        if ( $ret ) {
-            if ( ! $this->data['id'] ) {
-                $this->data['id'] = $ret;
-                $this->update();
-            }
-        }
-        return $ret;
-    }
-
-
-    /**
      * Вернет значение для новой позиции для нового раздела
      * @param $parent_id
      */
@@ -184,9 +148,10 @@ class model_Structure extends Model
         $max   = $this->db->fetchOne(
             "SELECT MAX(pos)
             FROM {$this->table}
-            WHERE parent = :parent AND deleted = 0", array(':parent'=>$parent_id));
-        if ( is_null($max) )
-            return 0;
+            WHERE parent = :parent AND deleted = 0",
+            array(':parent'=>$parent_id)
+        );
+        if ( ! $max ) return 0;
         return ++$max;
     }
 
@@ -218,7 +183,7 @@ class model_Structure extends Model
             case '':
                 break;
         }
-        return (bool) $this->db->insertUpdate( $this->table, $current );
+        return $this->save( $current );
     }
 
     /**
@@ -236,7 +201,7 @@ class model_Structure extends Model
             'params'    => array(':parent'=>$current['parent'], ':pos'=>$current['pos']),
             'order'     => 'pos DESC',
         ));
-        
+
         if ( ! $some ) {
             return true;
         }
@@ -251,7 +216,7 @@ class model_Structure extends Model
     function moveDown( $id )
     {
         $current    = $this->find( $id );
-        
+
         $model  = clone $this;
         $some   = $model->find(array(
             'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
@@ -291,11 +256,14 @@ class model_Structure extends Model
     {
         $this->parents = array();
         if ( count($this->all) == 0 ) {
-            $this->all = $this->findAll(array('cond'=>'deleted = 0'));
+            $this->all = $this->findAll(array('cond'=>'deleted = 0','order' => 'pos',));
         }
         // создаем массив, индексируемый по родителям
-        foreach( $this->all as &$data ) {
-            $this->parents[ $data['parent'] ][ $data['id'] ] =& $data;
+        /**
+         * @var Data_Object_Page $data
+         */
+        foreach( $this->all as $data ) {
+            $this->parents[ $data['parent'] ][ $data['id'] ] = $data;
         }
     }
 
@@ -452,6 +420,14 @@ class model_Structure extends Model
         return $this->form;
     }
 
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_Page';
+    }
 
     /**
      * @return string

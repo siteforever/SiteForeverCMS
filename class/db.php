@@ -260,7 +260,8 @@ class db
         if ( count($values) ) {
             foreach( $values as $k => $v ) {
                 $v = $this->escape( $v );
-                $where = str_replace(':'.$k, "'$v'", $where);
+                $k  = $k{0} == ':' ? $k : ':'.$k;
+                $where = str_replace($k, $v, $where);
             }
         }
 
@@ -325,7 +326,7 @@ class db
                 }
                 $data   = $xml->asXML();
             }
-            
+
             $exec = round(microtime(1)-$start, 4);
             $this->log[]    = $sql." [$exec сек.]";
             $this->time += $exec;

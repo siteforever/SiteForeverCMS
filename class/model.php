@@ -29,6 +29,11 @@ abstract class Model
     protected $table = null;
 
     /**
+     * @var Application_Abstract
+     */
+    protected $app;
+
+    /**
      * @var form_Form
      */
     //protected $form;
@@ -61,6 +66,8 @@ abstract class Model
             }
         }
 
+        $this->app      = App::getInstance();
+
         $this->request  =& App::$request;
         $this->user     =& App::$user;
         $this->config   =& App::$config;
@@ -78,19 +85,6 @@ abstract class Model
         }
 
         $this->Init();
-    }
-
-    /**
-     * Вернет значение поля id
-     * @return array|null
-     */
-    public function getId()
-    {
-        //App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
-        if ( isset( $this->data ) && isset($this->data['id']) ) {
-            return $this->data['id'];
-        }
-        return null;
     }
 
     /**
@@ -148,55 +142,53 @@ abstract class Model
     }
 
     /**
-     * Пакетный возврат данных (например в форму или представление)
-     * @deprecated
-     * @return Data_Object
-     */
-    public function getData()
-    {
-        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
-        if ( is_array( $this->data ) ) {
-            $this->data = $this->createObject( $this->data );
-        }
-
-        return $this->data;
-    }
-
-    /**
-     * Пакетная загрузка данных в модель (например из формы)
-     * @deprecated
-     * @param array|Data_Object $data
-     * @return Model
-     */
-    public function setData( $data )
-    {
-        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
-        if ( is_array( $data ) )
-            $this->data = $this->createObject( $data );
-        elseif ( $data instanceof Data_Object )
-            $this->data = $data;
-        return $this;
-    }
-
-    /**
      * Создать объект
      * @param array $data
      * @return Data_Object
      */
     public function createObject( $data = array() )
     {
+        if ( isset( $data['id'] ) ) {
+            $obj    = $this->getFromMap( $data['id'] );
+            if ( $obj ) {
+                return $obj;
+            }
+        }
         $class_name = $this->objectClass();
-        return new $class_name( $this, $data );
+        $obj    = new $class_name( $this, $data );
+        if ( ! is_null( $obj->getId() ) ) {
+            $this->addToMap( $obj );
+            $obj->markClean();
+        }
+        return $obj;
     }
+
+
+    /**
+     * Адаптер к наблюдателю для получения объекта
+     * @param int $id
+     * @return Data_Object|null
+     */
+    private function getFromMap( $id )
+    {
+        return Data_Watcher::exists( $this->objectClass(), $id );
+    }
+
+    /**
+     * Адаптер к наблюдателю для добавления объекта
+     * @param Data_Object $obj
+     */
+    private function addToMap( Data_Object $obj )
+    {
+        return Data_Watcher::add( $obj );
+    }
+
 
     /**
      * Класс для контейнера данных
      * @return string
      */
-    public function objectClass()
-    {
-        return 'Data_Object';
-    }
+    public abstract function objectClass();
 
     /**
      * @abstract
@@ -276,9 +268,14 @@ abstract class Model
      */
     public function find( $id )
     {
+        if ( empty( $id ) ) {
+            $id = 0;
+        }
+
         if ( is_numeric( $id ) ) {
-            if ( $this->getId() == $id ) {
-                return $this->data;
+            $obj = $this->getFromMap( $id );
+            if ( $obj ) {
+                return $obj;
             }
             $criteria   = new Data_Criteria($this->table, array(
                                    'cond'  => 'id = :id',
@@ -307,7 +304,6 @@ abstract class Model
 
         if ( $data ) {
             $obj_data   = $this->createObject( $data );
-            $this->setData( $obj_data );
             return $obj_data;
         }
         return null;
@@ -322,12 +318,15 @@ abstract class Model
     public function findAll( $crit = array(), $do_index   = false )
     {
         $criteria   = new Data_Criteria( $this->table, $crit );
+
+        //printVar($criteria->getSQL());
+
         $raw    = $this->db->fetchAll($criteria->getSQL(), $do_index, DB::F_ASSOC, $criteria->getParams() );
         $collection = array();
         //printVar($raw);
         if ( $raw ) {
-            foreach ( $raw as $d ) {
-                $collection[]   = $this->createObject( $d );
+            foreach ( $raw as $data ) {
+                $collection[]   = $this->createObject( $data );
             }
         }
         return $collection;
@@ -338,40 +337,30 @@ abstract class Model
      * @param Data_Object $obj
      * @return int
      */
-    public function save( Data_Object $obj = null )
+    public function save( Data_Object $obj )
     {
-        if ( ! is_null( $obj ) ) {
-            $data   = $obj->getAttributes();
-        } else {
-            $data   = $this->data;
-        }
+        $data   = $obj->getAttributes();
+        $ret    = false;
 
         if ( isset( $data['id'] ) && is_numeric( $data['id'] ) && $data['id'] ) {
-            return $this->db->update( (string) $this->table, $data, 'id = '.$data['id'] );
+            $ret = $this->db->update( (string) $this->table, $data, 'id = '.$data['id'] );
+            $obj->markClean();
         }
         else {
-            $ins = $this->db->insert( (string) $this->table, $data );
-            $obj['id']  = $ins;
-            return $ins;
+            $ret = $this->db->insert( (string) $this->table, $data );
+            $obj->id  = $ret;
+            $this->addToMap( $obj );
         }
+        return $ret;
     }
 
     /**
      * Удаляет строку из таблицы
-     * @param null $id
+     * @param int $id
      * @return bool|mixed
      */
-    public function delete( $id = null )
+    public function delete( $id )
     {
-        if ( is_null($id) ) {
-            if ( $this->getId() ) {
-                $id = $this->getId();
-            } else {
-                return false;
-            }
-        } elseif ( $id instanceof Data_Object ) {
-            $id = $id['id'];
-        }
         if ( $id ) {
             $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
         }

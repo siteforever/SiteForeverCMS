@@ -16,7 +16,7 @@ class Data_Field_Decimal extends Data_Field
      */
     function validate($value)
     {
-        return filter_var( $value, FILTER_VALIDATE_FLOAT );
+        return filter_var( $value, FILTER_VALIDATE_FLOAT ) === false ? false : true;
     }
 
     /**

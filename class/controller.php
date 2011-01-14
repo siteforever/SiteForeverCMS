@@ -36,6 +36,7 @@ abstract class Controller
      * @var Data_Object
      */
     protected $user;
+
     /**
      * @var Basket
      */
@@ -45,10 +46,17 @@ abstract class Controller
      */
     protected $templates;
 
+    /**
+     * @var Application_Abstract
+     */
+    private $app;
+
     private static $forms = array();
 
     function __construct()
     {
+        $this->app      = App::getInstance();
+
         $this->config   = App::$config;
         $this->request  = App::$request;
         $this->router   = App::$router;
@@ -59,17 +67,20 @@ abstract class Controller
 
         $this->params = $this->request->get('params');
 
-        $this->page = App::$structure->find( $this->request->get('id') );
+        $this->page = $this->getModel('Structure')->find( $this->request->get('id') );
 
-        // формируем список предков страницы
-        $path_array = json_decode( $this->page['path'], true );
-        $parents    = array();
-        if ( $path_array && is_array($path_array) ) {
-            foreach( $path_array as $path ) {
-                $parents[$path['id']] = $path['id'];
+        if ( $this->page ) {
+            // формируем список предков страницы
+            $path_array = json_decode( $this->page['path'], true );
+            $parents    = array();
+            if ( $path_array && is_array($path_array) ) {
+                foreach( $path_array as $path ) {
+                    $parents[$path['id']] = $path['id'];
+                }
             }
+            $this->page['parents'] = $parents;
+            $this->page->markClean();
         }
-        $this->page['parents'] = $parents;
 
         $theme = $this->config->get('template.theme');
 
@@ -80,12 +91,12 @@ abstract class Controller
                 'images'=> 'http://'.$_SERVER['HTTP_HOST'].'/themes/'.$theme.'/images',
                 'misc'  => 'http://'.$_SERVER['HTTP_HOST'].'/misc',
             ),
-            'page'   => $this->page,
+            'page'   => $this->page ? $this->page->getAttributes() : null,
         ));
 
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/reset.css');
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.css');
-        $this->request->addStyle($this->request->get('tpldata.path.misc').'/default.css');
+        $this->request->addStyle($this->request->get('tpldata.path.misc').'/siteforever.css');
 
         if ( file_exists( 'themes/'.$theme.'/css/style.css' ) ) {
             $this->request->addStyle($this->request->get('tpldata.path.css').'/style.css');
@@ -100,6 +111,14 @@ abstract class Controller
         $this->request->addScript($this->request->get('tpldata.path.misc').'/etc/catalog.js');
         $this->request->addScript($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.pack.js');
         $this->request->addScript($this->request->get('tpldata.path.js').'/script.js');
+    }
+
+    /**
+     * @return Application_Abstract
+     */
+    function app()
+    {
+        return $this->app;
     }
 
     /**

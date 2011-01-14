@@ -16,13 +16,13 @@ define('ROOT', dirname(__FILE__));
 define('DS', DIRECTORY_SEPARATOR);
 
 // отладка загрузки классов
-define('DEBUG_AUTOLOAD', 1);
+define('DEBUG_AUTOLOAD', 0);
 
 // Отладка запросов
-define('DEBUG_SQL', true);
+define('DEBUG_SQL', 1);
 
 // Вывод бенчмарка
-define('DEBUG_BENCHMARK', true);
+define('DEBUG_BENCHMARK', 1);
 
 define('TPL_CACHING', false);
 define('TPL_CACHE_LIVETIME', 600);

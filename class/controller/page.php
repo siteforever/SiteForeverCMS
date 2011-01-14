@@ -11,10 +11,11 @@ class controller_Page extends Controller
         // создаем замыкание страниц
         while ( $this->page['link'] != 0 )
         {
-            $page = App::$structure->find( $this->page['link'] );
+            $page = $this->getModel('Structure')->find( $this->page['link'] );
             //$this->page['title']    = $page['title'];
             $this->page['content']  = $page['content'];
             $this->page['link']     = $page['link'];
+            $this->page->markClean();
         }
         $this->request->set('tpldata.page', $this->page);
     }

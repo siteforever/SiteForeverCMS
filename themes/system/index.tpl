@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon-precomposed" href="http://{$host}/apple-touch-favicon.png" />
 
 <style type="text/css">@import url("{$path.misc}/reset.css");</style>
-<style type="text/css">@import url("{$path.misc}/default.css");</style>
+<style type="text/css">@import url("{$path.misc}/siteforever.css");</style>
 <style type="text/css">@import url("{$path.misc}/smoothness/jquery-ui.css");</style>
 <style type="text/css">@import url("{$path.misc}/admin.css");</style>
 
@@ -46,7 +46,7 @@
     <h1>{t text="Control panel"} :: {$page.title}</h1>
     {*<div class="b-module-menu">
     </div>*}
-    
+
     <div class="l-main-panel">
         <div class="l-panel">
 	        <ul class="b-admin-menu">
@@ -77,18 +77,18 @@
 
 	        </ul>
         </div>
-        
+
         <div class="l-content">
             {if $feedback}<p class="red">{$feedback}</p>{/if}
-            
+
             {$page.content}
 
             <div class="l-content-wrapper"></div>
         </div>
-        
+
         <div class="clear"></div>
     </div>
-    
+
     <div class="l-footer-wrapper"></div>
 
 </div>

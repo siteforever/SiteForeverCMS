@@ -19,7 +19,7 @@
 .b-catalog-product-noimage {
     width:100px;
     height:100px;
-    text-align: center;    
+    text-align: center;
 }
 
 .b-product-details {
@@ -84,7 +84,7 @@
         text-transform: none;
         color: #666666;
     }
-	
+
 
 .clear {
     clear: both;
@@ -153,4 +153,13 @@ div.paging {
 }
 
 
-	
+
+div.siteforever_logger {
+    background: #999;
+    color: #fff;
+    padding: 10px;
+    font: normal 12px Arial;
+}
+    div.siteforever_logger strong {
+        color: yellow;
+    }

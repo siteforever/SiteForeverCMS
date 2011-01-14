@@ -4,7 +4,7 @@
  */
 class model_Routes extends Model
 {
-    function Init()
+    function onCreateTable()
     {
         $this->db->insert($this->table, array(
              'pos'      => '0',
@@ -198,5 +198,10 @@ class model_Routes extends Model
     public function tableClass()
     {
         return 'Data_Table_Routes';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Route';
     }
 }

@@ -21,17 +21,17 @@ class Loader
         }
 
         // For support Smarty 3 autoload plugins
-        if (    defined('SMARTY_SYSPLUGINS_DIR') &&
+        /*if (    defined('SMARTY_SYSPLUGINS_DIR') &&
                 ( substr($class_name, 0, 16) === 'smarty_internal_' ||
                 $class_name == 'smarty_security' )
         ) {
             include SMARTY_SYSPLUGINS_DIR . $class_name . '.php';
             return;
-        }
+        }*/
 
         // PEAR format autoload
         $file = str_replace( '_', DS, $class_name ).'.php';
-        
+
         if ( @include_once $file ) {
             if ( DEBUG_AUTOLOAD ) {
                 self::$autoload_count++;

@@ -59,19 +59,32 @@ abstract class Application_Abstract
     static $user;
 
     /**
+     * @var Auth_Abstract
+     */
+    protected $auth;
+
+    /**
+     * Указывает на класс авторизации
+     * @var string
+     */
+    protected $auth_format;
+
+    /**
      * Время запуска
      * @var int
      */
     static $start_time = 0;
 
-
+    /**
+     * @var Logger_Interface
+     */
     protected $logger;
 
-    abstract function run();
+    abstract public function run();
 
-    abstract function init();
+    abstract protected function init();
 
-    abstract function handleRequest();
+    abstract protected function handleRequest();
 
     function __construct()
     {
@@ -100,10 +113,32 @@ abstract class Application_Abstract
     }
 
     /**
-     * @return logger
+     * @return Logger_Interface
      */
     public function getLogger()
     {
         return $this->logger;
+    }
+
+    function __set($name, $value)
+    {
+        $this->logger->log( "$name = $value", 'app_set' );
+    }
+
+    protected function setAuthFormat( $format )
+    {
+        $this->auth_format  = $format;
+    }
+
+    function getAuth()
+    {
+        if ( is_null( $this->auth ) ) {
+            if ( ! $this->auth_format ) {
+                throw new Exception('Auth type format not defined');
+            }
+            $class_name = 'Auth_'.$this->auth_format;
+            $this->auth = new $class_name();
+        }
+        return $this->auth;
     }
 }

@@ -1,30 +1,29 @@
 <?php
 class controller_Users extends Controller
 {
-    
     function init()
     {
         $this->request->set('template', 'inner' );
     }
-    
+
     function indexAction()
     {
-        $model  = $this->getModel('user');
+        $model  = $this->getModel('User');
 
         if ( $this->request->get('confirm') && $this->request->get('userid', FILTER_VALIDATE_INT) )
         { // подтверждение регистрации
-           $model->confirm();
+           $this->app()->getAuth()->confirm();
         }
 
         $option = $this->request->get('option');
         if ( $option == 'whole_request' ) {
             sendmail(
-               $this->user->get('email'),
+               $this->user->email,
                $this->config->get('admin'),
                'Запрос на оптовый аккаунт',
-               'Пользователь '.$this->user->get('login').
-               ' с id: '.$this->user->get('id').
-               ', email: '.$this->user->get('email').
+               'Пользователь '.$this->user->login.
+               ' с id: '.$this->user->getId().
+               ', email: '.$this->user->email.
                ' запросил перевести его аккаунт в статус "оптовый".'
            );
            $this->request->addFeedback('Ваша заявка принята');
@@ -43,10 +42,10 @@ class controller_Users extends Controller
         // используем шаблон админки
         $this->request->setTitle('Пользователи');
 
-        $model  = clone $this->getModel('user');
+        $model  = $this->getModel('user');
 
         $users = $this->request->get('users');
-        
+
         if ( $users ) {
             foreach( $users as $key => $user ) {
 
@@ -62,22 +61,29 @@ class controller_Users extends Controller
             }
         }
 
-        $user = clone( $this->user );
-
         $search = $this->request->get('search');
-        $cond   = '';
+
+        $criteria   = array(
+            'cond'  => '',
+        );
         if ( $search ) {
             if ( strlen($search) > 2 ) {
-                $cond = " login LIKE '%{$search}%' OR email LIKE '%{$search}%' ".
-                        " OR lname LIKE '%{$search}%' OR name LIKE '%{$search}%' ";
+                $search = '%'.$search.'%';
+                $criteria['cond']   =   ' login LIKE :search OR email LIKE :search '.
+                                        ' OR lname LIKE :search OR name LIKE :search ';
             } else {
                 $this->request->addFeedback('Слишком короткий запрос');
             }
         }
 
-        $count  = $user->count($cond);
+        $count  = $model->count( $criteria['cond'], array(':search'=>$search) );
+
         $paging = $this->paging($count, 25, '/admin/users/page%page%');
-        $users = $user->findAll($cond, 'login', $paging['limit']);
+
+        $criteria['limit']  = $paging['offset'].', '.$paging['perpage'];
+        $criteria['order']  = 'login';
+
+        $users = $model->findAll($criteria);
 
         $this->tpl->assign('users', $users);
         $this->tpl->assign('paging', $paging);
@@ -93,29 +99,33 @@ class controller_Users extends Controller
     function adminEditAction()
     {
         /**
-         * @var model_User
+         * @var model_User $model
+         * @var Data_Object_User $user
+         * @var form_Form $user_form
          */
         $model  = $this->getModel('user');
 
         $user_form = $model->getEditForm();
-        
-        
+
+
         $user_id = $this->request->get('userid');
-        
-        
+
+
         if ( $user_form->getPost() )
         {
             $this->setAjax();
-            
+
             if ( $user_form->validate() )
             {
                 $user = $model->createObject( $user_form->getData() );
 
-                if ( $user->password ) {
-                    $model->changePassword( $user->password, $user );
-                    //$user->changePassword( $user->get('password') );
+                if ( (string) $user_form->password ) {
+                    $user->changePassword( (string) $user_form->password );
                 }
-                
+                else {
+                    unset( $user->password );
+                }
+
                 if ( $ins = $model->save( $user ) )
                 {
                     if ( ! $user_id )
@@ -134,35 +144,32 @@ class controller_Users extends Controller
             }
             return;
         }
-        
-        if ( $user_data = $model->find( $user_id ) )
+
+        if ( $user_id && $user_data = $model->find( $user_id ) )
         {
-            $user_data->password = '';
             $user_form->setData( $user_data->getAttributes() );
+            $user_form->getField('password')->setValue('');
         }
-               
-        
+
+
         $this->tpl->user_form   = $user_form->html();
-        //$this->tpl->assign('', '');
         $content = $this->tpl->fetch('system:users.edit');
-        
-        
+
+
         $this->request->set('template', 'index');
         $this->request->setTitle((!$user_id ? 'Добавить пользователя' : 'Правка пользователя'));
-        $this->request->setContent($content);
-        
-        
+        $this->request->setContent( $content );
     }
-    
+
     /**
      * Выход
      */
     function logoutAction()
     {
-        $this->user->logout();
+        $this->app()->getAuth()->logout();
         redirect('users/login');
     }
-    
+
     /**
      * Вход
      */
@@ -171,20 +178,20 @@ class controller_Users extends Controller
         $model  = $this->getModel('user');
 
         $this->request->setTitle('tpldata.page.name', t('Personal page'));
-        
+
         if ( ! $this->user->id ) {
             // вход в систему
             $form = $model->getLoginForm();
-            
+
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
-                    if ( $model->login( $form->login, $form->password ) ) {
+                    if ( $this->app()->getAuth()->login( $form->login, $form->password ) ) {
                         redirect();
                     }
                 }
             }
             $this->request->setTitle('Вход в систему');
-            
+
             $this->tpl->assign('form', $form );
         }
         else {
@@ -192,10 +199,10 @@ class controller_Users extends Controller
             $this->tpl->user    = $this->user->getAttributes();
             $this->request->setTitle('Кабинет пользователя');
         }
-        
+
         $this->request->setContent($this->tpl->fetch('users.cabinet'));
     }
-    
+
     /**
      * Редактирование профиля пользователя
      * @return void
@@ -207,11 +214,11 @@ class controller_Users extends Controller
         $this->request->set('tpldata.page.name', 'Edit Profile');
         $this->request->setTitle('Редактирование профиля');
         //$this->request->set('tpldata.page.template', 'index');
-        
+
         $form = $model->getProfileForm();
 
         $form->setData( App::$user->getAttributes() );
-        
+
         // сохранение профиля
         if ( $form->getPost() && $form->validate() ) {
             $user   = $model->createObject( $form->getData() );
@@ -223,13 +230,13 @@ class controller_Users extends Controller
                 $this->request->addFeedback('Профиль не сохранен');
             }
         }
-        
+
         $this->tpl->assign('form', $form);
-        
+
         $this->request->setContent($this->tpl->fetch('system:users.profile'));
-        
+
     }
-    
+
     /**
      * Рагистрация пользователя
      * @return void
@@ -239,11 +246,11 @@ class controller_Users extends Controller
         $this->request->set('tpldata.page.name', 'Register');
         $this->request->setTitle('Регистрация');
         $this->request->setContent('');
-        
+
         $model  = $this->getModel('user');
 
         $form = $model->getRegisterForm();
-        
+
         if ( $form->getPost() )
         {
             if ( $form->validate() )
@@ -259,7 +266,7 @@ class controller_Users extends Controller
                 $this->request->addFeedback('Форма заполнена не верно');
             }
         }
-            
+
         $this->request->setContent($form->html());
     }
 
@@ -305,7 +312,7 @@ class controller_Users extends Controller
                         'loginform' => $this->config->get('siteurl').
                                 $this->router->createLink("users/login")
                     ));
-                    
+
                     sendmail(
                         $this->config->get('admin'),
                         $email,
@@ -330,7 +337,7 @@ class controller_Users extends Controller
                 'submit'=> array('type'=>'submit', 'value'=>'Запросить'),
             ),
         ));
-        
+
         if ( $form->getPost() )
         {
             if ( $form->validate() )
@@ -374,7 +381,7 @@ class controller_Users extends Controller
     {
         // @TODO Перевести под новую модель
         $this->request->setTitle('Изменить пароль');
-        
+
         $form = $this->user->getPasswordForm();
 
         //printVar($this->user->getData());

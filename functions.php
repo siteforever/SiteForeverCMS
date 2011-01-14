@@ -73,13 +73,13 @@ function ensure( $cond, $msg )
  * @param string $subject
  * @param string $message
  */
-function sendmail( $from, $to, $subject, $message ) 
+function sendmail( $from, $to, $subject, $message )
 {
     $header="Content-type: text/plain; charset=\"UTF-8\"\n";
     $header.="From: {$from}\n";
     $header.="Subject: $subject\n";
     $header.="Content-type: text/plain; charset=\"UTF-8\"\n";
-    
+
     mail($to, $subject, $message, $header);
 }
 
@@ -98,7 +98,7 @@ function t($text)
  * @param string $str
  * @return string
  */
-function translit( $str ) 
+function translit( $str )
 {
     $table = array(
         'а' => 'a',

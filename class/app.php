@@ -2,7 +2,9 @@
 /**
  * Класс приложение
  * FronController
- * @author KelTanas
+ * @author Ermin Nikolay <nikolay@ermin.ru>
+ * @link http://ermin.ru
+ * @link http://siteforever.ru
  */
 class App extends Application_Abstract
 {
@@ -44,7 +46,7 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    function init()
+    protected function init()
     {
         // Конфигурация
         self::$config   = new SysConfig();
@@ -55,7 +57,9 @@ class App extends Application_Abstract
         // шаблонизатор
         self::$tpl      = Tpl_Factory::create();
 
-        $this->logger   = new logger();
+        $this->logger   = new Logger_Firephp();
+        //$this->logger   = new Logger_Html();
+        //$this->logger   = new Logger_Blank();
 
         // база данных
         if ( self::$config->get('db') ) {
@@ -67,19 +71,23 @@ class App extends Application_Abstract
         self::$request  = new Request();
         self::$ajax = self::$request->getAjax();
 
-        // модель структуры
-        //self::$structure = Model::getModel('model_Structure');
-        self::$structure = Model::getModel('model_Structure');
-
         // маршрутизатор
         self::$router   = new Router( self::$request );
-        // Пользователь
 
-        self::$user     = model_User::getCurrentUser();
+        // модель структуры
+        //self::$structure = Model::getModel('model_Structure');
+        self::$structure = Model::getModel('Structure');
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+
+        // Авторизация
+        self::getInstance()->setAuthFormat('Session');
+
+        // Пользователь
+        self::$user     = self::getInstance()->getAuth()->currentUser();
 
         // корзина
-        self::$basket   = basketFactory::createBasket( self::$user );
-        //die(__CLASS__.'::'.__FUNCTION__.'('.__LINE__.')');
+        //self::$basket   = basketFactory::createBasket( self::$user );
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         // модель для работы с шаблонами из базы
         // @TODO Подумать над Lazy Load в model_Templates
@@ -93,12 +101,11 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    function handleRequest()
+    protected function handleRequest()
     {
         // маршрутизация
         self::$router->routing();
         self::$request->set('resource', 'theme:');
-
 
 
         //
@@ -121,27 +128,32 @@ class App extends Application_Abstract
             }
         }
 
+
         // если запрос является системным
         if ( self::$router->isSystem() )
         {
-            if ( self::$user->getPermission() == USER_ADMIN )
+            if ( self::$user->perm == USER_ADMIN )
             {
+                //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
                 self::$request->set('template', 'index' );
                 self::$request->set('resource', 'system:');
                 self::$request->set('modules', @include('modules.php'));
             }
             else {
+                //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
                 self::$request->addFeedback( t('Protected page') );
                 self::$request->set('controller', 'users');
                 self::$request->set('action', 'login');
             }
         }
 
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         $controller_class   = 'controller_'.self::$request->get('controller');
         $action             = self::$request->get('action').'Action';
 
 	//print $controller_class.'::'.$action;
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         if ( class_exists( $controller_class ) )
         {
@@ -166,6 +178,8 @@ class App extends Application_Abstract
         else {
             throw new Exception(t('Unable to find controller').' '.$controller_class);
         }
+
+        Data_Watcher::instance()->performOperations();
 
         //self::$request->debug();
 
@@ -215,6 +229,8 @@ class App extends Application_Abstract
                 }
             }
         }
+
+        //printVar( Data_Watcher::instance()->dumpAll() );
     }
 
 }

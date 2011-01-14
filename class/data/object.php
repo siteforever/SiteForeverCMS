@@ -1,46 +1,49 @@
 <?php
 /**
- * 
+ * Интервейс контейнера для данных
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Data_Object implements ArrayAccess, Iterator
-{
 
-    private $data   = array();
+abstract class Data_Object implements ArrayAccess, Iterator
+{
+    protected $data   = array();
 
     /**
      * @var Model
      */
-    private $model  = null;
+    protected $model  = null;
 
     /**
      * @var Data_Table
      */
-    private $table  = null;
+    protected $table  = null;
 
     /**
      * Поля таблицы
      * @var array
      */
-    private $field_names   = array();
+    protected $field_names   = array();
 
     /**
      * @param Model $model
      * @param array $data
      */
-    public function __construct( $model, $data )
+    public function __construct( Model $model, $data )
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
-        
+
         foreach ( $this->table->getFields() as $field ) {
             $this->field_names[ $field->getName() ]    = $field;
         }
 
         $this->setAttributes( $data );
+
+        if ( is_null( $this->getId() ) ) {
+            $this->markNew();
+        }
     }
 
     function __get($name)
@@ -58,6 +61,43 @@ class Data_Object implements ArrayAccess, Iterator
     function __isset($name)
     {
         return $this->offsetExists( $name );
+    }
+
+    function __clone()
+    {
+        unset( $this->data['id'] );
+        $this->markNew();
+    }
+
+    function __toString()
+    {
+        return get_class( $this );
+    }
+
+    /**
+     * Установить id
+     * @param  $id
+     * @return void
+     */
+    function setId( $id )
+    {
+        if ( ! isset( $this->data['id'] ) && is_numeric( $id ) ) {
+            $this->data['id']   = $id;
+            return;
+        }
+        throw new Exception('Attempting to set an existing object id');
+    }
+
+    /**
+     * Вернет id
+     * @return int|null
+     */
+    function getId()
+    {
+        if ( isset( $this->data['id'] ) && $this->data['id'] ) {
+            return $this->data['id'];
+        }
+        return null;
     }
 
 
@@ -80,7 +120,56 @@ class Data_Object implements ArrayAccess, Iterator
         foreach( $data as $k => $d ) {
             $this->offsetSet( $k, $d );
         }
+        $this->markDirty();
     }
+
+    /**
+     * Вернет модель данных
+     * @return Model|null
+     */
+    public function getModel()
+    {
+        return $this->model;
+    }
+
+
+    /**
+     * Как новый
+     * @return void
+     */
+    function markNew()
+    {
+        Data_Watcher::addNew( $this );
+    }
+
+    /**
+     * Как удаленный
+     * @return void
+     */
+    function markDeleted()
+    {
+        Data_Watcher::addDelete( $this );
+    }
+
+    /**
+     * На обновление
+     * @return void
+     */
+    function markDirty()
+    {
+        Data_Watcher::addDirty( $this );
+    }
+
+    /**
+     * Стереть везде
+     * @return void
+     */
+    function markClean()
+    {
+        Data_Watcher::addClean( $this );
+    }
+
+
 
     /**
      * (PHP 5 &gt;= 5.1.0)<br/>
@@ -131,8 +220,12 @@ class Data_Object implements ArrayAccess, Iterator
     public function offsetSet($offset, $value)
     {
         if ( isset( $this->field_names[ $offset ] ) )
-            if ( $this->field_names[ $offset ]->validate( $value ) )
+            if ( $this->field_names[ $offset ]->validate( $value ) !== false )
                 $this->data[ $offset ]  = $value;
+
+        //var_dump( $this->field_names[ $offset ]->validate( $value ) );
+
+        $this->markDirty();
     }
 
     /**
@@ -147,6 +240,7 @@ class Data_Object implements ArrayAccess, Iterator
     public function offsetUnset($offset)
     {
         unset( $this->data[ $offset ] );
+        $this->markDirty();
     }
 
     /**

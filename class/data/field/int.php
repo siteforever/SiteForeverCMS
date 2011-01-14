@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
+
 class Data_Field_Int extends Data_Field
 {
 
@@ -16,7 +16,7 @@ class Data_Field_Int extends Data_Field
      */
     function validate($value)
     {
-        return filter_var( $value, FILTER_VALIDATE_INT );
+        return filter_var( $value, FILTER_VALIDATE_INT ) === false ? false : true;
     }
 
     /**

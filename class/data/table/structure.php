@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
+
 class Data_Table_Structure extends Data_Table
 {
     /**
@@ -28,7 +28,7 @@ class Data_Table_Structure extends Data_Table
             new Data_Field_Int('parent', 11, true, '0'),
             new Data_Field_Varchar('name', 80, true, ''),
             new Data_Field_Varchar('template', 50, true, 'inner'),
-            new Data_Field_Varchar('uri', 100, true, ''),
+            //new Data_Field_Varchar('uri', 100, true, ''),
             new Data_Field_Varchar('alias', 250, true, ''),
             new Data_Field_Text('path'),
             new Data_Field_Int('date', 11, true, '0'),

@@ -20,7 +20,10 @@ class controller_Admin extends Controller
      */
     function indexAction()
     {
-        $model  = $this->getModel('structure');
+        /**
+         * @var model_Structure $model
+         */
+        $model  = $this->getModel('Structure');
 
         // добавление
         if ( $this->request->get('add') ) {
@@ -54,12 +57,12 @@ class controller_Admin extends Controller
 
 
         $this->request->setTitle("Структура сайта");
-        
+
         $do     = $this->request->get( 'do' );
         $part   = $this->request->get( 'part' );
 
         $sort   = $this->request->get('sort');
-        
+
         if ( $sort ) {
             $sort = array_flip($sort);
             $upd = array();
@@ -81,12 +84,9 @@ class controller_Admin extends Controller
             redirect('admin');
         }
 
-        $model->all = $model->findAll(array(
-            'cond'  => 'deleted = 0',
-            'order' => 'pos',
-        ));
         $model->createTree();
 
+        //printVar($model->parents);
         $model->createHtmlList();
 
         $this->request->setContent(
@@ -109,11 +109,11 @@ class controller_Admin extends Controller
             $parent     = $model->find( $parent_id );
         }
         else {
-            $parent     = array(
+            $parent     = $model->createObject( array(
                 'controller'    => 'page',
                 'action'        => 'index',
                 'sort'          => 'pos',
-            );
+            ));
         }
 
         $edit_form  = $model->getForm();
@@ -122,14 +122,14 @@ class controller_Admin extends Controller
         {
             if ( $edit_form->validate() )
             {
-                $model->setData( $edit_form->getData() );
+                $form_data  = $edit_form->getData();
 
-                if ( $model->findByRoute( $model->get('alias') ) ) {
+                if ( $model->findByRoute($edit_form->alias->getValue()) ) {
                     $this->request->addFeedback(t('The page with this address already exists'));
                     return;
                 }
 
-                if ( $model->update() )
+                if ( $model->save( $model->createObject( $form_data ) ) )
                 {
                     $this->request->addFeedback(t('Data save successfully'));
                     //reload('admin/edit', array('edit'=>$ins));
@@ -178,6 +178,9 @@ class controller_Admin extends Controller
      */
     function editAction()
     {
+        /**
+         * @var Model_Structure $model
+         */
         $model  = $this->getModel('structure');
 
         // идентификатор раздела, который надо редактировать
@@ -187,39 +190,55 @@ class controller_Admin extends Controller
 
         if ( $edit_form->getPost() )
         {
-            $edit_form->update->setValue(time());
+            $edit_form->getField('update')->setValue(time());
+
             if ( $edit_form->validate() )
             {
-                $model->setData( $edit_form->getData() );
+                if ( $edit_form->id->getValue() ) {
+                    $obj    = $model->find( (int) $edit_form->id->getValue() );
+                    $obj->setAttributes( $edit_form->getData() );
+                }
+                else {
+                    $obj    = $model->createObject( $edit_form->getData() );
+                }
 
-                if ( $page = $model->findByRoute( $model->get('alias') ) ) {
-                    if ( $page['id'] != $model->get('id') ) {
+                // Если с таким маршрутом уже есть страница, то не сохранять
+                if ( $page = $model->findByRoute( $obj->alias ) ) {
+                    if ( $page->id != $obj->id ) {
                         $this->request->addFeedback(t('The page with this address already exists'));
                         $this->request->addFeedback(t('Data not saved'));
+                        $obj->markClean();
                         return;
                     }
                 }
 
-                if ( $model->update() )
-                {
-                    $this->request->addFeedback(t('Data save successfully'));
+                // Если новая запись, то надо узнать id
+                if ( ! $obj->getId() ) {
+                    $model->save( $obj );
                 }
-                else {
+
+                // Обновляем путь
+                $obj->path = $model->findPathJSON( $obj->getId() );
+
+                if ( $model->save( $obj ) ) {
+                    $this->request->addFeedback(t('Data save successfully'));
+                } else {
                     $this->request->addFeedback(t('Data not saved'));
                 }
                 return;
             } else {
                 $this->request->addFeedback($edit_form->getFeedbackString());
             }
+            return;
         }
-        else {
-            // данные раздела
-            $part = $model->find( $part_id );
 
-            if ( $part )
-            {
-                $edit_form->setData( $part );
-            }
+
+
+        // данные раздела
+        $part = $model->find( $part_id );
+
+        if ( $part ) {
+            $edit_form->setData( $part->getAttributes() );
         }
 
         $this->request->setContent($edit_form->html());

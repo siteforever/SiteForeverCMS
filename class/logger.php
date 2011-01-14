@@ -1,17 +1,25 @@
 <?php
 /**
  * Логирование данных
- * @autor keltanas
+ * Переадресует log() на экземпляр $logger
+ * @author Ermin Nikolay <nikolay@ermin.ru>
+ * @link http://ermin.ru
+ * @link http://siteforever.ru
  */
- 
-class logger
+
+abstract class Logger implements Logger_Interface
 {
-    private $logger;
+    /**
+     * @var Logger_Interface
+     */
+    protected $logger;
 
     function __construct()
     {
-        $this->logger = FirePHP::getInstance(true);
+        $this->init();
     }
+
+    abstract function init();
 
     function log( $message, $label = '' )
     {

@@ -13,7 +13,11 @@ class Request
     const TYPE_XML  = 'xml';
 
     private $feedback   = array();
-    private $request;
+
+    /**
+     * @var array|string
+     */
+    private $request = array();
 
     private $_scripts   = array();
     private $_styles    = array();
@@ -193,25 +197,25 @@ class Request
 
     /**
      * Получить значение по алиасу
-     * @param $alias
+     * @param $path
      */
     protected function geti( $path )
     {
-        $data = &$this->request;
+        $data = $this->request;
         foreach( $path as $part ) {
-            $data =& $data[ $part ];
+            $data = $data[ $part ];
         }
         return $data;
     }
 
     /**
      * Установить свое значение по алиасу
-     * @param $alias
+     * @param $path
      * @param $value
      */
     protected function seti( $path, $value )
     {
-        $data = &$this->request;
+        $data =& $this->request;
         foreach( $path as $part ) {
             $data =& $data[ $part ];
         }
