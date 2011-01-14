@@ -325,8 +325,8 @@ abstract class Model
         $collection = array();
         //printVar($raw);
         if ( $raw ) {
-            foreach ( $raw as $data ) {
-                $collection[]   = $this->createObject( $data );
+            foreach ( $raw as $key => $data ) {
+                $collection[$key]   = $this->createObject( $data );
             }
         }
         return $collection;

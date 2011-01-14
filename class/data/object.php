@@ -63,6 +63,12 @@ abstract class Data_Object implements ArrayAccess, Iterator
         return $this->offsetExists( $name );
     }
 
+    function __unset($name)
+    {
+        unset( $this->data[$name] );
+        $this->markDirty();
+    }
+
     function __clone()
     {
         unset( $this->data['id'] );

@@ -203,6 +203,10 @@ table.dataset {
         color: #fff;
         text-align: left;
     }
+        table.dataset th a {
+            color: yellow;
+        }
+
     table.dataset tr.select td {
         background: #e7f2ff;
     }

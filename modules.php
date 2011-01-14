@@ -45,7 +45,7 @@ return array(
         'sub'   => array(
                 array(
                     'name'  => 'Добавить пользователя',
-                    'url'   => 'admin/users/add',
+                    'url'   => 'admin/users/add=1',
                     'icon'  => 'user_add',
                 ),
         ),

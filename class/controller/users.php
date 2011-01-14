@@ -42,17 +42,16 @@ class controller_Users extends Controller
         // используем шаблон админки
         $this->request->setTitle('Пользователи');
 
+        if ( $this->request->get('userid') || $this->request->get('add') ) {
+            return $this->adminEditAction();
+        }
+
         $model  = $this->getModel('user');
 
         $users = $this->request->get('users');
 
         if ( $users ) {
             foreach( $users as $key => $user ) {
-
-                foreach( $user as $k => $v ) {
-                    $user[$k]  = trim($v);
-                }
-
                 if ( isset( $user['delete'] ) ) {
                     $model->delete($key);
                     $this->request->addFeedback("Удален пользователь № {$key}");
@@ -117,7 +116,12 @@ class controller_Users extends Controller
 
             if ( $user_form->validate() )
             {
-                $user = $model->createObject( $user_form->getData() );
+                if ( $user_id = $user_form->getField('id')->getValue() ) {
+                    $user   = $model->find( $user_id );
+                    $user->setAttributes( $user_form->getData() );
+                } else {
+                    $user = $model->createObject( $user_form->getData() );
+                }
 
                 if ( (string) $user_form->password ) {
                     $user->changePassword( (string) $user_form->password );

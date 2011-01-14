@@ -99,7 +99,7 @@ class controller_Admin extends Controller
      */
     function addAction()
     {
-        $model  = $this->getModel('structure');
+        $model  = $this->getModel('Structure');
 
         // идентификатор раздела, в который надо добавить
         $parent_id  = $this->request->get('add');
@@ -113,7 +113,7 @@ class controller_Admin extends Controller
                 'controller'    => 'page',
                 'action'        => 'index',
                 'sort'          => 'pos',
-            ));
+            ))->markClean();
         }
 
         $edit_form  = $model->getForm();

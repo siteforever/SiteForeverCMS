@@ -108,9 +108,11 @@ class Data_Watcher
 
     static function addDelete( Data_Object $obj )
     {
-        self::addClean( $obj );
         $inst = self::instance();
-        $inst->delete[ $inst->globalKey($obj) ] = $obj;
+        $key    = $inst->globalKey($obj);
+        unset( $inst->all[ $key ] );
+        self::addClean( $obj );
+        $inst->delete[ $key ] = $obj;
     }
 
     /**
@@ -122,18 +124,33 @@ class Data_Watcher
         /**
          * @var Data_Object $obj
          */
-        if ( is_array( $this->dirty ) ) {
-            foreach( $this->dirty as $key => $obj ) {
-                $obj->getModel()->save( $obj );
+        $pdo    = App::$db->getResource();
+        $pdo->beginTransaction();
+        try {
+            if ( is_array( $this->dirty ) ) {
+                foreach( $this->dirty as $key => $obj ) {
+                    $obj->getModel()->save( $obj );
+                }
             }
-        }
-        if ( is_array( $this->new ) ) {
-            foreach( $this->new as $key => $obj ) {
-                $obj->getModel()->save( $obj );
+            if ( is_array( $this->new ) ) {
+                foreach( $this->new as $key => $obj ) {
+                    $obj->getModel()->save( $obj );
+                }
             }
+
+            if ( is_array( $this->delete ) ) {
+                foreach( $this->delete as $key => $obj ) {
+                    $obj->getModel()->delete( $obj->getId() );
+                }
+            }
+            $this->dirty = array();
+            $this->new   = array();
+            $this->delete= array();
+        } catch ( PDOException $e ) {
+            $pdo->rollBack();
+            return false;
         }
-        $this->dirty = array();
-        $this->new   = array();
+        $pdo->commit();
     }
 
     /**

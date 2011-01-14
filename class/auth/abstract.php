@@ -41,6 +41,7 @@ abstract class Auth_Abstract
                'login'  => 'guest',
                'perm'   => USER_GUEST,
             ));
+            $this->user->markClean();
         }
     }
 

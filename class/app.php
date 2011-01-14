@@ -57,8 +57,8 @@ class App extends Application_Abstract
         // шаблонизатор
         self::$tpl      = Tpl_Factory::create();
 
-        $this->logger   = new Logger_Firephp();
-        //$this->logger   = new Logger_Html();
+        //$this->logger   = new Logger_Firephp();
+        $this->logger   = new Logger_Html();
         //$this->logger   = new Logger_Blank();
 
         // база данных
@@ -75,7 +75,6 @@ class App extends Application_Abstract
         self::$router   = new Router( self::$request );
 
         // модель структуры
-        //self::$structure = Model::getModel('model_Structure');
         self::$structure = Model::getModel('Structure');
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 

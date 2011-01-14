@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-10-14 17:30:15
+<?php /* Smarty version 2.6.26, created on 2011-01-15 01:55:42
          compiled from system:users/admin.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'link', 'system:users/admin.tpl', 1, false),array('function', 'href', 'system:users/admin.tpl', 5, false),array('function', 'icon', 'system:users/admin.tpl', 13, false),array('modifier', 'date_format', 'system:users/admin.tpl', 31, false),)), $this); ?>
@@ -34,7 +34,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'link', 'sys
     <tr>
         <td><input type="checkbox" class="checkbox" name="users[<?php echo $this->_tpl_vars['user']['id']; ?>
 ][delete]" /></td>
-        <td><a <?php echo smarty_function_href(array('url' => "admin/users/edit",'userid' => $this->_tpl_vars['user']['id']), $this);?>
+        <td><a <?php echo smarty_function_href(array('url' => "admin/users",'userid' => $this->_tpl_vars['user']['id']), $this);?>
 "><?php echo $this->_tpl_vars['user']['login']; ?>
 </a></td>
         <td><?php echo $this->_tpl_vars['user']['email']; ?>

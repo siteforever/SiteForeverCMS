@@ -39,7 +39,7 @@ class model_User extends Model
                 'email'     => $this->config->get('admin'),
           ));
 
-        $this->changePassword('admin', $obj);
+        $obj->changePassword('admin');
 
         $this->save( $obj );
     }

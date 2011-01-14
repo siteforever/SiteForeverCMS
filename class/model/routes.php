@@ -16,22 +16,6 @@ class model_Routes extends Model
         ));
         $this->db->insert($this->table, array(
              'pos'      => '1',
-             'alias'    => 'admin/users/add',
-             'controller'=>'users',
-             'action'   => 'adminEdit',
-             'active'   => '1',
-             'system'   => '1',
-        ));
-        $this->db->insert($this->table, array(
-             'pos'      => '2',
-             'alias'    => 'admin/users/edit',
-             'controller'=>'users',
-             'action'   => 'adminEdit',
-             'active'   => '1',
-             'system'   => '1',
-        ));
-        $this->db->insert($this->table, array(
-             'pos'      => '3',
              'alias'    => 'admin/edit.*',
              'controller'=>'admin',
              'action'   => 'edit',
@@ -39,7 +23,7 @@ class model_Routes extends Model
              'system'   => '1',
         ));
         $this->db->insert($this->table, array(
-             'pos'      => '4',
+             'pos'      => '2',
              'alias'    => 'admin/add.*',
              'controller'=>'admin',
              'action'   => 'add',
@@ -47,8 +31,8 @@ class model_Routes extends Model
              'system'   => '1',
         ));
         $this->db->insert($this->table, array(
-             'pos'      => '5',
-             'alias'    => 'admin/users',
+             'pos'      => '3',
+             'alias'    => 'admin/users.*',
              'controller'=>'users',
              'action'   => 'admin',
              'active'   => '1',

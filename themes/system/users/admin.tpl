@@ -23,7 +23,7 @@
     {foreach from=$users item="user"}
     <tr>
         <td><input type="checkbox" class="checkbox" name="users[{$user.id}][delete]" /></td>
-        <td><a {href url="admin/users/edit" userid=$user.id}">{$user.login}</a></td>
+        <td><a {href url="admin/users" userid=$user.id}">{$user.login}</a></td>
         <td>{$user.email}</td>
         <td>{$user.lname}</td>
         <td>{$user.phone}</td>

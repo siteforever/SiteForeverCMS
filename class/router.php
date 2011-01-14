@@ -133,12 +133,10 @@ class Router
      */
     function findRoute()
     {
-
-
-        $route = Model::getModel('model_Routes');
+        $route = Model::getModel('Routes');
 
         $this->route_table = $route->findAll( array(
-            'cond' => "active = 1",
+            'cond' => 'active = 1',
         ));
 
         //Error::dump($this->route_table);
@@ -146,6 +144,8 @@ class Router
         // индексируем маршруты
         foreach( $this->route_table as $route )
         {
+            /*var_dump('@^'.$route['alias'].'$@ui', $this->route);
+            print '<br />';*/
             // если маршрут совпадает с алиасом, то сохраняем
             if ( preg_match( '@^'.$route['alias'].'$@ui', $this->route ) )
             {
