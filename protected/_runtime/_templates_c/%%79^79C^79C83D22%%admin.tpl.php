@@ -1,11 +1,13 @@
-<?php /* Smarty version 2.6.26, created on 2011-01-09 01:59:39
+<?php /* Smarty version 2.6.26, created on 2011-01-15 16:41:58
          compiled from system:news/admin.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:news/admin.tpl', 1, false),array('function', 'icon', 'system:news/admin.tpl', 17, false),array('modifier', 'truncate', 'system:news/admin.tpl', 14, false),array('modifier', 'date_format', 'system:news/admin.tpl', 15, false),)), $this); ?>
+smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:news/admin.tpl', 1, false),array('function', 'icon', 'system:news/admin.tpl', 2, false),array('modifier', 'truncate', 'system:news/admin.tpl', 14, false),array('modifier', 'date_format', 'system:news/admin.tpl', 15, false),)), $this); ?>
 <p><a <?php echo smarty_function_href(array('url' => "admin/news"), $this);?>
 >Категории материалов</a>
 &gt; <?php echo $this->_tpl_vars['cat']['name']; ?>
-
+ <a <?php echo smarty_function_href(array('url' => "admin/news",'catedit' => $this->_tpl_vars['cat']['id']), $this);?>
+><?php echo smarty_function_icon(array('name' => 'pencil'), $this);?>
+</a>
 &gt; <a <?php echo smarty_function_href(array('url' => "admin/news",'newsedit' => '0','cat' => $this->_tpl_vars['cat']['id']), $this);?>
 >Создать материал</a></p>
 <table class="dataset fullWidth">

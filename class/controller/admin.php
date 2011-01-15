@@ -194,17 +194,11 @@ class controller_Admin extends Controller
 
             if ( $edit_form->validate() )
             {
-                if ( $edit_form->id->getValue() ) {
-                    $obj    = $model->find( (int) $edit_form->id->getValue() );
-                    $obj->setAttributes( $edit_form->getData() );
-                }
-                else {
-                    $obj    = $model->createObject( $edit_form->getData() );
-                }
+                $obj    = $model->createObject( $edit_form->getData() );
 
                 // Если с таким маршрутом уже есть страница, то не сохранять
                 if ( $page = $model->findByRoute( $obj->alias ) ) {
-                    if ( $page->id != $obj->id ) {
+                    if ( $page->id != $obj->getId() ) {
                         $this->request->addFeedback(t('The page with this address already exists'));
                         $this->request->addFeedback(t('Data not saved'));
                         $obj->markClean();

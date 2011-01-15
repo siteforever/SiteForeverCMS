@@ -15,7 +15,7 @@ class controller_Page extends Controller
             //$this->page['title']    = $page['title'];
             $this->page['content']  = $page['content'];
             $this->page['link']     = $page['link'];
-            $this->page->markClean();
+            $page->markClean();
         }
         $this->request->set('tpldata.page', $this->page);
     }

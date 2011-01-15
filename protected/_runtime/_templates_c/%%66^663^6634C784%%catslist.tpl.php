@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2011-01-09 01:52:06
+<?php /* Smarty version 2.6.26, created on 2011-01-15 02:40:15
          compiled from system:news/catslist.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:news/catslist.tpl', 13, false),array('function', 'icon', 'system:news/catslist.tpl', 14, false),)), $this); ?>

@@ -1,5 +1,5 @@
 <p><a {href url="admin/news"}>Категории материалов</a>
-&gt; {$cat.name}
+&gt; {$cat.name} <a {href url="admin/news" catedit=$cat.id}>{icon name="pencil"}</a>
 &gt; <a {href url="admin/news" newsedit="0" cat=$cat.id}>Создать материал</a></p>
 <table class="dataset fullWidth">
 <tr>

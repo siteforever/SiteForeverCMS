@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-abstract class Data_Object implements ArrayAccess, Iterator
+abstract class Data_Object implements ArrayAccess//, Iterator
 {
     protected $data   = array();
 
@@ -126,7 +126,6 @@ abstract class Data_Object implements ArrayAccess, Iterator
         foreach( $data as $k => $d ) {
             $this->offsetSet( $k, $d );
         }
-        $this->markDirty();
     }
 
     /**
@@ -225,13 +224,19 @@ abstract class Data_Object implements ArrayAccess, Iterator
      */
     public function offsetSet($offset, $value)
     {
-        if ( isset( $this->field_names[ $offset ] ) )
-            if ( $this->field_names[ $offset ]->validate( $value ) !== false )
-                $this->data[ $offset ]  = $value;
-
-        //var_dump( $this->field_names[ $offset ]->validate( $value ) );
-
-        $this->markDirty();
+        if ( isset( $this->field_names[ $offset ] ) ) {
+            if ( $this->field_names[ $offset ]->validate( $value ) !== false ) {
+                if ( ( $this->offsetExists( $offset ) && $this->data[ $offset ] !== $value ) ||
+                     ! $this->offsetExists( $offset )
+                ) {
+                    $this->data[ $offset ]  = $value;
+                    $this->markDirty();
+                }
+            }
+        }
+        else {
+            $this->data[$offset]    = $value;
+        }
     }
 
     /**
@@ -245,8 +250,10 @@ abstract class Data_Object implements ArrayAccess, Iterator
      */
     public function offsetUnset($offset)
     {
-        unset( $this->data[ $offset ] );
-        $this->markDirty();
+        if ( isset ( $this->data[ $offset ] ) ) {
+            unset( $this->data[ $offset ] );
+            $this->markDirty();
+        }
     }
 
     /**
@@ -260,49 +267,4 @@ abstract class Data_Object implements ArrayAccess, Iterator
         return current( $this->data );
     }
 
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Return the key of the current element
-     * @link http://php.net/manual/en/iterator.key.php
-     * @return scalar scalar on success, integer
-     * 0 on failure.
-     */
-    public function key()
-    {
-        return key( $this->data );
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Move forward to next element
-     * @link http://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
-     */
-    public function next()
-    {
-        return next( $this->data );
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Rewind the Iterator to the first element
-     * @link http://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
-     */
-    public function rewind()
-    {
-        return reset( $this->data );
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Checks if current position is valid
-     * @link http://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     * Returns true on success or false on failure.
-     */
-    public function valid()
-    {
-        return $this->current() ? true : false;
-    }
 }

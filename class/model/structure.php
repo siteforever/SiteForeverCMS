@@ -106,14 +106,14 @@ class model_Structure extends Model
             }
         }
 
-        $data   = $this->find(array(
+        $obj    = $this->find(array(
                'cond'       => 'alias = :route AND deleted = 0',
                'params'     => array(':route'=>$route),
           ));
 
-        if ( $data ) {
-            $this->all[ $data['id'] ] = $data;
-            return $data;
+        if ( $obj ) {
+            $this->all[ $obj->getId() ] = $obj;
+            return $obj;
         }
         return false;
     }
@@ -126,14 +126,13 @@ class model_Structure extends Model
     {
         $path = array();
         while( $id ) {
-            $data   = $this->find( $id );
-            if ( $data ) {
-                $path[] = array( 'id'=>$data['id'], 'name'=>$data['name'], 'url'=>$data['alias']);
-                $id = $data['parent'];
+            $obj   = $this->find( $id );
+            if ( $obj ) {
+                $path[] = array( 'id'=>$obj['id'], 'name'=>$obj['name'], 'url'=>$obj['alias']);
+                $id = $obj['parent'];
+                continue;
             }
-            else {
-                $id = 0;
-            }
+            $id = 0;
         }
         $path = array_reverse( $path );
         return json_encode( $path );
@@ -195,8 +194,7 @@ class model_Structure extends Model
     {
         $current    = $this->find( $id );
 
-        $model  = clone $this;
-        $some   = $model->find(array(
+        $some   = $this->find(array(
             'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
             'params'    => array(':parent'=>$current['parent'], ':pos'=>$current['pos']),
             'order'     => 'pos DESC',
@@ -217,8 +215,7 @@ class model_Structure extends Model
     {
         $current    = $this->find( $id );
 
-        $model  = clone $this;
-        $some   = $model->find(array(
+        $some   = $this->find(array(
             'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
             'params'    => array(':parent'=>$current['parent'], ':pos'=>$current['pos']),
             'order'     => 'pos DESC',
@@ -231,16 +228,16 @@ class model_Structure extends Model
 
     /**
      * Осуществить перемещение в базе
-     * @param array $part1
-     * @param array $part2
+     * @param Data_Object_Page $page1
+     * @param Data_Object_Page $page2
      * @return bool
      */
-    private function moveComplete( &$part1, &$part2 )
+    private function moveComplete( Data_Object_Page $page1, Data_Object_Page $page2 )
     {
-        $old_pos        = $part2['pos'];
-        $part2['pos']   = $part1['pos'];
-        $part1['pos']   = $old_pos;
-        if ( $this->db->insertUpdateMulti( $this->table, array( $part2, $part1 ) ) ) {
+        $old_pos        = $page2['pos'];
+        $page2['pos']   = $page1['pos'];
+        $page1['pos']   = $old_pos;
+        if ( $this->db->insertUpdateMulti( $this->table, array( $page2, $page1 ) ) ) {
             return true;
         }
         $this->request->addFeedback('Раздел не был перемещен');

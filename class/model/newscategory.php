@@ -28,4 +28,13 @@ class model_NewsCategory extends Model
     {
         return 'Data_Table_NewsCategory';
     }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_NewsCategory';
+    }
 }

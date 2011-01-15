@@ -8,8 +8,9 @@
  */
 function redirect( $url = '', $params = array() )
 {
+    Data_Watcher::instance()->performOperations();
 	header("Location: ".App::$router->createLink( $url, $params ));
-	exit();
+	die();
 }
 
 /**
@@ -20,6 +21,7 @@ function redirect( $url = '', $params = array() )
  */
 function reload( $url = '', $params = array() )
 {
+    Data_Watcher::instance()->performOperations();
 	die('<script type="text/javascript">window.location.href = "'.App::$router->createLink( $url, $params ).'";</script>');
 }
 
@@ -34,6 +36,7 @@ function printVar( $var )
 
 /**
  * Создаст ссылку
+ * @deprecated
  * @param string $url
  * @param array  $params
  */
@@ -41,6 +44,7 @@ function href( $url, $params = array() )
 {
     return 'href="'.App::$router->createLink( $url, $params ).'"';
 }
+
 
 /**
  * Вернет HTML код для иконки

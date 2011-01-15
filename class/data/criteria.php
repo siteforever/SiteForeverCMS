@@ -37,7 +37,7 @@ class Data_Criteria
     {
         $sql    = array();
         $sql[]  = "SELECT {$this->criteria['select']}";
-        $sql[]  = "FROM {$this->table}";
+        $sql[]  = "FROM `{$this->table}`";
         if ( $this->criteria['cond'] ) {
             $sql[]  = "WHERE {$this->criteria['cond']}";
         }

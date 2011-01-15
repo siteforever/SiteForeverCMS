@@ -52,6 +52,24 @@ class Data_Watcher
         return $ret;
     }
 
+    function dumpDirty()
+    {
+        $ret    = array();
+        foreach ( $this->dirty as $key => $obj ) {
+            $ret[ $key ]    = (string) $obj;
+        }
+        return $ret;
+    }
+
+    function dumpNew()
+    {
+        $ret    = array();
+        foreach ( $this->new as $key => $obj ) {
+            $ret[ $key ]    = (string) $obj;
+        }
+        return $ret;
+    }
+
     /**
      * Создает ключ для объекта
      * @param  $class_name
@@ -137,7 +155,6 @@ class Data_Watcher
                     $obj->getModel()->save( $obj );
                 }
             }
-
             if ( is_array( $this->delete ) ) {
                 foreach( $this->delete as $key => $obj ) {
                     $obj->getModel()->delete( $obj->getId() );

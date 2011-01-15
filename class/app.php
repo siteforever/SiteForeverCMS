@@ -16,9 +16,10 @@ class App extends Application_Abstract
     function run()
     {
         ob_start();
-        //ob_start();
         self::$start_time = microtime( true );
+
         $this->init();
+
         $this->handleRequest();
 
         // включить лог SQL-запросов
@@ -118,9 +119,8 @@ class App extends Application_Abstract
                 ! self::$ajax &&
                 ! self::$router->isSystem()
         ) {
-            //self::$request->debug();
             if (    self::$request->get('controller') == 'page' &&
-                    self::$user->getPermission() == USER_GUEST &&
+                    self::$user->perm == USER_GUEST &&
                     self::$basket->count() == 0
             ) {
                 self::$tpl->caching(true);
@@ -151,13 +151,16 @@ class App extends Application_Abstract
         $controller_class   = 'controller_'.self::$request->get('controller');
         $action             = self::$request->get('action').'Action';
 
-	//print $controller_class.'::'.$action;
+        //print $controller_class.'::'.$action;
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         if ( class_exists( $controller_class ) )
         {
             $reflection_class = new ReflectionClass( $controller_class );
 
+            /**
+             * @var Controller $controller
+             */
             $controller = new $controller_class();
 
             if ( $reflection_class->hasMethod( 'init' ) ) {
@@ -169,6 +172,7 @@ class App extends Application_Abstract
             }
             elseif ( $reflection_class->hasMethod( 'indexAction' ) ) {
                 $controller->indexAction();
+                $controller->deInit();
             }
             else {
                 throw new Exception(t('Could not start the controller').' '.$controller_class);

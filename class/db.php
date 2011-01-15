@@ -654,7 +654,7 @@ class db
     {
         $start = microtime(true);
 
-        $sql = "SHOW COLUMNS FROM ".$table;
+        $sql = "SHOW COLUMNS FROM `$table`";
 
         $this->result   = $this->resource->prepare($sql);
 

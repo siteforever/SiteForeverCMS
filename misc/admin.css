@@ -186,6 +186,7 @@ div.b-module-menu {
 
 /* наборы данных */
 table.dataset {
+    width: 100%;
     font-size: 12px;
     margin: 0 0 5px 0;
     border: 1px #bbd solid;

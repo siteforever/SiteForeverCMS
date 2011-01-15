@@ -73,11 +73,11 @@ return array(
         'url'   => 'admin/routes',
     ),
     array(
-        'name'  => 'Выход',
-        'url'   => 'users/logout',
-    ),
-    array(
         'name'  => 'Конфигурация системы',
         'url'   => 'system',
+    ),
+    array(
+        'name'  => 'Выход',
+        'url'   => 'users/logout',
     ),
 );

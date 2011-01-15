@@ -26,25 +26,35 @@ class model_news extends Model
         $data_all   = $this->findAll( $crit );
 
         $list_id    = array();
-        foreach ( $data_all as $d ) {
-            $list_id[]  = $d['cat_id'];
+        foreach ( $data_all as $news ) {
+            /**
+             * @var Data_Object_News $news
+             */
+            $list_id[]  = $news->cat_id;
         }
 
-        $structure  = self::getModel('model_Structure');
+        $structure  = self::getModel('Structure');
 
-        $s_data_all = $structure->findAll(array(
-              'select'  => 'link, alias',
+        //printVar( Data_Watcher::instance()->dumpDirty() );
+        $page_data_all = $structure->findAll(array(
+              'select'  => 'id, link, alias',
               'cond'    => "deleted = 0 AND alias != 'index' AND controller = 'news' AND link IN (".join(',', $list_id).")"
           ));
 
-        foreach( $data_all as $i => $d ) {
-            foreach ( $s_data_all as $s ) {
-                if ( $d['cat_id'] == $s['link'] ) {
-                    $data_all[$i]['alias'] = $s['alias'];
+        foreach( $data_all as $news ) {
+            /**
+             * @var Data_Object_Page $page
+             */
+            foreach ( $page_data_all as $page ) {
+                if ( $news['cat_id'] == $page['link'] ) {
+                    $news->alias   = $page->alias;
+                    $news->markClean();
                     break;
                 }
             }
         }
+
+        //printVar( Data_Watcher::instance()->dumpNew() );
 
         return $data_all;
     }
@@ -66,5 +76,14 @@ class model_news extends Model
     public function tableClass()
     {
         return 'Data_Table_News';
+    }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_News';
     }
 }

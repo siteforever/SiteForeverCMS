@@ -81,6 +81,7 @@ class Router
      * Вернет href для ссылки
      * @param string $url
      * @param array  $params
+     * @return string
      */
     function createLink( $url = '', $params = array() )
     {

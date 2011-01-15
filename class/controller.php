@@ -67,7 +67,11 @@ abstract class Controller
 
         $this->params = $this->request->get('params');
 
-        $this->page = $this->getModel('Structure')->find( $this->request->get('id') );
+        $page   = $this->getModel('Structure')->find( $this->request->get('id') );
+        if ( $page ) {
+            $this->page = $page->getAttributes();
+        }
+
 
         if ( $this->page ) {
             // формируем список предков страницы
@@ -79,7 +83,6 @@ abstract class Controller
                 }
             }
             $this->page['parents'] = $parents;
-            $this->page->markClean();
         }
 
         $theme = $this->config->get('template.theme');
@@ -91,7 +94,7 @@ abstract class Controller
                 'images'=> 'http://'.$_SERVER['HTTP_HOST'].'/themes/'.$theme.'/images',
                 'misc'  => 'http://'.$_SERVER['HTTP_HOST'].'/misc',
             ),
-            'page'   => $this->page ? $this->page->getAttributes() : null,
+            'page'   => $this->page, //? $this->page->getAttributes() : null,
         ));
 
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/reset.css');
@@ -119,6 +122,11 @@ abstract class Controller
     function app()
     {
         return $this->app;
+    }
+
+    function deInit()
+    {
+        //$this->page->markClean();
     }
 
     /**
@@ -191,12 +199,13 @@ abstract class Controller
         $page  = $page ? $page : 1;
         $p     = array();
 
+        $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
+
         for ( $i = 1; $i <= $pages; $i++ ) {
             if ( $i == $page ) {
                 $p[]    = $i;
             }
             else {
-                $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
                 //print href($link, array('page'=>$i));
                 $p_params = array('page'=>$i);
                 if ( $this->request->get('order') ) {

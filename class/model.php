@@ -151,6 +151,7 @@ abstract class Model
         if ( isset( $data['id'] ) ) {
             $obj    = $this->getFromMap( $data['id'] );
             if ( $obj ) {
+                $obj->setAttributes( $data );
                 return $obj;
             }
         }
