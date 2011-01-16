@@ -194,6 +194,8 @@ abstract class Controller
      */
     function paging( $count, $perpage, $link )
     {
+        return new Pager( $count, $perpage, $link );
+        /*
         $pages = ceil( $count / $perpage );
         $page  = $this->request->get( 'page' );
         $page  = $page ? $page : 1;
@@ -230,6 +232,7 @@ abstract class Controller
             'html'      => $html,
             'limit'     => $limit,
         );
+         */
     }
 
     abstract function indexAction();

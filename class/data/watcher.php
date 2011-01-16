@@ -104,6 +104,9 @@ class Data_Watcher
     static function addNew( Data_Object $obj )
     {
         $inst = self::instance();
+        if ( isset( $inst->dirty[$inst->globalKey($obj)] ) ) {
+            unset( $inst->dirty[$inst->globalKey($obj)] );
+        }
         $inst->new[] = $obj;
     }
 
@@ -112,6 +115,9 @@ class Data_Watcher
         $inst = self::instance();
         unset( $inst->dirty[$inst->globalKey($obj)] );
 
+        /*if ( $key = array_search( $obj, $inst->new, true ) ) {
+            unset( $inst->new[ $key ] );
+        }*/
         if ( in_array( $obj, $inst->new, true ) )
         {
             $pruned = array();

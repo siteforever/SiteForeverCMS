@@ -18,7 +18,7 @@
 </tr>
 {foreachelse}
 <tr>
-    <td colspan="3">Ничего не найдено</td>
+    <td colspan="4">Ничего не найдено</td>
 </tr>
 {/foreach}
 </table>

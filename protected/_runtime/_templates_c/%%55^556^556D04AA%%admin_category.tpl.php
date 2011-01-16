@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-10-14 17:30:12
+<?php /* Smarty version 2.6.26, created on 2011-01-15 23:15:57
          compiled from system:gallery/admin_category.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:gallery/admin_category.tpl', 12, false),array('function', 'icon', 'system:gallery/admin_category.tpl', 13, false),)), $this); ?>
@@ -35,7 +35,7 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'sys
 </tr>
 <?php endforeach; else: ?>
 <tr>
-    <td colspan="3">Ничего не найдено</td>
+    <td colspan="4">Ничего не найдено</td>
 </tr>
 <?php endif; unset($_from); ?>
 </table>

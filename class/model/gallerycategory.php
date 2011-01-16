@@ -1,57 +1,15 @@
 <?php
 
-class model_galleryCategory extends Model
+class model_GalleryCategory extends Model
 {
-    protected $table;
-
-    /**
-     * @var form_Form
-     */
     protected $form;
 
-
-    function createTables()
+    /**
+     * @return Model_Gallery
+     */
+    function gallery()
     {
-        $this->table    = DBPREFIX.'gallery_category';
-
-        if ( ! $this->isExistTable( $this->table ) ) {
-            $this->db->query("
-                CREATE TABLE `{$this->table}` (
-                  `id` int(11) NOT NULL auto_increment,
-                  `name` varchar(200) NOT NULL default '',
-                  `middle_method` tinyint(4) NOT NULL default '1',
-                  `middle_width` int(11) NOT NULL default '200',
-                  `middle_height` int(11) NOT NULL default '200',
-                  `thumb_method` tinyint(4) NOT NULL default '1',
-                  `thumb_width` int(11) NOT NULL default '100',
-                  `thumb_height` int(11) NOT NULL default '100',
-                  PRIMARY KEY  (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8
-            ");
-        }
-    }
-
-    function find( $id )
-    {
-        $this->data = $this->db->fetch("SELECT * FROM {$this->table} WHERE id = {$id} LIMIT 1");
-        return $this->data;
-    }
-
-    function findAll()
-    {
-        return $this->db->fetchAll("SELECT * FROM {$this->table}");
-    }
-
-    function insert()
-    {
-        $id = $this->db->insert($this->table, $this->data);
-        $this->set('id', $id);
-        return $id;
-    }
-
-    function update()
-    {
-        return $this->db->update($this->table, $this->data, "id = {$this->data['id']}");
+        return self::getModel('Gallery');
     }
 
     /**
@@ -59,28 +17,33 @@ class model_galleryCategory extends Model
      * @param  $id
      * @return
      */
-    function delete( $id = null )
+    function remove( $id )
     {
-        if ( is_null( $id ) ) {
-            $id = $this->data['id'];
-        }
-
         /**
          * @var model_gallery $gallery
          */
-        $gallery = self::getModel('model_Gallery');
+        $category   = $this->find( $id );
 
-        $cat = $this->find( $id );
-        if ( $cat ) {
-            $images = $gallery->findAll(array('category_id = '.$cat['id']));
+        if ( $category ) {
+
+            $images = $this->gallery()->findAll(array(
+                'cond'      => 'category_id = :cat_id',
+                'params'    => array(':cat_id'=>$category->getId()),
+            ));
             foreach ( $images as $img ) {
-                $gallery->delete( $img['id'] );
+                $this->gallery()->delete( $img['id'] );
             }
 
             //print 'dir:'.ROOT.$this->config->get('gallery.dir').DS.substr( '0000'.$cat['id'], -4, 4 );
-            if ( @rmdir( ROOT.$this->config->get('gallery.dir').DS.substr( '0000'.$cat['id'], -4, 4 ) ) ) {
-                $this->db->delete($this->table, "id = {$cat['id']}");
-            }
+            $dir = ROOT.$this->config->get('gallery.dir').DS.substr( '0000'.$category['id'], -4, 4 );
+
+            $this->app()->getLogger()->log('del: '.$id.' dir: '.$dir);
+
+            //if ( file_exists( $dir ) ) {
+            //}
+            @rmdir( $dir );
+            
+            $category->markDeleted();
         }
 
         return;
@@ -95,5 +58,22 @@ class model_galleryCategory extends Model
             $this->form = new forms_gallery_category();
         }
         return $this->form;
+    }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_GalleryCategory';
+    }
+
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_GalleryCategory';
     }
 }

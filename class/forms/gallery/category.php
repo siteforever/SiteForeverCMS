@@ -49,6 +49,10 @@ class forms_gallery_category extends form_Form
                     'label' => 'Ширина миниатюры',
                     'value' => '100',
                 ),
+                'color'         => array(
+                    'type'  => 'text',
+                    'label' => 'Цвет полей',
+                ),
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),
         ));

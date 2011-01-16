@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.26, created on 2010-10-14 18:52:44
+<?php /* Smarty version 2.6.26, created on 2011-01-16 00:23:54
          compiled from system:gallery/admin_images.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('function', 'href', 'system:gallery/admin_images.tpl', 2, false),array('function', 'icon', 'system:gallery/admin_images.tpl', 2, false),array('function', 'link', 'system:gallery/admin_images.tpl', 41, false),)), $this); ?>
@@ -156,16 +156,6 @@ px;
         });
         $("#gallery").disableSelection();
 
-        // Эффекты
-        /*
-        $("#gallery").find(\'div.gallery_float_layer\').css(\'opacity\', \'0.4\');
-        $("#gallery li").hover(function(){
-            $(this).find(\'div.gallery_float_layer\').fadeTo(200, 1);
-        },function(){
-            $(this).find(\'div.gallery_float_layer\').fadeTo(200, 0.4);
-        });
-        */
-
         // Редактирование названия
         $(\'#gallery\').find(\'div.gallery_name\').click(function(){
             var val  = $(this).find(\'input\').val();
@@ -190,25 +180,25 @@ px;
             if ( $(\'#gallery_picture_edit\').length == 0 ) {
                 $(\'<div id="gallery_picture_edit" />\').appendTo(\'div.l-content\');
                 $(\'#gallery_picture_edit\').dialog({
-                        autoOpen        : false,
-                        modal           : true,
-                        draggable       : true,
-                        width           : 740,
-                        title           : \'Правка информации\',
-                        buttons         : {
-                                \'Закрыть\'   : function() {
-                                    $(this).dialog(\'close\');
-                                },
-                                \'Сохранить\' : function() {
-                                    $(this).find(\'form\').ajaxSubmit({
-                                        url     : action,
-                                        target  : \'#gallery_picture_edit\'
-                                        /*success : function(){
-                                            //$(\'#gallery_picture_edit\').dialog(\'close\');
-                                        }*/
-                                    });
-                                }
+                    autoOpen        : false,
+                    modal           : true,
+                    draggable       : true,
+                    width           : 740,
+                    title           : \'Правка информации\',
+                    buttons         : {
+                        \'Закрыть\'   : function() {
+                            $(this).dialog(\'close\');
+                        },
+                        \'Сохранить\' : function() {
+                            $(this).find(\'form\').ajaxSubmit({
+                                url     : action,
+                                target  : \'#gallery_picture_edit\'
+                                /*success : function(){
+                                    //$(\'#gallery_picture_edit\').dialog(\'close\');
+                                }*/
+                            });
                         }
+                    }
                     }).hide();
             };
 

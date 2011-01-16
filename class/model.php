@@ -88,6 +88,14 @@ abstract class Model
     }
 
     /**
+     * @return Application_Abstract
+     */
+    function app()
+    {
+        return App::getInstance();
+    }
+
+    /**
      * Инициализация
      * @return void
      */

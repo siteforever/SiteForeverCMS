@@ -58,8 +58,8 @@ class App extends Application_Abstract
         // шаблонизатор
         self::$tpl      = Tpl_Factory::create();
 
-        //$this->logger   = new Logger_Firephp();
-        $this->logger   = new Logger_Html();
+        $this->logger   = new Logger_Firephp();
+        //$this->logger   = new Logger_Html();
         //$this->logger   = new Logger_Blank();
 
         // база данных
@@ -168,10 +168,10 @@ class App extends Application_Abstract
             }
 
             if ( $reflection_class->hasMethod( $action ) ) {
-                $controller->$action();
+                $return = $controller->$action();
             }
             elseif ( $reflection_class->hasMethod( 'indexAction' ) ) {
-                $controller->indexAction();
+                $return = $controller->indexAction();
                 $controller->deInit();
             }
             else {
@@ -219,11 +219,15 @@ class App extends Application_Abstract
             header('Pragma: no-cache');
 
             if ( self::$request->getAjaxType() == Request::TYPE_JSON ) {
-                print json_encode( array(
-                    'error'     => self::$request->getError(),
-                    'feedback'  => self::$request->getFeedback(),
-                    'content'   => self::$request->getContent(),
-                ));
+                if ( $return ) {
+                    print $return;
+                } else {
+                    print json_encode( array(
+                        'error'     => self::$request->getError(),
+                        'feedback'  => self::$request->getFeedback(),
+                        'content'   => self::$request->getContent(),
+                    ));
+                }
             }
             else {
                 print self::$request->getFeedbackString();

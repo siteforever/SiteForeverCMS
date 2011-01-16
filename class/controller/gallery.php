@@ -29,22 +29,27 @@ class controller_gallery extends Controller
         /**
          * @var model_galleryCategory $model_category
          */
-        $model_category = $this->getModel('gallerycategory');
+        $model_category = $model->category();
 
         $category = $model_category->find($this->page['link']);
 
         if ( $category ) {
 
-            $count  = $model->getCount(array('hidden=0','category_id='.$category['id']));
+            $crit   = array(
+                'cond'      => 'hidden = 0 AND category_id = :cat_id',
+                'params'    => array(':cat_id'=>$category->getId()),
+            );
+
+            $count  = $model->count($crit['cond'], $crit['params']);
 
             $paging = $this->paging($count, 10, $this->page['alias'].'/cat='.$category['id']);
 
-            $rows   = $model->findAll(
-                    array('hidden=0','category_id='.$category['id']),
-                    $paging['from'].','.$paging['perpage']
-            );
+            $crit['limit']  = $paging['limit'];
+            $crit['order']  = 'pos';
 
-            $this->tpl->category= $category;
+            $rows   = $model->findAll( $crit );
+
+            $this->tpl->category= $category->getAttributes();
             $this->tpl->rows    = $rows;
             $this->tpl->page    = $this->page;
             $this->tpl->paging  = $paging;
@@ -62,12 +67,16 @@ class controller_gallery extends Controller
      */
     function adminAction()
     {
-        //die(__FILE__.':'.__LINE__);
+        /**
+         * @var model_gallery $model
+         * @var model_galleryCategory $category
+         */
 
         $this->request->setTitle(t('Images gallery'));
 
-        $category = $this->getModel('galleryCategory');
-        $model    = $this->getModel('gallery');
+        $model    = $this->getModel('Gallery');
+        //die(__FILE__.':'.__LINE__);
+        $category = $model->category();
 
         if ( $this->request->get('viewcat',FILTER_SANITIZE_NUMBER_INT) ) {
             return $this->viewCat( $category );
@@ -78,11 +87,11 @@ class controller_gallery extends Controller
         }
 
         if ( $this->request->get('delcat') ) {
-            return $this->deleteCat( $category );
+            $this->deleteCat( $category );
         }
 
         if ( $delimg = $this->request->get('delimg') ) {
-            if ( $model->delete( $delimg ) ) {
+            if ( $model->remove( $delimg ) ) {
                 print json_encode(array('id'=>$delimg,'error'=>'0'));
             } else {
                 print json_encode(array('error'=>'1'));
@@ -95,17 +104,22 @@ class controller_gallery extends Controller
         }
 
         if ( $switchimg = $this->request->get('switchimg', FILTER_SANITIZE_NUMBER_INT) ) {
+
             $switch_result = $model->hideSwitch($switchimg);
+            
             if ( $switch_result !== false ) {
                 if( $switch_result == 1 ) {
                     $switch_icon = icon('lightbulb_off', 'Вкл');
                 }elseif( $switch_result == 2 ) {
                     $switch_icon = icon('lightbulb', 'Выкл');
                 }
-                print json_encode(array('error'=>'0', 'id'=>$switchimg, 'img'=>$switch_icon));
+                //$this->request->
+                return json_encode(array('error'=>'0', 'id'=>$switchimg, 'img'=>$switch_icon));
+                //print ;
             }
             else {
-                print json_encode(array('error'=>'1'));
+                return json_encode(array('error'=>'1'));
+                //print json_encode(array('error'=>'1'));
             }
             return;
         }
@@ -118,9 +132,8 @@ class controller_gallery extends Controller
         if ( $editimage = $this->request->get('editimage', FILTER_SANITIZE_NUMBER_INT) ) {
             $this->setAjax();
             $editname   = $this->request->get('name');
-            $model->find($editimage);
-            $model->set('name', $editname);
-            $model->update();
+            $image  = $model->find($editimage);
+            $image->name    = $editname;
             print "$editimage => $editname";
             return;
         }
@@ -139,25 +152,28 @@ class controller_gallery extends Controller
     function editCat( model_galleryCategory $model )
     {
         $form = $model->getForm();
+        //die(__FILE__.':'.__LINE__);
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $model->setData( $form->getData() );
-                if ( $model->get('id') ) {
-                    $model->update();
-                } else {
-                    $model->insert();
+                $obj = $model->createObject( $form->getData() );
+                if ( ! $obj->getId() ) {
                     reload('admin/gallery');
                 }
                 $this->request->addFeedback('Данные успешно сохранены');
                 return;
             }
+            else {
+                print $form->getFeedbackString();
+                return;
+            }
         }
 
         if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
-            $model->find( $edit );
-            $form->setData( $model->getData() );
+            $obj    = $model->find( $edit );
+            $form->setData( $obj->getAttributes() );
         }
+
         $this->tpl->form    = $form;
         $this->request->setContent( $this->tpl->fetch('system:gallery.admin_category_edit') );
     }
@@ -171,9 +187,9 @@ class controller_gallery extends Controller
     {
         $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
         if ( $id ) {
-            $model->delete( $id );
+            $model->remove( $id );
         }
-        reload('admin/gallery');
+        redirect('admin/gallery');
     }
 
     /**
@@ -184,25 +200,28 @@ class controller_gallery extends Controller
     function viewCat( model_galleryCategory $category )
     {
         $cat_id = $this->request->get('viewcat', FILTER_SANITIZE_NUMBER_INT);
-        $category->find( $cat_id );
 
+        $obj    = $category->find( $cat_id );
+        
         /**
-         * @var model_gallery $model
+         * @var model_Gallery $model
          */
-        $model  = $this->getModel('gallery');
+        $model  = $category->gallery();
 
 
 
         if ( isset( $_FILES['image'] ) ) {
-            $this->upload($category);
+            $this->upload( $obj );
         }
 
-
-
-        $images = $model->findAll(array('category_id = '.$cat_id));
+        $images = $model->findAll(array(
+            'cond'  => 'category_id = :cat_id',
+            'params'=> array(':cat_id'=>$cat_id),
+            'order' => 'pos',
+        ));
 
         $this->tpl->images  = $images;
-        $this->tpl->category= $category->getData();
+        $this->tpl->category= $obj->getAttributes();
 
         $this->request->setContent( $this->tpl->fetch('system:gallery.admin_images') );
     }
@@ -215,14 +234,12 @@ class controller_gallery extends Controller
      */
     function editImage( model_gallery $model )
     {
-        $editimg = $this->request->get('editimg');
         $form   = $this->getForm('gallery_image');
-        $model->find( $editimg );
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $model->setData($form->getData());
-                $model->update();
+                $obj    = $model->find( $this->request->get('editimg') );
+                $obj->setAttributes( $form->getData() );
                 $this->request->addFeedback(t('Data save successfully'));
             }
             else {
@@ -231,7 +248,10 @@ class controller_gallery extends Controller
             return;
         }
 
-        $form->setData( $model->getData() );
+        $editimg = $this->request->get('editimg');
+        $obj    = $model->find( $editimg );
+
+        $form->setData( $obj->getAttributes() );
         $this->request->setContent( $form->html(false) );
     }
 
@@ -241,12 +261,12 @@ class controller_gallery extends Controller
      * @param model_galleryCategory $category
      * @return
      */
-    function upload( model_galleryCategory $category )
+    function upload( Data_Object_GalleryCategory $category )
     {
         /**
          * @var model_gallery $model
          */
-        $model  = $this->getModel('gallery');
+        $model  = $this->getModel('Gallery');
 
         $max_file_size = $this->config->get('gallery.max_file_size');
 
@@ -271,7 +291,12 @@ class controller_gallery extends Controller
             //printVar($images);
             foreach ( $images['error'] as $i => $err )
             {
-                $model->set('id', '');
+                $image  = $model->createObject(array(
+                        'pos'   => '0',
+                        'main'  => '0',
+                        'hidden'=> '0',
+                   ));
+                
                 if ( $err == UPLOAD_ERR_OK )
                 {
                     if ( $images['size'][$i] <= $max_file_size &&
@@ -285,47 +310,45 @@ class controller_gallery extends Controller
                         }
                         $src  = $images['tmp_name'][$i];
 
-                        $model->set('pos', $pos++);
-                        $model->set('category_id', $category->getId());
+                        $image->pos = $pos++;
+                        $image->category_id = $category->getId();
                         if ( isset( $names[ $i ] ) ) {
-                            $model->set('name', $names[ $i ]);
+                            $image->name    = $names[ $i ];
                         }
                         
-                        $model->insert();
-                        $g_id = $model->getId();
+                        $model->save( $image );
+                        $g_id = $image->getId();
 
                         $img = $dest.DS.$g_id.'_'.$images['name'][$i];
                         $tmb = $dest.DS.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
                         $mdl = $dest.DS.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
 
-                        $model->set('image', str_replace( DS, '/', $img ) );
+                        $image->image   = str_replace( DS, '/', $img );
+
+                        //$model->set('image', str_replace( DS, '/', $img ) );
 
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
                             // обработка
-                            $thumb_h    = $category->get('thumb_height');
-                            $thumb_w    = $category->get('thumb_width');
-                            $middle_h   = $category->get('middle_height');
-                            $middle_w   = $category->get('middle_width');
-                            $t_method   = $category->get('thumb_method');
-                            $m_method   = $category->get('middle_method');
+                            $thumb_h    = $category->thumb_height;
+                            $thumb_w    = $category->thumb_width;
+                            $middle_h   = $category->middle_height;
+                            $middle_w   = $category->middle_width;
+                            $t_method   = $category->thumb_method;
+                            $m_method   = $category->middle_method;
 
                             try {
                                 if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
-                                    $model->set('middle',
-                                        str_replace( DS, '/', $mdl )
-                                    );
+                                    $image->middle  = str_replace( DS, '/', $mdl );
                                 };
                                 if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
-                                    $model->set('thumb',
-                                        str_replace( DS, '/', $tmb )
-                                    );
+                                    $image->thumb   = str_replace( DS, '/', $tmb );
                                 };
                             } catch ( Exception $e ) {
                                 $this->request->addFeedback($e->getMessage());
                             }
                         }
-                        $model->update();
+                        $model->save( $image );
                     } else {
                         $this->request->addFeedback("Превышен максимальный предел {$images['size'][$i]} из $max_file_size");
                     }
