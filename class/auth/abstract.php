@@ -33,7 +33,7 @@ abstract class Auth_Abstract
         $this->model    = Model::getModel('User');
 
         if ( $this->getId() ) {
-            $obj    = $this->model->find( (int) $_SESSION['user_id'] );
+            $obj    = $this->model->find( (int) $this->getId() );
             $this->user = $obj;
             $this->user->last   = time();
         } else {
@@ -88,6 +88,7 @@ abstract class Auth_Abstract
 
         if ( $user )
         {
+
             if ( $user->perm < USER_USER ) {
                 $this->error    = true;
                 $this->message  = t('Not enough permissions');
@@ -101,6 +102,8 @@ abstract class Auth_Abstract
 
             $password = $this->generatePasswordHash( $password, $user->solt );
 
+            //print $user->password.' == '.$password;
+
             if ( $password != $user->password ) {
                 $this->error    = true;
                 $this->message  = t('Your password is not suitable');
@@ -108,6 +111,12 @@ abstract class Auth_Abstract
             }
 
             $this->setId( $user->id );
+
+            if ( $user->perm == USER_ADMIN ) {
+                // Авторизация Sypex Dumper
+                $_SESSION['sxd_auth']   = 1;
+                $_SESSION['sxd_conf']   = CONFIG;
+            }
 
             $this->error    = false;
             $this->message  = t('Authorization was successful');
@@ -127,6 +136,9 @@ abstract class Auth_Abstract
     function logout()
     {
         $this->setId(0);
+        $_SESSION['sxd_auth']   = 0; // Авторизация Sypex Dumper
+        $_SESSION['sxd_conf']   = null;
+        setcookie('sxd', null, null, '/misc/sxd/');
         $this->user->id     = 0;
         $this->user->perm   = USER_GUEST;
         $this->user->markClean();

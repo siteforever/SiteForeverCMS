@@ -97,12 +97,36 @@ $(function() {
         href        : '/?route=elfinder&finder=1&langCode=ru'
     });
 
-    $('a.dumper').fancybox({
-        type        : 'iframe',
-        href        : '/misc/dumper/dumper.php'
-    });
+    $('a.dumper').dumper();
+
+
 
 });
+
+$.fn.dumper = function()
+{
+    return $(this).each(function(){
+        $(this).click(function(){
+            if ( $("#dumper_dialog").length == 0 ) {
+                 $('body').append("<div id='dumper_dialog'></div>");
+                 $("#dumper_dialog").dialog({
+                     autoOpen:  false,
+                     width:     620,
+                     height:    510,
+                     modal:     true,
+                     resizable: false,
+                     title:     'Архивация базы данных'
+                 }).append("<iframe src='/misc/sxd'></iframe>")
+                         .find('iframe')
+                         .css({
+                            width: '590px', height: '465px', overflow: 'hidden'
+                           });
+             }
+             $("#dumper_dialog").dialog("open");
+            return false;
+        });
+    });
+}
 
 
 
