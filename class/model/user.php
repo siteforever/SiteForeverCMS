@@ -45,14 +45,6 @@ class model_User extends Model
     }
 
     /**
-     * Инициализация
-     * @return void
-     */
-    function Init()
-    {
-    }
-
-    /**
      * Поиск профиля по email
      * @param $email
      * @return Data_Object
@@ -80,20 +72,6 @@ class model_User extends Model
             unset( $obj->password );
         }
         return parent::save( $obj );
-    }
-
-    /**
-     * Количество пользователей в базе
-     * @param $cond
-     * @return mixed
-     */
-    function count($cond = '')
-    {
-        $where = '';
-        if ( $cond ) {
-            $where = " WHERE {$cond} ";
-        }
-        return $this->db->fetchOne("SELECT COUNT(*) FROM {$this->table} $where ");
     }
 
     /**

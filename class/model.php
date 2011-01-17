@@ -56,7 +56,7 @@ abstract class Model
     /**
      * Создание модели
      */
-    private function __construct()
+    final private function __construct()
     {
         // освобождаем потомков от зависимости от приложения
         if ( ! is_null( App::$db ) ) {
@@ -90,7 +90,7 @@ abstract class Model
     /**
      * @return Application_Abstract
      */
-    function app()
+    final function app()
     {
         return App::getInstance();
     }
@@ -130,7 +130,7 @@ abstract class Model
      * @param  $class_name
      * @return Model
      */
-    static public function getModel( $class_name )
+    final static public function getModel( $class_name )
     {
         if ( strpos( strtolower( $class_name ), 'model_' ) === false ) {
             $class_name = 'model_'.$class_name;
@@ -154,7 +154,7 @@ abstract class Model
      * @param array $data
      * @return Data_Object
      */
-    public function createObject( $data = array() )
+    final public function createObject( $data = array() )
     {
         if ( isset( $data['id'] ) ) {
             $obj    = $this->getFromMap( $data['id'] );
@@ -238,7 +238,7 @@ abstract class Model
      * Вернет таблицу модели
      * @return Data_Table|null
      */
-    public function getTable()
+    final public function getTable()
     {
         if ( is_null( $this->table ) ) {
             $class_name = $this->tableClass();
@@ -264,7 +264,7 @@ abstract class Model
      * Вернет текстовое имя таблицы
      * @return string
      */
-    public function getTableName()
+    final public function getTableName()
     {
         return (string) $this->getTable();
     }
@@ -275,7 +275,7 @@ abstract class Model
      * @param int|array $id
      * @return Data_Object
      */
-    public function find( $id )
+    final public function find( $id )
     {
         if ( empty( $id ) ) {
             $id = 0;
@@ -324,7 +324,7 @@ abstract class Model
      * @param bool $do_index
      * @return array
      */
-    public function findAll( $crit = array(), $do_index   = false )
+    final public function findAll( $crit = array(), $do_index   = false )
     {
         $criteria   = new Data_Criteria( $this->table, $crit );
 
@@ -368,7 +368,7 @@ abstract class Model
      * @param int $id
      * @return bool|mixed
      */
-    public function delete( $id )
+    final public function delete( $id )
     {
         if ( $id ) {
             $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
@@ -381,7 +381,7 @@ abstract class Model
      * @param array $params
      * @return int
      */
-    public function count( $cond = '', $params = array() )
+    final public function count( $cond = '', $params = array() )
     {
         $sql    = array();
         $sql[]  = "SELECT COUNT(*) FROM {$this->table}";

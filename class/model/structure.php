@@ -2,7 +2,7 @@
 /**
  * Модель структуры
  */
-class model_Structure extends Model
+class Model_Structure extends Model
 {
 
     /**

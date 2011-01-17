@@ -3,7 +3,7 @@
  * Модель каталога
  * @author KelTanas
  */
-class model_Catalog extends Model
+class Model_Catalog extends Model
 {
     /**
      * Массив, индексируемый по $parent
@@ -17,16 +17,19 @@ class model_Catalog extends Model
      */
     protected $all = array();
 
-    /**
-     * @var model_CatGallery
-     */
-    public  $gallery    = null;
-
     public $html = array();
 
-    function Init()
+    /**
+     * @var Forms_Catalog_Edit
+     */
+    protected   $form;
+
+    /**
+     * @return Model_CatGallery
+     */
+    function gallery()
     {
-        $this->gallery  = self::getModel('CatGallery');
+        return self::getModel('CatGallery');
     }
 
     /**
@@ -45,7 +48,7 @@ class model_Catalog extends Model
             return null;
         }
 
-        $image  = $this->gallery->find(array(
+        $image  = $this->gallery()->find(array(
             'cond'      => 'cat_id = :id AND hidden = 0 AND main = 1',
             'params'    => array(':id'=>$id),
            ));
@@ -79,16 +82,17 @@ class model_Catalog extends Model
      * @param string $limit
      * @return array
      */
-    function findAllByParent( $parent, $limit = '' )
+    function findAllByParent( $parent, $limit = 'LIMIT 100' )
     {
-        $list = App::$db->fetchAll(
+        $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(child.id) child_count
-            FROM ".DBCATALOG." cat
-                LEFT JOIN ".DBCATALOG." child ON child.parent = cat.id AND child.deleted = 0
-            WHERE cat.parent = '$parent' AND cat.deleted = 0
+            FROM {$this->getTable()} cat
+                LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0
+            WHERE cat.parent = :parent AND cat.deleted = 0
             GROUP BY cat.id
             ORDER BY  cat.cat DESC, cat.pos DESC
-            {$limit}"
+            {$limit}",
+            true, db::F_ASSOC, array(':parent'=>$parent)
         );
         return $list;
     }
@@ -120,11 +124,12 @@ class model_Catalog extends Model
         }
 
         //print "order=$order";
+        $gallery_table  = $this->gallery()->getTable();
 
         $list = $this->db->fetchAll(
             "SELECT cat.*, cg.image, cg.middle, cg.thumb
-            FROM ".DBCATALOG." cat
-            LEFT JOIN ".DBCATGALLERY." cg ON cg.cat_id = cat.id
+            FROM {$this->getTable()} cat
+            LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id
                                          AND cg.hidden = 0
                                          AND cg.main = 1
             WHERE cat.parent = '$parent'
@@ -147,8 +152,8 @@ class model_Catalog extends Model
     {
         $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(sub.id) sub_count
-            FROM ".DBCATALOG." cat
-                LEFT JOIN ".DBCATALOG." sub ON sub.parent = cat.id
+            FROM {$this->getTable()} cat
+                LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id
                     AND sub.cat = 0
                     AND sub.deleted = 0
                     AND sub.hidden = 0
@@ -173,10 +178,13 @@ class model_Catalog extends Model
         if ( ! is_array( $id_list ) ) {
             throw new Exception('Аргумент должен быть массивом');
         }
+
+        $gallery_table  = $this->gallery()->getTable();
+
         $list = $this->db->fetchAll(
             "SELECT cat.*, cg.image, cg.middle, cg.thumb
-             FROM ".DBCATALOG." cat
-             LEFT JOIN ".DBCATGALLERY." cg ON cg.cat_id = cat.id
+             FROM {$this->getTable()} cat
+             LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id
                                          AND cg.hidden = 0
                                          AND cg.main = 1
              WHERE cat.id IN (".join(',', $id_list).")",
@@ -197,7 +205,7 @@ class model_Catalog extends Model
     {
         $count = App::$db->fetchOne(
             "SELECT COUNT(id)
-            FROM ".DBCATALOG."
+            FROM {$this->getTable()}
             WHERE
                 parent = '{$parent}' ".
                     ($type != -1 ? " AND cat = {$type} " : "").
@@ -248,14 +256,10 @@ class model_Catalog extends Model
     {
         $path = array();
         while( $id ) {
-            if ( $this->data['id'] == $id ) {
-                $data = $this->data;
-            } else {
-                $data = $this->db->fetch("SELECT * FROM ".DBCATALOG." WHERE id = $id LIMIT 1");
-            }
-            if ( $data ) {
-                $path[] = array( 'id'=>$data['id'], 'name'=>$data['name'], 'url'=>$data['url']);
-                $id = $data['parent'];
+            $obj    = $this->find($id);
+            if ( $obj ) {
+                $path[] = array( 'id'=>$obj['id'], 'name'=>$obj['name'], 'url'=>$obj['url']);
+                $id = $obj['parent'];
             }
             else {
                 $id = 0;
@@ -269,12 +273,11 @@ class model_Catalog extends Model
      * Удалить в базе
      * @return void
      */
-    function delete()
+    function remove( $id )
     {
-        if ( isset( $this->data['id'] ) ) {
-            $this->data['deleted'] = 1;
-            $this->all[$this->data['id']] = $this->data;
-            $this->update();
+        $obj    = $this->find( $id );
+        if ( $obj ) {
+            $obj->deleted   = 1;
         }
     }
 
@@ -282,12 +285,11 @@ class model_Catalog extends Model
      * Восстановить в базе
      * @return void
      */
-    function undelete()
+    function unremove( $id )
     {
-        if ( isset( $this->data['id'] ) ) {
-            $this->data['deleted'] = 0;
-            $this->all[$this->data['id']] = $this->data;
-            $this->update();
+        $obj    = $this->find( $id );
+        if ( $obj ) {
+            $obj->deleted   = 0;
         }
     }
 
@@ -298,10 +300,12 @@ class model_Catalog extends Model
     function createTree( $parent = 0 )
     {
         $this->parents = array();
-        $this->findAll('cat = 1');
+        if ( count( $this->all ) == 0 ) {
+            $this->all = $this->findAll(array('cond'=>'cat = 1'));
+        }
         // создаем массив, индексируемый по родителям
-        foreach( $this->all as &$data ) {
-            $this->parents[ $data['parent'] ][ $data['id'] ] =& $data;
+        foreach( $this->all as $obj ) {
+            $this->parents[ $obj['parent'] ][ $obj['id'] ] = $obj;
         }
     }
 
@@ -315,11 +319,7 @@ class model_Catalog extends Model
     {
         $html = "";
 
-        //$cur_id = $this->request->get( 'cat', FILTER_VALIDATE_INT );
         $cur_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT );
-        //print $cur_id;
-
-        //print $cur_id;
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
@@ -381,196 +381,116 @@ class model_Catalog extends Model
         return $html;
     }
 
-        /**
-         * Выдаст HTML для выбора раздела в select
-         * @return array
-         */
-        function getSelectTree( $parent, $levelback )
-        {
-            static $maxlevelback;
-            if ( $maxlevelback < $levelback ) {
-                $maxlevelback = $levelback;
-            }
-
-            $list   = array();
-
-            if ( count($this->parents) == 0 ) {
-                $this->createTree();
-            }
-
-            if ( $levelback <= 0 ) {
-                return false;
-            }
-
-            if ( ! isset($this->parents[ $parent ]) ) {
-                return false;
-            }
-
-
-            foreach( $this->parents[ $parent ] as $branch ) {
-
-                if ( ! $branch['cat'] ) {
-                    continue;
-                }
-
-                $list[ $branch['id'] ] = str_repeat('&nbsp;', 8 * ( $maxlevelback - $levelback )).$branch['name'];
-                $sublist    = $this->getSelectTree( $branch['id'], $levelback-1 );
-                if ( $sublist ) {
-                    foreach( $sublist as $i => $item ) {
-                        $list[$i]   = $item;
-                    }
-                }
-            }
-
-            return $list;
+    /**
+     * Выдаст HTML для выбора раздела в select
+     * @return array
+     */
+    function getSelectTree( $parent, $levelback )
+    {
+        static $maxlevelback;
+        if ( $maxlevelback < $levelback ) {
+            $maxlevelback = $levelback;
         }
 
-        /**
-         * Пересортирует разделы
-         * @return string
-         */
-        function resort()
-        {
-            $sort = $this->request->get('sort');
-            if ( $sort && is_array( $sort ) ) {
-                $data = array();
-                foreach( $sort as $pos => $item_id ) {
-                    $data[] = array('id'=>$item_id, 'pos'=>$pos);
-                }
-                $this->db->insertUpdateMulti(DBCATALOG, $data);
-            } else {
-                return t('Error in sorting params');
-            }
-            return '';
+        $list   = array();
+
+        if ( count($this->parents) == 0 ) {
+            $this->createTree();
         }
 
-        /**
-         * Переместить товары в нужный раздел
-         * @return mixed
-         */
-        function moveList()
-        {
-            $list   = $this->request->get('move_list');
-            $target = $this->request->get('target', FILTER_SANITIZE_NUMBER_INT);
-            // TODO Не происходит пересчета порядка позиций
-            if ( $target !== false && is_numeric($target) && $list && is_array( $list ) ) {
-                //printVar($list);
-                foreach( $list as $item_id ) {
-                    $this->find($item_id);
-                    $this->set( 'parent', $target );
-                    $this->set( 'path', '' ); // форсируем пересчет пути
-                    $this->update();
+        if ( $levelback <= 0 ) {
+            return false;
+        }
+
+        if ( ! isset($this->parents[ $parent ]) ) {
+            return false;
+        }
+
+
+        foreach( $this->parents[ $parent ] as $branch ) {
+
+            if ( ! $branch['cat'] ) {
+                continue;
+            }
+
+            $list[ $branch['id'] ] = str_repeat('&nbsp;', 8 * ( $maxlevelback - $levelback )).$branch['name'];
+            $sublist    = $this->getSelectTree( $branch['id'], $levelback-1 );
+            if ( $sublist ) {
+                foreach( $sublist as $i => $item ) {
+                    $list[$i]   = $item;
                 }
             }
-            return '';
         }
 
-        /**
-         * Массив с категориями для select
-         * @return array
-         */
-        function &getCategoryList()
-        {
-            $parents = array('Корневой раздел');
-            $select_tree    = $this->getSelectTree(0,10);
-            if ( $select_tree ) {
-                foreach( $select_tree as $i => $item ) {
-                    $parents[$i] = $item;
-                }
+        return $list;
+    }
+
+    /**
+     * Пересортирует разделы
+     * @return string
+     */
+    function resort()
+    {
+        $sort = $this->request->get('sort');
+        if ( $sort && is_array( $sort ) ) {
+            $data = array();
+            foreach( $sort as $pos => $item_id ) {
+                $data[] = array('id'=>$item_id, 'pos'=>$pos);
             }
-            return $parents;
+            $this->db->insertUpdateMulti(DBCATALOG, $data);
+        } else {
+            return t('Error in sorting params');
         }
+        return '';
+    }
 
-        function getForm()
-        {
-            if ( is_null( $this->form ) ) {
-
-                //$parents[0] = 'Корневой раздел';
-                //printVar( $parents );
-                $parents    = $this->getCategoryList();
-
-                $this->form = new form_Form(array(
-                    'name'  => 'catalog',
-                    'title' => 'Раздел каталога',
-                    'fields'=> array(
-
-                        'id'        => array('type'=>'hidden', 'value'=>'0'),
-                        'cat'       => array('type'=>'hidden', 'value'=>'1'),
-
-                        'name'      => array('type'=>'text', 'label'=>'Наименование','required'),
-                        'parent'    => array(
-                            'type'      => 'select',
-                            'label'     => 'Раздел',
-                            'value'     => '0',
-                            'variants'  => $parents,
-                        ),
-
-                        'url'       => array('type'=>'hidden', 'label'=>'Адрес',),
-                        'path'      => array('type'=>'hidden'),
-
-                        /*'image'     => array(
-                            'type'  => 'text',
-                            'label' =>'Изображение',
-                            'hidden',
-                        ),*/
-                        'icon'      => array(
-                            'type'  => 'select',
-                            'label' => 'Иконка',
-                            'value' => '',
-                            'variants'  => array('Нет изображений'),
-                        ),
-
-                        'articul'   => array('type'=>'text', 'label'=>'Артикул', 'value'=>'', 'hidden'),
-                        'price1'    => array('type'=>'text', 'label'=>'Цена роз.', 'value'=>'0', 'hidden'),
-                        'price2'    => array('type'=>'text', 'label'=>'Цена опт.', 'value'=>'0', 'hidden'),
-                        'p0'        => array('type'=>'text', 'label'=>'Параметр 0'),
-                        'p1'        => array('type'=>'text', 'label'=>'Параметр 1'),
-                        'p2'        => array('type'=>'text', 'label'=>'Параметр 2'),
-                        'p3'        => array('type'=>'text', 'label'=>'Параметр 3'),
-                        'p4'        => array('type'=>'text', 'label'=>'Параметр 4'),
-                        'p5'        => array('type'=>'text', 'label'=>'Параметр 5'),
-                        'p6'        => array('type'=>'text', 'label'=>'Параметр 6'),
-                        'p7'        => array('type'=>'text', 'label'=>'Параметр 7'),
-                        'p8'        => array('type'=>'text', 'label'=>'Параметр 8'),
-                        'p9'        => array('type'=>'text', 'label'=>'Параметр 9'),
-
-                        'text'      => array('type'=>'textarea', 'label'=>'Описание'),
-
-                        'sort_view' => array(
-                            'type'=>'radio', 'label'=>'Выводить опции сортировки', 'value'=>'1',
-                            'variants'=>array('1'=>'Выводить','0'=>'Не выводить',),
-                        ),
-
-                        'top'       => array('type'=>'radio', 'label'=>'Всегда в начале', 'value'=>'0', 'hidden',
-                                             'variants' => array('1'=>'Да','0'=>'Нет',),
-                        ),
-                        'byorder'   => array('type'=>'radio', 'label'=>'Под заказ', 'value'=>'0', 'hidden',
-                                             'variants' => array('1'=>'Да','0'=>'Нет',),
-                        ),
-                        'absent'    => array('type'=>'radio', 'label'=>'Отсутствует', 'value'=>'0', 'hidden',
-                                             'variants' => array('1'=>'Да','0'=>'Нет',),
-                        ),
-
-                        'hidden'    => array(
-                            'type'      => 'radio',
-                            'label'     => 'Скрытое',
-                            'value'     => '0',
-                            'variants'  => array('1'=>'Да','0'=>'Нет',),
-                        ),
-                        'protected' => array(
-                            'type'      => 'radio',
-                            'label'     => 'Защита страницы',
-                            'value'     => USER_GUEST,
-                            'variants'  => $this->config->get('users.groups'),
-                        ),
-                        'sep'       => array('type'=>'separator'),
-                        'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
-                    ),
-                ));
+    /**
+     * Переместить товары в нужный раздел
+     * @return mixed
+     */
+    function moveList()
+    {
+        $list   = $this->request->get('move_list');
+        $target = $this->request->get('target', FILTER_SANITIZE_NUMBER_INT);
+        // TODO Не происходит пересчета порядка позиций
+        if ( $target !== false && is_numeric($target) && $list && is_array( $list ) ) {
+            //printVar($list);
+            foreach( $list as $item_id ) {
+                $this->find($item_id);
+                $this->set( 'parent', $target );
+                $this->set( 'path', '' ); // форсируем пересчет пути
+                $this->update();
             }
-
-            return $this->form;
         }
+        return '';
+    }
+
+    /**
+     * Массив с категориями для select
+     * @return array
+     */
+    function &getCategoryList()
+    {
+        $parents = array('Корневой раздел');
+        $select_tree    = $this->getSelectTree(0,10);
+        if ( $select_tree ) {
+            foreach( $select_tree as $i => $item ) {
+                $parents[$i] = $item;
+            }
+        }
+        return $parents;
+    }
+
+    /**
+     * @return Forms_Catalog_Edit
+     */
+    function getForm()
+    {
+        if ( is_null( $this->form ) ) {
+            $this->form = new Forms_Catalog_Edit();
+        }
+        return $this->form;
+    }
 
 
     /**
@@ -579,6 +499,15 @@ class model_Catalog extends Model
     public function tableClass()
     {
         return 'Data_Table_Catalog';
+    }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_Catalog';
     }
 }
 
