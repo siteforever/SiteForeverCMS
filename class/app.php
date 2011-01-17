@@ -86,7 +86,7 @@ class App extends Application_Abstract
         self::$user     = self::getInstance()->getAuth()->currentUser();
 
         // корзина
-        //self::$basket   = basketFactory::createBasket( self::$user );
+        self::$basket   = basketFactory::createBasket( self::$user );
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         // модель для работы с шаблонами из базы
