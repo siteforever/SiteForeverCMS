@@ -88,7 +88,7 @@ abstract class Auth_Abstract
 
         if ( $user )
         {
-
+            //print_r( $user->getAttributes() );
             if ( $user->perm < USER_USER ) {
                 $this->error    = true;
                 $this->message  = t('Not enough permissions');
@@ -102,7 +102,7 @@ abstract class Auth_Abstract
 
             $password = $this->generatePasswordHash( $password, $user->solt );
 
-            //print $user->password.' == '.$password;
+            print $user->password.' == '.$password;
 
             if ( $password != $user->password ) {
                 $this->error    = true;

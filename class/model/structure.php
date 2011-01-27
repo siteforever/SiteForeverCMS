@@ -411,10 +411,10 @@ class Model_Structure extends Model
      */
     function getForm()
     {
-        if ( !isset($this->form) ) {
+        if ( ! isset($this->form) ) {
             $this->form = new forms_page_structure();
-            $this->form->controller->setVariants($this->getAvaibleModules());
-            $this->form->protected->setVariants($this->config->get('users.groups'));
+            $this->form->getField('controller')->setVariants($this->getAvaibleModules());
+            $this->form->getField('protected')->setVariants($this->config->get('users.groups'));
         }
         return $this->form;
     }

@@ -17,8 +17,8 @@ function smarty_function_href( $params )
         $url = '';
     } else {
         $url = $params['url'];
-        unset($params['url']);
     }
+    unset($params['url']);
     return Siteforever::html()->href( $url, $params );
     //return href( $url, $params );
 }

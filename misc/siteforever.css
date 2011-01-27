@@ -7,6 +7,7 @@
  * Date: 28.05.2010
  * Time: 15:14:11
  */
+
 .float_right {
     float: right;
 }
@@ -15,6 +16,13 @@
     float: left;
 }
 
+.error {
+    color: red;
+}
+
+.feedback {
+    color: #999;
+}
 
 .b-catalog-product-noimage {
     width:100px;
@@ -98,23 +106,32 @@
 
 
 input, select, textarea {
-    width: 150px;
+    width: 300px;
     padding: 1px;
-    border: 1px #808080 solid;
+    border: 1px #999 solid;
+    border-bottom-color: #333;
+    border-right-color: #333;
+    background: #fff;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
-    font-family: inherit;
-    font-size:inherit;
+    font-family: Arial;
+    font-size: 1em;
 }
+
+input[type=submit], input[type=reset], button {
+    width: auto;
+    padding: 1px 5px;
+}
+
 textarea {
-    width: 200px;
     height: 100px;
 }
 input:focus, textarea:focus, select:focus {
     border-color: #000;
     background: #fff;
 }
+
 
 input.checkbox, input.radio {
     width: 15px;
@@ -124,6 +141,20 @@ input.checkbox, input.radio {
     border: none;
     background: none;
 }
+
+
+input.error {
+    border-color: red;
+}
+
+    form.standart   p.error {
+        margin-bottom:1em;
+    }
+
+.b-form-field {
+    margin-bottom: 1em;
+}
+
 
 .left {
     text-align: left;

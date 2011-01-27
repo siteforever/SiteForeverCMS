@@ -108,15 +108,7 @@ class model_User extends Model
     function getLoginForm()
     {
         if ( is_null( $this->login_form ) ) {
-            $this->login_form = new form_Form(array(
-                'name'      => 'login',
-                'action'    => App::$router->createLink('users/login'),
-                'fields'    => array(
-                    'login'     => array('type'=>'text',    'label'=>'Логин'),
-                    'password'  => array('type'=>'password','label'=>'Пароль'),
-                    'submit'    => array('type'=>'submit', 'value'=>'Войти'),
-                ),
-            ));
+            $this->login_form = new forms_user_login();
         }
         return $this->login_form;
     }
@@ -128,24 +120,7 @@ class model_User extends Model
     function getProfileForm()
     {
         if ( is_null( $this->profile_form ) ) {
-            $this->profile_form = new form_Form(array(
-                'name'      => 'profile',
-                'class'     => 'standart',
-                'fields'    => array(
-                    'id'        => array('type'=>'hidden',),
-                    'fname'     => array('type'=>'text', 'label'=>'Имя'),
-                    'lname'     => array('type'=>'text', 'label'=>'Фамилия'),
-                    'email'     => array('type'=>'text', 'label'=>'Email', 'required'),
-                    'name'      => array('type'=>'text', 'label'=>'Наименование организации **'),
-                    'phone'     => array('type'=>'text', 'label'=>'Телефон **'),
-                    'fax'       => array('type'=>'text', 'label'=>'Факс',),
-                    'inn'       => array('type'=>'text', 'label'=>'ИНН **',),
-                    'kpp'       => array('type'=>'text', 'label'=>'КПП **',),
-                    'address'   => array('type'=>'textarea', 'label'=>'Адрес'),
-
-                    'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
-                ),
-            ));
+            $this->profile_form = new forms_user_profile();
         }
         return $this->profile_form;
     }
@@ -153,15 +128,7 @@ class model_User extends Model
     function getPasswordForm()
     {
         if ( is_null( $this->password_form ) ) {
-            $this->password_form = new form_Form(array(
-                'name'      => 'password',
-                'fields'    => array(
-                    'password'  => array('type'=>'password', 'label'=>'Старый пароль', 'required', 'autocomplete'=>'off'),
-                    'password1' => array('type'=>'password', 'label'=>'Новый пароль',  'required', 'autocomplete'=>'off'),
-                    'password2' => array('type'=>'password', 'label'=>'Повтор пароля', 'required', 'autocomplete'=>'off'),
-                    'submit'    => array('type'=>'submit', 'value'=>'Изменить'),
-                ),
-            ));
+            $this->password_form = new forms_user_password();
         }
         return $this->password_form;
     }
@@ -169,16 +136,7 @@ class model_User extends Model
     function getRegisterForm()
     {
         if ( is_null( $this->register_form ) ) {
-            $this->register_form = new form_Form(array(
-                'name'      => 'register',
-                'class'     => 'standart',
-                'fields'    => array(
-                    'email'     => array('type'=>'text',    'label'=>'Email', 'required', 'autocomplete'=>'off'),
-                    'login'     => array('type'=>'text',    'label'=>'Логин', 'required', 'autocomplete'=>'off'),
-                    'password'  => array('type'=>'password', 'label'=>'Пароль', 'required', 'autocomplete'=>'off'),
-                    'submit'    => array('type'=>'submit', 'value'=>'Регистрация'),
-                ),
-            ));
+            $this->register_form = new forms_user_register();
         }
         return $this->register_form;
     }

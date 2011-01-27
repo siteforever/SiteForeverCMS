@@ -38,8 +38,8 @@ class App extends Application_Abstract
             $this->logger->log("Execution time: ".round(microtime(true)-self::$start_time, 3)." sec.", 'app');
             $this->logger->log("Required memory: ".round(memory_get_usage() / 1024, 3)." kb.", 'app');
         }
-
         ob_end_flush();
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
     }
 
     /**
@@ -107,7 +107,6 @@ class App extends Application_Abstract
         self::$router->routing();
         self::$request->set('resource', 'theme:');
 
-
         //
         //  Настройки кэширования
         //
@@ -126,6 +125,7 @@ class App extends Application_Abstract
                 self::$tpl->caching(true);
             }
         }
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
 
         // если запрос является системным
@@ -182,7 +182,10 @@ class App extends Application_Abstract
             throw new Exception(t('Unable to find controller').' '.$controller_class);
         }
 
+
+        // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         //self::$request->debug();
 
@@ -202,22 +205,15 @@ class App extends Application_Abstract
         self::$tpl->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
         self::$tpl->request     = self::$request;
 
-        //Error::dump($_SERVER);
-
-        // HTTP_X_REQUESTED_WITH => XMLHttpRequest
         if ( ! self::$ajax )
         {
             header('Content-type: text/html; charset=utf-8');
             self::$tpl->display( self::$request->get('resource').self::$request->get('template'), $cache_id );
-            /*if ( self::$tpl->is_cached($tpl_resource.self::$request->get('template'), $cache_id) ) {
-                print 'from cache';
-            }*/
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: post-check=0, pre-check=0', false);
             header('Pragma: no-cache');
-
             if ( self::$request->getAjaxType() == Request::TYPE_JSON ) {
                 if ( $return ) {
                     print $return;
@@ -236,7 +232,7 @@ class App extends Application_Abstract
                 }
             }
         }
-
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
         //printVar( Data_Watcher::instance()->dumpAll() );
     }
 

@@ -59,14 +59,14 @@ class controller_Order extends Controller
                     'all_summa' => $all_summa,
                 ));
 
-                $this->request->set('tpldata.page.content', $this->tpl->fetch('system:order.order'));
+                $this->request->setContent( $this->tpl->fetch('system:order.order'));
                 return;
             }
         }
 
         $list = $order->findAllByUserId( $this->user->get('id') );
         $this->tpl->assign('list', $list);
-        $this->request->set('tpldata.page.content', $this->tpl->fetch('system:order.index'));
+        $this->request->setContent( $this->tpl->fetch('system:order.index') );
     }
 
     /**

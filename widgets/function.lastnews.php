@@ -17,10 +17,10 @@ function smarty_function_lastnews( $params, $smarty )
 {
     switch( $params['sort'] ) {
         case 'rand':
-            $sort   = 'ORDER BY RAND()';
+            $sort   = 'RAND()';
             break;
         default:
-            $sort   = 'ORDER BY news.date DESC';
+            $sort   = 'news.date DESC';
     }
 
     if ( ! isset($params['limit']) ) {
@@ -32,7 +32,7 @@ function smarty_function_lastnews( $params, $smarty )
     $where[]    = "news.deleted = 0";
 
     if ( isset( $params['cat'] ) ) {
-        $where[]    = " news.cat_id = {$params['cat']} ";
+        $where[]    = " news.cat_id = :cat ";
     }
 
     $cat = '';
@@ -40,18 +40,32 @@ function smarty_function_lastnews( $params, $smarty )
     /**
      * @var model_news $model
      */
-    $model = Model::getModel('model_news');
+    $model = Model::getModel('News');
 
+    //$model->setCond( implode(' AND ', $where) );
 
-    $model->setCond( implode(' AND ', $where) );
-    $list   = $model->findAllWithLinks($params['limit']);
+    $list   = $model->findAllWithLinks(array(
+        'cond'  => join(" AND ", $where),
+        'params'=> array(':cat'=>$params['cat']),
+        'order' => $sort,
+        'limit' => $params['limit'],
+    ));
 
-    $content     = array('<ul>');
+    //$list   = $model->findAllWithLinks($params['limit']);
 
-    foreach ( $list as $l ) {
-        $content[]  = "<li><a ".href($l['link'], array('doc'=>$l['id'])).">{$l['name']}</a></li>";
+    if ( isset( $params['template'] ) ) {
+        $tpl    = App::$tpl;
+        $tpl->list  = $list;
+        $content    = $tpl->fetch( $params['template'] );
     }
-    $content[]  = '</ul>';
+    else {
+        $content     = array('<ul>');
+        foreach ( $list as $l ) {
+            $content[]  = "<li><a ".href($l['link'], array('doc'=>$l['id'])).">{$l['name']}</a></li>";
+        }
+        $content[]  = '</ul>';
+        $content    = join('', $content);
+    }
 
-    return join('', $content);
+    return $content;
 }

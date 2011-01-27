@@ -116,18 +116,18 @@ class controller_Users extends Controller
 
             if ( $user_form->validate() )
             {
-                if ( $user_id = $user_form->getField('id')->getValue() ) {
+                if ( $user_id = $user_form['id'] ) {
                     $user   = $model->find( $user_id );
                     $user->setAttributes( $user_form->getData() );
                 } else {
                     $user = $model->createObject( $user_form->getData() );
                 }
 
-                if ( (string) $user_form->password ) {
-                    $user->changePassword( (string) $user_form->password );
+                if ( $user_form['password'] ) {
+                    $user->changePassword( $user_form['password'] );
                 }
                 else {
-                    unset( $user->password );
+                    unset( $user['password'] );
                 }
 
                 if ( $ins = $model->save( $user ) )
@@ -180,16 +180,22 @@ class controller_Users extends Controller
     function loginAction()
     {
         $model  = $this->getModel('user');
+        $auth   = $this->app()->getAuth();
+
+        $user   = $auth->currentUser();
+
 
         $this->request->setTitle('tpldata.page.name', t('Personal page'));
 
-        if ( ! $this->user->id ) {
+
+        if ( ! $user->getId() ) {
             // вход в систему
             $form = $model->getLoginForm();
 
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
-                    if ( $this->app()->getAuth()->login( $form->login, $form->password ) ) {
+                    //print "login: {$form->login} pass:{$form->password}";
+                    if ( $auth->login( $form->login, $form->password ) ) {
                         redirect();
                     }
                 }
@@ -270,7 +276,6 @@ class controller_Users extends Controller
                 $this->request->addFeedback('Форма заполнена не верно');
             }
         }
-
         $this->request->setContent($form->html());
     }
 
@@ -296,14 +301,19 @@ class controller_Users extends Controller
 
         $user = $this->user;
 
+        $model  = $this->getModel('User');
+
 
         if ( $email && $code ) {
             // проверка, подходят ли email и code
-            $data = $user->findByEmail( $email );
+            $found  = $model->find(array(
+                'cond'  => 'email = :email',
+                'params'=> array(':email'=>$email),
+            ));
 
-            if ( $data )
+            if ( $found )
             {
-                if ( $code == md5( $data['solt'] ) )
+                if ( $code == md5( $found['solt'] ) )
                 {
                     $pass = $user->generateString( 8 );
                     $user->changePassword( $pass );
@@ -311,7 +321,7 @@ class controller_Users extends Controller
 
                     $this->tpl->assign(array(
                         'pass'  => $pass,
-                        'login'  => $data['login'],
+                        'login'  => $found['login'],
                         'sitename'  => $this->config->get('sitename'),
                         'loginform' => $this->config->get('siteurl').
                                 $this->router->createLink("users/login")
@@ -346,21 +356,24 @@ class controller_Users extends Controller
         {
             if ( $form->validate() )
             {
-                $data = $user->findByEmail($form->email);
+                $found  = $model->find(array(
+                    'cond'  => 'email = :email',
+                    'params'=> array(':email'=>$form['email']),
+                ));
 
-                if ( $data )
+                if ( $found )
                 {
                     $this->tpl->assign(array(
                         'sitename'  => $this->config->get('sitename'),
                         'siteurl'   => $this->config->get('siteurl'),
                         'link'      => $this->config->get('siteurl').$this->router->createLink(
                             "users/restore",
-                            array('email'=>$data['email'], 'code'=>md5($data['solt']),  )
+                            array('email'=>$found['email'], 'code'=>md5($found['solt']),  )
                         )
                     ));
                     sendmail(
                         $this->config->get('admin'),
-                        $form->email,
+                        $form['email'],
                         'Восстановление пароля',
                         $this->tpl->fetch('db:mail_restore')
                     );
@@ -373,7 +386,6 @@ class controller_Users extends Controller
             }
         }
 
-
         $this->request->setContent('<p>Для восстановления пароля укажите ваш адрес Email</p>'.$form->html());
     }
 
@@ -383,10 +395,14 @@ class controller_Users extends Controller
      */
     function passwordAction()
     {
-        // @TODO Перевести под новую модель
+        // @T ODO Перевести под новую модель
         $this->request->setTitle('Изменить пароль');
 
-        $form = $this->user->getPasswordForm();
+        $model  = $this->getModel('User');
+        $auth   = $this->app()->getAuth();
+        $user   = $auth->currentUser();
+
+        $form = $model->getPasswordForm();
 
         //printVar($this->user->getData());
 
@@ -394,17 +410,16 @@ class controller_Users extends Controller
         {
             if ( $form->validate() )
             {
-                $pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );
+                $pass_hash  = $auth->generatePasswordHash( $form->password, $user->solt );
+                //$pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );
 
-                if ( $this->user->get('password') == $pass_hash )
+                if ( $user->password == $pass_hash )
                 {
                     //$this->request->addFeedback('Пароль введен верно');
 
-                    if ( strcmp($form->password1,$form->password2) == 0 )
+                    if ( strcmp( $form->password1, $form->password2 ) === 0 )
                     {
-                        $this->user->changePassword( $form->password1 );
-                        $this->user->update();
-
+                        $user->changePassword( $form->password1 );
                         $this->request->addFeedback('Пароль успешно изменен');
                         $this->request->setContent($this->tpl->fetch('system:users.password_success'));
                         return;
@@ -426,7 +441,7 @@ class controller_Users extends Controller
             'form'  => $form
         ));
 
-        $this->request->setContent($this->tpl->fetch('users.password'));
+        $this->request->setContent( $this->tpl->fetch('users.password') );
     }
 
 }

@@ -203,7 +203,12 @@ class Request
     {
         $data = $this->request;
         foreach( $path as $part ) {
-            $data = $data[ $part ];
+            if ( isset( $data[ $part ] ) ) {
+                $data = $data[ $part ];
+            }
+            else {
+                return null;
+            }
         }
         return $data;
     }
