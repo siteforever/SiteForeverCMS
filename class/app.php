@@ -182,7 +182,6 @@ class App extends Application_Abstract
             throw new Exception(t('Unable to find controller').' '.$controller_class);
         }
 
-
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');

@@ -45,7 +45,7 @@ class controller_News extends Controller
 
         $this->tpl->news = $news->getAttributes();
 
-        $this->request->setTitle($news['title']);
+        $this->request->setTitle($news['title'] ? $news['title'] : $news['name']);
 
         if ( $news['protected'] > $this->user->perm ) {
             $this->request->setContent('Не достаточно прав доступа');
@@ -176,6 +176,7 @@ class controller_News extends Controller
             'cond'      => 'cat_id = :cat_id AND deleted = 0',
             'params'    => array(':cat_id'=>$cat_id),
             'limit'     => $paging->limit,
+            'order'     => '`date` DESC, `id` DESC',
         ));
 
         $cat    = $model->category->find($cat_id);

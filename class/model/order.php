@@ -11,7 +11,7 @@ class model_Order extends Model
 
     protected $statuses;
 
-    function createTables()
+    /*function createTables()
     {
         if ( ! $this->isExistTable( DBORDER ) ) {
             $this->db->query("CREATE TABLE `".DBORDER."` (
@@ -53,9 +53,9 @@ class model_Order extends Model
               PRIMARY KEY  (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
         }
-    }
+    }*/
 
-    function find( $id )
+    /*function find( $id )
     {
         if ( !isset( $this->data[$id] ) || !$this->data[$id] ) {
             $data = $this->db->fetch(
@@ -64,7 +64,7 @@ class model_Order extends Model
             $this->data[$id] = $data;
         }
         return $this->data[$id];
-    }
+    }*/
 
     /**
      * Вернет список статусов
@@ -251,5 +251,22 @@ class model_Order extends Model
             return $ret;
         }
         return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_Order';
+    }
+
+    /**
+     * Класс для контейнера данных
+     * @return string
+     */
+    public function objectClass()
+    {
+        return 'Data_Object_Order';
     }
 }

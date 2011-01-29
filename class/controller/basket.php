@@ -28,7 +28,7 @@ class controller_Basket extends Controller
             $count = $this->request->get('basket_prod_count', FILTER_SANITIZE_NUMBER_INT);
             $product = $cat->find( $basket_prod_id );
 
-            $price = ($this->user->getPermission() == USER_WHOLE) ? $product['price2'] : $product['price1'];
+            $price = ($this->user->perm == USER_WHOLE) ? $product['price2'] : $product['price1'];
             $price = $price ? $price : 0;
 
             $details = '';

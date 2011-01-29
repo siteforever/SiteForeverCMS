@@ -11,7 +11,8 @@ class controller_Order extends Controller
         $this->request->set('template', 'inner');
         $this->request->setTitle('Мои заказы');
         $this->request->setContent('');
-        
+
+
         $order  = $this->getModel('Order');
 
         if ( !$this->user->get('id') || $this->user->getPermission() == USER_GUEST ) {

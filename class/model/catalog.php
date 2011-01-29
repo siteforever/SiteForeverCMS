@@ -37,7 +37,7 @@ class Model_Catalog extends Model
      * @param int $id
      * @return array
      */
-    function find( $id )
+    /*function find( $id )
     {
         $data = parent::find(array(
             'cond'  => 'id = :id AND deleted = 0',
@@ -60,7 +60,7 @@ class Model_Catalog extends Model
         }
         $this->setData( $data ); // для совместимости
         return $data;
-    }
+    }*/
 
     /**
      * Искать все в список по фильтру по артикулу
