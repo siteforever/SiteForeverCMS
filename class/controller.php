@@ -1,4 +1,7 @@
 <?php
+
+class ControllerExeption extends Exception {}
+
 /**
  * Интерфейс контроллера
  * @author keltanas aka Nikolay Ermin

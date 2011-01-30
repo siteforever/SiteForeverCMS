@@ -8,7 +8,7 @@
 * Назначение:  Получает шаблон из директории шаблонов темы
 * -------------------------------------------------------------
 */
-function smarty_resource_theme_source($tpl_name, &$tpl_source, &$smarty)
+function smarty_resource_theme_source($tpl_name, $tpl_source, $smarty)
 {
     // выполняем обращение для получения шаблона
     // и занесения полученного результата в в $tpl_source
@@ -22,7 +22,7 @@ function smarty_resource_theme_source($tpl_name, &$tpl_source, &$smarty)
     return false;
 }
 
-function smarty_resource_theme_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
+function smarty_resource_theme_timestamp($tpl_name, $tpl_timestamp, $smarty)
 {
     // выполняем обращение для присвоения значения $tpl_timestamp.
     $theme = App::$config->get('template.theme');
@@ -35,13 +35,13 @@ function smarty_resource_theme_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
     return false;
 }
 
-function smarty_resource_theme_secure($tpl_name, &$smarty)
+function smarty_resource_theme_secure($tpl_name, $smarty)
 {
     // предполагаем, что шаблоны безопасны
     return true;
 }
 
-function smarty_resource_theme_trusted($tpl_name, &$smarty)
+function smarty_resource_theme_trusted($tpl_name, $smarty)
 {
     // не используется для шаблонов
 }

@@ -66,11 +66,10 @@ setlocale ( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English');
 // запуск сессии
 session_start();
 
-
 // автозагрузка классов
 require_once 'loader.php';
 require_once 'functions.php';
 
 $firephp = FirePHP::getInstance(true);
-$firephp->registerErrorHandler();
-$firephp->registerExceptionHandler();
+//$firephp->registerErrorHandler();
+//$firephp->registerExceptionHandler();

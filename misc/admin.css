@@ -42,8 +42,9 @@ div.ui-tabs ul {
     display: inline-block;
 }
 
-input, select {
-    padding: 0.4em 0.1em;
+input, select, textarea {
+    padding: 0.2em 0.1em;
+    width: 150px;
 }
 
 input.ui-button, .ui-button-text-only .ui-button-text {

@@ -1,7 +1,9 @@
 <?php
 // класс шаблонизатора
-define('SMARTY_SPL_AUTOLOAD', 1);
-require_once 'smarty/Smarty.class.php';
+spl_autoload_unregister(array('Loader', 'load'));
+require_once 'Smarty-3.0.6'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
+spl_autoload_register(array('Loader', 'load'));
+
 
 /**
  * Драйвер для Smarty

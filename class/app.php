@@ -34,7 +34,8 @@ class App extends Application_Abstract
         //    App::$basket->save();
         //}
         if ( DEBUG_BENCHMARK ) {
-            $this->logger->log("Total SQL time: ".round(self::$db->time, 3)." sec.", 'app');
+            $this->logger->log("Total SQL: ".count(self::$db->getLog()).
+                               "; time: ".round(self::$db->time, 3)." sec.", 'app');
             $this->logger->log("Execution time: ".round(microtime(true)-self::$start_time, 3)." sec.", 'app');
             $this->logger->log("Required memory: ".round(memory_get_usage() / 1024, 3)." kb.", 'app');
         }
@@ -70,7 +71,7 @@ class App extends Application_Abstract
 
         // канал запросов
         self::$request  = new Request();
-        self::$ajax = self::$request->getAjax();
+        self::$ajax     = self::$request->getAjax();
 
         // маршрутизатор
         self::$router   = new Router( self::$request );
@@ -148,39 +149,12 @@ class App extends Application_Abstract
 
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
-        $controller_class   = 'controller_'.self::$request->get('controller');
-        $action             = self::$request->get('action').'Action';
 
         //print $controller_class.'::'.$action;
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
-        if ( class_exists( $controller_class ) )
-        {
-            $reflection_class = new ReflectionClass( $controller_class );
-
-            /**
-             * @var Controller $controller
-             */
-            $controller = new $controller_class();
-
-            if ( $reflection_class->hasMethod( 'init' ) ) {
-                $controller->init();
-            }
-
-            if ( $reflection_class->hasMethod( $action ) ) {
-                $return = $controller->$action();
-            }
-            elseif ( $reflection_class->hasMethod( 'indexAction' ) ) {
-                $return = $controller->indexAction();
-                $controller->deInit();
-            }
-            else {
-                throw new Exception(t('Could not start the controller').' '.$controller_class);
-            }
-        }
-        else {
-            throw new Exception(t('Unable to find controller').' '.$controller_class);
-        }
+        $controller_resolver    = new ControllerResolver();
+        $controller_resolver->callController( self::$request );
 
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();

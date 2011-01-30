@@ -8,7 +8,7 @@
 * Назначение:  Получает шаблон из базы данных
 * -------------------------------------------------------------
 */
-function smarty_resource_db_source( $tpl_name, &$tpl_source, &$smarty )
+function smarty_resource_db_source( $tpl_name, $tpl_source, $smarty )
 {
     // выполняем обращение к базе данных для получения шаблона
     // и занесения полученного результата в в $tpl_source
@@ -20,7 +20,7 @@ function smarty_resource_db_source( $tpl_name, &$tpl_source, &$smarty )
     return false;
 }
 
-function smarty_resource_db_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
+function smarty_resource_db_timestamp($tpl_name, $tpl_timestamp, $smarty)
 {
     // выполняем обращение к базе данных для присвоения значения $tpl_timestamp.
     if ( $tpl = App::$templates->findByName( $tpl_name )  )
@@ -31,13 +31,13 @@ function smarty_resource_db_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
     return false;
 }
 
-function smarty_resource_db_secure($tpl_name, &$smarty)
+function smarty_resource_db_secure($tpl_name, $smarty)
 {
     // предполагаем, что шаблоны безопасны
     return true;
 }
 
-function smarty_resource_db_trusted($tpl_name, &$smarty)
+function smarty_resource_db_trusted($tpl_name, $smarty)
 {
     // не используется для шаблонов
 }

@@ -8,7 +8,7 @@
 * Назначение:  Получает шаблон из системной директории
 * -------------------------------------------------------------
 */
-function smarty_resource_system_source($tpl_name, &$tpl_source, &$smarty)
+function smarty_resource_system_source($tpl_name, $tpl_source, $smarty)
 {
     // выполняем обращение к базе данных для получения шаблона
     // и занесения полученного результата в в $tpl_source
@@ -20,7 +20,7 @@ function smarty_resource_system_source($tpl_name, &$tpl_source, &$smarty)
     return false;
 }
 
-function smarty_resource_system_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
+function smarty_resource_system_timestamp($tpl_name, $tpl_timestamp, $smarty)
 {
     // выполняем обращение к базе данных для присвоения значения $tpl_timestamp.
     $path = App::$config->get('template.admin');
@@ -31,13 +31,13 @@ function smarty_resource_system_timestamp($tpl_name, &$tpl_timestamp, &$smarty)
     return false;
 }
 
-function smarty_resource_system_secure($tpl_name, &$smarty)
+function smarty_resource_system_secure($tpl_name, $smarty)
 {
     // предполагаем, что шаблоны безопасны
     return true;
 }
 
-function smarty_resource_system_trusted($tpl_name, &$smarty)
+function smarty_resource_system_trusted($tpl_name, $smarty)
 {
     // не используется для шаблонов
 }

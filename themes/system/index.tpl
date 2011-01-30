@@ -52,20 +52,20 @@
 	        <ul class="b-admin-menu">
 	            {foreach from=$request->get('modules') item="item"}
                 <li>
-                    {if $item.icon}{icon name=$item.icon}{/if}
-                    <a  {if $item.norefact}href="{$item.url}"{else}{href url=$item.url}{/if}
-                        {if $item.class!=''}class="{$item.class}"{/if}
-                        {if $item.target}target="{$item.target}"{/if} >
+                    {if ! empty($item.icon)}{icon name=$item.icon}{/if}
+                    <a  {if ! empty($item.norefact)}href="{$item.url}"{else}{href url=$item.url}{/if}
+                        {if ! empty($item.class)}class="{$item.class}"{/if}
+                        {if ! empty($item.target)}target="{$item.target}"{/if} >
                         {$item.name}
                     </a>
                     {if isset($item.sub)}
                         <ul>
                         {foreach from=$item.sub item="subitem"}
                         <li>
-                            {if $subitem.icon}{icon name=$subitem.icon}{/if}
-                            <a  {if $subitem.norefact}href="{$subitem.url}"{else}{href url=$subitem.url}{/if}
-                                {if $subitem.class!=''}class="{$subitem.class}"{/if}
-                                {if $subitem.target}target="{$subitem.target}"{/if} >
+                            {if ! empty($subitem.icon)}{icon name=$subitem.icon}{/if}
+                            <a  {if ! empty($subitem.norefact)}href="{$subitem.url}"{else}{href url=$subitem.url}{/if}
+                                {if ! empty($item.class)}class="{$subitem.class}"{/if}
+                                {if ! empty($subitem.target)}target="{$subitem.target}"{/if} >
                                 {$subitem.name}
                             </a>
                         </li>
