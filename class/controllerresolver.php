@@ -8,22 +8,33 @@
 
 class ControllerResolver
 {
-    function callController( Application_Abstract $app )
-    {
-        $request    = $app->getRequest();
+    /**
+     * @var Application_Abstract
+     */
+    private $app;
 
-        $controller_class   = 'controller_'.$request->get('controller');
+    function __construct( Application_Abstract $app )
+    {
+        $this->app  = $app;
+    }
+
+    function callController()
+    {
+        $request    = $this->app->getRequest();
+
+        $controller_class   = 'controller_'.ucfirst($request->get('controller'));
         $action             = $request->get('action').'Action';
 
         if ( class_exists( $controller_class ) )
         {
             $reflection_class = new ReflectionClass( $controller_class );
-
+            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             /**
              * @var Controller $controller
              */
-            $controller = new $controller_class( $app );
-
+            $controller = new $controller_class( $this->app );
+            //print $controller_class;
+            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();
             }

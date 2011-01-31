@@ -1,43 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>{t text="Control panel"} :: {$page.title}</title>
-
-<meta content="text/html; charset=UTF-8" />
-<meta http-equiv="content-language" content="ru" />
-
-<link rel="icon" type="image/png" href="http://{$host}/favicon.png" />
-<link rel="apple-touch-icon-precomposed" href="http://{$host}/apple-touch-favicon.png" />
-
-<style type="text/css">@import url("{$path.misc}/reset.css");</style>
-<style type="text/css">@import url("{$path.misc}/siteforever.css");</style>
-<style type="text/css">@import url("{$path.misc}/smoothness/jquery-ui.css");</style>
-<style type="text/css">@import url("{$path.misc}/admin.css");</style>
-
-<script type="text/javascript" src="{$path.misc}/jquery.min.js"></script>
-<script type="text/javascript" src="{$path.misc}/jquery-ui.min.js"></script>
-<script type="text/javascript" src="{$path.misc}/jquery.form.js"></script>
-<script type="text/javascript" src="{$path.misc}/jquery.blockUI.js"></script>
-
-{*<script type="text/javascript" src="{$path.misc}/jquery.filemanager.js"></script>*}
-
-{*<script type="text/javascript" src="{$path.misc}/jquery.mousewheel-3.0.2.pack.js"></script>*}
-{*<script type="text/javascript" src="{$path.misc}/jquery.easing-1.3.pack.js"></script>*}
-
-{*fancybox*}
-<style type="text/css">@import url("{$path.misc}/fancybox/jquery.fancybox-1.3.1.css");</style>
-<script type="text/javascript" src="{$path.misc}/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
-
-{*CKEditor*}
-<script type="text/javascript" src="{$path.misc}/ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="{$path.misc}/ckeditor/adapters/jquery.js"></script>
-
-{*<script type="text/javascript" src="{$path.misc}/filebrowser/ajex.js"></script>*}
-
-{*userscript*}
-<script type="text/javascript" src="{$path.misc}/forms.js"></script>
-<script type="text/javascript" src="{$path.misc}/admin.js"></script>
-<script type="text/javascript" src="{$path.misc}/catalog.js"></script>
+{head}
 </head>
 
 <body class="body">

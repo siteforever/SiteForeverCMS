@@ -509,6 +509,11 @@ class Model_Catalog extends Model
     {
         return 'Data_Object_Catalog';
     }
+
+    protected function Init()
+    {
+        $this->request->addScript( $this->request->get('tpldata.path.mics') . '/etc/catalog.js' );
+    }
 }
 
 

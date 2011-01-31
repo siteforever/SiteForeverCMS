@@ -65,7 +65,9 @@ abstract class Controller
         $this->router   = App::$router;
         $this->tpl      = $app->getTpl();
         $this->user     = $app->getAuth()->currentUser();
-        $this->templates= App::$templates;
+        //$this->templates= $this->getModel('Templates');
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+
         $this->basket   = $app->getBasket();
 
         $this->params = $this->request->get('params');
@@ -88,38 +90,10 @@ abstract class Controller
             $this->page['parents'] = $parents;
         }
 
-        $theme = $this->config->get('template.theme');
-
-        $this->request->set('tpldata', array(
-            'path'  => array(
-                'css'   => 'http://'.$_SERVER['HTTP_HOST'].'/themes/'.$theme.'/css',
-                'js'    => 'http://'.$_SERVER['HTTP_HOST'].'/themes/'.$theme.'/js',
-                'images'=> 'http://'.$_SERVER['HTTP_HOST'].'/themes/'.$theme.'/images',
-                'misc'  => 'http://'.$_SERVER['HTTP_HOST'].'/misc',
-            ),
-            'page'   => $this->page, //? $this->page->getAttributes() : null,
-        ));
+        $this->request->set('tpldata.page', $this->page);
 
         $this->tpl->request = $this->request;
         $this->tpl->page    = $this->page;
-
-        $this->request->addStyle($this->request->get('tpldata.path.misc').'/reset.css');
-        $this->request->addStyle($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.css');
-        $this->request->addStyle($this->request->get('tpldata.path.misc').'/siteforever.css');
-
-        if ( file_exists( 'themes/'.$theme.'/css/style.css' ) ) {
-            $this->request->addStyle($this->request->get('tpldata.path.css').'/style.css');
-        }
-
-        if ( file_exists( 'themes/'.$theme.'/css/print.css' ) ) {
-            $this->request->addStyle($this->request->get('tpldata.path.css').'/print.css');
-        }
-
-
-        $this->request->addScript($this->request->get('tpldata.path.misc').'/jquery.min.js');
-        $this->request->addScript($this->request->get('tpldata.path.misc').'/etc/catalog.js');
-        $this->request->addScript($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.pack.js');
-        $this->request->addScript($this->request->get('tpldata.path.js').'/script.js');
     }
 
     /**

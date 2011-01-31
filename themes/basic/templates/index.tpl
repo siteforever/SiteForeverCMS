@@ -18,7 +18,7 @@
                 {menu parent=0 level=5}
             </div>
 
-            {if $page.controller == 'catalog'}
+            {if isset($page.controller) && $page.controller == 'catalog'}
             <div class="b-left-catmenu">
                 <h3>Каталог</h3>
                 {catmenu parent=0 level=2 url=$page.alias}
@@ -28,7 +28,7 @@
 
         <div class="b-content">
         
-            {breadcrumbs path=$page.path}
+            {breadcrumbs page=$page}
 
             <h1>{$page.title|default:$page.name}</h1>
 

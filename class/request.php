@@ -71,6 +71,22 @@ class Request
                 }
             }
         }
+
+        $theme = App::$config->get('template.theme');
+
+        $this->request['path'] = $this->request['tpldata']['path']   = array(
+            'css'   => '/themes/'.$theme.'/css',
+            'js'    => '/themes/'.$theme.'/js',
+            'images'=> '/themes/'.$theme.'/images',
+            'misc'  => '/misc',
+        );
+
+        $this->addStyle($this->request['tpldata']['path']['misc'].'/reset.css');
+        $this->addStyle($this->request['tpldata']['path']['misc'].'/fancybox/jquery.fancybox-1.3.1.css');
+        $this->addStyle($this->request['tpldata']['path']['misc'].'/siteforever.css');
+
+        $this->addScript($this->request['tpldata']['path']['misc'].'/jquery.min.js');
+        $this->addScript($this->request['tpldata']['path']['misc'].'/fancybox/jquery.fancybox-1.3.1.pack.js');
     }
 
 
@@ -128,7 +144,7 @@ class Request
      */
     function addStyle( $style )
     {
-        $this->_styles[] = $style;
+        $this->_styles[$style] = $style;
     }
 
     function cleanStyle()
@@ -143,7 +159,7 @@ class Request
 
     function addScript( $script )
     {
-        $this->_scripts[] = $script;
+        $this->_scripts[$script] = $script;
     }
 
     function cleanScript()

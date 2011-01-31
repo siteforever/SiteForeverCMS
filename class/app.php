@@ -66,6 +66,7 @@ class App extends Application_Abstract
         // маршрутизатор
         self::$router   = new Router( $this->getRequest() );
 
+        //$this->getRequest()->debug();
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
         
         // модель структуры
@@ -143,8 +144,10 @@ class App extends Application_Abstract
         //print $controller_class.'::'.$action;
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
-        $controller_resolver    = new ControllerResolver();
-        $controller_resolver->callController( $this );
+        $controller_resolver    = new ControllerResolver( $this );
+        $result = $controller_resolver->callController();
+
+        $this->invokeView( $result ); 
 
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
@@ -157,6 +160,18 @@ class App extends Application_Abstract
             self::$request->setTitle( self::$request->get('tpldata.page.name'));
         }
 
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+        //printVar( Data_Watcher::instance()->dumpAll() );
+    }
+
+    /**
+     * Вызвать отображение
+     * @return void
+     */
+    function invokeView( $result )
+    {
+        $request    = $this->getRequest();
+
         /**
          * Данные шаблона
          */
@@ -166,39 +181,74 @@ class App extends Application_Abstract
         $this->getTpl()->host        = $_SERVER['HTTP_HOST'];
         $this->getTpl()->memory      = number_format( memory_get_usage() / 1024, 2, ',', ' ' ).' Kb';
         $this->getTpl()->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
-        $this->getTpl()->request     = $this->getRequest();
+        $this->getTpl()->request     = $request;
 
         if ( ! self::$ajax )
         {
             header('Content-type: text/html; charset=utf-8');
-            $this->getTpl()->display( self::$request->get('resource').self::$request->get('template'), $cache_id );
+
+            $theme_css  = $request->get('path.css');
+            $theme_js   = $request->get('path.js');
+            $path_misc  = $request->get('path.misc');
+
+            if ( $request->get('resource') == 'system:' ) {
+                // подключение админских стилей и скриптов
+
+                $request->addStyle( $path_misc.'/smoothness/jquery-ui.css');
+                $request->addStyle( $path_misc.'/admin.css');
+                // jQuery
+                $request->addScript( $path_misc.'/jquery-ui.min.js' );
+                $request->addScript( $path_misc.'/jquery.form.js' );
+                //$request->addScript( $path_misc.'/jquery.cookie.js' );
+                //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
+                $request->addScript( $path_misc.'/jquery.blockUI.js' );
+                // CKEditor
+                $request->addScript( $path_misc.'/ckeditor/ckeditor.js' );
+                $request->addScript( $path_misc.'/ckeditor/adapters/jquery.js' );
+
+
+                $request->addScript( $path_misc.'/forms.js' );
+                $request->addScript( $path_misc.'/catalog.js' );
+                $request->addScript( $path_misc.'/admin.js' );
+
+            } else {
+                if ( file_exists( trim( $theme_css, '/').'/style.css' ) ) {
+                    $request->addStyle($theme_css.'/style.css');
+                }
+                if ( file_exists( trim( $theme_css, '/').'/print.css' ) ) {
+                    $request->addStyle($theme_css.'/print.css');
+                }
+                if ( file_exists( trim( $theme_js.'/script.js', '/' ) ) ) {
+                    $request->addScript($theme_js.'/script.js');
+                }
+            }
+
+            $this->getTpl()->display(
+                $request->get('resource').$request->get('template') );
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: post-check=0, pre-check=0', false);
             header('Pragma: no-cache');
-            if ( $this->getRequest()->getAjaxType() == Request::TYPE_JSON ) {
-                if ( $return ) {
-                    print $return;
+            if ( $request->getAjaxType() == Request::TYPE_JSON ) {
+                if ( $result ) {
+                    print $result;
                 } else {
                     print json_encode( array(
-                        'error'     => $this->getRequest()->getError(),
-                        'feedback'  => $this->getRequest()->getFeedback(),
-                        'content'   => $this->getRequest()->getContent(),
+                        'error'     => $request->getError(),
+                        'feedback'  => $request->getFeedback(),
+                        'content'   => $request->getContent(),
                     ));
                 }
             }
             else {
-                print $this->getRequest()->getFeedbackString();
-                if ( $this->getRequest()->getContent() ) {
-                    print $this->getRequest()->getContent();
+                print $request->getFeedbackString();
+                if ( $request->getContent() ) {
+                    print $request->getContent();
                 }
             }
         }
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        //printVar( Data_Watcher::instance()->dumpAll() );
     }
-
 
     /**
      * Вернет модель
