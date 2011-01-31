@@ -126,4 +126,34 @@ class controller_Basket extends Controller
         ));
         $this->request->setContent($this->tpl->fetch('basket.index'));
     }
+
+
+    /**
+     * Добавит в корзину товар
+     * @param $_REQUEST['basket_prod_id']
+     * @param $_REQUEST['basket_prod_count']
+     * @param $_REQUEST['basket_prod_price']
+     * @param $_REQUEST['basket_prod_details']
+     * @return void
+     */
+    function addAction()
+    {
+        $basket_prod_id = $this->request->get('basket_prod_id');
+
+        if ( $basket_prod_id )
+        {
+            $basket_prod_count      = $this->request->get('basket_prod_count');
+            $basket_prod_price      = $this->request->get('basket_prod_price');
+            $basket_prod_details    = $this->request->get('basket_prod_details');
+
+            $this->basket->add(
+                $basket_prod_id,
+                $basket_prod_count,
+                $basket_prod_price,
+                $basket_prod_details
+            );
+
+            $this->basket->save();
+        }
+    }
 }

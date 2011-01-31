@@ -88,17 +88,13 @@ abstract class Application_Abstract
 
     function __construct()
     {
-        self::setInstance( $this );
-    }
-
-    static protected function setInstance( Application_Abstract $app )
-    {
-        if ( ! is_null( self::$instance ) ) {
-            throw new Exception('Application WAS instanced');
+        if ( is_null( self::$instance ) ) {
+            self::$instance = $this;
+        } else {
+            throw new Application_Exception('You can not create more than one instance of Application');
         }
-        self::$instance = $app;
     }
-
+    
     /**
      * @static
      * @throws Exception
@@ -125,11 +121,21 @@ abstract class Application_Abstract
         $this->logger->log( "$name = $value", 'app_set' );
     }
 
+    /**
+     * Установить формат авторизации
+     * @param string $format
+     * @return void
+     */
     protected function setAuthFormat( $format )
     {
         $this->auth_format  = $format;
     }
 
+    /**
+     * Получить объект авторизации
+     * @throws Exception
+     * @return Auth_Abstract
+     */
     function getAuth()
     {
         if ( is_null( $this->auth ) ) {
@@ -137,8 +143,50 @@ abstract class Application_Abstract
                 throw new Exception('Auth type format not defined');
             }
             $class_name = 'Auth_'.$this->auth_format;
-            $this->auth = new $class_name();
+            //print $class_name;
+
+            //$this->auth = new Auth_Session();
+
+            
+
+            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+            $this->auth = new $class_name;
         }
         return $this->auth;
+    }
+
+    /**
+     * @throws Application_Exception
+     * @return Basket
+     */
+    function getBasket()
+    {
+        if ( is_null( self::$basket ) ) {
+            self::$basket   = Basket_Factory::createBasket( $this->getAuth()->currentUser() );
+        }
+        return self::$basket;
+    }
+
+    /**
+     * @return Request
+     */
+    function getRequest()
+    {
+        if ( is_null( self::$request ) ) {
+            self::$request  = new Request();
+            self::$ajax     = self::$request->getAjax();
+        }
+        return self::$request;
+    }
+
+    /**
+     * @return TPL_Driver
+     */
+    function getTpl()
+    {
+        if ( is_null( self::$tpl ) ) {
+            self::$tpl  = Tpl_Factory::create();
+        }
+        return self::$tpl;
     }
 }

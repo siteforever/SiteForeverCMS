@@ -56,17 +56,17 @@ abstract class Controller
 
     private static $forms = array();
 
-    function __construct()
+    function __construct( Application_Abstract $app )
     {
-        $this->app      = App::getInstance();
+        $this->app      = $app;
 
         $this->config   = App::$config;
-        $this->request  = App::$request;
+        $this->request  = $app->getRequest();
         $this->router   = App::$router;
-        $this->tpl      = App::$tpl;
-        $this->user     = App::$user;
+        $this->tpl      = $app->getTpl();
+        $this->user     = $app->getAuth()->currentUser();
         $this->templates= App::$templates;
-        $this->basket   = App::$basket;
+        $this->basket   = $app->getBasket();
 
         $this->params = $this->request->get('params');
 
@@ -99,6 +99,9 @@ abstract class Controller
             ),
             'page'   => $this->page, //? $this->page->getAttributes() : null,
         ));
+
+        $this->tpl->request = $this->request;
+        $this->tpl->page    = $this->page;
 
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/reset.css');
         $this->request->addStyle($this->request->get('tpldata.path.misc').'/fancybox/jquery.fancybox-1.3.1.css');

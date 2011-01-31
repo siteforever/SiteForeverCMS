@@ -8,8 +8,10 @@
 
 class ControllerResolver
 {
-    function callController( Request $request )
+    function callController( Application_Abstract $app )
     {
+        $request    = $app->getRequest();
+
         $controller_class   = 'controller_'.$request->get('controller');
         $action             = $request->get('action').'Action';
 
@@ -20,7 +22,7 @@ class ControllerResolver
             /**
              * @var Controller $controller
              */
-            $controller = new $controller_class();
+            $controller = new $controller_class( $app );
 
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();

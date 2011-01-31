@@ -16,6 +16,5 @@
     </div>
     {/foreach}
 
-    <hr />
-    {$paging.html}
+    {if $paging.html}<hr />{$paging.html}{/if}
 {/if}

@@ -5,13 +5,13 @@
  * File:     function.head.php
  * Type:     function
  * Name:     head
- * Purpose:  Ïå÷àòàåò çàãîëîâ head íà ñàéòå
+ * Purpose:  ĞŸĞµÑ‡Ğ°Ñ‚Ğ°ĞµÑ‚ Ğ·Ğ°Ğ³Ğ¾Ğ»Ğ¾Ğ² head Ğ½Ğ° ÑĞ°Ğ¹Ñ‚Ğµ
  * -------------------------------------------------------------
  * @example {head}
  */
 function smarty_function_head( $params )
 {
-    $request = App::$request;
+    $request = App::getInstance()->getRequest();
 
     $head = array();
     $head[] = "<title>".$request->getTitle()."</title>";

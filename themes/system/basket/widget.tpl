@@ -1,4 +1,4 @@
-            <div class="b-basket">
+            <div class="b-basket basket-widget">
                 <img alt="Ваша корзина" src="{$path.images}/basket.png" />
                 <div class="b-basket-spacer"></div>
                 <div class="b-basket-info">

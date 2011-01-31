@@ -11,6 +11,10 @@
  */
 function smarty_function_breadcrumbs( $params, &$smarty )
 {
+    if ( isset ( $params['page'] ) && isset( $params['page']['path'] ) ) {
+        $params['path'] = $params['page']['path'];
+    }
+
     if ( !isset( $params['path'] ) ) {
         return '';
     }

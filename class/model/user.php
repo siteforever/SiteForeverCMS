@@ -76,6 +76,7 @@ class model_User extends Model
 
     /**
      * Вернет массив с корзиной
+     * @deprecated
      * @return array
      */
     function getBasketArray( Data_Object $user )
@@ -89,6 +90,7 @@ class model_User extends Model
 
     /**
      * Установить новые значения для корзины
+     * @deprecated
      * @param array $array
      * @return void
      */

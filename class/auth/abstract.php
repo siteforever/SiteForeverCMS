@@ -209,8 +209,8 @@ abstract class Auth_Abstract
         /**
          * @var Data_Object_User $user
          */
-        $user_id = App::$request->get('userid', FILTER_VALIDATE_INT);
-        $confirm = App::$request->get('confirm');
+        $user_id = App::getInstance()->getRequest()->get('userid', FILTER_VALIDATE_INT);
+        $confirm = App::getInstance()->getRequest()->get('confirm');
 
         if ( $user_id && $confirm )
         {

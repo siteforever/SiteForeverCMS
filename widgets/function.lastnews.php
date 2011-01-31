@@ -15,12 +15,15 @@
 */
 function smarty_function_lastnews( $params, $smarty )
 {
-    switch( $params['sort'] ) {
-        case 'rand':
-            $sort   = 'RAND()';
-            break;
-        default:
-            $sort   = 'news.date DESC';
+    if ( isset( $params['sort'] ) ) {
+        switch( $params['sort'] ) {
+            case 'rand':
+                $sort   = 'RAND()';
+                break;
+        }
+    }
+    else {
+        $sort   = 'news.date DESC';
     }
 
     if ( ! isset($params['limit']) ) {
@@ -31,8 +34,11 @@ function smarty_function_lastnews( $params, $smarty )
     $where[]    = "news.hidden = 0";
     $where[]    = "news.deleted = 0";
 
+    $param      = array();
+
     if ( isset( $params['cat'] ) ) {
         $where[]    = " news.cat_id = :cat ";
+        $param[':cat']  = $params['cat'];
     }
 
     $cat = '';
@@ -46,7 +52,7 @@ function smarty_function_lastnews( $params, $smarty )
 
     $list   = $model->findAllWithLinks(array(
         'cond'  => join(" AND ", $where),
-        'params'=> array(':cat'=>$params['cat']),
+        'params'=> $param,
         'order' => $sort,
         'limit' => $params['limit'],
     ));

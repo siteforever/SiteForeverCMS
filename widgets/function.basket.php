@@ -15,10 +15,12 @@
 */
 function smarty_function_basket()
 {
+    $basket = App::getInstance()->getBasket();
+
     App::$tpl->assign(array(
-        'count'     => App::$basket->getCount(),
-        'summa'     => App::$basket->getSum(),
-        'number'    => App::$basket->count(),
+        'count'     => $basket->getCount(),
+        'summa'     => $basket->getSum(),
+        'number'    => $basket->count(),
     ));
     return App::$tpl->fetch('basket.widget');
     //return App::$tpl->fetch('system:basket.widget');

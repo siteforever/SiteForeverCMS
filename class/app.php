@@ -53,41 +53,31 @@ class App extends Application_Abstract
         // Конфигурация
         self::$config   = new SysConfig();
 
-        //обработка ошибок
-        // инициализируется в bootstrap.php через класс FirePHP
-        //Error::init();
-        // шаблонизатор
-        self::$tpl      = Tpl_Factory::create();
-
         $this->logger   = new Logger_Firephp();
         //$this->logger   = new Logger_Html();
         //$this->logger   = new Logger_Blank();
 
         // база данных
         if ( self::$config->get('db') ) {
-            self::$db       = db::getInstance(self::$config->get('db'));
+            self::$db   = db::getInstance( self::$config->get('db') );
             self::$db->setLoggerClass( $this->logger );
         }
 
-        // канал запросов
-        self::$request  = new Request();
-        self::$ajax     = self::$request->getAjax();
-
         // маршрутизатор
-        self::$router   = new Router( self::$request );
+        self::$router   = new Router( $this->getRequest() );
 
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+        
         // модель структуры
-        self::$structure = Model::getModel('Structure');
+        self::$structure = $this->getModel('Structure');// Model::getModel('Structure');
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         // Авторизация
-        self::getInstance()->setAuthFormat('Session');
+        $this->setAuthFormat('Session');
 
         // Пользователь
-        self::$user     = self::getInstance()->getAuth()->currentUser();
+        self::$user     = $this->getAuth()->currentUser();
 
-        // корзина
-        self::$basket   = basketFactory::createBasket( self::$user );
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         // модель для работы с шаблонами из базы
@@ -154,7 +144,7 @@ class App extends Application_Abstract
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         $controller_resolver    = new ControllerResolver();
-        $controller_resolver->callController( self::$request );
+        $controller_resolver->callController( $this );
 
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
@@ -170,43 +160,86 @@ class App extends Application_Abstract
         /**
          * Данные шаблона
          */
-        self::$tpl->assign( self::$request->get('tpldata') );
-        self::$tpl->config      = self::$config;
-        self::$tpl->feedback    = self::$request->getFeedbackString();
-        self::$tpl->host        = $_SERVER['HTTP_HOST'];
-        self::$tpl->memory      = number_format( memory_get_usage() / 1024, 2, ',', ' ' ).' Kb';
-        self::$tpl->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
-        self::$tpl->request     = self::$request;
+        $this->getTpl()->assign( self::$request->get('tpldata') );
+        $this->getTpl()->config      = self::$config;
+        $this->getTpl()->feedback    = self::$request->getFeedbackString();
+        $this->getTpl()->host        = $_SERVER['HTTP_HOST'];
+        $this->getTpl()->memory      = number_format( memory_get_usage() / 1024, 2, ',', ' ' ).' Kb';
+        $this->getTpl()->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
+        $this->getTpl()->request     = $this->getRequest();
 
         if ( ! self::$ajax )
         {
             header('Content-type: text/html; charset=utf-8');
-            self::$tpl->display( self::$request->get('resource').self::$request->get('template'), $cache_id );
+            $this->getTpl()->display( self::$request->get('resource').self::$request->get('template'), $cache_id );
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: post-check=0, pre-check=0', false);
             header('Pragma: no-cache');
-            if ( self::$request->getAjaxType() == Request::TYPE_JSON ) {
+            if ( $this->getRequest()->getAjaxType() == Request::TYPE_JSON ) {
                 if ( $return ) {
                     print $return;
                 } else {
                     print json_encode( array(
-                        'error'     => self::$request->getError(),
-                        'feedback'  => self::$request->getFeedback(),
-                        'content'   => self::$request->getContent(),
+                        'error'     => $this->getRequest()->getError(),
+                        'feedback'  => $this->getRequest()->getFeedback(),
+                        'content'   => $this->getRequest()->getContent(),
                     ));
                 }
             }
             else {
-                print self::$request->getFeedbackString();
-                if ( self::$request->getContent() ) {
-                    print self::$request->getContent();
+                print $this->getRequest()->getFeedbackString();
+                if ( $this->getRequest()->getContent() ) {
+                    print $this->getRequest()->getContent();
                 }
             }
         }
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
         //printVar( Data_Watcher::instance()->dumpAll() );
+    }
+
+
+    /**
+     * Вернет модель
+     * @param string $model
+     * @return Model
+     */
+    function getModel( $model )
+    {
+        return Model::getModel( $model );
+    }
+
+    /**
+     * @static
+     * @throws Exception
+     * @param  $class_name
+     * @return bool
+     */
+    static function autoload( $class_name )
+    {
+        static $class_count = 0;
+
+        $class_name = strtolower( $class_name );
+
+        if ( in_array( $class_name, array('finfo') ) ) {
+            return false;
+        }
+
+        if ( $class_name == 'register' ) {
+            throw new Exception('Autoload Register class');
+        }
+
+        // PEAR format autoload
+        $file = str_replace( '_', DS, $class_name ).'.php';
+
+        if ( @include_once $file ) {
+            if ( DEBUG_AUTOLOAD ) {
+                self::getInstance()->getLogger()->log( $file, 'include '.++$class_count );
+            }
+            return true;
+        }
+        return false;
     }
 
 }

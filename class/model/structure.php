@@ -294,7 +294,7 @@ class Model_Structure extends Model
         foreach( $this->parents[ $parent ] as $branch )
         {
             if (   $branch['hidden'] == 0
-                && $branch['protected'] <= $this->user->perm
+                && $branch['protected'] <= $this->app()->getAuth()->currentUser()->perm
                 && $branch['deleted'] == 0
             ) {
                 $html .= "<li class='item-{$branch['id']}".($counter == $total_count?" first":($counter==1?" last":""))."'>";

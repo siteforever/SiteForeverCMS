@@ -58,19 +58,19 @@ abstract class Model
      */
     final private function __construct()
     {
+
         // освобождаем потомков от зависимости от приложения
         if ( ! is_null( App::$db ) ) {
-            $this->db       =& App::$db;
+            $this->db       = App::$db;
             if ( is_null( $this->pdo ) ) {
                 $this->pdo        = App::$db->getResource();
             }
         }
 
-        $this->app      = App::getInstance();
-
-        $this->request  =& App::$request;
-        $this->user     =& App::$user;
-        $this->config   =& App::$config;
+        $this->request  = $this->app()->getRequest();
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+        //$this->user     = $this->app()->getAuth()->currentUser();
+        $this->config   = App::$config;
 
         if ( ! isset( self::$exists_tables ) ) {
             self::$exists_tables    = array();
@@ -92,7 +92,10 @@ abstract class Model
      */
     final function app()
     {
-        return App::getInstance();
+        if ( is_null( $this->app ) ) {
+            $this->app  = App::getInstance();
+        }
+        return $this->app;
     }
 
     /**
