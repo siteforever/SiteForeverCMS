@@ -1,8 +1,8 @@
 <form action="{link url="admin/users"}" method="post">
 <p>Фильтр:
-    <input type="text" name="search" value="{$smarty.post.search}"  />
+    <input type="text" name="search" value="{$smarty.post.search|default:""}"  />
     <input type="submit" value="Найти" />
-    {if $smarty.post.search != ''}<a {href url="admin/users"}>Сбросить фильтр</a>{/if}
+    {if ! empty( $smarty.post.search )}<a {href url="admin/users"}>Сбросить фильтр</a>{/if}
 </p>
 </form>
 

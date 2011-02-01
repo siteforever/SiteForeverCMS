@@ -97,12 +97,11 @@ class App extends Application_Abstract
     {
         // маршрутизация
         self::$router->routing();
-        self::$request->set('resource', 'theme:');
 
         //
         //  Настройки кэширования
         //
-        $cache_id = self::$request->get('controller').self::$request->get('id');
+        //$cache_id = self::$request->get('controller').self::$request->get('id');
 
         // возможность использовать кэш
         if (    TPL_CACHING &&
@@ -139,10 +138,7 @@ class App extends Application_Abstract
         }
 
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-
-
-        //print $controller_class.'::'.$action;
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+        //$this->getRequest()->debug();
 
         $controller_resolver    = new ControllerResolver( $this );
         $result = $controller_resolver->callController();
@@ -151,17 +147,11 @@ class App extends Application_Abstract
 
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-
-        //self::$request->debug();
 
         // Заголовок по-умолчанию
         if ( self::$request->getTitle() == '' ) {
             self::$request->setTitle( self::$request->get('tpldata.page.name'));
         }
-
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        //printVar( Data_Watcher::instance()->dumpAll() );
     }
 
     /**
@@ -195,7 +185,7 @@ class App extends Application_Abstract
                 // подключение админских стилей и скриптов
 
                 $request->addStyle( $path_misc.'/smoothness/jquery-ui.css');
-                $request->addStyle( $path_misc.'/admin.css');
+                $request->addStyle( $path_misc.'/admin/admin.css');
                 // jQuery
                 $request->addScript( $path_misc.'/jquery-ui.min.js' );
                 $request->addScript( $path_misc.'/jquery.form.js' );
@@ -208,8 +198,8 @@ class App extends Application_Abstract
 
 
                 $request->addScript( $path_misc.'/forms.js' );
-                $request->addScript( $path_misc.'/catalog.js' );
-                $request->addScript( $path_misc.'/admin.js' );
+                $request->addScript( $path_misc.'/admin/catalog.js' );
+                $request->addScript( $path_misc.'/admin/admin.js' );
 
             } else {
                 if ( file_exists( trim( $theme_css, '/').'/style.css' ) ) {

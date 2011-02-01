@@ -48,7 +48,7 @@
 </tr>
 {foreachelse}
 <tr>
-    <td colspan="5">Пока нет разделов</td>
+    <td colspan="6">Пока нет разделов</td>
 </tr>
 {/foreach}
 </table>

@@ -1,6 +1,6 @@
 <table class="dataset fullWidth">
 <tr>
-    <th>ID</th>
+    <th width="20">#</th>
     <th>Название</th>
     <th>Описание</th>
     <th>Статей</th>

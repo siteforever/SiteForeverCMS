@@ -33,7 +33,7 @@ class ControllerResolver
              * @var Controller $controller
              */
             $controller = new $controller_class( $this->app );
-            //print $controller_class;
+            print $controller_class.'::'.$action;
             //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();

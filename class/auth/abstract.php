@@ -94,7 +94,7 @@ abstract class Auth_Abstract
                 $this->message  = t('Not enough permissions');
                 return false;
             }
-            if ( $user['status'] == 0 ) {
+            if ( $user->status == 0 ) {
                 $this->error    = true;
                 $this->message  = t('Your account has been disabled');
                 return false;
@@ -102,7 +102,7 @@ abstract class Auth_Abstract
 
             $password = $this->generatePasswordHash( $password, $user->solt );
 
-            print $user->password.' == '.$password;
+            //print $user->password.' == '.$password;
 
             if ( $password != $user->password ) {
                 $this->error    = true;
@@ -110,7 +110,7 @@ abstract class Auth_Abstract
                 return false;
             }
 
-            $this->setId( $user->id );
+            $this->setId( $user->getId() );
 
             if ( $user->perm == USER_ADMIN ) {
                 // Авторизация Sypex Dumper
@@ -125,6 +125,8 @@ abstract class Auth_Abstract
 
         $this->error    = true;
         $this->message  = t('Your login is not registered');
+
+        //Data_Watcher::instance()->dumpNew();
     }
 
 
@@ -139,8 +141,10 @@ abstract class Auth_Abstract
         $_SESSION['sxd_auth']   = 0; // Авторизация Sypex Dumper
         $_SESSION['sxd_conf']   = null;
         setcookie('sxd', null, null, '/misc/sxd/');
-        $this->user->id     = 0;
-        $this->user->perm   = USER_GUEST;
+        $this->user =$this->model->createObject(array(
+            'login'  => 'guest',
+            'perm'   => USER_GUEST,
+        ));
         $this->user->markClean();
     }
 
@@ -244,7 +248,7 @@ abstract class Auth_Abstract
      */
     function getPermission()
     {
-        return $this->currentUser()->perm;
+        return $this->user->perm;
     }
 
     /**

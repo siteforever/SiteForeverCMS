@@ -12,10 +12,16 @@ class Basket_User extends Basket
     function load()
     {
         $this->data = array();
+
+
         if ( $this->user->basket )
         {
-            $this->data = unserialize( $this->user->basket );
+            $this->data = @unserialize( $this->user->basket );
+            $this->save();
         }
+
+        //printVar( $this->user->basket );
+        //printVar( $this->data );
 
         // Если были данные в сессии, то сохранить их пользователю
         if ( isset($_SESSION['basket']) && is_array($_SESSION['basket']) )

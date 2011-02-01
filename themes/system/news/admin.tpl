@@ -3,7 +3,7 @@
 &gt; <a {href url="admin/news" newsedit="0" cat=$cat.id}>Создать материал</a></p>
 <table class="dataset fullWidth">
 <tr>
-    <th>id</th>
+    <th width="20">#</th>
     <th>Наименование</th>
     <th>Дата</th>
     <th>Свойства</th>

@@ -13,7 +13,7 @@ class Basket_Factory
      * @param $user
      * @return basket
      */
-    static function createBasket( Data_Object $user )
+    static function createBasket( Data_Object_User $user )
     {
         if ( self::$created ) {
             throw new Exception('Корзина может быть создана только один раз');

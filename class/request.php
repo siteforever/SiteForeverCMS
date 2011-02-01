@@ -80,12 +80,13 @@ class Request
             'images'=> '/themes/'.$theme.'/images',
             'misc'  => '/misc',
         );
+        $this->request['resource']  = 'theme:';
 
         $this->addStyle($this->request['tpldata']['path']['misc'].'/reset.css');
         $this->addStyle($this->request['tpldata']['path']['misc'].'/fancybox/jquery.fancybox-1.3.1.css');
         $this->addStyle($this->request['tpldata']['path']['misc'].'/siteforever.css');
 
-        $this->addScript($this->request['tpldata']['path']['misc'].'/jquery.min.js');
+        $this->addScript($this->request['tpldata']['path']['misc'].'/jquery-1.5.min.js');
         $this->addScript($this->request['tpldata']['path']['misc'].'/fancybox/jquery.fancybox-1.3.1.pack.js');
     }
 

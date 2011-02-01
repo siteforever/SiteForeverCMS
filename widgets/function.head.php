@@ -33,7 +33,7 @@ function smarty_function_head( $params )
     }
 
     foreach( $request->getStyle() as $style ) {
-        $head[] = "<style type=\"text/css\">@import url(\"$style\");</style>";
+        $head[] = "<style type=\"text/css\">@import url(\"{$style}\");</style>";
     }
     foreach( $request->getScript() as $script ) {
         $head[] = "<script type=\"text/javascript\" src=\"{$script}\"></script>";

@@ -117,6 +117,11 @@ class Router
      */
     function routing()
     {
+        // Если контроллер и действие указаны явно, то не производить маршрутизацию
+        if ( $this->request->get('controller') && $this->request->get('action') ) {
+            return;
+        }
+
         if ( ! $this->findRoute() ) {
             $this->findStructure();
         }

@@ -66,17 +66,20 @@ abstract class Controller
         $this->tpl      = $app->getTpl();
         $this->user     = $app->getAuth()->currentUser();
         //$this->templates= $this->getModel('Templates');
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         $this->basket   = $app->getBasket();
+        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
 
         $this->params = $this->request->get('params');
 
         $page   = $this->getModel('Structure')->find( $this->request->get('id') );
+
         if ( $page ) {
+            if( ! $page->title ) {
+                $page->title    = $page->name;
+            }
             $this->page = $page->getAttributes();
         }
-
 
         if ( $this->page ) {
             // формируем список предков страницы
