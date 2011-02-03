@@ -28,18 +28,22 @@ class Request
     private $error      = 0;
 
 
-
+    /**
+     * Созание запроса
+     */
     function __construct()
     {
         if ( isset($_REQUEST['route']) ) {
             $_REQUEST['route'] = preg_replace('/\?.*/', '', $_REQUEST['route']);
         }
 
-        $q_pos  = strrpos( $_SERVER['REQUEST_URI'], '?' );
-        $req    = trim( substr( $_SERVER['REQUEST_URI'], $q_pos+1, strlen($_SERVER['REQUEST_URI']) ), '?&' );
+        if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+            $q_pos  = strrpos( $_SERVER['REQUEST_URI'], '?' );
+            $req    = trim( substr( $_SERVER['REQUEST_URI'], $q_pos+1, strlen($_SERVER['REQUEST_URI']) ), '?&' );
+        }
 
         // дополняем массив $_REQUEST не учтенными значениями
-        if ( $opt_req = explode('&', $req) ) {
+        if ( isset( $req ) && $opt_req = explode('&', $req) ) {
             foreach( $opt_req as $opt_req_item ) {
                 $opt_req_item = explode('=', $opt_req_item);
                 if ( ! isset( $_REQUEST[ $opt_req_item[0] ] ) && isset($opt_req_item[1]) ) {

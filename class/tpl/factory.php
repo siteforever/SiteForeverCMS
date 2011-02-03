@@ -3,6 +3,9 @@
  * Стратегия выбора шаблонизатора
  * @author KelTanas
  */
+
+class Tpl_Exception extends Exception {};
+
 class Tpl_Factory
 {
     public  static $template_dir;
@@ -17,6 +20,11 @@ class Tpl_Factory
     static function create()
     {
         $cfg = App::$config->get('template');
+
+        if ( ! $cfg ) {
+            throw new Tpl_Exception('Config for templates not defined');
+        }
+        
         $driver = $cfg['driver'];
         $theme  = $cfg['theme'];
 
@@ -24,10 +32,10 @@ class Tpl_Factory
             $obj = new $driver();
             //Register::setTpl( $obj );
 
-            $obj->setTplDir("themes/{$theme}/templates");
+            $obj->setTplDir(SF_PATH."/themes/{$theme}/templates");
 
-            $tpl_c  = "protected/_runtime/_templates_c";
-            $cache  = "protected/_runtime/_cache";
+            $tpl_c  = SF_PATH."/protected/_runtime/_templates_c";
+            $cache  = SF_PATH."/protected/_runtime/_cache";
 
             if ( ! is_dir( $tpl_c ) ) {
                 mkdir( $tpl_c, 0666, true );
@@ -42,10 +50,7 @@ class Tpl_Factory
             return $obj;
         }
         else {
-            throw new Exception("Драйвер шаблонов {$driver} не найден");
+            throw new Exception("Templates driver '{$driver}' not found");
         }
     }
-
-
-
 }

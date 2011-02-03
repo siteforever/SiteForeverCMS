@@ -82,17 +82,20 @@ abstract class Application_Abstract
 
     abstract public function run();
 
-    abstract protected function init();
+    abstract function init();
 
-    abstract protected function handleRequest();
+    abstract function handleRequest();
 
-    function __construct()
+    function __construct( $cfg_file = null )
     {
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
         } else {
             throw new Application_Exception('You can not create more than one instance of Application');
         }
+
+        // Конфигурация
+        self::$config   = new SysConfig( $cfg_file );
     }
     
     /**
@@ -140,16 +143,10 @@ abstract class Application_Abstract
     {
         if ( is_null( $this->auth ) ) {
             if ( ! $this->auth_format ) {
-                throw new Exception('Auth type format not defined');
+                //throw new Exception('Auth type format not defined');
+                $this->setAuthFormat('Session');
             }
             $class_name = 'Auth_'.$this->auth_format;
-            //print $class_name;
-
-            //$this->auth = new Auth_Session();
-
-            
-
-            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             $this->auth = new $class_name;
         }
         return $this->auth;
@@ -188,5 +185,24 @@ abstract class Application_Abstract
             self::$tpl  = Tpl_Factory::create();
         }
         return self::$tpl;
+    }
+
+    /**
+     * @return SysConfig
+     */
+    function getConfig()
+    {
+        return self::$config;
+    }
+
+    /**
+     * @return Router
+     */
+    function getRouter()
+    {
+        if ( is_null( self::$router ) ) {
+            self::$router   = new Router( $this->getRequest() );
+        }
+        return self::$router;
     }
 }

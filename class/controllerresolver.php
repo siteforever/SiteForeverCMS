@@ -18,9 +18,15 @@ class ControllerResolver
         $this->app  = $app;
     }
 
+    /**
+     * Запуск контроллера
+     * @throws ControllerExeption
+     * @return void
+     */
     function callController()
     {
         $request    = $this->app->getRequest();
+
 
         $controller_class   = 'controller_'.ucfirst($request->get('controller'));
         $action             = $request->get('action').'Action';
@@ -33,7 +39,7 @@ class ControllerResolver
              * @var Controller $controller
              */
             $controller = new $controller_class( $this->app );
-            print $controller_class.'::'.$action;
+            //print $controller_class.'::'.$action;
             //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();

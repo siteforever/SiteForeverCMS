@@ -73,6 +73,7 @@ abstract class Controller
         $this->params = $this->request->get('params');
 
         $page   = $this->getModel('Structure')->find( $this->request->get('id') );
+        //$page   = null;
 
         if ( $page ) {
             if( ! $page->title ) {
@@ -156,7 +157,7 @@ abstract class Controller
      */
     function getAjax()
     {
-        return App::$ajax;
+        return App::getInstance()->getRequest()->getAjax();
     }
 
     /**
@@ -178,44 +179,6 @@ abstract class Controller
     function paging( $count, $perpage, $link )
     {
         return new Pager( $count, $perpage, $link );
-        /*
-        $pages = ceil( $count / $perpage );
-        $page  = $this->request->get( 'page' );
-        $page  = $page ? $page : 1;
-        $p     = array();
-
-        $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
-
-        for ( $i = 1; $i <= $pages; $i++ ) {
-            if ( $i == $page ) {
-                $p[]    = $i;
-            }
-            else {
-                //print href($link, array('page'=>$i));
-                $p_params = array('page'=>$i);
-                if ( $this->request->get('order') ) {
-                    $p_params['order'] = $this->request->get('order');
-                }
-                $p[]    = '<a '.href($link, $p_params).'>'.$i.'</a>';
-            }
-        }
-
-        $html = count($p) > 0 ? '<div class="paging">Страница: '.join(' - ',$p).'</div>' : "";
-        $offset = ($page - 1) * $perpage;
-        $limit = ($pages > 1) ? " LIMIT {$offset}, {$perpage}" : "";
-
-        return array(
-            'total'     => $count,
-            'count'     => $count,
-            'page'      => $page,
-            'perpage'   => $perpage,
-            'offset'    => $offset,
-            'from'      => $offset,
-            'to'        => $offset + $perpage,
-            'html'      => $html,
-            'limit'     => $limit,
-        );
-         */
     }
 
     abstract function indexAction();

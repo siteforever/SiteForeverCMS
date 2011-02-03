@@ -16,16 +16,18 @@ define('ROOT', dirname(__FILE__));
 define('DS', DIRECTORY_SEPARATOR);
 
 // отладка загрузки классов
-define('DEBUG_AUTOLOAD', 0);
+if ( ! defined('DEBUG_AUTOLOAD') ) {
+    define('DEBUG_AUTOLOAD', 0);
+}
 
 // Отладка запросов
-define('DEBUG_SQL', 1);
-
+if ( ! defined('DEBUG_SQL') ) {
+    define('DEBUG_SQL', 1);
+}
 // Вывод бенчмарка
-define('DEBUG_BENCHMARK', 1);
-
-define('TPL_CACHING', false);
-define('TPL_CACHE_LIVETIME', 600);
+if ( ! defined('DEBUG_BENCHMARK') ) {
+    define('DEBUG_BENCHMARK', 1);
+}
 
 define('REWRITEURL', true);
 
@@ -67,9 +69,13 @@ setlocale ( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English');
 session_start();
 
 // автозагрузка классов
-require_once 'loader.php';
+require_once 'application/abstract.php';
+require_once 'app.php';
+spl_autoload_register(array('App','autoload'));
+
+//require_once 'loader.php';
 require_once 'functions.php';
 
-$firephp = FirePHP::getInstance(true);
+//$firephp = FirePHP::getInstance(true);
 //$firephp->registerErrorHandler();
 //$firephp->registerExceptionHandler();

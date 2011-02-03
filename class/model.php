@@ -47,6 +47,7 @@ abstract class Model
 
     protected static $all_class = array();
     protected static $exists_tables;
+    protected static $dao;
 
     /**
      * @var PDO
@@ -58,19 +59,19 @@ abstract class Model
      */
     final private function __construct()
     {
-
-        // освобождаем потомков от зависимости от приложения
-        if ( ! is_null( App::$db ) ) {
-            $this->db       = App::$db;
-            if ( is_null( $this->pdo ) ) {
-                $this->pdo        = App::$db->getResource();
-            }
-        }
-
         $this->request  = $this->app()->getRequest();
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        //$this->user     = $this->app()->getAuth()->currentUser();
-        $this->config   = App::$config;
+        $this->config   = $this->app()->getConfig();
+
+
+        // база данных
+        // определяется только в моделях
+        if ( is_null( self::$dao ) ) {
+            self::$dao  = db::getInstance( $this->config->get('db') );
+            self::$dao->setLoggerClass( $this->app()->getLogger() );
+        }
+        $this->db   = self::$dao;
+        $this->pdo  = $this->db->getResource();
+        
 
         if ( ! isset( self::$exists_tables ) ) {
             self::$exists_tables    = array();

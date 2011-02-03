@@ -4,11 +4,6 @@
  * Точка входа для SiteForeverCMS
  * Этот файл вызывает сервер при запросах
  */
-
-
-// Профиль конфигурации
-define('CONFIG', 'main');
-
 // путь к фреймворку
 // если не указан, то в текущей директории
 define('SF_PATH', dirname(__FILE__));
@@ -28,7 +23,9 @@ $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));
 //die(get_include_path());
 // запуск системы
-require_once 'bootstrap.php';
 
-$app = new App();
+
+require_once 'bootstrap.php';
+$app = new App( dirname(__FILE__).'/protected/config/main.php');
 $app->run();
+print __FILE__.":".__LINE__;

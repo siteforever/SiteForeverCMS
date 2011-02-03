@@ -3,17 +3,29 @@ class SysConfig
 {
     private $config;
 
-
-
-    function __construct()
+    /**
+     * @throws Application_Exception
+     * @param string|array $cfg_file
+     */
+    function __construct( $cfg_file = null )
     {
-        $cfg_file = 'protected/config/'.CONFIG.'.php';
-        if ( file_exists( $cfg_file ) ) {
+        if ( is_null( $cfg_file ) ) {
+            if ( defined('CONFIG') ) {
+                $cfg_file = 'protected/config/'.CONFIG.'.php';
+            }
+            throw new Application_Exception('Config not defined');
+        }
+
+        if ( is_array( $cfg_file ) ) {
+            $this->config   = $cfg_file;
+            return;
+        }
+        
+        if ( is_string( $cfg_file ) && file_exists( $cfg_file ) ) {
             $this->config = require $cfg_file;
+            return;
         }
-        else {
-            throw new Exception('SysConfig not found');
-        }
+        throw new Application_Exception('SysConfig not found');
     }
 
     /**
@@ -34,6 +46,9 @@ class SysConfig
     }
 
     /**
+     * Устанавливает для ключа значение по умолчанию.
+     * Если значения присутствуют, то ини не будут изменены, а только дополнены.
+     * Удобно для присваивания массивами. 
      * @param string $key
      * @param array $default
      * @return void
@@ -41,10 +56,10 @@ class SysConfig
     function setDefault( $key, $default )
     {
         $config = $this->get($key);
-        if ( $config ) {
+        if ( $config && is_array($config) && is_array($default) ) {
             $config = array_merge( $default, $config );
         }
-        else {
+        elseif ( is_null( $config ) ) {
             $config = $default;
         }
         $this->set($key, $config);
@@ -62,6 +77,7 @@ class SysConfig
             if ( isset( $this->config[ $key ] ) ) {
                 return $this->config[ $key ];
             }
+            return null;
         }
         else {
             return $this->geti( $path );
@@ -70,13 +86,18 @@ class SysConfig
 
     /**
      * Получить значение по алиасу
-     * @param $alias
+     * @param array $path
+     * @return mixed|null
      */
     protected function geti( $path )
     {
-        $data = &$this->config;
+        $data = $this->config;
         foreach( $path as $part ) {
-            $data =& $data[ $part ];
+            if( isset( $data[ $part ] ) ) {
+                $data = $data[ $part ];
+            } else {
+                return null;
+            }
         }
         return $data;
     }
@@ -90,9 +111,10 @@ class SysConfig
     {
         $data = &$this->config;
         foreach( $path as $part ) {
-            if ( isset($data[ $part ]) ) {
-                $data =& $data[ $part ];
+            if ( ! isset($data[ $part ]) ) {
+                $data[ $part ]  = array();
             }
+            $data =& $data[ $part ];
         }
         $data = $value;
     }

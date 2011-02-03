@@ -48,38 +48,20 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    protected function init()
+    function init()
     {
-        // Конфигурация
-        self::$config   = new SysConfig();
-
-        $this->logger   = new Logger_Firephp();
-        //$this->logger   = new Logger_Html();
+        //$this->logger   = new Logger_Firephp();
+        $this->logger   = new Logger_Plain();
         //$this->logger   = new Logger_Blank();
+        //$this->logger   = new Logger_Html();
 
-        // база данных
-        if ( self::$config->get('db') ) {
-            self::$db   = db::getInstance( self::$config->get('db') );
-            self::$db->setLoggerClass( $this->logger );
-        }
-
-        // маршрутизатор
-        self::$router   = new Router( $this->getRequest() );
-
-        //$this->getRequest()->debug();
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        
         // модель структуры
         self::$structure = $this->getModel('Structure');// Model::getModel('Structure');
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-
-        // Авторизация
-        $this->setAuthFormat('Session');
 
         // Пользователь
-        self::$user     = $this->getAuth()->currentUser();
+        $auth   = $this->getAuth();
 
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+        self::$user     = $auth->currentUser();
 
         // модель для работы с шаблонами из базы
         // @TODO Подумать над Lazy Load в model_Templates
@@ -93,10 +75,11 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    protected function handleRequest()
+    function handleRequest()
     {
-        // маршрутизация
-        self::$router->routing();
+        // маршрутизатор
+        $this->getRouter()->routing();
+        //print __FILE__.":".__LINE__;
 
         //
         //  Настройки кэширования
@@ -104,20 +87,20 @@ class App extends Application_Abstract
         //$cache_id = self::$request->get('controller').self::$request->get('id');
 
         // возможность использовать кэш
-        if (    TPL_CACHING &&
-                ! self::$request->getAjax() &&
+        if (    $this->getConfig()->get('caching') &&
+                ! $this->getRequest()->getAjax() &&
                 ! self::$ajax &&
-                ! self::$router->isSystem()
+                ! $this->getRouter()->isSystem()
         ) {
-            if (    self::$request->get('controller') == 'page' &&
-                    self::$user->perm == USER_GUEST &&
-                    self::$basket->count() == 0
+            if (    $this->getRequest()->get('controller') == 'page' &&
+                    $this->getAuth()->currentUser()->perm == USER_GUEST &&
+                    $this->getBasket()->count() == 0
             ) {
                 self::$tpl->caching(true);
             }
         }
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-
+        //print __FILE__.":".__LINE__;
 
         // если запрос является системным
         if ( self::$router->isSystem() )
@@ -139,7 +122,6 @@ class App extends Application_Abstract
 
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
         //$this->getRequest()->debug();
-
         $controller_resolver    = new ControllerResolver( $this );
         $result = $controller_resolver->callController();
 

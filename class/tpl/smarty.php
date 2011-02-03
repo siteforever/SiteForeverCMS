@@ -1,8 +1,8 @@
 <?php
 // класс шаблонизатора
-spl_autoload_unregister(array('Loader', 'load'));
+spl_autoload_unregister(array('App', 'autoload'));
 require_once 'Smarty-3.0.6'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
-spl_autoload_register(array('Loader', 'load'));
+spl_autoload_register(array('App', 'autoload'));
 
 
 /**
@@ -11,14 +11,16 @@ spl_autoload_register(array('Loader', 'load'));
  */
 class TPL_Smarty extends TPL_Driver
 {
-	private $ext = '';
-	
+    private $ext = '';
+
     function __construct()
     {
+        $config    = App::getInstance()->getConfig();
+
         $this->engine = new Smarty(); // link (used php5)
         $this->engine->caching = false;
-        $this->engine->cache_lifetime = TPL_CACHE_LIVETIME;
-        $this->ext    = App::$config->get('template.ext');
+        $this->engine->cache_lifetime = $config->get('template.cache.livetime');
+        $this->ext    = $config->get('template.ext');
     }
     
     function assign( $params, $value = null )
