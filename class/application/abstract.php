@@ -93,7 +93,6 @@ abstract class Application_Abstract
         } else {
             throw new Application_Exception('You can not create more than one instance of Application');
         }
-
         // Конфигурация
         self::$config   = new SysConfig( $cfg_file );
     }
@@ -106,17 +105,9 @@ abstract class Application_Abstract
     static public function getInstance()
     {
         if ( is_null( self::$instance ) ) {
-            throw new Exception('Application NOT instanced');
+            throw new Application_Exception('Application NOT instanced');
         }
         return self::$instance;
-    }
-
-    /**
-     * @return Logger_Interface
-     */
-    public function getLogger()
-    {
-        return $this->logger;
     }
 
     function __set($name, $value)
@@ -205,4 +196,29 @@ abstract class Application_Abstract
         }
         return self::$router;
     }
+
+    /**
+     * @return Logger_Interface
+     */
+    function getLogger()
+    {
+        if ( ! isset( $this->logger ) ) {
+            switch ( strtolower( trim( $this->getConfig()->get('logger') ) ) ) {
+                case 'firephp':
+                    $this->logger   = new Logger_Firephp();
+                    break;
+                case 'html':
+                    $this->logger   = new Logger_Html();
+                    break;
+                case 'plain':
+                    $this->logger   = new Logger_Plain();
+                    break;
+                default:
+                    $this->logger   = new Logger_Blank();
+            }
+        }
+        return $this->logger;
+    }
+
+
 }

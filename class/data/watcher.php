@@ -148,7 +148,7 @@ class Data_Watcher
         /**
          * @var Data_Object $obj
          */
-        $pdo    = App::$db->getResource();
+        $pdo    = Model::getDB()->getResource();
         $pdo->beginTransaction();
         try {
             if ( is_array( $this->dirty ) ) {

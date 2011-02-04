@@ -47,7 +47,7 @@
 {* 
     Если страницу открыл не гость
  *}
-{if App::$user->perm != $smarty.const.USER_GUEST}
+{if App::getInstance()->getAuth()->currentUser()->perm != $smarty.const.USER_GUEST}
 <p>&nbsp;</p>
 <p>Быстрый переход:</p>
 

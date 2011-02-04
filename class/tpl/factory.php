@@ -32,10 +32,10 @@ class Tpl_Factory
             $obj = new $driver();
             //Register::setTpl( $obj );
 
-            $obj->setTplDir(SF_PATH."/themes/{$theme}/templates");
+            $obj->setTplDir(ROOT."/themes/{$theme}/templates");
 
-            $tpl_c  = SF_PATH."/protected/_runtime/_templates_c";
-            $cache  = SF_PATH."/protected/_runtime/_cache";
+            $tpl_c  = ROOT."/protected/_runtime/_templates_c";
+            $cache  = ROOT."/protected/_runtime/_cache";
 
             if ( ! is_dir( $tpl_c ) ) {
                 mkdir( $tpl_c, 0666, true );

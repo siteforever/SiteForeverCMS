@@ -28,18 +28,16 @@ class Router
     {
         $this->request = $request;
         $route = $this->request->get('route');
-
         if ( is_array( $route ) ) {
             $route = 'index';
         }
 
         $this->route = trim( $route, '/' );
 
-        if ( $this->route == 'index' ) {
+        /*if ( $this->route == 'index' ) {
             header("location: /");
             exit();
-        }
-
+        }*/
 
         if ( ! $this->route ) {
             $this->route = 'index';
@@ -172,7 +170,9 @@ class Router
      */
     function findStructure()
     {
-        if ( $data = App::$structure->findByRoute( $this->route ) )
+        $model  = Model::getModel('Structure');
+
+        if ( $data = $model->findByRoute( $this->route ) )
         {
             $this->controller   = $data['controller'];
             $this->action       = $data['action'];
@@ -184,7 +184,7 @@ class Router
             $this->controller   = 'page';
             $this->action       = 'error';
             $this->id           = '404';
-            $this->template     = App::$config->get('template.404');
+            $this->template     = App::getInstance()->getConfig()->get('template.404');
             $this->system       = 0;
         }
     }

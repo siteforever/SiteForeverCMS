@@ -26,6 +26,7 @@ set_include_path( join( PATH_SEPARATOR, $include_list ));
 
 
 require_once 'bootstrap.php';
+
 $app = new App( dirname(__FILE__).'/protected/config/main.php');
 $app->run();
-print __FILE__.":".__LINE__;
+

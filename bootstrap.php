@@ -15,11 +15,6 @@ define('ROOT', dirname(__FILE__));
 // разделитель директорий
 define('DS', DIRECTORY_SEPARATOR);
 
-// отладка загрузки классов
-if ( ! defined('DEBUG_AUTOLOAD') ) {
-    define('DEBUG_AUTOLOAD', 0);
-}
-
 // Отладка запросов
 if ( ! defined('DEBUG_SQL') ) {
     define('DEBUG_SQL', 1);
@@ -67,6 +62,7 @@ setlocale ( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English');
 
 // запуск сессии
 session_start();
+
 
 // автозагрузка классов
 require_once 'application/abstract.php';

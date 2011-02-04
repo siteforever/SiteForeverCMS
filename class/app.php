@@ -22,20 +22,17 @@ class App extends Application_Abstract
 
         $this->handleRequest();
 
-        // включить лог SQL-запросов
-
         // WARNING!!!
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
+
         if ( DEBUG_SQL ) {
-            self::$db->saveLog();
+            Model::getDB()->saveLog();
         }
-        //if ( App::$basket ) {
-        //    App::$basket->save();
-        //}
-        if ( DEBUG_BENCHMARK ) {
-            $this->logger->log("Total SQL: ".count(self::$db->getLog()).
-                               "; time: ".round(self::$db->time, 3)." sec.", 'app');
+
+        if ( $this->getConfig()->get('debug.profile') ) {
+            $this->logger->log("Total SQL: ".count( Model::getDB()->getLog()).
+                               "; time: ".round( Model::getDB()->time, 3)." sec.", 'app');
             $this->logger->log("Execution time: ".round(microtime(true)-self::$start_time, 3)." sec.", 'app');
             $this->logger->log("Required memory: ".round(memory_get_usage() / 1024, 3)." kb.", 'app');
         }
@@ -50,24 +47,10 @@ class App extends Application_Abstract
      */
     function init()
     {
-        //$this->logger   = new Logger_Firephp();
-        $this->logger   = new Logger_Plain();
-        //$this->logger   = new Logger_Blank();
-        //$this->logger   = new Logger_Html();
-
-        // модель структуры
-        self::$structure = $this->getModel('Structure');// Model::getModel('Structure');
-
-        // Пользователь
-        $auth   = $this->getAuth();
-
-        self::$user     = $auth->currentUser();
-
-        // модель для работы с шаблонами из базы
-        // @TODO Подумать над Lazy Load в model_Templates
-        //self::$templates= Model::getModel('model_Templates');
-
-        translate::getInstance()->setLanguage('ru');
+        $this->getConfig()->setDefault('language', 'ru');
+        translate::getInstance()->setLanguage(
+            $this->getConfig()->get('language')
+        );
     }
 
     /**
@@ -79,12 +62,6 @@ class App extends Application_Abstract
     {
         // маршрутизатор
         $this->getRouter()->routing();
-        //print __FILE__.":".__LINE__;
-
-        //
-        //  Настройки кэширования
-        //
-        //$cache_id = self::$request->get('controller').self::$request->get('id');
 
         // возможность использовать кэш
         if (    $this->getConfig()->get('caching') &&
@@ -99,29 +76,25 @@ class App extends Application_Abstract
                 self::$tpl->caching(true);
             }
         }
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        //print __FILE__.":".__LINE__;
 
         // если запрос является системным
-        if ( self::$router->isSystem() )
+        if ( $this->getRouter()->isSystem() )
         {
-            if ( self::$user->perm == USER_ADMIN )
+            if ( $this->getAuth()->currentUser()->perm == USER_ADMIN )
             {
                 //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-                self::$request->set('template', 'index' );
-                self::$request->set('resource', 'system:');
-                self::$request->set('modules', @include('modules.php'));
+                $this->getRequest()->set('template', 'index' );
+                $this->getRequest()->set('resource', 'system:');
+                $this->getRequest()->set('modules', @include('modules.php'));
             }
             else {
                 //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-                self::$request->addFeedback( t('Protected page') );
-                self::$request->set('controller', 'users');
-                self::$request->set('action', 'login');
+                $this->getRequest()->addFeedback( t('Protected page') );
+                $this->getRequest()->set('controller', 'users');
+                $this->getRequest()->set('action', 'login');
             }
         }
 
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-        //$this->getRequest()->debug();
         $controller_resolver    = new ControllerResolver( $this );
         $result = $controller_resolver->callController();
 
@@ -256,8 +229,9 @@ class App extends Application_Abstract
         $file = str_replace( '_', DS, $class_name ).'.php';
 
         if ( @include_once $file ) {
-            if ( DEBUG_AUTOLOAD ) {
-                self::getInstance()->getLogger()->log( $file, 'include '.++$class_count );
+            if ( defined('DEBUG_AUTOLOAD') && DEBUG_AUTOLOAD ) {
+                $class_count++;
+                print "{$class_count}. include {$file}\n";
             }
             return true;
         }

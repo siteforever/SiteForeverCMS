@@ -42,6 +42,15 @@ class Request
             $req    = trim( substr( $_SERVER['REQUEST_URI'], $q_pos+1, strlen($_SERVER['REQUEST_URI']) ), '?&' );
         }
 
+        if ( isset( $_SERVER['argv'] ) ) {
+            foreach ( $_SERVER['argv'] as $arg ) {
+                if ( strpos( $arg, '=' ) ) {
+                    list( $arg_key, $arg_val )  = explode('=', $arg);
+                    $this->set( $arg_key, $arg_val );
+                }
+            }
+        }
+
         // дополняем массив $_REQUEST не учтенными значениями
         if ( isset( $req ) && $opt_req = explode('&', $req) ) {
             foreach( $opt_req as $opt_req_item ) {
@@ -76,7 +85,7 @@ class Request
             }
         }
 
-        $theme = App::$config->get('template.theme');
+        $theme = App::getInstance()->getConfig()->get('template.theme');
 
         $this->request['path'] = $this->request['tpldata']['path']   = array(
             'css'   => '/themes/'.$theme.'/css',
@@ -101,6 +110,15 @@ class Request
      * @return bool
      */
     function getAjax()
+    {
+        return $this->ajax;
+    }
+
+    /**
+     * Является ли запрос аяксовым
+     * @return bool
+     */
+    function isAjax()
     {
         return $this->ajax;
     }
@@ -321,6 +339,6 @@ class Request
 
     function debug()
     {
-        Error::dump( $this->request );
+        printVar( $this->request );
     }
 }

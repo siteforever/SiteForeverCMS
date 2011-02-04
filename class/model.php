@@ -82,10 +82,19 @@ abstract class Model
         }
 
         if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
-            self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
+            //self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
         }
 
         $this->Init();
+    }
+
+    /**
+     * @static
+     * @return db
+     */
+    static public function getDB()
+    {
+        return self::$dao;
     }
 
     /**

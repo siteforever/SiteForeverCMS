@@ -1,4 +1,7 @@
 <?php
+
+class Basket_Exception extends Exception {};
+
 /**
  * Интерфейс корзины
  * @author KelTanas
@@ -30,6 +33,17 @@ abstract class Basket
      */
     function add( $id, $count, $price, $details = '' )
     {
+        if ( ! is_array( $this->data ) ) {
+            throw new Basket_Exception('Basket data corrupted');
+        }
+        foreach ( $this->data as &$prod ) {
+            if ( $prod['id'] == $id ) {
+                $prod['count'] += $count;
+                $prod['price']  = $price;
+                $prod['details']    = $details;
+                return true;
+            }
+        }
         $this->data[] = array(
             'id'    => $id,
             'count' => $count,
@@ -46,9 +60,11 @@ abstract class Basket
      */
     function setCount( $id, $count )
     {
-        if ( isset( $this->data[$id] ) ) {
-            $this->data[$id]['count']   = $count;
-            return true;
+        foreach ( $this->data as &$prod ) {
+            if ( $prod['id'] == $id ) {
+                $prod['count']  = $count;
+                return true;
+            }
         }
         return false;
     }
@@ -57,29 +73,35 @@ abstract class Basket
      * Количество данного товара в корзине
      * @param string $id
      */
-    function getCount( $id = 0 )
+    function getCount( $id = '' )
     {
+        if ( ! is_array( $this->data ) ) {
+            throw new Basket_Exception('Basket data corrupted');
+        }
         if ( $id ) {
-            if ( isset( $this->data[ $id ] ) ) {
-                return $this->data[ $id ]['count'];
+            foreach ( $this->data as $prod ) {
+                if ( $prod['id'] == $id ) {
+                    return $prod['count'];
+                }
             }
         }
         else {
             $count = 0;
-            if ( is_array($this->data) ) {
-                foreach( $this->data as $item ) {
-                    $count += $item['count'];
-                }
-                return $count;
+            foreach( $this->data as $prod ) {
+                $count += $prod['count'];
             }
+            return $count;
         }
     }
     
     function getPrice( $id )
     {
-        if ( isset( $this->data[ $id ] ) ) {
-            return $this->data[ $id ]['price'];
+        foreach ( $this->data as $prod ) {
+            if ( $prod['id'] == $id ) {
+                return $prod['price'];
+            }
         }
+        return 0;
     }
     
     /**
@@ -90,13 +112,14 @@ abstract class Basket
      */
     function del( $id, $count = 0 )
     {
-        if ( isset( $this->data[ $id ] ) ) {
-
-            if ( $count == 0 || $this->data[ $id ]['count'] <= $count ) {
-                unset( $this->data[ $id ] );
-            }
-            else {
-                $this->data[ $id ]['count'] -= $count;
+        foreach ( $this->data as $i => $prod ) {
+            if ( $prod['id'] == $id ) {
+                $new_count  = $prod['count'] - $count;
+                if ( $new_count < 0 ) {
+                    unset( $this->data[$i] );
+                    break;
+                }
+                $this->data[$i]['count']    = $new_count;
             }
         }
     }
@@ -125,15 +148,25 @@ abstract class Basket
      * Сумма заказа
      * @return float
      */
-    function getSum()
+    function getSum( $id = '' )
     {
-        $summa = 0;
-        if ( is_array($this->data) ) {
+        if ( ! is_array( $this->data ) ) {
+            throw new Basket_Exception('Basket data corrupted');
+        }
+        if ( $id ) {
+            foreach ( $this->data as $prod ) {
+                if ( $prod['id'] == $id ) {
+                    return $prod['count'] * $prod['price'];
+                }
+            }
+        }
+        else {
+            $summa = 0;
             foreach( $this->data as $prod ) {
                 $summa += $prod['count'] * $prod['price'];
             }
+            return $summa;
         }
-        return $summa;
     }
 
     /**
@@ -143,7 +176,6 @@ abstract class Basket
     function clear()
     {
         $this->data = array();
-        $this->save();
     }
 
     /**

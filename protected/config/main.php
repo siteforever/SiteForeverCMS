@@ -5,7 +5,11 @@
 return array(
 
     // отладка
-    'debug' => true,
+    'debug' => array(
+        'profile'   => true,
+    ),
+
+    'logger'    => 'html',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],

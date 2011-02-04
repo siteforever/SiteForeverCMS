@@ -18,6 +18,16 @@ class ControllerResolver
         $this->app  = $app;
     }
 
+    function resolveController()
+    {
+        $request    = $this->app->getRequest();
+
+        $controller_class   = 'controller_'.ucfirst($request->get('controller'));
+        $action             = $request->get('action').'Action';
+
+        return array( 'controller' => $controller_class, 'action' => $action );
+    }
+
     /**
      * Запуск контроллера
      * @throws ControllerExeption
@@ -25,39 +35,37 @@ class ControllerResolver
      */
     function callController()
     {
-        $request    = $this->app->getRequest();
+        if ( ! $command = $this->resolveController() ) {
+            throw new Application_Exception('Controller not resolved');
+        }
 
-
-        $controller_class   = 'controller_'.ucfirst($request->get('controller'));
-        $action             = $request->get('action').'Action';
-
-        if ( class_exists( $controller_class ) )
+        if ( class_exists( $command['controller'] ) )
         {
-            $reflection_class = new ReflectionClass( $controller_class );
+            $reflection_class = new ReflectionClass( $command['controller'] );
             //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             /**
              * @var Controller $controller
              */
-            $controller = new $controller_class( $this->app );
+            $controller = new $command['controller']( $this->app );
             //print $controller_class.'::'.$action;
             //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();
             }
 
-            if ( $reflection_class->hasMethod( $action ) ) {
-                $return = $controller->$action();
+            if ( $reflection_class->hasMethod( $command['action'] ) ) {
+                $return = $controller->$command['action']();
             }
             elseif ( $reflection_class->hasMethod( 'indexAction' ) ) {
                 $return = $controller->indexAction();
                 $controller->deInit();
             }
             else {
-                throw new ControllerExeption(t('Could not start the controller').' '.$controller_class);
+                throw new ControllerExeption(t('Could not start the controller').' '.$command['controller']);
             }
         }
         else {
-            throw new ControllerExeption(t('Unable to find controller').' '.$controller_class);
+            throw new ControllerExeption(t('Unable to find controller').' '.$command['controller']);
         }
         return $return;
     }

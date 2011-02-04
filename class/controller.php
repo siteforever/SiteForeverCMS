@@ -60,17 +60,16 @@ abstract class Controller
     {
         $this->app      = $app;
 
-        $this->config   = App::$config;
+        $this->config   = $app->getConfig();
         $this->request  = $app->getRequest();
-        $this->router   = App::$router;
+        $this->router   = $app->getRouter();
         $this->tpl      = $app->getTpl();
         $this->user     = $app->getAuth()->currentUser();
         //$this->templates= $this->getModel('Templates');
-
         $this->basket   = $app->getBasket();
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-
         $this->params = $this->request->get('params');
+
+        //print "id = {$this->request->get('id')}\n";
 
         $page   = $this->getModel('Structure')->find( $this->request->get('id') );
         //$page   = null;
@@ -80,7 +79,10 @@ abstract class Controller
                 $page->title    = $page->name;
             }
             $this->page = $page->getAttributes();
+            $this->request->setContent($page->content);
+            $this->request->setTitle( $page->title );
         }
+        //print( __METHOD__."() in ".__FILE__.':'.__LINE__."\n");
 
         if ( $this->page ) {
             // формируем список предков страницы

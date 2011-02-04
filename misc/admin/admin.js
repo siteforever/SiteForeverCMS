@@ -1,8 +1,8 @@
 $(function() {
 
     // выделение активного раздела
-    var pathname = '/' + window.location.pathname.replace(/(^\/+)|(\/+$)/g, "") + '/';
-    $('a[href='+pathname+']').addClass('active');
+    //var pathname = '/' + window.location.pathname.replace(/(^\/+)|(\/+$)/g, "") + '/';
+    //$('a[href='+pathname+']').addClass('active');
 
     $(':button, :submit, :reset').button();
 
