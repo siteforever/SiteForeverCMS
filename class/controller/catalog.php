@@ -3,7 +3,7 @@
  * Контроллер каталога
  * @author KelTanas
  */
-class controller_Catalog extends controller
+class Controller_Catalog extends controller
 {
     function init()
     {
@@ -23,7 +23,10 @@ class controller_Catalog extends controller
 
 
 
-
+    /**
+     * Действие по умолчанию
+     * @return void
+     */
     function indexAction()
     {
         $cat_id = $this->request->get('cat', FILTER_SANITIZE_NUMBER_INT);
@@ -50,7 +53,7 @@ class controller_Catalog extends controller
 
         // хлебные крошки для каталога
         $html       = array();
-        $patches    = json_decode( $item->path, true );
+        $patches    = unserialize( $item->path, true );
 
         if ( is_array($patches) ) {
             foreach( $patches as $key => $path ) {
@@ -65,7 +68,7 @@ class controller_Catalog extends controller
         //printVar(json_decode( $this->page['path'], true ));
 
         $html_page = array();
-        foreach( json_decode( $this->page['path'], true ) as $path ) {
+        foreach( unserialize( $this->page['path'], true ) as $path ) {
             $html_page[] = "<a ".href($path['url']).">{$path['name']}</a>";
         }
         $html = array_merge( $html_page, $html );
@@ -188,6 +191,9 @@ class controller_Catalog extends controller
      */
     function adminEdit()
     {
+        /**
+         * @var Model_Catalog $catalog
+         */
         $catalog = $this->getModel('Catalog');
         $catalog_gallery = $this->getModel('CatGallery');
 
@@ -202,21 +208,21 @@ class controller_Catalog extends controller
         $form = $catalog->getForm();
 
 
-        if ( $id ) // если раздел существует
+        if ( $id !== "" ) // если раздел существует
         {
-            $data       = $catalog->find( $id );
-            $parent     = $data;
-            $parent_id  = isset( $data['parent'] ) ? $data['parent'] : 0;
-            $form->setData( $data );
+            $item       = $catalog->find( $id );
+            $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
+            $form->setData( $item->getAttributes() );
         }
-        elseif( $type !== false && $parent_id !== false )
+        elseif( $type !== "" && $parent_id !== "" )
         {
-            $parent     = $catalog->find( $parent_id );
-            $form->parent->setValue( $parent_id );
-            $form->cat->setValue( $type );
+            //$parent     = $catalog->find( $parent_id );
+            $form->getField('parent')->setValue( $parent_id );
+            $form->getField('cat')->setValue( $type );
         }
         else {
-            die('Не указаны важные параметры');
+            $this->request->addFeedback('Не указаны важные параметры');
+            return;
         }
 
         // Если форма отправлена
@@ -225,13 +231,24 @@ class controller_Catalog extends controller
             $this->setAjax();
             if ( $form->validate() )
             {
-                $catalog->setData( $form->getData() );
-                if ( $catalog->get('id') != 0 && $catalog->get('id') == $catalog->get('parent') ) {
+                $object = $catalog->createObject( $form->getData() );
+
+                if ( $object->getId() && $object->getId() == $object->parent ) {
+                    // раздел не может быть замкнут на себя
                     $this->request->addFeedback(t('The section can not be in myself'));
                     return;
                 }
+
+                $this->request->addFeedback(t('Data save successfully'));
+
+                if ( ! $object->getId() ) {
+                    $catalog->update( $object );
+                    reload('', array('part'=>$object->parent));
+                }
+
+                $catalog->update( $object );
                 //printVar($form->getData());
-                if ( $catalog->update() ) {
+                /*if ( $catalog->update() ) {
                     $this->request->addFeedback(t('Data save successfully'));
                     if ( $id ) {
                     } else {
@@ -239,27 +256,28 @@ class controller_Catalog extends controller
                     }
                 } else {
                     $this->request->addFeedback(t('Data not saved'));
-                }
+                }*/
             }
             else {
-                $this->request->addFeedback('Форма заполнена не правильно');
+                $this->request->addFeedback($form->getFeedbackString());
             }
             return;
         }
 
         // если товар
-        if ( ( ! $id && $type == 0 ) || ( isset($data) && is_array($data) && $data['cat'] == 0 ) )
-        {
+        if (    ! ( $id || $type ) ||
+                ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 )
+        ) {
             //$form->image->show();
-            $form->icon->hide();
-            $form->articul->show();
-            $form->price1->show();
-            $form->price2->show();
-            $form->sort_view->hide();
+            $form->getField('icon')->hide();
+            $form->getField('articul')->show();
+            $form->getField('price1')->show();
+            $form->getField('price2')->show();
+            $form->getField('sort_view')->hide();
 
             //$form->top->show();
-            $form->byorder->show();
-            $form->absent->show();
+            $form->getField('byorder')->show();
+            $form->getField('absent')->show();
 
             $parent = $catalog->find( $parent_id );
             if ( is_array( $parent ) ) {
@@ -276,7 +294,11 @@ class controller_Catalog extends controller
             }
 
             if ( $id ) {
-                $gallery = $catalog_gallery->findGalleryByProduct($id);
+                $gallery    = $catalog_gallery->findAll(array(
+                    'cond'  => 'cat_id = :cat_id AND hidden = :hidden',
+                    'params'=> array(':cat_id'=>$id, ':hidden'=>0),
+                ));
+                //$gallery = $catalog_gallery->findGalleryByProduct($id);
                 $this->tpl->gallery = $gallery;
             }
         }
@@ -292,7 +314,7 @@ class controller_Catalog extends controller
                     $icon_list[$icon_dir.'/'.$item] = $item;
                 }
             }
-            $form->icon->setVariants( array_merge(array(''=>'нет иконки'), $icon_list ) );
+            $form->getField('icon')->setVariants( array_merge(array(''=>'нет иконки'), $icon_list ) );
         }
 
         if ( ! isset($data['path']) ) {
@@ -314,7 +336,7 @@ class controller_Catalog extends controller
     function adminBreadcrumbs( $path )
     {
         $bc = array('<a '.href('').'>Каталог</a>'); // breadcrumbs
-        if ( $from_json =  json_decode( $path ) ) {
+        if ( $from_json =  unserialize( $path ) ) {
             foreach( $from_json as $key => $val ) {
                 $bc[] =
                     '<a '.href('', array('part'=>$val->id)).'>'.$val->name.'</a>
@@ -347,9 +369,12 @@ class controller_Catalog extends controller
         // пересортировка
         if ( $this->request->get('sort') ) {
             $error = $catalog->resort();
-            die( json_encode(array('error'=>$error)) );
+            $this->request->setError( $error );
+            return;
+            //die( json_encode(array('error'=>$error)) );
         }
 
+        // перемещение
         if ( $this->request->get('move_list') ) {
             $this->request->setContent(
                 $this->request->get('target', FILTER_SANITIZE_NUMBER_INT)
@@ -361,9 +386,10 @@ class controller_Catalog extends controller
         // Сохранение позиций
         if ( $save_pos = $this->request->get('save_pos') ) {
             foreach ( $save_pos as $pos ) {
-                $catalog->find($pos['key']);
-                $catalog->set('pos', $pos['val']);
-                $catalog->update();
+                $item   = $catalog->find( $pos['key'] );
+                if ( $item ) {
+                    $item->pos  = $pos['val'];
+                }
             }
             return;
         }
@@ -376,50 +402,55 @@ class controller_Catalog extends controller
         if ( $this->request->get('delete') == 'group' ) {
             return $this->groupAjaxDelete();
         }
+        //print 'Work '.__FILE__.':'.__LINE__;
 
         // добавление / правка
-        if ( $this->request->get('add', Request::INT) !== false || $this->request->get('edit', Request::INT) !== false )
-        {
+        if (    $this->request->get('add', FILTER_SANITIZE_NUMBER_INT ) !== '' ||
+                $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT ) !== ''
+        ) {
             return $this->adminEdit();
         }
 
+        //print 'Work '.__FILE__.':'.__LINE__;
+
         // удаление
-        if ( $this->request->get('del', Request::INT) !== false )
+        if ( $del_id = $this->request->get('del', FILTER_SANITIZE_NUMBER_INT) )
         {
-            $data = $catalog->find( $this->request->get('del', Request::INT) );
-            $catalog->delete();
-            redirect( 'admin/catalog', array('part'=>$data['parent']) );
+            $item = $catalog->find( $del_id );
+            if ( $item )
+                $catalog->delete( $item->getId() );
+            redirect( 'admin/catalog', array('part'=>$item->parent) );
         }
 
         // включение/выключение
         if ( $this->request->get('item') && $this->request->get('switch') )
         {
-            if ( $catalog->find( $this->request->get('item') ) )
+            if ( $item = $catalog->find( $this->request->get('item') ) )
             {
                 switch ( $this->request->get('switch') )
                 {
                     case 'on':
-                        $catalog->set('hidden', '0');
+                        $item->hidden   = 0;
                         $switch = 'off';
                         break;
                     case 'off':
-                        $catalog->set('hidden', '1');
+                        $item->hiden    = 1;
                         $switch = 'on';
                         break;
                 }
-                $catalog->update();
-            }
-            if ( $this->getAjax() ) {
-                die(json_encode(array(
-                    'error' => '0',
-                    'href'  => $this->router->createLink('admin/catalog', array(
-                        'item'      => $this->request->get('item'),
-                        'switch'    => $switch,
-                    )),
-                    'img'   => $switch == 'on' ? icon('lightbulb_off', 'Включить') : icon('lightbulb', 'Выключить'),
-                )));
-            } else {
-                redirect( 'admin/catalog', array('part'=>$catalog->get('parent')) );
+                //$catalog->update();
+                if ( $this->getAjax() ) {
+                    die(json_encode(array(
+                        'error' => '0',
+                        'href'  => $this->router->createLink('admin/catalog', array(
+                            'item'      => $this->request->get('item'),
+                            'switch'    => $switch,
+                        )),
+                        'img'   => $switch == 'on' ? icon('lightbulb_off', 'Включить') : icon('lightbulb', 'Выключить'),
+                    )));
+                } else {
+                    redirect( 'admin/catalog', array('part'=>$item->parent ) );
+                }
             }
             return;
         }
@@ -431,15 +462,33 @@ class controller_Catalog extends controller
 
         // Если корневой раздел
         if ( !$parent ) {
-            $parent = array('id'=>0, 'parent'=>0, 'path'=>'[]');
+            $parent = $catalog->createObject(array('id'=>0, 'parent'=>0, 'path'=>'[]'));
+            $parent->markClean();
         }
 
         // Если смотрим список в товаре, то переместить на редактирование
-        if ( $parent['id'] != 0 && $parent['cat'] == 0) {
-            redirect('', array('edit'=>$parent['id']));
+        if ( $parent->getId() && ! $parent->cat ) {
+            redirect( '', array('edit'=>$parent->getId() ));
         }
 
+        $crit   = array();
         if ( ! $filter ) {
+            $crit['cond']   = 'deleted = 0 AND parent = :parent';
+            $crit['params'] = array(':parent'=>$part);
+        } else {
+            $crit['cond']   = 'deleted = 0 AND articul LIKE :filter';
+            $crit['params'] = array(':filter'=>'%'.$filter.'%');
+        }
+
+        $count  = $catalog->count( $crit['cond'], $crit['params'] );
+        $paging = $this->paging( $count, 25, 'admin/catalog/part='.$part );
+
+        $crit['limit']  = $paging->limit;
+        $crit['order']  = 'cat DESC, pos DESC';
+
+        $list   = $catalog->findAll( $crit );
+
+        /*if ( ! $filter ) {
 
             $count = $catalog->getCountByParent( $part );
 
@@ -452,7 +501,7 @@ class controller_Catalog extends controller
 
             $list  = $catalog->findAllFiltered( $filter );
 
-        }
+        }*/
 
         $this->tpl->assign(array(
             'filter'    => trim( $this->request->get('goods_filter') ),
@@ -464,8 +513,9 @@ class controller_Catalog extends controller
             'paging'    => $paging,
             'moving_list'=>$catalog->getCategoryList(),
         ));
-        $content = $this->tpl->fetch('system:catalog/admin');
 
+        
+        $content = $this->tpl->fetch('system:catalog/admin');
 
         $this->request->setTitle('Каталог');
         $this->request->setContent($content);

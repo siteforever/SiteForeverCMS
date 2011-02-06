@@ -9,7 +9,7 @@
 function redirect( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-	header("Location: ".App::$router->createLink( $url, $params ));
+	header("Location: ".App::getInstance()->getRouter()->createLink( $url, $params ));
 	die();
 }
 
@@ -22,7 +22,8 @@ function redirect( $url = '', $params = array() )
 function reload( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-	die('<script type="text/javascript">window.location.href = "'.App::$router->createLink( $url, $params ).'";</script>');
+	die('<script type="text/javascript">window.location.href = "'.
+        App::getInstance()->getRouter()->createLink( $url, $params ).'";</script>');
 }
 
 /**
@@ -42,7 +43,7 @@ function printVar( $var )
  */
 function href( $url, $params = array() )
 {
-    return 'href="'.App::$router->createLink( $url, $params ).'"';
+    return 'href="'.App::getInstance()->getRouter()->createLink( $url, $params ).'"';
 }
 
 

@@ -232,6 +232,10 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->object->addFeedback('Test');
         $feedback   = $this->object->getFeedback();
         $this->assertTrue( in_array( 'Test', $feedback ), 'Feedback Test not found' );
+        $this->object->addFeedback(array('Test1', 'Test2'));
+        $feedback   = $this->object->getFeedback();
+        $this->assertTrue( in_array( 'Test1', $feedback ), 'Feedback Test1 not found' );
+        $this->assertTrue( in_array( 'Test2', $feedback ), 'Feedback Test2 not found' );
     }
 
     /**

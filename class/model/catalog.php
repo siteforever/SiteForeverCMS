@@ -33,6 +33,15 @@ class Model_Catalog extends Model
     }
 
     /**
+     * Инициализация
+     * @return void
+     */
+    protected function Init()
+    {
+        $this->request->addScript( $this->request->get('path.misc') . '/etc/catalog.js' );
+    }
+
+    /**
      * Поиск по id
      * @param int $id
      * @return array
@@ -203,13 +212,18 @@ class Model_Catalog extends Model
      */
     function getCountByParent( $parent, $type = -1 )
     {
-        $count = App::$db->fetchOne(
+        $count  = $this->count(
+            'parent = :parent AND deleted = 0 AND hidden = 0 '.
+                ($type != -1 ? ' AND cat = :type' : ''),
+            array(':parent'=>$parent, ':type'=>$type)
+        );
+        /*$count = App::$db->fetchOne(
             "SELECT COUNT(id)
             FROM {$this->getTable()}
             WHERE
                 parent = '{$parent}' ".
                     ($type != -1 ? " AND cat = {$type} " : "").
-                    "AND deleted = 0 AND hidden = 0");
+                    "AND deleted = 0 AND hidden = 0");*/
         return $count;
     }
 
@@ -217,30 +231,28 @@ class Model_Catalog extends Model
      * Обновить информацию
      * @return int идентификатор записи
      */
-    function update()
+    function update( Data_Object_Catalog $obj )
     {
-        $data = $this->data;
-        if ( $data['id'] ) {
-            if ( $data['path'] ) {
-                $path = json_decode( $this->data['path'] );
+        if ( $obj['id'] ) {
+            if ( $obj['path'] ) {
+                $path = serialize( $obj['path'] );
             }
 
-            if ( empty($data['path']) || ( $path && $path[0]->name != $data['name'] ) )
+            if ( ! $obj->path || ( $path && $path[0]->name != $obj['name'] ) )
             {
-                $data['path'] = $this->findPathJSON( $data['id'] );
+                $obj['path'] = $this->findPathSerialize( $obj['id'] );
             }
         }
-        unset($data['image']);
-        unset($data['middle']);
-        unset($data['thumb']);
+        unset($obj['image']);
+        unset($obj['middle']);
+        unset($obj['thumb']);
 
-        $ret = $this->db->insertUpdate( DBCATALOG, $data );
+        $ret = $this->db->insertUpdate( $this->getTable(), $obj->getAttributes() );
 
         if ( $ret ) {
-            if ( empty( $data['id'] ) ) {
-                $data['id'] = $ret;
-                $this->data = $data;
-                $this->update();
+            if ( empty( $obj['id'] ) ) {
+                $obj['id'] = $ret;
+                $this->update( $obj );
             }
         }
         return $ret;
@@ -250,9 +262,9 @@ class Model_Catalog extends Model
      * Найдет путь для страницы
      * Нужна, чтобы строить кэш хлебных крошек при сохранении
      * @param int $id
-     * @return string JSON
+     * @return string
      */
-    function findPathJSON( $id )
+    function findPathSerialize( $id )
     {
         $path = array();
         while( $id ) {
@@ -266,7 +278,7 @@ class Model_Catalog extends Model
             }
         }
         $path = array_reverse( $path );
-        return json_encode( $path );
+        return serialize( $path );
     }
 
     /**
@@ -437,7 +449,7 @@ class Model_Catalog extends Model
             foreach( $sort as $pos => $item_id ) {
                 $data[] = array('id'=>$item_id, 'pos'=>$pos);
             }
-            $this->db->insertUpdateMulti(DBCATALOG, $data);
+            $this->db->insertUpdateMulti($this->getTable(), $data);
         } else {
             return t('Error in sorting params');
         }
@@ -453,12 +465,13 @@ class Model_Catalog extends Model
         $list   = $this->request->get('move_list');
         $target = $this->request->get('target', FILTER_SANITIZE_NUMBER_INT);
         // TODO Не происходит пересчета порядка позиций
-        if ( $target !== false && is_numeric($target) && $list && is_array( $list ) ) {
+
+        if ( $target !== "" && is_numeric($target) && $list && is_array( $list ) ) {
             //printVar($list);
             foreach( $list as $item_id ) {
-                $this->find($item_id);
-                $this->set( 'parent', $target );
-                $this->set( 'path', '' ); // форсируем пересчет пути
+                $item   = $this->find($item_id);
+                $item->parent   = $target;
+                $item->path     = '';
                 $this->update();
             }
         }
@@ -508,11 +521,6 @@ class Model_Catalog extends Model
     public function objectClass()
     {
         return 'Data_Object_Catalog';
-    }
-
-    protected function Init()
-    {
-        $this->request->addScript( $this->request->get('tpldata.path.mics') . '/etc/catalog.js' );
     }
 }
 
