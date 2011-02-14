@@ -17,11 +17,11 @@ function smarty_function_basket()
 {
     $basket = App::getInstance()->getBasket();
 
-    App::$tpl->assign(array(
+    App::getInstance()->getTpl()->assign(array(
         'count'     => $basket->getCount(),
         'summa'     => $basket->getSum(),
         'number'    => $basket->count(),
     ));
-    return App::$tpl->fetch('basket.widget');
+    return App::getInstance()->getTpl()->fetch('basket.widget');
     //return App::$tpl->fetch('system:basket.widget');
 }

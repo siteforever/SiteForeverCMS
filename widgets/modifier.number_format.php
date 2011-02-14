@@ -1,14 +1,18 @@
 <?php
 /**
  * Smarty plugin
+ * ÐœÐ¾Ð´Ð¸Ñ„Ð¸ÐºÐ°Ñ‚Ð¾Ñ€ Ñ‡Ð¸ÑÐµÐ»
  * -------------------------------------------------------------
- * Ôàéë:     modifier.number_format.php
- * Òèï:      modifier
- * Èìÿ:      number_format
- * Íàçíà÷åíèå:  Ôîðìàòèðîâàòü ÷èñëî php-ôóíêöèåé number_format
+ * Ð¤Ð°Ð¹Ð»:     modifier.number_format.php
+ * Ð¢Ð¸Ð¿:      modifier
+ * Ð˜Ð¼Ñ:      number_format
+ * ÐÐ°Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ:  Ð¤Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð¾ php-Ñ„ÑƒÐ½ÐºÑ†Ð¸ÐµÐ¹ number_format
  * -------------------------------------------------------------
  */
 function smarty_modifier_number_format( $number, $decimal = 2, $dec_point = ',', $thousands_sep = '' )
 {
+    if ( $number === "" )
+        return "";
+    
     return number_format( $number, $decimal, $dec_point, $thousands_sep );
 }

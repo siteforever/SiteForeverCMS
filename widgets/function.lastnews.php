@@ -23,7 +23,7 @@ function smarty_function_lastnews( $params, $smarty )
         }
     }
     else {
-        $sort   = 'news.date DESC';
+        $sort   = '`date` DESC';
     }
 
     if ( ! isset($params['limit']) ) {
@@ -31,13 +31,13 @@ function smarty_function_lastnews( $params, $smarty )
     }
 
     $where = array();
-    $where[]    = "news.hidden = 0";
-    $where[]    = "news.deleted = 0";
+    $where[]    = "hidden = 0";
+    $where[]    = "deleted = 0";
 
     $param      = array();
 
     if ( isset( $params['cat'] ) ) {
-        $where[]    = " news.cat_id = :cat ";
+        $where[]    = " cat_id = :cat ";
         $param[':cat']  = $params['cat'];
     }
 
@@ -57,11 +57,19 @@ function smarty_function_lastnews( $params, $smarty )
         'limit' => $params['limit'],
     ));
 
+    foreach ( $list as $key => $item ) {
+        //print $key;
+        //printVar( $item->getAttributes() );
+    }
+
+    //printVar( $list );
+
     //$list   = $model->findAllWithLinks($params['limit']);
 
     if ( isset( $params['template'] ) ) {
         $tpl    = App::$tpl;
         $tpl->list  = $list;
+        //return $params['template'];
         $content    = $tpl->fetch( $params['template'] );
     }
     else {
