@@ -64,18 +64,19 @@ class controller_Users extends Controller
 
         $criteria   = array(
             'cond'  => '',
+            'params'=> array(),
         );
         if ( $search ) {
-            if ( strlen($search) > 2 ) {
-                $search = '%'.$search.'%';
+            if ( strlen($search) >= 2 ) {
                 $criteria['cond']   =   ' login LIKE :search OR email LIKE :search '.
                                         ' OR lname LIKE :search OR name LIKE :search ';
+                $criteria['params'][':search']  = '%'.$search.'%';
             } else {
                 $this->request->addFeedback('Слишком короткий запрос');
             }
         }
 
-        $count  = $model->count( $criteria['cond'], array(':search'=>$search) );
+        $count  = $model->count( $criteria['cond'], $criteria['params'] );
 
         $paging = $this->paging($count, 25, '/admin/users/page%page%');
 
@@ -185,7 +186,7 @@ class controller_Users extends Controller
         $user   = $auth->currentUser();
 
 
-        $this->request->setTitle('tpldata.page.name', t('Personal page'));
+        $this->request->setTitle(t('Personal page'));
 
 
         if ( ! $user->getId() ) {
@@ -194,10 +195,11 @@ class controller_Users extends Controller
 
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
-                    //print "login: {$form->login} pass:{$form->password}";
+                    print "login: {$form->login} pass:{$form->password}";
                     if ( $auth->login( $form->login, $form->password ) ) {
                         redirect();
                     }
+                    print "Auth";
                 }
             }
             $this->request->setTitle('Вход в систему');
@@ -227,7 +229,7 @@ class controller_Users extends Controller
 
         $form = $model->getProfileForm();
 
-        $form->setData( App::$user->getAttributes() );
+        $form->setData( $this->app()->getAuth()->currentUser()->getAttributes() );
 
         // сохранение профиля
         if ( $form->getPost() && $form->validate() ) {
@@ -244,7 +246,6 @@ class controller_Users extends Controller
         $this->tpl->assign('form', $form);
 
         $this->request->setContent($this->tpl->fetch('system:users.profile'));
-
     }
 
     /**
@@ -287,7 +288,7 @@ class controller_Users extends Controller
     {
         // @TODO Перевести под новую модель
         $this->request->set('tpldata.page.name', 'Restore');
-        $this->request->set('tpldata.page.template', 'index');
+        $this->request->setTemplate('inner');
         $this->request->setTitle('Восстановление пароля');
         $this->request->setContent('');
 

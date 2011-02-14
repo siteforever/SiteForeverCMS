@@ -53,10 +53,10 @@ class Controller_Catalog extends controller
 
         // хлебные крошки для каталога
         $html       = array();
-        $patches    = unserialize( $item->path, true );
+        $pathes    = @unserialize( $item->path );
 
-        if ( is_array($patches) ) {
-            foreach( $patches as $key => $path ) {
+        if ( is_array($pathes) ) {
+            foreach( $pathes as $key => $path ) {
                 if ( $key == 0 && $this->page['link'] != 0 ) {
                     continue;
                 }
@@ -64,12 +64,13 @@ class Controller_Catalog extends controller
             }
         }
 
-        //printVar($patches);
-        //printVar(json_decode( $this->page['path'], true ));
-
         $html_page = array();
-        foreach( unserialize( $this->page['path'], true ) as $path ) {
-            $html_page[] = "<a ".href($path['url']).">{$path['name']}</a>";
+        $page_pathes    = @unserialize( $this->page['path'] );
+
+        if( $page_pathes && is_array( $page_pathes ) ) {
+            foreach( $page_pathes as $path ) {
+                $html_page[] = "<a ".href($path['url']).">{$path['name']}</a>";
+            }
         }
         $html = array_merge( $html_page, $html );
         $this->tpl->assign('breadcrumbs', '<div class="b-breadcrumbs">'.join(' &gt; ', $html).'</div>');
@@ -77,28 +78,70 @@ class Controller_Catalog extends controller
         // отрубаем breadcrumbs основной страницы
         $this->request->set('tpldata.page.path', '');
 
-        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT);
+        $page_number    = $this->request->get('page');
         $this->tpl->page_number = $page_number ? $page_number : '1';
 
         try {
             // Если открывается раздел каталога
-            if ( $cat_item['cat'] )
+            if ( $item->cat )
             {
-                // количество товаров и подразделов
-                $count  = $catalog->getCountByParent( $catalog->get('id'), 0 );
-                $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$cat_id) ) );
+                $parent = $catalog->find( $item->getId() );
 
-                $list   = $catalog->findGoodsByParent( $cat_id, $paging['limit'] );
-                foreach( $list as $key => $item )
-                {
-                    $list[$key]['properties'] = $this->buildParamView( $cat_item, $item );
+                // количество товаров
+                $criteria   = array(
+                    'cond'      => ' parent = ? AND deleted = 0 AND hidden = 0 AND cat = 0 ',
+                    'params'    => array($item->getId()),
+                );
+
+                $count  = $catalog->count( $criteria['cond'], $criteria['params'] );
+
+                //$count  = $catalog->getCountByParent( $catalog->get('id'), 0 );
+
+                $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$item->getId()) ) );
+
+                $criteria['limit']  = $paging->limit;
+
+
+                $order = $this->config->get('catalog.order_default');
+
+                // Примеряем способ сортировки к списку из конфига
+                $order_list = $this->config->get('catalog.order_list');
+                if ( $order_list && is_array($order_list) ) {
+                    $set = $this->request->get('order');
+                    if ( $set && $this->config->get('catalog.order_list.'.$set) ) {
+                        $order = $set;
+                    }
+                    else {
+                        $order  = reset( array_keys($order_list) );
+                    }
+                    $this->request->set('order', $order);
                 }
-                //printVar($list);
 
-                $cats   = $catalog->findCatsByParent( $cat_id );
+                if ( $order ) {
+                    $criteria['order']  = $order;
+                }
+
+                $list   = $catalog->findAll( $criteria );
+
+                $properties = array();
+
+                foreach ( $list as $l ) {
+                    for ( $i = 0; $i <= 9; $i++ ) {
+                        $properties[ $l->getId() ][ $parent['p'.$i] ]  = $l['p'.$i];
+                    }
+                }
+
+                $cats   = $catalog->findAll(array(
+                    'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
+                    'params'    => array($item->getId()),
+                ));
+
+                //$cats   = $catalog->findCatsByParent( $cat_id );
 
                 $this->tpl->assign(array(
-                    'category'  => $cat_item,
+                    'parent'    => $parent,
+                    'properties'=> $properties,
+                    'category'  => $item,
                     'list'      => $list,
                     'cats'      => $cats,
                     'paging'    => $paging,
@@ -114,25 +157,27 @@ class Controller_Catalog extends controller
 
                 $properties = array();
 
-                if ( $cat_item['parent'] ) {
-                    $category       = $catalog->find( $cat_item['parent'] );
-                    $properties = $this->buildParamView($category, $cat_item);
+                if ( $item->parent ) {
+                    $category       = $catalog->find( $item['parent'] );
+                    $properties = $this->buildParamView($category, $item);
                 }
 
                 $gallery_model  = $this->getModel('CatGallery');
-                $gallery        = $gallery_model->findGalleryByProduct( $cat_id, 0 );
+                //$gallery        = $gallery_model->findGalleryByProduct( $cat_id, 0 );
+
+                $gallery    = $gallery_model->findAll(array(
+                    'cond'      => ' cat_id = ? AND hidden = 0 ',
+                    'params'    => array( $cat_id ),
+                ));
 
                 $this->tpl->assign(array(
-                    'product'   => $cat_item,
+                    'item'      => $item,
                     'properties'=> $properties,
                     'gallery'   => $gallery,
                     'user'      => $this->user,
                 ));
 
-                $this->request->setTitle(
-                    ($this->page['title'] ? $this->page['title'] : $this->page['name']).
-                    ' &mdash; '.$cat_item['name']
-                );
+                $this->request->setTitle( $this->page['title'] . ' &mdash; '.$item['name'] );
                 $this->request->setContent( $this->tpl->fetch('catalog.product') );
             }
         } catch ( Exception $e ) {
@@ -150,9 +195,9 @@ class Controller_Catalog extends controller
      * @param array $item
      * @return array
      */
-    function buildParamView( $cat, $item )
+    function buildParamView( Data_Object_Catalog $cat, Data_Object_Catalog $item )
     {
-        $properties = array();
+        $properties = array( $item->getId() => array() );
 
         for ( $p = 0; $p < 10; $p ++ )
         {
@@ -180,10 +225,14 @@ class Controller_Catalog extends controller
                 continue;
             }
 
-            $properties[ $cat['p'.$p] ] = $item['p'.$p];
+            $properties[ $item->getId() ][ $cat['p'.$p] ] = $item[ 'p'.$p ];
+
+            $item->markClean();
         }
         return $properties;
     }
+
+
 
     /**
      * Редактирование / добавление раздела / товара каталога
@@ -211,14 +260,16 @@ class Controller_Catalog extends controller
         if ( $id !== "" ) // если раздел существует
         {
             $item       = $catalog->find( $id );
+
             $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
             $form->setData( $item->getAttributes() );
         }
         elseif( $type !== "" && $parent_id !== "" )
         {
-            //$parent     = $catalog->find( $parent_id );
-            $form->getField('parent')->setValue( $parent_id );
-            $form->getField('cat')->setValue( $type );
+            $parent     = $catalog->find( $parent_id );
+
+            $form->parent   = $parent_id;
+            $form->cat      = $type;
         }
         else {
             $this->request->addFeedback('Не указаны важные параметры');
@@ -247,16 +298,6 @@ class Controller_Catalog extends controller
                 }
 
                 $catalog->update( $object );
-                //printVar($form->getData());
-                /*if ( $catalog->update() ) {
-                    $this->request->addFeedback(t('Data save successfully'));
-                    if ( $id ) {
-                    } else {
-                        reload('', array('part'=>$catalog->get('parent')));
-                    }
-                } else {
-                    $this->request->addFeedback(t('Data not saved'));
-                }*/
             }
             else {
                 $this->request->addFeedback($form->getFeedbackString());
@@ -280,25 +321,20 @@ class Controller_Catalog extends controller
             $form->getField('absent')->show();
 
             $parent = $catalog->find( $parent_id );
-            if ( is_array( $parent ) ) {
-                foreach( $parent as $k => $p ) {
+            if ( $parent ) {
+                foreach( $parent->getAttributes() as $k => $p ) {
                     if ( preg_match('/p\d+/', $k) ) {
-                        if ( $p ) {
-                            $form->getField( $k )->setLabel( $p );
-                        }
-                        else {
-                            $form->getField( $k )->hide();
-                        }
+                        $field  = $form->getField( $k );
+                        trim($p) ? $field->setLabel( $p ) : $field->hide();
                     }
                 }
             }
 
             if ( $id ) {
                 $gallery    = $catalog_gallery->findAll(array(
-                    'cond'  => 'cat_id = :cat_id AND hidden = :hidden',
-                    'params'=> array(':cat_id'=>$id, ':hidden'=>0),
+                    'cond'  => ' cat_id = ? ',
+                    'params'=> array($id),
                 ));
-                //$gallery = $catalog_gallery->findGalleryByProduct($id);
                 $this->tpl->gallery = $gallery;
             }
         }
@@ -308,19 +344,16 @@ class Controller_Catalog extends controller
                 mkdir($icon_dir, 0777, true);
             }
             $icon_list = scandir($icon_dir);
-            foreach( $icon_list as $key => $item ) {
-                unset( $icon_list[$key] );
-                if ( preg_match( '/(\.gif|\.jpg|\.jpeg|\.png)/i', $item ) ) {
-                    $icon_list[$icon_dir.'/'.$item] = $item;
+            foreach( $icon_list as $icon_key => $icon_item ) {
+                unset( $icon_list[$icon_key] );
+                if ( preg_match( '/(\.gif|\.jpg|\.jpeg|\.png)/i', $icon_item ) ) {
+                    $icon_list[$icon_dir.'/'.$icon_item] = $icon_item;
                 }
             }
             $form->getField('icon')->setVariants( array_merge(array(''=>'нет иконки'), $icon_list ) );
         }
 
-        if ( ! isset($data['path']) ) {
-            $data['path']   = '[]';
-        }
-        $this->tpl->breadcrumbs = $this->adminBreadcrumbs($data['path']);
+        $this->tpl->breadcrumbs = $this->adminBreadcrumbs($item['path']);
         $this->tpl->form        = $form;
         $this->tpl->cat         = $form->id;
 
@@ -336,11 +369,14 @@ class Controller_Catalog extends controller
     function adminBreadcrumbs( $path )
     {
         $bc = array('<a '.href('').'>Каталог</a>'); // breadcrumbs
-        if ( $from_json =  unserialize( $path ) ) {
-            foreach( $from_json as $key => $val ) {
-                $bc[] =
-                    '<a '.href('', array('part'=>$val->id)).'>'.$val->name.'</a>
-                    <a '.href('', array('edit'=>$val->id)).'>'.icon('pencil', 'Правка').'</a>';
+
+        if ( $from_string =  @unserialize( $path ) ) {
+            if ( $from_string && is_array( $from_string ) ) {
+                foreach( $from_string as $key => $val ) {
+                    $bc[] =
+                            '<a '.href('', array('part'=>$val['id'])).'>'.$val['name'].'</a>
+                    <a '.href('', array('edit'=>$val['id'])).'>'.icon('pencil', 'Правка').'</a>';
+                }
             }
         }
         return '<div class="b-breadcrumbs">Путь: '.join(' &gt; ', $bc).'</div>';
@@ -458,12 +494,15 @@ class Controller_Catalog extends controller
         $part = $this->request->get('part');
         $part = $part ? $part : '0';
 
-        $parent = $catalog->find( $part );
+        try {
+            $parent = $catalog->find( $part );
+        } catch ( ModelException $e ) {
+            $parent = null;
+        }
 
         // Если корневой раздел
         if ( !$parent ) {
             $parent = $catalog->createObject(array('id'=>0, 'parent'=>0, 'path'=>'[]'));
-            $parent->markClean();
         }
 
         // Если смотрим список в товаре, то переместить на редактирование

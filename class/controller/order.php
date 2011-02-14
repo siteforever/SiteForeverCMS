@@ -4,7 +4,7 @@
  * @author keltanas
  * @link http://ermin.ru
  */
-class controller_Order extends Controller
+class Controller_Order extends Controller
 {
     function indexAction()
     {
@@ -12,10 +12,12 @@ class controller_Order extends Controller
         $this->request->setTitle('Мои заказы');
         $this->request->setContent('');
 
+        $user   = $this->app()->getAuth()->currentUser();
+
 
         $order  = $this->getModel('Order');
 
-        if ( !$this->user->get('id') || $this->user->getPermission() == USER_GUEST ) {
+        if ( ! $user->getId() || $user->perm == USER_GUEST ) {
             redirect("users/login");
         }
 
@@ -23,19 +25,20 @@ class controller_Order extends Controller
         {
             //print "cancel:$cancel";
             $can_order = $order->find( $cancel );
-            if( $can_order['user_id'] == $this->user->get('id') )
+            if( $can_order['user_id'] == $user->getId() )
             {
                 $can_order['status'] = '100';
                 $order->update( $can_order );
             }
-            //printVar($can_order);
         }
 
         // просмотр заказа
-        $item = $this->request->get('item', Request::INT);
+        $item = $this->request->get('item', FILTER_SANITIZE_NUMBER_INT);
+
         if ( $item )
         {
             $order_data = $order->find( $item );
+            
             if ( $order_data )
             {
                 if ( $this->user->get('id') != $order_data['user_id'] ) {
@@ -65,7 +68,13 @@ class controller_Order extends Controller
             }
         }
 
-        $list = $order->findAllByUserId( $this->user->get('id') );
+        $list   = $order->findAll(array(
+            'cond'      => 'user_id = ? AND status < 100',
+            'params'    => array( $user->getId() ),
+            'order'     => 'status, date DESC',
+        ));
+
+        //$list = $order->findAllByUserId( $user->getId() );
         $this->tpl->assign('list', $list);
         $this->request->setContent( $this->tpl->fetch('system:order.index') );
     }
@@ -92,7 +101,7 @@ class controller_Order extends Controller
             return;
         }
 
-        $cat = $this->getModel('Catalog');
+        //$cat = $this->getModel('Catalog');
 
         // готовим список к выводу
         $all_product = $this->basket->getAll();
@@ -101,7 +110,7 @@ class controller_Order extends Controller
         foreach( $all_product as $prod ) {
             $all_keys[] = $prod['id'];
         }
-        $goods = $cat->findGoodsById( $all_keys );
+        /*$goods = $cat->findGoodsById( $all_keys );
 
         foreach( $all_product as $key => &$product )
         {
@@ -113,7 +122,7 @@ class controller_Order extends Controller
                             $goods[$product['id']]['price1'];
             $product['summa']   = $product['price'] * $product['count'];
             $product['articul'] = $goods[$product['id']]['articul'];
-        }
+        }*/
 
         //printVar( $all_product );
 
@@ -121,8 +130,8 @@ class controller_Order extends Controller
         $complete = $this->request->get('complete');
         if ( $complete && $all_product ) {
             //$this->request->debug();
-            $ord = $this->getModel('Order');
-            $ord->createOrder( $all_product );
+            $order_model    = $this->getModel('Order');
+            $order_model->createOrder( $all_product );
             $this->basket->clear();
             redirect('order');
         }
@@ -146,10 +155,14 @@ class controller_Order extends Controller
 
         $model = $this->getModel('Order');
 
-        $cond = array();
+        $cond   = array();
+        $params = array();
+
         if ( $number = $this->request->get('number', FILTER_VALIDATE_INT) ) {
-            $cond[] = " ord.id = '{$number}' ";
+            $cond[]             = " id = :number ";
+            $params[':number']  = $number;
         }
+
         if ( $date = $this->request->get('date') ) {
             if ( $tstamp = strtotime( $date ) ) {
                 $mon    = date('n', $tstamp);
@@ -157,18 +170,49 @@ class controller_Order extends Controller
                 $yer    = date('Y', $tstamp);
                 $from   = mktime(0,0,0,$mon,$day,$yer);
                 $to     = mktime(23,59,59,$mon,$day,$yer);
-                $cond[] = " ord.date BETWEEN $from AND $to ";
+
+                $cond[]     = ' `date` BETWEEN :from AND :to ';
+                $params[':from']    = $from;
+                $params[':to']      = $to;
             }
         }
-        if ( $user = $this->request->get('user') ) {
-            $cond[] =  " ( u.login LIKE '%{$user}%' OR u.email LIKE '%{$user}%' ".
-                        " OR u.lname LIKE '%{$user}%' OR u.name LIKE '%{$user}%' ) ";
+
+        if ( $this->request->get('user') ) {
+            $user_model = $this->getModel('User');
+            $users  = $user_model->findAll(array(
+                'select'    => 'id',
+                'cond'      => ' ( login LIKE :user OR email LIKE :user '.
+                        ' OR lname LIKE :user OR name LIKE :user ) ',
+                'params'    => array(':user'=>$this->request->get('user')),
+            ));
+            $users_id    = array();
+            if ( $users ) {
+                foreach ( $users as $u ) {
+                    $users_id[] = $u->getId();
+                }
+            }
+            if ( $users_id && count( $users_id ) ) {
+                $cond[]     = ' user_id IN ( :users )';
+                $params[':users']   = $users_id;
+            }
         }
 
-        $count = $model->getCountForAdmin($cond);
+        $cond   = implode(' AND ', $cond);
+
+        $count  = $model->count( $cond, $params );
+
+        //$count = $model->getCountForAdmin($cond);
 
         $paging = $this->paging( $count, 20, 'admin/order' );
-        $orders = $model->findAllForAdmin($cond, $paging['offset'].','.$paging['perpage']);
+
+        $orders     = $model->findAll(array(
+            'cond'      => $cond,
+            'params'    => $params,
+            'order'     => '`date` DESC',
+            'limit'     => $paging->limit,
+        ));
+
+        //$orders = $model->findAllForAdmin($cond, $paging['offset'].','.$paging['perpage']);
 
         $this->tpl->assign(array(
             'orders'    => $orders,

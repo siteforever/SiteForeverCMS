@@ -2,8 +2,19 @@
 /**
  * Файловый менеджер
  */
-class controller_Elfinder extends controller
+class Controller_Elfinder extends Controller
 {
+    
+    function init()
+    {
+        $this->request->setTitle('ElFinder');
+
+        $this->request->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
+        $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
+        $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
+        $this->request->addScript( $this->request->get('path.misc') . '/admin/elfinder.js' );
+    }
+
     function indexAction()
     {
         if ( $this->request->get('connector') ) {
@@ -89,22 +100,3 @@ class controller_Elfinder extends controller
     }
 
 }
-
-/**
- * Simple example how to use logger with elFinder
- **/
-/*class elFinderLogger
-{
-    public function log($cmd, $ok, $context, $err='', $errorData = array()) {
-        if (false != ($fp = fopen('./log.txt', 'a'))) {
-            if ($ok) {
-                $str = "cmd: $cmd; OK; context: ".str_replace("\n", '', var_export($context, true))."; \n";
-            } else {
-                $str = "cmd: $cmd; FAILED; context: ".str_replace("\n", '', var_export($context, true))."; error: $err; errorData: ".str_replace("\n", '', var_export($errorData, true))."\n";
-            }
-            fwrite($fp, $str);
-            fclose($fp);
-        }
-    }
-}*/
-

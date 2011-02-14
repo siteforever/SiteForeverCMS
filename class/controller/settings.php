@@ -5,12 +5,6 @@
  */
 class controller_Settings extends Controller
 {
-    function init()
-    {
-        App::$request->set('template', 'index');
-    }
-    
-    
     function indexAction()
     {
         
@@ -23,12 +17,13 @@ class controller_Settings extends Controller
     function adminAction()
     {
         // используем шаблон админки
-        App::$request->set('tpldata.page.title', 'Настройка');
-        
-        $settings = App::$request->get('settings');
+        $this->request->setTitle('Настройка');
+
+        $settings   = $this->request->get('settings');
+        $settings   = ! $settings ? array() : $settings;
         
         if ( $settings ) {
-        	
+
             $update = array();
             foreach( $settings as $key => $r ) {
                 
@@ -41,8 +36,8 @@ class controller_Settings extends Controller
                 }
                 
                 if ( isset( $r['delete'] ) ) {
-                    App::$db->delete(DBSETTINGS, "id = '{$key}'");
-                    App::$request->addFeedback("Удален параметр № {$key}");
+                    //App::$db->delete(DBSETTINGS, "id = '{$key}'");
+                    $this->request->addFeedback("Удален параметр № {$key}");
                     continue;
                 }
                 
@@ -55,20 +50,22 @@ class controller_Settings extends Controller
                     'system'        => isset( $r['system'] ) ? 1 : 0,
                 );
             }
-            
+            /*
             if ( App::$db->insertUpdateMulti( DBSETTINGS, $update ) ) {
                 App::$request->addFeedback('Данные сохранены');
             } else {
                 App::$request->addFeedback('Данные не были сохранены');
-            }
+            }*/
         }
         
-        $router = Model::getModel('model_Settings');
-        $settings = $router->findAll();
+        //$model_settings = Model::getModel('Settings');
+        //$settings = $router->findAll();
         
-        App::$tpl->assign('settings', $settings);
-        
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:settings.admin'));
+        //App::$tpl->assign('settings', $settings);
+        $this->tpl->settings    = $settings;
+        $this->request->setContent( $this->tpl->fetch('system:settings.admin') );
+        //App::$request->set('tpldata.page.content', App::$tpl->fetch('system:settings.admin'));
+
     }
         
 }

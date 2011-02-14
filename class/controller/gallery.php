@@ -149,7 +149,7 @@ class controller_gallery extends Controller
      * @param model_galleryCategory $model
      * @return
      */
-    function editCat( model_galleryCategory $model )
+    function editCat( Model_galleryCategory $model )
     {
         $form = $model->getForm();
         //die(__FILE__.':'.__LINE__);
@@ -157,7 +157,8 @@ class controller_gallery extends Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
-                if ( ! $obj->getId() ) {
+                $obj->markNew();
+                if (  $obj && ! $obj->getId() ) {
                     reload('admin/gallery');
                 }
                 $this->request->addFeedback('Данные успешно сохранены');

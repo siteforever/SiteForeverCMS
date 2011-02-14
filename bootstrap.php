@@ -10,6 +10,9 @@ if ( version_compare(phpversion(), CORRECT_PHP_VERSION, '=' ) == true) {
     die ('PHP '.CORRECT_PHP_VERSION.' Only');
 }
 
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', true);
+
 //корень сайта
 define('ROOT', dirname(__FILE__));
 // разделитель директорий
@@ -65,13 +68,16 @@ session_start();
 
 
 // автозагрузка классов
-require_once 'application/abstract.php';
 require_once 'app.php';
 spl_autoload_register(array('App','autoload'));
 
 //require_once 'loader.php';
-require_once 'functions.php';
+if ( defined('TEST') ) {
+    require_once 'functionsTest.php';
+} else {
+    require_once 'functions.php';
+    $firephp = FirePHP::getInstance(true);
+    $firephp->registerErrorHandler();
+    $firephp->registerExceptionHandler();
+}
 
-//$firephp = FirePHP::getInstance(true);
-//$firephp->registerErrorHandler();
-//$firephp->registerExceptionHandler();

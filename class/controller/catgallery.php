@@ -31,14 +31,18 @@ class controller_catGallery extends Controller
     function indexAction()
     {
         $this->setAjax();
+        $this->request->setAjax( true, Request::TYPE_ANY );
+
+        $max_file_size = $this->config->get('catalog.gallery_max_file_size');
 
         //$catalog = Model::getModel('model_Catalog');
         $catalog_gallery = $this->getModel('CatGallery');
 
         $prod = $this->request->get('prod');
-        if ( $prod )
-        {
-            $this->tpl->prod = $prod;
+
+        if ( $prod ) {
+            $this->tpl->prod            = $prod;
+            $this->tpl->max_file_size   = $max_file_size;
             $this->tpl->display('system:catgallery.upload_form');
         }
 
@@ -47,17 +51,22 @@ class controller_catGallery extends Controller
         $thumb_prefix = $this->config->get('catalog.gallery_thumb_prefix');
         $middle_prefix = $this->config->get('catalog.gallery_middle_prefix');
 
-        if ( $reload = $this->request->get('reload', FILTER_SANITIZE_NUMBER_INT) ) {
-            $gallery = $catalog_gallery->findGalleryByProduct($reload);
+        if ( $reload = $this->request->get( 'reload', FILTER_SANITIZE_NUMBER_INT ) ) {
+
+            $gallery    = $catalog_gallery->findAll(array(
+                'cond'      => 'cat_id = ?',
+                'params'    => array( $reload ),
+            ));
+                //$gallery = $catalog_gallery->findGalleryByProduct($reload);
             $this->tpl->gallery = $gallery;
             $this->tpl->cat     = $reload;
-            $this->request->setContent($this->tpl->fetch('system:catgallery.admin_panel'));
+            $this->request->setContent( $this->tpl->fetch('system:catgallery.admin_panel') );
             return;
         }
 
         if ( $upload )
         {
-            $max_file_size = $this->config->get('catalog.gallery_max_file_size');
+            $obj_image  = $catalog_gallery->createObject();
 
             //printVar($_FILES);
 
@@ -75,15 +84,21 @@ class controller_catGallery extends Controller
                                 in_array( $images['type'][$i], array('image/jpeg', 'image/gif', 'image/png') )
                         ) {
                             $upload_ok = 1;
+
                             $dest = $this->config->get('catalog.gallery_dir').DS.substr( '0000'.$upload, -4, 4 );
+
                             if ( ! is_dir( ROOT.$dest ) ) {
                                 mkdir( ROOT.$dest, 0777, true );
                             }
+
                             $src  = $images['tmp_name'][$i];
 
-                            $catalog_gallery->set('cat_id', $upload);
-                            $catalog_gallery->insert();
-                            $g_id = $catalog_gallery->getId();
+                            $obj_image->cat_id  = $upload;
+                            $catalog_gallery->save( $obj_image );
+                            $g_id   = $obj_image->getId();
+                            //$catalog_gallery->set('cat_id', $upload);
+                            //$catalog_gallery->insert();
+                            //$g_id = $catalog_gallery->getId();
 
                             $img = $dest.DS.$g_id.'_'.$images['name'][$i];
                             $tmb = $dest.DS.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
@@ -92,7 +107,7 @@ class controller_catGallery extends Controller
                             if ( move_uploaded_file( $src, ROOT.$img ) )
                             {
                                 // обработка
-                                $catalog_gallery->set('image', str_replace( DS, '/', $img ) );
+                                $obj_image->image   = str_replace( DS, '/', $img );
 
                                 $thumb_h    = $this->config->get('catalog.gallery_thumb_h');
                                 $thumb_w    = $this->config->get('catalog.gallery_thumb_w');
@@ -102,16 +117,11 @@ class controller_catGallery extends Controller
                                 $m_method   = $this->config->get('catalog.gallery_middle_method');
 
                                 if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
-                                    $catalog_gallery->set('middle',
-                                        str_replace( DS, '/', $mdl )
-                                    );
+                                    $obj_image->middle  = str_replace( DS, '/', $mdl );
                                 };
                                 if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
-                                    $catalog_gallery->set('thumb',
-                                        str_replace( DS, '/', $tmb )
-                                    );
+                                    $obj_image->thumb   = str_replace( DS, '/', $tmb );
                                 };
-                                $catalog_gallery->update();
                             }
                         }
                     }
@@ -131,9 +141,16 @@ class controller_catGallery extends Controller
         $cat = $this->request->get('cat', FILTER_SANITIZE_NUMBER_INT);
 
         $del = $this->request->get('del', FILTER_SANITIZE_NUMBER_INT);
+
+        $gallery    = $catalog_gallery->findAll(array(
+            'cond'      => 'cat_id = ?',
+            'params'    => array( $reload ),
+        ));
+
         if ( $del ) {
-            $catalog_gallery->delete( $del );
-            $gallery = $catalog_gallery->findGalleryByProduct($cat);
+            //$catalog_gallery->delete( $del );
+            $catalog_gallery->remove( $del );
+            //$gallery = $catalog_gallery->findGalleryByProduct($cat);
             $this->tpl->gallery = $gallery;
             $this->tpl->cat     = $cat;
             $this->request->setContent($this->tpl->fetch('system:catgallery.admin_panel'));
@@ -142,9 +159,10 @@ class controller_catGallery extends Controller
         }
 
         $main = $this->request->get('main', FILTER_SANITIZE_NUMBER_INT);
+        
         if ( $main ) {
             $catalog_gallery->setDefault( $main, $cat );
-            $gallery = $catalog_gallery->findGalleryByProduct($cat);
+            //$gallery = $catalog_gallery->findGalleryByProduct($cat);
             $this->tpl->gallery = $gallery;
             $this->tpl->cat     = $cat;
             $this->request->setContent($this->tpl->fetch('system:catgallery.admin_panel'));

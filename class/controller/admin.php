@@ -113,7 +113,7 @@ class controller_Admin extends Controller
                 'controller'    => 'page',
                 'action'        => 'index',
                 'sort'          => 'pos',
-            ))->markClean();
+            ));
         }
 
         $edit_form  = $model->getForm();
@@ -124,7 +124,12 @@ class controller_Admin extends Controller
             {
                 $form_data  = $edit_form->getData();
 
-                if ( $model->findByRoute($edit_form->alias->getValue()) ) {
+                $found_page = $model->find(array(
+                    'cond'      => 'alias = :alias',
+                    'params'    => array(':alias'=>$edit_form->alias,),
+                ));
+
+                if ( $found_page ) {
                     $this->request->addFeedback(t('The page with this address already exists'));
                     return;
                 }
@@ -144,28 +149,30 @@ class controller_Admin extends Controller
             return;
         }
 
-        $edit_form->parent->setValue( $parent_id );
-        $edit_form->template->setValue( 'inner' );
+
+        $edit_form->parent      = $parent_id;
+        $edit_form->template    = 'inner';
 
         if ( isset($parent['alias']) ) {
-            $edit_form->alias->setValue( $parent['alias'] );
+            $edit_form->alias   = $parent['alias'];
         }
-        $edit_form->author->setValue( '1' );
+        
+        $edit_form->author  = '1';
 
-        $edit_form->date->setValue( time() );
-        $edit_form->update->setValue( time() );
+        $edit_form->date    = time();
+        $edit_form->update  = time();
 
         if ( isset($parent['controller']) ) {
-            $edit_form->controller->setValue( $parent['controller'] );
+            $edit_form->controller  = $parent['controller'];
         }
         if ( isset($parent['action']) ) {
-            $edit_form->action->setValue( $parent['action'] );
+            $edit_form->action      = $parent['action'];
         }
         $next_pos   = $model->getNextPos($parent_id);
-        $edit_form->pos->setValue( $next_pos );
+        $edit_form->pos     = $next_pos;
 
         if ( isset($parent['sort']) ) {
-            $edit_form->sort->setValue( $parent['sort'] );
+            $edit_form->sort    = $parent['sort'];
         }
 
         $this->request->setTitle( 'Добавить страницу' );

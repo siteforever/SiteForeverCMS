@@ -9,7 +9,8 @@ return array(
         'profile'   => true,
     ),
 
-    'logger'    => 'html',
+    'logger'    => 'firephp',
+    //'logger'    => 'html',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],

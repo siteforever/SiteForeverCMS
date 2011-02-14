@@ -7,10 +7,9 @@ class controller_System extends Controller
 {
     function indexAction()
     {
-        App::$request->set('tpldata.page.name', 'System config');
-        App::$request->set('tpldata.page.title', 'Конфигурация системы');
-        App::$request->set('tpldata.page.template', 'index');
-        
+        $this->request->setTitle('Конфигурация системы');
+        $this->request->set('tpldata.page.template', 'index');
+
         $sys = ini_get_all();
         
         foreach( $sys as $key => $value ) {
@@ -20,11 +19,9 @@ class controller_System extends Controller
                 $sys[ $key ] = $value;
             }
         }
-        
-        App::$tpl->assign('sys', $sys);
-        
-        //printVar( $sys );
-        
-        App::$request->set('tpldata.page.content', App::$tpl->fetch('system:system.index'));
+
+        $this->tpl->sys = $sys;
+
+        $this->request->setContent( $this->tpl->fetch('system:system.index') );
     }
 }
