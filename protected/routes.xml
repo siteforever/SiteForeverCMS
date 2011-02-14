@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<routes>
+    <!-- RSS -->
+    <route alias="rss">
+        <controller>rss</controller>
+    </route>
+
+    <!-- ADMIN -->
+    <route alias="admin/edit.*" system="1">
+        <controller>admin</controller>
+        <action>edit</action>
+    </route>
+    <route alias="admin/add.*" system="1">
+        <controller>admin</controller>
+        <action>add</action>
+    </route>
+    <route alias="admin/users.*" system="1">
+        <controller>users</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/settings" system="1">
+        <controller>settings</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/routes" system="1">
+        <controller>routes</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/order" system="1">
+        <controller>order</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/catalog" system="1">
+        <controller>catalog</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/catgallery" system="1">
+        <controller>catgallery</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/news" system="1">
+        <controller>news</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/gallery" system="1">
+        <controller>gallery</controller>
+        <action>admin</action>
+    </route>
+    <route alias="admin/settings" system="1">
+        <controller>settings</controller>
+    </route>
+    <route alias="admin.*" system="1">
+        <controller>admin</controller>
+    </route>
+    <route alias="system" system="1">
+        <controller>system</controller>
+    </route>
+
+    <!-- ORDER -->
+    <route alias="order" protected="1">
+        <controller>order</controller>
+    </route>
+    <route alias="order/create" protected="1">
+        <controller>order</controller>
+        <action>create</action>
+    </route>
+
+    <!-- BASKET -->
+    <route alias="basket">
+        <controller>basket</controller>
+    </route>
+
+
+    <!-- USERS -->
+    <route alias="users/logout" protected="1">
+        <controller>users</controller>
+        <action>logout</action>
+    </route>
+    <route alias="users/edit" protected="1">
+        <controller>users</controller>
+        <action>edit</action>
+    </route>
+    <route alias="users/restore">
+        <controller>users</controller>
+        <action>restore</action>
+    </route>
+    <route alias="users/register">
+        <controller>users</controller>
+        <action>register</action>
+    </route>
+    <route alias="users/login">
+        <controller>users</controller>
+        <action>login</action>
+    </route>
+    <route alias="users/cabinet" protected="1">
+        <controller>users</controller>
+        <action>cabinet</action>
+    </route>
+    <route alias="users/password" protected="1">
+        <controller>users</controller>
+        <action>password</action>
+    </route>
+    <route alias="users.*">
+        <controller>users</controller>
+    </route>
+
+    <!-- EL FINDER -->
+    <route alias="elfinder">
+        <controller>elfinder</controller>
+    </route>
+
+    <!-- TEMPLATES -->
+    <route alias="templates/edit" system="1">
+        <controller>templates</controller>
+        <action>edit</action>
+    </route>
+    <route alias="templates" system="1">
+        <controller>templates</controller>
+    </route>
+</routes>

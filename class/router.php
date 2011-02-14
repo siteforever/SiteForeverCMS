@@ -28,6 +28,7 @@ class Router
     {
         $this->request = $request;
         $route = $this->request->get('route');
+
         if ( is_array( $route ) ) {
             $route = 'index';
         }
@@ -103,7 +104,7 @@ class Router
             $url .= $par;
         }
 
-        if ( ! REWRITEURL ) {
+        if ( ! defined('REWRITEURL') || ! REWRITEURL ) {
             $url = "/index.php?route=".$url;
         }
         return $url;
@@ -116,7 +117,10 @@ class Router
     function routing()
     {
         // Если контроллер и действие указаны явно, то не производить маршрутизацию
-        if ( $this->request->get('controller') && $this->request->get('action') ) {
+        if ( $this->request->get('controller') ) {
+            if ( ! $this->request->get('action') ) {
+                $this->request->set('action', 'index');
+            }
             return;
         }
 
@@ -137,13 +141,32 @@ class Router
      */
     function findRoute()
     {
+
+        // сначала ищем маршрут в XML
+        $xml_routes_file    = SF_PATH.'/protected/routes.xml';
+        if ( file_exists( $xml_routes_file ) ) {
+            $xml_routes = new SimpleXMLIterator( file_get_contents( $xml_routes_file ) );
+            if ( $xml_routes ) {
+                foreach ( $xml_routes as $route ) {
+                    if ( $route['active'] !== "0" && preg_match( '@^'.$route['alias'].'$@ui', $this->route ) ) {
+                        $this->controller   = (string) $route->controller;
+                        $this->action       = $route->action ? (string) $route->action : 'index';
+                        $this->id           = $route['id'];
+                        $this->protected    = $route['protected'];
+                        $this->system       = $route['system'];
+                        return true;
+                    }
+                }
+            }
+        }
+
+
+        // Далее ищем маршрут в таблице
         $route = Model::getModel('Routes');
 
         $this->route_table = $route->findAll( array(
             'cond' => 'active = 1',
         ));
-
-        //Error::dump($this->route_table);
 
         // индексируем маршруты
         foreach( $this->route_table as $route )
