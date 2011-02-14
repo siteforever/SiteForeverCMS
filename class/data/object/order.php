@@ -8,5 +8,4 @@
  
 class Data_Object_Order extends Data_Object
 {
-
 }

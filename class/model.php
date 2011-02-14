@@ -7,8 +7,13 @@ class ModelException extends Exception {};
  */
 abstract class Model
 {
-    // @TODO Нужен способ обмена данными между контроллером и моделью
-    // @TODO Тестирование классов Data_Criteria и Data_Object
+    const HAS_MANY  = 'has_many';   // содержет много
+    const HAS_ONE   = 'has_one';    // содержет один
+    const BELONGS   = 'belongs';    // принадлежит
+    const MANY_MANY = 'many_many';  // много ко многим
+
+    const STAT      = 'stat';       // статистическая связь
+
     /**
      * @var db
      */
@@ -50,6 +55,12 @@ abstract class Model
     protected static $dao;
 
     /**
+     * Количество relation полей, которые должны быть загружены группой
+     * @var array
+     */
+    protected $with = array();
+
+    /**
      * @var PDO
      */
     protected $pdo = null;
@@ -75,17 +86,17 @@ abstract class Model
 
         if ( ! isset( self::$exists_tables ) ) {
             self::$exists_tables    = array();
-            $tables = $this->db->fetchAll("SHOW TABLES", false, db::F_ARRAY);
+            $tables = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
             foreach ( $tables as $t ) {
                 self::$exists_tables[]  = $t[0];
             }
         }
 
-        if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
-            //self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
-        }
+        /*if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
+            self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
+        }*/
 
-        $this->Init();
+        $this->init();
     }
 
     /**
@@ -112,8 +123,17 @@ abstract class Model
      * Инициализация
      * @return void
      */
-    protected function Init()
+    protected function init()
     {
+    }
+
+    /**
+     * Отношения модели с другими моделями
+     * @return array
+     */
+    function relation()
+    {
+        return array();
     }
 
     /**
@@ -133,7 +153,7 @@ abstract class Model
      */
     private function addNewTable( Data_Table $table )
     {
-        $this->db->query($this->table->getCreateTable());
+        $this->getDB()->query( $this->table->getCreateTable() );
         self::$exists_tables[]  = (string) $table;
     }
 
@@ -146,7 +166,7 @@ abstract class Model
     final static public function getModel( $class_name )
     {
         if ( strpos( strtolower( $class_name ), 'model_' ) === false ) {
-            $class_name = 'model_'.$class_name;
+            $class_name = 'Model_'.$class_name;
         }
         //var_dump( isset( self::$all_class[ $class_name ] ) );
 
@@ -210,41 +230,21 @@ abstract class Model
      * Класс для контейнера данных
      * @return string
      */
-    public abstract function objectClass();
-
-    /**
-     * @abstract
-     * @return string
-     */
-    abstract public function tableClass();
-
-    /**
-     * Установка значения поля
-     * @deprecated
-     * @param  $key
-     * @param  $value
-     * @return Model
-     */
-    public function set( $key, $value )
+    //public abstract function objectClass();
+    public function objectClass()
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
-        $this->data[$key] = $value;
-        return $this;
+        return 'Data_Object_'.substr( get_class( $this ), 6 );
     }
 
     /**
-     * Вернет значение поля
-     * @deprecated
-     * @param  $key
-     * @return array|null
+     * Класс таблицы БД
+     * @abstract
+     * @return string
      */
-    public function get( $key )
+    //abstract public function tableClass();
+    public function tableClass()
     {
-        App::getInstance()->getLogger()->log('use deprecated method '.__METHOD__);
-        if ( isset($this->data[$key]) ) {
-            return $this->data[$key];
-        }
-        return null;
+        return 'Data_Table_'.substr( get_class( $this ), 6 );
     }
 
     /**
@@ -255,7 +255,9 @@ abstract class Model
     {
         if ( is_null( $this->table ) ) {
             $class_name = $this->tableClass();
+
             $this->table    = new $class_name();
+
             if ( ! $this->isExistTable( $this->table ) ) {
                 $this->addNewTable( $this->table );
                 $this->onCreateTable();
@@ -283,46 +285,61 @@ abstract class Model
     }
 
     /**
+     * Установить связи для следующего запроса
+     * @return Model
+     */
+    function with()
+    {
+        $this->with = func_get_args();
+        return $this;
+    }
+
+    /**
      * Finding data by primary key
      * @throws Exception
-     * @param int|array $id
+     * @param int|array|Data_Criteria $id
      * @return Data_Object
      */
     final public function find( $id )
     {
+        $with   = $this->with;
+        $this->with = array();
+
         if ( empty( $id ) ) {
-            $id = 0;
+            throw new ModelException('Criterion must not be empty');
         }
 
-        if ( is_numeric( $id ) ) {
+        if ( is_object( $id ) && $id instanceof Data_Criteria ) {
+            $criteria   = $id;
+        }
+
+        if ( ! isset ( $criteria ) && is_numeric( $id ) ) {
             $obj = $this->getFromMap( $id );
             if ( $obj ) {
                 return $obj;
             }
-            $criteria   = new Data_Criteria($this->table, array(
-                                   'cond'  => 'id = :id',
-                                   'params'=> array(':id'=>$id),
-                                   'limit' => '1',
-                              ));
+            $crit   = array(
+                'cond'  => 'id = :id',
+                'params'=> array(':id'=>$id),
+                'limit' => '1',
+            );
         } elseif ( is_array( $id ) ) {
-
             $default = array(
                 'select'    => '*',
                 'cond'      => 'id = :id',
                 'params'    => array(':id'=>1),
                 'limit'     => '1',
             );
-
-            $criteria   = new Data_Criteria($this->table, array_merge($default,$id));
+            $crit   = array_merge($default,$id);
         } else {
-            throw new ModelException('Undefined parameter format');
+            throw new ModelException('Not valid criteron');
         }
 
-        $data = $this->db->fetch(
-            $criteria->getSQL(),
-            db::F_ASSOC,
-            $criteria->getParams()
-        );
+        if ( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
+            $criteria   = new Data_Criteria( $this->getTable(), $crit );
+        }
+
+        $data = $this->db->fetch( $criteria->getSQL() );
 
         if ( $data ) {
             $obj_data   = $this->createObject( $data );
@@ -337,21 +354,111 @@ abstract class Model
      * @param bool $do_index
      * @return array
      */
-    final public function findAll( $crit = array(), $do_index   = false )
+    final public function findAll( $crit = array() )
     {
-        $criteria   = new Data_Criteria( $this->table, $crit );
+        $with   = $this->with;
+        $this->with = array();
 
-        //printVar($criteria->getSQL());
+        if ( is_array( $crit ) ) {
+            $criteria   = new Data_Criteria( $this->getTable(), $crit );
+        }
+        elseif ( is_object( $crit ) && $crit instanceof Data_Criteria ) {
+            $criteria   = $crit;
+        }
+        else {
+            throw new ModelException('Not valid criteria');
+        }
 
-        $raw    = $this->db->fetchAll($criteria->getSQL(), $do_index, DB::F_ASSOC, $criteria->getParams() );
+        $raw    = $this->db->fetchAll($criteria->getSQL(), true);
         $collection = array();
-        //printVar($raw);
+
         if ( $raw ) {
             foreach ( $raw as $key => $data ) {
                 $collection[$key]   = $this->createObject( $data );
             }
         }
+
+        if ( count( $raw ) && count( $with ) ) {
+            $relation   = $this->relation();
+
+            $keys   = array_keys( $collection );
+            foreach ( $with as $rel ) {
+
+                $model  = self::getModel( $relation[ $rel ][1] );
+                $key    = $relation[ $rel ][2];
+
+                switch ( $relation[$rel][0] ) {
+                    case self::HAS_ONE:
+
+                        $objects    = $model->findAll(array(
+                            'cond'      => " $key IN ( ? ) ",
+                            'params'    => array( implode(",", $keys) ),
+                        ));
+
+                        break;
+                }
+            }
+        }
+
+
+
+
+
+
         return $collection;
+    }
+
+    /**
+     * Поиск по отношению
+     * @param string $rel
+     * @param mixed $data
+     * @return array|Data_Object
+     */
+    final public function findByRelation( $rel, $data )
+    {
+        if ( is_object( $data ) && $data instanceof Data_Object ) {
+            $obj    = $data;
+        }
+
+        $relation   = $this->relation();
+
+        $key        = $relation[ $rel ][2];
+
+        $model  = self::getModel( $relation[ $rel ][1] );
+
+        if (    $relation[ $rel ][0] == self::HAS_ONE ||
+                $relation[ $rel ][0] == self::HAS_MANY
+        ) {
+            $criteria = array(
+                'cond'  => " {$key} IN (:key) ",
+                'params'=> array(":key"=>$obj->getId()),
+            );
+        }
+
+        switch ( $relation[$rel][0] ) {
+            case self::HAS_ONE:
+                return $model->find( $criteria );
+                break;
+
+            case self::HAS_MANY:
+                return $model->findAll( $criteria );
+                break;
+
+            case self::BELONGS:
+                if ( $obj->$key ) {
+                    return $model->find( $obj->$key );
+                }
+                return null;
+                break;
+
+            case self::MANY_MANY:
+
+                break;
+
+            case self::STAT:
+                $model->count( $criteria['cond'], $criteria['params'] );
+                break;
+        }
     }
 
     /**
@@ -362,14 +469,13 @@ abstract class Model
     public function save( Data_Object $obj )
     {
         $data   = $obj->getAttributes();
-        $ret    = false;
-
-        if ( isset( $data['id'] ) && is_numeric( $data['id'] ) && $data['id'] ) {
-            $ret = $this->db->update( (string) $this->table, $data, 'id = '.$data['id'] );
+        $ret    = null;
+        if ( $obj->getId() ) {
+            $ret = $this->db->update( $this->getTableName(), $data, 'id = '.$obj->getId() );
             $obj->markClean();
         }
         else {
-            $ret = $this->db->insert( (string) $this->table, $data );
+            $ret = $this->db->insert( $this->getTableName(), $data );
             $obj->id  = $ret;
             $this->addToMap( $obj );
         }
@@ -383,8 +489,10 @@ abstract class Model
      */
     final public function delete( $id )
     {
-        if ( $id ) {
-            $this->db->delete($this->table, 'id = :id', array(':id'=>$id));
+        $obj    = $this->find($id);
+        if ( $obj ) {
+            Data_Watcher::del( $obj );
+            $this->getDB()->delete($this->getTableName(), 'id = :id', array(':id'=>$obj->getId()));
         }
     }
 
@@ -396,14 +504,16 @@ abstract class Model
      */
     final public function count( $cond = '', $params = array() )
     {
-        $sql    = array();
-        $sql[]  = "SELECT COUNT(*) FROM {$this->table}";
-        if ( $cond )
-            $sql[] = "WHERE {$cond}";
+        $criteria   = new Data_Criteria($this->getTable(), array(
+            'select'    => 'COUNT(*)',
+            'cond'      => $cond,
+            'params'    => $params,
+        ));
 
-        $count  = $this->db->fetchOne(
-            join("\n", $sql), $params
-        );
+        $sql    = $criteria->getSQL();
+
+        $count  = $this->db->fetchOne( $sql );
+        
         if ( $count )
             return $count;
 

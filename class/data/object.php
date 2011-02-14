@@ -8,6 +8,7 @@
 
 abstract class Data_Object implements ArrayAccess//, Iterator
 {
+
     protected $data   = array();
 
     /**
@@ -41,13 +42,21 @@ abstract class Data_Object implements ArrayAccess//, Iterator
 
         $this->setAttributes( $data );
 
-        if ( is_null( $this->getId() ) ) {
+
+        // @TODO Пока не будем помечать новые объекты для добавления
+        /*if ( is_null( $this->getId() ) ) {
             $this->markNew();
-        }
+        }*/
     }
 
     function __get($name)
     {
+        $relation = $this->model->relation();
+
+        if ( isset( $relation[ $name ] ) ) {
+            return $this->model->findByRelation( $name, $this );
+        }
+
         if ( $this->offsetExists( $name ) ) {
             return $this->offsetGet( $name );
         }

@@ -40,4 +40,15 @@ class Data_Object_User extends Data_Object
         $this->data['status']   = 0;
     }
 
+
+    /**
+     * Возвращает права пользователя
+     * @return int
+     */
+    function getPermission()
+    {
+        return $this->data['perm'];
+    }
+
+
 }

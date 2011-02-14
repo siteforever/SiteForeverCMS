@@ -93,6 +93,23 @@ class Data_Watcher
         $inst->all[ $inst->globalKey($obj) ] = $obj;
     }
 
+    /**
+     * Удаление объекта из хранилища
+     * @static
+     * @param Data_Object $obj
+     * @return void
+     */
+    static function del( Data_Object $obj )
+    {
+        self::addClean( $obj );
+
+        $inst   = self::instance();
+        $key    = $inst->globalKey($obj);
+        if ( isset( $inst->all[ $key ] ) ) {
+            unset( $inst->all[ $key ] );
+        }
+    }
+
     static function addDirty( Data_Object $obj )
     {
         $inst = self::instance();
@@ -114,10 +131,6 @@ class Data_Watcher
     {
         $inst = self::instance();
         unset( $inst->dirty[$inst->globalKey($obj)] );
-
-        /*if ( $key = array_search( $obj, $inst->new, true ) ) {
-            unset( $inst->new[ $key ] );
-        }*/
         if ( in_array( $obj, $inst->new, true ) )
         {
             $pruned = array();
