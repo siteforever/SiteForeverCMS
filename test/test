@@ -1,3 +1,6 @@
 #!/bin/bash
 clear
+echo "   **************************"
+echo "   * * *   TEST BEGIN   * * *"
+echo "   **************************"
 phpunit --verbose Test.php

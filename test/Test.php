@@ -5,11 +5,14 @@
  * @link http://ermin.ru
  */
 
+define('TEST', true);
+
 if ( ! defined('PHPUnit_MAIN_METHOD') ) {
     define('PHPUnit_MAIN_METHOD', 'Test::main');
 }
 
 define('CORRECT_PHP_VERSION', '5.2.0');
+
 
 
 define('SF_PATH', realpath( dirname(__FILE__).DIRECTORY_SEPARATOR.'..' ));
@@ -33,6 +36,8 @@ require_once 'RequestTest.php';
 require_once 'AppTest.php';
 require_once 'ControllerTest.php';
 require_once 'BasketTest.php';
+require_once 'Data_CriteriaTest.php';
+require_once 'ModelTest.php';
 
 
 
@@ -50,9 +55,14 @@ class Test {
         $ts = new PHPUnit_Framework_TestSuite( 'Test Classes' );
         $ts->addTestSuite('SysConfigTest');
         $ts->addTestSuite('RequestTest');
+        $ts->addTestSuite('Data_CriteriaTest');
+        $ts->addTestSuite('ModelTest');
+
         $ts->addTestSuite('AppTest');
         $ts->addTestSuite('ControllerTest');
         $ts->addTestSuite('BasketTest');
+
+
 
         return $ts;
     }

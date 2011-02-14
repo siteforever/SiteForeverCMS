@@ -33,13 +33,13 @@ class BasketTest extends PHPUnit_Framework_TestCase
      */
     public function testAdd()
     {
-        $this->object->add( 'product', 7, 5.55, 'some info' );
+        $this->object->add( 0, 'product', 7, 5.55, 'some info' );
 
         $products   = $this->object->getAll();
 
         $found  = false;
         foreach ( $products as $product ) {
-            if ( $product['id'] == 'product' ) {
+            if ( $product['name'] == 'product' ) {
                 $found  = true;
                 $this->assertEquals( $product['count'], 7, 'Count not equal' );
                 $this->assertEquals( $product['price'], 5.55, 'Price not equal' );
@@ -56,13 +56,12 @@ class BasketTest extends PHPUnit_Framework_TestCase
      */
     public function testSetCount()
     {
-        $this->assertTrue( $this->object->setCount('product', 10), 'Count not setted' );
-
+        $this->assertTrue( $this->object->setCount('product', 10) );
         $products   = $this->object->getAll();
 
         foreach ( $products as $product ) {
-            if ( $product['id'] == 'product' ) {
-                $this->assertEquals( $product['count'], 10, 'Count not equal' );
+            if ( $product['name'] == 'product' ) {
+                $this->assertEquals( $product['count'], 10 );
                 break;
             }
         }
@@ -74,9 +73,9 @@ class BasketTest extends PHPUnit_Framework_TestCase
     public function testGetCount()
     {
         $this->assertEquals( $this->object->getCount('product'), 10, 'Count not correspond test value' );
-        $this->object->add('prod2', 5, 7.66, 'test prod');
+        $this->object->add( 0, 'prod2', 5, 7.66, 'test prod');
         $this->assertEquals( $this->object->getCount(), 15, 'Count not correspond test value' );
-        $this->object->add('product', 5, 5.65, 'prod for test');
+        $this->object->add( 0, 'product', 5, 5.65, 'prod for test');
         $this->assertEquals( $this->object->getCount(), 20, 'Count not correspond test value' );
     }
 
@@ -94,9 +93,7 @@ class BasketTest extends PHPUnit_Framework_TestCase
      */
     public function testCount()
     {
-        $this->assertEquals( $this->object->getCount('product'), 15 );
-        $this->assertEquals( $this->object->getCount('prod2'), 5 );
-        $this->assertEquals( $this->object->getCount(), 20 );
+        $this->assertEquals( $this->object->count(), 2 );
     }
 
     /**
@@ -124,6 +121,9 @@ class BasketTest extends PHPUnit_Framework_TestCase
     {
         $this->object->del('product', 7);
         $this->assertEquals( $this->object->getCount('product'), 8 );
+
+        $this->object->del('product');
+        $this->assertNull( $this->object->getCount('product') );
     }
 
     /**
