@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-abstract class Auth_Abstract
+abstract class Auth
 {
     /**
      * @var Data_Object_User
@@ -30,7 +30,7 @@ abstract class Auth_Abstract
 
     function __construct()
     {
-        $this->model    = Model::getModel('User');
+        $this->model    = $this->app()->getModel('User');
 
         if ( $this->getId() ) {
             $obj    = $this->model->find( (int) $this->getId() );
@@ -43,6 +43,14 @@ abstract class Auth_Abstract
             ));
             $this->user->markClean();
         }
+    }
+
+    /**
+     * @return Application_Abstract
+     */
+    function app()
+    {
+        return App::getInstance();
     }
 
     /**
@@ -82,12 +90,11 @@ abstract class Auth_Abstract
         }
 
         $user = $this->model->find(array(
-            'cond' => 'login = :login',
-            'params'=> array(':login'=>$login),
+            'cond' => 'login = ?',
+            'params'=> array($login),
         ));
 
-        if ( $user )
-        {
+        if ( $user ) {
             //print_r( $user->getAttributes() );
             if ( $user->perm < USER_USER ) {
                 $this->error    = true;
@@ -115,7 +122,7 @@ abstract class Auth_Abstract
             if ( $user->perm == USER_ADMIN ) {
                 // Авторизация Sypex Dumper
                 $_SESSION['sxd_auth']   = 1;
-                $_SESSION['sxd_conf']   = CONFIG;
+                $_SESSION['sxd_conf']   = $this->app()->getConfig()->get('db');
             }
 
             $this->error    = false;
@@ -125,8 +132,6 @@ abstract class Auth_Abstract
 
         $this->error    = true;
         $this->message  = t('Your login is not registered');
-
-        //Data_Watcher::instance()->dumpNew();
     }
 
 
@@ -180,16 +185,19 @@ abstract class Auth_Abstract
         // Надо сохранить, чтобы знать id
         if ( $this->model->save( $obj ) )
         {
-            App::$tpl->data = $obj;
-            App::$tpl->sitename = App::$config->get('sitename');
-            App::$tpl->siteurl  = App::$config->get('siteurl');
+            $tpl    = $this->app()->getTpl();
+            $config = $this->app()->getConfig();
 
-            $msg = App::$tpl->fetch('system:users.register');
+            $tpl->data = $obj;
+            $tpl->sitename = $config->get('sitename');
+            $tpl->siteurl  = $config->get('siteurl');
+
+            $msg = $tpl->fetch('system:users.register');
 
             //print $msg;
 
             sendmail(
-                App::$config->get('sitename').' <'.App::$config->get('admin').'>',
+                $config->get('sitename').' <'.$config->get('admin').'>',
                 $obj->email,
                 'Подтверждение регистрации',
                 $msg
@@ -210,11 +218,13 @@ abstract class Auth_Abstract
      */
     function confirm()
     {
+        $request    = $this->app()->getRequest();
+
         /**
          * @var Data_Object_User $user
          */
-        $user_id = App::getInstance()->getRequest()->get('userid', FILTER_VALIDATE_INT);
-        $confirm = App::getInstance()->getRequest()->get('confirm');
+        $user_id = $request->get('userid', FILTER_VALIDATE_INT);
+        $confirm = $request->get('confirm');
 
         if ( $user_id && $confirm )
         {
@@ -238,17 +248,8 @@ abstract class Auth_Abstract
 
         $this->error    = true;
         $this->message  = 'Ваш аккаунт не подвержден, обратитесь к '.
-                '<a href="mailto:'.App::$config->get('admin').'">администрации сайта</a>';
+                '<a href="mailto:'.$this->app()->getConfig()->get('admin').'">администрации сайта</a>';
         return false;
-    }
-
-    /**
-     * Возвращает права пользователя
-     * @return int
-     */
-    function getPermission()
-    {
-        return $this->user->perm;
     }
 
     /**

@@ -1,7 +1,4 @@
 <?php
-
-class ControllerExeption extends Exception {}
-
 /**
  * Интерфейс контроллера
  * @author keltanas aka Nikolay Ermin
@@ -71,8 +68,11 @@ abstract class Controller
 
         //print "id = {$this->request->get('id')}\n";
 
-        $page   = $this->getModel('Structure')->find( $this->request->get('id') );
-        //$page   = null;
+        try {
+            $page   = $this->getModel('Structure')->find( $this->request->get('id') );
+        } catch ( ModelException $e ) {
+            $page   = null;
+        }
 
         if ( $page ) {
             if( ! $page->title ) {
@@ -100,9 +100,21 @@ abstract class Controller
 
         $this->tpl->request = $this->request;
         $this->tpl->page    = $this->page;
+        $this->tpl->auth    = $this->app()->getAuth();
+
+        $this->init();
     }
 
     /**
+     * Уничтожение контроллера
+     */
+    function __destruct()
+    {
+        $this->deInit();
+    }
+
+    /**
+     * Приложение
      * @return Application_Abstract
      */
     function app()
@@ -110,9 +122,20 @@ abstract class Controller
         return $this->app;
     }
 
+    /**
+     * Инициализация
+     * @return void
+     */
+    function init()
+    {
+    }
+
+    /**
+     * Деинициализация
+     * @return void
+     */
     function deInit()
     {
-        //$this->page->markClean();
     }
 
     /**
@@ -122,7 +145,7 @@ abstract class Controller
      */
     function getModel($model)
     {
-        return Model::getModel('model_'.$model);
+        return Model::getModel($model);
     }
 
     /**
@@ -176,7 +199,7 @@ abstract class Controller
      * @param $count
      * @param $perpage
      * @param $link
-     * @return array
+     * @return Pager
      */
     function paging( $count, $perpage, $link )
     {

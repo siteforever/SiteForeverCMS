@@ -210,7 +210,8 @@ class Error
      */
     static function dump( $var )
     {
-        $val = print_r($var, true);
+        //$val = print_r($var, true);
+        $val = var_export($var, true);
         $val = preg_replace(array(
             '/array/xi',
             //'\([\w+\])xi',

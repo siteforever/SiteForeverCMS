@@ -36,19 +36,17 @@ class ControllerResolver
     function callController()
     {
         if ( ! $command = $this->resolveController() ) {
-            throw new Application_Exception('Controller not resolved');
+            throw new ControllerException('Controller not resolved');
         }
 
         if ( class_exists( $command['controller'] ) )
         {
             $reflection_class = new ReflectionClass( $command['controller'] );
-            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
             /**
              * @var Controller $controller
              */
             $controller = new $command['controller']( $this->app );
-            //print $controller_class.'::'.$action;
-            //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
+            
             if ( $reflection_class->hasMethod( 'init' ) ) {
                 $controller->init();
             }
@@ -61,11 +59,11 @@ class ControllerResolver
                 $controller->deInit();
             }
             else {
-                throw new ControllerExeption(t('Could not start the controller').' '.$command['controller']);
+                throw new ControllerException(t('Could not start the controller').' '.$command['controller']);
             }
         }
         else {
-            throw new ControllerExeption(t('Unable to find controller').' '.$command['controller']);
+            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
         }
         return $return;
     }

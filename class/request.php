@@ -120,6 +120,19 @@ class Request
     }
 
     /**
+     * Установить обработку аякс принудительно
+     * @param bool $ajax
+     * @param string $type
+     * @return void
+     */
+    function setAjax( $ajax = false, $type  = self::TYPE_ANY )
+    {
+        $this->ajax = $ajax;
+        if ( $ajax )
+            $this->ajax_type    = $type;
+    }
+
+    /**
      * Является ли запрос аяксовым
      * @return bool
      */
@@ -320,6 +333,25 @@ class Request
             return $this->request['tpldata']['page']['title'];
         }
         return '';
+    }
+
+    /**
+     * Установит имя шаблона для вида
+     * @param  $tpl
+     * @return void
+     */
+    function setTemplate( $tpl )
+    {
+        $this->request['template']  = $tpl;
+    }
+
+    /**
+     * Вернет имя текущего шаблона для вида
+     * @return array|string
+     */
+    function getTemplate()
+    {
+        return $this->request['template'];
     }
 
     /**

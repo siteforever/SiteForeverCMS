@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class Auth_Session extends Auth_Abstract
+class Auth_Session extends Auth
 {
     /**
      * Id текущего пользователя

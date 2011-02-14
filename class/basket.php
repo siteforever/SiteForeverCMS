@@ -31,13 +31,20 @@ abstract class Basket
      * @param float $price
      * @param string $details
      */
-    function add( $id, $count, $price, $details = '' )
+    function add( $id = '', $name, $count, $price, $details = '' )
     {
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
         }
+
+        if ( ! $id )
+            $id = $name;
+
+        if ( $id && ! $name )
+            $name   = $id;
+
         foreach ( $this->data as &$prod ) {
-            if ( $prod['id'] == $id ) {
+            if ( @$prod['name'] == $name || @$prod['id'] == $id ) {
                 $prod['count'] += $count;
                 $prod['price']  = $price;
                 $prod['details']    = $details;
@@ -46,6 +53,7 @@ abstract class Basket
         }
         $this->data[] = array(
             'id'    => $id,
+            'name'  => $name,
             'count' => $count,
             'price' => $price,
             'details'=>$details,
@@ -58,11 +66,15 @@ abstract class Basket
      * @param  $count
      * @return void
      */
-    function setCount( $id, $count )
+    function setCount( $name, $count )
     {
-        foreach ( $this->data as &$prod ) {
-            if ( $prod['id'] == $id ) {
-                $prod['count']  = $count;
+        foreach ( $this->data as $i => &$prod ) {
+            if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
+                if ( $count > 0 )
+                    $prod['count']  = $count;
+                else
+                    unset( $this->data[$i] );
+                
                 return true;
             }
         }
@@ -73,17 +85,18 @@ abstract class Basket
      * Количество данного товара в корзине
      * @param string $id
      */
-    function getCount( $id = '' )
+    function getCount( $name = '' )
     {
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
         }
-        if ( $id ) {
+        if ( $name ) {
             foreach ( $this->data as $prod ) {
-                if ( $prod['id'] == $id ) {
+                if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
                     return $prod['count'];
                 }
             }
+            return null;
         }
         else {
             $count = 0;
@@ -94,10 +107,10 @@ abstract class Basket
         }
     }
     
-    function getPrice( $id )
+    function getPrice( $name )
     {
         foreach ( $this->data as $prod ) {
-            if ( $prod['id'] == $id ) {
+            if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
                 return $prod['price'];
             }
         }
@@ -110,18 +123,16 @@ abstract class Basket
      * @param string $id
      * @param int $count
      */
-    function del( $id, $count = 0 )
+    function del( $name, $count = 0 )
     {
-        foreach ( $this->data as $i => $prod ) {
-            if ( $prod['id'] == $id ) {
-                $new_count  = $prod['count'] - $count;
-                if ( $new_count < 0 ) {
-                    unset( $this->data[$i] );
-                    break;
-                }
-                $this->data[$i]['count']    = $new_count;
-            }
+        $old_count  = $this->getCount( $name );
+        $new_count  = $old_count - $count;
+
+        if ( $count <= 0 || $new_count <= 0 ) {
+            $this->setCount($name, 0);
+            return 0;
         }
+        $this->setCount($name, $new_count);
     }
 
     /**
@@ -148,14 +159,14 @@ abstract class Basket
      * Сумма заказа
      * @return float
      */
-    function getSum( $id = '' )
+    function getSum( $name = '' )
     {
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
         }
-        if ( $id ) {
+        if ( $name ) {
             foreach ( $this->data as $prod ) {
-                if ( $prod['id'] == $id ) {
+                if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
                     return $prod['count'] * $prod['price'];
                 }
             }

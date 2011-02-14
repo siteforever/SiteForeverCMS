@@ -9,7 +9,7 @@ class dbException extends Exception {};
  * @author  Ermin Nikolay
  * @link    http://ermin.ru
  */
-class db
+class DB
 {
     // @TODO Убрать зависимости от системы.
     // @TODO Перевести на PDO (Переведено. Стадия тестирования)
@@ -211,6 +211,12 @@ class db
 
         $this->return = $this->resource->exec($sql);
 
+
+        if ( $this->return === false ) {
+            $error = $this->resource->errorInfo();
+            throw new dbException( $error[2] );
+        }
+
         //$this-> = "";
         switch ($m[1]) {
             case 'UPDATE':
@@ -235,7 +241,6 @@ class db
         $this->time += $exec;
 
         $error = $this->resource->errorInfo();
-
         $this->errno = 0;
         $this->error = '';
         if ( isset($error[1]) && isset($error[2]) ) {
@@ -265,7 +270,7 @@ class db
             }
         }
 
-        $this->result = $this->query("DELETE FROM {$table} WHERE {$where}");
+        $this->result = $this->query("DELETE FROM `{$table}` WHERE {$where}");
         if ( !$this->errno ) {
             return $this->result;
         }

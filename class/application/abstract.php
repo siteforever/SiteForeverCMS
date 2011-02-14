@@ -59,7 +59,7 @@ abstract class Application_Abstract
     static $user;
 
     /**
-     * @var Auth_Abstract
+     * @var Auth
      */
     protected $auth;
 
@@ -74,6 +74,12 @@ abstract class Application_Abstract
      * @var int
      */
     static $start_time = 0;
+
+    /**
+     * Время работы контроллера
+     * @var int
+     */
+    static $controller_time = 0;
 
     /**
      * @var Logger_Interface
@@ -128,7 +134,7 @@ abstract class Application_Abstract
     /**
      * Получить объект авторизации
      * @throws Exception
-     * @return Auth_Abstract
+     * @return Auth
      */
     function getAuth()
     {
@@ -217,6 +223,7 @@ abstract class Application_Abstract
                     $this->logger   = new Logger_Blank();
             }
         }
+
         return $this->logger;
     }
 

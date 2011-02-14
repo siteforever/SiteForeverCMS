@@ -1,4 +1,7 @@
 <?php
+
+require_once 'application/abstract.php';
+
 /**
  * Класс приложение
  * FronController
@@ -33,6 +36,7 @@ class App extends Application_Abstract
         if ( $this->getConfig()->get('debug.profile') ) {
             $this->logger->log("Total SQL: ".count( Model::getDB()->getLog()).
                                "; time: ".round( Model::getDB()->time, 3)." sec.", 'app');
+            $this->logger->log("Controller time: ".round(self::$controller_time, 3)." sec.", 'app');
             $this->logger->log("Execution time: ".round(microtime(true)-self::$start_time, 3)." sec.", 'app');
             $this->logger->log("Required memory: ".round(memory_get_usage() / 1024, 3)." kb.", 'app');
         }
@@ -95,8 +99,10 @@ class App extends Application_Abstract
             }
         }
 
+        self::$controller_time  = microtime(1);
         $controller_resolver    = new ControllerResolver( $this );
         $result = $controller_resolver->callController();
+        self::$controller_time  = microtime(1) - self::$controller_time;
 
         $this->invokeView( $result ); 
 
@@ -128,7 +134,7 @@ class App extends Application_Abstract
         $this->getTpl()->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
         $this->getTpl()->request     = $request;
 
-        if ( ! self::$ajax )
+        if ( ! $request->getAjax() )
         {
             header('Content-type: text/html; charset=utf-8');
 
