@@ -74,21 +74,4 @@ class Model_CatGallery extends Model
         $data['cat_id'] = $cat;
         $this->save( $data );
     }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_CatGallery';
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_CatGallery';
-    }
 }

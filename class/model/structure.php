@@ -326,7 +326,7 @@ class Model_Structure extends Model
 
     /**
      * Обходит массив дерева структуры и возвращает
-     * на его основе HTML
+     * на его основе HTML для админки
      * @param $branches
      * @return array
      */
@@ -375,10 +375,10 @@ class Model_Structure extends Model
             $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>
                     <span id='item{$branch['id']}' class='{$bicon}'>
                     <img src='/images/admin/icons/{$icon}.png' alt='' />
-                    <a ".href('admin/edit',   array('edit'   => $branch['id'])).">{$branch['name']}</a>
+                    <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>
                     <span class='tools'>
-                        <a ".href('admin/edit',   array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>
-                        <a ".href('admin/add',    array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>
+                        <a ".href('admin',   array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>
+                        <a ".href('admin',    array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>
                         <a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>".
                         //($branch['controller'] != 'page' ? '' : " <a class='link_add' page='{$branch['id']}' ".href('').">".icon('link_add', 'Добавить внешнюю связь').'</a> ' ).
                     "</span>

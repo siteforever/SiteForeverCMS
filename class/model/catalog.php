@@ -39,38 +39,9 @@ class Model_Catalog extends Model
     protected function Init()
     {
         $this->request->addScript( $this->request->get('path.misc') . '/etc/catalog.js' );
+        $this->request->addStyle( $this->request->get('path.misc') . '/etc/catalog.css' );
     }
-
-    /**
-     * Поиск по id
-     * @param int $id
-     * @return array
-     */
-    /*function find( $id )
-    {
-        $data = parent::find(array(
-            'cond'  => 'id = :id AND deleted = 0',
-            'params'=> array(':id'=>$id),
-         ));
-
-        if ( ! $data ) {
-            return null;
-        }
-
-        $image  = $this->gallery()->find(array(
-            'cond'      => 'cat_id = :id AND hidden = 0 AND main = 1',
-            'params'    => array(':id'=>$id),
-           ));
-
-        if ( $image ) {
-            $data['image']  = $image['image'];
-            $data['middle'] = $image['middle'];
-            $data['thumb']  = $image['thumb'];
-        }
-        $this->setData( $data ); // для совместимости
-        return $data;
-    }*/
-
+    
     /**
      * Искать все в список по фильтру по артикулу
      * @param string $filter
@@ -233,27 +204,30 @@ class Model_Catalog extends Model
      */
     function update( Data_Object_Catalog $obj )
     {
-        if ( $obj['id'] ) {
-            if ( $obj['path'] ) {
-                $path = serialize( $obj['path'] );
+        $obj_id = $obj->getId();
+
+        if ( $obj_id ) {
+            if ( $obj->path ) {
+                $path = unserialize( $obj->path );
             }
 
-            if ( ! $obj->path || ( $path && $path[0]->name != $obj['name'] ) )
+            //printVar( $path );
+            //printVar( $obj->getAttributes() );
+
+            if ( ! $obj->path || ( $path && is_array( $path ) && $path[0]['name'] != $obj->name ) )
             {
-                $obj['path'] = $this->findPathSerialize( $obj['id'] );
+                $obj->path  = $this->findPathSerialize( $obj->getId() );
             }
         }
-        unset($obj['image']);
-        unset($obj['middle']);
-        unset($obj['thumb']);
+        //unset($obj['image']);
+        //unset($obj['middle']);
+        //unset($obj['thumb']);
 
-        $ret = $this->db->insertUpdate( $this->getTable(), $obj->getAttributes() );
+        $ret    = $this->save( $obj );
 
-        if ( $ret ) {
-            if ( empty( $obj['id'] ) ) {
-                $obj['id'] = $ret;
-                $this->update( $obj );
-            }
+        // Если мы не знали своего ID (новый), то надо пересоздать путь и сохранить снова
+        if ( ! $obj_id ) {
+            $this->update( $obj );
         }
         return $ret;
     }
@@ -270,7 +244,9 @@ class Model_Catalog extends Model
         while( $id ) {
             $obj    = $this->find($id);
             if ( $obj ) {
+
                 $path[] = array( 'id'=>$obj['id'], 'name'=>$obj['name'], 'url'=>$obj['url']);
+
                 $id = $obj['parent'];
             }
             else {
@@ -472,7 +448,7 @@ class Model_Catalog extends Model
                 $item   = $this->find($item_id);
                 $item->parent   = $target;
                 $item->path     = '';
-                $this->update();
+                $this->update( $item );
             }
         }
         return '';

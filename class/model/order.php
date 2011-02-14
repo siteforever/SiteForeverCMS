@@ -1,70 +1,48 @@
 <?php
 /**
- * Модель заказов
+ * Модель заказа
  * @author Nikolay Ermin 
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class model_Order extends Model
+class Model_Order extends Model
 {
     protected $positions = array();
 
     protected $statuses;
 
-    /*function createTables()
-    {
-        if ( ! $this->isExistTable( DBORDER ) ) {
-            $this->db->query("CREATE TABLE `".DBORDER."` (
-              `id` int(10) unsigned NOT NULL auto_increment,
-              `status` tinyint(4) NOT NULL default '0',
-              `date` int(11) NOT NULL default '0',
-              `user_id` int(11) NOT NULL default '0',
-              PRIMARY KEY  (`id`),
-              KEY `status` (`status`),
-              KEY `user_id` (`date`,`user_id`),
-              KEY `date` (`date`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        }
-        if ( ! $this->isExistTable( DBORDERPOS ) ) {
-            $this->db->query("CREATE TABLE `".DBORDERPOS."` (
-              `id` int(10) unsigned NOT NULL auto_increment,
-              `ord_id` int(11) NOT NULL default '0',
-              `name` varchar(250) NOT NULL default '',
-              `articul` varchar(250) NOT NULL default '',
-              `details` text NOT NULL,
-              `currency` varchar(10) NOT NULL default 'руб.',
-              `item` varchar(10) NOT NULL default 'шт',
-              `cat_id` int(11) NOT NULL default '0',
-              `price` decimal(13,2) NOT NULL default '0.00',
-              `count` int(11) NOT NULL default '0',
-              `status` decimal(13,2) NOT NULL default '0.00',
-              PRIMARY KEY  (`id`),
-              KEY `ord_id` (`ord_id`),
-              KEY `cat_id` (`cat_id`),
-              KEY `name` (`name`),
-              KEY `articul` (`articul`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        }
-        if ( ! $this->isExistTable( DBORDERSTATUS ) ) {
-            $this->db->query("CREATE TABLE `".DBORDERSTATUS."` (
-              `id` int(11) NOT NULL auto_increment,
-              `status` int(11) NOT NULL default '0',
-              `name` varchar(100) NOT NULL default '',
-              PRIMARY KEY  (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-        }
-    }*/
+    /**
+     * @var Model_OrderStatus
+     */
+    public  $model_status;
 
-    /*function find( $id )
+    /**
+     * @var Model_OrderPosition
+     */
+    public  $model_position;
+
+    /**
+     * Инициализация
+     * @return void
+     */
+    protected function init()
     {
-        if ( !isset( $this->data[$id] ) || !$this->data[$id] ) {
-            $data = $this->db->fetch(
-                "SELECT * FROM `".DBORDER."` WHERE id = {$id} LIMIT 1"
-            );
-            $this->data[$id] = $data;
-        }
-        return $this->data[$id];
-    }*/
+        $this->model_position   = $this->getModel('OrderPosition');
+        $this->model_status     = $this->getModel('OrderStatus');
+    }
+
+    /**
+     * Отношения
+     * @return array
+     */
+    function relation()
+    {
+        return array(
+            'positions'     => array( self::HAS_MANY, 'OrderPosition', 'ord_id' ),
+            'count'         => array( self::STAT,     'OrderPosition', 'ord_id' ),
+            'statusObj'     => array( self::HAS_ONE,  'OrderStatus', 'status' ),
+        );
+    }
 
     /**
      * Вернет список статусов
@@ -72,8 +50,12 @@ class model_Order extends Model
      */
     function getStatuses()
     {
+        $order_status   = $this->getModel('OrderStatus');
+        
         if ( is_null( $this->statuses ) ) {
-            $data = $this->db->fetchAll("SELECT * FROM ".DBORDERSTATUS." ORDER BY status");
+            $data   = $order_status->findAll(array(
+                'order' => 'status'
+            ));
             $this->statuses = array();
             foreach( $data as $d ) {
                 $this->statuses[$d['status']] = $d['name'];
@@ -98,6 +80,7 @@ class model_Order extends Model
 
     /**
      * Поиск по Id пользователя
+     * @deprecated
      * @param  $id
      * @return array
      */
@@ -120,8 +103,10 @@ class model_Order extends Model
         return $list;
     }
 
+
     /**
      * Список позиций к заказу
+     * @deprecated
      * @param  $id
      * @return void
      */
@@ -133,60 +118,6 @@ class model_Order extends Model
         return $list;
     }
 
-
-    /**
-     * Количество заказов
-     * @return string
-     */
-    function getCountForAdmin( $cond = array() )
-    {
-        $where = '';
-        if ( count( $cond ) ) {
-            $where = 'WHERE '.join(' AND ', $cond);
-        }
-        return $this->db->fetchOne(
-            "SELECT COUNT(*) FROM `".DBORDER."` ord
-            INNER JOIN ".DBUSERS." u ON  u.id = ord.user_id 
-            {$where}"
-        );
-    }
-
-    /**
-     * Список заказов для админки
-     * @param string $limit
-     * @return array
-     */
-    function findAllForAdmin( $cond = array(), $limit = '' )
-    {
-        $where = '';
-        if ( count( $cond ) ) {
-            $where = 'WHERE '.join(' AND ', $cond);
-        }
-        $list = $this->db->fetchAll(
-            "SELECT ord.*, COUNT(op.id) pos_num, SUM(op.count) count, SUM(op.count * op.price) summa, u.email
-            FROM `".DBORDER."` ord
-            INNER JOIN ".DBUSERS." u ON u.id = ord.user_id
-            LEFT JOIN ".DBORDERPOS." op ON op.ord_id = ord.id
-            {$where}
-            GROUP BY ord.id
-            ORDER BY ord.date DESC".($limit?' LIMIT '.$limit : '')
-        );
-        foreach ( $list as &$l ) {
-            $l['status_value'] = $this->getStatus( $l['status'] );
-        }
-        return $list;
-    }
-
-    /**
-     * Сохранить данные
-     * @param array $data
-     * @return void
-     */
-    function update( $data )
-    {
-        return $this->db->update( DBORDER, $data, " id = {$data['id']} " );
-    }
-
     /**
      * Создать заказ
      * @param array $basket_data
@@ -194,79 +125,66 @@ class model_Order extends Model
      */
     function createOrder( $basket_data )
     {
-        $ord_id = $this->db->insert( DBORDER, array(
-            //'id'        => '',
-            'status'    => '0',
-            'date'      => time(), 
-            'user_id'   => App::$user->get('id'),
+        $obj    = $this->createObject(array(
+            'status'    => 0,
+            'date'      => time(),
+            'user_id'   => $this->app()->getAuth()->currentUser()->getId(),
         ));
-        if ( $ord_id ) {
+
+        $this->save( $obj );
+
+        if ( $obj->getId() ) {
             $ret = true;
             $pos_list = array();
             $total_count = 0;
             $total_summa = 0;
             foreach( $basket_data as $data ) {
-                $pos_data = array(
-                    //'id'        => '0',
-                    'ord_id'    => $ord_id,
+                $position   = $this->model_position->createObject(array(
+                    'ord_id'    => $obj->getId(),
                     'name'      => $data['name'],
                     'articul'   => $data['articul'],
                     'details'   => $data['details'],
                     'currency'  => $data['currency'],
                     'item'      => $data['item'],
-                    'cat_id'    => $data['cat_id'],
+                    'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
                     'price'     => $data['price'],
                     'count'     => $data['count'],
                     'status'    => 0,
-                );
-                $ret &= $this->db->insert( DBORDERPOS, $pos_data );
-                $pos_data['summa'] = $pos_data['count'] * $pos_data['price'];
-                $total_count += $pos_data['count'];
-                $total_summa += $pos_data['summa'];
-                $pos_list[] = $pos_data;
+                ));
+
+                $this->model_position->save( $position );
+
+                $ret = $position->getId() ? $ret : false;
+
+                $total_count += $position->count;
+                $total_summa += $position->count * $position->price;
+                $pos_list[] = $position->getAttributes();
             }
 
-            App::$tpl->assign(array(
-                'sitename'  => App::$config->get('sitename'),
-                'ord_link'  => App::$config->get('siteurl').App::$router->createLink('order',array('item'=>$ord_id)),
-                'user'      => App::$user->getData(),
+            $this->app()->getTpl()->assign(array(
+                'sitename'  => $this->config->get('sitename'),
+                'ord_link'  => $this->config->get('siteurl').$this->app()->getRouter()->createLink('order',array('item'=>$obj->getId())),
+                'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
                 'date'      => date('H:i d.m.Y'),
-                'order_n'   => $ord_id,
+                'order_n'   => $obj->getId(),
                 'positions' => $pos_list,
                 'total_summa'=> $total_summa,
                 'total_count'=> $total_count,
             ));
 
-            $msg = App::$tpl->fetch('system:order.mail_create');
+            $msg = $this->app()->getTpl()->fetch('system:order.mail_create');
 
             //print $msg;
 
             sendmail(
-                 App::$config->get('sitename').' <'.App::$config->get('admin').'>',
-                App::$user->get('email'),
-                'Новый заказ №'.$ord_id,
+                $this->config->get('sitename').' <'.$this->config->get('admin').'>',
+                $this->app()->getAuth()->currentUser()->email,
+                'Новый заказ №'.$obj->getId(),
                 $msg
             );
 
             return $ret;
         }
         return false;
-    }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Order';
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_Order';
     }
 }

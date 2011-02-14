@@ -7,7 +7,7 @@
  */
 
 
-class model_news extends Model
+class Model_News extends Model
 {
     private $form = null;
 

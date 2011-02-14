@@ -59,21 +59,4 @@ class model_GalleryCategory extends Model
         }
         return $this->form;
     }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_GalleryCategory';
-    }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_GalleryCategory';
-    }
 }
