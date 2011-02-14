@@ -1,5 +1,3 @@
-<h2>Мои заказы</h2>
-
 <table class="basket-table">
 <tr>
     <th width="100">№</th>

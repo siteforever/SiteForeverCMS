@@ -19,7 +19,7 @@
     </tr>
     {foreachelse}
     <tr>
-        <td colspan="5"></td>
+        <td colspan="5">Настроек не найдено</td>
     </tr>
     {/foreach}
     <tr>

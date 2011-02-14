@@ -1,13 +1,12 @@
-<form action="{link url="admin/users"}" method="post">
+{form action="admin/users" method="get"}
 <p>Фильтр:
-    <input type="text" name="search" value="{$smarty.post.search|default:""}"  />
-    <input type="submit" value="Найти" />
-    {if ! empty( $smarty.post.search )}<a {href url="admin/users"}>Сбросить фильтр</a>{/if}
+    <input type="text" name="search" value="{$request->get('search')}" />
+    <input type="submit" value="Фильтровать" />
+    {if $request->get('search')}<a {href url="admin/users"} class="button">Сбросить фильтр</a>{/if}
 </p>
-</form>
+{/form}
 
-
-<form method="post" action="/admin/users">
+{form action="admin/users" method="post"}
     <table class="dataset fullWidth">
     <tr>
         <th>{icon name="delete" title="Удалить"}</th>
@@ -44,6 +43,6 @@
     {/foreach}
     </table>
     <p><input type="submit" value="Удалить" /></p>
-</form>
+{/form}
 
 <p>{$paging.html}</p>

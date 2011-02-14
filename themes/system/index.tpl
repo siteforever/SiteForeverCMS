@@ -7,7 +7,7 @@
 <body class="body">
 <div class="l-wrapper">
 
-    <h1>{t text="Control panel"} :: {$page.title}</h1>
+    <h1>{t}Control panel{/t} :: {$page.title}</h1>
     {*<div class="b-module-menu">
     </div>*}
 
@@ -57,7 +57,7 @@
 
 </div>
 <div class="l-footer">
-    <a href="http://siteforever.ru" target="_blank">{t text="Working on"} &copy; SiteForeverCMS</a> <small>{t text="Memory"}:{$memory}, {t text="Generation"}:{$exec}</small>
+    <a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a> <small>{t}Memory{/t}:{$memory}, {t}Generation{/t}:{$exec}</small>
 </div>
 
 </body>

@@ -23,7 +23,7 @@
     </tr>
     {foreachelse}
     <tr>
-        <td colspan="9"></td>
+        <td colspan="9">Не найдено пользовательских маршрутов</td>
     </tr>
     {/foreach}
     </table>

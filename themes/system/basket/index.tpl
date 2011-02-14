@@ -17,9 +17,9 @@
         <td><span>{$item.name}</span></td>
         <td>{$item.details|nl2br}</td>
         <td class="right">{$item.price|number_format}</td>
-        <td class="right">Шт <input type="text" class="b-catalog-buy-count" name="basket_counts[{$key}]" value="{$item.count}" /></td>
+        <td class="right">Шт <input type="text" class="b-catalog-buy-count" name="basket_counts[{$item.id}]" value="{$item.count}" /></td>
         <td class="right">{$item.summa|number_format}</td>
-        <td class="center"><input type="checkbox" name="basket_del[{$key}]" value="{$key}" /></td>
+        <td class="center"><input type="checkbox" class="checkbox" name="basket_del[{$item.id}]" value="{$key}" /></td>
     </tr>
     {foreachelse}
     <tr>
@@ -47,7 +47,7 @@
 {* 
     Если страницу открыл не гость
  *}
-{if App::getInstance()->getAuth()->currentUser()->perm != $smarty.const.USER_GUEST}
+{if $auth->currentUser()->perm != $smarty.const.USER_GUEST}
 <p>&nbsp;</p>
 <p>Быстрый переход:</p>
 

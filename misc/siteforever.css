@@ -24,42 +24,6 @@
     color: #999;
 }
 
-.b-catalog-product-noimage {
-    width:100px;
-    height:100px;
-    text-align: center;
-}
-
-.b-product-details {
-    margin-left: 250px;
-}
-
-    .b-product-details td {
-        font-size: 12px;
-    }
-        .b-product-details td select {
-            font-size: 12px;
-            padding: 0;
-        }
-
-.b-product .b-catalog-articul,
-.b-product .b-catalog-product {
-    font-size: 12px;
-    font-weight: bold;
-    color: #A7A7A7;
-}
-.b-product .b-catalog-price big {
-    font-size: 24px;
-}
-
-.b-product .b-catalog-inbasket {
-    padding-top: 5px;
-}
-
-.b-product .b-description strong {
-    font-size: 12px;
-}
-
 .basket-table {
     border-collapse: collapse;
     width: 100%;
@@ -82,10 +46,9 @@
 
 
 .catalog_order {
-    float: right;
     font-size: 12px;
-    text-transform: uppercase;
     color: #a7a7a7;
+    margin-bottom: 1em;
 }
     .catalog_order select:focus { background: #fff; }
     .catalog_order select, .catalog_order option {
@@ -117,6 +80,7 @@ input, select, textarea {
     border-radius: 5px;
     font-family: Arial;
     font-size: 1em;
+    line-height: 1em;
 }
 
 input[type=submit], input[type=reset], button {

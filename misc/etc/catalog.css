@@ -1,0 +1,86 @@
+@CHARSET "UTF-8";
+/**
+ * Файл стилей для каталога по умолчанию
+ * @author Nikolay Ermin <nikolay@ermin.ru>
+ * @link http://ermin.ru
+ */
+
+.b-catalog-product {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px #247D06 solid;
+}
+    .b-catalog-product div {
+
+    }
+
+    .b-product-image,
+    .b-catalog-product-thumb {
+        width: 150px;
+        height: 150px;
+        display: block;
+        float: left;
+        margin: 0 10px 10px 0;
+        border: 1px #247D06 solid;
+    }
+        .b-product-noimage,
+        .b-catalog-product-nothumb {
+            text-align: center;
+            padding-top: 30px;
+        }
+
+    .b-catalog-product-block,
+    .b-product-block {
+        margin-left: 160px;
+        min-height: 160px;
+    }
+
+    .b-catalog-product-title,
+    .b-product-title {
+        margin-bottom: 1em;
+    }
+
+    .b-catalog-product-articul,
+    .b-product-articul {
+        margin-bottom: 1em;
+    }
+
+    .b-product-price,
+    .b-catalog-product-price {
+        margin-bottom: 1em;
+    }
+
+    .b-product-properties,
+    .b-catalog-product-properties {
+        margin-bottom: 1em;
+    }
+        .b-product-properties-item,
+        .b-catalog-product-properties-item {
+            
+        }
+            .b-product-properties-key,
+            .b-catalog-product-properties-key {
+                width: 100px;
+                float:left;
+                overflow: hidden;
+            }
+            .b-product-properties-val,
+            .b-catalog-product-properties-val {
+                margin-left: 110px;
+            }
+
+    .b-product-desc,
+    .b-catalog-product-desc {
+        margin-bottom: 1em;
+    }
+
+    .b-product-basket,
+    .b-catalog-product-basket {
+        text-align: right;
+    }
+
+        .b-product-basket-count,
+        .b-catalog-product-basket-count {
+            width: 50px;
+            text-align: right;
+        }

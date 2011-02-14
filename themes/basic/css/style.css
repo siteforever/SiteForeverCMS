@@ -163,6 +163,10 @@ input.submit {
         .b-left-catmenu li li {
             padding: 0 0 0 15px;
         }
+    .b-left-catmenu li a.active {
+        color: inherit;
+        text-decoration: none;
+    }
 
 
 ul.gallery_list {

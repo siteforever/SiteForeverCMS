@@ -4,7 +4,7 @@ $(function() {
     //var pathname = '/' + window.location.pathname.replace(/(^\/+)|(\/+$)/g, "") + '/';
     //$('a[href='+pathname+']').addClass('active');
 
-    $(':button, :submit, :reset').button();
+    $(':button, :submit, :reset, .button').button();
 
     // Подсветка разделов структуры
     $('div.b-main-structure span').bind('mouseover', function() {
@@ -88,18 +88,55 @@ $(function() {
     }).disableSelection();
 
 
+    // Добавляем окно для обработчика форм
+    if ( $('#form_container').length == 0 ) {
+
+        $('body').append("<div id='form_container' title='Сохраняем...'></div>");
+        //.append("<iframe id='form_frame' name='form_frame'></iframe>");
+
+        $('#form_container').hide().dialog({
+            bgiframe: true,
+            modal: true,
+            autoOpen: false,
+            width: 400,
+            zindex: 100,
+            draggable: true,
+            buttons: {
+                Ok: function() {
+                    $(this).dialog('close');
+                },
+                "Обновить": function() {
+                    window.location.reload(true);
+                }
+            },
+            close: function() {
+                $(this).html("");
+            }
+        });
+    }
+
+
+
+
     //$('a.filemanager').filemanager();
     $('a.filemanager').fancybox({
         width       : 650,
         height      : 430,
         scrolling   : 'no',
         type        : 'iframe',
-        href        : '/?route=elfinder&finder=1&langCode=ru'
+        href        : '/?controller=elfinder&finder=1&langCode=ru'
+    });
+
+    var editor = $('textarea').not('.plain').ckeditor({
+        filebrowserBrowseUrl 		: '/?controller=elfinder&action=index&finder=1',
+        filebrowserImageBrowseUrl 	: '/?controller=elfinder&action=index&finder=1',
+        filebrowserWindowWidth : '530',
+        filebrowserWindowHeight : '500',
+        filebrowserImageWindowWidth : '530',
+        filebrowserImageWindowHeight : '500'
     });
 
     $('a.dumper').dumper();
-
-
 
 });
 

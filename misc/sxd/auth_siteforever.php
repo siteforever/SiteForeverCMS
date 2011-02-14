@@ -12,8 +12,8 @@ session_start();
 if ( ! empty( $_SESSION['sxd_auth'] ) ) {
     $auth   = 1;
 
-    $conf   = require_once '../../protected/config/'.$_SESSION['sxd_conf'].'.php';
-    $db = $conf['db'];
+    //$conf   = require_once '../../protected/config/'.$_SESSION['sxd_conf'].'.php';
+    $db = $_SESSION['sxd_conf'];
 
     $CFG['my_host'] = $db['host'];
     $CFG['my_user'] = $db['login'];

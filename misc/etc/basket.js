@@ -6,12 +6,21 @@
 
 var basket_class    = '.basket-widget';
 
-var basket_add  = function( product, count, price, details )
+/**
+ * Добавит товар в корзину
+ * @param id
+ * @param product
+ * @param count
+ * @param price
+ * @param details
+ */
+var basket_add  = function( id, product, count, price, details )
 {
     $.post('/?controller=basket&action=add', {
-        basket_prod_id:     product,
-        basket_prod_count:  count,
-        basket_prod_price:  price,
+        basket_prod_id:     id,
+        basket_prod_name:   product,
+        basket_prod_count:  parseInt( count ),
+        basket_prod_price:  parseFloat( price ),
         basket_prod_details:details
     }, function( data ){
         alert('Товар добавлен в корзину');

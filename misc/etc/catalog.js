@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-$.ready(function(){
+$(function(){
     /*
      * Управляет галереей картинок в товаре каталога
      */
