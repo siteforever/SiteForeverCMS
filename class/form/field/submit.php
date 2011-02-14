@@ -3,7 +3,7 @@
  * Поле отправки данных
  * @author keltanas
  */
-class form_Submit extends form_Field
+class Form_Field_Submit extends Form_Field
 {
     protected $type     = 'submit';
     protected $class    = 'submit';

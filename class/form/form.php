@@ -3,7 +3,7 @@
  * Класс формы
  * @author keltanas
  */
-class form_Form implements ArrayAccess
+class Form_Form implements ArrayAccess
 {
     /*
      * 1. Получить значения из POST
@@ -46,8 +46,15 @@ class form_Form implements ArrayAccess
      * Создает форму согласно конфигу
      * @param $config
      */
-    function __construct( $config )
+    function __construct( $config, Request $request = null )
     {
+        $request = App::getInstance()->getRequest();
+        $request->addScript( $request->get('path.misc').'/jquery.form.js' );
+        //$request->addScript( $request->get('path.misc').'/jquery.blockUI.js' );
+        //$request->addScript( $request->get('path.misc').'/forms.js' );
+
+        
+
         if ( ! isset( $config['name'] ) ) {
             throw new Exception('Для формы нужно определить обязательный параметр name');
         }
@@ -77,6 +84,8 @@ class form_Form implements ArrayAccess
 
             $hidden = false;
 
+            $field['type'] = isset( $field['type'] ) ? $field['type'] : 'text';
+
             // тип hidden преобразовать в скрытый text
             if ( $field['type'] == 'hidden' /*|| in_array( 'hidden', $field )*/ ) {
                 self::DEBUG ? print 'hidden' : false;
@@ -85,7 +94,7 @@ class form_Form implements ArrayAccess
             }
 
             // физический класс обработки поля
-            $field_class = 'form_'.$field['type'];
+            $field_class = 'Form_Field_'.$field['type'];
 
             if ( self::DEBUG ) {
                 print '('.$field_class.($hidden?', hidden':'').') '.$fname.'<br />';
@@ -154,7 +163,6 @@ class form_Form implements ArrayAccess
      */
     function __set( $key, $value )
     {
-        //var_dump( $key, $value );
         $this->getField( $key )->setValue( $value );
     }
 
@@ -169,7 +177,7 @@ class form_Form implements ArrayAccess
         {
             return $this->fields[$id];
         }
-        return null;
+        throw new Form_Exception("Field '{$key}' not found");
     }
 
     /**

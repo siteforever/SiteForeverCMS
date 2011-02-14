@@ -4,7 +4,7 @@
  * @author keltanas
  *
  */
-class form_Radio extends form_Field
+class Form_Field_Radio extends Form_Field
 {
     protected
         $type   = 'radio',

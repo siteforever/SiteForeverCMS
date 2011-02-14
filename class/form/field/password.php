@@ -3,7 +3,7 @@
  * Текстовое поле пароля
  * @author keltanas
  */
-class form_Password extends form_Field
+class Form_Field_Password extends Form_Field
 {
     protected $type = 'password';
 }

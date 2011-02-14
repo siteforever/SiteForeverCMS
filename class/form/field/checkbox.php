@@ -4,7 +4,7 @@
  * @author keltanas
  *
  */
-class form_Checkbox extends form_Radio
+class Form_Field_Checkbox extends Form_Field_Radio
 {
     protected
         $type   = 'checkbox',

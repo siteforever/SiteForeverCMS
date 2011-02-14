@@ -3,7 +3,7 @@
  * Поле целого числа 
  * @author keltanas
  */
-class form_Int extends form_Text
+class Form_Field_Int extends Form_Field_Text
 {
 	protected $type    = 'int';
 	protected $class   = 'int';

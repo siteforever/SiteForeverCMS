@@ -3,7 +3,7 @@
  * Поле многострочного поля
  * User: keltanas
  */
-class form_Textarea extends form_Field
+class Form_Field_Textarea extends Form_Field
 {
     protected $type = 'textarea';
     protected $class = 'textarea';

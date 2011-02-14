@@ -4,7 +4,7 @@
  *
  * @author keltanas
  */
-class form_Select extends form_Field
+class Form_Field_Select extends Form_Field
 {
     protected
         $type   = 'select',

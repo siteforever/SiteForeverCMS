@@ -2,7 +2,7 @@
 /**
  * @author: keltanas
  */
-class form_Date extends form_Field
+class Form_Field_Date extends Form_Field
 {
     protected $type = 'text';
     protected $class = 'datepicker';

@@ -3,7 +3,7 @@
  * Поле выбора с предсказанием
  * @author keltanas
  */
-class form_Suggest extends form_Field
+class Form_Field_Suggest extends Form_Field
 {
     protected $type = 'text';
     protected $class = 'xsuggest';

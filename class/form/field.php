@@ -8,7 +8,7 @@
 
 // todo В случае использования чекбоксов и радиобаттонов видимо надо реализовывать списки значений, как в селектах
 
-abstract class form_Field
+abstract class Form_Field
 {
     protected
             /**
