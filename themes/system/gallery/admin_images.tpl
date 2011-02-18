@@ -14,13 +14,27 @@
         {foreach from=$images item="img"}
         <li class="ui-state-default" rel="{$img.id}">
 
-            <img rel="{$img.id}" src="{$img.thumb}" title="{$img.name}" alt="{$img.name}" width="{$category.thumb_width}" height="{$category.thumb_height}" />
-
+            <div style="width: {$category.thumb_width}px; height: {$category.thumb_height}px; background: #999;">
+                <img rel="{$img.id}" src="{$img.thumb}"
+                     title="{$img.name}" alt="{$img.name}"
+                     style="width: {$category.thumb_width}px; height: {$category.thumb_height}px;" />
+            </div>
+            
             <div class="gallery_float_layer">
                 <div class="gallery_control">
-                    <a {href editimg=$img.id} class="gallery_picture_edit">{icon name="picture_edit" title="Изменить"}</a>
-                    <a {href switchimg=$img.id} class="gallery_picture_switch">{if $img.hidden}{icon name="lightbulb_off" title="Выкл"}{else}{icon name="lightbulb" title="Вкл"}{/if}</a>
-                    <a {href delimg=$img.id} class="gallery_picture_delete">{icon name="delete" title="Удалить"}</a>
+                    <a {href editimg=$img.id} class="gallery_picture_edit">
+                        {icon name="picture_edit" title="Изменить"}
+                    </a>
+                    <a {href switchimg=$img.id} class="gallery_picture_switch">
+                        {if $img.hidden}
+                            {icon name="lightbulb_off" title="Выкл"}
+                        {else}
+                            {icon name="lightbulb" title="Вкл"}
+                        {/if}
+                    </a>
+                    <a {href delimg=$img.id} class="gallery_picture_delete">
+                        {icon name="delete" title="Удалить"}
+                    </a>
                 </div>
 
                 <div class="gallery_name" rel="{$img.id}">
@@ -63,12 +77,12 @@
 
 
 <style type="text/css">
-    #gallery {ldelim}
+    #gallery {
         list-style-type: none;
         margin: 0;
         padding: 0;
-    {rdelim}
-    #gallery li.ui-state-default {ldelim}
+    }
+    #gallery li.ui-state-default {
         margin: 0 20px 20px 0;
         padding: 20px 20px 45px 20px;
         float: left;
@@ -77,33 +91,32 @@
         font-size: 1em;
         text-align: center;
         overflow: hidden;
-    {rdelim}
-    #gallery div.gallery_float_layer {ldelim}
+    }
+    #gallery div.gallery_float_layer {
         position:   relative;
         width:      {$category.thumb_width}px;
         height:     {$category.thumb_height}px;
         margin-top: -{$category.thumb_height}px;
         /*verflow:   hidden;*/
         font-size: 100%;
-    {rdelim}
-    #gallery div.gallery_float_layer input {ldelim}
+    }
+    #gallery div.gallery_float_layer input {
         width: 80%;
-    {rdelim}
-    #gallery div.gallery_control {ldelim}
+    }
+    #gallery div.gallery_control {
         height:     {$category.thumb_height}px;
         text-align:right;
         margin-bottom: 5px;
-    {rdelim}
-    #gallery div.gallery_name {ldelim}
+    }
+    #gallery div.gallery_name {
         cursor: pointer;
         color: #000;
         height: 25px;
-    {rdelim}
+    }
 </style>
 
 
 <script type="text/javascript">
-{literal}
     $(function() {
         // Сортировочность
         $("#gallery").sortable({
@@ -112,7 +125,7 @@
                 $(this).find('li').each(function(){
                     positions.push($(this).attr('rel'));
                 });
-                $.post('/?route=admin/gallery', {positions: positions});
+                $.post('/?route=admin/gallery', { positions: positions });
             }
         });
         $("#gallery").disableSelection();
@@ -123,7 +136,7 @@
             var name = $(this).find('input').attr('name');
             $(this).html("<input type='text' name='"+name+"' value='"+val+"' rel='"+val+"' />")
                 .find('input').focus();
-            $(this).find('input').blur(function(){gallery_edit_name_apply(this);})
+            $(this).find('input').blur(function(){ gallery_edit_name_apply(this) })
                 .keypress(function( event ){
                     if (event.keyCode == '13') {
                         gallery_edit_name_apply( this );
@@ -163,7 +176,7 @@
                     }).hide();
             };
 
-            $(window).bind('close', function(){return false;});
+            $(window).bind('close', function(){ return false; });
 
             $.showBlock('Загрузка...');
             $.post($(this).attr('href'), function( data ){
@@ -176,9 +189,7 @@
 
         // Удаление изображений
         $('a.gallery_picture_delete').click(function(){
-
             if ( confirm('Действительно хотите удалить?') ) {
-
                 var href = $(this).attr('href');
                 $.post( href, function(data){
                     try {
@@ -191,8 +202,8 @@
                         }
                     } catch(e) { alert(e.message) };
                 }, 'json');
-                return false;
             }
+            return false;
         });
 
         // Переключение активности изображения
@@ -203,7 +214,7 @@
                         var elem = $('#gallery li[rel='+data.id+'] a.gallery_picture_switch' );
                         $(elem).html(data.img);
                     }
-                } catch(e) {alert(e.message);};
+                } catch(e) { alert(e.message) };
             }, 'json');
             return false;
         });
@@ -228,9 +239,9 @@
         var name = $(obj).attr('name');
         var id = $(obj).parent().attr('rel');
         if ( id && val != rel ) {
-            $.post('/?route=admin/gallery', {editimage: id, name: val});
+            $.post('/?route=admin/gallery', { editimage: id, name: val });
         }
-        $(obj).replaceWith(val+"{/literal} {icon name="pencil" title="Править"}{literal}<input type='hidden' name='"+name+"' value='"+val+"' />");
+        $(obj).replaceWith(val+"{icon name="pencil" title="Править"} <input type='hidden' name='"+name+"' value='"+val+"' />");
     }
 
     // Редактировать название и отменить
@@ -238,8 +249,6 @@
     {
         var val  = $(obj).attr('rel');
         var name = $(obj).attr('name');
-        $(obj).replaceWith(val+"{/literal} {icon name="pencil" title="Править"}{literal}<input type='hidden' name='"+name+"' value='"+val+"' />");
+        $(obj).replaceWith(val+"{icon name="pencil" title="Править"} <input type='hidden' name='"+name+"' value='"+val+"' />");
     }
-
-{/literal}
 </script>

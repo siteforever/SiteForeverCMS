@@ -261,9 +261,10 @@ class controller_Admin extends Controller
         reload('admin');
     }
 
-
-    function listAction()
+    function rules()
     {
-
+        return array(
+            'system'    => array('index','edit','add','move'),
+        );
     }
 }

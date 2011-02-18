@@ -38,7 +38,7 @@ require_once 'ControllerTest.php';
 require_once 'BasketTest.php';
 require_once 'Data_CriteriaTest.php';
 require_once 'ModelTest.php';
-
+require_once 'RouterTest.php';
 
 
 
@@ -57,6 +57,8 @@ class Test {
         $ts->addTestSuite('RequestTest');
         $ts->addTestSuite('Data_CriteriaTest');
         $ts->addTestSuite('ModelTest');
+
+        $ts->addTestSuite('RouterTest');
 
         $ts->addTestSuite('AppTest');
         $ts->addTestSuite('ControllerTest');

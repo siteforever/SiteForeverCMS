@@ -2,10 +2,10 @@
 class Request
 {
     const TEXT = FILTER_SANITIZE_STRING;
-    const INT = FILTER_VALIDATE_INT;
-    const FLOAT = FILTER_VALIDATE_FLOAT;
-    const URL = FILTER_VALIDATE_URL;
-    const EMAIL = FILTER_VALIDATE_EMAIL;
+    const INT = FILTER_SANITIZE_NUMBER_INT;
+    const FLOAT = FILTER_SANITIZE_NUMBER_FLOAT;
+    const URL = FILTER_SANITIZE_URL;
+    const EMAIL = FILTER_SANITIZE_EMAIL;
     const IP = FILTER_VALIDATE_IP;
 
     const TYPE_ANY = '*/*';
@@ -100,6 +100,7 @@ class Request
             'images'    => '/themes/' . $theme . '/images', 'misc' => '/misc',
         );
         $this->request['resource'] = 'theme:';
+        $this->request['template'] = 'index';
 
         $this->addStyle($this->request['path']['misc'] . '/reset.css');
         $this->addStyle($this->request['path']['misc'] . '/fancybox/jquery.fancybox-1.3.1.css');

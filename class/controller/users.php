@@ -180,7 +180,10 @@ class controller_Users extends Controller
      */
     function loginAction()
     {
-        $model  = $this->getModel('user');
+        /**
+         * @var Model_User $model
+         */
+        $model  = $this->getModel('User');
         $auth   = $this->app()->getAuth();
 
         $user   = $auth->currentUser();
@@ -195,11 +198,16 @@ class controller_Users extends Controller
 
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
-                    print "login: {$form->login} pass:{$form->password}";
+                    //print "login: {$form->login} pass:{$form->password}";
                     if ( $auth->login( $form->login, $form->password ) ) {
                         redirect();
                     }
-                    print "Auth";
+                    else {
+                        $this->request->addFeedback( $auth->getMessage() );
+                    }
+                }
+                else {
+                    $this->request->addFeedback( $form->getFeedback() );
                 }
             }
             $this->request->setTitle('Вход в систему');

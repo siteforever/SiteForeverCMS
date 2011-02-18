@@ -10,20 +10,12 @@
 class model_Gallery extends Model
 {
     protected $form;
-    
-    /**
-     * @return model_galleryCategory
-     */
-    function category()
-    {
-        return self::getModel('galleryCategory');
-    }
 
     function getNextPosition( $category_id )
     {
         return $this->db->fetchOne(
             "SELECT MAX(pos)+1
-            FROM {$this->table}
+            FROM {$this->getTable()}
             WHERE category_id = :category_id
             LIMIT 1",
             array(':category_id'=>$category_id)
@@ -100,6 +92,10 @@ class model_Gallery extends Model
         return false;
     }
 
+    /**
+     * Пересортировка изображений
+     * @return int
+     */
     function reposition()
     {
         $positions = $this->request->get('positions');
@@ -107,7 +103,7 @@ class model_Gallery extends Model
         foreach ( $positions as $pos => $id ) {
             $new_pos[] = array('id'=>$id, 'pos'=>$pos);
         }
-        return $this->db->insertUpdateMulti($this->table, $new_pos);
+        return $this->db->insertUpdateMulti($this->getTable(), $new_pos);
     }
 
     /**
@@ -138,22 +134,5 @@ class model_Gallery extends Model
             $this->form = new forms_gallery_image();
         }
         return $this->form;
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_Gallery';
-    }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Gallery';
     }
 }

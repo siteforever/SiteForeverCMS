@@ -117,6 +117,8 @@ abstract class Auth
                 return false;
             }
 
+            $this->user = $user;
+
             $this->setId( $user->getId() );
 
             if ( $user->perm == USER_ADMIN ) {
@@ -127,6 +129,7 @@ abstract class Auth
 
             $this->error    = false;
             $this->message  = t('Authorization was successful');
+
             return true;
         }
 

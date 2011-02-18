@@ -106,6 +106,19 @@ abstract class Controller
     }
 
     /**
+     * Правила, определяющие доступ к приложениям
+     * @return array
+     */
+    function rules()
+    {
+        return array(
+            'system'    => array(
+                'admin',
+            ),
+        );
+    }
+
+    /**
      * Уничтожение контроллера
      */
     function __destruct()

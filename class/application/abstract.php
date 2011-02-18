@@ -227,5 +227,14 @@ abstract class Application_Abstract
         return $this->logger;
     }
 
+    /**
+     * Вернет текущего пользователя
+     * @return Data_Object_User
+     */
+    function getUser()
+    {
+        return $this->getAuth()->currentUser();
+    }
+
 
 }

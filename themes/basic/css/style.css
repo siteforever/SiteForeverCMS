@@ -1,7 +1,7 @@
 @CHARSET "UTF-8";
 
 html, body {
-	height: 100%;
+    height: 100%;
     font: 14px tahoma;
 }
 
@@ -17,14 +17,14 @@ div.b-request-feedback {
 }
 
 a {
-	color: #247d06;
+    color: #247d06;
 }
 a:hover {
-	color: #40df0b;
+    color: #40df0b;
 }
 
 .b-header {
-	border-bottom: 1px solid #999; 
+    border-bottom: 1px solid #999;
 }
 
 ul {
@@ -48,11 +48,15 @@ input.submit {
     width: 100px;
 }
 
+.feedback {
+    margin-bottom: 10px;
+}
+
 
 
 
 .b-body {
-	text-align: center;
+    text-align: center;
     min-height: 100%;
     height: auto !important;
     height: 100%;
@@ -60,21 +64,21 @@ input.submit {
 }
 
     .b-body-wrapper {
-    	width: 1000px;
-		text-align: left;
-		margin: 0 auto;
+        width: 1000px;
+        text-align: left;
+        margin: 0 auto;
     }
 
     .b-body-footer {
         height: 70px;
     }
-	
-	.b-footer {
-		height: 70px;
-    	width: 1000px;
-		text-align: left;
-		margin: 0 auto;
-	}
+
+    .b-footer {
+        height: 70px;
+        width: 1000px;
+        text-align: left;
+        margin: 0 auto;
+    }
 
     .b-left-panel {
         float: left;
@@ -91,23 +95,23 @@ input.submit {
 
 
 .b-logo {
-	display: block;
-	width: 125px;
-	height: 65px;
-	float: left;
+    display: block;
+    width: 125px;
+    height: 65px;
+    float: left;
 }
 .b-header {
-	height: 65px;
+    height: 65px;
     margin-bottom: 20px;
 }
 
 .b-menu {
-	overflow: hidden;
+    overflow: hidden;
     margin-left: 150px;
     padding-top: 20px;
 }
-	.b-menu ul {
-		display: block;
+    .b-menu ul {
+        display: block;
         height: 30px;
         padding-left: 10px;
         /*border: 1px solid #247d06;
@@ -115,14 +119,14 @@ input.submit {
         -webkit-border-radius: 10px;
         border-radius: 10px;
         background: #E9F4E7;*/
-	}
-	
-		.b-menu ul li {
-			display: block;
-			float: left;
-			padding: 5px 15px;
+    }
+
+        .b-menu ul li {
+            display: block;
+            float: left;
+            padding: 5px 15px;
             background: url(../images/menu_li.gif) no-repeat 0 50%;
-		}
+        }
             .b-menu ul li a.active, .b-menu ul li span {
                 color: #000;
                 text-decoration:none;
@@ -135,15 +139,15 @@ input.submit {
 }
 
 
-	table.b-info-staff td {
-		padding: 0 0.5em 0.5em 0;
+    table.b-info-staff td {
+        padding: 0 0.5em 0.5em 0;
     }
-	table.b-info-staff td.position {
-		width: 170px;
-	}
-	
-	table.b-info-staff td.name {
-		width: 150px;
+    table.b-info-staff td.position {
+        width: 170px;
+    }
+
+    table.b-info-staff td.name {
+        width: 150px;
     }
 
 

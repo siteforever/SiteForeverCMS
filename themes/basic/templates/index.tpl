@@ -30,11 +30,13 @@
         
             {breadcrumbs page=$page}
 
-            <h1>{$page.title|default:$page.name}</h1>
+            <h1>{$request->getTitle()}</h1>
 
-            {$feedback}
+            {if $request->getFeedback()}
+                <div class="feedback">{$request->getFeedbackString()}</div>
+            {/if}
             
-            {$page.content}
+            {$request->getContent()}
         
         </div>
 

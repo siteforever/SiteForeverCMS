@@ -41,20 +41,38 @@ class ControllerResolver
 
         if ( class_exists( $command['controller'] ) )
         {
-            $reflection_class = new ReflectionClass( $command['controller'] );
+            $ref = new ReflectionClass( $command['controller'] );
             /**
              * @var Controller $controller
              */
-            $controller = new $command['controller']( $this->app );
+            $controller = $ref->newInstance( $this->app );
+
+            //$controller = new $command['controller']( $this->app );
             
-            if ( $reflection_class->hasMethod( 'init' ) ) {
+            if ( $ref->hasMethod( 'init' ) ) {
                 $controller->init();
             }
 
-            if ( $reflection_class->hasMethod( $command['action'] ) ) {
+
+            // Защита системных действий
+            $rules  = $controller->rules();
+
+            if ( ! $this->app->getUser()->hasPermission( USER_ADMIN ) ) {
+                if ( isset( $rules['system'] ) && is_array( $rules['system'] ) ) {
+                    foreach ( $rules['system'] as $rule ) {
+                        if ( strtolower( $rule.'action' ) == strtolower( $command['action'] ) ) {
+                            throw new ControllerException(t('Call system method'));
+                        }
+                    }
+                }
+            }
+
+
+
+            if ( $ref->hasMethod( $command['action'] ) ) {
                 $return = $controller->$command['action']();
             }
-            elseif ( $reflection_class->hasMethod( 'indexAction' ) ) {
+            elseif ( $ref->hasMethod( 'indexAction' ) ) {
                 $return = $controller->indexAction();
                 $controller->deInit();
             }

@@ -24,7 +24,7 @@ abstract class Model
     protected $request;
 
     /**
-     * @var model_User
+     * @var Data_Object_User
      */
     protected $user;
 
@@ -72,6 +72,7 @@ abstract class Model
     {
         $this->request  = $this->app()->getRequest();
         $this->config   = $this->app()->getConfig();
+        //$this->user     = $this->app()->getAuth()->currentUser();
 
 
         // база данных

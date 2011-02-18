@@ -8,16 +8,24 @@ class controller_Page extends Controller
 {
     function indexAction()
     {
+        if ( ! $this->user->hasPermission( $this->page['protected'] ) )
+        {
+            $this->request->setContent(t('Access denied'));
+            return;
+        }
+        
         // создаем замыкание страниц
         while ( $this->page['link'] != 0 )
         {
             $page = $this->getModel('Structure')->find( $this->page['link'] );
-            //$this->page['title']    = $page['title'];
+
+            if ( ! $this->user->hasPermission( $page['protected'] ) ) {
+                $this->request->setContent(t('Access denied'));
+                return;
+            }
             $this->page['content']  = $page['content'];
             $this->page['link']     = $page['link'];
-            //$page->markClean();
         }
-        $this->request->set('tpldata.page', $this->page);
     }
 
     function errorAction()

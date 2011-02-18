@@ -16,6 +16,10 @@ return array(
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
     'admin'     => 'admin@ermin.ru',
 
+    'url'       => array(
+        'rewrite'   => true,
+    ),
+
     // база данных
     'db' => array(
         'login'     => 'siteforever',

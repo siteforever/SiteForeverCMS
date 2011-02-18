@@ -274,7 +274,7 @@ class Model_Structure extends Model
      */
     function getMenu( $parent, $levelback = 1 )
     {
-        $html = "";
+        $html = '';
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
@@ -294,7 +294,7 @@ class Model_Structure extends Model
         foreach( $this->parents[ $parent ] as $branch )
         {
             if (   $branch['hidden'] == 0
-                && $branch['protected'] <= $this->app()->getAuth()->currentUser()->perm
+                //&& $this->app()->getUser()->hasPermission( $branch['protected'] )
                 && $branch['deleted'] == 0
             ) {
                 $html .= "<li class='item-{$branch['id']}".($counter == $total_count?" first":($counter==1?" last":""))."'>";

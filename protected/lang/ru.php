@@ -3,6 +3,9 @@
  * Dictionary for russian language
  */
 return array(
+
+    'Access denied' => 'Доступ запрещен',
+
     'Control panel' => 'Панель управления',
     'Memory'        => 'Память',
     'Generation'    => 'Генерация',

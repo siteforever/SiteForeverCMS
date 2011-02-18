@@ -1,5 +1,11 @@
 <?php
-class controller_gallery extends Controller
+/**
+ * Контроллер галереи
+ * @author Nikolay Ermin <nikolay@ermin.ru>
+ * @link    http://siteforever.ru
+ * @link    http://ermin.ru
+ */
+class Controller_Gallery extends Controller
 {
     function init()
     {
@@ -25,11 +31,11 @@ class controller_gallery extends Controller
         /**
          * @var model_gallery $model
          */
-        $model  = $this->getModel('gallery');
+        $model  = $this->getModel('Gallery');
         /**
          * @var model_galleryCategory $model_category
          */
-        $model_category = $model->category();
+        $model_category = $this->getModel('GalleryCategory');
 
         $category = $model_category->find($this->page['link']);
 
@@ -76,9 +82,9 @@ class controller_gallery extends Controller
 
         $model    = $this->getModel('Gallery');
         //die(__FILE__.':'.__LINE__);
-        $category = $model->category();
+        $category = $this->getModel('GalleryCategory');
 
-        if ( $this->request->get('viewcat',FILTER_SANITIZE_NUMBER_INT) ) {
+        if ( $this->request->get('viewcat', Request::INT) ) {
             return $this->viewCat( $category );
         }
 
@@ -129,7 +135,7 @@ class controller_gallery extends Controller
             return;
         }
 
-        if ( $editimage = $this->request->get('editimage', FILTER_SANITIZE_NUMBER_INT) ) {
+        if ( $editimage = $this->request->get('editimage', Request::INT) ) {
             $this->setAjax();
             $editname   = $this->request->get('name');
             $image  = $model->find($editimage);
@@ -198,21 +204,22 @@ class controller_gallery extends Controller
      * @param model_galleryCategory $category
      * @return void
      */
-    function viewCat( model_galleryCategory $category )
+    function viewCat()
     {
-        $cat_id = $this->request->get('viewcat', FILTER_SANITIZE_NUMBER_INT);
+        $category   = $this->getModel('GalleryCategory');
+        
+        $cat_id = $this->request->get('viewcat', Request::INT);
 
-        $obj    = $category->find( $cat_id );
+        $cat    = $category->find( $cat_id );
         
         /**
          * @var model_Gallery $model
          */
         $model  = $category->gallery();
-
-
+        
 
         if ( isset( $_FILES['image'] ) ) {
-            $this->upload( $obj );
+            $this->upload( $cat );
         }
 
         $images = $model->findAll(array(
@@ -222,7 +229,7 @@ class controller_gallery extends Controller
         ));
 
         $this->tpl->images  = $images;
-        $this->tpl->category= $obj->getAttributes();
+        $this->tpl->category= $cat->getAttributes();
 
         $this->request->setContent( $this->tpl->fetch('system:gallery.admin_images') );
     }
@@ -259,13 +266,17 @@ class controller_gallery extends Controller
 
     /**
      * Загрузка файлов
-     * @param model_galleryCategory $category
+     * @param Data_Object_GalleryCategory $cat
      * @return
      */
-    function upload( Data_Object_GalleryCategory $category )
+    function upload( Data_Object_GalleryCategory $cat )
     {
         /**
-         * @var model_gallery $model
+         * @var Model_GalleryCategory $category
+         */
+        $category   = $this->getModel('GalleryCategory');
+        /**
+         * @var Model_Gallery $model
          */
         $model  = $this->getModel('Gallery');
 
@@ -283,20 +294,21 @@ class controller_gallery extends Controller
             $images = $_FILES['image'];
 
             $names  = array();
+
             if ( $this->request->get('name') ) {
                 $names  = $this->request->get('name');
             }
 
-            $pos = $model->getNextPosition($category->getId());
+            $pos = $model->getNextPosition($cat->getId());
 
             //printVar($images);
             foreach ( $images['error'] as $i => $err )
             {
                 $image  = $model->createObject(array(
-                        'pos'   => '0',
-                        'main'  => '0',
-                        'hidden'=> '0',
-                   ));
+                    'pos'   => '0',
+                    'main'  => '0',
+                    'hidden'=> '0',
+                ));
                 
                 if ( $err == UPLOAD_ERR_OK )
                 {
@@ -305,14 +317,14 @@ class controller_gallery extends Controller
                     ) {
                         $upload_ok = 1;
 
-                        $dest = $this->config->get('gallery.dir').DS.substr( '0000'.$category->getId(), -4, 4 );
+                        $dest = $this->config->get('gallery.dir').DS.substr( '0000'.$cat->getId(), -4, 4 );
                         if ( ! is_dir( ROOT.$dest ) ) {
                             mkdir( ROOT.$dest, 0777, true );
                         }
                         $src  = $images['tmp_name'][$i];
 
                         $image->pos = $pos++;
-                        $image->category_id = $category->getId();
+                        $image->category_id = $cat->getId();
                         if ( isset( $names[ $i ] ) ) {
                             $image->name    = $names[ $i ];
                         }

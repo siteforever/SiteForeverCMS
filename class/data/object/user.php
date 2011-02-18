@@ -50,5 +50,18 @@ class Data_Object_User extends Data_Object
         return $this->data['perm'];
     }
 
+    /**
+     * Проверит наличие прав у пользователя
+     * @param int $perm
+     * @return bool
+     */
+    function hasPermission( $perm )
+    {
+        if ( $this->data['perm'] >= $perm ) {
+            return 1;
+        }
+        return 0;
+    }
+
 
 }

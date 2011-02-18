@@ -101,7 +101,12 @@ class App extends Application_Abstract
 
         self::$controller_time  = microtime(1);
         $controller_resolver    = new ControllerResolver( $this );
-        $result = $controller_resolver->callController();
+        try {
+            $result = $controller_resolver->callController();
+        } catch ( ControllerException $e ) {
+            $result = false;
+            $this->getRequest()->setContent($e->getMessage());
+        }
         self::$controller_time  = microtime(1) - self::$controller_time;
 
         $this->invokeView( $result ); 
@@ -174,8 +179,7 @@ class App extends Application_Abstract
                 }
             }
 
-            $this->getTpl()->display(
-                $request->get('resource').$request->get('template') );
+            $this->getTpl()->display( $request->get('resource').$request->get('template') );
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');

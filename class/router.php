@@ -90,8 +90,6 @@ class Router
             $url = $this->request->get('route');
         }
 
-        $url = '/'.$url.'/';
-
         $par = array();
 
         if ( count($params) ) {
@@ -99,14 +97,14 @@ class Router
                 $par[] = $k.'='.$v;
             }
         }
-        if ( count($par) ) {
-            $par = join('/', $par).'/';
-            $url .= $par;
+
+        if ( App::getInstance()->getConfig()->get('url.rewrite') ) {
+            $url = '/'.$url.( count($par) ? '/'.join('/', $par) : '' );
+        }
+        else {
+            $url = '/index.php?route='.$url.( count($par) ? '&'.join('&', $par) : '' );
         }
 
-        if ( ! defined('REWRITEURL') || ! REWRITEURL ) {
-            $url = "/index.php?route=".$url;
-        }
         return $url;
     }
 
@@ -141,7 +139,6 @@ class Router
      */
     function findRoute()
     {
-
         // сначала ищем маршрут в XML
         $xml_routes_file    = SF_PATH.'/protected/routes.xml';
         if ( file_exists( $xml_routes_file ) ) {
@@ -150,7 +147,7 @@ class Router
                 foreach ( $xml_routes as $route ) {
                     if ( $route['active'] !== "0" && preg_match( '@^'.$route['alias'].'$@ui', $this->route ) ) {
                         $this->controller   = (string) $route->controller;
-                        $this->action       = $route->action ? (string) $route->action : 'index';
+                        $this->action       = isset($route->action) ? (string) $route->action : 'index';
                         $this->id           = $route['id'];
                         $this->protected    = $route['protected'];
                         $this->system       = $route['system'];
@@ -162,17 +159,18 @@ class Router
 
 
         // Далее ищем маршрут в таблице
-        $route = Model::getModel('Routes');
+        $routes = Model::getModel('Routes');
 
-        $this->route_table = $route->findAll( array(
+        $this->route_table = $routes->findAll( array(
             'cond' => 'active = 1',
         ));
+
 
         // индексируем маршруты
         foreach( $this->route_table as $route )
         {
-            /*var_dump('@^'.$route['alias'].'$@ui', $this->route);
-            print '<br />';*/
+            // var_dump('@^'.$route['alias'].'$@ui', $this->route);
+            // print '<br />';
             // если маршрут совпадает с алиасом, то сохраняем
             if ( preg_match( '@^'.$route['alias'].'$@ui', $this->route ) )
             {
@@ -195,7 +193,12 @@ class Router
     {
         $model  = Model::getModel('Structure');
 
-        if ( $data = $model->findByRoute( $this->route ) )
+        $data   = $model->find(array(
+            'cond'  => 'alias = ? AND deleted = 0',
+            'params'=> array($this->route),
+        ));
+
+        if ( $data )
         {
             $this->controller   = $data['controller'];
             $this->action       = $data['action'];
@@ -215,5 +218,15 @@ class Router
     function isSystem()
     {
         return $this->system;
+    }
+
+    public function setRoute($route)
+    {
+        $this->route = $route;
+    }
+
+    public function getRoute()
+    {
+        return $this->route;
     }
 }
