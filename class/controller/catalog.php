@@ -3,7 +3,7 @@
  * Контроллер каталога
  * @author KelTanas
  */
-class Controller_Catalog extends controller
+class Controller_Catalog extends Controller
 {
     function init()
     {

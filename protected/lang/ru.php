@@ -11,6 +11,8 @@ return array(
     'Generation'    => 'Генерация',
     'Working on'    => 'Работает на',
 
+    'Home page for the filling' => 'Информационная страница для наполнения',
+
     'Routes'        => 'Маршруты',
     'Deleted route # '  => 'Удален маршрут № ',
 

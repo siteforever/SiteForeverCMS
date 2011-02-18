@@ -109,7 +109,7 @@ abstract class Controller
      * Правила, определяющие доступ к приложениям
      * @return array
      */
-    function rules()
+    function access()
     {
         return array(
             'system'    => array(

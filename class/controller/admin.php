@@ -99,6 +99,9 @@ class controller_Admin extends Controller
      */
     function addAction()
     {
+        /**
+         * @var Model_Structure $model
+         */
         $model  = $this->getModel('Structure');
 
         // идентификатор раздела, в который надо добавить
@@ -158,6 +161,7 @@ class controller_Admin extends Controller
         }
         
         $edit_form->author  = '1';
+        $edit_form->content = t('Home page for the filling');
 
         $edit_form->date    = time();
         $edit_form->update  = time();
@@ -261,7 +265,7 @@ class controller_Admin extends Controller
         reload('admin');
     }
 
-    function rules()
+    function access()
     {
         return array(
             'system'    => array('index','edit','add','move'),

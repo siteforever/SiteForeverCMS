@@ -55,13 +55,13 @@ class ControllerResolver
 
 
             // Защита системных действий
-            $rules  = $controller->rules();
+            $rules  = $controller->access();
 
             if ( ! $this->app->getUser()->hasPermission( USER_ADMIN ) ) {
                 if ( isset( $rules['system'] ) && is_array( $rules['system'] ) ) {
                     foreach ( $rules['system'] as $rule ) {
                         if ( strtolower( $rule.'action' ) == strtolower( $command['action'] ) ) {
-                            throw new ControllerException(t('Call system method'));
+                            throw new ControllerException(t('Access denied'));
                         }
                     }
                 }
