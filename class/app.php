@@ -189,11 +189,12 @@ class App extends Application_Abstract
                 if ( $result ) {
                     print $result;
                 } else {
-                    print json_encode( array(
+                    print $this->getRequest()->getResponseAsJson();
+                    /*print json_encode( array(
                         'error'     => $request->getError(),
                         'feedback'  => $request->getFeedback(),
                         'content'   => $request->getContent(),
-                    ));
+                    ));*/
                 }
             }
             else {

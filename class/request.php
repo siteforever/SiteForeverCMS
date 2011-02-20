@@ -12,8 +12,7 @@ class Request
     const TYPE_JSON = 'json';
     const TYPE_XML = 'xml';
 
-    private $feedback = array(
-    );
+    private $feedback = array( );
 
     /**
      * @var array|string
@@ -30,6 +29,11 @@ class Request
     private $ajax_type = self::TYPE_ANY;
 
     private $error = 0;
+
+    private $response   = array(
+        'error' => '',
+        'errno' => 0,
+    );
 
 
     /**
@@ -390,6 +394,66 @@ class Request
             $ret = join($sep, $this->feedback);
         }
         return $ret;
+    }
+
+    /**
+     * Добавить параметр в ответ
+     * @param  $key
+     * @param  $value
+     * @return void
+     */
+    function setResponse( $key, $value )
+    {
+        $this->response[ $key ] = $value;
+    }
+
+    /**
+     * Установить код ошибки
+     * @param int $errno
+     * @param string $error
+     * @return void
+     */
+    function setResponseError( $errno, $error = '' )
+    {
+        if ( ! $errno && ! $error ) {
+            $error  = t('No errors');
+        }
+        $this->setResponse('errno', $errno);
+        $this->setResponse('error', $error);
+    }
+
+    /**
+     * Вернет ответ как Json
+     * @return string
+     */
+    function getResponseAsJson()
+    {
+        return json_encode( $this->response );
+    }
+
+    /**
+     * Вернет ответ как XML
+     * @return mixed
+     */
+    function getResponseAsXML()
+    {
+        $xml    = new SimpleXMLElement('<response></response>');
+
+        array_walk_recursive( $this->response, array( self, 'arrayWalkToXML' ), $xml );
+
+        return $xml->asXML();
+    }
+
+    /**
+     * Функция коллбэк
+     * @param  $item
+     * @param  $key
+     * @param SimpleXMLElement $xml
+     * @return void
+     */
+    function arrayWalkToXML( $item, $key, SimpleXMLElement $xml )
+    {
+        $xml->addChild( $key, $item );
     }
 
     function debug()
