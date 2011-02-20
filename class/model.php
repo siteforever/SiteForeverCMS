@@ -490,11 +490,35 @@ abstract class Model
      */
     final public function delete( $id )
     {
-        $obj    = $this->find($id);
+        if ( $this->onDeleteStart( $id ) === false ) {
+            return false;
+        }
+
+        $obj    = $this->find( $id );
         if ( $obj ) {
             Data_Watcher::del( $obj );
-            $this->getDB()->delete($this->getTableName(), 'id = :id', array(':id'=>$obj->getId()));
+            if ( $this->getDB()->delete($this->getTableName(), 'id = :id', array(':id'=>$obj->getId())) ) {
+                $this->onDeleteSuccess( $id );
+                return true;
+            }
         }
+    }
+
+    /**
+     * Событие, вызывается перед удалением объекта
+     * Если вернет false, объект не будет удален
+     * @return bool
+     */
+    public function onDeleteStart( $id = null ) {
+        return true;
+    }
+
+    /**
+     * Событие, вызывается после успешного удаления объекта
+     * @return bool
+     */
+    public function onDeleteSuccess( $id = null ) {
+        return true;
     }
 
     /**
