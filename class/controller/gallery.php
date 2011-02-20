@@ -7,6 +7,7 @@
  */
 class Controller_Gallery extends Controller
 {
+
     function init()
     {
         $default = array(
@@ -20,6 +21,15 @@ class Controller_Gallery extends Controller
             $default['max_file_size']   = 2*1024*1024;
         }
         $this->config->setDefault('gallery', $default);
+    }
+
+    function access()
+    {
+        return array(
+            'system'    => array(
+                'admin', 'edit', 'delete', 'deleteImage',
+            ),
+        );
     }
 
     /**
@@ -96,22 +106,13 @@ class Controller_Gallery extends Controller
             $this->deleteCat( $category );
         }
 
-        if ( $delimg = $this->request->get('delimg') ) {
-            if ( $model->remove( $delimg ) ) {
-                print json_encode(array('id'=>$delimg,'error'=>'0'));
-            } else {
-                print json_encode(array('error'=>'1'));
-            }
-            return;
-        }
-
-        if ( $editimg = $this->request->get('editimg') ) {
+        if ( $this->request->get('editimg') ) {
             return $this->editImage($model);
         }
 
-        if ( $switchimg = $this->request->get('switchimg', FILTER_SANITIZE_NUMBER_INT) ) {
+        if ( $switchimg = $this->request->get('switchimg', Request::INT) ) {
 
-            $switch_result = $model->hideSwitch($switchimg);
+            $switch_result = $model->hideSwitch( $switchimg );
             
             if ( $switch_result !== false ) {
                 if( $switch_result == 1 ) {
@@ -120,12 +121,12 @@ class Controller_Gallery extends Controller
                     $switch_icon = icon('lightbulb', 'Выкл');
                 }
                 //$this->request->
-                return json_encode(array('error'=>'0', 'id'=>$switchimg, 'img'=>$switch_icon));
-                //print ;
+                $this->request->setResponseError(0);
+                $this->request->setResponse('id', $switchimg);
+                $this->request->setResponse('img', $switch_icon);
             }
             else {
-                return json_encode(array('error'=>'1'));
-                //print json_encode(array('error'=>'1'));
+                $this->request->setResponseError(1, t('Switch error'));
             }
             return;
         }
@@ -148,6 +149,26 @@ class Controller_Gallery extends Controller
 
         $this->tpl->categories  = $cat_list;
         $this->request->setContent( $this->tpl->fetch('gallery.admin_category') );
+    }
+
+    /**
+     * Удаление картинки
+     * @return void
+     */
+    function deleteImageAction()
+    {
+        $model  = $this->getModel('Gallery');
+
+        $img_id = $this->request->get('id', Request::INT);
+
+        if ( $img_id ) {
+            if ( $model->delete( $img_id ) ) {
+                $this->request->setResponse('id', $img_id);
+                $this->request->setResponseError(0);
+            } else {
+                $this->request->setResponseError(1, 'Can not delete');
+            }
+        }
     }
 
     /**
@@ -201,11 +222,13 @@ class Controller_Gallery extends Controller
 
     /**
      * Просмотр категории
-     * @param model_galleryCategory $category
      * @return void
      */
     function viewCat()
     {
+        /**
+         * @var model_galleryCategory $category
+         */
         $category   = $this->getModel('GalleryCategory');
         
         $cat_id = $this->request->get('viewcat', Request::INT);
@@ -215,7 +238,7 @@ class Controller_Gallery extends Controller
         /**
          * @var model_Gallery $model
          */
-        $model  = $category->gallery();
+        $model  = $this->getModel('Gallery');
         
 
         if ( isset( $_FILES['image'] ) ) {
@@ -269,12 +292,12 @@ class Controller_Gallery extends Controller
      * @param Data_Object_GalleryCategory $cat
      * @return
      */
-    function upload( Data_Object_GalleryCategory $cat )
+    protected function upload( Data_Object_GalleryCategory $cat )
     {
         /**
          * @var Model_GalleryCategory $category
          */
-        $category   = $this->getModel('GalleryCategory');
+        //$category   = $this->getModel('GalleryCategory');
         /**
          * @var Model_Gallery $model
          */
@@ -299,19 +322,27 @@ class Controller_Gallery extends Controller
                 $names  = $this->request->get('name');
             }
 
+            //printVar( $images );
+            //printVar( $names );
+
+
             $pos = $model->getNextPosition($cat->getId());
 
+            //print $pos;
+
             //printVar($images);
+            //return;
+
             foreach ( $images['error'] as $i => $err )
             {
-                $image  = $model->createObject(array(
-                    'pos'   => '0',
-                    'main'  => '0',
-                    'hidden'=> '0',
-                ));
-                
                 if ( $err == UPLOAD_ERR_OK )
                 {
+                    $image  = $model->createObject(array(
+                        'pos'   => $pos,
+                        'main'  => '0',
+                        'hidden'=> '0',
+                    ));
+
                     if ( $images['size'][$i] <= $max_file_size &&
                             in_array( $images['type'][$i], array('image/jpeg', 'image/gif', 'image/png') )
                     ) {
@@ -343,12 +374,12 @@ class Controller_Gallery extends Controller
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
                             // обработка
-                            $thumb_h    = $category->thumb_height;
-                            $thumb_w    = $category->thumb_width;
-                            $middle_h   = $category->middle_height;
-                            $middle_w   = $category->middle_width;
-                            $t_method   = $category->thumb_method;
-                            $m_method   = $category->middle_method;
+                            $thumb_h    = $cat->thumb_height;
+                            $thumb_w    = $cat->thumb_width;
+                            $middle_h   = $cat->middle_height;
+                            $middle_w   = $cat->middle_width;
+                            $t_method   = $cat->thumb_method;
+                            $m_method   = $cat->middle_method;
 
                             try {
                                 if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
@@ -375,6 +406,9 @@ class Controller_Gallery extends Controller
                             break;
                         case UPLOAD_ERR_PARTIAL:
                             $this->request->addFeedback('partial error');
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            $this->request->addFeedback('no file');
                             break;
                         default:
                             $this->request->addFeedback('unknown error');

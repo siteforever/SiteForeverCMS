@@ -32,7 +32,7 @@
                             {icon name="lightbulb" title="Вкл"}
                         {/if}
                     </a>
-                    <a {href delimg=$img.id} class="gallery_picture_delete">
+                    <a {href url="admin" controller="gallery" action="deleteImage"  id=$img.id} class="gallery_picture_delete">
                         {icon name="delete" title="Удалить"}
                     </a>
                 </div>
@@ -191,10 +191,10 @@
         $('a.gallery_picture_delete').click(function(){
             if ( confirm('Действительно хотите удалить?') ) {
                 var href = $(this).attr('href');
-                $.post( href, function(data){
+                $.post( href, function(data) {
                     try {
-                        if ( data.error == '0' ) {
-                            var elem = $('#gallery li[rel='+data.id+']');
+                        if ( data.errno == '0' ) {
+                            var elem = $('#gallery').find('li[rel='+data.id+']');
                             $(elem).fadeOut(500);
                             setTimeout(function(){
                                 $(elem).remove();
@@ -210,9 +210,12 @@
         $('a.gallery_picture_switch').click(function(){
             $.post($(this).attr('href'), function(data){
                 try {
-                    if ( data.error == '0' ) {
+                    if ( data.errno == '0' ) {
                         var elem = $('#gallery li[rel='+data.id+'] a.gallery_picture_switch' );
                         $(elem).html(data.img);
+                    }
+                    else {
+                        alert( data.error );
                     }
                 } catch(e) { alert(e.message) };
             }, 'json');

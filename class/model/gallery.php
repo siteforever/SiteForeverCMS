@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class model_Gallery extends Model
+class Model_Gallery extends Model
 {
     protected $form;
 
@@ -69,11 +69,11 @@ class model_Gallery extends Model
     }*/
 
     /**
-     * Удалить изображения и запись из базы
+     * Удалить изображения перед удаление объекта
      * @param int $id
      * @return void
      */
-    function remove( $id )
+    public function onDeleteStart( $id )
     {
         $data = $this->find( $id );
         if ( $data ) {
@@ -86,11 +86,12 @@ class model_Gallery extends Model
             if ( $data['image'] && file_exists(ROOT.$data['image']) ) {
                 @unlink ( ROOT.$data['image'] );
             }
-            $data->markDeleted();
-            //return $this->db->delete( $this->table, " id = {$id} " );
+            return true;
         }
         return false;
     }
+
+
 
     /**
      * Пересортировка изображений
