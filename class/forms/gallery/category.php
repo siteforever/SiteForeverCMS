@@ -49,9 +49,29 @@ class forms_gallery_category extends form_Form
                     'label' => 'Ширина миниатюры',
                     'value' => '100',
                 ),
+                'target'        => array(
+                    'type'  => 'select',
+                    'label' => 'Цель ссылок',
+                    'variants'  => array(
+                        '_gallery'  =>'Галерея',
+                        '_blank'    =>'Новое окно',
+                        '_self'     =>'Текущее окно',
+                        '_none'     =>'Без ссылки',
+                    ),
+                ),
+                'perpage'       => array(
+                    'type'  => 'int',
+                    'label' => 'Изображений на страницу',
+                    'value' => '20',
+                ),
                 'color'         => array(
-                    'type'  => 'text',
+                    'type'  => 'select',
                     'label' => 'Цвет полей',
+                    'variants'=>array(
+                        'ffffff'    => 'Белый',
+                        '000000'    => 'Черный',
+                        '-1'        => 'По первому пикселю',
+                    ),
                 ),
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),

@@ -92,7 +92,6 @@ class Model_Gallery extends Model
     }
 
 
-
     /**
      * Пересортировка изображений
      * @return int

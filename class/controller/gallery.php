@@ -265,6 +265,8 @@ class Controller_Gallery extends Controller
      */
     function editImage( model_gallery $model )
     {
+        $this->request->setAjax(1, Request::TYPE_ANY);
+
         $form   = $this->getForm('gallery_image');
 
         if ( $form->getPost() ) {
@@ -276,11 +278,12 @@ class Controller_Gallery extends Controller
             else {
                 $this->request->addFeedback($form->getFeedbackString());
             }
-            return;
+            //return;
         }
 
-        $editimg = $this->request->get('editimg');
-        $obj    = $model->find( $editimg );
+        $editimg    = $this->request->get('editimg');
+        if ( ! isset( $obj ) )
+            $obj = $model->find( $editimg );
 
         $form->setData( $obj->getAttributes() );
         $this->request->setContent( $form->html(false) );
@@ -324,7 +327,6 @@ class Controller_Gallery extends Controller
 
             //printVar( $images );
             //printVar( $names );
-
 
             $pos = $model->getNextPosition($cat->getId());
 
@@ -382,12 +384,27 @@ class Controller_Gallery extends Controller
                             $m_method   = $cat->middle_method;
 
                             try {
-                                if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
+                                $img_full   = new Image(ROOT.$img);
+
+                                $img_mid    = $img_full->createThumb($middle_w, $middle_h, $m_method, $cat->color);
+                                if ( $img_mid ) {
+                                    $img_mid->saveToFile( ROOT.$mdl );
                                     $image->middle  = str_replace( DS, '/', $mdl );
-                                };
-                                if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
+                                    unset( $img_mid );
+                                }
+
+                                $img_thmb   = $img_full->createThumb($thumb_w, $thumb_h, $t_method, $cat->color);
+                                if ( $img_thmb ) {
+                                    $img_thmb->saveToFile( ROOT.$tmb );
+                                    $image->thumb   = str_replace( DS, '/', $tmb);
+                                    unset( $img_thmb );
+                                }
+                                /*if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method, $cat->color ) ) {
+                                    $image->middle  = str_replace( DS, '/', $mdl );
+                                };*/
+                                /*if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method, $cat->color ) ) {
                                     $image->thumb   = str_replace( DS, '/', $tmb );
-                                };
+                                };*/
                             } catch ( Exception $e ) {
                                 $this->request->addFeedback($e->getMessage());
                             }

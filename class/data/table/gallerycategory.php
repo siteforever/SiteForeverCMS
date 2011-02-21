@@ -24,6 +24,8 @@ class Data_Table_GalleryCategory extends Data_Table
             new Data_Field_Tinyint('thumb_method'),
             new Data_Field_Int('thumb_width'),
             new Data_Field_Int('thumb_height'),
+            new Data_Field_Varchar('target', 10),
+            new Data_Field_Int('perpage'),
             new Data_Field_Varchar('color', 20),
         );
     }
