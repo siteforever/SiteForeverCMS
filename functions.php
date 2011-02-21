@@ -225,10 +225,21 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method )
         imagecopyresampled ( $newim, $im, $ix, $iy, 0, 0, $tw, $th, $iw, $ih );
     }
 
-    $return = @imageJpeg ( $newim, $thumbfile, 80 );
+    switch( $isize[2] ) {
+        case IMAGETYPE_GIF:
+            $return = @imagegif( $newim, $thumbfile );
+            break;
+        case IMAGETYPE_PNG:
+            $return = @imagepng( $newim, $thumbfile );
+            break;
+        case IMAGETYPE_JPEG:
+        default:
+            $return = @imageJpeg ( $newim, $thumbfile, 80 );
+    }
 
     if ($im)
         imagedestroy ( $im );
+    
     if ($newim)
         imagedestroy ( $newim );
 
