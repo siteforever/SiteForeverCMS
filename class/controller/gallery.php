@@ -58,7 +58,7 @@ class Controller_Gallery extends Controller
 
             $count  = $model->count($crit['cond'], $crit['params']);
 
-            $paging = $this->paging($count, 10, $this->page['alias'].'/cat='.$category['id']);
+            $paging = $this->paging($count, $category->perpage, $this->page['alias'].'/cat='.$category['id']);
 
             $crit['limit']  = $paging['limit'];
             $crit['order']  = 'pos';

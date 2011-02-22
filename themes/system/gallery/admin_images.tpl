@@ -1,9 +1,7 @@
 
 <h2>Галерея: {$category.name} <a {href editcat=$category.id}>{icon name="pencil" title="Править"}</a></h2>
 
-<p>
-    <a {href url="admin/gallery"}>&laquo; Вернуться к списку категорий</a>
-</p>
+<p><a {href url="admin/gallery"}>&laquo; Вернуться к списку категорий</a></p>
 <br />
 
 <table>
@@ -97,7 +95,6 @@
         width:      {$category.thumb_width}px;
         height:     {$category.thumb_height}px;
         margin-top: -{$category.thumb_height}px;
-        /*verflow:   hidden;*/
         font-size: 100%;
     }
     #gallery div.gallery_float_layer input {
@@ -148,42 +145,45 @@
         });
 
 
+        var action  = '';
         // Правка данных об изображении
-        $('a.gallery_picture_edit').click(function(){
-            var action = $(this).attr('href');
-            if ( $('#gallery_picture_edit').length == 0 ) {
-                $('<div id="gallery_picture_edit" />').appendTo('div.l-content');
-                $('#gallery_picture_edit').dialog({
-                    autoOpen        : false,
-                    modal           : true,
-                    draggable       : true,
-                    width           : 740,
-                    title           : 'Правка информации',
-                    buttons         : {
-                        'Закрыть'   : function() {
-                            $(this).dialog('close');
-                        },
-                        'Сохранить' : function() {
-                            $(this).find('form').ajaxSubmit({
-                                url     : action,
-                                target  : '#gallery_picture_edit'
-                                /*success : function(){
-                                    //$('#gallery_picture_edit').dialog('close');
-                                }*/
-                            });
+        $('a.gallery_picture_edit').each(function(){
+            $(this).click(function(){
+                action = $(this).attr('href');
+                if ( $('#gallery_picture_edit').length == 0 ) {
+                    $('<div id="gallery_picture_edit" />').appendTo('div.l-content');
+                    $('#gallery_picture_edit').dialog({
+                        autoOpen        : false,
+                        modal           : true,
+                        draggable       : true,
+                        width           : 740,
+                        title           : 'Правка информации',
+                        buttons         : {
+                            'Закрыть'   : function() {
+                                $(this).dialog('close');
+                            },
+                            'Сохранить' : function() {
+                                $(this).find('form').ajaxSubmit({
+                                    url     : action,
+                                    target  : '#gallery_picture_edit'
+                                });
+                            }
                         }
-                    }
                     }).hide();
-            };
+                }
 
-            $(window).bind('close', function(){ return false; });
+                $(window).bind('close', function(){ return false; });
 
-            $.showBlock('Загрузка...');
-            $.post($(this).attr('href'), function( data ){
-                $.hideBlock();
-                $('#gallery_picture_edit').html(data).dialog('open');
+                $.showBlock('Загрузка...');
+                $.post($(this).attr('href'), function( data ){
+                    $.hideBlock();
+                    $('#gallery_picture_edit').html(data).dialog('open');
+                });
+                
+                return false;
             });
-            return false;
+
+
         });
 
 
