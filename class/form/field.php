@@ -1,12 +1,11 @@
 <?php
 /**
- * @author keltanas <keltanas@gmail.com>
  * Интерфейс классов полей формы
+ * @author keltanas <keltanas@gmail.com>
  *
  * Для полей формы рекомендуется переопределять следующие методы xxx
  */
 
-// todo В случае использования чекбоксов и радиобаттонов видимо надо реализовывать списки значений, как в селектах
 
 abstract class Form_Field
 {
@@ -30,6 +29,17 @@ abstract class Form_Field
             $hidden   = false,
             $params;
 
+    /**
+     * Есть ли у поля ошибка
+     * @var bool
+     */
+    protected   $_error = false;
+    /**
+     * Текст ошибки поля
+     * @var string
+     */
+    protected   $_error_string  = '';
+    
     /**
      * Создаем поле формы
      * @param  $form
@@ -304,28 +314,30 @@ abstract class Form_Field
         }
 
         // по умолчанию валидно
-        $error  = 0;
+        $this->_error   = 0;
 
         // не валидно
         if ( $this->isRequired() && $this->isEmpty() )
         {
             //    или если его значение пустое
-            $this->form->addFeedback("&laquo;{$this->label}&raquo; нужно заполнить");
-            $error = 2;
+            $this->_error   = 2;
+            $this->_error_string    = "&laquo;{$this->label}&raquo; нужно заполнить";
         }
             //    если значение не соответствует типу
         elseif ( ! ( $this->checkValue( $this->value ) || $this->isEmpty() ) )
         {
-            $this->form->addFeedback("&laquo;{$this->label}&raquo; не соответствует типу");
-            $error = 1;
+            $this->_error   = 1;
+            $this->_error_string    = "&laquo;{$this->label}&raquo; не соответствует типу";
         }
 
-        if ( $error > 0 ) {
+        if ( $this->_error > 0 ) {
+            $this->form->addFeedback( $this->_error_string );
+            
             $classes[] = 'error';
             $this->class    = join(' ', $classes);
         }
 
-        return ! $error;
+        return ! $this->_error;
     }
 
     /**
@@ -381,15 +393,17 @@ abstract class Form_Field
     function htmlTpl( $html )
     {
         $label_class = '';
+        $error  = false;
         if ( strpos( $this->class, 'error' ) !== false ) {
+            $error  = true;
             $label_class = 'class="error"';
         }
-        return "<div class='b-form-field'>
-            <label for='{$this->getId()}' {$label_class}>{$this->label}".($this->isRequired()?' <b>*</b> ':'')."</label>
-            <div class='b-form-field-{$this->type}'>
-                {$html}
-            </div>
-        </div>";
+        return "<div class='b-form-field'>".
+            "<label for='{$this->getId()}' {$label_class}>{$this->label}".($this->isRequired()?' <b>*</b> ':'')."</label>".
+            "<div class='b-form-field-{$this->type}'>".
+               $html.($error ? "<div {$label_class}>{$this->_error_string}</div>" : '').
+            "</div>".
+        "</div>";
     }
 
     /**

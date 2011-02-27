@@ -17,30 +17,27 @@ class Form_Form implements ArrayAccess
     const DEBUG = false;
 
     private
-        $name,
-        $method,
-        $action,
-        $class,
+        $_name,
+        $_method,
+        $_action,
+        $_class,
         /**
          * Массив объектов полей формы
          */
-        $fields,
+        $_fields,
         /**
          * Массив кнопок
          */
-        $buttons,
+        $_buttons,
         /**
          * Данные, полученные из _POST или _GET
          */
-        $data;
+        $_data;
 
-    private $err_required   = 0;
-    private $err_untype     = 0;
+    private $_err_required  = 0;
+    private $_err_untype    = 0;
 
-    private $feedback = array();
-
-    private $uploader;
-
+    private $_feedback      = array();
 
     /**
      * Создает форму согласно конфигу
@@ -61,10 +58,10 @@ class Form_Form implements ArrayAccess
         if ( ! isset( $config['fields'] ) ) {
             throw new Exception('Для формы нужно определить массив полей fields');
         }
-        $this->name     = $config['name'];
-        $this->method   = isset( $config['method'] ) ? $config['method'] : 'post';
-        $this->action   = isset( $config['action'] ) ? $config['action'] : '';
-        $this->class    = isset( $config['class'] ) ? $config['class'] : 'standart ajax';
+        $this->_name    = $config['name'];
+        $this->_method  = isset( $config['method'] ) ? $config['method'] : 'post';
+        $this->_action  = isset( $config['action'] ) ? $config['action'] : '';
+        $this->_class   = isset( $config['class'] ) ? $config['class'] : 'standart ajax';
 
         foreach( $config['fields'] as $fname => $field )
         {
@@ -72,13 +69,13 @@ class Form_Form implements ArrayAccess
             if ( in_array( $fname, array('separate', 'separator', 'sep') ) ||
                      in_array( $field, array('separate', 'separator', 'sep') )
             ) {
-                $this->fields[] = "<hr class='separator' />";
+                $this->_fields[] = "<hr class='separator' />";
                 continue;
             }
 
             // Обработка HTML
             if ( is_string( $field ) ) {
-                $this->fields[] = $field;
+                $this->_fields[] = $field;
                 continue;
             }
 
@@ -111,14 +108,14 @@ class Form_Form implements ArrayAccess
             $field_id    = $obj_field->getId();
 
             if ( in_array( $field['type'], array('submit','reset','button') ) ) {
-                $this->buttons[ $field_id ] = $obj_field;
+                $this->_buttons[ $field_id ] = $obj_field;
                 continue;
             }
 
-            $this->fields[ $field_id ] = $obj_field;
+            $this->_fields[ $field_id ] = $obj_field;
 
             if ( $hidden )
-                $this->fields[ $field_id ]->hide();
+                $this->_fields[ $field_id ]->hide();
         }
     }
 
@@ -139,7 +136,7 @@ class Form_Form implements ArrayAccess
      */
     function clear()
     {
-        foreach( $this->fields as $field )
+        foreach( $this->_fields as $field )
         {
             if ( is_object( $field ) )
                 $field->clear();
@@ -172,10 +169,10 @@ class Form_Form implements ArrayAccess
      */
     function getField( $key )
     {
-        $id = $this->name.'_'.$key;
-        if ( isset( $this->fields[$id] ) )
+        $id = $this->_name.'_'.$key;
+        if ( isset( $this->_fields[$id] ) )
         {
-            return $this->fields[$id];
+            return $this->_fields[$id];
         }
         throw new Form_Exception("Field '{$key}' not found");
     }
@@ -187,12 +184,12 @@ class Form_Form implements ArrayAccess
     {
         if ( $this->isSent() )
         {
-            $data = $this->data;
+            $data = $this->_data;
 
             /**
              * @var $field form_Field
              */
-            foreach ( $this->fields as $field )
+            foreach ( $this->_fields as $field )
             {
                 if ( is_object( $field ) ) {
                     if ( isset( $data[ $field->getName() ] ) )
@@ -215,8 +212,8 @@ class Form_Form implements ArrayAccess
      */
     function isSent()
     {
-        if ( isset( $_REQUEST[ $this->name ] ) ) {
-            $this->data = $_REQUEST[ $this->name ];
+        if ( isset( $_REQUEST[ $this->_name ] ) ) {
+            $this->_data = $_REQUEST[ $this->_name ];
             return true;
         }
         return false;
@@ -230,10 +227,10 @@ class Form_Form implements ArrayAccess
     function name( $name = '' )
     {
             if ( $name ) {
-                $this->name = $name;
+                $this->_name = $name;
             }
             else {
-                return $this->name;
+                return $this->_name;
             }
     }
 
@@ -245,25 +242,25 @@ class Form_Form implements ArrayAccess
     {
         $html     = array();
 
-        $html[]   = "<form name='form_{$this->name}' id='form_{$this->name}' ".
-                    "class='{$this->class}' method='{$this->method}' action='{$this->action}' ".
+        $html[]   = "<form name='form_{$this->_name}' id='form_{$this->_name}' ".
+                    "class='{$this->_class}' method='{$this->_method}' action='{$this->_action}' ".
                     "enctype='multipart/form-data'>";
 
-        $feedback   = $this->getFeedbackString();
+        /*$feedback   = $this->getFeedbackString();
         if ( trim($feedback) ) {
             $html[] = "<p class='error'>{$feedback}</p>";
-        }
+        }*/
 
-        foreach ( $this->fields as $field ) {
+        foreach ( $this->_fields as $field ) {
             if ( is_object( $field ) )
                 $html[] = $field->html();
             elseif ( is_string( $field ) )
                 $html[] = $field;
         }
 
-        if ( $buttons && is_array( $this->buttons ) ) {
+        if ( $buttons && is_array( $this->_buttons ) ) {
             //$html[] = '<hr />';
-            foreach ( $this->buttons as $button ) {
+            foreach ( $this->_buttons as $button ) {
                 $html[]  = $button->html();
             }
         }
@@ -284,7 +281,7 @@ class Form_Form implements ArrayAccess
     function getData( $toString = false )
     {
         $data = array();
-        foreach( $this->fields as $field )
+        foreach( $this->_fields as $field )
         {
             if ( is_object( $field ) ) {
                 if ( ! in_array( $field->getType(), array('submit', 'separator') ) )
@@ -312,11 +309,11 @@ class Form_Form implements ArrayAccess
      */
     function setData( $data )
     {
-        if ( count($this->fields) == 0 ) {
+        if ( count($this->_fields) == 0 ) {
             throw new Exception( 'Форма не содержит полей' );
             return false;
         }
-        foreach( $this->fields as $field )
+        foreach( $this->_fields as $field )
         {
             if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) )
             {
@@ -343,16 +340,16 @@ class Form_Form implements ArrayAccess
     function validate()
     {
         $valid = true;
-        foreach( $this->fields as $field ) {
+        foreach( $this->_fields as $field ) {
             if( is_object( $field ) ) {
                 $ret = $field->validate();
                 $valid &= ($ret == 1) ? true : false;
                 switch ( $ret ) {
                     case -1:
-                        $this->err_untype++;
+                        $this->_err_untype++;
                         break;
                     case -2:
-                        $this->err_required++;
+                        $this->_err_required++;
                         break;
                 }
             }
@@ -362,20 +359,33 @@ class Form_Form implements ArrayAccess
 
 
 
-
+    /**
+     * Добавит сообщение обратной связи
+     * @param  $msg
+     * @return void
+     */
     function addFeedback( $msg )
     {
-        array_push( $this->feedback, $msg );
+        array_push( $this->_feedback, $msg );
     }
 
+    /**
+     * Вернет сообщения обратной связи как массив
+     * @return array
+     */
     function getFeedback()
     {
-        return $this->feedback;
+        return $this->_feedback;
     }
 
+    /**
+     * Вернет сообщения обратной связи как строку
+     * @param string $sep
+     * @return string
+     */
     function getFeedbackString( $sep = "<br />\n" )
     {
-        return join( $sep, $this->feedback );
+        return join( $sep, $this->_feedback );
     }
 
 
