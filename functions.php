@@ -83,9 +83,10 @@ function sendmail( $from, $to, $subject, $message )
     $header="Content-type: text/plain; charset=\"UTF-8\"\n";
     $header.="From: {$from}\n";
     $header.="Subject: $subject\n";
+    $header.="X-Mailer: SiteForeverCMS\n";
     $header.="Content-type: text/plain; charset=\"UTF-8\"\n";
 
-    mail($to, $subject, $message, $header);
+    return mail($to, $subject, $message, $header);
 }
 
 /**
@@ -149,17 +150,17 @@ function translit( $str )
 }
 
 
-
-
-
 /**
  * Создает миниатюру картинки из файла с именем $newfile в файл $thumbfile
- *
- * @param string $newfile
+ * @param string $srcfile
  * @param string $thumbfile
+ * @param string $thumb_w
+ * @param string $thumb_h
+ * @param int $method
+ * @param string $color
  * @return bool
  */
-function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method )
+function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color = '-1' )
 {
     /*
     * Создание миниатюр
@@ -186,6 +187,7 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method )
     // 1. пропорции
     $kh = $ih / $thumb_h;
     $kw = $iw / $thumb_w;
+
     // 2. выбираем коэффициент
     if ($method == 1) { // добавление полей
         $k = $kw < $kh ? $kh : $kw;
@@ -196,31 +198,50 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method )
     $th = round( $ih / $k );
     $tw = round( $iw / $k );
 
+    //var_dump($th, $tw);
+
     // 3. вычисляем координаты
     $m = array( // матрица распределения значений
         1 => array( // method 1
-            'x' => array( 0 , -1 ),
-            'y' => array( 1 , 0 ),
+            'x' => array( 1 , 0 ),
+            'y' => array( 0 , 1 ),
         ),
         2 => array( // method 2
             'x' => array( -0.5 , 0 ),
             'y' => array( 0 , 0.5 ),
-        )
+        ),
     );
 
-    $otrez = round ( ($tw - $th) / 2 );
-    $variant = $tw > $th ? 0 : 1;
+    //$otrez = round ( ($thumb_w - $thumb_h) / 2 );
+    $variant = $thumb_w > $thumb_h ? 0 : 1;
+
+    if ( $variant ) {
+        $otrez  = round( ($thumb_h - $th) / 2 );
+    } else {
+        $otrez  = round( ($thumb_w - $tw) / 2 );
+    }
 
     $ix = intval( $m[ $method ]['x'][ $variant ] * $otrez );
     $iy = intval( $m[ $method ]['y'][ $variant ] * $otrez );
 
-    //printVar(array( $variant, $ix, $iy));
+    //printVar(array( $variant, $ix, $iy, $otrez));
 
     // 4.
     $newim = imagecreatetruecolor ( $thumb_w, $thumb_h );
-    //$bgcolor = imagecolorat($im, 0, 0);
-    $bgcolor = imagecolorallocate($newim, 255, 255, 255);
-    imagefill( $newim, 0, 0, $bgcolor ); // заливаем белым
+
+    if ( $color == '-1' ) {
+        $bgcolor = imagecolorat($im, 0, 0);
+    } elseif ( strlen( $color ) == 6 ) {
+        $hred   = hexdec( substr($color, 0, 2) );
+        $hgr    = hexdec( substr($color, 2, 2) );
+        $hblue  = hexdec( substr($color, 4, 2) );
+        $bgcolor    = imagecolorallocate($newim, $hred, $hgr, $hblue);
+    }
+
+    if ( isset( $bgcolor ) ) {
+        imagefill( $newim, 0, 0, $bgcolor ); // заливаем
+    }
+
     if ($newim && $im) {
         imagecopyresampled ( $newim, $im, $ix, $iy, 0, 0, $tw, $th, $iw, $ih );
     }

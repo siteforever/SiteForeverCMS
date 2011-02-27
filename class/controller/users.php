@@ -6,6 +6,13 @@ class controller_Users extends Controller
         $this->request->set('template', 'inner' );
     }
 
+    function access()
+    {
+        return array(
+            'system'    => array('admin','adminEdit'),
+        );
+    }
+
     function indexAction()
     {
         $model  = $this->getModel('User');
@@ -206,9 +213,9 @@ class controller_Users extends Controller
                         $this->request->addFeedback( $auth->getMessage() );
                     }
                 }
-                else {
+                /*else {
                     $this->request->addFeedback( $form->getFeedback() );
-                }
+                }*/
             }
             $this->request->setTitle('Вход в систему');
 

@@ -33,10 +33,12 @@ class ControllerResolver
      * @throws ControllerExeption
      * @return void
      */
-    function callController()
+    function callController( $command = array() )
     {
-        if ( ! $command = $this->resolveController() ) {
-            throw new ControllerException('Controller not resolved');
+        if ( ! $command ) {
+            if ( ! $command = $this->resolveController() ) {
+                throw new ControllerException('Controller not resolved');
+            }
         }
 
         if ( class_exists( $command['controller'] ) )

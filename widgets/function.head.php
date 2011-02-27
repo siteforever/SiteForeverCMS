@@ -11,10 +11,11 @@
  */
 function smarty_function_head( $params )
 {
-    $request = App::getInstance()->getRequest();
+    $request    = App::getInstance()->getRequest();
+    $config     = App::getInstance()->getConfig();
 
     $head = array();
-    $head[] = "<title>".$request->getTitle()."</title>";
+    $head[] = "<title>".$config->get('sitename').': '.$request->getTitle()."</title>";
 
     if ( $request->get('tpldata.page.keywords') ) {
         $head[] = "<meta name=\"keywords\" content=\"".$request->get('tpldata.page.keywords')."\" />";

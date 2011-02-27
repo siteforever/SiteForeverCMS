@@ -1,6 +1,6 @@
 <?php
 $SES = array (
-  '52be36ba8e3bab6eab859555a354fb4e' => 
+  '612ba53444094d246acaa3a00d1b03da' => 
   array (
     'cfg' => 
     array (
@@ -14,17 +14,17 @@ $SES = array (
       'globstat' => 0,
       'my_host' => 'localhost',
       'my_port' => 3306,
-      'my_user' => 'siteforever',
-      'my_pass' => 'siteforever',
+      'my_user' => 'root',
+      'my_pass' => 's03olx',
       'my_comp' => 0,
-      'my_db' => 'siteforever',
+      'my_db' => 'stdel_site',
       'auth' => 'siteforever',
       'user' => '',
       'pass' => '',
       'confirm' => '6',
       'exitURL' => './',
     ),
-    'time' => 1297696247,
+    'time' => 1298387026,
     'lng' => 'ru',
   ),
 );

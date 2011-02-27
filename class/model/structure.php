@@ -351,10 +351,11 @@ class Model_Structure extends Model
                 continue;
             }
 
-            $icon   = 'folder';
-            $opened = isset($this->parents[ $branch['id'] ]);
-            $icon   = $opened ? 'folder_explore' : $icon;
-            $icon   = $branch['action'] == 'doc' ? 'page' : $icon;
+            $icon   = $branch['controller'] == 'page' ? 'page' : 'folder';
+            $icon   = $branch['controller'] == 'news' ? 'folder_feed' : $icon;
+            $icon   = $branch['controller'] == 'gallery' ? 'folder_picture' : $icon;
+            $icon   = $branch['controller'] == 'catalog' ? 'folder_table' : $icon;
+            $icon   = isset($this->parents[ $branch['id'] ]) ? 'folder_explore' : $icon;
 
             $li_class = '';
             if ( $level == 1 ) {
@@ -372,22 +373,21 @@ class Model_Structure extends Model
             }
 
             $this->html[] =
-            $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>
-                    <span id='item{$branch['id']}' class='{$bicon}'>
-                    <img src='/images/admin/icons/{$icon}.png' alt='' />
-                    <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>
-                    <span class='tools'>
-                        <a ".href('admin',   array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>
-                        <a ".href('admin',    array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>
-                        <a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>".
-                        //($branch['controller'] != 'page' ? '' : " <a class='link_add' page='{$branch['id']}' ".href('').">".icon('link_add', 'Добавить внешнюю связь').'</a> ' ).
-                    "</span>
-                    <span class='order'>".
-                        ($branch['link'] ? '<a class="link_del" page="'.$branch['id'].'" '.href('').'>'.icon('link', 'Внешняя связь').'</a>' : '' ).
+                    $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>
+                    <span id='item{$branch['id']}' class='{$bicon}'>".icon($icon).
+                    " <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>".
+                    "<span class='tools'>".
+                        "<a ".href('admin', array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>".
+                        "<a ".href('admin', array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
+                        "<a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>".
+                            //($branch['controller'] != 'page' ? '' : " <a class='link_add' page='{$branch['id']}' ".href('').">".icon('link_add', 'Добавить внешнюю связь').'</a> ' ).
+                    "</span>".
+                    "<span class='order'>".
+                        ($branch['controller']=='page' ? '' : '<a class="link_del" page="'.$branch['id'].'" '.href('').'>'.icon('link', 'Внешняя связь').'</a>' ).
                         ($branch['hidden'] ?
-                            " <a ".href('admin', array('do'=>'on','part'=>$branch['id'])).">".icon('lightbulb_off', 'Выключен')."</a>":
-                            " <a ".href('admin', array('do'=>'off','part'=>$branch['id'])).">".icon('lightbulb', 'Включен'))."</a>".
-                        " <a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>".icon('arrow_up', 'Вверх')."</a>
+                                " <a ".href('admin', array('do'=>'on','part'=>$branch['id'])).">".icon('lightbulb_off', 'Выключен')."</a>":
+                                " <a ".href('admin', array('do'=>'off','part'=>$branch['id'])).">".icon('lightbulb', 'Включен'))."</a>".
+                            " <a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>".icon('arrow_up', 'Вверх')."</a>
                         <a class='order-down' ".href('admin', array('do'=>'down','part'=>$branch['id']))." title='Вниз'>".icon('arrow_down', 'Вниз')."</a>
 
                         <span class='id_number'>

@@ -21,7 +21,7 @@ function smarty_function_page( $params )
         return 'Page with id='.$params['id'].' not found';
     }
 
-    if ( App::getInstance()->getUser()->hasPermission( $page->protected )  ) {
+    if ( ! App::getInstance()->getUser()->hasPermission( $page->protected )  ) {
         return 'Page content protected';
     }
 

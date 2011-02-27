@@ -257,6 +257,13 @@ class Model_Catalog extends Model
         return serialize( $path );
     }
 
+
+    function onDeleteStart( $id )
+    {
+        $this->remove( $id );
+        return false;
+    }
+
     /**
      * Удалить в базе
      * @return void

@@ -8,22 +8,27 @@ class controller_Rss extends Controller
 {
     function indexAction()
     {
+        $this->request->setAjax(true, Request::TYPE_XML);
+
         // @TODO Нет абсолютного подтверждения работы этого модуля
         /**
-         * @var model_news $model
+         * @var Model_News $model
          */
-        $model = $this->getModel('news');
+        $model = $this->getModel('News');
 
-        $model->setCond('news.hidden = 0 AND news.protected = 0 AND news.deleted = 0');
-        $data = $model->findAllWithLinks(10);
+        $crit   = array(
+            'cond'      => ' hidden = 0 AND protected = 0 AND deleted = 0 ',
+            'params'    => array(),
+            'limit'     => 10,
+        );
 
-        //printVar($data);
 
-        $this->tpl->assign('data', $data);
+        $news   = $model->findAllWithLinks( $crit );
+
+        $this->tpl->assign('data', $news);
         $this->tpl->assign('gmdate', gmdate('D, d M Y H:i:s', time()).' GTM');
 
         $this->request->set('getcontent', true);
-        $this->setAjax();
 
         //header('Content-type: text/xml; charset=utf-8');
 
@@ -46,12 +51,12 @@ class controller_Rss extends Controller
 
 
 
-        foreach( $data as $news ) {
+        foreach( $news as $n ) {
             $item = $channel->addChild('item');
-            $item->addChild('title', $news['title']);
-            $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($news['link'], array('doc'=>$news['id'])));
-            $item->addChild('description', $news['notice']);
-            $item->addChild('pubDate', date('r', $news['date']));
+            $item->addChild('title', $n['title']);
+            $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($n['link'], array('doc'=>$n['id'])));
+            $item->addChild('description', $n['notice']);
+            $item->addChild('pubDate', date('r', $n['date']));
         }
 
 

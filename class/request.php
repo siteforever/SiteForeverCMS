@@ -112,6 +112,7 @@ class Request
 
         $this->addScript($this->request['path']['misc'] . '/jquery-1.5.min.js');
         $this->addScript($this->request['path']['misc'] . '/fancybox/jquery.fancybox-1.3.1.pack.js');
+        //$this->addScript($this->request['path']['misc'] . '/siteforever.js');
     }
 
 

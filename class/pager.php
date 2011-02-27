@@ -20,6 +20,8 @@ class Pager implements ArrayAccess
 
     function __construct( $count, $perpage, $link = '' )
     {
+        $perpage    = $perpage ? $perpage : 10;
+
         $pages  = ceil( $count / $perpage );
 
         if ( $pages < 2 ) {

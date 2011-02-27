@@ -185,8 +185,17 @@ class App extends Application_Abstract
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: post-check=0, pre-check=0', false);
             header('Pragma: no-cache');
+
             if ( $request->getAjaxType() == Request::TYPE_JSON ) {
+                header('Content-type: text/json; charset=utf-8');
                 if ( $result ) {
+                    if ( is_object( $result ) || is_array( $result ) ) {
+                        $result = json_encode( $result );
+                    } elseif ( is_string( $result ) ) {
+                        if ( ! @json_decode( $result ) ) {
+                            throw new Application_Exception('Result is not valid and can not convert to json');
+                        }
+                    }
                     print $result;
                 } else {
                     print $this->getRequest()->getResponseAsJson();
@@ -197,8 +206,12 @@ class App extends Application_Abstract
                     ));*/
                 }
             }
+            elseif ( $request->getAjaxType() == Request::TYPE_XML ) {
+                header('Content-type: text/xml; charset=utf-8');
+                print $request->getContent();
+            }
             else {
-                print $request->getFeedbackString();
+                print '<div class="feedback">'.$request->getFeedbackString().'</div>';
                 if ( $request->getContent() ) {
                     print $request->getContent();
                 }

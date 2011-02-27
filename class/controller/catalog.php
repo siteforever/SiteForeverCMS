@@ -94,9 +94,7 @@ class Controller_Catalog extends Controller
                 );
 
                 $count  = $catalog->count( $criteria['cond'], $criteria['params'] );
-
-                //$count  = $catalog->getCountByParent( $catalog->get('id'), 0 );
-
+                
                 $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$item->getId()) ) );
 
                 $criteria['limit']  = $paging->limit;
@@ -246,10 +244,10 @@ class Controller_Catalog extends Controller
         $catalog = $this->getModel('Catalog');
         $catalog_gallery = $this->getModel('CatGallery');
 
-        $id = $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT);
+        $id = $this->request->get('edit', Request::INT);
 
-        $type   = $this->request->get('type', FILTER_SANITIZE_NUMBER_INT);
-        $parent_id = $this->request->get('add', FILTER_SANITIZE_NUMBER_INT);
+        $type   = $this->request->get('type', Request::INT);
+        $parent_id = $this->request->get('add', Request::INT);
 
         /**
          * @var form_Form
@@ -339,6 +337,7 @@ class Controller_Catalog extends Controller
             }
         }
         else { // если каталог
+
             $icon_dir = 'files/catalog/icons';
             if ( ! is_dir( $icon_dir ) ) {
                 mkdir($icon_dir, 0777, true);
@@ -392,9 +391,9 @@ class Controller_Catalog extends Controller
         /**
          * @var model_Catalog $catalog
          */
-        $catalog = $this->getModel('catalog');
+        $catalog = $this->getModel('Catalog');
 
-        $filter = trim( $this->request->get('goods_filter', FILTER_SANITIZE_STRING) );
+        $filter = trim( $this->request->get('goods_filter') );
         if ( $filter ) {
             $filter  = preg_replace('/[^\d\wа-яА-Я]+/u', '%', $filter);
             $filter  = str_replace(array('%34', '&#34;'), '', $filter);
@@ -404,10 +403,8 @@ class Controller_Catalog extends Controller
 
         // пересортировка
         if ( $this->request->get('sort') ) {
-            $error = $catalog->resort();
-            $this->request->setError( $error );
+            $this->request->setResponseError( 0, $catalog->resort() );
             return;
-            //die( json_encode(array('error'=>$error)) );
         }
 
         // перемещение
@@ -415,7 +412,7 @@ class Controller_Catalog extends Controller
             $this->request->setContent(
                 $this->request->get('target', FILTER_SANITIZE_NUMBER_INT)
             );
-            $this->request->setError($catalog->moveList());
+            $this->request->setResponseError( 0, $catalog->moveList() );
             return;
         }
 

@@ -101,6 +101,7 @@ abstract class Controller
         $this->tpl->request = $this->request;
         $this->tpl->page    = $this->page;
         $this->tpl->auth    = $this->app()->getAuth();
+        $this->tpl->config  = $this->config;
 
         $this->init();
     }

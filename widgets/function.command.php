@@ -12,7 +12,7 @@
  * @link http://ermin.ru
  */
  
-function smarty_function_command( $params, $smarty )
+function smarty_function_command( $params )
 {
     $app    = App::getInstance();
 
