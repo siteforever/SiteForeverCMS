@@ -45,9 +45,13 @@ class controller_News extends Controller
 
         $this->tpl->news = $news->getAttributes();
 
-        $this->request->setTitle($news['title'] ? $news['title'] : $news['name']);
+        $this->request->setTitle(
+            ( $this->page['title'] ? $this->page['title'] : $this->page['name'] ) .
+            ' &mdash; ' .
+            ( $news['title'] ? $news['title'] : $news['name'] )
+        );
 
-        if ( $news['protected'] > $this->user->perm ) {
+        if ( ! $this->user->hasPermission( $news['protected'] ) ) {
             $this->request->setContent('Не достаточно прав доступа');
         }
         else {
