@@ -123,7 +123,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     {
         $scripts    = $this->object->getScript();
         $this->assertTrue( is_array( $scripts ), 'Scripts list fail format' );
-        $this->assertEquals( count( $scripts ), 2, 'Default scripts list count not equal 2' );
+        $this->assertEquals( count( $scripts ), 3, 'Default scripts list count not equal 2' );
     }
 
     /**
@@ -135,7 +135,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
         $scripts = $this->object->getScript();
 
-        $this->assertEquals( count( $scripts ), 3, 'Count scripts not equal 3' );
+        $this->assertEquals( count( $scripts ), 4, 'Count scripts not equal 3' );
 
         $found = false;
         foreach ( $scripts as $script ) {

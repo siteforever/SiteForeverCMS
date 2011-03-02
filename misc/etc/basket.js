@@ -3,8 +3,9 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
+siteforever.basket  = {};
 
-var basket_class    = '.basket-widget';
+siteforever.basket.class_name    = '.basket-widget';
 
 /**
  * Добавит товар в корзину
@@ -14,7 +15,7 @@ var basket_class    = '.basket-widget';
  * @param price
  * @param details
  */
-var basket_add  = function( id, product, count, price, details )
+siteforever.basket.add  = function( id, product, count, price, details )
 {
     $.post('/?controller=basket&action=add', {
         basket_prod_id:     id,
@@ -23,11 +24,7 @@ var basket_add  = function( id, product, count, price, details )
         basket_prod_price:  parseFloat( price ),
         basket_prod_details:details
     }, function( data ){
-        alert('Товар добавлен в корзину');
-        $(basket_class).replaceWith( data );
+        siteforever.alert('Товар добавлен в корзину');
+        $(siteforever.basket.class_name).replaceWith( data );
     });
 }
-
-$(function(){
-    
-})
