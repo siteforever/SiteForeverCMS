@@ -14,6 +14,6 @@
             {if $user.perm == $smarty.const.USER_ADMIN}Администратор{/if}
         </li>
         <li><a {href url="users/cabinet"}>Кабинет пользователя</a></li>
-        <li><a {href url="users/logout"}>Выход из системы</a></li>
+        <li><a {href url="users/logout"}>Выход</a></li>
     </ul>
 {/if}

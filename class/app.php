@@ -211,7 +211,9 @@ class App extends Application_Abstract
                 print $request->getContent();
             }
             else {
-                print '<div class="feedback">'.$request->getFeedbackString().'</div>';
+                if ( count( $request->getFeedback() ) ) {
+                    print '<div class="feedback">'.$request->getFeedbackString().'</div>';
+                }
                 if ( $request->getContent() ) {
                     print $request->getContent();
                 }

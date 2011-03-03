@@ -14,11 +14,14 @@ class Data_Object_User extends Data_Object
      */
     function changePassword( $password )
     {
-        $solt = App::getInstance()->getAuth()->generateString(8);
+        $solt = App::getInstance()->getAuth()->generateString( 8 );
         $hash = App::getInstance()->getAuth()->generatePasswordHash( $password, $solt );
 
-        $this->offsetSet( 'solt', $solt );
-        $this->offsetSet( 'password', $hash );
+        $this->data['solt']     = $solt;
+        $this->data['password'] = $hash;
+
+        $this->markDirty();
+
         return $this;
     }
 
@@ -61,6 +64,16 @@ class Data_Object_User extends Data_Object
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * Проверит, равны ли права значению
+     * @param int $perm
+     * @return bool
+     */
+    function isPermission( $perm )
+    {
+        return $this->data['perm'] == $perm ? true : false;
     }
 
 

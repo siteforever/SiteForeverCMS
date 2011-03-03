@@ -15,14 +15,14 @@ class controller_Users extends Controller
 
     function indexAction()
     {
-        $model  = $this->getModel('User');
-
+        $auth   = $this->app()->getAuth();
         if ( $this->request->get('confirm') && $this->request->get('userid', FILTER_VALIDATE_INT) )
         { // подтверждение регистрации
-           $this->app()->getAuth()->confirm();
+            $auth->confirm();
+            $this->request->addFeedback($auth->getMessage());
         }
 
-        $option = $this->request->get('option');
+        /*$option = $this->request->get('option');
         if ( $option == 'whole_request' ) {
             sendmail(
                $this->user->email,
@@ -34,7 +34,7 @@ class controller_Users extends Controller
                ' запросил перевести его аккаунт в статус "оптовый".'
            );
            $this->request->addFeedback('Ваша заявка принята');
-        }
+        }*/
 
         $this->loginAction();
     }
@@ -46,6 +46,7 @@ class controller_Users extends Controller
     function adminAction()
     {
         $this->request->set('template', 'index' );
+
         // используем шаблон админки
         $this->request->setTitle('Пользователи');
 
@@ -273,7 +274,10 @@ class controller_Users extends Controller
         $this->request->setTitle('Регистрация');
         $this->request->setContent('');
 
-        $model  = $this->getModel('user');
+        /**
+         * @var Model_User $model
+         */
+        $model  = $this->getModel('User');
 
         $form = $model->getRegisterForm();
 
@@ -283,9 +287,16 @@ class controller_Users extends Controller
             {
                 $user   = $model->createObject( $form->getData() );
 
-                if ( $model->register( $user ) )
+                $auth   = $this->app()->getAuth();
+
+                $auth->register( $user );
+
+                if ( $auth->getError() )
                 {
-                    return 1;
+                    $this->request->addFeedback($auth->getMessage());
+                } else {
+                    $this->request->setContent($this->tpl->fetch('users.register_successfull'));
+                    return;
                 }
             }
             else {
@@ -308,36 +319,35 @@ class controller_Users extends Controller
         $this->request->setContent('');
 
 
-        // 1. Если нет параметров, фома ввода email
+        // 1. Если нет параметров, форма ввода email
         // 2. Если введен email, отправить письмо, где будет ссылка, с email и md5 соли
         // 3. Если email и md5 соли подходят, то выслать новый пароль
 
         $email = $this->request->get('email');
         $code  = $this->request->get('code');
 
-        $user = $this->user;
-
         $model  = $this->getModel('User');
 
 
         if ( $email && $code ) {
             // проверка, подходят ли email и code
-            $found  = $model->find(array(
+            $user  = $model->find(array(
                 'cond'  => 'email = :email',
                 'params'=> array(':email'=>$email),
             ));
 
-            if ( $found )
+            if ( $user )
             {
-                if ( $code == md5( $found['solt'] ) )
+                if ( $code == md5( $user['solt'] ) )
                 {
-                    $pass = $user->generateString( 8 );
+                    $pass = $this->app()->getAuth()->generateString( 8 );
                     $user->changePassword( $pass );
-                    $user->update();
+
+                    //$model->save( $user );
 
                     $this->tpl->assign(array(
-                        'pass'  => $pass,
-                        'login'  => $found['login'],
+                        'pass'      => $pass,
+                        'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
                         'loginform' => $this->config->get('siteurl').
                                 $this->router->createLink("users/login")
@@ -346,10 +356,10 @@ class controller_Users extends Controller
                     sendmail(
                         $this->config->get('admin'),
                         $email,
-                        'Новый пароль', $this->tpl->fetch('db:mail_new_password')
+                        'Новый пароль', $this->tpl->fetch('users.password_new')
                     );
-                    $this->request->addFeedback('Новый пароль отправлен на Вашу почту.');
-                    return 1;
+                    $this->request->addFeedback('Новый пароль отправлен на Вашу почту');
+                    return;
                 }
                 else {
                     $this->request->addFeedback('Не верный код восстановления');
@@ -372,26 +382,27 @@ class controller_Users extends Controller
         {
             if ( $form->validate() )
             {
-                $found  = $model->find(array(
+                $user  = $model->find(array(
                     'cond'  => 'email = :email',
                     'params'=> array(':email'=>$form['email']),
                 ));
 
-                if ( $found )
+                if ( $user )
                 {
                     $this->tpl->assign(array(
+                        'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
                         'siteurl'   => $this->config->get('siteurl'),
                         'link'      => $this->config->get('siteurl').$this->router->createLink(
                             "users/restore",
-                            array('email'=>$found['email'], 'code'=>md5($found['solt']),  )
+                            array('email'=>$user['email'], 'code'=>md5($user['solt']),  )
                         )
                     ));
                     sendmail(
                         $this->config->get('admin'),
                         $form['email'],
                         'Восстановление пароля',
-                        $this->tpl->fetch('db:mail_restore')
+                        $this->tpl->fetch('users.password_restore')
                     );
                     $this->request->addFeedback('Ссылка для восстановления отправлена на вашу почту');
                     return;

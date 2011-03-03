@@ -155,7 +155,8 @@ abstract class Application_Abstract
      */
     function getBasket()
     {
-        if ( is_null( self::$basket ) ) {
+        if ( is_null( self::$basket ) )
+        {
             self::$basket   = Basket_Factory::createBasket( $this->getAuth()->currentUser() );
         }
         return self::$basket;

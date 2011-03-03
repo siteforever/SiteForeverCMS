@@ -20,7 +20,11 @@ class Basket_Factory
         }
         self::$created = true;
 
-        if ( $user->perm != USER_GUEST ) {
+        if ( ! $user instanceof Data_Object_User ) {
+            throw new Exception('Not valid User object');
+        }
+
+        if ( $user && $user->getPermission() != USER_GUEST ) {
             $basket = new Basket_User( $user );
         }
         else {

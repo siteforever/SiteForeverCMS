@@ -383,6 +383,10 @@ abstract class Form_Field
             $field['disabled'] = 'disabled="disabled"';
         }
 
+        if ( isset($this->params['autocomplete']) ) {
+            $field['autocomplete']  = 'autocomplete="'.$this->params['autocomplete'].'"';
+        }
+
         return $this->htmlTpl( $this->doInput( $field ) );
     }
 
@@ -413,7 +417,7 @@ abstract class Form_Field
     function doInput( &$field )
     {
         $field['class']    = 'class="'.join(' ', $field['class']).'"';
-        return "<input ".join(' ', $field)." autocomplete='off' />";
+        return "<input ".join(' ', $field)." />";
     }
 
     /**

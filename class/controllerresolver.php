@@ -22,7 +22,7 @@ class ControllerResolver
     {
         $request    = $this->app->getRequest();
 
-        $controller_class   = 'controller_'.ucfirst($request->get('controller'));
+        $controller_class   = 'Controller_'.ucfirst($request->get('controller'));
         $action             = $request->get('action').'Action';
 
         return array( 'controller' => $controller_class, 'action' => $action );
@@ -40,14 +40,15 @@ class ControllerResolver
                 throw new ControllerException('Controller not resolved');
             }
         }
+        //printVar($command);
 
         if ( class_exists( $command['controller'] ) )
         {
-            $ref = new ReflectionClass( $command['controller'] );
+            $ref    = new ReflectionClass( $command['controller'] );
             /**
              * @var Controller $controller
              */
-            $controller = $ref->newInstance( $this->app );
+            $controller     = $ref->newInstance( $this->app );
 
             //$controller = new $command['controller']( $this->app );
             

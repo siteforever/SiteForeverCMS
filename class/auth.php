@@ -33,16 +33,18 @@ abstract class Auth
         $this->model    = $this->app()->getModel('User');
 
         if ( $this->getId() ) {
-            $obj    = $this->model->find( (int) $this->getId() );
-            $this->user = $obj;
-            $this->user->last   = time();
-        } else {
-            $this->user =$this->model->createObject(array(
-               'login'  => 'guest',
-               'perm'   => USER_GUEST,
-            ));
-            $this->user->markClean();
+            $obj                = $this->model->find( (int) $this->getId() );
+            if ( $obj ) {
+                $this->user         = $obj;
+                $this->user->last   = time();
+                return;
+            }
         }
+        $this->user =$this->model->createObject(array(
+            'login' => 'guest',
+            'perm'  => USER_GUEST,
+        ));
+        $this->user->markClean();
     }
 
     /**
@@ -162,10 +164,20 @@ abstract class Auth
      */
     function register( Data_Object_User $obj )
     {
-        $obj['solt']   = $this->generateString( 8 );
+        if ( strlen( $obj['login'] ) < 5 ) {
+            $this->setError('Логин должен быть не короче 5 символов');
+            return false;
+        }
+
+        if ( strlen( $obj['password'] ) < 6 ) {
+            $this->setError( 'Пароль должен быть не короче 6 символов' );
+            return false;
+        }
+
+        $obj['solt']    = $this->generateString( 8 );
         $obj['password']= $this->generatePasswordHash( $obj['password'], $obj['solt'] );
-        $obj['perm']   = USER_GUEST;
-        $obj['status'] = 0;
+        $obj['perm']    = USER_GUEST;
+        $obj['status']  = 0;
         $obj['confirm'] = md5(microtime().$obj['solt']);
 
         //$data['login']  = $data['login'];
@@ -173,16 +185,28 @@ abstract class Auth
         $obj['last']   = time();
 
         $user   = $this->model->find(array(
-             'cond'     => 'login = :login OR email = :email',
-             'params'   => array(':login'=>$obj['login'], ':email'=>$obj['email']),
+             'cond'     => 'login = :login',
+             'params'   => array(':login'=>$obj['login']),
           ));
 
-        if ( $user )
-        {
-            $this->error    = true;
-            $this->message  = 'Такой пользователь уже зарегистрирован';
+        if ( $user ) {
+            $this->setError( 'Пользователь с таким логином уже существует' );
             return false;
         }
+
+        $user   = $this->model->find(array(
+            'cond'     => 'email = :email',
+            'params'   => array(':email'=>$obj['email']),
+        ));
+
+        if ( $user ) {
+            $this->setError( 'Пользователь с таким адресом уже существует' );
+            return false;
+        }
+
+        //printVar($obj->getAttributes());
+
+        //return;
 
         //$this->setData( $data );
         // Надо сохранить, чтобы знать id
@@ -195,7 +219,7 @@ abstract class Auth
             $tpl->sitename = $config->get('sitename');
             $tpl->siteurl  = $config->get('siteurl');
 
-            $msg = $tpl->fetch('system:users.register');
+            $msg = $tpl->fetch('system:users.mail.register');
 
             //print $msg;
 
@@ -234,14 +258,15 @@ abstract class Auth
             $user   = $this->model->find( array(
                     'cond'      => 'id = :id AND confirm = :confirm',
                     'params'    => array(':id'=>$user_id, ':confirm'=>$confirm),
-               ) );
+               ));
 
             if ( $user ) {
                 $user->perm = USER_USER;
                 $user->last = time();
                 $user->active();
+                $user->confirm  = md5(microtime().$user->solt);
 
-                $_SESSION['user_id'] = $user->getId();
+                //$this->setId( $user->getId() );
 
                 $this->error    = false;
                 $this->message  = 'Регистрация успешно подтверждена';
@@ -284,14 +309,33 @@ abstract class Auth
         return md5( md5($solt) . md5($password) );
     }
 
+    /**
+     * Вернет сообщение системы
+     * @return string
+     */
     function getMessage()
     {
         return $this->message;
     }
 
+    /**
+     * Вернет состояние ошибки
+     * @return bool
+     */
     function getError()
     {
         return $this->error;
+    }
+
+    /**
+     * Обозначить ошибку
+     * @param string $message
+     * @return void
+     */
+    function setError( $message )
+    {
+        $this->message  = $message;
+        $this->error    = true;
     }
 
 }

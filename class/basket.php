@@ -17,13 +17,14 @@ abstract class Basket
     {
         $request    = App::getInstance()->getRequest();
         $request->addScript('/misc/etc/basket.js');
+        //$request->addScript('/misc/etc/jquery.blockUI.js');
 
         $this->user = $user;
         $this->data = array();
 
         $this->load();
     }
-    
+
     /**
      * Добавить товар в корзину
      * @param string $id
