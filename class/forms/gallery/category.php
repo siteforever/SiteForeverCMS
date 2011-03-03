@@ -54,8 +54,8 @@ class forms_gallery_category extends form_Form
                     'label' => 'Цель ссылок',
                     'variants'  => array(
                         '_gallery'  =>'Галерея',
-                        '_blank'    =>'Новое окно',
-                        '_self'     =>'Текущее окно',
+                        '_blank'    =>'Изображение в новом окне',
+                        '_self'     =>'Страница в текущем окне',
                         '_none'     =>'Без ссылки',
                     ),
                 ),

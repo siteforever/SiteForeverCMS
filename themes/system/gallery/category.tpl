@@ -7,6 +7,8 @@
         {if $category.target != '_none'}
             {if $category.target == '_gallery' && $img.link == ''}
             <a href="{$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
+            {elseif $category.target == '_self'}
+            <a {href img=$img.id}>
             {else}
             <a href="{$img.link|default:$img.image}" title="{$img.name}" target="{$category.target}">
             {/if}

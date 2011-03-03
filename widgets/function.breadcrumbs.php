@@ -1,6 +1,6 @@
 <?php
 /**
- * Smarty plugin
+ * Smarty plugin BreadCrumbs
  * -------------------------------------------------------------
  * File:     function.breadcrumbs.php
  * Type:     function
@@ -9,7 +9,7 @@
  * -------------------------------------------------------------
  * @example {breadcrumbs path=$page.path}
  */
-function smarty_function_breadcrumbs( $params, &$smarty )
+function smarty_function_breadcrumbs( $params )
 {
     if ( isset ( $params['page'] ) && isset( $params['page']['path'] ) ) {
         $params['path'] = $params['page']['path'];

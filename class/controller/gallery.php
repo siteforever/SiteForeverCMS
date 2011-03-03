@@ -23,6 +23,10 @@ class Controller_Gallery extends Controller
         $this->config->setDefault('gallery', $default);
     }
 
+    /**
+     * Уровень доступа к действиям
+     * @return array
+     */
     function access()
     {
         return array(
@@ -47,6 +51,50 @@ class Controller_Gallery extends Controller
          */
         $model_category = $this->getModel('GalleryCategory');
 
+        if ( $img = $this->request->get('img', Request::INT) ) {
+            $image  = $model->find( $img );
+            if ( $image ) {
+
+                $path   = json_decode( $this->page['path'] );
+                $path[] = array(
+                    'id'    => $this->page['id'],
+                    'name'  => $image->name,
+                    'url'   => $this->router->createLink('', array('img'=>$image->id))
+                );
+                $this->page['path'] =   json_encode( $path );
+                $this->request->set('tpldata.page.path', $this->page['path']);
+
+                $crit   = array(
+                    'cond'  => 'category_id = ? AND pos > ?',
+                    'params'=> array($image->category_id, $image->pos),
+                    'order' => 'pos ASC',
+                    'limit' => '1',
+                );
+
+                $next   = $model->find( $crit );
+
+                $crit['cond']   = 'category_id = ? AND pos < ?';
+                $crit['order']  = 'pos DESC';
+
+                $pred   = $model->find( $crit );
+
+                $category   = $model_category->find($image->category_id);
+
+                $this->tpl->image   = $image;
+                $this->tpl->next    = $next;
+                $this->tpl->pred    = $pred;
+                $this->tpl->category= $category;
+
+                $this->request->setTitle( $category->name . ': ' . $image->name );
+
+                $this->request->setContent(
+                    $this->tpl->fetch('gallery.image')
+                );
+
+                return;
+            }
+        }
+
         $category = $model_category->find($this->page['link']);
 
         if ( $category ) {
@@ -69,7 +117,9 @@ class Controller_Gallery extends Controller
             $this->tpl->rows    = $rows;
             $this->tpl->page    = $this->page;
             $this->tpl->paging  = $paging;
-            $this->request->setContent( $this->tpl->fetch('gallery.index') );            
+
+            $this->request->setTitle( $category->name );
+            $this->request->setContent( $this->tpl->fetch('gallery.category') );
 
         } else {
             $this->request->addFeedback('Категория не определена');
@@ -328,7 +378,8 @@ class Controller_Gallery extends Controller
             //printVar( $images );
             //printVar( $names );
 
-            $pos = $model->getNextPosition($cat->getId());
+            $pos    = $model->getNextPosition($cat->getId());
+            $pos    = $pos ? $pos : 0;
 
             //print $pos;
 
@@ -345,6 +396,8 @@ class Controller_Gallery extends Controller
                         'hidden'=> '0',
                     ));
 
+                    $pos++;
+
                     if ( $images['size'][$i] <= $max_file_size &&
                             in_array( $images['type'][$i], array('image/jpeg', 'image/gif', 'image/png') )
                     ) {
@@ -356,7 +409,6 @@ class Controller_Gallery extends Controller
                         }
                         $src  = $images['tmp_name'][$i];
 
-                        $image->pos = $pos++;
                         $image->category_id = $cat->getId();
                         if ( isset( $names[ $i ] ) ) {
                             $image->name    = $names[ $i ];
