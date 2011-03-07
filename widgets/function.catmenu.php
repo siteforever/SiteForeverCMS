@@ -16,7 +16,7 @@ function smarty_function_catmenu($params, $smarty)
     $level  = isset( $params['level'] ) ? $params['level'] : '1';
     $url    = isset($params['url']) ? $params['url'] : 'catalog';
   
-    $catalog = Model::getModel('model_Catalog');
+    $catalog = Model::getModel('Catalog');
     
     
     return $catalog->getMenu( $url, $parent, $level );

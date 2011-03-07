@@ -7,7 +7,7 @@
  * Name:     breadcrumbs
  * Purpose:  Напечатает "хлебные крошки"
  * -------------------------------------------------------------
- * @example {breadcrumbs path=$page.path}
+ * @example {breadcrumbs path=$page}
  */
 function smarty_function_breadcrumbs( $params )
 {

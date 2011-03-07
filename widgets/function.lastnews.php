@@ -57,13 +57,6 @@ function smarty_function_lastnews( $params, $smarty )
         'limit' => $params['limit'],
     ));
 
-    foreach ( $list as $key => $item ) {
-        //print $key;
-        //printVar( $item->getAttributes() );
-    }
-
-    //printVar( $list );
-
     //$list   = $model->findAllWithLinks($params['limit']);
 
     if ( isset( $params['template'] ) ) {
