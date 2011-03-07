@@ -8,29 +8,32 @@
  
 class Data_Criteria
 {
-    private $criteria;
-    private $table;
+    /**
+     * @var Db_Criteria
+     */
+    private $_criteria;
+    
+    /**
+     * @var string
+     */
+    private $_table;
 
     /**
      * @param string $table
      * @param array $criteria
      */
-    function __construct( $table, $criteria = array() )
+    function __construct( $table, $criteria = null )
     {
-        if ( isset( $criteria['params'] ) && ! is_array( $criteria['params'] ) ) {
-            throw new Data_Criteria_Exception('Criteria params must be Array');
+        if ( is_array( $criteria ) ) {
+            $this->_criteria = new Db_Criteria( $criteria );
+        } elseif ( is_null( $criteria ) ) {
+            $this->_criteria = new Db_Criteria();
+        } elseif ( is_object( $criteria ) && $criteria instanceof Db_Criteria ) {
+            $this->_criteria = $criteria;
+        } else {
+            throw new Data_Exception('Criteria format fail');
         }
-
-        $this->criteria = array_merge(
-            array(
-                'select'    => '*',
-                'cond'      => '',
-                'params'    => array(),
-                'limit'     => '',
-            ),
-            $criteria
-        );
-        $this->table    = $table;
+        $this->_table    = $table;
     }
 
     /**
@@ -40,25 +43,25 @@ class Data_Criteria
     function getSQL()
     {
         $sql    = array();
-        $sql[]  = "SELECT {$this->criteria['select']}";
-        $sql[]  = "FROM `{$this->table}`";
-        if ( $this->criteria['cond'] ) {
-            $sql[]  = "WHERE {$this->criteria['cond']}";
+        $sql[]  = "SELECT {$this->_criteria->select}";
+        $sql[]  = "FROM `{$this->_table}`";
+        if ( $this->_criteria->condition ) {
+            $sql[]  = "WHERE {$this->_criteria->condition}";
         }
         else {
-            $this->criteria['params'] = array();
+            $this->_criteria->params = array();
         }
-        if ( ! empty( $this->criteria['order'] ) ) {
-            $sql[]  = "ORDER BY {$this->criteria['order']}";
+        if ( $this->_criteria->order ) {
+            $sql[]  = "ORDER BY {$this->_criteria->order}";
         }
-        if ( $this->criteria['limit'] ) {
-            $sql[]  = "LIMIT {$this->criteria['limit']}";
+        if ( $this->_criteria->limit ) {
+            $sql[]  = "LIMIT {$this->_criteria->limit}";
         }
 
         $str_sql = join(' ', $sql);
-        if ( isset($this->criteria['params']) && is_array($this->criteria['params']) ) {
+        if ( count($this->_criteria->params ) ) {
             $q_start    = 0;
-            foreach ( $this->criteria['params'] as $par => $val ) {
+            foreach ( $this->_criteria->params as $par => $val ) {
 
                 if ( is_array( $val ) ) {
                     $val    = implode("','",$val); // Внешние апострофы добавяться в след. условии
