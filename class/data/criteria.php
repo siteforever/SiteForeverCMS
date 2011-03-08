@@ -102,6 +102,6 @@ class Data_Criteria
      */
     function getParams()
     {
-        return $this->criteria['params'];
+        return $this->_criteria->params;
     }
 }
