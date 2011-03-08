@@ -54,6 +54,15 @@ class Data_Criteria
         if ( $this->_criteria->order ) {
             $sql[]  = "ORDER BY {$this->_criteria->order}";
         }
+
+        if ( $this->_criteria->group ) {
+            $sql[]  = "GROUP BY {$this->_criteria->group}";
+        }
+
+        if ( $this->_criteria->having ) {
+            $sql[]  = "HAVING {$this->_criteria->having}";
+        }
+
         if ( $this->_criteria->limit ) {
             $sql[]  = "LIMIT {$this->_criteria->limit}";
         }
