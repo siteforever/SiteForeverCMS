@@ -298,40 +298,47 @@ abstract class Model
     /**
      * Finding data by primary key
      * @throws Exception
-     * @param int|array|Data_Criteria $id
+     * @param int|array|Data_Criteria $crit
      * @return Data_Object
      */
-    final public function find( $id )
+    final public function find( $crit )
     {
         $with   = $this->with;
         $this->with = array();
 
-        if ( empty( $id ) ) {
+        if ( empty( $crit ) ) {
             throw new ModelException('Criterion must not be empty');
         }
 
-        if ( is_object( $id ) && $id instanceof Data_Criteria ) {
-            $criteria   = $id;
+        if ( is_object( $crit ) ) {
+            if ( $crit instanceof Db_Criteria ) {
+                $criteria   = new Data_Criteria($this->getTable(), $crit);
+            }
+            elseif ( $crit instanceof Data_Criteria ) {
+                $criteria   = $crit;
+            }
         }
 
-        if ( ! isset ( $criteria ) && is_numeric( $id ) ) {
-            $obj = $this->getFromMap( $id );
+        // не определился критерий, но параметр - число
+        // тогда полагаем, что параметр - это ID объекта
+        if ( ! isset ( $criteria ) && is_numeric( $crit ) ) {
+            $obj = $this->getFromMap( $crit );
             if ( $obj ) {
                 return $obj;
             }
             $crit   = array(
                 'cond'  => 'id = :id',
-                'params'=> array(':id'=>$id),
+                'params'=> array(':id'=>$crit),
                 'limit' => '1',
             );
-        } elseif ( is_array( $id ) ) {
+        } elseif ( is_array( $crit ) ) {
             $default = array(
                 'select'    => '*',
                 'cond'      => 'id = :id',
                 'params'    => array(':id'=>1),
                 'limit'     => '1',
             );
-            $crit   = array_merge($default,$id);
+            $crit   = array_merge($default,$crit);
         } else {
             throw new ModelException('Not valid criteron');
         }
@@ -360,7 +367,7 @@ abstract class Model
         $with   = $this->with;
         $this->with = array();
 
-        if ( is_array( $crit ) ) {
+        if ( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Db_Criteria ) ) {
             $criteria   = new Data_Criteria( $this->getTable(), $crit );
         }
         elseif ( is_object( $crit ) && $crit instanceof Data_Criteria ) {
