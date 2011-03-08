@@ -29,7 +29,7 @@ class Controller_Catalog extends Controller
      */
     function indexAction()
     {
-        $cat_id = $this->request->get('cat', FILTER_SANITIZE_NUMBER_INT);
+        $cat_id = $this->request->get('cat', Request::INT);
 
         // Пытаемся получить из страницы, если link не 0
         if ( ! $cat_id && $this->page['link'] ) {
@@ -37,14 +37,21 @@ class Controller_Catalog extends Controller
             $this->request->set('cat', $cat_id);
         }
 
+
+        $catalog    = $this->getModel('Catalog');
+
         // без параметров
         if ( ! $cat_id ) {
+            $criteria   = new Db_Criteria();
+            $criteria->condition    = 'parent = 0 AND cat = 1 AND deleted = 0 AND hidden = 0';
+            $criteria->order        = 'pos DESC';
+            $list   = $catalog->findAll($criteria);
+            $this->tpl->list    = $list;
+            $this->request->setContent($this->tpl->fetch('catalog.category_first'));
             return;
         }
 
-        $catalog    = $this->getModel('Catalog');
         $item       = $catalog->find( $cat_id );
-
         if ( ! $item ) {
             $this->request->addFeedback(t('Catalogue part not found with id ').$cat_id);
             return;
