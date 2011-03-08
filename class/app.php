@@ -36,8 +36,11 @@ class App extends Application_Abstract
         if ( $this->getConfig()->get('debug.profile') ) {
             $this->logger->log("Total SQL: ".count( Model::getDB()->getLog()).
                                "; time: ".round( Model::getDB()->time, 3)." sec.", 'app');
+            $this->logger->log("Init time: ".round(self::$init_time, 3)." sec.", 'app');
             $this->logger->log("Controller time: ".round(self::$controller_time, 3)." sec.", 'app');
-            $this->logger->log("Execution time: ".round(microtime(true)-self::$start_time, 3)." sec.", 'app');
+            $exec_time  = microtime(true)-self::$start_time;
+            $this->logger->log("Other time: ".round($exec_time-self::$init_time-self::$controller_time, 3)." sec.", 'app');
+            $this->logger->log("Execution time: ".round($exec_time, 3)." sec.", 'app');
             $this->logger->log("Required memory: ".round(memory_get_usage() / 1024, 3)." kb.", 'app');
         }
         ob_end_flush();
@@ -98,6 +101,8 @@ class App extends Application_Abstract
                 $this->getRequest()->set('action', 'login');
             }
         }
+
+        self::$init_time    = microtime(1) - self::$start_time;
 
         self::$controller_time  = microtime(1);
         $controller_resolver    = new ControllerResolver( $this );

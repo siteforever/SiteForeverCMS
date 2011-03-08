@@ -82,6 +82,12 @@ abstract class Application_Abstract
     static $controller_time = 0;
 
     /**
+     * Врямя, затраченное до запуска контроллера
+     * @var int
+     */
+    static $init_time   = 0;
+
+    /**
      * @var Logger_Interface
      */
     protected $logger;
