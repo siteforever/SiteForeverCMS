@@ -24,7 +24,7 @@ siteforever.basket.add  = function( id, product, count, price, details )
         basket_prod_price:  parseFloat( price ),
         basket_prod_details:details
     }, function( data ){
-        siteforever.alert('Товар добавлен в корзину');
+        //siteforever.alert('Товар добавлен в корзину');
         $(siteforever.basket.class_name).replaceWith( data );
     });
 }

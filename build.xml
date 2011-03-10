@@ -4,7 +4,7 @@
 <project name="standart" default="main">
 
     <property name="basedir" value="${project.basedir}"></property>
-    <property name="destdir" value="${user.home}/www/stdel.ru/site"></property>
+    <property name="destdir" value="${user.home}/siteforever"></property>
 
     <property name="theme" value="basic"></property>
 
@@ -82,6 +82,42 @@
 
     <!-- Build an autonomous project  -->
     <target name="build">
+        <delete dir="${destdir}"></delete>
+
+        <mkdir dir="${destdir}"></mkdir>
+
+        <copy todir="${destdir}" mode="0644">
+            <fileset dir="${basedir}">
+                <exclude name=".idea/**"></exclude>
+                <exclude name="files/**"></exclude>
+                <exclude name="test/**"></exclude>
+                <exclude name="protected/_runtime/**"></exclude>
+                <exclude name="functionsTest.php"></exclude>
+                <exclude name="index-sample.php"></exclude>
+                <exclude name="biuld.xml"></exclude>
+                <exclude name="info.php"></exclude>
+                <exclude name="install.php"></exclude>
+                <exclude name="pack.php"></exclude>
+                <exclude name="todo.txt"></exclude>
+            </fileset>
+        </copy>
+
+        <mkdir dir="${destdir}/protected/_runtime/_templates_c"></mkdir>
+        <mkdir dir="${destdir}/files"></mkdir>
+
+        <copy todir="${destdir}">
+            <fileset dir="${basedir}">
+                <include name="**/.htaccess"></include>
+            </fileset>
+        </copy>
+
+        <delete file="${user.home}/siteforever.tgz"></delete>
+        <tar destfile="${user.home}/siteforever.tgz" compression="gzip">
+            <fileset dir="${destdir}">
+                <include name="**/**" />
+                <include name="**/.htaccess" />
+            </fileset>
+        </tar>
 
     </target>
 

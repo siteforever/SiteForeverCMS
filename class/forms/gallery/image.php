@@ -13,7 +13,7 @@ class forms_gallery_image extends form_Form
                 'id'            => array('type'=>'int', 'hidden'),
                 'name'          => array('label'=>'Наименование', 'type'=>'text'),
                 'link'          => array('label'=>'Внешняя ссылка', 'type'=>'text'),
-                'description'   => array('label'=>'Описание', 'type'=>'text'),
+                'description'   => array('label'=>'Описание', 'type'=>'textarea'),
             ),
         ));
     }

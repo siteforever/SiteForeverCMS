@@ -9,6 +9,7 @@ class controller_Rss extends Controller
     function indexAction()
     {
         $this->request->setAjax(true, Request::TYPE_XML);
+        $this->request->setTemplate('inner');
 
         // @TODO Нет абсолютного подтверждения работы этого модуля
         /**
@@ -16,14 +17,16 @@ class controller_Rss extends Controller
          */
         $model = $this->getModel('News');
 
-        $crit   = array(
+        $criteria   = new Db_Criteria(array(
             'cond'      => ' hidden = 0 AND protected = 0 AND deleted = 0 ',
             'params'    => array(),
             'limit'     => 10,
-        );
+        ));
+
+        //$crit   = ;
 
 
-        $news   = $model->findAllWithLinks( $crit );
+        $news   = $model->findAllWithLinks( $criteria );
 
         $this->tpl->assign('data', $news);
         $this->tpl->assign('gmdate', gmdate('D, d M Y H:i:s', time()).' GTM');
@@ -32,7 +35,7 @@ class controller_Rss extends Controller
 
         //header('Content-type: text/xml; charset=utf-8');
 
-        $rss    = new SimpleXMLElement('<rss />');
+        $rss    = new SimpleXMLElement('<rss />', null );
         $rss->addAttribute('version', '2.0');
         $channel= $rss->addChild('channel');
 
@@ -48,18 +51,24 @@ class controller_Rss extends Controller
         $channel->addChild('generator','SiteForeverCMS');
         $channel->addChild('managingEditor',$this->config->get('admin'));
         $channel->addChild('webMaster', 'nikolay@ermin.ru');
-
-
-
+        
         foreach( $news as $n ) {
+            $description = $n['notice'];
+            $description = str_replace('&nbsp;', ' ', $description);
+
             $item = $channel->addChild('item');
             $item->addChild('title', $n['title']);
             $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($n['link'], array('doc'=>$n['id'])));
-            $item->addChild('description', $n['notice']);
+            $item->addChild('description', $description );
             $item->addChild('pubDate', date('r', $n['date']));
         }
 
+        $xml_string = $rss->asXML();
 
-        $this->request->setContent( $rss->asXML() );
+        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
+        //$xml_string = htmlspecialchars_decode( $xml_string );
+
+        $this->request->setContent($xml_string);
+        return;
     }
 }
