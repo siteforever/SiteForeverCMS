@@ -25,6 +25,11 @@
     margin-bottom: 1em;
 }
 
+.siteforever_captcha_reload {
+    border-bottom: 1px black dashed;
+    cursor: pointer;
+}
+
 .basket-table {
     border-collapse: collapse;
     width: 100%;

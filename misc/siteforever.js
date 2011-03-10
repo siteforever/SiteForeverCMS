@@ -81,3 +81,15 @@ siteforever.alert   = function( msg )
         $('#siteforever_alert').hide();
     }, 2000);
 }
+
+
+
+
+$(function(){
+    if ( $('.siteforever_captcha_reload').length > 0 ) {
+        $('.siteforever_captcha_reload').click(function(){
+            var img = $(this).parent().find('img');
+            $(img).attr('src', $(img).attr('src')+'&'+Math.random());
+        });
+    }
+})
