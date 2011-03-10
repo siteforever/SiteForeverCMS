@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <!-- build.xml -->
 
-<project name="standart" default="main">
+<project name="main" default="main">
 
     <property name="basedir" value="${project.basedir}"></property>
     <property name="destdir" value="${user.home}/siteforever"></property>
+
+    <property name="version" value="0.3"></property>
+    <property name="svnrepository" value="http://svn.stdel.ru/svn/siteforever/trunk"></property>
 
     <property name="theme" value="basic"></property>
 
@@ -18,6 +21,10 @@
         <echo>To start setup use :$ phing setup</echo>
     </target>
 
+    <target name="svn">
+        <svnlastrevision workingcopy="." repositoryurl="${svnrepository}" propertyname="revision" />
+        <echo>Revision: ${revision}</echo>
+    </target>
 
     <!-- Setup on this server -->
     <target name="setup">
@@ -81,20 +88,27 @@
     </target>
 
     <!-- Build an autonomous project  -->
-    <target name="build">
+    <target name="build" depends="svn">
+
+        <property name="distribname" value="siteforever_${version}.${revision}.tgz"></property>
+        <echo>Distribution file: ${distribname}</echo>
+
+        <delete file="${user.home}/projects/${distribname}"></delete>
+
         <delete dir="${destdir}"></delete>
 
         <mkdir dir="${destdir}"></mkdir>
 
-        <copy todir="${destdir}" mode="0644">
+        <copy todir="${destdir}">
             <fileset dir="${basedir}">
                 <exclude name=".idea/**"></exclude>
                 <exclude name="files/**"></exclude>
                 <exclude name="test/**"></exclude>
                 <exclude name="protected/_runtime/**"></exclude>
+                <exclude name="protected/config/**"></exclude>
                 <exclude name="functionsTest.php"></exclude>
                 <exclude name="index-sample.php"></exclude>
-                <exclude name="biuld.xml"></exclude>
+                <exclude name="build.xml"></exclude>
                 <exclude name="info.php"></exclude>
                 <exclude name="install.php"></exclude>
                 <exclude name="pack.php"></exclude>
@@ -102,17 +116,35 @@
             </fileset>
         </copy>
 
+        <!-- make other dirs -->
         <mkdir dir="${destdir}/protected/_runtime/_templates_c"></mkdir>
+        <mkdir dir="${destdir}/protected/config"></mkdir>
         <mkdir dir="${destdir}/files"></mkdir>
 
+        <!-- config -->
+        <copy file="${basedir}/protected/config/sample.php"
+              tofile="${destdir}/protected/config/${phing.project.name}.php"
+              overwrite="true">
+            <filterchain>
+                <replacetokens>
+                    <token key="theme"      value="${theme}"></token>
+                    <token key="db_login"   value="${db_login}"></token>
+                    <token key="db_password" value="${db_password}"></token>
+                    <token key="db_server"  value="${db_server}"></token>
+                    <token key="db_name"    value="${db_name}"></token>
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <!-- coping .htaccess files -->
         <copy todir="${destdir}">
             <fileset dir="${basedir}">
                 <include name="**/.htaccess"></include>
             </fileset>
         </copy>
 
-        <delete file="${user.home}/siteforever.tgz"></delete>
-        <tar destfile="${user.home}/siteforever.tgz" compression="gzip">
+        <!-- create disptibution archive -->
+        <tar destfile="${user.home}/projects/${distribname}" compression="gzip">
             <fileset dir="${destdir}">
                 <include name="**/**" />
                 <include name="**/.htaccess" />

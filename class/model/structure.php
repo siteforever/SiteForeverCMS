@@ -41,7 +41,6 @@ class Model_Structure extends Model
             'parent'    => '0',
             'name'      => 'Главная',
             'template'  => 'index',
-            'uri'       => 'index',
             'alias'     => 'index',
             'date'      => time(),
             'update'    => time(),

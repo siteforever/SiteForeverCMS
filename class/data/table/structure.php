@@ -57,9 +57,9 @@ class Data_Table_Structure extends Data_Table
     {
         return array(
             'id_structure'  => 'parent',
-            'url'           => 'uri',
+            //'url'           => 'uri',
             'date'          => 'date',
-            'order'         => 'parent,pos',
+            'order'         => array('parent','pos'),
             'request'       => 'alias'
         );
     }
