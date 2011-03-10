@@ -15,15 +15,14 @@
 */
 function smarty_function_lastnews( $params, $smarty )
 {
+    $sort   = '`date` DESC';
+
     if ( isset( $params['sort'] ) ) {
         switch( $params['sort'] ) {
             case 'rand':
                 $sort   = 'RAND()';
                 break;
         }
-    }
-    else {
-        $sort   = '`date` DESC';
     }
 
     if ( ! isset($params['limit']) ) {
@@ -59,8 +58,9 @@ function smarty_function_lastnews( $params, $smarty )
 
     //$list   = $model->findAllWithLinks($params['limit']);
 
+    $tpl    = App::$tpl;
+
     if ( isset( $params['template'] ) ) {
-        $tpl    = App::$tpl;
         $tpl->list  = $list;
         //return $params['template'];
         $content    = $tpl->fetch( $params['template'] );

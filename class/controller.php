@@ -205,7 +205,7 @@ abstract class Controller
      */
     function getDB()
     {
-        return App::$db;
+        return Db::getInstance();
     }
 
     /**

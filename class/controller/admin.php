@@ -64,17 +64,24 @@ class controller_Admin extends Controller
         $sort   = $this->request->get('sort');
 
         if ( $sort ) {
+            
             $sort = array_flip($sort);
             $upd = array();
+
             foreach( $sort as $id => $pos ) {
                 $upd[] = array('id'=>$id, 'pos'=>$pos);
             }
-            if ( App::$db->insertUpdateMulti( $model->getTable(), $upd ) )
+
+            if ( DB::getInstance()->insertUpdateMulti( $model->getTable(), $upd ) )
             {
-                die( json_encode( array('errno'=>0, 'error'=>'ok') ) );
+                $this->request->setResponse('errno', 0);
+                $this->request->setResponse('error', 'ok');
+                return;
             }
             else {
-                die( json_encode( array('errno'=>1, 'error'=>'Ошибка сохранения' ) ) );
+                $this->request->setResponse('errno', 1);
+                $this->request->setResponse('error', t('Data not saved'));
+                return;
             }
         }
 
