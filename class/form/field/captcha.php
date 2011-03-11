@@ -12,6 +12,10 @@ class Form_Field_Captcha extends Form_Field
 
     function htmlTpl($html)
     {
+        $html   = preg_replace('/value=[\"\\\'].*?[\"\\\']/i', '', $html);
+        $html   = preg_replace('/class=[\"\\\'](.*?)[\"\\\']/i', 'class="$1 captcha"', $html);
+        $html   = preg_replace('/\s+/', ' ', $html);
+        //print htmlspecialchars( $html );
         $html   .=  '<img src="/?controller=captcha" alt="captcha" />';
         $html   .=  '<span class="siteforever_captcha_reload">Обновить</span>';
 
@@ -27,7 +31,7 @@ class Form_Field_Captcha extends Form_Field
             }
         }
 
-        if ( $_SESSION['captcha_code'] == $this->getValue() ) {
+        if ( strtolower( $_SESSION['captcha_code'] ) == strtolower( $this->getValue() ) ) {
             $this->_error   = 0;
         }
         else {
@@ -40,5 +44,7 @@ class Form_Field_Captcha extends Form_Field
             $classes[] = 'error';
             $this->class    = join(' ', $classes);
         }
+
+        return ! $this->_error;
     }
 }

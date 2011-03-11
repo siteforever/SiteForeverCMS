@@ -284,7 +284,7 @@ class Form_Form implements ArrayAccess
         foreach( $this->_fields as $field )
         {
             if ( is_object( $field ) ) {
-                if ( ! in_array( $field->getType(), array('submit', 'separator') ) )
+                if ( ! in_array( $field->getType(), array('submit', 'separator', 'captcha') ) )
                 {
                     if ( $toString ) {
                         $value = $field->getStringValue();

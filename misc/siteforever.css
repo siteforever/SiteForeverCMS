@@ -88,6 +88,9 @@ input, select, textarea {
     font-size: 1em;
     line-height: 1em;
 }
+input.captcha {
+    width: 100px;
+}
 
 input[type=submit], input[type=reset], button {
     width: auto;
@@ -116,7 +119,6 @@ input.checkbox, input.radio {
 input.error {
     border-color: red;
 }
-
     form.standart   p.error {
         margin-bottom:1em;
     }

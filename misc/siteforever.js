@@ -89,7 +89,7 @@ $(function(){
     if ( $('.siteforever_captcha_reload').length > 0 ) {
         $('.siteforever_captcha_reload').click(function(){
             var img = $(this).parent().find('img');
-            $(img).attr('src', $(img).attr('src')+'&'+Math.random());
+            $(img).attr('src', $(img).attr('src').replace(/\&hash=[^\&]+/, '')+'&hash='+Math.random());
         });
     }
 })
