@@ -20,7 +20,8 @@ class controller_Rss extends Controller
         $criteria   = new Db_Criteria(array(
             'cond'      => ' hidden = 0 AND protected = 0 AND deleted = 0 ',
             'params'    => array(),
-            'limit'     => 10,
+            'order'     => 'date DESC',
+            'limit'     => 20,
         ));
 
         //$crit   = ;
@@ -57,8 +58,8 @@ class controller_Rss extends Controller
             $description = str_replace('&nbsp;', ' ', $description);
 
             $item = $channel->addChild('item');
-            $item->addChild('title', $n['title']);
-            $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($n['link'], array('doc'=>$n['id'])));
+            $item->addChild('title', $n['title'] ? $n['title'] : $n['name']);
+            $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($n['alias'], array('doc'=>$n['id'])));
             $item->addChild('description', $description );
             $item->addChild('pubDate', date('r', $n['date']));
         }
