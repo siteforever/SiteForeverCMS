@@ -340,7 +340,7 @@ abstract class Model
             );
             $crit   = array_merge($default,$crit);
         } else {
-            throw new ModelException('Not valid criteron');
+            throw new ModelException('Not valid criteria');
         }
 
         if ( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
