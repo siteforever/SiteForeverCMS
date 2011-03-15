@@ -164,8 +164,10 @@ class App extends Application_Abstract
                 //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
                 $request->addScript( $path_misc.'/jquery.blockUI.js' );
                 // CKEditor
-                $request->addScript( $path_misc.'/ckeditor/ckeditor.js' );
-                $request->addScript( $path_misc.'/ckeditor/adapters/jquery.js' );
+                //$request->addScript( $path_misc.'/ckeditor/ckeditor.js' );
+                //$request->addScript( $path_misc.'/ckeditor/adapters/jquery.js' );
+                // TinyMCE
+                $request->addScript( $path_misc.'/tinymce/jscripts/tiny_mce/jquery.tinymce.js' );
 
 
                 $request->addScript( $path_misc.'/forms.js' );

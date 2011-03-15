@@ -57,6 +57,10 @@ div.b-request-feedback {
     color: #333;
 }
 
+.blockMsg div.feedback {
+    margin: 0;
+}
+
 div.l-wrapper {
     min-height: 100%;
     min-width: 1000px;
