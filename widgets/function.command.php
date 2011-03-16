@@ -35,11 +35,13 @@ function smarty_function_command( $params )
 
         $command    = new $controller( $app );
 
-        if ( $command instanceof Controller ) {
-            $command->$action();
+        if ( $command instanceof Controller && method_exists( $command, $action ) ) {
+            call_user_func(array($command, $action));
         }
 
-
         return $app->getRequest()->getContent();
+    }
+    else {
+        return 'command not exists';
     }
 }

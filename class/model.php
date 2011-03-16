@@ -377,7 +377,7 @@ abstract class Model
             throw new ModelException('Not valid criteria');
         }
 
-        $raw    = $this->db->fetchAll($criteria->getSQL(), true);
+        $raw    = $this->db->fetchAll($criteria->getSQL());
         $collection = array();
 
         if ( $raw ) {

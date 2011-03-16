@@ -13,11 +13,11 @@ return array(
         'name'  => 'Структура',
         'url'   => 'admin',
         'sub'   => array(
-                array(
-                    'name'  => 'Добавить страницу',
-                    'url'   => 'admin/add/add=0',
-                    'icon'  => 'page_add',
-                ),
+            array(
+                'name'  => 'Добавить страницу',
+                'url'   => 'admin/add/add=0',
+                'icon'  => 'page_add',
+            ),
         ),
     ),
     array(
@@ -28,11 +28,11 @@ return array(
         'name'  => 'Каталог',
         'url'   => 'admin/catalog',
         'sub'   => array(
-                array(
-                    'name'  => 'Добавить раздел',
-                    'url'   => 'admin/catalog/add=0/type=1',
-                    'icon'  => 'folder_add',
-                ),
+            array(
+                'name'  => 'Добавить раздел',
+                'url'   => 'admin/catalog/add=0/type=1',
+                'icon'  => 'folder_add',
+            ),
         ),
     ),
     array(
@@ -43,11 +43,11 @@ return array(
         'name'  => 'Пользователи',
         'url'   => 'admin/users',
         'sub'   => array(
-                array(
-                    'name'  => 'Добавить пользователя',
-                    'url'   => 'admin/users/add=1',
-                    'icon'  => 'user_add',
-                ),
+            array(
+                'name'  => 'Добавить пользователя',
+                'url'   => 'admin/users/add=1',
+                'icon'  => 'user_add',
+            ),
         ),
     ),
     array(
@@ -65,16 +65,16 @@ return array(
         'class' => 'dumper',
     ),
     array(
-        'name'  => 'Настройки',
-        'url'   => 'admin/settings',
-    ),
-    array(
         'name'  => 'Маршруты',
         'url'   => 'admin/routes',
     ),
     array(
         'name'  => 'Конфигурация системы',
         'url'   => 'system',
+    ),
+    array(
+        'name'  => 'Настройка',
+        'url'   => 'admin/settings',
     ),
     array(
         'name'  => 'Выход',

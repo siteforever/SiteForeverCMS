@@ -48,4 +48,9 @@ return array(
     'Authorization was successful'  => 'Авторизация прошла успешно',
     'Your login is not registered'  => 'Ваш логин не зарегистрирован',
 
+
+    // Settings
+    'Settings'      => 'Настройки',
+    'Settings saved'=> 'Настройки сохранены',
+
 );

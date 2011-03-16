@@ -3,69 +3,59 @@
  * Контроллер управления настройками
  * @author keltanas
  */
-class controller_Settings extends Controller
+class Controller_Settings extends Controller
 {
-    function indexAction()
-    {
-        
-    }
-    
+
     /**
-     * Управление маршрутами
+     * Действие по умолчанию
      * @return void
      */
-    function adminAction()
+    function indexAction()
     {
-        // используем шаблон админки
-        $this->request->setTitle('Настройка');
+        $this->request->setTitle(t('Settings'));
 
-        $settings   = $this->request->get('settings');
-        $settings   = ! $settings ? array() : $settings;
-        
-        if ( $settings ) {
+        $this->tpl->modules = $this->app()->getModules();
+        $this->tpl->settings= $this->app()->getSettings()->getAll();
 
-            $update = array();
-            foreach( $settings as $key => $r ) {
-                
-                foreach( $r as $k => $v ) {
-                    $r[$k]  = trim($v);
-                }
-                
-                if ( $key == 0 && ( $r['key'] == '' || $r['value'] == '' ) ) {
-                    continue;
-                }
-                
-                if ( isset( $r['delete'] ) ) {
-                    //App::$db->delete(DBSETTINGS, "id = '{$key}'");
-                    $this->request->addFeedback("Удален параметр № {$key}");
-                    continue;
-                }
-                
-                $update[] = array(
-                    'id'            => $key,
-                    'cat'           => '0',
-                    'key'           => $r['key'],
-                    'value'         => $r['value'],
-                    'comment'       => $r['comment'],
-                    'system'        => isset( $r['system'] ) ? 1 : 0,
-                );
-            }
-            /*
-            if ( App::$db->insertUpdateMulti( DBSETTINGS, $update ) ) {
-                App::$request->addFeedback('Данные сохранены');
-            } else {
-                App::$request->addFeedback('Данные не были сохранены');
-            }*/
-        }
-        
-        //$model_settings = Model::getModel('Settings');
-        //$settings = $router->findAll();
-        
-        //App::$tpl->assign('settings', $settings);
-        $this->tpl->settings    = $settings;
         $this->request->setContent( $this->tpl->fetch('system:settings.admin') );
-        //App::$request->set('tpldata.page.content', App::$tpl->fetch('system:settings.admin'));
-
     }
-        
+
+    /**
+     * Сохранение данных
+     * @return void
+     */
+    function saveAction()
+    {
+        $model      = $this->getModel('Settings');
+
+        $settings   = $this->app()->getSettings();
+
+        $modules    = $this->app()->getModules();
+        foreach ( $modules as $module ) {
+            if ( $values = $this->request->get($module->name) ) {
+                foreach ( $values as $key => $val ) {
+                    $settings->set( $module->name, $key, $val );
+
+                    $this->getDB()->insertUpdate( $model->getTableName(), array(
+                        'module'    => $module->name,
+                        'property'  => $key,
+                        'value'     => $val,
+                    ));
+                }
+            }
+        }
+
+        print t('Settings saved');
+    }
+
+    /**
+     * Уровень доступа
+     * @return array
+     */
+    function access()
+    {
+        return array(
+            'system'    => array('index', 'save'),
+        );
+    }
 }

@@ -19,7 +19,8 @@ abstract class Data_Table
      * Тип базы
      * @var string
      */
-    protected $engine   = 'MyISAM';
+    //protected $engine   = 'MyISAM';
+    protected $engine   = 'InnoDB';
 
     /**
      * Список полей

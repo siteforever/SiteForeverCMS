@@ -115,9 +115,6 @@ $(function() {
         });
     }
 
-
-
-
     //$('a.filemanager').filemanager();
     $('a.filemanager').fancybox({
         width       : 650,
@@ -127,35 +124,6 @@ $(function() {
         href        : '/?controller=elfinder&finder=1&langCode=ru'
     });
 
-   /* var editor = $('textarea').not('.plain').ckeditor({
-        filebrowserBrowseUrl 		: '/?controller=elfinder&action=index&finder=1',
-        filebrowserImageBrowseUrl 	: '/?controller=elfinder&action=index&finder=1',
-        filebrowserWindowWidth : '530',
-        filebrowserWindowHeight : '500',
-        filebrowserImageWindowWidth : '530',
-        filebrowserImageWindowHeight : '500'
-    });*/
-
-    $('textarea').not('.plain').tinymce({
-        // Location of TinyMCE script
-        script_url :    '/misc/tinymce/jscripts/tiny_mce/tiny_mce.js',
-        // General options
-        theme :         'advanced',
-        language:       'ru',
-        convert_urls :  false,
-        // Theme options
-        theme_advanced_toolbar_location : "top",
-        theme_advanced_toolbar_align : "left",
-        theme_advanced_statusbar_location : "bottom",
-        // Connect ElFinder
-        file_browser_callback : function(field_name, url, type, win) {
-            var w = window.open('/?controller=elfinder&action=index&finder=1', null, 'width=600,height=420');
-            // Сохраняем необходимые параметры в глобальных переменных окна (не самое лучшее решение, предложите другое?),
-            // или можете передавать параметры в GET и потом разбирать их в elfinder.html
-            w.tinymceFileField = field_name;
-            w.tinymceFileWin = win;
-        }
-    });
 
     $('a.dumper').dumper();
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="editor">
+    <title>Редактор</title>
+    <settings>
+        <param name="type" title="Тип" value="tinymce" type="select">
+            <option value="tinymce">Tiny MCE</option>
+            <option value="ckeditor">CKEditor</option>
+        </param>
+    </settings>
+</module>

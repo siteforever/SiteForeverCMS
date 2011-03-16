@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <routes>
     <!-- RSS -->
     <route alias="rss">
@@ -16,10 +16,6 @@
     </route>
     <route alias="admin/users.*" system="1">
         <controller>users</controller>
-        <action>admin</action>
-    </route>
-    <route alias="admin/settings" system="1">
-        <controller>settings</controller>
         <action>admin</action>
     </route>
     <route alias="admin/routes" system="1">
@@ -55,7 +51,7 @@
     <route alias="system" system="1">
         <controller>system</controller>
     </route>
-
+    
     <!-- ORDER -->
     <route alias="order" protected="1">
         <controller>order</controller>
@@ -116,5 +112,11 @@
     </route>
     <route alias="templates" system="1">
         <controller>templates</controller>
+    </route>
+
+    <!-- TEST -->
+    <route alias="test">
+        <controller>test</controller>
+        <action>test</action>
     </route>
 </routes>

@@ -391,8 +391,11 @@ class DB
                         }
                         elseif (isset( $data['id'] )) {
                             $index  = $data['id'];
-                        } else {
+                        } elseif ( isset( $data[0] ) ) {
                             $index  = $data[0];
+                        }
+                        else {
+                            $index  = null;
                         }
                         $indexed_data[ $index ] = $data;
                     }

@@ -70,6 +70,12 @@ abstract class Application_Abstract
     protected $auth_format;
 
     /**
+     * Класс настроек
+     * @var Settings
+     */
+    protected $_settings;
+
+    /**
      * Время запуска
      * @var int
      */
@@ -92,6 +98,12 @@ abstract class Application_Abstract
      */
     protected $logger;
 
+    /**
+     * Список установленных в систему модулей
+     * @var array
+     */
+    protected $_modules = array();
+
     abstract public function run();
 
     abstract function init();
@@ -107,6 +119,9 @@ abstract class Application_Abstract
         }
         // Конфигурация
         self::$config   = new SysConfig( $cfg_file );
+
+        // Загрузка параметров модулей
+        $this->loadModules();
     }
     
     /**
@@ -244,4 +259,48 @@ abstract class Application_Abstract
     }
 
 
+    /**
+     * Вернет модель
+     * @param string $model
+     * @return Model
+     */
+    function getModel( $model )
+    {
+        return Model::getModel( $model );
+    }
+
+    /**
+     * Настройки сайта
+     * @return Settings
+     */
+    function getSettings()
+    {
+        if (  is_null( $this->_settings ) ) {
+            $this->_settings    = new Settings();
+        }
+        return $this->_settings;
+    }
+
+    /**
+     * Загрузка конфигураций модулей
+     * @return void
+     */
+    function loadModules()
+    {
+        $files  = glob( SF_PATH.DS.'protected'.DS.'modules'.DS.'*.xml');
+
+        foreach ( $files as $file ) {
+            $module = new Application_Module( $file );
+            $this->_modules[ $module->name ]   = $module;
+        }
+    }
+
+    /**
+     * Вернет список зарегистрированных модулей
+     * @return array of Application_Module
+     */
+    function getModules()
+    {
+        return $this->_modules;
+    }
 }

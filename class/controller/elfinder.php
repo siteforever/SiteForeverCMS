@@ -12,7 +12,6 @@ class Controller_Elfinder extends Controller
         $this->request->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
         $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
         $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
-        $this->request->addScript( $this->request->get('path.misc') . '/admin/elfinder.js' );
     }
 
     function indexAction()
