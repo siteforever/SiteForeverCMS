@@ -1,11 +1,11 @@
 <?php
 /**
- *
+ * Форма регистрации нового пользователя
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
  
-class forms_user_register extends form_Form
+class Forms_User_Register extends Form_Form
 {
     function __construct()
     {
@@ -18,6 +18,14 @@ class forms_user_register extends form_Form
                 'password'  => array('type'=>'password', 'label'=>'Пароль', 'required', 'autocomplete'=>'off'),
                 'captcha'   => array('type'=>'captcha', 'label'=>'Проверка'),
                 'submit'    => array('type'=>'submit', 'value'=>'Регистрация'),
+            ),
+            'buttons'   => array(
+                'submit'    => array('type'=>'submit', 'value'=>'bРегистрация'),
+            ),
+            'validate'  => array(
+                'email'     => array('email'),
+                'login'     => array('minlength'=>6),
+                'password'  => array('minlength'=>6),
             ),
         ));
     }

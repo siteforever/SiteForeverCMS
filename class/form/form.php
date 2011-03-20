@@ -45,12 +45,12 @@ class Form_Form implements ArrayAccess
      */
     function __construct( $config, Request $request = null )
     {
-        $request = App::getInstance()->getRequest();
-        $request->addScript( $request->get('path.misc').'/jquery.form.js' );
-        //$request->addScript( $request->get('path.misc').'/jquery.blockUI.js' );
-        //$request->addScript( $request->get('path.misc').'/forms.js' );
+        if ( isset( $request )  ) {
+            $request->addScript( $request->get('path.misc').'/jquery.form.js' );
+            //$request->addScript( $request->get('path.misc').'/jquery.blockUI.js' );
+            //$request->addScript( $request->get('path.misc').'/forms.js' );
+        }
 
-        
 
         if ( ! isset( $config['name'] ) ) {
             throw new Exception('Для формы нужно определить обязательный параметр name');

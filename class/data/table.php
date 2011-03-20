@@ -155,26 +155,71 @@ abstract class Data_Table
         return array();
     }
 
+    /**
+     * Поле целого чисиа
+     * @param  $name
+     * @param int $length
+     * @param bool $notnull
+     * @param null $default
+     * @param bool $autoincrement
+     * @return Data_Field_Int
+     */
     function getInt( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Int( $name, $length, $notnull, $default, $autoincrement );
     }
 
-    function getTinyint( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    /**
+     * Поле короткого целого
+     * @param  $name
+     * @param int $length
+     * @param bool $notnull
+     * @param null $default
+     * @param bool $autoincrement
+     * @return Data_Field_Tinyint
+     */
+    function getTinyint( $name, $length = 4, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Tinyint( $name, $length, $notnull, $default, $autoincrement );
     }
 
-    function getText( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    /**
+     * Текстовое поле
+     * @param  $name
+     * @param bool $notnull
+     * @return Data_Field_Text
+     */
+    function getText( $name, $notnull = false )
     {
+        $length     = null;
+        $default    = null;
+        $autoincrement  = null;
         return new Data_Field_Text( $name, $length, $notnull, $default, $autoincrement );
     }
 
-    function getVarchar( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    /**
+     * Строка переменной длины
+     * @param  $name
+     * @param int $length
+     * @param bool $notnull
+     * @param null $default
+     * @param bool $autoincrement
+     * @return Data_Field_Varchar
+     */
+    function getVarchar( $name, $length = 255, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Varchar( $name, $length, $notnull, $default, $autoincrement );
     }
 
+    /**
+     * Число с плавающей точкой
+     * @param  $name
+     * @param string $length
+     * @param bool $notnull
+     * @param null $default
+     * @param bool $autoincrement
+     * @return Data_Field_Decimal
+     */
     function getDecimal( $name, $length = '13,2', $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Decimal( $name, $length, $notnull, $default, $autoincrement );

@@ -17,6 +17,9 @@ class forms_user_login extends form_Form
                 'password'  => array('type'=>'password','label'=>'Пароль',  'required'),
                 'submit'    => array('type'=>'submit', 'value'=>'Войти',),
             ),
+            'buttons'   => array(
+                'submit'    => array('type'=>'submit', 'value'=>'bВойти',),
+            ),
         ));
     }
 }

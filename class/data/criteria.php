@@ -77,9 +77,10 @@ class Data_Criteria
                 }
 
                 if ( ! is_numeric( $val ) )
-                    if ( is_string( $val ) )
+                    if ( is_string( $val ) ) {
+                        $val    = trim($val, "'");
                         $val    = "'{$val}'";
-                    else
+                    } else
                         continue;
                 
                 if ( is_numeric( $par ) ) {

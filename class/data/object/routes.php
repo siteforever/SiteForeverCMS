@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
 
-class Data_Object_Route extends Data_Object
+class Data_Object_Routes extends Data_Object
 {
 
 }

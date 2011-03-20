@@ -8,7 +8,6 @@
  
 class Data_Table_Settings extends Data_Table
 {
-
     /**
      * Создаст список полей
      * @return array
@@ -22,7 +21,6 @@ class Data_Table_Settings extends Data_Table
             new Data_Field_Varchar('value', 100),
         );
     }
-
 
     /**
      * Вернет имя таблицы
