@@ -1,4 +1,53 @@
+<p>Версия PHP: {$ver}</p>
 
+
+<script>
+    $(function() {
+        $( "#tabs" ).tabs();
+    });
+</script>
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-all">Все</a></li>
+        {foreach from=$modules key="i" item="m"}
+        <li><a href="#tabs-{$i}">{$m}</a></li>
+        {/foreach}
+    </ul>
+    <div id="tabs-all">
+        <table class="dataset">
+            <tr>
+                <th>Свойство</th>
+                <th>Значение</th>
+            </tr>
+            {foreach from=$sys key="key" item="item"}
+            <tr>
+                <td>{$key}</td>
+                <td>{$item}</td>
+            </tr>
+            {/foreach}
+        </table>
+    </div>
+    {foreach from=$modules key="i" item="m"}
+    <div id="tabs-{$i}">
+        <table class="dataset">
+            <tr>
+                <th>Свойство</th>
+                <th>Значение</th>
+            </tr>
+            {foreach from=$msys[$i] key="key" item="item"}
+            <tr>
+                <td>{$key}</td>
+                <td>{$item}</td>
+            </tr>
+            {/foreach}
+        </table>
+    </div>
+    {/foreach}
+</div>
+
+
+{*
 <p>Allow url fopen: {$sys.allow_url_fopen.local_value}</p>
 
 <p>Allow url include: {$sys.allow_url_include.local_value}</p>
@@ -38,3 +87,4 @@
 <p>Upload tmp dir: {$sys.upload_tmp_dir.local_value}</p>
 
 <p>Variables order: {$sys.variables_order.local_value}</p>
+*}

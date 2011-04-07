@@ -1,6 +1,6 @@
 <?php
 /**
- * $Id$
+ * Version @version@
  * Точка входа для SiteForeverCMS
  * Этот файл вызывает сервер при запросах
  */

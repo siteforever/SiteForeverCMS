@@ -114,6 +114,11 @@
                 <exclude name="pack.php"></exclude>
                 <exclude name="todo.txt"></exclude>
             </fileset>
+            <filterchain>
+                <replacetokens>
+                    <token key="version" value="${version}.${revision}"></token>
+                </replacetokens>
+            </filterchain>
         </copy>
 
         <!-- make other dirs -->
