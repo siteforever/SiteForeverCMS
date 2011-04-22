@@ -85,7 +85,7 @@ class Controller_Gallery extends Controller
                 $this->tpl->pred    = $pred;
                 $this->tpl->category= $category;
 
-                $this->request->setTitle( $category->name . ': ' . $image->name );
+                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
 
                 $this->request->setContent(
                     $this->tpl->fetch('gallery.image')
@@ -178,12 +178,12 @@ class Controller_Gallery extends Controller
             else {
                 $this->request->setResponseError(1, t('Switch error'));
             }
-            return;
+            return 1;
         }
 
         if ( $positions = $this->request->get('positions') ) {
             print $model->reposition();
-            return;
+            return 1;
         }
 
         if ( $editimage = $this->request->get('editimage', Request::INT) ) {
@@ -192,13 +192,14 @@ class Controller_Gallery extends Controller
             $image  = $model->find($editimage);
             $image->name    = $editname;
             print "$editimage => $editname";
-            return;
+            return 1;
         }
 
         $cat_list = $category->findAll();
 
         $this->tpl->categories  = $cat_list;
         $this->request->setContent( $this->tpl->fetch('gallery.admin_category') );
+        return 1;
     }
 
     /**

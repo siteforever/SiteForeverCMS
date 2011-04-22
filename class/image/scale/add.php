@@ -22,19 +22,14 @@ class Image_Scale_Add extends Image_Scale_Abstract
         $kh = $this->height / $height;
         $kw = $this->width / $width;
 
-        // выбираем больший
-        $k = max( array( $kw, $kh ) );
+        $this->k = max( array( $kw, $kh ) );
 
-        // вычисляем размеры реальной миниатюры
-        $th = round( $this->height / $k );
-        $tw = round( $this->width / $k );
-
-        if ( $th == $height ) {
+        if ( $this->scalledHeight() == $height ) {
             $from_y = 0;
-            $from_x = round( abs( $tw - $width ) / 2 );
-        } elseif ( $tw == $width ) {
+            $from_x = round( abs( $this->scalledWidth() - $width ) / 2 );
+        } elseif ( $this->scalledWidth() == $width ) {
             $from_x = 0;
-            $from_y = round( abs( $th - $height ) / 2 );
+            $from_y = round( abs( $this->scalledHeight() - $height ) / 2 );
         }
 
         $thumb  = imagecreatetruecolor( $width, $height );
@@ -47,7 +42,8 @@ class Image_Scale_Add extends Image_Scale_Abstract
         if ($this->image && $thumb ) {
             if ( imagecopyresampled ( $thumb, $this->image,
                 $from_x, $from_y, 0, 0,
-                $tw, $th, $this->width, $this->height
+                $this->scalledWidth(), $this->scalledHeight(),
+                $this->width, $this->height
             ) ) {
                 return $thumb;
             }

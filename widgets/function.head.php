@@ -15,7 +15,7 @@ function smarty_function_head( $params )
     $config     = App::getInstance()->getConfig();
 
     $head = array();
-    $head[] = "<title>".$config->get('sitename').': '.$request->getTitle()."</title>";
+    $head[] = "<title>".$config->get('sitename').': '.strip_tags( $request->getTitle() )."</title>";
 
     if ( $request->get('tpldata.page.keywords') ) {
         $head[] = "<meta name=\"keywords\" content=\"".$request->get('tpldata.page.keywords')."\" />";
@@ -34,10 +34,10 @@ function smarty_function_head( $params )
     }
 
     foreach( $request->getStyle() as $style ) {
-        $head[] = "<style type=\"text/css\">@import url(\"{$style}\");</style>";
+        $head[] = "<style type=\"text/css\">@import url(\"".$style."\");</style>";
     }
     foreach( $request->getScript() as $script ) {
-        $head[] = "<script type=\"text/javascript\" src=\"{$script}\"></script>";
+        $head[] = "<script type=\"text/javascript\" src=\"".$script."\"></script>";
     }
 
     $head[] = "<meta name=\"generator\" content=\"SiteForever CMS\" />";

@@ -4,7 +4,7 @@
  * @author keltanas aka Nikolay Ermin
  */
 
-class controller_Rss extends Controller
+class Controller_Rss extends Controller
 {
     function indexAction()
     {
@@ -46,12 +46,14 @@ class controller_Rss extends Controller
 
         $channel->addChild('title', $this->config->get('sitename'));
         $channel->addChild('link', $this->config->get('siteurl'));
-        $channel->addChild('pubDate', date('r'));
-        $channel->addChild('lastBuildDate', date('r'));
-        $channel->addChild('docs',$this->config->get('siteurl').'/rss');
+        $channel->addChild('description', $this->config->get('sitename'));
+
+//        $channel->addChild('pubDate', date('r'));
+//        $channel->addChild('lastBuildDate', date('r'));
+//        $channel->addChild('docs',$this->config->get('siteurl').'/rss');
         $channel->addChild('generator','SiteForeverCMS');
-        $channel->addChild('managingEditor',$this->config->get('admin'));
-        $channel->addChild('webMaster', 'nikolay@ermin.ru');
+//        $channel->addChild('managingEditor',$this->config->get('admin'));
+//        $channel->addChild('webMaster', 'nikolay@ermin.ru');
         
         foreach( $news as $n ) {
             $description = $n['notice'];

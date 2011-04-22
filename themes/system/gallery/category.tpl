@@ -3,7 +3,7 @@
 <div id="siteforever_gallery_{$category.id}">
     <ul class="gallery_list">
     {foreach from=$rows item="img"}
-        <li style="width: {$category.thumb_width}px; height: {$category.thumb_height}px;">
+        <li style="width: {$category.thumb_width}px; height: {$category.thumb_height+10}px;">
         {if $category.target != '_none'}
             {if $category.target == '_gallery' && $img.link == ''}
             <a href="{$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
@@ -15,7 +15,13 @@
         {/if} {* _none *}
             <img src="{$img.thumb}" alt="{$img.name}" width="{$category.thumb_width}" height="{$category.thumb_height}" />
         {if $category.target != '_none'}</a>{/if} {* _none *}
-        {if $img.name}<div>{$img.name}</div>{/if}
+        {if $img.name}
+            {if $category.target == '_self'}
+            <a {href img=$img.id}>{$img.name}</a>
+            {else}
+            <div>{$img.name}</div>
+            {/if}
+        {/if}
         </li>
     {/foreach}
     </ul>

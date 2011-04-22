@@ -47,7 +47,7 @@ class controller_News extends Controller
 
         $this->request->setTitle(
             ( $this->page['title'] ? $this->page['title'] : $this->page['name'] ) .
-            ' &mdash; ' .
+            ' &rarr; ' .
             ( $news['title'] ? $news['title'] : $news['name'] )
         );
 
@@ -78,8 +78,8 @@ class controller_News extends Controller
             return;
         }
         
-        $cond   = 'deleted = 0 AND hidden = 0 AND cat_id = :cat_id';
-        $params = array(':cat_id'=>$cat->getId());
+        $cond   = '`deleted` = 0 AND `hidden` = 0 AND `cat_id` = ?';
+        $params = array($cat->getId());
 
         $count  = $model->count($cond, $params);
 
@@ -90,7 +90,7 @@ class controller_News extends Controller
                    'cond'     => $cond,
                    'params'   => $params,
                    'limit'    => $paging['limit'],
-                   'order'    => 'date DESC',
+                   'order'    => '`date` DESC',
               ));
         }
 

@@ -11,6 +11,8 @@ abstract class Image_Scale_Abstract {
     protected $width;
     protected $height;
 
+    protected $k;
+
     /**
      * @param resource $image
      * @param string   $method
@@ -52,5 +54,23 @@ abstract class Image_Scale_Abstract {
         }
         return $bgcolor;
     }
+
+
+    /**
+     * @return float
+     */
+    function scalledHeight()
+    {
+        return round( $this->height / $this->k );
+    }
+
+    /**
+     * @return float
+     */
+    function scalledWidth()
+    {
+        return round( $this->width / $this->k );
+    }
+    
 
 }
