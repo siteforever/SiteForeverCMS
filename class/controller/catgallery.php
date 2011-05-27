@@ -12,7 +12,7 @@ class controller_catGallery extends Controller
     function init()
     {
         $default = array(
-            'gallery_dir' => DS.'files'.DS.'catalog'.DS.'gallery',
+            'gallery_dir' => DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'catalog'.DIRECTORY_SEPARATOR.'gallery',
             'gallery_max_file_size' => 1000000,
             'gallery_thumb_prefix'  => 'thumb_',
             'gallery_thumb_h'   => 100,
@@ -85,7 +85,7 @@ class controller_catGallery extends Controller
                         ) {
                             $upload_ok = 1;
 
-                            $dest = $this->config->get('catalog.gallery_dir').DS.substr( '0000'.$upload, -4, 4 );
+                            $dest = $this->config->get('catalog.gallery_dir').DIRECTORY_SEPARATOR.substr( '0000'.$upload, -4, 4 );
 
                             if ( ! is_dir( ROOT.$dest ) ) {
                                 mkdir( ROOT.$dest, 0777, true );
@@ -100,14 +100,14 @@ class controller_catGallery extends Controller
                             //$catalog_gallery->insert();
                             //$g_id = $catalog_gallery->getId();
 
-                            $img = $dest.DS.$g_id.'_'.$images['name'][$i];
-                            $tmb = $dest.DS.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
-                            $mdl = $dest.DS.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
+                            $img = $dest.DIRECTORY_SEPARATOR.$g_id.'_'.$images['name'][$i];
+                            $tmb = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
+                            $mdl = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
 
                             if ( move_uploaded_file( $src, ROOT.$img ) )
                             {
                                 // обработка
-                                $obj_image->image   = str_replace( DS, '/', $img );
+                                $obj_image->image   = str_replace( DIRECTORY_SEPARATOR, '/', $img );
 
                                 $thumb_h    = $this->config->get('catalog.gallery_thumb_h');
                                 $thumb_w    = $this->config->get('catalog.gallery_thumb_w');
@@ -117,10 +117,10 @@ class controller_catGallery extends Controller
                                 $m_method   = $this->config->get('catalog.gallery_middle_method');
 
                                 if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
-                                    $obj_image->middle  = str_replace( DS, '/', $mdl );
+                                    $obj_image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
                                 };
                                 if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
-                                    $obj_image->thumb   = str_replace( DS, '/', $tmb );
+                                    $obj_image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
                                 };
                             }
                         }

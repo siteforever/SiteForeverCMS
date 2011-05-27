@@ -149,7 +149,7 @@ class Form_Form implements ArrayAccess
      */
     function __get( $key )
     {
-        return $this->getField( $key )->getValue();
+        return $this->getField( $key );
     }
 
     /**

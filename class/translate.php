@@ -17,7 +17,7 @@ class translate {
     function setLanguage( $lang = 'en' )
     {
         $this->lang = $lang;
-        $dict_file  = 'protected'.DS.'lang'.DS.$this->lang.'.php';
+        $dict_file  = 'protected'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$this->lang.'.php';
         if ( ! $this->dictionary = @include($dict_file) ) {
             throw new Exception('Dictionary for language '.$this->lang.' not found in file '.$dict_file);
         }

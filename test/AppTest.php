@@ -35,14 +35,6 @@ class AppTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testInit().
-     */
-    public function testInit()
-    {
-        $this->object->init();
-    }
-
-    /**
      * @todo Implement testHandleRequest().
      */
     public function testHandleRequest()

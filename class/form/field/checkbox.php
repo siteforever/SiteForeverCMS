@@ -7,8 +7,8 @@
 class Form_Field_Checkbox extends Form_Field_Radio
 {
     protected
-        $type   = 'checkbox',
-        $class  = 'checkbox';
+        $_type   = 'checkbox',
+        $_class  = 'checkbox';
 
 
     /**
@@ -19,19 +19,19 @@ class Form_Field_Checkbox extends Form_Field_Radio
     {
         $html = array();
 
-        if ( isset($this->params['variants']) )
+        if ( isset($this->_params['variants']) )
         {
-            foreach( $this->params['variants'] as $value => $label )
+            foreach( $this->_params['variants'] as $value => $label )
             {
                 $field['id']     = "id='{$this->getId()}_{$value}'";
                 $field['value']  = "value='{$value}'";
 
                 $field['checked'] = '';
-                if ( $this->value == $value || ( is_array($this->value) && in_array( $value, $this->value) ) ) {
+                if ( $this->_value == $value || ( is_array($this->_value) && in_array( $value, $this->_value) ) ) {
                     $field['checked'] = " checked='checked' ";
                 }
 
-                $field['name']   = "name='{$this->form->name()}[{$this->name}][{$value}]'";
+                $field['name']   = "name='{$this->_form->name()}[{$this->_name}][{$value}]'";
 
                 if ( is_array( $field['class'] ) ) {
                     $field['class'] = 'class="'.join(' ', $field['class']).'"';
@@ -40,7 +40,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
                 $html[]  = "<input ".join(' ', $field)." /> <label for='{$this->getId()}_{$value}'>{$label}</label>";
             }
         }
-        $br = in_array('br', $this->params) ? "<br />" : "";
+        $br = in_array('br', $this->_params) ? "<br />" : "";
         return join($br."\n", $html);
     }
 
@@ -59,7 +59,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
             return $check;
         }
         else {
-            return preg_match($this->filter, $value);
+            return preg_match($this->_filter, $value);
         }
     }
 
@@ -80,7 +80,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
 
         if ( $this->checkValue( $value ) )
         {
-            $this->value  = $value;
+            $this->_value  = $value;
         }
         return $this;
     }
@@ -88,10 +88,10 @@ class Form_Field_Checkbox extends Form_Field_Radio
 
     function getStringValue()
     {
-        if ( is_array($this->value) ) {
-            return join(',', $this->value);
+        if ( is_array($this->_value) ) {
+            return join(',', $this->_value);
         }
-        return $this->value;
+        return $this->_value;
     }
 
 

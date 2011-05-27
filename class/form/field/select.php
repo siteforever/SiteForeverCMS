@@ -4,11 +4,10 @@
  *
  * @author keltanas
  */
-class Form_Field_Select extends Form_Field
+class Form_Field_Select extends Form_Field_Composite
 {
     protected
-        $type   = 'select',
-        $class  = 'select';
+        $_class  = 'select';
 
 
     /**
@@ -19,20 +18,20 @@ class Form_Field_Select extends Form_Field
     {
     	$html = array();
 
-        $multiple = in_array('multiple', $this->params) ? ' multiple="multiple" ' : '';
-        $size     = isset( $this->params['size'] ) ? " size='{$this->params['size']}' " : '';
+        $multiple = in_array('multiple', $this->_params) ? ' multiple="multiple" ' : '';
+        $size     = isset( $this->_params['size'] ) ? " size='{$this->_params['size']}' " : '';
 
 
         $field['class'] = 'class="'.join(' ', $field['class']).'"';
 
         $html[] = "<select {$field['id']} {$field['class']} {$field['name']}{$multiple}{$size}>\n";
-    	if ( isset($this->params['variants']) )
+    	if ( isset($this->_params['variants']) )
     	{
-            foreach( $this->params['variants'] as $value => $label )
+            foreach( $this->_params['variants'] as $value => $label )
             {
                 $field['id']       = " id='{$this->getId()}_{$value}' ";
                 $field['value']    = " value='{$value}' ";
-                $field['selected'] = ( $this->value == $value ) ? " selected='selected' " : '';
+                $field['selected'] = ( $this->_value == $value ) ? " selected='selected' " : '';
 
                 $html[]  = "<option {$field['value']} {$field['selected']}>{$label}</option>\n";
             }
@@ -58,7 +57,7 @@ class Form_Field_Select extends Form_Field
             return $check;
         }
         else {
-            return preg_match($this->filter, $value);
+            return preg_match($this->_filter, $value);
         }
     }
 }

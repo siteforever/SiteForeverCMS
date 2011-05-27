@@ -5,9 +5,8 @@
  */
 class Form_Field_Textarea extends Form_Field
 {
-    protected $type = 'textarea';
-    protected $class = 'textarea';
-    protected $filter = '/.*/';
+    protected $_class = 'textarea';
+    protected $_filter = '/.*/';
 
     /**
      * Вернет HTML для поля
@@ -19,7 +18,7 @@ class Form_Field_Textarea extends Form_Field
         unset( $field['value'] );
 
         $field['class'] = "class='".join(' ', $field['class'])."'";
-        return "<textarea ".join(' ', $field).">{$this->value}</textarea>\n";
+        return "<textarea ".join(' ', $field).">{$this->_value}</textarea>\n";
     }
 
     /**

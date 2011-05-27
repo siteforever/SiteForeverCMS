@@ -5,8 +5,7 @@
  */
 class Form_Field_Float extends Form_Field_Text
 {
-    protected $type    = 'float';
-    protected $class   = 'float';
-    protected $filter  = '/^-?\d*[\.|\,]?\d*$/';
+    protected $_class   = 'float';
+    protected $_filter  = '/^-?\d*[\.|\,]?\d*$/';
 
 }

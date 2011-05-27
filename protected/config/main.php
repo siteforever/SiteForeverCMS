@@ -26,6 +26,7 @@ return array(
         'password'  => 'siteforever',
         'host'      => 'localhost',
         'database'  => 'siteforever',
+        'debug'     => 1,
     ),
     // тема
     'template' => array(
@@ -33,25 +34,25 @@ return array(
         // драйвер шаблонизатора
         // это класс, поддерживающий интерфейс TPL_Driver
         'driver'    => 'TPL_Smarty',
-        'widgets'   => SF_PATH.DS.'widgets',
+        'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
         'ext'       => 'tpl', // расширение шаблонов
-        'admin'     => SF_PATH.DS.'themes'.DS.'system', // каталог шаблонов админки
+        'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system', // каталог шаблонов админки
         '404'       => 'error404', // шаблон страницы 404
     ),
 
     // настройки пользователей
     'users' => array(
-        'groups' => array(
-            USER_GUEST  => 'Гость',
-            USER_USER   => 'Пользователь',
-            USER_WHOLE  => 'Оптовый покупатель',
-            USER_ADMIN  => 'Админ',
-        ),
-        'userdir' => DS.'files',
+//        'groups' => array(
+//            USER_GUEST  => 'Гость',
+//            USER_USER   => 'Пользователь',
+//            USER_WHOLE  => 'Оптовый покупатель',
+//            USER_ADMIN  => 'Админ',
+//        ),
+        'userdir' => DIRECTORY_SEPARATOR.'files',
     ),
 
     'catalog' => array(
-        'gallery_dir' => DS.'files'.DS.'catalog'.DS.'gallery',
+        'gallery_dir' => DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'catalog'.DIRECTORY_SEPARATOR.'gallery',
         'gallery_max_file_size' => 1000000,
         'gallery_thumb_prefix'  => 'thumb_',
         'gallery_thumb_h'   => 100,

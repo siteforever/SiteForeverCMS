@@ -112,6 +112,8 @@ abstract class Application_Abstract
 
     function __construct( $cfg_file = null )
     {
+        App::autoloadRegister(array('App','autoload'));
+
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
         } else {
@@ -150,6 +152,26 @@ abstract class Application_Abstract
     protected function setAuthFormat( $format )
     {
         $this->auth_format  = $format;
+    }
+
+    /**
+     * Зарегистрировать колбэк автозагрузки
+     * @param  $callback
+     * @return void
+     */
+    public static function autoloadRegister( $callback )
+    {
+        spl_autoload_register($callback);
+    }
+
+    /**
+     * Удалить колбэк автозагрузки
+     * @param  $callback
+     * @return void
+     */
+    public static function autoloadUnRegister( $callback )
+    {
+        spl_autoload_unregister($callback);
     }
 
     /**
@@ -287,7 +309,7 @@ abstract class Application_Abstract
      */
     function loadModules()
     {
-        $files  = glob( SF_PATH.DS.'protected'.DS.'modules'.DS.'*.xml');
+        $files  = glob( SF_PATH.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'modules'.DIRECTORY_SEPARATOR.'*.xml');
 
         foreach ( $files as $file ) {
             $module = new Application_Module( $file );

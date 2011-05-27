@@ -24,9 +24,9 @@ class controller_dumper extends Controller
             $dumper = new dumper( $this->request );
             $sql    = $dumper->create();
             $json_sql   = json_encode( $sql );
-            //file_put_contents($this->backup_dir.DS.date('Ynd_His').'.sql.json', $json_sql);
-            file_put_contents($this->backup_dir.DS.date('Ymd_His').'.sql', implode("\n",$sql));
-            //file_put_contents($this->backup_dir.DS.date('Ynd_His').'.sql.ser', serialize($sql));
+            //file_put_contents($this->backup_dir.DIRECTORY_SEPARATOR.date('Ynd_His').'.sql.json', $json_sql);
+            file_put_contents($this->backup_dir.DIRECTORY_SEPARATOR.date('Ymd_His').'.sql', implode("\n",$sql));
+            //file_put_contents($this->backup_dir.DIRECTORY_SEPARATOR.date('Ynd_His').'.sql.ser', serialize($sql));
             $this->request->addFeedback( t('Dump successfully created') );
             $this->request->setContent($this->tpl->fetch('dumper.create'));
             return;
@@ -35,7 +35,7 @@ class controller_dumper extends Controller
         if ( $this->request->get('dump') == 'restore' ) {
 
             $this->request->setTitle(t('Restore DB from dump'));
-            $sql_files  = glob($this->backup_dir.DS.'*.sql');
+            $sql_files  = glob($this->backup_dir.DIRECTORY_SEPARATOR.'*.sql');
             sort( $sql_files );
             $this->tpl->files   = $sql_files;
             $this->request->setContent( $this->tpl->fetch('dumper.restore') );

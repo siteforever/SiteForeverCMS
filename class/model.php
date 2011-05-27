@@ -93,10 +93,6 @@ abstract class Model
             }
         }
 
-        /*if ( $this->getTable() && ! isset( self::$fields[(string)$this->table] ) ) {
-            self::$fields[(string) $this->table]   = $this->db->getFields( (string) $this->table );
-        }*/
-
         $this->init();
     }
 
@@ -303,12 +299,7 @@ abstract class Model
      */
     final public function find( $crit )
     {
-        $with   = $this->with;
         $this->with = array();
-
-        if ( empty( $crit ) ) {
-            throw new ModelException('Criterion must not be empty');
-        }
 
         if ( is_object( $crit ) ) {
             if ( $crit instanceof Db_Criteria ) {
@@ -347,7 +338,7 @@ abstract class Model
             $criteria   = new Data_Criteria( $this->getTable(), $crit );
         }
 
-        $data = $this->db->fetch( $criteria->getSQL() );
+        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit['params'] );
 
         if ( $data ) {
             $obj_data   = $this->createObject( $data );

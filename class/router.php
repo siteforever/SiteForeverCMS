@@ -56,14 +56,12 @@ class Router
 
         $params = explode('/', $this->route);
 
-
         foreach( $params as $key => $param ) {
             if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
                 $this->request->set( $matches[1], $matches[2] );
                 unset( $params[$key] );
             }
         }
-
 
         $this->request->set('params', $params);
 

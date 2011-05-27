@@ -4,12 +4,18 @@
  * Точка входа для SiteForeverCMS
  * Этот файл вызывает сервер при запросах
  */
+
+ini_set('error_reporting', E_ALL);
+ini_set('display_errors', true);
+
+
 // путь к фреймворку
 // если не указан, то в текущей директории
 define('SF_PATH', dirname(__FILE__));
 
-// версия php
-define('CORRECT_PHP_VERSION', '5.2');
+//корень сайта
+define('ROOT', dirname(__FILE__));
+
 
 // директории для подключения
 $include_list   = array();
@@ -21,11 +27,10 @@ $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
 $include_list[] = SF_PATH;
 $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));
-//die(get_include_path());
-// запуск системы
 
+// автозагрузка классов
+require_once 'app.php';
 
-require_once 'bootstrap.php';
 
 $app = new App( dirname(__FILE__).'/protected/config/main.php');
 $app->run();

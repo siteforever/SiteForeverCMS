@@ -11,7 +11,7 @@ class Controller_Gallery extends Controller
     function init()
     {
         $default = array(
-            'dir' => DS.'files'.DS.'gallery',
+            'dir' => DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'gallery',
             'thumb_prefix'  => 'thumb_',
             'middle_prefix'  => 'middle_',
         );
@@ -404,7 +404,7 @@ class Controller_Gallery extends Controller
                     ) {
                         $upload_ok = 1;
 
-                        $dest = $this->config->get('gallery.dir').DS.substr( '0000'.$cat->getId(), -4, 4 );
+                        $dest = $this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$cat->getId(), -4, 4 );
                         if ( ! is_dir( ROOT.$dest ) ) {
                             mkdir( ROOT.$dest, 0777, true );
                         }
@@ -418,13 +418,13 @@ class Controller_Gallery extends Controller
                         $model->save( $image );
                         $g_id = $image->getId();
 
-                        $img = $dest.DS.$g_id.'_'.$images['name'][$i];
-                        $tmb = $dest.DS.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
-                        $mdl = $dest.DS.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
+                        $img = $dest.DIRECTORY_SEPARATOR.$g_id.'_'.$images['name'][$i];
+                        $tmb = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
+                        $mdl = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
 
-                        $image->image   = str_replace( DS, '/', $img );
+                        $image->image   = str_replace( DIRECTORY_SEPARATOR, '/', $img );
 
-                        //$model->set('image', str_replace( DS, '/', $img ) );
+                        //$model->set('image', str_replace( DIRECTORY_SEPARATOR, '/', $img ) );
 
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
@@ -442,21 +442,21 @@ class Controller_Gallery extends Controller
                                 $img_mid    = $img_full->createThumb($middle_w, $middle_h, $m_method, $cat->color);
                                 if ( $img_mid ) {
                                     $img_mid->saveToFile( ROOT.$mdl );
-                                    $image->middle  = str_replace( DS, '/', $mdl );
+                                    $image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
                                     unset( $img_mid );
                                 }
 
                                 $img_thmb   = $img_full->createThumb($thumb_w, $thumb_h, $t_method, $cat->color);
                                 if ( $img_thmb ) {
                                     $img_thmb->saveToFile( ROOT.$tmb );
-                                    $image->thumb   = str_replace( DS, '/', $tmb);
+                                    $image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb);
                                     unset( $img_thmb );
                                 }
                                 /*if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method, $cat->color ) ) {
-                                    $image->middle  = str_replace( DS, '/', $mdl );
+                                    $image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
                                 };*/
                                 /*if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method, $cat->color ) ) {
-                                    $image->thumb   = str_replace( DS, '/', $tmb );
+                                    $image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
                                 };*/
                             } catch ( Exception $e ) {
                                 $this->request->addFeedback($e->getMessage());

@@ -1,5 +1,5 @@
 <?php
-class controller_Users extends Controller
+class Controller_Users extends Controller
 {
     function init()
     {
@@ -21,20 +21,6 @@ class controller_Users extends Controller
             $auth->confirm();
             $this->request->addFeedback($auth->getMessage());
         }
-
-        /*$option = $this->request->get('option');
-        if ( $option == 'whole_request' ) {
-            sendmail(
-               $this->user->email,
-               $this->config->get('admin'),
-               'Запрос на оптовый аккаунт',
-               'Пользователь '.$this->user->login.
-               ' с id: '.$this->user->getId().
-               ', email: '.$this->user->email.
-               ' запросил перевести его аккаунт в статус "оптовый".'
-           );
-           $this->request->addFeedback('Ваша заявка принята');
-        }*/
 
         $this->loginAction();
     }

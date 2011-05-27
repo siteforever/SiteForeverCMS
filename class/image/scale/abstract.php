@@ -4,7 +4,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
+
 abstract class Image_Scale_Abstract {
 
     protected $image;

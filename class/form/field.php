@@ -14,20 +14,21 @@ abstract class Form_Field
              * Объект формы
              * @var form_Form
              */
-            $form     = null,
-            $name     = '',
-            $value    = '',
-            $class    = 'text',
-            $id       = '',
-            $label    = '',
+            $_form     = null,
+            $_name     = '',
+            $_value    = '',
+            $_class    = 'text',
+            $_id       = '',
+            $_label    = '',
 
-            $filter   = '/.*/',
+            $_filter   = '/.*/',
 
-            $readonly = false,
-            $required = false,
-            $disabled = false,
-            $hidden   = false,
-            $params;
+            $_readonly = false,
+            $_required = false,
+            $_disabled = false,
+            $_hidden   = false,
+            $_type      = null,
+            $_params;
 
     /**
      * Есть ли у поля ошибка
@@ -42,24 +43,24 @@ abstract class Form_Field
     
     /**
      * Создаем поле формы
-     * @param  $form
-     * @param  $name
-     * @param  $params
+     * @param Form_Form $form
+     * @param string $name
+     * @param array $params
      * @return void
      */
-    function __construct( $form, $name, $params )
+    function __construct( Form_Form $form, $name, $params )
     {
-        $this->form = $form;
-        $this->name = $name;
+        $this->_form = $form;
+        $this->_name = $name;
 
-        $this->id       = $form->name().'_'.$name;
+        $this->_id       = $form->name().'_'.$name;
 
         if ( isset($params['class']) ) {
-            $this->class    = $params['class'];
+            $this->_class    = $params['class'];
         }
 
         if ( $this->in_array_strict('readonly', $params) ) {
-            $this->readonly = true;
+            $this->_readonly = true;
         }
 
         if ( $this->in_array_strict('disable', $params) ) {
@@ -76,22 +77,22 @@ abstract class Form_Field
         }
 
         if ( isset($params['label']) ) {
-            $this->label = $params['label'];
+            $this->_label = $params['label'];
         }
 
         if ( isset( $params['value'] ) ) {
             if ( $this->setValue( trim( $params['value'] ) ) ) {
                 if ( form_Form::DEBUG ) {
-                    print $this->name.' = '.$params['value'].'<br />';
+                    print $this->_name.' = '.$params['value'].'<br />';
                 }
             }
         }
 
         if ( isset( $params['filter'] ) ) {
-            $this->filter = $params['filter'];
+            $this->_filter = $params['filter'];
         }
 
-        $this->params	= $params;
+        $this->_params   = $params;
     }
 
     /**
@@ -100,18 +101,19 @@ abstract class Form_Field
      * @param array $array
      * @return bool
      */
-    function in_array_strict( $val, &$array )
+    protected function in_array_strict( $val, &$array )
     {
         foreach( $array as $arr ) {
             if ( $arr === $val ) {
                 return true;
             }
         }
+        return false;
     }
 
     function __toString()
     {
-        return $this->getStringValue();
+        return $this->getValue();
     }
 
     /**
@@ -120,7 +122,7 @@ abstract class Form_Field
      */
     function getParams()
     {
-        return $this->params;
+        return $this->_params;
     }
 
     /**
@@ -128,20 +130,27 @@ abstract class Form_Field
      */
     function getId()
     {
-        return $this->form->name().'_'.$this->name;
+        return $this->_form->name().'_'.$this->_name;
     }
 
     /**
      * Вернет наименование поля
+     * @return string
      */
     function getName()
     {
-        return $this->name;
+        return $this->_name;
     }
 
+    /**
+     * @return string
+     */
     function getType()
     {
-        return $this->type;
+        if ( null === $this->_type ) {
+            $this->_type    = strtolower( substr( get_class($this), strrpos( get_class($this), '_' ) + 1 ) );
+        }
+        return $this->_type;
     }
 
     /**
@@ -149,7 +158,7 @@ abstract class Form_Field
      */
     function hide()
     {
-        $this->hidden   = true;
+        $this->_hidden   = true;
     }
 
     /**
@@ -157,7 +166,7 @@ abstract class Form_Field
      */
     function show()
     {
-        $this->hidden   = false;
+        $this->_hidden   = false;
     }
 
     /**
@@ -165,12 +174,12 @@ abstract class Form_Field
      */
     function clear()
     {
-        if ( isset( $this->params['empty'] ) )
+        if ( isset( $this->_params['empty'] ) )
         {
-            $this->value    = $this->params['empty'];
+            $this->_value    = $this->_params['empty'];
             return;
         }
-        $this->value    = '';
+        $this->_value    = '';
     }
 
     /**
@@ -179,7 +188,7 @@ abstract class Form_Field
      */
     function getValue()
     {
-        return $this->value;
+        return $this->_value;
     }
 
     /**
@@ -188,7 +197,7 @@ abstract class Form_Field
      */
     function getStringValue()
     {
-        return $this->value;
+        return (string) $this->_value;
     }
 
     /**
@@ -203,7 +212,7 @@ abstract class Form_Field
     {
         if ( $this->checkValue( $value ) )
         {
-            $this->value  = $value;
+            $this->_value  = $value;
         }
         return $this;
     }
@@ -214,7 +223,7 @@ abstract class Form_Field
      */
     function setVariants( $list )
     {
-        $this->params['variants'] = $list;
+        $this->_params['variants'] = $list;
     }
 
     /**
@@ -223,18 +232,13 @@ abstract class Form_Field
      */
     function setLabel( $label )
     {
-        $this->label = $label;
+        $this->_label = $label;
     }
 
-    /**
-     * Добавить варианты выбора к уже имеющимся (для select и radio)
-     * @param $list
-     */
-    function addVariants( $list )
+    function getLabel()
     {
-        $this->params['variants'] = array_merge( $this->params['variants'], $list );
+        return $this->_label;
     }
-
 
     /**
      * Проверит значение на валидность типа
@@ -243,9 +247,7 @@ abstract class Form_Field
      */
     function checkValue( $value )
     {
-        //$this->form->addFeedback($this->name.' => '.$value);
-        //print "preg_match('{$this->filter}', '{$value}')".@preg_match($this->filter, $value)."<br />";
-        return preg_match($this->filter, $value);
+        return preg_match($this->_filter, $value);
     }
 
     /**
@@ -254,8 +256,8 @@ abstract class Form_Field
      */
     function isRequired()
     {
-        if ( ! $this->hidden ) {
-            return $this->required;
+        if ( ! $this->_hidden ) {
+            return $this->_required;
         }
         return false;
     }
@@ -267,7 +269,7 @@ abstract class Form_Field
      */
     function setRequired( $required = true )
     {
-        $this->required = $required;
+        $this->_required = $required;
     }
 
     /**
@@ -276,23 +278,23 @@ abstract class Form_Field
      */
     function isEmpty()
     {
-        if ( isset( $this->params['empty'] ) )
+        if ( isset( $this->_params['empty'] ) )
         {
-            if ( $this->params['empty'] == $this->value )
+            if ( $this->_params['empty'] == $this->_value )
             {
                 return true;
             }
         }
         else {
-            if ( empty( $this->value ) )
+            if ( empty( $this->_value ) )
             {
                 return true;
             }
-            if ( in_array( $this->type, array('text', 'textarea') ) && trim($this->value) == '' )
+            if ( in_array( $this->getType(), array('text', 'textarea') ) && trim($this->_value) == '' )
             {
                 return true;
             }
-            if ( in_array( $this->type, array('int', 'float') ) && $this->value == 0 )
+            if ( in_array( $this->getType(), array('int', 'float') ) && $this->_value == 0 )
             {
                 return true;
             }
@@ -303,10 +305,11 @@ abstract class Form_Field
     /**
      * Проверит значение поля на соответствие типу, а также заполнено ли
      * значение обязательного поля
+     * @return bool
      */
     function validate()
     {
-        $classes    = explode( ' ', trim($this->class) );
+        $classes    = explode( ' ', trim($this->_class) );
         foreach ( $classes as $i => $class ) {
             if ( $class == 'error' ) {
                 unset( $classes[ $i ] );
@@ -316,27 +319,46 @@ abstract class Form_Field
         // по умолчанию валидно
         $this->_error   = 0;
 
-        // не валидно
+        if ( ! $this->checkValid() ) {
+            $this->checkType();
+        }
+
+        if ( $this->_error > 0 ) {
+            $this->_form->addFeedback( $this->_error_string );
+            
+            $classes[] = 'error';
+            $this->_class    = join(' ', $classes);
+        }
+
+        return ! $this->_error;
+    }
+
+    /**
+     * Проверка валидности
+     * @return bool
+     */
+    protected function checkValid()
+    {
         if ( $this->isRequired() && $this->isEmpty() )
         {
             //    или если его значение пустое
             $this->_error   = 2;
-            $this->_error_string    = "&laquo;{$this->label}&raquo; нужно заполнить";
+            $this->_error_string    = "&laquo;{$this->_label}&raquo; нужно заполнить";
         }
-            //    если значение не соответствует типу
-        elseif ( ! ( $this->checkValue( $this->value ) || $this->isEmpty() ) )
+        return ! $this->_error;
+    }
+
+    /**
+     * Проверка типа
+     * @return bool
+     */
+    protected function checkType()
+    {
+        if ( ! ( $this->checkValue( $this->_value ) || $this->isEmpty() ) )
         {
             $this->_error   = 1;
-            $this->_error_string    = "&laquo;{$this->label}&raquo; не соответствует типу";
+            $this->_error_string    = "&laquo;{$this->_label}&raquo; не соответствует типу";
         }
-
-        if ( $this->_error > 0 ) {
-            $this->form->addFeedback( $this->_error_string );
-            
-            $classes[] = 'error';
-            $this->class    = join(' ', $classes);
-        }
-
         return ! $this->_error;
     }
 
@@ -347,7 +369,7 @@ abstract class Form_Field
     function html()
     {
         // если поле скрытое, то вывести скрытое
-        if ( $this->hidden ) {
+        if ( $this->_hidden ) {
             return $this->doInputHidden();
         }
 
@@ -355,12 +377,12 @@ abstract class Form_Field
 
         $field['id']  = "id='{$this->getId()}'";
 
-        $field['type']     = "type='{$this->type}'";
+        $field['type']     = "type='{$this->getType()}'";
 
-        $class = explode( ' ', $this->class );
+        $class = explode( ' ', $this->_class );
 
         // исключения из типов
-        if ( in_array( $this->type, array('int', 'float', 'date', 'password') ) )
+        if ( in_array( $this->getType(), array('int', 'float', 'date', 'password') ) )
         {
             $class['type'] = 'text';
         }
@@ -371,20 +393,20 @@ abstract class Form_Field
 
         $field['class']    = $class;
 
-        $field['name']     = "name='{$this->form->name()}[{$this->name}]'";
+        $field['name']     = "name='{$this->_form->name()}[{$this->_name}]'";
         $field['value']    = "value='{$this->getStringValue()}'";
 
-        if ( $this->readonly ) {
+        if ( $this->_readonly ) {
             $field['readonly'] = 'readonly="readonly"';
             $field['class']['readonly'] = 'readonly';
         }
 
-        if ( $this->disabled ) {
+        if ( $this->_disabled ) {
             $field['disabled'] = 'disabled="disabled"';
         }
 
-        if ( isset($this->params['autocomplete']) ) {
-            $field['autocomplete']  = 'autocomplete="'.$this->params['autocomplete'].'"';
+        if ( isset($this->_params['autocomplete']) ) {
+            $field['autocomplete']  = 'autocomplete="'.$this->_params['autocomplete'].'"';
         }
 
         return $this->htmlTpl( $this->doInput( $field ) );
@@ -393,28 +415,29 @@ abstract class Form_Field
     /**
      * Декоратор полей
      * @param $html
+     * @return string
      */
-    function htmlTpl( $html )
+    protected function htmlTpl( $html )
     {
         $label_class = '';
         $error  = false;
-        if ( strpos( $this->class, 'error' ) !== false ) {
+        if ( strpos( $this->_class, 'error' ) !== false ) {
             $error  = true;
-            $label_class = 'class="error"';
+            $label_class = ' class="error"';
         }
-        return "<div class='b-form-field'>".
-            "<label for='{$this->getId()}' {$label_class}>{$this->label}".($this->isRequired()?' <b>*</b> ':'')."</label>".
-            "<div class='b-form-field-{$this->type}'>".
-               $html.($error ? "<div {$label_class}>{$this->_error_string}</div>" : '').
-            "</div>".
-        "</div>";
+        return "<div class='b-form-field'>"
+                   ."<label for='{$this->getId()}'{$label_class}>{$this->_label}".($this->isRequired()?' <b>*</b> ':'')."</label>"
+                   ."<div class='b-form-field-{$this->getType()}'>"
+                       .$html.($error ? "<div {$label_class}>{$this->_error_string}</div>" : '')
+                   ."</div>"
+                ."</div>";
     }
 
     /**
      * Вернет HTML для поля
      * @return string
      */
-    function doInput( &$field )
+    protected function doInput( $field )
     {
         $field['class']    = 'class="'.join(' ', $field['class']).'"';
         return "<input ".join(' ', $field)." />";
@@ -424,12 +447,8 @@ abstract class Form_Field
      * Вернет HTML для скрытого поля
      * @return string
      */
-    function doInputHidden()
+    protected function doInputHidden()
     {
-        return "<input type='hidden' name='{$this->form->name()}[{$this->name}]' id='{$this->getId()}' value='{$this->value}' />";
+        return "<input type='hidden' name='{$this->_form->name()}[{$this->_name}]' id='{$this->getId()}' value='{$this->_value}' />";
     }
-
-
-
-
 }

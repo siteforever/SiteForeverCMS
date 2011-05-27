@@ -29,7 +29,7 @@ class App extends Application_Abstract
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
-        if ( DEBUG_SQL ) {
+        if ( $this->getConfig()->get('db.debug') ) {
             Model::getDB()->saveLog();
         }
 
@@ -54,10 +54,39 @@ class App extends Application_Abstract
      */
     function init()
     {
+        // Language
         $this->getConfig()->setDefault('language', 'ru');
         translate::getInstance()->setLanguage(
             $this->getConfig()->get('language')
         );
+
+        // Locale
+        setlocale ( LC_TIME,    'rus', 'ru_RU.UTF-8', 'Russia');
+        setlocale ( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English');
+
+        // TIME_ZONE
+        date_default_timezone_set ( 'Europe/Moscow' );
+
+        // DB prefix
+        if ( ! defined( 'DBPREFIX' ) )
+            if ( $this->getConfig()->get('db.prefix') ) {
+                define('DBPREFIX', $this->getConfig()->get('db.prefix'));
+            } else {
+                define('DBPREFIX', '');
+            }
+
+
+        if ( defined('TEST') ) {
+            require_once 'functionsTest.php';
+        } else {
+            require_once 'functions.php';
+            $firephp = FirePHP::getInstance(true);
+            $firephp->registerErrorHandler();
+            $firephp->registerExceptionHandler();
+        }
+
+        if ( ! defined('MAX_FILE_SIZE') )
+            define('MAX_FILE_SIZE', 2*1024*1024);
     }
 
     /**
@@ -67,18 +96,21 @@ class App extends Application_Abstract
      */
     function handleRequest()
     {
+        // запуск сессии
+        session_start();
+
         // маршрутизатор
         $this->getRouter()->routing();
 
         // возможность использовать кэш
-        if (    $this->getConfig()->get('caching') &&
-                ! $this->getRequest()->getAjax() &&
-                ! self::$ajax &&
-                ! $this->getRouter()->isSystem()
+        if (    $this->getConfig()->get('caching')
+           && ! $this->getRequest()->getAjax()
+           && ! self::$ajax
+           && ! $this->getRouter()->isSystem()
         ) {
-            if (    $this->getRequest()->get('controller') == 'page' &&
-                    $this->getAuth()->currentUser()->perm == USER_GUEST &&
-                    $this->getBasket()->count() == 0
+            if (    $this->getRequest()->get('controller') == 'page'
+                 && $this->getAuth()->currentUser()->perm == USER_GUEST
+                 && $this->getBasket()->count() == 0
             ) {
                 self::$tpl->caching(true);
             }
@@ -258,7 +290,7 @@ class App extends Application_Abstract
         }
 
         // PEAR format autoload
-        $file = str_replace( '_', DS, $class_name ).'.php';
+        $file = str_replace( '_', DIRECTORY_SEPARATOR, $class_name ).'.php';
 
         if ( @include_once $file ) {
             if ( defined('DEBUG_AUTOLOAD') && DEBUG_AUTOLOAD ) {

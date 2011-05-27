@@ -34,8 +34,8 @@ class model_GalleryCategory extends Model
                 $this->gallery()->delete( $img['id'] );
             }
 
-            //print 'dir:'.ROOT.$this->config->get('gallery.dir').DS.substr( '0000'.$cat['id'], -4, 4 );
-            $dir = ROOT.$this->config->get('gallery.dir').DS.substr( '0000'.$category['id'], -4, 4 );
+            //print 'dir:'.ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$cat['id'], -4, 4 );
+            $dir = ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$category['id'], -4, 4 );
 
             $this->app()->getLogger()->log('del: '.$id.' dir: '.$dir);
 

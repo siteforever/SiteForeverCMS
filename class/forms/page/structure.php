@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class forms_page_structure extends form_Form
+class Forms_Page_Structure extends Form_Form
 {
     function __construct()
     {
@@ -17,7 +17,7 @@ class forms_page_structure extends form_Form
                     'parent'    => array('type'=>'hidden','label'=>'Parent', 'value'=>'0',),
                     'name'      => array('type'=>'text','label'=>'Наименование', 'required'),
                     'template'  => array('type'=>'text','label'=>'Шаблон', 'required'),
-                    'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
+                    //'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
                     'alias'     => array('type'=>'text','label'=>'Адрес', 'required'),
 
                     'date'      => array('type'=>'date','label'=>'Дата создания', 'value'=>time(),),

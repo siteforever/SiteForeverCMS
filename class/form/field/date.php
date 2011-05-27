@@ -4,15 +4,16 @@
  */
 class Form_Field_Date extends Form_Field
 {
-    protected $type = 'text';
-    protected $class = 'datepicker';
+    protected $_type = 'text';
+    protected $_class = 'datepicker';
 
+    protected $_value   = 0;
 
     function __construct( $form, $name, $params )
     {
         parent::__construct( $form, $name, $params );
-        if ( ! $this->value ) {
-            $this->value = time();
+        if ( ! $this->_value ) {
+            $this->_value = time();
         }
     }
 
@@ -32,7 +33,7 @@ class Form_Field_Date extends Form_Field
      */
     function getStringValue()
     {
-        return strftime( '%x', $this->value );
+        return strftime( '%x', $this->_value );
     }
 
 
@@ -49,10 +50,10 @@ class Form_Field_Date extends Form_Field
         if ( $this->checkValue( $value ) )
         {
             if ( preg_match( '/\d{2}\.\d{2}\.\d{4}/', $value ) ) {
-                $this->value    = strtotime( $value );
+                $this->_value    = strtotime( $value );
             }
             else {
-                $this->value  = $value;
+                $this->_value  = $value;
             }
         }
         return $this;
@@ -67,7 +68,7 @@ class Form_Field_Date extends Form_Field
      */
     function doInput( &$field )
     {
-        if ( $this->readonly ) {
+        if ( $this->_readonly ) {
             $field['class']['class'] = 'date';
         }
         //printVar($field);

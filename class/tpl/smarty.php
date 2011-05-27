@@ -1,9 +1,8 @@
 <?php
 // класс шаблонизатора
-spl_autoload_unregister(array('App', 'autoload'));
+App::autoloadUnRegister(array('App', 'autoload'));
 require_once 'Smarty-3.0.7'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
-spl_autoload_register(array('App', 'autoload'));
-
+App::autoloadRegister(array('App','autoload'));
 
 /**
  * Драйвер для Smarty

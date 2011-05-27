@@ -8,7 +8,7 @@
  
 class Form_Field_Captcha extends Form_Field
 {
-    protected $type =   'captcha';
+    protected $_type =   'captcha';
 
     function htmlTpl($html)
     {
@@ -24,7 +24,7 @@ class Form_Field_Captcha extends Form_Field
 
     function validate()
     {
-        $classes    = explode( ' ', trim($this->class) );
+        $classes    = explode( ' ', trim($this->_class) );
         foreach ( $classes as $i => $class ) {
             if ( $class == 'error' ) {
                 unset( $classes[ $i ] );
@@ -40,9 +40,9 @@ class Form_Field_Captcha extends Form_Field
         }
 
         if ( $this->_error > 0 ) {
-            $this->form->addFeedback( $this->_error_string );
+            $this->_form->addFeedback( $this->_error_string );
             $classes[] = 'error';
-            $this->class    = join(' ', $classes);
+            $this->_class    = join(' ', $classes);
         }
 
         return ! $this->_error;

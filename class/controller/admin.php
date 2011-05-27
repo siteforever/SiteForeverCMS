@@ -4,7 +4,7 @@
  * @author keltanas aka Nikolay Ermin
  */
 
-class controller_Admin extends Controller
+class Controller_Admin extends Controller
 {
 
     function init()
@@ -212,32 +212,36 @@ class controller_Admin extends Controller
 
             if ( $edit_form->validate() )
             {
-                $obj    = $model->createObject( $edit_form->getData() );
+                try {
+                    $obj    = $model->createObject( $edit_form->getData() );
 
-                // Если с таким маршрутом уже есть страница, то не сохранять
-                if ( $page = $model->findByRoute( $obj->alias ) ) {
-                    if ( $page->id != $obj->getId() ) {
-                        $this->request->addFeedback(t('The page with this address already exists'));
-                        $this->request->addFeedback(t('Data not saved'));
-                        $obj->markClean();
-                        return;
+                    // Если с таким маршрутом уже есть страница, то не сохранять
+                    if ( $page = $model->findByRoute( $obj->alias ) ) {
+                        if ( $page->id != $obj->getId() ) {
+                            $this->request->addFeedback(t('The page with this address already exists'));
+                            $this->request->addFeedback(t('Data not saved'));
+                            $obj->markClean();
+                            return;
+                        }
                     }
-                }
 
-                // Если новая запись, то надо узнать id
-                if ( ! $obj->getId() ) {
-                    $model->save( $obj );
-                }
+                    // Если новая запись, то надо узнать id
+                    if ( ! $obj->getId() ) {
+                        $model->save( $obj );
+                    }
 
-                // Обновляем путь
-                $obj->path = $model->findPathJSON( $obj->getId() );
+                    // Обновляем путь
+                    $obj->path = $model->findPathJSON( $obj->getId() );
 
-                if ( $model->save( $obj ) ) {
-                    $this->request->addFeedback(t('Data save successfully'));
-                } else {
-                    $this->request->addFeedback(t('Data not saved'));
+                    if ( $model->save( $obj ) ) {
+                        $this->request->addFeedback(t('Data save successfully'));
+                    } else {
+                        $this->request->addFeedback(t('Data not saved'));
+                    }
+                    return;
+                } catch ( Exception $e ) {
+                    $this->request->addFeedback($e->getMessage());
                 }
-                return;
             } else {
                 $this->request->addFeedback($edit_form->getFeedbackString());
             }

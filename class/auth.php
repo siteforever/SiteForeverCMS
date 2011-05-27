@@ -1,11 +1,18 @@
 <?php
+
+// группы пользователей
+define('USER_GUEST', '0'); // гость
+define('USER_USER',  '1'); // юзер
+define('USER_WHOLE', '2'); // оптовый покупатель
+define('USER_ADMIN', '10'); // админ
+
+
 /**
  * Интерфейс авторизации
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-
 abstract class Auth
 {
     /**

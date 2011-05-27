@@ -80,6 +80,7 @@ class Controller_Catalog extends Controller
             }
         }
         $html = array_merge( $html_page, $html );
+
         $this->tpl->assign('breadcrumbs', '<div class="b-breadcrumbs">'.join(' &gt; ', $html).'</div>');
 
         // отрубаем breadcrumbs основной страницы
@@ -261,18 +262,15 @@ class Controller_Catalog extends Controller
          */
         $form = $catalog->getForm();
 
-
-        if ( $id !== "" ) // если раздел существует
+        if ( "" !== $id ) // если раздел существует
         {
             $item       = $catalog->find( $id );
-
             $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
             $form->setData( $item->getAttributes() );
         }
-        elseif( $type !== "" && $parent_id !== "" )
+        elseif( "" !== $type && "" !== $parent_id )
         {
-            $parent     = $catalog->find( $parent_id );
-
+            $item       = $catalog->createObject();
             $form->parent   = $parent_id;
             $form->cat      = $type;
         }

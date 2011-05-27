@@ -5,8 +5,8 @@
  */
 class Form_Field_Suggest extends Form_Field
 {
-    protected $type = 'text';
-    protected $class = 'xsuggest';
+    protected $_type = 'text';
+    protected $_class = 'xsuggest';
 
     function __construct( $form, $name, $params )
     {
@@ -15,11 +15,11 @@ class Form_Field_Suggest extends Form_Field
         //$this->class .= " xsuggest";
 
         if ( empty( $params['field_value'] ) ) {
-            $this->form->addFeedback( "Укажите поле, куда сохранять значения 'field_value'" );
+            $this->_form->addFeedback( "Укажите поле, куда сохранять значения 'field_value'" );
             exit();
         }
         if ( !isset( $params['ajax'] ) ) {
-            $this->form->addFeedback( "Укажите внешний файл данных 'ajax'" );
+            $this->_form->addFeedback( "Укажите внешний файл данных 'ajax'" );
             exit();
         }
     }
@@ -27,15 +27,15 @@ class Form_Field_Suggest extends Form_Field
     function doInput( &$field )
     {
         // выставляем статус OK
-        if ( $this->form->getField( $this->params['field_value'] )->getValue() ) {
+        if ( $this->_form->getField( $this->_params['field_value'] )->getValue() ) {
             $field['class'][] = "sug_ok";
         }
         //$field['class'][] = "progress";
-        $field['ajax']      = "ajax='{$this->params['ajax']}'";
-        $field['field_id']  = "field_value='{$this->params['field_value']}'";
+        $field['ajax']      = "ajax='{$this->_params['ajax']}'";
+        $field['field_id']  = "field_value='{$this->_params['field_value']}'";
 
         $script =   '<script type="text/javascript">'.
-                    '$("#'.$this->id.'").xsuggest();'.
+                    '$("#'.$this->_id.'").xsuggest();'.
                     '</script>';
 
         return parent::doInput( $field ).$script;
