@@ -21,7 +21,7 @@ class Controller_Admin extends Controller
     function indexAction()
     {
         /**
-         * @var model_Structure $model
+         * @var Model_Structure $model
          */
         $model  = $this->getModel('Structure');
 
@@ -58,34 +58,13 @@ class Controller_Admin extends Controller
 
         $this->request->setTitle("Структура сайта");
 
-        $do     = $this->request->get( 'do' );
-        $part   = $this->request->get( 'part' );
-
         $sort   = $this->request->get('sort');
-
         if ( $sort ) {
-            
-            $sort = array_flip($sort);
-            $upd = array();
-
-            foreach( $sort as $id => $pos ) {
-                $upd[] = array('id'=>$id, 'pos'=>$pos);
-            }
-
-            if ( DB::getInstance()->insertUpdateMulti( $model->getTable(), $upd ) )
-            {
-                $this->request->setResponse('errno', 0);
-                $this->request->setResponse('error', 'ok');
-                return;
-            }
-            else {
-                $this->request->setResponse('errno', 1);
-                $this->request->setResponse('error', t('Data not saved'));
-                return;
-            }
+            return $model->resort( $sort );
         }
 
-        // включить
+        $do     = $this->request->get( 'do' );
+        $part   = $this->request->get( 'part' );
         if ( $do && $part ) {
             $model->switching( $do, $part );
             redirect('admin');

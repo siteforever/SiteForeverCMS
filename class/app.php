@@ -139,14 +139,14 @@ class App extends Application_Abstract
         self::$controller_time  = microtime(1);
         $controller_resolver    = new ControllerResolver( $this );
         try {
-            $result = $controller_resolver->callController();
+            $result = $controller_resolver->dispatch();
         } catch ( ControllerException $e ) {
             $result = false;
             $this->getRequest()->setContent($e->getMessage());
         }
         self::$controller_time  = microtime(1) - self::$controller_time;
 
-        $this->invokeView( $result ); 
+        $this->invokeView( $result );
 
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
@@ -247,11 +247,6 @@ class App extends Application_Abstract
                     print $result;
                 } else {
                     print $this->getRequest()->getResponseAsJson();
-                    /*print json_encode( array(
-                        'error'     => $request->getError(),
-                        'feedback'  => $request->getFeedback(),
-                        'content'   => $request->getContent(),
-                    ));*/
                 }
             }
             elseif ( $request->getAjaxType() == Request::TYPE_XML ) {

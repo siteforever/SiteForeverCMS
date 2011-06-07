@@ -137,7 +137,20 @@ class Router
      */
     function findRoute()
     {
-        // сначала ищем маршрут в XML
+        if ( $this->findXMLRoute() ) {
+            return true;
+        } elseif ( $this->findTableRoute() ) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Ищем маршрут в XML конфиге
+     * @return bool
+     */
+    protected function findXMLRoute()
+    {
         $xml_routes_file    = SF_PATH.'/protected/routes.xml';
         if ( file_exists( $xml_routes_file ) ) {
             $xml_routes = new SimpleXMLIterator( file_get_contents( $xml_routes_file ) );
@@ -154,21 +167,24 @@ class Router
                 }
             }
         }
+        return false;
+    }
 
-
-        // Далее ищем маршрут в таблице
+    /**
+     * Поиск маршрута в таблице БД
+     * @return bool
+     */
+    protected function findTableRoute()
+    {
         $routes = Model::getModel('Routes');
 
         $this->route_table = $routes->findAll( array(
             'cond' => 'active = 1',
         ));
 
-
         // индексируем маршруты
         foreach( $this->route_table as $route )
         {
-            // var_dump('@^'.$route['alias'].'$@ui', $this->route);
-            // print '<br />';
             // если маршрут совпадает с алиасом, то сохраняем
             if ( preg_match( '@^'.$route['alias'].'$@ui', $this->route ) )
             {

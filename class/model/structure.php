@@ -56,6 +56,32 @@ class Model_Structure extends Model
     }
 
     /**
+     * @param  $sort
+     * @return int
+     */
+    public function resort( $sort )
+    {
+        $sort = array_flip($sort);
+        $upd = array();
+
+        foreach( $sort as $id => $pos ) {
+            $upd[] = array('id'=>$id, 'pos'=>$pos);
+        }
+
+        if ( $this->db->insertUpdateMulti( $this->getTable(), $upd ) )
+        {
+            $this->request->setResponse('errno', 0);
+            $this->request->setResponse('error', 'ok');
+            return 1;
+        }
+        else {
+            $this->request->setResponse('errno', 1);
+            $this->request->setResponse('error', t('Data not saved'));
+        }
+        return 0;
+    }
+
+    /**
      * Вернет список доступных модулей
      * @return array
      */

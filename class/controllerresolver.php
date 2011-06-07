@@ -31,10 +31,11 @@ class ControllerResolver
     /**
      * Запуск контроллера
      * @throws ControllerExeption
-     * @return void
+     * @return mixed
      */
-    function callController( $command = array() )
+    function dispatch( $command = array() )
     {
+        $result = null;
         if ( ! $command ) {
             if ( ! $command = $this->resolveController() ) {
                 throw new ControllerException('Controller not resolved');
@@ -73,10 +74,10 @@ class ControllerResolver
 
 
             if ( $ref->hasMethod( $command['action'] ) ) {
-                $return = $controller->$command['action']();
+                $result = $controller->$command['action']();
             }
             elseif ( $ref->hasMethod( 'indexAction' ) ) {
-                $return = $controller->indexAction();
+                $result = $controller->indexAction();
                 $controller->deInit();
             }
             else {
@@ -86,6 +87,6 @@ class ControllerResolver
         else {
             throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
         }
-        return $return;
+        return $result;
     }
 }
