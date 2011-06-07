@@ -60,14 +60,6 @@
 
 
         <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"></copy>
-        <copy file="${basedir}/index-sample.php" tofile="${destdir}/index.php" overwrite="true">
-            <filterchain>
-                <replacetokens>
-                    <token key="config" value="${phing.project.name}"></token>
-                    <token key="sf_path" value="${basedir}"></token>
-                </replacetokens>
-            </filterchain>
-        </copy>
         <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"></copy>
         <copy file="${basedir}/bootstrap.php" tofile="${destdir}/bootstrap.php" overwrite="true"></copy>
 
@@ -107,7 +99,6 @@
                 <exclude name="protected/_runtime/**"></exclude>
                 <exclude name="protected/config/**"></exclude>
                 <exclude name="functionsTest.php"></exclude>
-                <exclude name="index-sample.php"></exclude>
                 <exclude name="build.xml"></exclude>
                 <exclude name="info.php"></exclude>
                 <exclude name="install.php"></exclude>
@@ -149,7 +140,7 @@
         </copy>
 
         <!-- create disptibution archive -->
-        <tar destfile="${user.home}/projects/${distribname}" compression="gzip">
+        <tar destFile="${user.home}/projects/${distribname}" compression="gzip">
             <fileset dir="${destdir}">
                 <include name="**/**" />
                 <include name="**/.htaccess" />
