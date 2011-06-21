@@ -28,7 +28,9 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
     {
     }
 
-
+    /**
+     * @return void
+     */
     public function testRender()
     {
         $pathes = array(

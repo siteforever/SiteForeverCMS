@@ -44,21 +44,35 @@ class View_Breadcrumbs
         }
     }
 
+    /**
+     * @return string
+     */
     public  function toSerialize()
     {
         return serialize( $this->_pieces );
     }
 
+    /**
+     * @return string
+     */
     public function toJson()
     {
         return json_encode( $this->_pieces );
     }
 
+    /**
+     * @param $url
+     * @param $name
+     * @return void
+     */
     public function addPiece( $url, $name )
     {
         $this->_pieces[] = array( 'name'=>$name, 'url'=>$url );
     }
 
+    /**
+     * @return void
+     */
     public function clearPieces()
     {
         $this->_pieces  = array();
