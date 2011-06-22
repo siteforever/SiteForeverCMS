@@ -22,6 +22,7 @@ class Router
 
     /**
      * Создаем маршрутизатор
+     * @param Request $request
      * @return void
      */
     function __construct( Request $request )

@@ -45,6 +45,9 @@
     <route alias="admin/settings" system="1">
         <controller>settings</controller>
     </route>
+    <route alias="^admin" system="1">
+        <controller>admin</controller>
+    </route>
     <route alias="^admin[^/].*" system="1">
         <controller>admin</controller>
     </route>
