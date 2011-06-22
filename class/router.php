@@ -121,7 +121,13 @@ class Router
         }
 
         if ( ! $this->findRoute() ) {
-            $this->findStructure();
+            if ( ! $this->findStructure() ) {
+                $this->controller   = 'page';
+                $this->action       = 'error';
+                $this->id           = '404';
+                $this->template     = App::getInstance()->getConfig()->get('template.404');
+                $this->system       = 0;
+            }
         }
 
         $this->request->set('controller', $this->controller);
@@ -129,7 +135,6 @@ class Router
         $this->request->set('id',         $this->id);
         $this->request->set('template',   $this->template);
     }
-
 
     /**
      * Поиск по маршрутам
@@ -201,7 +206,7 @@ class Router
 
     /**
      * Поиск по структуре
-     * @return void
+     * @return bool
      */
     function findStructure()
     {
@@ -219,14 +224,9 @@ class Router
             $this->id           = $data['id'];
             $this->template     = $data['template'];
             $this->system       = $data['system'];
+            return true;
         }
-        else {
-            $this->controller   = 'page';
-            $this->action       = 'error';
-            $this->id           = '404';
-            $this->template     = App::getInstance()->getConfig()->get('template.404');
-            $this->system       = 0;
-        }
+        return false;
     }
 
     function isSystem()

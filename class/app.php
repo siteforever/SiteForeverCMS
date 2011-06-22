@@ -112,7 +112,7 @@ class App extends Application_Abstract
                  && $this->getAuth()->currentUser()->perm == USER_GUEST
                  && $this->getBasket()->count() == 0
             ) {
-                self::$tpl->caching(true);
+                $this->getTpl()->caching(true);
             }
         }
 
@@ -152,89 +152,90 @@ class App extends Application_Abstract
         Data_Watcher::instance()->performOperations();
 
         // Заголовок по-умолчанию
-        if ( self::$request->getTitle() == '' ) {
-            self::$request->setTitle( self::$request->get('tpldata.page.name'));
+        if ( $this->getRequest()->getTitle() == '' ) {
+            $this->getRequest()->setTitle( $this->getRequest()->get('tpldata.page.name'));
         }
     }
 
     /**
      * Вызвать отображение
+     * @param mixed $result
      * @return void
      */
     function invokeView( $result )
     {
-        $request    = $this->getRequest();
-
         /**
          * Данные шаблона
          */
-        $this->getTpl()->assign( self::$request->get('tpldata') );
-        $this->getTpl()->config      = self::$config;
-        $this->getTpl()->feedback    = self::$request->getFeedbackString();
+        $this->getTpl()->assign( $this->getRequest()->get('tpldata') );
+        $this->getTpl()->config      = $this->getConfig();
+        $this->getTpl()->feedback    = $this->getRequest()->getFeedbackString();
         $this->getTpl()->host        = $_SERVER['HTTP_HOST'];
         $this->getTpl()->memory      = number_format( memory_get_usage() / 1024, 2, ',', ' ' ).' Kb';
         $this->getTpl()->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
-        $this->getTpl()->request     = $request;
+        $this->getTpl()->request     = $this->getRequest();
 
-        if ( ! $request->getAjax() )
+        if ( ! $this->getRequest()->getAjax() )
         {
             header('Content-type: text/html; charset=utf-8');
 
-            $theme_css  = $request->get('path.css');
-            $theme_js   = $request->get('path.js');
-            $path_misc  = $request->get('path.misc');
+            $theme_css  = $this->getRequest()->get('path.css');
+            $theme_js   = $this->getRequest()->get('path.js');
+            $path_misc  = $this->getRequest()->get('path.misc');
 
-            if ( $request->get('resource') == 'system:' ) {
+            if ( $this->getRequest()->get('resource') == 'system:' ) {
                 // подключение админских стилей и скриптов
 
-                $request->addStyle( $path_misc.'/smoothness/jquery-ui.css');
-                $request->addStyle( $path_misc.'/admin/admin.css');
+                $this->getRequest()->addStyle( $path_misc.'/smoothness/jquery-ui.css');
+                $this->getRequest()->addStyle( $path_misc.'/admin/admin.css');
                 // jQuery
-                $request->addScript( $path_misc.'/jquery-ui.min.js' );
-                $request->addScript( $path_misc.'/jquery.form.js' );
+                $this->getRequest()->addScript( $path_misc.'/jquery-ui.min.js' );
+                $this->getRequest()->addScript( $path_misc.'/jquery.form.js' );
                 //$request->addScript( $path_misc.'/jquery.cookie.js' );
                 //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
-                $request->addScript( $path_misc.'/jquery.blockUI.js' );
+                $this->getRequest()->addScript( $path_misc.'/jquery.blockUI.js' );
 
                 switch ( strtolower( $this->getSettings()->get('editor','type') ) ) {
                     case 'tinymce':
                         // TinyMCE
-                        $request->addScript( $path_misc.'/tinymce/jscripts/tiny_mce/jquery.tinymce.js' );
-                        $request->addScript( $path_misc.'/admin/editor/tinymce.js' );
+                        $this->getRequest()->addScript( $path_misc.'/tinymce/jscripts/tiny_mce/jquery.tinymce.js' );
+                        $this->getRequest()->addScript( $path_misc.'/admin/editor/tinymce.js' );
                         break;
 
                     case 'ckeditor':
                         // CKEditor
-                        $request->addScript( $path_misc.'/ckeditor/ckeditor.js' );
-                        $request->addScript( $path_misc.'/ckeditor/adapters/jquery.js' );
-                        $request->addScript( $path_misc.'/admin/editor/ckeditor.js' );
+                        $this->getRequest()->addScript( $path_misc.'/ckeditor/ckeditor.js' );
+                        $this->getRequest()->addScript( $path_misc.'/ckeditor/adapters/jquery.js' );
+                        $this->getRequest()->addScript( $path_misc.'/admin/editor/ckeditor.js' );
                         break;
+
+                    default: // plain
                 }
 
-                $request->addScript( $path_misc.'/forms.js' );
-                $request->addScript( $path_misc.'/admin/catalog.js' );
-                $request->addScript( $path_misc.'/admin/admin.js' );
+                $this->getRequest()->addScript( $path_misc.'/forms.js' );
+                $this->getRequest()->addScript( $path_misc.'/admin/catalog.js' );
+                $this->getRequest()->addScript( $path_misc.'/admin/admin.js' );
 
             } else {
                 if ( file_exists( trim( $theme_css, '/').'/style.css' ) ) {
-                    $request->addStyle($theme_css.'/style.css');
+                    $this->getRequest()->addStyle($theme_css.'/style.css');
                 }
                 if ( file_exists( trim( $theme_css, '/').'/print.css' ) ) {
-                    $request->addStyle($theme_css.'/print.css');
+                    $this->getRequest()->addStyle($theme_css.'/print.css');
                 }
                 if ( file_exists( trim( $theme_js.'/script.js', '/' ) ) ) {
-                    $request->addScript($theme_js.'/script.js');
+                    $this->getRequest()->addScript($theme_js.'/script.js');
                 }
             }
 
-            $this->getTpl()->display( $request->get('resource').$request->get('template') );
+            $this->getTpl()->display( $this->getRequest()->get('resource').$this->getRequest()->get('template') );
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');
             header('Cache-Control: post-check=0, pre-check=0', false);
             header('Pragma: no-cache');
 
-            if ( $request->getAjaxType() == Request::TYPE_JSON ) {
+            if ( $this->getRequest()->getAjaxType() == Request::TYPE_JSON ) {
                 header('Content-type: text/json; charset=utf-8');
                 if ( $result ) {
                     if ( is_object( $result ) || is_array( $result ) ) {
@@ -249,16 +250,16 @@ class App extends Application_Abstract
                     print $this->getRequest()->getResponseAsJson();
                 }
             }
-            elseif ( $request->getAjaxType() == Request::TYPE_XML ) {
+            elseif ( $this->getRequest()->getAjaxType() == Request::TYPE_XML ) {
                 header('Content-type: text/xml; charset=utf-8');
-                print $request->getContent();
+                print $this->getRequest()->getContent();
             }
             else {
-                if ( count( $request->getFeedback() ) ) {
-                    print '<div class="feedback">'.$request->getFeedbackString().'</div>';
+                if ( count( $this->getRequest()->getFeedback() ) ) {
+                    print '<div class="feedback">'.$this->getRequest()->getFeedbackString().'</div>';
                 }
-                if ( $request->getContent() ) {
-                    print $request->getContent();
+                if ( $this->getRequest()->getContent() ) {
+                    print $this->getRequest()->getContent();
                 }
             }
         }
