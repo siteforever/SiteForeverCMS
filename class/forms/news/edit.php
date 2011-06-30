@@ -51,7 +51,7 @@ class forms_news_Edit extends form_Form
                     'type'      => 'radio',
                     'label'     => 'Защита страницы',
                     'value'     => USER_GUEST,
-                    'variants'  => $app->getConfig()->get('users.groups'),
+                    'variants'  => Model::getModel('User')->getGroups(),
                 ),
 
                 'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

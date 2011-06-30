@@ -37,7 +37,7 @@ class forms_user_edit extends form_Form
                 'last'      => array('type'=>'date', 'label'=>'Последний вход',),
                 'perm'      => array(
                         'type'      => 'select',
-                        'variants'  => App::$config->get('users.groups'),
+                        'variants'  => Model::getModel('User')->getGroups(),
                         'label'     => 'Группа',
                         'value'     => '3'
                 ),

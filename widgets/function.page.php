@@ -14,7 +14,7 @@ function smarty_function_page( $params )
     if ( ! isset( $params['id'] ) || ! is_int( $params['id'] ) ) {
         return 'Using {page id="57"}';
     }
-    $model   = Model::getModel('Structure');
+    $model   = Model::getModel('Page');
     $page   = $model->find( $params['id'] );
 
     if ( ! $page ) {

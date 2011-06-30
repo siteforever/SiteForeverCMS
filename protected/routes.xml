@@ -7,11 +7,11 @@
 
     <!-- ADMIN -->
     <route alias="admin/edit.*" system="1">
-        <controller>admin</controller>
+        <controller>page</controller>
         <action>edit</action>
     </route>
     <route alias="admin/add.*" system="1">
-        <controller>admin</controller>
+        <controller>page</controller>
         <action>add</action>
     </route>
     <route alias="admin/users.*" system="1">
@@ -46,10 +46,12 @@
         <controller>settings</controller>
     </route>
     <route alias="^admin" system="1">
-        <controller>admin</controller>
+        <controller>page</controller>
+        <action>admin</action>
     </route>
     <route alias="^admin[^/].*" system="1">
-        <controller>admin</controller>
+        <controller>page</controller>
+        <action>admin</action>
     </route>
     <route alias="system" system="1">
         <controller>system</controller>

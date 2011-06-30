@@ -40,6 +40,8 @@ return array(
     'Restore DB from dump'  => 'Восстановить базу из дампа',
 
     'Images gallery'        => 'Галерея изображений',
+    'Images are loaded'     => 'Изображения загружены',
+    'Image not loaded'      => 'Изображения не загружены',
 
     // Model User
     'Not enough permissions' => 'Недостаточно прав доступа',

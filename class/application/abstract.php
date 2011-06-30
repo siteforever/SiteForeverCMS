@@ -6,7 +6,6 @@
 
 abstract class Application_Abstract
 {
-
     static protected $instance = null;
 
     /**
@@ -44,9 +43,9 @@ abstract class Application_Abstract
     static $request;
 
     /**
-     * @var model_Structure
+     * @var Model_Page
      */
-    static $structure;
+    static $page;
 
     /**
      * @var Basket
@@ -279,7 +278,6 @@ abstract class Application_Abstract
     {
         return $this->getAuth()->currentUser();
     }
-
 
     /**
      * Вернет модель

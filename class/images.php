@@ -141,7 +141,7 @@ class Images
 
             $db = db::getInstance();
 
-            $structure   = App::$structure;
+            $structure   = App::$page;
             $page    = $structure->find($id);
             $module  = $page['module'];
 

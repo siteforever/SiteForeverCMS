@@ -8,7 +8,6 @@
 
 abstract class Data_Object implements ArrayAccess//, Iterator
 {
-
     protected $data   = array();
 
     /**
@@ -42,48 +41,101 @@ abstract class Data_Object implements ArrayAccess//, Iterator
 
         $this->setAttributes( $data );
 
-
         // @TODO Пока не будем помечать новые объекты для добавления
         /*if ( is_null( $this->getId() ) ) {
             $this->markNew();
         }*/
     }
 
+    /**
+     * @param $name
+     * @return array|Data_Object|mixed|null
+     */
     function __get($name)
     {
-        $relation = $this->model->relation();
-
-        if ( isset( $relation[ $name ] ) ) {
-            return $this->model->findByRelation( $name, $this );
-        }
-
-        if ( $this->offsetExists( $name ) ) {
-            return $this->offsetGet( $name );
-        }
+        return $this->get( $name );
     }
 
+    /**
+     * @param $key
+     * @return array|Data_Object|mixed|null
+     */
+    function get( $key )
+    {
+        $relation = $this->model->relation();
+        if ( isset( $relation[ $key ] ) ) {
+            return $this->model->findByRelation( $key, $this );
+        }
+        if ( $this->offsetExists( $key ) ) {
+            return $this->offsetGet( $key );
+        }
+        return null;
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return void
+     */
     function __set($name, $value)
     {
-        $this->offsetSet( $name, $value );
+        $this->set( $name, $value );
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return Data_Object
+     */
+    function set( $key, $value )
+    {
+        if ( isset( $this->field_names[ $key ] ) ) {
+            if ( $this->field_names[ $key ]->validate( $value ) !== false ) {
+                if ( ( $this->offsetExists( $key ) && $this->data[ $key ] !== $value ) ||
+                     ! $this->offsetExists( $key )
+                ) {
+                    $this->data[ $key ]  = $value;
+                    $this->markDirty();
+                }
+            }
+        }
+        else {
+            $this->data[$key]    = $value;
+        }
+        return $this;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
     function __isset($name)
     {
         return $this->offsetExists( $name );
     }
 
+    /**
+     * @param $name
+     * @return void
+     */
     function __unset($name)
     {
         unset( $this->data[$name] );
         $this->markDirty();
     }
 
+    /**
+     * @return void
+     */
     function __clone()
     {
         unset( $this->data['id'] );
         $this->markNew();
     }
 
+    /**
+     * @return string
+     */
     function __toString()
     {
         return get_class( $this );
@@ -133,19 +185,36 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     public function setAttributes( $data = array() )
     {
         foreach( $data as $k => $d ) {
-            $this->offsetSet( $k, $d );
+            $this->set( $k, $d );
         }
     }
 
     /**
      * Вернет модель данных
-     * @return Model|null
+     * @param string $model
+     * @return Model
      */
-    public function getModel()
+    public function getModel( $model = '' )
     {
-        return $this->model;
+        if ( '' === $model )
+            return $this->model;
+        else
+            return Model::getModel($model);
     }
 
+    public function getTable()
+    {
+        return $this->model->getTable();
+    }
+
+    /**
+     * Сохранение
+     * @return int
+     */
+    public function save()
+    {
+        return $this->model->save( $this );
+    }
 
     /**
      * Как новый
@@ -233,19 +302,8 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     public function offsetSet($offset, $value)
     {
-        if ( isset( $this->field_names[ $offset ] ) ) {
-            if ( $this->field_names[ $offset ]->validate( $value ) !== false ) {
-                if ( ( $this->offsetExists( $offset ) && $this->data[ $offset ] !== $value ) ||
-                     ! $this->offsetExists( $offset )
-                ) {
-                    $this->data[ $offset ]  = $value;
-                    $this->markDirty();
-                }
-            }
-        }
-        else {
-            $this->data[$offset]    = $value;
-        }
+        $this->set( $offset, $value );
+        return $this;
     }
 
     /**

@@ -69,7 +69,7 @@ abstract class Controller
         //print "id = {$this->request->get('id')}\n";
 
         try {
-            $page   = $this->getModel('Structure')->find( $this->request->get('id') );
+            $page   = $this->getModel('Page')->find( $this->request->get('id') );
         } catch ( ModelException $e ) {
             $page   = null;
         }

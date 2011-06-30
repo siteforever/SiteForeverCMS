@@ -399,11 +399,6 @@ abstract class Model
             }
         }
 
-
-
-
-
-
         return $collection;
     }
 
@@ -468,13 +463,27 @@ abstract class Model
     public function save( Data_Object $obj )
     {
         $data   = $obj->getAttributes();
+
+        $fields = $this->table->getFields();
+
+        $save_data  = array();
+
+        /**
+         * @var Data_Field $field
+         */
+        foreach ( $fields as $field ) {
+            if ( isset( $data[ $field->getName() ] ) ) {
+                $save_data[ $field->getName() ] = $data[ $field->getName() ];
+            }
+        }
+
         $ret    = null;
         if ( $obj->getId() ) {
-            $ret = $this->db->update( $this->getTableName(), $data, 'id = '.$obj->getId() );
+            $ret = $this->db->update( $this->getTableName(), $save_data, 'id = '.$obj->getId() );
             $obj->markClean();
         }
         else {
-            $ret = $this->db->insert( $this->getTableName(), $data );
+            $ret = $this->db->insert( $this->getTableName(), $save_data );
             $obj->id  = $ret;
             $this->addToMap( $obj );
         }
@@ -513,6 +522,7 @@ abstract class Model
 
     /**
      * Событие, вызывается после успешного удаления объекта
+     * @param int $id
      * @return bool
      */
     public function onDeleteSuccess( $id = null ) {

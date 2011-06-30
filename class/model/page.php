@@ -2,7 +2,7 @@
 /**
  * Модель структуры
  */
-class Model_Structure extends Model
+class Model_Page extends Model
 {
 
     /**
@@ -15,15 +15,15 @@ class Model_Structure extends Model
      * Списков разделов в кэше
      * @var array
      */
-    public $all = array();
+    public $all     = array();
 
-    public $html = array();
+    public $html    = array();
 
     /**
      * Форма редактирования
      * @var form_Form
      */
-    private $form;
+    private $form   = null;
 
 
     protected   $available_modules;
@@ -148,6 +148,7 @@ class Model_Structure extends Model
     /**
      * Найдет путь для страницы
      * @param int $id
+     * @return string
      */
     function findPathJSON( $id )
     {
@@ -168,6 +169,7 @@ class Model_Structure extends Model
     /**
      * Вернет значение для новой позиции для нового раздела
      * @param $parent_id
+     * @return int
      */
     function getNextPos( $parent_id )
     {
@@ -185,17 +187,17 @@ class Model_Structure extends Model
      * Переключение
      * @param string $action    действие
      * @param int $id           идентификатор
-     * @return bool
+     * @return mixed
      */
     function switching( $action, $id )
     {
         $current = $this->find( $id );
         switch( $action ) {
             case 'on':
-                $current['hidden'] = '0';
+                $current['hidden']  = '0';
                 break;
             case 'off':
-                $current['hidden'] = '1';
+                $current['hidden']  = '1';
                 break;
             case 'delete':
                 $current['deleted'] = '1';
@@ -274,7 +276,7 @@ class Model_Structure extends Model
 
     /**
      * Создает дерево $this->tree по данным из $this->all
-     * @param $parent
+     * @param int $parent
      */
     function createTree( $parent = 0 )
     {
@@ -313,15 +315,16 @@ class Model_Structure extends Model
             return '';
         }
 
-        $html .= '<ul>';
-        $counter = count( $this->parents[ $parent ] );
-        $total_count = $counter;
-        foreach( $this->parents[ $parent ] as $branch )
+        $html          .= '<ul>';
+        $counter        = count( $this->parents[ $parent ] );
+        $total_count    = $counter;
+
+        foreach ( $this->parents[ $parent ] as $branch )
         {
             if (   $branch['hidden'] == 0
                 //&& $this->app()->getUser()->hasPermission( $branch['protected'] )
-                && $branch['deleted'] == 0
-            ) {
+                && $branch['deleted'] == 0 )
+            {
                 $html .= "<li class='item-{$branch['id']}".($counter == $total_count?" first":($counter==1?" last":""))."'>";
                 if ( $branch['id'] == $this->request->get('id') || $branch['alias']==$this->request->get('route') ) {
                     $html .= '<span>'.$branch['name'].'</span>';
@@ -437,27 +440,27 @@ class Model_Structure extends Model
     function getForm()
     {
         if ( ! isset($this->form) ) {
-            $this->form = new forms_page_structure();
+            $this->form = new Forms_Page_Page();
             $this->form->getField('controller')->setVariants($this->getAvaibleModules());
-            $this->form->getField('protected')->setVariants($this->config->get('users.groups'));
+            $this->form->getField('protected')->setVariants(Model::getModel('User')->getGroups());
         }
         return $this->form;
     }
 
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_Page';
-    }
+//    /**
+//     * Класс для контейнера данных
+//     * @return string
+//     */
+//    public function objectClass()
+//    {
+//        return 'Data_Object_Page';
+//    }
 
     /**
      * @return string
      */
     public function tableClass()
     {
-        return 'Data_Table_Structure';
+        return 'Data_Table_Page';
     }
 }

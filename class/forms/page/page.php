@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Forms_Page_Structure extends Form_Form
+class Forms_Page_Page extends Form_Form
 {
     function __construct()
     {

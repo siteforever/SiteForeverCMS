@@ -1,5 +1,5 @@
 <?php
-class model_User extends Model
+class Model_User extends Model
 {
     /**
      * Форма входа в систему
@@ -29,6 +29,23 @@ class model_User extends Model
      */
     protected $password_form;
 
+    /**
+     * Группы пользователей
+     * @return array
+     */
+    public function getGroups()
+    {
+        return array(
+            USER_GUEST  => 'Гость',
+            USER_USER   => 'Пользователь',
+            USER_WHOLE  => 'Постоянный покупатель',
+            USER_ADMIN  => 'Админ',
+        );
+    }
+
+    /**
+     * @return void
+     */
     function onCreateTable()
     {
         $obj    = $this->createObject(array(
@@ -156,20 +173,4 @@ class model_User extends Model
 
     }
 
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_User';
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_User';
-    }
 }

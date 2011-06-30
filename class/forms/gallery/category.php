@@ -17,6 +17,8 @@ class forms_gallery_category extends form_Form
             'fields'    => array(
                 'id'        => array('type'=>'int', 'hidden', 'value'=>'0'),
                 'name'      => array('type'=>'text', 'label'=>'Наименование', 'required'),
+                'alias'     => array('type'=>'text', 'label'=>'Псевдоним', 'required'),
+
                 'middle_method' => array(
                     'type'  =>'select',
                     'label' =>'Метод создания средней картинки',

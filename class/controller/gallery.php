@@ -27,7 +27,7 @@ class Controller_Gallery extends Controller
      * Уровень доступа к действиям
      * @return array
      */
-    function access()
+    public function access()
     {
         return array(
             'system'    => array(
@@ -40,7 +40,7 @@ class Controller_Gallery extends Controller
      * Действие по-умолчанию
      * @return void
      */
-    function indexAction()
+    public function indexAction()
     {
         /**
          * @var model_gallery $model
@@ -51,8 +51,10 @@ class Controller_Gallery extends Controller
          */
         $model_category = $this->getModel('GalleryCategory');
 
-        if ( $img = $this->request->get('img', Request::INT) ) {
+        if ( $img = $this->request->get('img', Request::INT) )
+        {
             $image  = $model->find( $img );
+
             if ( $image ) {
 
                 $path   = json_decode( $this->page['path'] );
@@ -129,7 +131,7 @@ class Controller_Gallery extends Controller
 
     /**
      * Администрирование
-     * @return void
+     * @return mixed
      */
     function adminAction()
     {
@@ -141,10 +143,10 @@ class Controller_Gallery extends Controller
         $this->request->setTitle(t('Images gallery'));
 
         $model    = $this->getModel('Gallery');
-        //die(__FILE__.':'.__LINE__);
+
         $category = $this->getModel('GalleryCategory');
 
-        if ( $this->request->get('viewcat', Request::INT) ) {
+        if ( $this->request->get( 'viewcat', Request::INT ) ) {
             return $this->viewCat( $category );
         }
 
@@ -165,9 +167,10 @@ class Controller_Gallery extends Controller
             $switch_result = $model->hideSwitch( $switchimg );
             
             if ( $switch_result !== false ) {
-                if( $switch_result == 1 ) {
+                if ( $switch_result == 1 ) {
                     $switch_icon = icon('lightbulb_off', 'Вкл');
-                }elseif( $switch_result == 2 ) {
+                }
+                elseif ( $switch_result == 2 ) {
                     $switch_icon = icon('lightbulb', 'Выкл');
                 }
                 //$this->request->
@@ -217,29 +220,32 @@ class Controller_Gallery extends Controller
                 $this->request->setResponse('id', $img_id);
                 $this->request->setResponseError(0);
             } else {
-                $this->request->setResponseError(1, 'Can not delete');
+                $this->request->setResponseError(1, t('Can not delete'));
             }
         }
     }
 
     /**
      * Редактирование категории
-     * @param model_galleryCategory $model
+     * @param model_GalleryCategory $model
      * @return
      */
-    function editCat( Model_galleryCategory $model )
+    function editCat( Model_GalleryCategory $model )
     {
         $form = $model->getForm();
-        //die(__FILE__.':'.__LINE__);
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
-                $obj->markNew();
+//                var_dump($obj->getAttributes());
+                //$obj->markNew();
+
+                $model->save( $obj );
+
                 if (  $obj && ! $obj->getId() ) {
                     reload('admin/gallery');
                 }
-                $this->request->addFeedback('Данные успешно сохранены');
+                $this->request->addFeedback(t('Data save successfully'));
                 return;
             }
             else {
@@ -250,7 +256,9 @@ class Controller_Gallery extends Controller
 
         if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
             $obj    = $model->find( $edit );
+
             $form->setData( $obj->getAttributes() );
+            $form->alias    = $obj->createAlias();
         }
 
         $this->tpl->form    = $form;
@@ -259,10 +267,10 @@ class Controller_Gallery extends Controller
 
     /**
      * Удалить категорию
-     * @param model_galleryCategory $model
+     * @param Model_GalleryCategory $model
      * @return void
      */
-    function deleteCat( model_galleryCategory $model )
+    function deleteCat( Model_GalleryCategory $model )
     {
         $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
         if ( $id ) {
@@ -349,17 +357,11 @@ class Controller_Gallery extends Controller
     protected function upload( Data_Object_GalleryCategory $cat )
     {
         /**
-         * @var Model_GalleryCategory $category
-         */
-        //$category   = $this->getModel('GalleryCategory');
-        /**
          * @var Model_Gallery $model
          */
         $model  = $this->getModel('Gallery');
 
         $max_file_size = $this->config->get('gallery.max_file_size');
-
-        //printVar($_FILES);
 
         $upload_ok = 0;
 
@@ -376,16 +378,8 @@ class Controller_Gallery extends Controller
                 $names  = $this->request->get('name');
             }
 
-            //printVar( $images );
-            //printVar( $names );
-
             $pos    = $model->getNextPosition($cat->getId());
             $pos    = $pos ? $pos : 0;
-
-            //print $pos;
-
-            //printVar($images);
-            //return;
 
             foreach ( $images['error'] as $i => $err )
             {
@@ -452,12 +446,6 @@ class Controller_Gallery extends Controller
                                     $image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb);
                                     unset( $img_thmb );
                                 }
-                                /*if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method, $cat->color ) ) {
-                                    $image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
-                                };*/
-                                /*if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method, $cat->color ) ) {
-                                    $image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
-                                };*/
                             } catch ( Exception $e ) {
                                 $this->request->addFeedback($e->getMessage());
                             }
@@ -484,15 +472,14 @@ class Controller_Gallery extends Controller
                             $this->request->addFeedback('unknown error');
                     }
                 }
-                //printVar($_FILES);
             }
         }
 
         if ( $upload_ok ) {
-            $this->request->addFeedback('Изображения загружены');
+            $this->request->addFeedback(t('Images are loaded'));
         }
         else {
-            $this->request->addFeedback('Изображения не загружены');
+            $this->request->addFeedback(t('Image not loaded'));
         }
         return;
         //redirect('admin/catalog', array('edit'=>$upload));

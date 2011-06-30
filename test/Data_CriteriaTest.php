@@ -18,7 +18,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( ! isset( $this->table ) ) {
-            $this->table  = new Data_Table_Structure();
+            $this->table  = new Data_Table_Page();
         }
     }
 

@@ -7,5 +7,12 @@
 
 class Data_Object_Page extends Data_Object
 {
+    public function getAlias()
+    {
+        if ( ! $this->getId() ) {
+            return null;
+        }
 
+
+    }
 }

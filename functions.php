@@ -9,8 +9,8 @@
 function redirect( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-	header("Location: ".App::getInstance()->getRouter()->createLink( $url, $params ));
-	die();
+    header("Location: ".App::getInstance()->getRouter()->createLink( $url, $params ));
+    die();
 }
 
 /**
@@ -22,7 +22,7 @@ function redirect( $url = '', $params = array() )
 function reload( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-	die('<script type="text/javascript">window.location.href = "'.
+    die('<script type="text/javascript">window.location.href = "'.
         App::getInstance()->getRouter()->createLink( $url, $params ).'";</script>');
 }
 
@@ -32,7 +32,7 @@ function reload( $url = '', $params = array() )
  */
 function printVar( $var )
 {
-	Error::dump( $var );
+    Error::dump( $var );
 }
 
 /**
@@ -107,6 +107,9 @@ function t($text)
 function translit( $str )
 {
     $table = array(
+        'кон'=> 'con',
+        'ком'=> 'com',
+        'кат'=> 'cat',
         'а' => 'a',
         'б' => 'b',
         'в' => 'v',
@@ -142,7 +145,6 @@ function translit( $str )
         'я' => 'ya',
         ' ' => '_',
     );
-    $strlen = strlen( $str );
     foreach ( $table as $rus => $eng ) {
         $str = str_replace( $rus, $eng, $str );
     }
@@ -260,7 +262,7 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
 
     if ($im)
         imagedestroy ( $im );
-    
+
     if ($newim)
         imagedestroy ( $newim );
 

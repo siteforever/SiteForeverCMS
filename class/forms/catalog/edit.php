@@ -84,7 +84,7 @@ class Forms_Catalog_Edit extends Form_Form
                             'type'      => 'radio',
                             'label'     => 'Защита страницы',
                             'value'     => USER_GUEST,
-                            'variants'  => App::$config->get('users.groups'),
+                            'variants'  => Model::getModel('User')->getGroups()
                         ),
                         'sep'       => array('type'=>'separator'),
                         'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),

@@ -4,6 +4,7 @@
  * @author keltanas aka Ermin Nikolay
  * @link http://ermin.ru
  */
+
 class Router
 {
     private $route;
@@ -23,9 +24,8 @@ class Router
     /**
      * Создаем маршрутизатор
      * @param Request $request
-     * @return void
      */
-    function __construct( Request $request )
+    public function __construct( Request $request )
     {
         $this->request = $request;
         $route = $this->request->get('route');
@@ -81,7 +81,7 @@ class Router
      * @param array  $params
      * @return string
      */
-    function createLink( $url = '', $params = array() )
+    public function createLink( $url = '', $params = array() )
     {
         $url = trim($url, '/');
 
@@ -109,25 +109,27 @@ class Router
 
     /**
      * Маршрутизация
-     * @return void
+     * @return bool
      */
-    function routing()
+    public function routing()
     {
         // Если контроллер и действие указаны явно, то не производить маршрутизацию
         if ( $this->request->get('controller') ) {
             if ( ! $this->request->get('action') ) {
                 $this->request->set('action', 'index');
             }
-            return;
+            return true;
         }
 
-        if ( ! $this->findRoute() ) {
-            if ( ! $this->findStructure() ) {
-                $this->controller   = 'page';
-                $this->action       = 'error';
-                $this->id           = '404';
-                $this->template     = App::getInstance()->getConfig()->get('template.404');
-                $this->system       = 0;
+        if ( ! $this->findAlias() ) {
+            if ( ! $this->findRoute() ) {
+                if ( ! $this->findStructure() ) {
+                    $this->controller   = 'page';
+                    $this->action       = 'error';
+                    $this->id           = '404';
+                    $this->template     = App::getInstance()->getConfig()->get('template.404');
+                    $this->system       = 0;
+                }
             }
         }
 
@@ -135,13 +137,41 @@ class Router
         $this->request->set('action',     $this->action);
         $this->request->set('id',         $this->id);
         $this->request->set('template',   $this->template);
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function findAlias()
+    {
+        $model  = Model::getModel('Alias');
+        $alias  = $model->find(
+            array(
+                'cond'  => 'alias = ?',
+                'params'=> array($this->route),
+            )
+        );
+        if ( $alias ) {
+            $this->controller   = $alias->controller;
+            $this->action       = $alias->action;
+            $params = $alias->getParams();
+            if ( $params && is_array( $params ) ) {
+                foreach ( $params as $key => $val ) {
+                    $this->request->set( $key, $val );
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     /**
      * Поиск по маршрутам
      * @return bool
      */
-    function findRoute()
+    private function findRoute()
     {
         if ( $this->findXMLRoute() ) {
             return true;
@@ -155,7 +185,7 @@ class Router
      * Ищем маршрут в XML конфиге
      * @return bool
      */
-    protected function findXMLRoute()
+    private function findXMLRoute()
     {
         $xml_routes_file    = SF_PATH.'/protected/routes.xml';
         if ( file_exists( $xml_routes_file ) ) {
@@ -180,7 +210,7 @@ class Router
      * Поиск маршрута в таблице БД
      * @return bool
      */
-    protected function findTableRoute()
+    private function findTableRoute()
     {
         $routes = Model::getModel('Routes');
 
@@ -209,9 +239,9 @@ class Router
      * Поиск по структуре
      * @return bool
      */
-    function findStructure()
+    private function findStructure()
     {
-        $model  = Model::getModel('Structure');
+        $model  = Model::getModel('Page');
 
         $data   = $model->find(array(
             'cond'  => 'alias = ? AND deleted = 0',
@@ -230,16 +260,26 @@ class Router
         return false;
     }
 
-    function isSystem()
+    /**
+     * @return int
+     */
+    public function isSystem()
     {
         return $this->system;
     }
 
+    /**
+     * @param $route
+     * @return void
+     */
     public function setRoute($route)
     {
         $this->route = $route;
     }
 
+    /**
+     * @return string
+     */
     public function getRoute()
     {
         return $this->route;

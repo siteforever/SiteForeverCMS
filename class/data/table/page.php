@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class Data_Table_Structure extends Data_Table
+class Data_Table_Page extends Data_Table
 {
     /**
      * Вернет имя таблицы
