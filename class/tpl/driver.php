@@ -7,6 +7,8 @@ abstract class TPL_Driver
 {
     // движок шаблонизатора
     protected $engine = null;
+
+    protected $_breacrumbs  = null;
     
     function __call( $fname, $args )
     {
@@ -21,9 +23,19 @@ abstract class TPL_Driver
     abstract function setTplDir( $dir );
     abstract function setCplDir( $dir );
 
-    function __set( $key, $value )
+    public function __set( $key, $value )
     {
         $this->assign($key, $value);
     }
-    
+
+    /**
+     * @return View_Breadcrumbs
+     */
+    public function getBreadcrumbs()
+    {
+        if ( null === $this->_breacrumbs ) {
+            $this->_breacrumbs  = new View_Breadcrumbs();
+        }
+        return $this->_breacrumbs;
+    }
 }

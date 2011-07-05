@@ -34,8 +34,8 @@ class App extends Application_Abstract
         }
 
         if ( $this->getConfig()->get('debug.profile') ) {
-            $this->logger->log("Total SQL: ".count( Model::getDB()->getLog()).
-                               "; time: ".round( Model::getDB()->time, 3)." sec.", 'app');
+            $this->logger->log("Total SQL: ".count( Model::getDB()->getLog())
+                                . "; time: ".round( Model::getDB()->time, 3)." sec.", 'app');
             $this->logger->log("Init time: ".round(self::$init_time, 3)." sec.", 'app');
             $this->logger->log("Controller time: ".round(self::$controller_time, 3)." sec.", 'app');
             $exec_time  = microtime(true)-self::$start_time;
@@ -80,9 +80,9 @@ class App extends Application_Abstract
             require_once 'functionsTest.php';
         } else {
             require_once 'functions.php';
-            $firephp = FirePHP::getInstance(true);
-            $firephp->registerErrorHandler();
-            $firephp->registerExceptionHandler();
+//            $firephp = FirePHP::getInstance(true);
+//            $firephp->registerErrorHandler();
+//            $firephp->registerExceptionHandler();
         }
 
         if ( ! defined('MAX_FILE_SIZE') )

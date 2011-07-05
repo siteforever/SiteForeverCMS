@@ -8,7 +8,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
     /**
      * @var Request
      */
-    protected $object;
+    protected $request;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -21,7 +21,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $_REQUEST['email']  = 'foo@example.com';
         $_REQUEST['test']['foo']    = 'foo';
         $_REQUEST['digit']  = 5;
-        $this->object = new Request;
+        $this->request = new Request();
     }
 
     /**
@@ -37,7 +37,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAjax()
     {
-        $this->assertFalse( $this->object->getAjax(), 'Not ajax' );
+        $this->assertFalse( $this->request->getAjax(), 'Not ajax' );
     }
 
     /**
@@ -45,7 +45,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testIsAjax()
     {
-        $this->assertFalse( $this->object->isAjax(), 'Not ajax' );
+        $this->assertFalse( $this->request->isAjax(), 'Not ajax' );
     }
 
     /**
@@ -53,7 +53,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAjaxType()
     {
-        $this->assertEquals( $this->object->getAjaxType(), Request::TYPE_ANY, 'Ajax type not ANY' );
+        $this->assertEquals( $this->request->getAjaxType(), Request::TYPE_ANY, 'Ajax type not ANY' );
     }
 
     /**
@@ -61,7 +61,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetError()
     {
-        $this->assertEquals( $this->object->getError(), 0, 'Error found' );
+        $this->assertEquals( $this->request->getError(), 0, 'Error found' );
     }
 
     /**
@@ -69,11 +69,11 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testSetError()
     {
-        $this->object->setError(7);
-        $this->assertEquals( $this->object->getError(), 7, 'Digit error test fail' );
+        $this->request->setError(7);
+        $this->assertEquals( $this->request->getError(), 7, 'Digit error test fail' );
 
-        $this->object->setError('Text');
-        $this->assertEquals( $this->object->getError(), 'Text', 'Text error test fail' );
+        $this->request->setError('Text');
+        $this->assertEquals( $this->request->getError(), 'Text', 'Text error test fail' );
     }
 
     /**
@@ -81,7 +81,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetStyle()
     {
-        $styles = $this->object->getStyle();
+        $styles = $this->request->getStyle();
 
         $this->assertTrue(is_array( $styles ), 'Styles list not Array');
         $this->assertEquals( count( $styles ), 3, 'Count default styles not equal 3' );
@@ -92,9 +92,9 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testAddStyle()
     {
-        $this->object->addStyle('/css/style.css');
+        $this->request->addStyle('/css/style.css');
 
-        $styles = $this->object->getStyle();
+        $styles = $this->request->getStyle();
 
         $this->assertEquals( count( $styles ), 4, 'Count styles not equal 4' );
 
@@ -112,8 +112,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testCleanStyle()
     {
-        $this->object->cleanStyle();
-        $this->assertEquals( count( $this->object->getStyle() ), 0, 'Styles list not cleared' );
+        $this->request->cleanStyle();
+        $this->assertEquals( count( $this->request->getStyle() ), 0, 'Styles list not cleared' );
     }
 
     /**
@@ -121,7 +121,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetScript()
     {
-        $scripts    = $this->object->getScript();
+        $scripts    = $this->request->getScript();
         $this->assertTrue( is_array( $scripts ), 'Scripts list fail format' );
         $this->assertEquals( count( $scripts ), 3, 'Default scripts list count not equal 2' );
     }
@@ -131,9 +131,9 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testAddScript()
     {
-        $this->object->addScript('/js/script.js');
+        $this->request->addScript('/js/script.js');
 
-        $scripts = $this->object->getScript();
+        $scripts = $this->request->getScript();
 
         $this->assertEquals( count( $scripts ), 4, 'Count scripts not equal 3' );
 
@@ -151,8 +151,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testCleanScript()
     {
-        $this->object->cleanScript();
-        $this->assertEquals( count( $this->object->getScript() ), 0, 'Scripts list not cleared' );
+        $this->request->cleanScript();
+        $this->assertEquals( count( $this->request->getScript() ), 0, 'Scripts list not cleared' );
     }
 
     /**
@@ -160,8 +160,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testSet()
     {
-        $this->object->set('test', 'test');
-        $this->assertEquals( $this->object->get('test'), 'test', 'Setted value not equal getted value' );
+        $this->request->set('test', 'test');
+        $this->assertEquals( $this->request->get('test'), 'test', 'Setted value not equal getted value' );
     }
 
     /**
@@ -169,13 +169,13 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGet()
     {
-        $this->assertEquals( $this->object->get('digit', FILTER_SANITIZE_NUMBER_INT), 5,
+        $this->assertEquals( $this->request->get('digit', FILTER_SANITIZE_NUMBER_INT), 5,
                 'Sanitize number int test fail' );
-        $this->assertEquals( $this->object->get('test1'), 'test1', 'String value fail' );
-        $this->assertEquals( $this->object->get('test2', FILTER_SANITIZE_STRING), 'test2', 'String value fail' );
-        $this->assertEquals( $this->object->get('email', FILTER_SANITIZE_EMAIL), 'foo@example.com', 'Email value fail' );
-        $this->assertTrue( is_array( $this->object->get('test') ), 'Array value getted not as array' );
-        $this->assertEquals( $this->object->get('test.foo'), 'foo', 'Chain do not work' );
+        $this->assertEquals( $this->request->get('test1'), 'test1', 'String value fail' );
+        $this->assertEquals( $this->request->get('test2', FILTER_SANITIZE_STRING), 'test2', 'String value fail' );
+        $this->assertEquals( $this->request->get('email', FILTER_SANITIZE_EMAIL), 'foo@example.com', 'Email value fail' );
+        $this->assertTrue( is_array( $this->request->get('test') ), 'Array value getted not as array' );
+        $this->assertEquals( $this->request->get('test.foo'), 'foo', 'Chain do not work' );
     }
 
     /**
@@ -183,8 +183,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testSetContent()
     {
-        $this->object->setContent('My content');
-        $this->assertEquals($this->object->getContent(), 'My content', 'Broken content information');
+        $this->request->setContent('My content');
+        $this->assertEquals($this->request->getContent(), 'My content', 'Broken content information');
     }
 
     /**
@@ -192,8 +192,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetContent()
     {
-        $this->object->setContent('My content');
-        $this->assertEquals($this->object->getContent(), 'My content', 'Broken content information');
+        $this->request->setContent('My content');
+        $this->assertEquals($this->request->getContent(), 'My content', 'Broken content information');
     }
 
     /**
@@ -201,8 +201,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testSetTitle()
     {
-        $this->object->setTitle('My content');
-        $this->assertEquals($this->object->getTitle(), 'My content', 'Broken title information');
+        $this->request->setTitle('My content');
+        $this->assertEquals($this->request->getTitle(), 'My content', 'Broken title information');
     }
 
     /**
@@ -210,8 +210,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetTitle()
     {
-        $this->object->setTitle('My content');
-        $this->assertEquals($this->object->getTitle(), 'My content', 'Broken title information');
+        $this->request->setTitle('My content');
+        $this->assertEquals($this->request->getTitle(), 'My content', 'Broken title information');
     }
 
     /**
@@ -219,8 +219,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testAddFeedback()
     {
-        $this->object->addFeedback('Test');
-        $feedback   = $this->object->getFeedback();
+        $this->request->addFeedback('Test');
+        $feedback   = $this->request->getFeedback();
         $this->assertTrue( in_array( 'Test', $feedback ), 'Feedback Test not found' );
     }
 
@@ -229,11 +229,11 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetFeedback()
     {
-        $this->object->addFeedback('Test');
-        $feedback   = $this->object->getFeedback();
+        $this->request->addFeedback('Test');
+        $feedback   = $this->request->getFeedback();
         $this->assertTrue( in_array( 'Test', $feedback ), 'Feedback Test not found' );
-        $this->object->addFeedback(array('Test1', 'Test2'));
-        $feedback   = $this->object->getFeedback();
+        $this->request->addFeedback(array('Test1', 'Test2'));
+        $feedback   = $this->request->getFeedback();
         $this->assertTrue( in_array( 'Test1', $feedback ), 'Feedback Test1 not found' );
         $this->assertTrue( in_array( 'Test2', $feedback ), 'Feedback Test2 not found' );
     }
@@ -243,9 +243,9 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetFeedbackString()
     {
-        $this->object->addFeedback('Test1');
-        $this->object->addFeedback('Test2');
-        $this->assertEquals( $this->object->getFeedbackString("\n"), "Test1\nTest2", 'Feedback String fail' );
+        $this->request->addFeedback('Test1');
+        $this->request->addFeedback('Test2');
+        $this->assertEquals( $this->request->getFeedbackString("\n"), "Test1\nTest2", 'Feedback String fail' );
     }
 
     /**
@@ -254,5 +254,5 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public function testDebug()
     {
     }
+
 }
-?>

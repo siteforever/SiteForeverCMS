@@ -9,8 +9,8 @@ return array(
         'profile'   => true,
     ),
 
-    'logger'    => 'firephp',
-    //'logger'    => 'html',
+//    'logger'    => 'firephp',
+    'logger'    => 'html',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
@@ -28,6 +28,7 @@ return array(
         'database'  => 'siteforever',
         'debug'     => 1,
     ),
+
     // тема
     'template' => array(
         'theme'     => 'basic',

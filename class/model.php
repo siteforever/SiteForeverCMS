@@ -514,6 +514,7 @@ abstract class Model
     /**
      * Событие, вызывается перед удалением объекта
      * Если вернет false, объект не будет удален
+     * @param int $id
      * @return bool
      */
     public function onDeleteStart( $id = null ) {

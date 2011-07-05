@@ -67,6 +67,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $request->set('controller', null);
 
+        $this->router->setRoute('basket');
+        $this->router->routing();
+        $this->assertEquals( $request->get('controller'), 'basket' );
+        $this->assertEquals( $request->get('action'), 'index' );
+
+        $request->set('controller', null);
+
         $this->router->setRoute('users/edit');
         $this->router->routing();
         $this->assertEquals( $request->get('controller'), 'users' );

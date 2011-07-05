@@ -115,19 +115,44 @@ $(function() {
         });
     }
 
-    //$('a.filemanager').filemanager();
-    $('a.filemanager').fancybox({
-        width       : 650,
-        height      : 430,
-        scrolling   : 'no',
-        type        : 'iframe',
-        href        : '/?controller=elfinder&finder=1&langCode=ru'
-    });
+    $('a.filemanager').filemanager();
+//    $('a.filemanager').fancybox({
+//        width       : 650,
+//        height      : 430,
+//        scrolling   : 'no',
+//        type        : 'iframe',
+//        href        : '/?controller=elfinder&finder=1&langCode=ru'
+//    });
 
 
     $('a.dumper').dumper();
 
 });
+
+$.fn.filemanager    = function()
+{
+    return $(this).each(function(){
+        $(this).click(function(){
+            if ( $("#filemanager_dialog").length == 0 ) {
+                 $('body').append("<div id='filemanager_dialog'></div>");
+                 $("#filemanager_dialog").dialog({
+                     autoOpen:  false,
+                     width:     650,
+                     height:    465,
+                     modal:     true,
+                     resizable: false,
+                     title:     'Менеджер файлов'
+                 }).append("<iframe src='/?controller=elfinder&finder=1&langCode=ru'></iframe>")
+                         .find('iframe')
+                         .css({
+                            width: '625px', height: '415px', overflow: 'hidden'
+                         });
+             }
+             $("#filemanager_dialog").dialog("open");
+            return false;
+        });
+    });
+}
 
 $.fn.dumper = function()
 {

@@ -30,6 +30,7 @@ class View_Breadcrumbs
                 $this->_pieces[]    = $path;
             }
         }
+        return $this;
     }
 
     public function fromJson( $path )
@@ -42,6 +43,7 @@ class View_Breadcrumbs
                 $this->_pieces[]    = $path;
             }
         }
+        return $this;
     }
 
     /**
@@ -63,19 +65,21 @@ class View_Breadcrumbs
     /**
      * @param $url
      * @param $name
-     * @return void
+     * @return View_Breadcrumbs
      */
     public function addPiece( $url, $name )
     {
         $this->_pieces[] = array( 'name'=>$name, 'url'=>$url );
+        return $this;
     }
 
     /**
-     * @return void
+     * @return View_Breadcrumbs
      */
     public function clearPieces()
     {
         $this->_pieces  = array();
+        return $this;
     }
 
     /**
@@ -85,7 +89,7 @@ class View_Breadcrumbs
      */
     protected function createCrumb( $name, $url )
     {
-        return new View_Breadcrumbs_Crumb( $name, App::getInstance()->getRouter()->createLink( $url ) );
+        return new View_Breadcrumbs_Crumb( $name, $url );
     }
 
     /**

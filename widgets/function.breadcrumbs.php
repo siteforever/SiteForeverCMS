@@ -9,23 +9,17 @@
  * -------------------------------------------------------------
  * @example {breadcrumbs path=$page}
  */
-function smarty_function_breadcrumbs( $params )
+
+function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $template )
 {
     if ( isset ( $params['page'] ) && isset( $params['page']['path'] ) ) {
         $params['path'] = $params['page']['path'];
     }
 
-    if ( !isset( $params['path'] ) ) {
-        return '';
+    $breadcrumbs    = App::getInstance()->getView()->getBreadcrumbs();
+    if ( isset( $params['path'] ) ) {
+        $breadcrumbs->fromJson( $params['path'] );
     }
 
-    $html = array();
-    if ( $patches = json_decode( $params['path'], true ) ) {
-        if ( count($patches) > 0 ) {
-            foreach( $patches as $path ) {
-                $html[] = "<a ".href($path['url']).">{$path['name']}</a>";
-            }
-            return '<div class="b-breadcrumbs">'.join(' &gt; ', $html).'</div>';
-        }
-    }
+    return '<div class="b-breadcrumbs">'.$breadcrumbs->render().'</div>';
 }

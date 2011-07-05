@@ -1,29 +1,22 @@
 <?php
 class Request
 {
-    const TEXT = FILTER_SANITIZE_STRING;
-    const INT = FILTER_SANITIZE_NUMBER_INT;
+    const TEXT  = FILTER_SANITIZE_STRING;
+    const INT   = FILTER_SANITIZE_NUMBER_INT;
     const FLOAT = FILTER_SANITIZE_NUMBER_FLOAT;
-    const URL = FILTER_SANITIZE_URL;
+    const URL   = FILTER_SANITIZE_URL;
     const EMAIL = FILTER_SANITIZE_EMAIL;
-    const IP = FILTER_VALIDATE_IP;
+    const IP    = FILTER_VALIDATE_IP;
 
-    const TYPE_ANY = '*/*';
+    const TYPE_ANY  = '*/*';
     const TYPE_JSON = 'json';
-    const TYPE_XML = 'xml';
+    const TYPE_XML  = 'xml';
 
     private $feedback = array( );
 
-    /**
-     * @var array|string
-     */
-    private $request = array(
-    );
+    private $request = array();
 
-    private $_scripts = array(
-    );
-    private $_styles = array(
-    );
+    private $_assets = null;
 
     private $ajax = false;
     private $ajax_type = self::TYPE_ANY;
@@ -35,19 +28,20 @@ class Request
         'errno' => 0,
     );
 
-
     /**
      * Созание запроса
      */
     function __construct()
     {
+        $this->_assets  = new Siteforever_Assets();
+
         if (isset($_REQUEST['route'])) {
             $_REQUEST['route'] = preg_replace('/\?.*/', '', $_REQUEST['route']);
         }
 
         if (isset($_SERVER['REQUEST_URI'])) {
             $q_pos = strrpos($_SERVER['REQUEST_URI'], '?');
-            $req = trim(substr($_SERVER['REQUEST_URI'], $q_pos + 1, strlen($_SERVER['REQUEST_URI'])), '?&');
+            $req = trim( substr($_SERVER['REQUEST_URI'], $q_pos + 1, strlen($_SERVER['REQUEST_URI'])), '?&' );
         }
 
         if (isset($_SERVER['argv'])) {
@@ -103,6 +97,7 @@ class Request
             'css'       => '/themes/' . $theme . '/css', 'js' => '/themes/' . $theme . '/js',
             'images'    => '/themes/' . $theme . '/images', 'misc' => '/misc',
         );
+
         $this->request['resource'] = 'theme:';
         $this->request['template'] = 'index';
 
@@ -181,7 +176,7 @@ class Request
      */
     function getStyle()
     {
-        return $this->_styles;
+        return $this->_assets->getStyle();
     }
 
     /**
@@ -189,31 +184,29 @@ class Request
      * @param  $style
      * @return void
      */
-    function addStyle($style)
+    function addStyle( $style )
     {
-        $this->_styles[$style] = $style;
+        $this->_assets->addStyle( $style );
     }
 
     function cleanStyle()
     {
-        $this->_styles = array(
-        );
+        $this->_assets->cleanStyle();
     }
 
     function getScript()
     {
-        return $this->_scripts;
+        return $this->_assets->getScript();
     }
 
     function addScript($script)
     {
-        $this->_scripts[$script] = $script;
+        $this->_assets->addScript( $script );
     }
 
     function cleanScript()
     {
-        $this->_scripts = array(
-        );
+        $this->_assets->cleanScript();
     }
 
     /**
@@ -236,9 +229,11 @@ class Request
     /**
      * Получить значение
      * @param $key
+     * @param int $type
+     * @param $default
      * @return mixed
      */
-    function get($key, $type = FILTER_DEFAULT)
+    function get($key, $type = FILTER_DEFAULT, $default = null)
     {
         $get = '';
         $path = $key;
@@ -257,12 +252,13 @@ class Request
             return $get;
         }
         //print $key.':'.$get.' => filtered: '.filter_var( $get, $type )."<br />\n";
-        return filter_var($get, $type);
+        return filter_var($get, $type) ? filter_var($get, $type) : $default;
     }
 
     /**
      * Получить значение по алиасу
-     * @param $path
+     * @param string $path
+     * @return mixed
      */
     protected function geti($path)
     {

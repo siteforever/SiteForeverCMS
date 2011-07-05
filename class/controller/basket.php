@@ -5,9 +5,10 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class controller_Basket extends Controller
+class Controller_Basket extends Controller
 {
-    function indexAction()
+
+    public function indexAction()
     {
         // создать заказ
         if ( $this->request->get('do_order') ) {
@@ -20,11 +21,16 @@ class controller_Basket extends Controller
         $this->request->setContent('Корзина');
         $this->request->set('template', 'inner');
 
+
         // добавление товара в корзину
         $basket_prod_id     = $this->request->get('basket_prod_id', FILTER_SANITIZE_NUMBER_INT);
         $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
 
-        if ( $basket_prod_id !== "" || $basket_prod_name !== "" )
+//        var_dump(__METHOD__);
+//
+//        var_dump($basket_prod_id, $basket_prod_name);
+
+        if ( $basket_prod_id || $basket_prod_name )
         {
             return $this->addAction();
         }
@@ -59,6 +65,7 @@ class controller_Basket extends Controller
                 $this->basket->del( $key );
             }
         }
+
         if ( $basket_counts || $basket_del ) {
             $this->basket->save();
         }
@@ -97,6 +104,8 @@ class controller_Basket extends Controller
             'all_count'     => $all_count,
             'all_summa'     => $all_summa,
         ));
+
+        $this->tpl->getBreadcrumbs()->addPiece('index','Главная')->addPiece(null,$this->request->getTitle());
         $this->request->setContent($this->tpl->fetch('basket.index'));
     }
 
@@ -110,10 +119,10 @@ class controller_Basket extends Controller
      * @param $_REQUEST['basket_prod_details']
      * @return void
      */
-    function addAction()
+    public function addAction()
     {
-        $basket_prod_id     = $this->request->get('basket_prod_id');
-        $basket_prod_name   = $this->request->get('basket_prod_name');
+        $basket_prod_id     = $this->request->get('basket_prod_id', FILTER_SANITIZE_NUMBER_INT);
+        $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
 
         if ( $basket_prod_id || $basket_prod_name )
         {

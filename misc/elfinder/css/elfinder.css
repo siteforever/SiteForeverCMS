@@ -2,7 +2,7 @@
 /* file manager window */
 
 .el-finder {
-	width:100%; 
+	/*width:100%; */
 	min-width:400px;
 	border:1px solid #ccc;
 	background-color:#eee;

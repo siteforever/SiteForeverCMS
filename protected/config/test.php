@@ -15,6 +15,8 @@ return array(
     // отладка
     'debug' => true,
 
+    'logger'    => 'plain',
+
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'example.test',
     'admin'     => 'admin@ermin.ru',
@@ -26,6 +28,7 @@ return array(
         'host'      => 'localhost',
         'database'  => 'siteforever',
     ),
+
     // тема
     'template' => array(
         'theme'     => 'basic',

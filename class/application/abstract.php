@@ -228,6 +228,14 @@ abstract class Application_Abstract
     }
 
     /**
+     * @return TPL_Driver
+     */
+    public function getView()
+    {
+        return $this->getTpl();
+    }
+
+    /**
      * @return SysConfig
      */
     function getConfig()
