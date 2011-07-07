@@ -17,9 +17,23 @@ class View_Breadcrumbs
 
     public function __construct( array $pieces = array() )
     {
-        $this->_pieces  = $pieces;
+        $this->fromArray( $pieces );
     }
 
+    /**
+     * @param array $path
+     * @return View_Breadcrumbs
+     */
+    public function fromArray( array $path )
+    {
+        $this->_pieces  = $path;
+        return $this;
+    }
+
+    /**
+     * @param $path
+     * @return View_Breadcrumbs
+     */
     public function fromSerialize( $path )
     {
         $pathes     = @unserialize( $path );
@@ -33,6 +47,10 @@ class View_Breadcrumbs
         return $this;
     }
 
+    /**
+     * @param $path
+     * @return View_Breadcrumbs
+     */
     public function fromJson( $path )
     {
         $pathes     = @json_decode( $path, true );

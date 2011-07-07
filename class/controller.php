@@ -204,6 +204,7 @@ abstract class Controller
 
     /**
      * Вернет соединение с БД
+     * @deprecated
      * @return db
      */
     function getDB()
@@ -224,6 +225,5 @@ abstract class Controller
     }
 
     abstract function indexAction();
-
 
 }

@@ -39,54 +39,147 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $params = array('par1'=>'val1','par2'=>'val2');
 
         $this->assertEquals(
-            $this->router->createLink($url, $params),
-            "/index.php?route={$url}&par1=val1&par2=val2"
+            "/?route={$url}&par1=val1&par2=val2",
+            $this->router->createLink($url, $params)
         );
 
         App::getInstance()->getConfig()->set('url.rewrite', true);
 
         $this->assertEquals(
-            $this->router->createLink($url, $params),
-            "/{$url}/par1=val1/par2=val2"
+            "/{$url}/par1=val1/par2=val2",
+            $this->router->createLink($url, $params)
         );
-
     }
+
+    public function testCreateLinkZendStyle()
+    {
+        App::getInstance()->getConfig()->set('url.rewrite', true);
+
+        $this->assertEquals(
+            '/page/create/id/123/page/7',
+            $this->router->createLink(null,
+                array(
+                    'controller'    => 'page',
+                    'action'        => 'create',
+                    'id'            => 123,
+                    'page'          => 7,
+                )
+            )
+        );
+    }
+
+    public function testCreateServiceLinkPage()
+    {
+        App::getInstance()->getConfig()->set('url.rewrite', true);
+        $this->assertEquals(
+            '/page',
+            $this->router->createServiceLink('page')
+        );
+    }
+
+    public function testCreateServiceLinkPage2()
+    {
+        App::getInstance()->getConfig()->set('url.rewrite', true);
+        $this->assertEquals(
+            '/page/edit',
+            $this->router->createServiceLink('page', 'edit')
+        );
+    }
+
+    public function testCreateServiceLinkPageNorewrite()
+    {
+        App::getInstance()->getConfig()->set('url.rewrite', false);
+        $this->assertEquals(
+            '/?route=page',
+            $this->router->createServiceLink('page')
+        );
+    }
+
+    public function testCreateServiceLinkPage2Norewrite()
+    {
+        App::getInstance()->getConfig()->set('url.rewrite', false);
+        $this->assertEquals(
+            '/?route=page/edit',
+            $this->router->createServiceLink('page','edit')
+        );
+    }
+
 
     /**
      * @todo Implement testFindRoute().
      */
     public function testFindRoute()
     {
+        App::getInstance()->getConfig()->set('url.rewrite', true);
         // find route in routes.xml
         $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
+
+        $this->router->setRoute('page/nameconvert/id/123/page/7')->routing();
+        $this->assertEquals( $request->get('controller'), 'page' );
+        $this->assertEquals( $request->get('action'), 'nameconvert' );
+
+        $this->assertEquals( 7, $request->get('page') );
+        $this->assertEquals( 123, $request->get('id') );
+    }
+
+    public function testFindRouteUsersCabinet()
+    {
+        $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
+
+        $this->router->setRoute('users/cabinet')->routing();
+        $this->assertEquals( $request->get('controller'), 'users' );
+        $this->assertEquals( $request->get('action'), 'cabinet' );
+    }
+
+    public function testFindRouteAdmin()
+    {
+        $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
 
         $this->router->setRoute('admin');
         $this->router->routing();
         $this->assertEquals( $request->get('controller'), 'page' );
         $this->assertEquals( $request->get('action'), 'admin' );
+    }
 
-        $request->set('controller', null);
-
-        $this->router->setRoute('basket');
-        $this->router->routing();
-        $this->assertEquals( $request->get('controller'), 'basket' );
-        $this->assertEquals( $request->get('action'), 'index' );
-
+    public function testFindRouteUsersEdit()
+    {
+        $request    = App::getInstance()->getRequest();
         $request->set('controller', null);
 
         $this->router->setRoute('users/edit');
         $this->router->routing();
         $this->assertEquals( $request->get('controller'), 'users' );
         $this->assertEquals( $request->get('action'), 'edit' );
+    }
 
+    public function testFindRouteBasket()
+    {
+        $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
+
+        $this->router->setRoute('basket');
+        $this->router->routing();
+        $this->assertEquals( $request->get('controller'), 'basket' );
+        $this->assertEquals( $request->get('action'), 'index' );
+    }
+
+    public function testFindRouteTest()
+    {
+        $request    = App::getInstance()->getRequest();
         $request->set('controller', null);
 
         $this->router->setRoute('test');
         $this->router->routing();
         $this->assertEquals( $request->get('controller'), 'test' );
         $this->assertEquals( $request->get('action'), 'test' );
+    }
 
-        $request->set('controller', null);
+    public function testFindRouteIndex()
+    {
+        App::getInstance()->getRequest()->set('controller', null);
         $this->router->setRoute('index');
         $this->router->routing();
     }
@@ -127,4 +220,3 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->router->getRoute(), 'index');
     }
 }
-?>

@@ -18,6 +18,9 @@ class ControllerResolver
         $this->app  = $app;
     }
 
+    /**
+     * @return array
+     */
     function resolveController()
     {
         $request    = $this->app->getRequest();
@@ -30,10 +33,11 @@ class ControllerResolver
 
     /**
      * Запуск контроллера
+     * @params array $command
      * @throws ControllerExeption
      * @return mixed
      */
-    function dispatch( $command = array() )
+    function dispatch( array $command = array() )
     {
         $result = null;
         if ( ! $command ) {
@@ -57,7 +61,6 @@ class ControllerResolver
                 $controller->init();
             }
 
-
             // Защита системных действий
             $rules  = $controller->access();
 
@@ -71,17 +74,15 @@ class ControllerResolver
                 }
             }
 
-
-
             if ( $ref->hasMethod( $command['action'] ) ) {
                 $result = $controller->$command['action']();
             }
-            elseif ( $ref->hasMethod( 'indexAction' ) ) {
-                $result = $controller->indexAction();
-                $controller->deInit();
-            }
+//            elseif ( $ref->hasMethod( 'indexAction' ) ) {
+//                $result = $controller->indexAction();
+//                $controller->deInit();
+//            }
             else {
-                throw new ControllerException(t('Could not start the controller').' '.$command['controller']);
+                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
             }
         }
         else {

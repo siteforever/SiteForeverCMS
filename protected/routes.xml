@@ -45,11 +45,11 @@
     <route alias="admin/settings" system="1">
         <controller>settings</controller>
     </route>
-    <route alias="^admin" system="1">
+    <route alias="admin" system="1">
         <controller>page</controller>
         <action>admin</action>
     </route>
-    <route alias="^admin[^/].*" system="1">
+    <route alias="admin[^/].*" system="1">
         <controller>page</controller>
         <action>admin</action>
     </route>

@@ -83,9 +83,12 @@ class Router
      */
     public function createLink( $url = '', $params = array() )
     {
-        $url = trim($url, '/');
+        if ( null === $url && isset( $params['controller'] ) ) {
+            return $this->createDirectRequest( $params );
+        }
 
-        if ( $url == '' ) {
+        $url = trim($url, '/');
+        if ( '' === $url ) {
             $url = $this->request->get('route');
         }
 
@@ -101,10 +104,54 @@ class Router
             $url = '/'.$url.( count($par) ? '/'.join('/', $par) : '' );
         }
         else {
-            $url = '/index.php?route='.$url.( count($par) ? '&'.join('&', $par) : '' );
+            $url = '/?route='.$url.( count($par) ? '&'.join('&', $par) : '' );
         }
 
         return $url;
+    }
+
+    /**
+     * @param $controller
+     * @param string $action
+     * @param array $params
+     * @return string
+     */
+    public function createServiceLink( $controller, $action = 'index', $params = array() )
+    {
+        $result     = '';
+        $parstring  = '';
+        foreach ( $params as $key => $param ) {
+            $parstring .= '/'.$key.'/'.$param;
+        }
+
+        $result .= '/'.$controller;
+        if ('index' != $action || '' != $parstring ) {
+            $result .= '/'.$action . $parstring;
+        }
+
+        if ( ! App::getInstance()->getConfig()->get('url.rewrite') ) {
+            $result = '/?route='.trim( $result, '/' );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    private function createDirectRequest( $params )
+    {
+        $controller = $params['controller'];
+        unset( $params['controller'] );
+        if ( isset( $params['action'] ) ) {
+            $action = $params['action'];
+            unset( $params['action'] );
+        } else {
+            $action = 'index';
+        }
+
+        return $this->createServiceLink( $controller, $action, $params );
     }
 
     /**
@@ -124,20 +171,50 @@ class Router
         if ( ! $this->findAlias() ) {
             if ( ! $this->findRoute() ) {
                 if ( ! $this->findStructure() ) {
-                    $this->controller   = 'page';
-                    $this->action       = 'error';
-                    $this->id           = '404';
-                    $this->template     = App::getInstance()->getConfig()->get('template.404');
-                    $this->system       = 0;
+
+                    $route_pieces   = explode( '/', $this->route );
+
+                    if ( count( $route_pieces ) == 1 ) {
+                        $this->controller   = $route_pieces[0];
+                        $this->action   = 'index';
+                    }
+                    elseif ( count( $route_pieces ) > 1 ) {
+                        $this->controller   = $route_pieces[0];
+                        $this->action       = $route_pieces[1];
+
+                        $route_pieces       = array_slice( $route_pieces, 2 );
+
+                        if ( 0 == count( $route_pieces ) % 2 ) {
+                            $key    = '';
+                            foreach ( $route_pieces as $i => $r ) {
+                                if ( $i % 2 ) {
+                                    $this->request->set( $key, $r );
+                                } else {
+                                    $key    = $r;
+                                }
+                            }
+                        }
+                    } else {
+                        $this->activateError();
+                    }
                 }
             }
         }
 
         $this->request->set('controller', $this->controller);
         $this->request->set('action',     $this->action);
-        $this->request->set('id',         $this->id);
-        $this->request->set('template',   $this->template);
+        if ( $this->id )        $this->request->set('id',         $this->id);
+        if ( $this->template )  $this->request->set('template',   $this->template);
         return true;
+    }
+
+    public function activateError( $error = '404' )
+    {
+        $this->controller   = 'page';
+        $this->action       = 'error';
+        $this->id           = $error;
+        $this->template     = App::getInstance()->getConfig()->get('template.404');
+        $this->system       = 0;
     }
 
     /**
@@ -226,8 +303,8 @@ class Router
             {
                 $this->controller   = $route['controller'];
                 $this->action       = $route['action'];
-                $this->id           = $route['id'];
-                $this->system       = $route['system'];
+                if ( isset($route['id']) )      $this->id       = $route['id'];
+                if ( isset($route['system']) )  $this->system   = $route['system'];
 
                 return true;
             }
@@ -270,11 +347,12 @@ class Router
 
     /**
      * @param $route
-     * @return void
+     * @return Router
      */
     public function setRoute($route)
     {
         $this->route = $route;
+        return $this;
     }
 
     /**
