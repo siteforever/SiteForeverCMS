@@ -18,6 +18,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->router = App::getInstance()->getRouter();
+        App::getInstance()->getConfig()->set('url.rewrite', true);
     }
 
     /**
@@ -51,10 +52,24 @@ class RouterTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCreateLink2()
+    {
+        $this->assertEquals(
+            '/',
+            $this->router->createLink( null )
+        );
+    }
+
+    public function testCreateServiceLink2()
+    {
+        $this->assertEquals(
+            '/',
+            $this->router->createServiceLink( 'index' )
+        );
+    }
+
     public function testCreateLinkZendStyle()
     {
-        App::getInstance()->getConfig()->set('url.rewrite', true);
-
         $this->assertEquals(
             '/page/create/id/123/page/7',
             $this->router->createLink(null,
@@ -70,7 +85,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testCreateServiceLinkPage()
     {
-        App::getInstance()->getConfig()->set('url.rewrite', true);
         $this->assertEquals(
             '/page',
             $this->router->createServiceLink('page')
@@ -79,7 +93,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testCreateServiceLinkPage2()
     {
-        App::getInstance()->getConfig()->set('url.rewrite', true);
         $this->assertEquals(
             '/page/edit',
             $this->router->createServiceLink('page', 'edit')
@@ -104,13 +117,11 @@ class RouterTest extends PHPUnit_Framework_TestCase
         );
     }
 
-
     /**
      * @todo Implement testFindRoute().
      */
     public function testFindRoute()
     {
-        App::getInstance()->getConfig()->set('url.rewrite', true);
         // find route in routes.xml
         $request    = App::getInstance()->getRequest();
         $request->set('controller', null);

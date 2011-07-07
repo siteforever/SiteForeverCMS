@@ -100,6 +100,10 @@ class Router
             }
         }
 
+        if ( 'index' == $url ) {
+            $url = '';
+        }
+
         if ( App::getInstance()->getConfig()->get('url.rewrite') ) {
             $url = '/'.$url.( count($par) ? '/'.join('/', $par) : '' );
         }
@@ -131,6 +135,10 @@ class Router
 
         if ( ! App::getInstance()->getConfig()->get('url.rewrite') ) {
             $result = '/?route='.trim( $result, '/' );
+        }
+
+        if ('index' == $action && 'index' == $controller && '' == $parstring ) {
+            $result = '/';
         }
 
         return $result;

@@ -36,7 +36,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
         $pathes = array(
             array(
                 'name'  => 'Главная',
-                'url'   => '/index',
+                'url'   => '/',
             ),
             array(
                 'name'  => 'О компании',
@@ -48,7 +48,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
 
         $this->object->fromSerialize( $ser );
         
-        $this->assertEquals("<a href='/index'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
+        $this->assertEquals("<a href='/'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
     }
 
     public function testRenderJson()
@@ -56,7 +56,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
         $pathes = array(
             array(
                 'name'  => 'Главная',
-                'url'   => '/index',
+                'url'   => '/',
             ),
             array(
                 'name'  => 'О компании',
@@ -68,15 +68,15 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
 
         $this->object->fromJson( $ser );
 
-        $this->assertEquals("<a href='/index'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
+        $this->assertEquals("<a href='/'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
     }
 
     public function testAddPiece()
     {
-        $this->object->addPiece( '/index', 'Главная' );
+        $this->object->addPiece( '', 'Главная' );
         $this->object->addPiece( '/about', 'О компании' );
 
-        $this->assertEquals("<a href='/index'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
+        $this->assertEquals("<a href='/'>Главная</a> &rarr; <a href='/about'>О компании</a>", $this->object->render());
     }
 
 }
