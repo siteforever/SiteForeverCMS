@@ -246,6 +246,10 @@ form.standart label {
     cursor: pointer;
 }
 
+form.standart textarea.elcatalog-meta {
+    height: 200px;
+}
+
 form.standart input,
 form.standart select,
 form.standart textarea {
@@ -256,7 +260,6 @@ form.standart textarea {
 form.standart textarea {
     height: 300px;
 }
-
 form.standart input.submit {
     width: 100px;
 }
