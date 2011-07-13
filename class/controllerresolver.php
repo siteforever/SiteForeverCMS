@@ -45,7 +45,17 @@ class ControllerResolver
                 throw new ControllerException('Controller not resolved');
             }
         }
-        //printVar($command);
+//        printVar($command);
+
+
+        // если запрос является системным
+        if ( $this->app->getRouter()->isSystem() ) {
+            if ( $this->app->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
+                $this->setSystemPage();
+            } else {
+                $this->setProtectedPage();
+            }
+        }
 
         if ( class_exists( $command['controller'] ) )
         {
@@ -55,8 +65,6 @@ class ControllerResolver
              */
             $controller     = $ref->newInstance( $this->app );
 
-            //$controller = new $command['controller']( $this->app );
-            
             if ( $ref->hasMethod( 'init' ) ) {
                 $controller->init();
             }
@@ -64,23 +72,22 @@ class ControllerResolver
             // Защита системных действий
             $rules  = $controller->access();
 
-            if ( ! $this->app->getUser()->hasPermission( USER_ADMIN ) ) {
-                if ( isset( $rules['system'] ) && is_array( $rules['system'] ) ) {
-                    foreach ( $rules['system'] as $rule ) {
-                        if ( strtolower( $rule.'action' ) == strtolower( $command['action'] ) ) {
-                            throw new ControllerException(t('Access denied'));
+            if ( $rules && is_array($rules['system']) ) {
+                foreach ( $rules['system'] as $rule ) {
+                    if ( strtolower( $rule.'action' ) == strtolower( $command['action'] ) ) {
+                        if ( $this->app->getUser()->hasPermission( USER_ADMIN ) ) {
+                            $this->setSystemPage();
+                        } else {
+                            $this->setProtectedPage();
                         }
+                        break;
                     }
                 }
             }
-
             if ( $ref->hasMethod( $command['action'] ) ) {
+//                printVar($command);
                 $result = $controller->$command['action']();
             }
-//            elseif ( $ref->hasMethod( 'indexAction' ) ) {
-//                $result = $controller->indexAction();
-//                $controller->deInit();
-//            }
             else {
                 throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
             }
@@ -89,5 +96,21 @@ class ControllerResolver
             throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
         }
         return $result;
+    }
+
+
+    private function setSystemPage()
+    {
+        $this->app->getRequest()->set('template', 'index' );
+        $this->app->getRequest()->set('resource', 'system:');
+        $this->app->getRequest()->set('modules', @include('modules.php'));
+    }
+
+    private function setProtectedPage()
+    {
+        $this->app->getRequest()->addFeedback( t('Protected page') );
+        $this->app->getRequest()->set('controller', 'users');
+        $this->app->getRequest()->set('action', 'login');
+        throw new ControllerException(t('Access denied'));
     }
 }

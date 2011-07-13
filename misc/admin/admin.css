@@ -36,6 +36,12 @@ small, span.small {
     font-size: 10px;
 }
 
+fieldset {
+    border: 1px #ddd solid;
+    border-radius: 0.5em;
+    padding: 1em;
+    margin-bottom: 1em;
+}
 
 
 div.ui-tabs ul {

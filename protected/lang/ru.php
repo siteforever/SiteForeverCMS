@@ -55,4 +55,9 @@ return array(
     'Settings'      => 'Настройки',
     'Settings saved'=> 'Настройки сохранены',
 
+
+
+    'Couldn\'t load this tab.'
+                    => 'Не удалось загрузить эту вкладку.',
+
 );

@@ -14,7 +14,7 @@ class Siteforever_Html
      * Позволяет создать только 1 экземпляр
      * @throws Siteforever_Exception
      */
-    function __construct() {
+    public function __construct() {
         self::$counter ++;
         if ( self::$counter > 1 ) {
             throw new Siteforever_Exception('HTML class singleton');
@@ -28,20 +28,19 @@ class Siteforever_Html
      * @param array $params
      * @return string
      */
-    function link( $text, $url, $params = array() )
+    public function link( $text, $url, $params = array() )
     {
-        $href   = $this->href( $url, $params );
-        return "<a {$href}>{$text}</a>";
+        return '<a '.$this->href( $url, $params ).'>'.$text.'</a>';
     }
-
 
     /**
      * Создаст ссылку
      * @param string $url
      * @param array  $params
+     * @return string
      */
-    function href( $url = '', $params = array() )
+    public function href( $url = '', $params = array() )
     {
-        return 'href="'.App::$router->createLink( $url, $params ).'"';
+        return 'href="'.App::getInstance()->getRouter()->createLink( $url, $params ).'"';
     }
 }

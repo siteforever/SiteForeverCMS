@@ -309,7 +309,6 @@ abstract class Model
                 $criteria   = $crit;
             }
         }
-
         // не определился критерий, но параметр - число
         // тогда полагаем, что параметр - это ID объекта
         if ( ! isset ( $criteria ) && is_numeric( $crit ) ) {

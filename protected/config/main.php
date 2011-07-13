@@ -10,7 +10,7 @@ return array(
     ),
 
 //    'logger'    => 'firephp',
-    'logger'    => 'html',
+//    'logger'    => 'html',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],

@@ -14,11 +14,12 @@
 function smarty_function_href( $params )
 {
     if ( empty($params['url']) ) {
-        $url = '';
+        $url = null;
     } else {
         $url = $params['url'];
     }
     unset($params['url']);
+
     return Siteforever::html()->href( $url, $params );
     //return href( $url, $params );
 }

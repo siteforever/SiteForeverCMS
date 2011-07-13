@@ -178,6 +178,12 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $this->request->get('test.foo'), 'foo', 'Chain do not work' );
     }
 
+    public function testGetNol()
+    {
+        $this->request->set('nol', 0);
+        $this->assertEquals(0, $this->request->get('nol'));
+    }
+
     /**
      * @todo Implement testSetContent().
      */

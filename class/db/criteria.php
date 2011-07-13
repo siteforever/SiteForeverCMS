@@ -31,6 +31,11 @@ class Db_Criteria
             unset( $criteria['cond'] );
         }
 
+        if ( isset( $criteria['condition'] ) ) {
+            $this->condition    = $criteria['condition'];
+            unset( $criteria['condition'] );
+        }
+
         if ( isset( $criteria['where'] ) ) {
             $this->condition    = $criteria['where'];
             unset( $criteria['where'] );

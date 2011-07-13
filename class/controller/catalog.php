@@ -252,23 +252,23 @@ class Controller_Catalog extends Controller
         $catalog = $this->getModel('Catalog');
         $catalog_gallery = $this->getModel('CatGallery');
 
-        $id = $this->request->get('edit', Request::INT);
+        $id         = $this->request->get('edit', Request::INT);
 
-        $type   = $this->request->get('type', Request::INT);
-        $parent_id = $this->request->get('add', Request::INT);
+        $type       = $this->request->get('type', Request::INT);
+        $parent_id  = $this->request->get('add', Request::INT, 0);
 
         /**
          * @var form_Form
          */
         $form = $catalog->getForm();
 
-        if ( "" !== $id ) // если раздел существует
+        if ( '' != $id ) // если раздел существует
         {
             $item       = $catalog->find( $id );
             $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
             $form->setData( $item->getAttributes() );
         }
-        elseif( "" !== $type && "" !== $parent_id )
+        elseif( '' !== $type /*&& '' !== $parent_id*/ )
         {
             $item       = $catalog->createObject();
             $form->parent   = $parent_id;
@@ -377,9 +377,8 @@ class Controller_Catalog extends Controller
         if ( $from_string =  @unserialize( $path ) ) {
             if ( $from_string && is_array( $from_string ) ) {
                 foreach( $from_string as $key => $val ) {
-                    $bc[] =
-                            '<a '.href('', array('part'=>$val['id'])).'>'.$val['name'].'</a>
-                    <a '.href('', array('edit'=>$val['id'])).'>'.icon('pencil', 'Правка').'</a>';
+                    $bc[] = '<a '.href('', array('part'=>$val['id'])).'>'.$val['name'].'</a>'
+                          . '<a '.href('', array('edit'=>$val['id'])).'>'.icon('pencil', 'Правка').'</a>';
                 }
             }
         }
@@ -420,7 +419,6 @@ class Controller_Catalog extends Controller
             $this->request->setResponseError( 0, $catalog->moveList() );
             return;
         }
-
         // Сохранение позиций
         if ( $save_pos = $this->request->get('save_pos') ) {
             foreach ( $save_pos as $pos ) {
@@ -440,16 +438,21 @@ class Controller_Catalog extends Controller
         if ( $this->request->get('delete') == 'group' ) {
             return $this->groupAjaxDelete();
         }
-        //print 'Work '.__FILE__.':'.__LINE__;
+//        print 'Work '.__FILE__.':'.__LINE__;
+
+//        $this->request->debug();
+//
+//        var_dump($this->request->get('add', Request::INT));
 
         // добавление / правка
-        if (    $this->request->get('add', FILTER_SANITIZE_NUMBER_INT ) !== '' ||
-                $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT ) !== ''
+        if (    null !== $this->request->get('add', FILTER_SANITIZE_NUMBER_INT ) ||
+                null !== $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT )
         ) {
+//            print 'Work '.__FILE__.':'.__LINE__;
             return $this->adminEdit();
         }
 
-        //print 'Work '.__FILE__.':'.__LINE__;
+//        print 'Work '.__FILE__.':'.__LINE__;
 
         // удаление
         if ( $del_id = $this->request->get('del', FILTER_SANITIZE_NUMBER_INT) )

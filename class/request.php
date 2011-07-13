@@ -243,6 +243,15 @@ class Request
         if (count($path) == 1) {
             if (isset($this->request[$key])) {
                 $get = $this->request[$key];
+                if ( $type == FILTER_DEFAULT ) {
+                    return $get;
+                }
+                if ( $type == self::INT && preg_match('/[\+\-]?\d+/', $get) ) {
+                    return (int) $get;
+                }
+                if ( $type == self::FLOAT && preg_match('/[\+\-]?\d+[\.,]?\d*/', $get) ) {
+                    return (float) $get;
+                }
             }
         }
         else {
@@ -252,7 +261,9 @@ class Request
             return $get;
         }
         //print $key.':'.$get.' => filtered: '.filter_var( $get, $type )."<br />\n";
-        return filter_var($get, $type) ? filter_var($get, $type) : $default;
+        return  filter_var( $get, $type )
+                ? filter_var( $get, $type )
+                : $default;
     }
 
     /**

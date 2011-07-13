@@ -125,37 +125,37 @@ class controller_News extends Controller
          */
         $model      = $this->getModel('News');
         $category   = $model->category;
-        //die(__FILE__.':'.__LINE__);
+//        die(__FILE__.':'.__LINE__);
 
-        if ( $this->request->get('catid', FILTER_VALIDATE_INT) !== false ) {
+        if ( $this->request->get('catid', FILTER_VALIDATE_INT) !== null ) {
             $this->newsList( $model );
             return;
         }
 
-        if ( $this->request->get('catedit', FILTER_VALIDATE_INT) !== false ) {
+        if ( $this->request->get('catedit', FILTER_VALIDATE_INT) !== null ) {
             $this->catEdit( $model );
             return;
         }
 
-        if ( $this->request->get('newsedit', FILTER_VALIDATE_INT) !== false ) {
+        if ( $this->request->get('newsedit', FILTER_VALIDATE_INT) !== null ) {
             $this->newsEdit( $model );
             return;
         }
 
-        if ( $this->request->get('catdel', FILTER_VALIDATE_INT) !== false ) {
+        if ( $this->request->get('catdel', FILTER_VALIDATE_INT) !== null ) {
             $this->catDelete( $model );
             return;
         }
 
-        if ( $this->request->get('newsdel', FILTER_VALIDATE_INT) !== false ) {
+        if ( $this->request->get('newsdel', FILTER_VALIDATE_INT) !== null ) {
             $this->newsDelete( $model );
             return;
         }
 
         $list   = $category->findAll(array('cond'=>'deleted = 0'));
         $this->tpl->assign(array(
-                                'list'  => $list,
-                           ));
+            'list'  => $list,
+        ));
 
         //$this->request->setContent( $this->tpl->fetch('system:news.admin') );
         $this->request->setContent( $this->tpl->fetch('news.catslist') );

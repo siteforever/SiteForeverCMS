@@ -10,7 +10,7 @@ class Controller_Page extends Controller
     function access()
     {
         return array(
-            'system'    => array('admin','edit','add','move'),
+            'system'    => array('admin','edit','add','move', 'nameconvert'),
         );
     }
 
@@ -39,6 +39,10 @@ class Controller_Page extends Controller
         }
     }
 
+    /**
+     * Ошибка 404
+     * @return void
+     */
     public function errorAction()
     {
         $this->request->set('template', 'inner');
@@ -118,6 +122,15 @@ class Controller_Page extends Controller
     }
 
     /**
+     * @return void
+     */
+    public function nameconvertAction()
+    {
+        $this->request->setTemplate( 'inner' );
+        $this->request->setContent( __METHOD__ );
+    }
+
+    /**
      * Добавления
      * @return void
      */
@@ -165,8 +178,7 @@ class Controller_Page extends Controller
                     return;
                 }
 
-                if ( $model->save( $model->createObject( $form_data ) ) )
-                {
+                if ( $model->save( $model->createObject( $form_data ) ) ) {
                     $this->request->addFeedback(t('Data save successfully'));
                     //reload('admin/edit', array('edit'=>$ins));
                     reload('admin');
@@ -179,7 +191,6 @@ class Controller_Page extends Controller
             }
             return;
         }
-
 
         $edit_form->parent      = $parent_id;
         $edit_form->template    = 'inner';
@@ -197,9 +208,11 @@ class Controller_Page extends Controller
         if ( isset($parent['controller']) ) {
             $edit_form->controller  = $parent['controller'];
         }
+
         if ( isset($parent['action']) ) {
             $edit_form->action      = $parent['action'];
         }
+
         $next_pos   = $model->getNextPos($parent_id);
         $edit_form->pos     = $next_pos;
 
@@ -233,10 +246,10 @@ class Controller_Page extends Controller
 
         if ( $edit_form->getPost() )
         {
-            $edit_form->getField('update')->setValue(time());
-
             if ( $edit_form->validate() )
             {
+                $edit_form->update  = time();
+
                 try {
                     $obj    = $model->createObject( $edit_form->getData() );
 

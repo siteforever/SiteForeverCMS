@@ -13,7 +13,7 @@ class Controller_Users extends Controller
         );
     }
 
-    function indexAction()
+    public function indexAction()
     {
         $auth   = $this->app()->getAuth();
         if ( $this->request->get('confirm') && $this->request->get('userid', FILTER_VALIDATE_INT) )
@@ -29,7 +29,7 @@ class Controller_Users extends Controller
      * Управление пользователем
      * @return void
      */
-    function adminAction()
+    public function adminAction()
     {
         $this->request->set('template', 'index' );
 
@@ -60,6 +60,7 @@ class Controller_Users extends Controller
             'cond'  => '',
             'params'=> array(),
         );
+
         if ( $search ) {
             if ( strlen($search) >= 2 ) {
                 $criteria['cond']   =   ' login LIKE :search OR email LIKE :search '.
@@ -83,14 +84,14 @@ class Controller_Users extends Controller
         $this->tpl->assign('paging', $paging);
         $this->tpl->assign('groups', $this->config->get('users.groups'));
 
-        $this->request->setContent( $this->tpl->fetch('users.admin'));
+        $this->request->setContent( $this->tpl->fetch('users.admin') );
     }
 
     /**
      * Редактирование пользователя в админке
      * @return void
      */
-    function adminEditAction()
+    public function adminEditAction()
     {
         /**
          * @var model_User $model
@@ -101,9 +102,7 @@ class Controller_Users extends Controller
 
         $user_form = $model->getEditForm();
 
-
         $user_id = $this->request->get('userid');
-
 
         if ( $user_form->getPost() )
         {
@@ -163,7 +162,7 @@ class Controller_Users extends Controller
     /**
      * Выход
      */
-    function logoutAction()
+    public function logoutAction()
     {
         $this->app()->getAuth()->logout();
         redirect('users/login');
@@ -172,7 +171,7 @@ class Controller_Users extends Controller
     /**
      * Вход
      */
-    function loginAction()
+    public function loginAction()
     {
         /**
          * @var Model_User $model
@@ -181,6 +180,10 @@ class Controller_Users extends Controller
         $auth   = $this->app()->getAuth();
 
         $user   = $auth->currentUser();
+
+        if ( $user->getId() ) {
+            return $this->cabinetAction();
+        }
 
 
         $this->request->setTitle(t('Personal page'));
@@ -200,28 +203,40 @@ class Controller_Users extends Controller
                         $this->request->addFeedback( $auth->getMessage() );
                     }
                 }
-                /*else {
-                    $this->request->addFeedback( $form->getFeedback() );
-                }*/
             }
             $this->request->setTitle('Вход в систему');
 
             $this->tpl->assign('form', $form );
-        }
-        else {
-            // отображаем кабинет
-            $this->tpl->user    = $this->user->getAttributes();
-            $this->request->setTitle('Кабинет пользователя');
         }
 
         $this->request->setContent($this->tpl->fetch('users.cabinet'));
     }
 
     /**
+     * @return void
+     */
+    public function cabinetAction()
+    {
+        $auth   = $this->app()->getAuth();
+        $user   = $auth->currentUser();
+
+        if ( $user->getId() ) {
+            // отображаем кабинет
+            $this->tpl->user    = $user->getAttributes();
+            $this->request->setTitle('Кабинет пользователя');
+
+            $this->request->setContent($this->tpl->fetch('users.cabinet'));
+        }
+        else {
+            reload('users/login');
+        }
+    }
+
+    /**
      * Редактирование профиля пользователя
      * @return void
      */
-    function editAction()
+    public function editAction()
     {
         $model  = $this->getModel('user');
 
@@ -254,7 +269,7 @@ class Controller_Users extends Controller
      * Рагистрация пользователя
      * @return void
      */
-    function registerAction()
+    public function registerAction()
     {
         $this->request->set('tpldata.page.name', 'Register');
         $this->request->setTitle('Регистрация');
@@ -296,7 +311,7 @@ class Controller_Users extends Controller
      * Восстановление пароля
      * @return void
      */
-    function restoreAction()
+    public function restoreAction()
     {
         // @TODO Перевести под новую модель
         $this->request->set('tpldata.page.name', 'Restore');
@@ -406,7 +421,7 @@ class Controller_Users extends Controller
      * Изменение пароля
      * @return void
      */
-    function passwordAction()
+    public function passwordAction()
     {
         // @T ODO Перевести под новую модель
         $this->request->setTitle('Изменить пароль');

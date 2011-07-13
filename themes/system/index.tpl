@@ -8,20 +8,16 @@
 <div class="l-wrapper">
 
     <h1>{t}Control panel{/t} :: {$page.title}</h1>
-    {*<div class="b-module-menu">
-    </div>*}
 
     <div class="l-main-panel">
         <div class="l-panel">
-	        <ul class="b-admin-menu">
-	            {foreach from=$request->get('modules') item="item"}
+            <ul class="b-admin-menu">
+                {foreach from=$request->get('modules') item="item"}
                 <li>
                     {if ! empty($item.icon)}{icon name=$item.icon}{/if}
                     <a  {if ! empty($item.norefact)}href="{$item.url}"{else}{href url=$item.url}{/if}
                         {if ! empty($item.class)}class="{$item.class}"{/if}
-                        {if ! empty($item.target)}target="{$item.target}"{/if} >
-                        {$item.name}
-                    </a>
+                        {if ! empty($item.target)}target="{$item.target}"{/if} >{$item.name}</a>
                     {if isset($item.sub)}
                         <ul>
                         {foreach from=$item.sub item="subitem"}
@@ -29,17 +25,14 @@
                             {if ! empty($subitem.icon)}{icon name=$subitem.icon}{/if}
                             <a  {if ! empty($subitem.norefact)}href="{$subitem.url}"{else}{href url=$subitem.url}{/if}
                                 {if ! empty($item.class)}class="{$subitem.class}"{/if}
-                                {if ! empty($subitem.target)}target="{$subitem.target}"{/if} >
-                                {$subitem.name}
-                            </a>
+                                {if ! empty($subitem.target)}target="{$subitem.target}"{/if} >{$subitem.name}</a>
                         </li>
                         {/foreach}
                         </ul>
                     {/if}
                 </li>
-	            {/foreach}
-
-	        </ul>
+                {/foreach}
+            </ul>
         </div>
 
         <div class="l-content">

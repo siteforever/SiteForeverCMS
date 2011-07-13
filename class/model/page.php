@@ -447,20 +447,4 @@ class Model_Page extends Model
         return $this->form;
     }
 
-//    /**
-//     * Класс для контейнера данных
-//     * @return string
-//     */
-//    public function objectClass()
-//    {
-//        return 'Data_Object_Page';
-//    }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Page';
-    }
 }

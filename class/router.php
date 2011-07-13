@@ -202,7 +202,8 @@ class Router
                                 }
                             }
                         }
-                    } else {
+                    }
+                    else {
                         $this->activateError();
                     }
                 }

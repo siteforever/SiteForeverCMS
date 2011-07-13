@@ -80,9 +80,9 @@ class App extends Application_Abstract
             require_once 'functionsTest.php';
         } else {
             require_once 'functions.php';
-//            $firephp = FirePHP::getInstance(true);
-//            $firephp->registerErrorHandler();
-//            $firephp->registerExceptionHandler();
+            $firephp = FirePHP::getInstance(true);
+            $firephp->registerErrorHandler();
+            $firephp->registerExceptionHandler();
         }
 
         if ( ! defined('MAX_FILE_SIZE') )
@@ -113,24 +113,6 @@ class App extends Application_Abstract
                  && $this->getBasket()->count() == 0
             ) {
                 $this->getTpl()->caching(true);
-            }
-        }
-
-        // если запрос является системным
-        if ( $this->getRouter()->isSystem() )
-        {
-            if ( $this->getAuth()->currentUser()->perm == USER_ADMIN )
-            {
-                //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-                $this->getRequest()->set('template', 'index' );
-                $this->getRequest()->set('resource', 'system:');
-                $this->getRequest()->set('modules', @include('modules.php'));
-            }
-            else {
-                //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
-                $this->getRequest()->addFeedback( t('Protected page') );
-                $this->getRequest()->set('controller', 'users');
-                $this->getRequest()->set('action', 'login');
             }
         }
 
