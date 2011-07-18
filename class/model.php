@@ -51,7 +51,9 @@ abstract class Model
     protected static $fields   = array();
 
     protected static $all_class = array();
+
     protected static $exists_tables;
+
     protected static $dao;
 
     /**
@@ -516,7 +518,8 @@ abstract class Model
      * @param int $id
      * @return bool
      */
-    public function onDeleteStart( $id = null ) {
+    public function onDeleteStart( $id = null )
+    {
         return true;
     }
 
@@ -525,7 +528,8 @@ abstract class Model
      * @param int $id
      * @return bool
      */
-    public function onDeleteSuccess( $id = null ) {
+    public function onDeleteSuccess( $id = null )
+    {
         return true;
     }
 

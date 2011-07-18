@@ -355,7 +355,8 @@ class Model_Page extends Model
     /**
      * Обходит массив дерева структуры и возвращает
      * на его основе HTML для админки
-     * @param $branches
+     * @param $parent
+     * @param $level
      * @return array
      */
     protected function returnListRecursive( $parent, $level = 1 )
@@ -403,10 +404,13 @@ class Model_Page extends Model
             $this->html[] =
                     $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>
                     <span id='item{$branch['id']}' class='{$bicon}'>".icon($icon).
-                    " <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>".
+//                    " <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>".
+                    " <a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id'])).">{$branch['name']}</a>".
                     "<span class='tools'>".
-                        "<a ".href('admin', array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>".
-                        "<a ".href('admin', array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
+//                        "<a ".href('admin', array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>".
+                        "<a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id']))." title='Правка'>".icon('pencil', 'Правка')."</a>".
+//                        "<a ".href('admin', array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
+                        "<a ".href(null, array( 'controller'=>'page','action'=>'add','add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
                         "<a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>".
                             //($branch['controller'] != 'page' ? '' : " <a class='link_add' page='{$branch['id']}' ".href('').">".icon('link_add', 'Добавить внешнюю связь').'</a> ' ).
                     "</span>".
@@ -435,7 +439,7 @@ class Model_Page extends Model
 
     /**
      * Вернет объект формы
-     * @return form_Form
+     * @return Form_Form
      */
     function getForm()
     {

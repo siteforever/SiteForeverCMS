@@ -10,7 +10,7 @@ class Controller_Page extends Controller
     function access()
     {
         return array(
-            'system'    => array('admin','edit','add','move', 'nameconvert'),
+            'system'    => array('admin','edit','add','correct','move','nameconvert','save'),
         );
     }
 
@@ -50,8 +50,6 @@ class Controller_Page extends Controller
         $this->request->setContent('Ошибка 404.<br />Страница не найдена.');
     }
 
-
-
     /**
      * Структура
      * @return void
@@ -74,7 +72,7 @@ class Controller_Page extends Controller
 
         // правка
         if ( $this->request->get('edit') ) {
-            return $this->editAction();
+            return $this->correctAction();
         }
 
         // обновление
@@ -98,15 +96,16 @@ class Controller_Page extends Controller
         }
 
 
-        $this->request->setTitle("Структура сайта");
+        $this->request->setTitle( 'Структура сайта' );
 
-        $sort   = $this->request->get('sort');
+        $sort   = $this->request->get( 'sort' );
         if ( $sort ) {
-            return $model->resort( $sort );
+            return  $model->resort( $sort );
         }
 
         $do     = $this->request->get( 'do' );
         $part   = $this->request->get( 'part' );
+
         if ( $do && $part ) {
             $model->switching( $do, $part );
             redirect('admin');
@@ -136,10 +135,6 @@ class Controller_Page extends Controller
      */
     function addAction()
     {
-        // используем шаблон админки
-        $this->request->set('template', 'index');
-        $this->request->setTitle('Управление сайтом');
-
         /**
          * @var Model_Page $model
          */
@@ -160,140 +155,153 @@ class Controller_Page extends Controller
             ));
         }
 
-        $edit_form  = $model->getForm();
+        $form  = $model->getForm();
 
-        if ( $edit_form->getPost() )
-        {
-            if ( $edit_form->validate() )
-            {
-                $form_data  = $edit_form->getData();
-
-                $found_page = $model->find(array(
-                    'cond'      => 'alias = :alias',
-                    'params'    => array(':alias'=>$edit_form->alias,),
-                ));
-
-                if ( $found_page ) {
-                    $this->request->addFeedback(t('The page with this address already exists'));
-                    return;
-                }
-
-                if ( $model->save( $model->createObject( $form_data ) ) ) {
-                    $this->request->addFeedback(t('Data save successfully'));
-                    //reload('admin/edit', array('edit'=>$ins));
-                    reload('admin');
-                }
-                else {
-                    $this->request->addFeedback(t('Data not saved'));
-                }
-            } else {
-                $this->request->addFeedback($edit_form->getFeedbackString());
-            }
-            return;
-        }
-
-        $edit_form->parent      = $parent_id;
-        $edit_form->template    = 'inner';
+        $form->parent      = $parent_id;
+        $form->template    = 'inner';
 
         if ( isset($parent['alias']) ) {
-            $edit_form->alias   = $parent['alias'];
+            $form->alias   = $parent['alias'];
         }
 
-        $edit_form->author  = '1';
-        $edit_form->content = t('Home page for the filling');
+        $form->author  = '1';
+        $form->content = t('Home page for the filling');
 
-        $edit_form->date    = time();
-        $edit_form->update  = time();
+        $form->date    = time();
+        $form->update  = time();
 
         if ( isset($parent['controller']) ) {
-            $edit_form->controller  = $parent['controller'];
+            $form->controller  = $parent['controller'];
         }
 
         if ( isset($parent['action']) ) {
-            $edit_form->action      = $parent['action'];
+            $form->action      = $parent['action'];
         }
 
-        $next_pos   = $model->getNextPos($parent_id);
-        $edit_form->pos     = $next_pos;
+        $form->pos     = $model->getNextPos($parent_id);
 
         if ( isset($parent['sort']) ) {
-            $edit_form->sort    = $parent['sort'];
+            $form->sort    = $parent['sort'];
         }
 
         $this->request->setTitle( 'Добавить страницу' );
-        $this->request->setContent( $edit_form->html() );
+        $this->tpl->form    = $form;
+        $this->request->setContent($this->tpl->fetch('system:page.edit'));
     }
 
     /**
-     * Редактирование
      * @return void
      */
-    function editAction()
+    public function saveAction()
     {
-        // используем шаблон админки
-        $this->request->set('template', 'index');
-        $this->request->setTitle('Управление сайтом');
-
         /**
          * @var Model_Page $model
          */
         $model  = $this->getModel('Page');
 
-        // идентификатор раздела, который надо редактировать
-        $part_id = $this->request->get('edit');
+        $form   = $model->getForm();
 
-        $edit_form = $model->getForm();
+        if ( $form->getPost() ) {
+            if ( $form->validate() ) {
 
-        if ( $edit_form->getPost() )
-        {
-            if ( $edit_form->validate() )
-            {
-                $edit_form->update  = time();
+                $form->update   = time();
 
-                try {
-                    $obj    = $model->createObject( $edit_form->getData() );
+                $obj    = $model->createObject( $form->getData() );
 
-                    // Если с таким маршрутом уже есть страница, то не сохранять
-                    if ( $page = $model->findByRoute( $obj->alias ) ) {
-                        if ( $page->id != $obj->getId() ) {
-                            $this->request->addFeedback(t('The page with this address already exists'));
-                            $this->request->addFeedback(t('Data not saved'));
-                            $obj->markClean();
-                            return;
-                        }
-                    }
-
-                    // Если новая запись, то надо узнать id
-                    if ( ! $obj->getId() ) {
-                        $model->save( $obj );
-                    }
-
-                    // Обновляем путь
-                    $obj->path = $model->findPathJSON( $obj->getId() );
-
-                    if ( $model->save( $obj ) ) {
-                        $this->request->addFeedback(t('Data save successfully'));
-                    } else {
+                // Если с таким маршрутом уже есть страница, то не сохранять
+                if ( $page = $model->findByRoute( $obj->alias ) )
+                {
+                    if ( $page->id != $obj->getId() ) {
+                        $this->request->addFeedback(t('The page with this address already exists'));
                         $this->request->addFeedback(t('Data not saved'));
+                        $obj->markClean();
+                        return;
                     }
-                    return;
-                } catch ( Exception $e ) {
-                    $this->request->addFeedback($e->getMessage());
+
+                    if ( ! $obj->getId() ) {
+                        $this->request->addFeedback(t('The page with this address already exists'));
+                        return;
+                    }
+                }
+
+                $old_id = $obj->getId();
+                if ( $obj->save() ) {
+                    /**
+                     * @var Model_Alias $alias_model
+                     */
+                    $alias_model    = $this->getModel('Alias');
+
+                    $alias  = $alias_model->findByAlias( $obj->alias );
+
+                    if ( null === $alias ) {
+                        $alias  = $alias_model->createObject(
+                            array(
+                                'alias'     => $obj->alias,
+                                'controller'=> 'page',
+                                'action'    => 'index',
+                                'params'    => serialize(array('id'=>$obj->getId())),
+                            )
+                        );
+                        $alias->save();
+                    } else {
+                        $alias->alias   = $obj->alias;
+                        $alias->params  = serialize(array('id'=>$obj->getId()));
+                    }
+
+                    $this->request->addFeedback(t('Data save successfully'));
+                    if ( ! $old_id ) {
+                        reload(null, array('controller'=>'page','action'=>'edit','edit'=>$obj->getId()));
+                    }
+                } else {
+                    $this->request->addFeedback(t('Data not saved'));
                 }
             } else {
-                $this->request->addFeedback($edit_form->getFeedbackString());
+                $this->request->addFeedback( $form->getFeedback() );
             }
-            return;
+        }
+    }
+
+    /**
+     * @return void
+     */
+    public function editAction()
+    {
+        /**
+         * @var Model_Page $model
+         */
+        $model  = $this->getModel('Page');
+
+        $form   = $model->getForm();
+
+        // используем шаблон админки
+        $this->request->set('template', 'index');
+        $this->request->setTitle('Управление сайтом');
+
+        // идентификатор раздела, который надо редактировать
+        $edit_id = $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT);
+
+        // идентификатор раздела, в который надо добавить
+        $add_id  = $this->request->get('add', FILTER_SANITIZE_NUMBER_INT);
+
+        // родительский раздел
+        if( $add_id ) {
+            $parent     = $model->find( $add_id );
         }
 
-        // данные раздела
-        $part = $model->find( $part_id );
+        if ( $edit_id ) {
+            // данные раздела
+            $part = $model->find( $edit_id );
 
-        if ( $part ) {
-            $edit_form->setData( $part->getAttributes() );
+            if ( $part ) {
+                $form->setData( $part->getAttributes() );
+            }
+
+            $this->tpl->form    = $form;
+            $this->request->setContent($this->tpl->fetch('system:page.edit'));
         }
-
-        $this->request->setContent($edit_form->html());
+        else {
+            $this->request->setContent(t('Data not valid'));
+        }
     }
 
     /**
@@ -315,5 +323,4 @@ class Controller_Page extends Controller
         }
         reload('admin');
     }
-
 }

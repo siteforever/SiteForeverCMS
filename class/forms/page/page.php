@@ -11,6 +11,7 @@ class Forms_Page_Page extends Form_Form
     {
         parent::__construct(array(
             'name'      => 'structure',
+            'action'    => App::getInstance()->getRouter()->createServiceLink('page','save'),
             'class'     => 'standart ajax',
             'fields'    => array(
                     'id'        => array('type'=>'hidden','label'=>'ID', 'value'=>'0',),
@@ -20,8 +21,8 @@ class Forms_Page_Page extends Form_Form
                     //'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
                     'alias'     => array('type'=>'text','label'=>'Адрес', 'required'),
 
-                    'date'      => array('type'=>'date','label'=>'Дата создания', 'value'=>time(),),
-                    'update'    => array('type'=>'date','label'=>'Дата обновления', 'value'=>time(),),
+                    'date'      => array('type'=>'date','label'=>'Дата создания', 'value'=>time(),'hidden'),
+                    'update'    => array('type'=>'date','label'=>'Дата обновления', 'value'=>time(),'hidden'),
 
                     'pos'       => array('type'=>'int','label'=>'Порядок сортировки', 'value'=>'0',
                                          'readonly' ,'hidden',),
@@ -79,6 +80,7 @@ class Forms_Page_Page extends Form_Form
 
                     'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
 
-            ),        ));
+            ),
+        ));
     }
 }

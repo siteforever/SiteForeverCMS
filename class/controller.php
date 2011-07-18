@@ -76,28 +76,14 @@ abstract class Controller
         }
 
         if ( $page ) {
-            if( ! $page->title ) {
+            if ( ! $page->title ) {
                 $page->title    = $page->name;
             }
             $this->page = $page->getAttributes();
+            $this->request->setTemplate($page->template);
             $this->request->setContent($page->content);
             $this->request->setTitle( $page->title );
         }
-//        print( __METHOD__."() in ".__FILE__.':'.__LINE__."\n");
-//
-//        var_dump($this->page);
-//        if ( $this->page && isset( $this->page['path'] ) ) {
-//
-//            // формируем список предков страницы
-//            $path_array = json_decode( $this->page['path'], true );
-//            $parents    = array();
-//            if ( $path_array && is_array($path_array) ) {
-//                foreach( $path_array as $path ) {
-//                    $parents[$path['id']] = $path['id'];
-//                }
-//            }
-//            $this->page['parents'] = $parents;
-//        }
 
         $this->request->set('tpldata.page', $this->page);
 

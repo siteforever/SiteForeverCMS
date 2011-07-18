@@ -15,7 +15,7 @@ return array(
         'sub'   => array(
             array(
                 'name'  => 'Добавить страницу',
-                'url'   => 'admin/add/add=0',
+                'url'   => 'page/add/add=0',
                 'icon'  => 'page_add',
             ),
         ),

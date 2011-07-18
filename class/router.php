@@ -12,14 +12,14 @@ class Router
     private $route_table = array();
 
     private $controller = 'page';
-    private $action = 'index';
+    private $action     = 'index';
     private $id;
 
     private $request;
 
     private $system = 0;
 
-    private $template = 'index';
+    private $template   = 'index';
 
     /**
      * Создаем маршрутизатор

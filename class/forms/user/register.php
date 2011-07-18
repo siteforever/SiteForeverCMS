@@ -16,6 +16,11 @@ class Forms_User_Register extends Form_Form
                 'email'     => array('type'=>'text',    'label'=>'Email', 'required', 'autocomplete'=>'off'),
                 'login'     => array('type'=>'text',    'label'=>'Логин', 'required', 'autocomplete'=>'off'),
                 'password'  => array('type'=>'password', 'label'=>'Пароль', 'required', 'autocomplete'=>'off'),
+
+                'fname'     => array('label'=>'Имя'),
+                'lname'     => array('label'=>'Фамилия'),
+                'phone'     => array('label'=>'Телефон'),
+
                 'captcha'   => array('type'=>'captcha', 'label'=>'Проверка'),
                 'submit'    => array('type'=>'submit', 'value'=>'Регистрация'),
             ),
