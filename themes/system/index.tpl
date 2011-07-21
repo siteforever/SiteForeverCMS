@@ -13,8 +13,7 @@
         <div class="l-panel">
             <ul class="b-admin-menu">
                 {foreach from=$request->get('modules') item="item"}
-                <li>
-                    {if ! empty($item.icon)}{icon name=$item.icon}{/if}
+                <li>{if ! empty($item.icon)}{icon name=$item.icon}{/if}
                     <a  {if ! empty($item.norefact)}href="{$item.url}"{else}{href url=$item.url}{/if}
                         {if ! empty($item.class)}class="{$item.class}"{/if}
                         {if ! empty($item.target)}target="{$item.target}"{/if} >{$item.name}</a>
@@ -29,8 +28,7 @@
                         </li>
                         {/foreach}
                         </ul>
-                    {/if}
-                </li>
+                {/if}</li>
                 {/foreach}
             </ul>
         </div>

@@ -158,6 +158,9 @@
                         draggable       : true,
                         width           : 740,
                         title           : 'Правка информации',
+                        open            : function() {
+                            wysiwyg.init();
+                        },
                         buttons         : {
                             'Закрыть'   : function() {
                                 $(this).dialog('close');
