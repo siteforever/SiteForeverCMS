@@ -28,14 +28,14 @@ class Model_Page extends Model
 
     protected   $available_modules;
 
-    function Init()
+    public function Init()
     {
         // Кэшируем структуру страниц
         $this->all = $this->findAll(array('cond'=>'deleted = 0','order' => 'pos',));
     }
 
 
-    function onCreateTable()
+    public function onCreateTable()
     {
         $this->db->insert( $this->table, array(
             'parent'    => '0',
@@ -82,10 +82,65 @@ class Model_Page extends Model
     }
 
     /**
+     * @param Data_Object_Page $obj
+     * @return bool
+     */
+    public function onSaveStart($obj = null)
+    {
+        // Проверить алиас страницы
+        /**
+         * @var Model_Alias $alias_model
+         */
+        $alias_model    = $this->getModel('Alias');
+        $alias  = $alias_model->findByAlias( $obj->alias );
+        if ( null !== $alias ) {
+            if ( null === $obj ) {
+                // если наш объект еще не создан, значит у кого-то уже есть такой алиас
+                throw new ModelException('Такой алиас уже существует');
+            } else {
+                $route  = $obj->createUrl();
+                if ( $alias->url != $route ) {
+                    // если адреса не соответствуют
+                    throw new ModelException('Такой алиас уже существует');
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param Data_Object_Page $obj
+     * @return bool
+     */
+    public function onSaveSuccess( $obj = null )
+    {
+        /**
+         * @var Model_Alias $alias_model
+         */
+        $alias_model    = $this->getModel('Alias');
+
+        $url    = $obj->createUrl();
+
+        $alias  = $alias_model->findByUrl($url);
+
+        if ( null === $alias ) {
+            $alias  = $alias_model->createObject();
+        }
+
+        $alias->alias       = $obj->alias;
+        $alias->url         = $obj->createUrl();
+//        $alias->controller  = $obj->controller;
+//        $alias->action      = $obj->action;
+//        $alias->params      = serialize(array('id'=>$obj->getId()));
+        $alias->save();
+        return true;
+    }
+
+    /**
      * Вернет список доступных модулей
      * @return array
      */
-    function getAvaibleModules()
+    public function getAvaibleModules()
     {
         if ( is_null( $this->available_modules ) ) {
             $this->available_modules = array(
@@ -115,17 +170,12 @@ class Model_Page extends Model
         return $ret;
     }
 
-    function debugAll()
-    {
-        printVar($this->all);
-    }
-
     /**
      * Искать структуру по маршруту
      * @param  $route
      * @return array
      */
-    function findByRoute( $route )
+    public function findByRoute( $route )
     {
         foreach( $this->all as $data ) {
             if ( $data->alias == $route ) {
@@ -150,7 +200,7 @@ class Model_Page extends Model
      * @param int $id
      * @return string
      */
-    function findPathJSON( $id )
+    public function findPathJSON( $id )
     {
         $path = array();
         while( $id ) {
@@ -171,7 +221,7 @@ class Model_Page extends Model
      * @param $parent_id
      * @return int
      */
-    function getNextPos( $parent_id )
+    public function getNextPos( $parent_id )
     {
         $max   = $this->db->fetchOne(
             "SELECT MAX(pos)
@@ -189,7 +239,7 @@ class Model_Page extends Model
      * @param int $id           идентификатор
      * @return mixed
      */
-    function switching( $action, $id )
+    public function switching( $action, $id )
     {
         $current = $this->find( $id );
         switch( $action ) {
@@ -219,7 +269,7 @@ class Model_Page extends Model
      * @param $id
      * @return bool
      */
-    function moveUp( $id )
+    public function moveUp( $id )
     {
         $current    = $this->find( $id );
 
@@ -240,7 +290,7 @@ class Model_Page extends Model
      * @param $id
      * @return bool
      */
-    function moveDown( $id )
+    public function moveDown( $id )
     {
         $current    = $this->find( $id );
 
@@ -273,12 +323,11 @@ class Model_Page extends Model
         return false;
     }
 
-
     /**
      * Создает дерево $this->tree по данным из $this->all
      * @param int $parent
      */
-    function createTree( $parent = 0 )
+    public function createTree( $parent = 0 )
     {
         $this->parents = array();
         if ( count($this->all) == 0 ) {
@@ -299,9 +348,9 @@ class Model_Page extends Model
      * @param int $level уровень вложенности
      * @return string
      */
-    function getMenu( $parent, $levelback = 1 )
+    public function getMenu( $parent, $levelback = 1 )
     {
-        $html = '';
+        $html = array();
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
@@ -315,7 +364,7 @@ class Model_Page extends Model
             return '';
         }
 
-        $html          .= '<ul>';
+        $html[]         = '<ul>';
         $counter        = count( $this->parents[ $parent ] );
         $total_count    = $counter;
 
@@ -325,28 +374,38 @@ class Model_Page extends Model
                 //&& $this->app()->getUser()->hasPermission( $branch['protected'] )
                 && $branch['deleted'] == 0 )
             {
-                $html .= "<li class='item-{$branch['id']}".($counter == $total_count?" first":($counter==1?" last":""))."'>";
-                if ( $branch['id'] == $this->request->get('id') || $branch['alias']==$this->request->get('route') ) {
-                    $html .= '<span>'.$branch['name'].'</span>';
+                $html[] = "<li class='item-{$branch['id']}"
+                         .($counter == $total_count
+                                 ? " first"
+                                 : ($counter==1
+                                         ? " last"
+                                         : ""
+                                   )
+                          )
+                         ."'>";
+                if (    /*$branch['id'] == $this->request->get('id')
+                     ||*/ $branch['alias'] == $this->request->get('route')
+                ) {
+                    $html[] = '<span>'.$branch['name'].'</span>';
                     //$html .= "<a ".href($branch['alias'])." class='active'>{$branch['name']}</a>";
                 }
                 else {
-                    $html .= "<a ".href($branch['alias']).">{$branch['name']}</a>";
+                    $html[] = '<a '.href($branch['alias']).">{$branch['name']}</a>";
                 }
-                $html .= $this->getMenu( $branch['id'], $levelback - 1 );
-                $html .= '</li>';
+                $html[] = $this->getMenu( $branch['id'], $levelback - 1 );
+                $html[] = '</li>';
             }
             $counter--;
         }
-        $html .= '</ul>';
-        return $html;
+        $html[] = '</ul>';
+        return implode( $html );
     }
 
     /**
      * Венет HTML-структуру
      * @return string
      */
-    function createHtmlList()
+    public function createHtmlList()
     {
         $this->html = array();
         $this->returnListRecursive( 0 );
@@ -355,8 +414,8 @@ class Model_Page extends Model
     /**
      * Обходит массив дерева структуры и возвращает
      * на его основе HTML для админки
-     * @param $parent
-     * @param $level
+     * @param int $parent
+     * @param int $level
      * @return array
      */
     protected function returnListRecursive( $parent, $level = 1 )
@@ -380,12 +439,6 @@ class Model_Page extends Model
                 continue;
             }
 
-            $icon   = $branch['controller'] == 'page' ? 'page' : 'folder';
-            $icon   = $branch['controller'] == 'news' ? 'folder_feed' : $icon;
-            $icon   = $branch['controller'] == 'gallery' ? 'folder_picture' : $icon;
-            $icon   = $branch['controller'] == 'catalog' ? 'folder_table' : $icon;
-            $icon   = isset($this->parents[ $branch['id'] ]) ? 'folder_explore' : $icon;
-
             $li_class = '';
             if ( $level == 1 ) {
                 $li_class = ' class="level_one"';
@@ -402,35 +455,32 @@ class Model_Page extends Model
             }
 
             $this->html[] =
-                    $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>
-                    <span id='item{$branch['id']}' class='{$bicon}'>".icon($icon).
-//                    " <a ".href('admin',   array('edit'   => $branch['id'])).">{$branch['name']}</a>".
-                    " <a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id'])).">{$branch['name']}</a>".
-                    "<span class='tools'>".
-//                        "<a ".href('admin', array('edit'   => $branch['id']))."   title='Правка'>".icon('pencil', 'Правка')."</a>".
-                        "<a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id']))." title='Правка'>".icon('pencil', 'Правка')."</a>".
-//                        "<a ".href('admin', array('add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
-                        "<a ".href(null, array( 'controller'=>'page','action'=>'add','add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>".
-                        "<a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>".
-                            //($branch['controller'] != 'page' ? '' : " <a class='link_add' page='{$branch['id']}' ".href('').">".icon('link_add', 'Добавить внешнюю связь').'</a> ' ).
-                    "</span>".
-                    "<span class='order'>".
-                        ($branch['controller']=='page' ? '' : '<a class="link_del" page="'.$branch['id'].'" '.href('').'>'.icon('link', 'Внешняя связь').'</a>' ).
-                        ($branch['hidden'] ?
-                                " <a ".href('admin', array('do'=>'on','part'=>$branch['id'])).">".icon('lightbulb_off', 'Выключен')."</a>":
-                                " <a ".href('admin', array('do'=>'off','part'=>$branch['id'])).">".icon('lightbulb', 'Включен'))."</a>".
-                            " <a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>".icon('arrow_up', 'Вверх')."</a>
-                        <a class='order-down' ".href('admin', array('do'=>'down','part'=>$branch['id']))." title='Вниз'>".icon('arrow_down', 'Вниз')."</a>
+                    $prefix."<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>"
+                    ."<span id='item{$branch['id']}' class='{$bicon}'>".icon($this->selectIcon($branch))
+                    ." <a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id'])).">{$branch['name']}</a>"
+                    ."<span class='tools'>"
+                        ."<a ".href(null,array('controller'=>'page','action'=>'edit','edit'=>$branch['id']))." title='Правка'>".icon('pencil', 'Правка')."</a>"
+                        ."<a ".href(null, array( 'controller'=>'page','action'=>'add','add' => $branch['id']))."    title='Добавить'>".icon('add', 'Добавить')."</a>"
+                        ."<a ".href('admin', array('do'=>'delete','part'=>$branch['id']))." title='Удалить' class='do_delete'>".icon('delete', 'Удалить')."</a>"
+                    ."</span>"
+                    ."<span class='order'>"
+                        .($branch['controller']=='page'
+                            ? ''
+                            : '<a class="link_del" page="'.$branch['id'].'" '.href('').'>'.icon('link', 'Внешняя связь').'</a>'
+                        )
+                        .($branch['hidden']
+                            ? " <a ".href('admin', array('do'=>'on','part'=>$branch['id'])).">".icon('lightbulb_off', 'Выключен')."</a>"
+                            : " <a ".href('admin', array('do'=>'off','part'=>$branch['id'])).">".icon('lightbulb', 'Включен')
+                        )."</a>"
+                        ."<a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>"
+                            .icon('arrow_up', 'Вверх')."</a>"
+                        ."<a class='order-down' ".href('admin', array('do'=>'down','part'=>$branch['id']))." title='Вниз'>"
+                            .icon('arrow_down', 'Вниз')."</a>"
 
-                        <span class='id_number'>
-                        #{$branch['id']}
-                        </span>
-                    </span>
-                </span>";
+                        ."<span class='id_number'>#{$branch['id']}</span>"
+                    ."</span>"
+                ."</span>";
 
-            //if ( $opened ) {
-            //    $this->returnListRecursive( $this->parents[ $branch['id'] ], $level + 1 );
-            //}
             $this->returnListRecursive( $branch['id'], $level + 1 );
             $this->html[] = $prefix."</li>";
         }
@@ -438,10 +488,24 @@ class Model_Page extends Model
     }
 
     /**
+     * @param $branch
+     * @return string
+     */
+    private function selectIcon($branch)
+    {
+        $result   = $branch['controller'] == 'page' ? 'page' : 'folder';
+        $result   = $branch['controller'] == 'news' ? 'folder_feed' : $result;
+        $result   = $branch['controller'] == 'gallery' ? 'folder_picture' : $result;
+        $result   = $branch['controller'] == 'catalog' ? 'folder_table' : $result;
+        $result   = isset($this->parents[ $branch['id'] ]) ? 'folder_explore' : $result;
+        return  $result;
+    }
+
+    /**
      * Вернет объект формы
      * @return Form_Form
      */
-    function getForm()
+    public function getForm()
     {
         if ( ! isset($this->form) ) {
             $this->form = new Forms_Page_Page();
@@ -450,5 +514,4 @@ class Model_Page extends Model
         }
         return $this->form;
     }
-
 }

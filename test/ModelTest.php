@@ -165,5 +165,11 @@ class ModelTest extends PHPUnit_Framework_TestCase
         $pdo    = $this->object->getDB()->getResource();
         $pdo->exec("DROP TABLE `{$this->object->getTable()}`");
     }
+
+//
+//    public function testMigration()
+//    {
+//        $reflection = new ReflectionMethod( get_class( $this->object ), 'migration' );
+//        $reflection->invoke( $this->object );
+//    }
 }
-?>

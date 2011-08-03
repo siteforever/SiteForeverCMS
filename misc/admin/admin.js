@@ -116,18 +116,35 @@ $(function() {
     }
 
     $('a.filemanager').filemanager();
-//    $('a.filemanager').fancybox({
-//        width       : 650,
-//        height      : 430,
-//        scrolling   : 'no',
-//        type        : 'iframe',
-//        href        : '/?controller=elfinder&finder=1&langCode=ru'
-//    });
-
-
     $('a.dumper').dumper();
 
+    $('a.realias').realias();
+
 });
+
+$.fn.realias    = function()
+{
+    return $(this).each(function(){
+        $(this).click(function(){
+            if ( $("#realias_dialog").length == 0 ) {
+                $('body').append("<div id='realias_dialog'></div>");
+                $("#realias_dialog").dialog({
+                    autoOpen:  false,
+                    width:     650,
+                    height:    465,
+                    modal:     true,
+                    resizable: false,
+                    title:     'Пересчет алиасов'
+                });
+            }
+            $("#realias_dialog").html('<p>Ведется пересчет...<br />Не закрывайте окно.</p>').dialog("open");
+            $.post($(this).attr('href'), function( request ) {
+                $("#realias_dialog").html(request);
+            });
+            return false;
+        });
+    });
+}
 
 $.fn.filemanager    = function()
 {

@@ -17,7 +17,7 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->html = new Siteforever_Html;
+        $this->html = Siteforever::html();
         App::getInstance()->getConfig()->set('url.rewrite', true);
     }
 
@@ -32,7 +32,7 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
     public function testHref()
     {
         $this->assertEquals(
-            'href="/elcatalog/metaProduct/prodid/15"',
+            'href="/elcatalog/metaproduct/prodid/15"',
             $this->html->href( null, array("controller"=>"elcatalog", "action"=>"metaProduct", "prodid"=>15) )
         );
     }

@@ -27,6 +27,7 @@ return array(
         'password'  => 'siteforever',
         'host'      => 'localhost',
         'database'  => 'siteforever',
+        'migration' => true,
     ),
 
     // тема

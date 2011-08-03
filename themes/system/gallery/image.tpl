@@ -11,8 +11,8 @@
 </style>
 
 <div class="sf_gallery_panel">
-    {if $pred}<div class="sf_gallery_pred"><a {href img=$pred->id}>&laquo; Пред.</a></div>{/if}
-    {if $next}<div class="sf_gallery_next"><a {href img=$next->id}>След. &raquo;</a></div>{/if}
+    {if $pred}<div class="sf_gallery_pred"><a href="/{$pred->getAddr()}">&laquo; Пред.</a></div>{/if}
+    {if $next}<div class="sf_gallery_next"><a href="/{$next->getAddr()}">След. &raquo;</a></div>{/if}
     <div class="clear"></div>
 </div>
 

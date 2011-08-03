@@ -167,7 +167,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
         return null;
     }
 
-
     /**
      * Вернет список установленных атрибутов
      * @return array

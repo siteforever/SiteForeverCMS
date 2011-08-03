@@ -10,7 +10,7 @@ class Controller_Page extends Controller
     function access()
     {
         return array(
-            'system'    => array('admin','edit','add','correct','move','nameconvert','save'),
+            'system'    => array('admin','edit','add','correct','move','nameconvert','save','realias',),
         );
     }
 
@@ -116,8 +116,8 @@ class Controller_Page extends Controller
         //printVar($model->parents);
         $model->createHtmlList();
 
-        $this->request->setContent(
-            '<div class="b-main-structure">'.join( "\n", $model->html ).'</div>' );
+        $this->tpl->html    = join( "\n", $model->html );
+        $this->request->setContent( $this->tpl->fetch('system:page.admin') );
     }
 
     /**
@@ -201,11 +201,11 @@ class Controller_Page extends Controller
 
         $form   = $model->getForm();
 
-        if ( $form->getPost() ) {
-            if ( $form->validate() ) {
-
+        if ( $form->getPost() )
+        {
+            if ( $form->validate() )
+            {
                 $form->update   = time();
-
                 $obj    = $model->createObject( $form->getData() );
 
                 // Если с таким маршрутом уже есть страница, то не сохранять
@@ -225,35 +225,18 @@ class Controller_Page extends Controller
                 }
 
                 $old_id = $obj->getId();
-                if ( $obj->save() ) {
-                    /**
-                     * @var Model_Alias $alias_model
-                     */
-                    $alias_model    = $this->getModel('Alias');
 
-                    $alias  = $alias_model->findByAlias( $obj->alias );
-
-                    if ( null === $alias ) {
-                        $alias  = $alias_model->createObject(
-                            array(
-                                'alias'     => $obj->alias,
-                                'controller'=> 'page',
-                                'action'    => 'index',
-                                'params'    => serialize(array('id'=>$obj->getId())),
-                            )
-                        );
-                        $alias->save();
+                try {
+                    if ( $obj->save() ) {
+                        $this->request->addFeedback(t('Data save successfully'));
+                        if ( ! $old_id ) {
+                            reload(null, array('controller'=>'page','action'=>'edit','edit'=>$obj->getId()));
+                        }
                     } else {
-                        $alias->alias   = $obj->alias;
-                        $alias->params  = serialize(array('id'=>$obj->getId()));
+                        $this->request->addFeedback(t('Data not saved'));
                     }
-
-                    $this->request->addFeedback(t('Data save successfully'));
-                    if ( ! $old_id ) {
-                        reload(null, array('controller'=>'page','action'=>'edit','edit'=>$obj->getId()));
-                    }
-                } else {
-                    $this->request->addFeedback(t('Data not saved'));
+                } catch ( ModelException $e ) {
+                    $this->request->addFeedback( $e->getMessage() );
                 }
             } else {
                 $this->request->addFeedback( $form->getFeedback() );
@@ -308,7 +291,7 @@ class Controller_Page extends Controller
      * Перемещение раздела
      * @return void
      */
-    function moveAction()
+    public function moveAction()
     {
         // используем шаблон админки
         $this->request->set('template', 'index');
@@ -323,4 +306,32 @@ class Controller_Page extends Controller
         }
         reload('admin');
     }
+
+    /**
+     * Пересчитает все алиасы структуры
+     * @return void
+     */
+    public function realiasAction()
+    {
+        $this->request->setTitle('Пересчет алиасов');
+        $pages  = $this->getModel('Page')->findAll(array('cond'=>'deleted = 0'));
+        ob_implicit_flush(1);
+
+        /**
+         * @var Data_Object_Page $page
+         */
+        foreach ( $pages as $page ) {
+            try {
+                $page->save();
+                print('Алиас &laquo;' . $page->alias .'&raquo; пересчитан<br />');
+                //$this->request->addFeedback('Алиас &laquo;' . $page->alias .'&raquo; пересчитан');
+            } catch ( Exception $e ) {
+                print( $e->getMessage() . ' &laquo;' . $page->alias .'&raquo;<br />' );
+                //$this->request->addFeedback( $e->getMessage() . ' &laquo;' . $page->alias .'&raquo;' );
+            }
+        }
+
+        $this->request->setContent('Пересчет алиасов завершен');
+    }
+
 }

@@ -84,6 +84,7 @@ class ControllerResolver
                     }
                 }
             }
+
             if ( $ref->hasMethod( $command['action'] ) ) {
 //                printVar($command);
                 $result = $controller->$command['action']();

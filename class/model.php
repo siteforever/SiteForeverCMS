@@ -260,10 +260,57 @@ abstract class Model
             if ( ! $this->isExistTable( $this->table ) ) {
                 $this->addNewTable( $this->table );
                 $this->onCreateTable();
+            } elseif ( $this->config->get('db.migration') ) {
+                $this->migration();
             }
         }
 
         return $this->table;
+    }
+
+    /**
+     * Выполнение сверки таблицы и выполнение миграции полей
+     * @return void
+     */
+    private function migration()
+    {
+        $sys_fields     = $this->getTable()->getFields();
+        $have_fields    = $this->getDB()->getFields((string)$this->getTable());
+
+        $txtsys_fields  = array();
+        foreach ( $sys_fields as $sfield ) {
+            /**
+             * @var Data_Field $sfield
+             */
+            $txtsys_fields[]    = $sfield->getName();
+        }
+
+        $add_array = array_diff( $txtsys_fields, $have_fields );
+        $del_array = array_diff( $have_fields, $txtsys_fields );
+
+
+        $sql    = array();
+
+        if ( count($add_array) || count($del_array) ) {
+
+            foreach ( $del_array as $col ) {
+                $sql[]  = "ALTER TABLE `{$this->getTable()}` DROP COLUMN `$col`";
+            }
+            foreach ( $add_array as $key => $col ) {
+                $after  = '';
+                if ( $key == 0 ) {
+                    $after  = ' FIRST';
+                }
+                if ( $key > 0 ) {
+                    $after  = ' AFTER `'.$sys_fields[$key-1]->getName().'`';
+                }
+                $sql[]  = "ALTER TABLE `{$this->getTable()}` ADD COLUMN ".$sys_fields[$key].$after;
+            }
+
+            foreach ( $sql as $query ) {
+                $this->getDB()->query( $query );
+            }
+        }
     }
 
     /**
@@ -430,29 +477,25 @@ abstract class Model
             );
         }
 
-        switch ( $relation[$rel][0] ) {
+        switch ( $relation[$rel][0] )
+        {
             case self::HAS_ONE:
                 return $model->find( $criteria );
-                break;
 
             case self::HAS_MANY:
                 return $model->findAll( $criteria );
-                break;
 
             case self::BELONGS:
                 if ( $obj->$key ) {
                     return $model->find( $obj->$key );
                 }
                 return null;
-                break;
 
             case self::MANY_MANY:
-
-                break;
+                return null;
 
             case self::STAT:
-                $model->count( $criteria['cond'], $criteria['params'] );
-                break;
+                return $model->count( $criteria['cond'], $criteria['params'] );
         }
     }
 
@@ -463,6 +506,9 @@ abstract class Model
      */
     public function save( Data_Object $obj )
     {
+        if ( ! $this->onSaveStart( $obj ) ) {
+            return null;
+        }
         $data   = $obj->getAttributes();
 
         $fields = $this->table->getFields();
@@ -488,7 +534,28 @@ abstract class Model
             $obj->id  = $ret;
             $this->addToMap( $obj );
         }
+        if ( null !== $ret ) {
+            $this->onSaveSuccess( $obj );
+        }
         return $ret;
+    }
+
+    /**
+     * @param Data_Object $obj
+     * @return bool
+     */
+    public function onSaveStart( $obj = null )
+    {
+        return true;
+    }
+
+    /**
+     * @param Data_Object $obj
+     * @return bool
+     */
+    public function onSaveSuccess( $obj = null )
+    {
+        return true;
     }
 
     /**
@@ -555,6 +622,36 @@ abstract class Model
             return $count;
 
         return 0;
+    }
+
+    /**
+     * Начало транзакции
+     * @return void
+     */
+    public function transaction()
+    {
+        $pdo    = $this->db->getResource();
+        $pdo->beginTransaction();
+    }
+
+    /**
+     * Применение транзакции
+     * @return void
+     */
+    public function commit()
+    {
+        $pdo    = $this->db->getResource();
+        $pdo->commit();
+    }
+
+    /**
+     * Откат транзакции
+     * @return void
+     */
+    public function rollBack()
+    {
+        $pdo    = $this->db->getResource();
+        $pdo->rollBack();
     }
 
 }

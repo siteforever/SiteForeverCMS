@@ -150,26 +150,41 @@
         $('a.gallery_picture_edit').each(function(){
             $(this).click(function(){
                 action = $(this).attr('href');
-                if ( $('#gallery_picture_edit').length == 0 ) {
+                if ( 0 == $('#gallery_picture_edit').length ) {
                     $('<div id="gallery_picture_edit" />').appendTo('div.l-content');
                     $('#gallery_picture_edit').dialog({
                         autoOpen        : false,
                         modal           : true,
-                        draggable       : true,
+                        draggable       : false,
                         width           : 740,
                         title           : 'Правка информации',
                         open            : function() {
-                            wysiwyg.init();
+//                            wysiwyg.init();
+                            return true;
                         },
                         buttons         : {
                             'Закрыть'   : function() {
                                 $(this).dialog('close');
+                                return true;
                             },
                             'Сохранить' : function() {
                                 $(this).find('form').ajaxSubmit({
                                     url     : action,
-                                    target  : '#gallery_picture_edit'
+                                    success : function(response) {
+                                        $.showBlock(response);
+                                        $.hideBlock(2000);
+                                        return true;
+                                    },
+                                    error: function () {
+                                        $.showBlock('Данные не сохранены');
+                                        $.hideBlock(2000);
+                                        return true;
+                                    }
+                                    //target  : '#gallery_picture_edit'
                                 });
+                                $(this).dialog('close');
+                                $.showBlock('Отправка...');
+                                return true;
                             }
                         }
                     }).hide();
@@ -179,14 +194,13 @@
 
                 $.showBlock('Загрузка...');
                 $.post($(this).attr('href'), function( data ){
-                    $.hideBlock();
                     $('#gallery_picture_edit').html(data).dialog('open');
+                    $.hideBlock();
+                    return true;
                 });
                 
                 return false;
             });
-
-
         });
 
 

@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class forms_gallery_category extends form_Form
+class Forms_Gallery_Category extends form_Form
 {
     function __construct()
     {
@@ -17,7 +17,6 @@ class forms_gallery_category extends form_Form
             'fields'    => array(
                 'id'        => array('type'=>'int', 'hidden', 'value'=>'0'),
                 'name'      => array('type'=>'text', 'label'=>'Наименование', 'required'),
-                'alias'     => array('type'=>'text', 'label'=>'Псевдоним', 'required'),
 
                 'middle_method' => array(
                     'type'  =>'select',

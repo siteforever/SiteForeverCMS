@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: keltanas
- * Date: 30.09.2010
- * Time: 23:56:10
- * To change this template use File | Settings | File Templates.
+ * Модель для изображений галереи
  */
 
 class Model_Gallery extends Model
@@ -14,59 +10,76 @@ class Model_Gallery extends Model
     function getNextPosition( $category_id )
     {
         return $this->db->fetchOne(
-            "SELECT MAX(pos)+1
-            FROM {$this->getTable()}
-            WHERE category_id = :category_id
-            LIMIT 1",
-            array(':category_id'=>$category_id)
+             "SELECT MAX(pos)+1"
+            ."FROM `{$this->getTable()}` "
+            ."WHERE category_id = ? "
+            ."LIMIT 1",
+            array($category_id)
         );
     }
 
     /**
-     * @param array $cond = array()
-     * @param string $limit = ''
-     * @return array
-     *
-     * $model = findAll(array('category_id = 10', 'hidden = 0'), '20, 10');
+     * @param Data_Object_Gallery $obj
+     * @return bool
      */
-    /*function findAll($cond = array(), $limit = '')
+    public function onSaveStart($obj = null)
     {
-        $where = '';
-        if ( count($cond) ) {
-            $where = ' WHERE '.implode(' AND ', $cond);
+//        print "Проверить алиас страницы";
+        /**
+         * @var Model_Alias $alias_model
+         */
+        $alias_model    = $this->getModel('Alias');
+        $alias          = $alias_model->findByAlias( $obj->getAlias() );
+        if ( null !== $alias ) {
+            if ( null === $obj ) {
+                // если наш объект еще не создан, значит у кого-то уже есть такой алиас
+                throw new ModelException('Такой алиас уже существует');
+            } else {
+                $route  = $obj->createUrl();
+                if ( $alias->url != $route ) {
+                    // если адреса не соответствуют
+                    throw new ModelException('Такой алиас уже существует');
+                }
+            }
         }
-        if ( $limit != '' ) {
-            $limit = ' LIMIT '.$limit;
-        }
-        return $this->db->fetchAll("SELECT * FROM {$this->table} {$where} ORDER BY `pos` {$limit}");
-    }*/
+        return true;
+    }
 
     /**
-     * Количество по условию
-     * @param array $cond
-     * @return string
+     * @param Data_Object_Page $obj
+     * @return bool
      */
-    /*function getCount($cond = array())
+    public function onSaveSuccess( $obj = null )
     {
-        $where = '';
-        if ( count($cond) ) {
-            $where = ' WHERE '.implode(' AND ', $cond);
+        /**
+         * @var Model_Alias $alias_model
+         */
+        $alias_model    = $this->getModel('Alias');
+
+        $alias  = $alias_model->findByUrl($obj->createUrl());
+
+        if ( null === $alias ) {
+            $alias  = $alias_model->createObject();
         }
-        return $this->db->fetchOne("SELECT COUNT(*) FROM {$this->table} {$where}");
-    }*/
 
-    /*function insert()
-    {
-        unset( $this->data['id'] );
-        $id = $this->db->insert($this->table, $this->data);
-        $this->set('id', $id);
-        return $id;
-    }*/
+        $alias->alias       = $obj->getAlias();
+        $alias->url         = $obj->createUrl();
+        $alias->controller  = 'gallery';
+        $alias->action      = 'index';
+        $alias->params      = serialize(array('id'=>$obj->getId()));
+        $alias->save();
 
-    /*function update()
-    {
-        return $this->db->update($this->table, $this->data, "id = {$this->data['id']}");
-    }*/
+        try {
+            if ( $obj->alias_id != $alias->getId() ) {
+                $obj->alias_id  = $alias->getId();
+                $obj->save();
+            }
+        } catch ( Exception $e ) {
+            print $e->getMessage();
+        }
+
+        return true;
+    }
 
     /**
      * Удалить изображения перед удаление объекта
@@ -90,7 +103,6 @@ class Model_Gallery extends Model
         }
         return false;
     }
-
 
     /**
      * Пересортировка изображений

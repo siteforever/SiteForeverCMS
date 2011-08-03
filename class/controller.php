@@ -11,6 +11,7 @@ abstract class Controller
      * @var array
      */
     protected $params;
+
     /**
      * @var array
      */
@@ -20,31 +21,38 @@ abstract class Controller
      * @var SysConfig $config
      */
     protected $config;
+
     /**
      * @var Request
      */
     protected $request;
+
     /**
      * @var router
      */
     protected $router;
+
     /**
      * @var TPL_Driver
      */
     protected $tpl;
+
     /**
      * @var Data_Object
      */
     protected $user;
 
+
     /**
      * @var Basket
      */
     protected $basket;
+
     /**
      * @var model_Templates
      */
     protected $templates;
+
 
     /**
      * @var Application_Abstract
@@ -69,23 +77,35 @@ abstract class Controller
         //print "id = {$this->request->get('id')}\n";
 
         try {
-            $page   = $this->getModel('Page')->find( $this->request->get('id') );
+            $id     = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
+
+            if (    $id
+                 && 'page' != $this->request->get('controller')
+                 && $this->app()->getRouter()->isAlias()
+            ) {
+                $page   = $this->getModel('Page')->find(array('cond'=>'link = ? AND deleted = 0','params'=>array($id)));
+            }
+            elseif ( 'page' == $this->request->get('controller') && $id ) {
+                $page   = $this->getModel('Page')->find( $id );
+            }
+            else {
+                $page   = null;
+            }
         } catch ( ModelException $e ) {
             $page   = null;
-//            $page   = $this->getModel('Page')->createObject();
         }
 
         if ( $page ) {
             if ( ! $page->title ) {
                 $page->title    = $page->name;
             }
-            $this->page = $page->getAttributes();
-            $this->request->setTemplate($page->template);
-            $this->request->setContent($page->content);
-            $this->request->setTitle( $page->title );
+            $this->page     = $page->getAttributes();
+            $this->request->setTemplate($page->template );
+            $this->request->setContent( $page->content );
+            $this->request->setTitle(   $page->title );
         }
 
-        $this->request->set('tpldata.page', $this->page);
+        $this->request->set( 'tpldata.page', $this->page );
 
         $this->tpl->request = $this->request;
         $this->tpl->page    = $this->page;
@@ -162,7 +182,8 @@ abstract class Controller
 
     /**
      * Вернет форму
-     * @return form_Form
+     * @param $name
+     * @return Form_Form
      */
     function getForm( $name )
     {
@@ -211,5 +232,21 @@ abstract class Controller
     }
 
     abstract function indexAction();
+
+    /**
+     * @param Data_Object_Page $page
+     */
+    public function setPage( Data_Object_Page $page)
+    {
+        $this->page = $page;
+    }
+
+    /**
+     * @return Data_Object_Page
+     */
+    public function getPage()
+    {
+        return $this->page;
+    }
 
 }

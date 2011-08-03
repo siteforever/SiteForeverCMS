@@ -21,6 +21,8 @@ class Router
 
     private $template   = 'index';
 
+    private $_isAlias   = false;
+
     /**
      * Создаем маршрутизатор
      * @param Request $request
@@ -76,20 +78,29 @@ class Router
     }
 
     /**
+     * Произошел поиск по алиасу
+     * @return bool
+     */
+    public function isAlias()
+    {
+        return  $this->_isAlias;
+    }
+
+    /**
      * Вернет href для ссылки
-     * @param string $url
+     * @param string $result
      * @param array  $params
      * @return string
      */
-    public function createLink( $url = '', $params = array() )
+    public function createLink( $result = '', $params = array() )
     {
-        if ( null === $url && isset( $params['controller'] ) ) {
+        if ( null === $result && isset( $params['controller'] ) ) {
             return $this->createDirectRequest( $params );
         }
 
-        $url = trim($url, '/');
-        if ( '' === $url ) {
-            $url = $this->request->get('route');
+        $result = trim($result, '/');
+        if ( '' === $result ) {
+            $result = $this->request->get('route');
         }
 
         $par = array();
@@ -100,18 +111,18 @@ class Router
             }
         }
 
-        if ( 'index' == $url ) {
-            $url = '';
+        if ( 'index' == $result ) {
+            $result = '';
         }
 
         if ( App::getInstance()->getConfig()->get('url.rewrite') ) {
-            $url = '/'.$url.( count($par) ? '/'.join('/', $par) : '' );
+            $result = '/'.$result.( count($par) ? '/'.join('/', $par) : '' );
         }
         else {
-            $url = '/?route='.$url.( count($par) ? '&'.join('&', $par) : '' );
+            $result = '/?route='.$result.( count($par) ? '&'.join('&', $par) : '' );
         }
 
-        return $url;
+        return strtolower($result);
     }
 
     /**
@@ -141,7 +152,7 @@ class Router
             $result = '/';
         }
 
-        return $result;
+        return strtolower($result);
     }
 
     /**
@@ -176,36 +187,37 @@ class Router
             return true;
         }
 
-        if ( ! $this->findAlias() ) {
-            if ( ! $this->findRoute() ) {
-                if ( ! $this->findStructure() ) {
+        $this->findAlias();
 
-                    $route_pieces   = explode( '/', $this->route );
+        if ( ! $this->findRoute() )
+        {
+            if ( ! $this->findStructure() ) {
 
-                    if ( count( $route_pieces ) == 1 ) {
-                        $this->controller   = $route_pieces[0];
-                        $this->action   = 'index';
-                    }
-                    elseif ( count( $route_pieces ) > 1 ) {
-                        $this->controller   = $route_pieces[0];
-                        $this->action       = $route_pieces[1];
+                $route_pieces   = explode( '/', $this->route );
 
-                        $route_pieces       = array_slice( $route_pieces, 2 );
+                if ( count( $route_pieces ) == 1 ) {
+                    $this->controller   = $route_pieces[0];
+                    $this->action   = 'index';
+                }
+                elseif ( count( $route_pieces ) > 1 ) {
+                    $this->controller   = $route_pieces[0];
+                    $this->action       = $route_pieces[1];
 
-                        if ( 0 == count( $route_pieces ) % 2 ) {
-                            $key    = '';
-                            foreach ( $route_pieces as $i => $r ) {
-                                if ( $i % 2 ) {
-                                    $this->request->set( $key, $r );
-                                } else {
-                                    $key    = $r;
-                                }
+                    $route_pieces       = array_slice( $route_pieces, 2 );
+
+                    if ( 0 == count( $route_pieces ) % 2 ) {
+                        $key    = '';
+                        foreach ( $route_pieces as $i => $r ) {
+                            if ( $i % 2 ) {
+                                $this->request->set( $key, $r );
+                            } else {
+                                $key    = $r;
                             }
                         }
                     }
-                    else {
-                        $this->activateError();
-                    }
+                }
+                else {
+                    $this->activateError();
                 }
             }
         }
@@ -239,17 +251,10 @@ class Router
             )
         );
         if ( $alias ) {
-            $this->controller   = $alias->controller;
-            $this->action       = $alias->action;
-            $params = $alias->getParams();
-            if ( $params && is_array( $params ) ) {
-                foreach ( $params as $key => $val ) {
-                    $this->request->set( $key, $val );
-                }
-            }
+            $this->setRoute( $alias->url );
+            $this->_isAlias = true;
             return true;
         }
-
         return false;
     }
 
@@ -360,7 +365,7 @@ class Router
      */
     public function setRoute($route)
     {
-        $this->route = $route;
+        $this->route = trim($route,'/');
         return $this;
     }
 

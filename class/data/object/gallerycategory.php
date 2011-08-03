@@ -12,27 +12,32 @@ class Data_Object_GalleryCategory extends Data_Object
      * Вернет псевдоним для категории
      * @return mixed|string
      */
-    public function createAlias()
+    public function getAlias()
     {
         $alias_model    = $this->getModel('Alias');
-        $structure_model= $this->getModel('Page');
 
-        /**
-         * @var Data_Object_Alias $alias
-         */
-        $alias      = $alias_model->createObject();
-
-        $strpage    = $structure_model->find(
-            array(
-                'cond'      => ' controller = ? AND action = ? AND link = ? ',
-                'params'    => array( 'gallery', 'index', $this->id ),
-            )
-        );
+        $strpage    = $this->getPage();
 
         if ( $strpage ) {
-            return $strpage->alias . '/' . $alias->generateAlias( $this->name );
-        } else {
-            return $alias->generateAlias( $this->name );
+            return $strpage->alias;
         }
+        else {
+            return $alias_model->generateAlias( $this->name );
+        }
+    }
+
+    /**
+     * @return Data_Object_Page
+     */
+    public function getPage()
+    {
+        $model  = $this->getModel('Page');
+        $result = $model->find( array(
+            'cond'  => '`controller` = ? AND `action` = ? AND `link` = ? AND `deleted` = 0 ',
+            'params'=> array('gallery', 'index', $this->getId()),
+        ));
+        if ( null === $result  )
+            throw new Data_Exception(t('Page not found for gallery'));
+        return $result;
     }
 }

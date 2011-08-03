@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class controller_News extends Controller
+class Controller_News extends Controller
 {
 
     function indexAction()
@@ -207,7 +207,8 @@ class controller_News extends Controller
         {
             $this->setAjax();
 
-            if ( $form->validate() ) {
+            if ( $form->validate() )
+            {
                 $data   = $form->getData();
                 $obj    = $model->createObject( $data );
 
@@ -227,7 +228,6 @@ class controller_News extends Controller
             }
             return;
         }
-
 
         $edit   = $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT);
 

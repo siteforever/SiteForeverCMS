@@ -1,5 +1,4 @@
 <?php
-
 require_once 'application/abstract.php';
 
 /**
@@ -61,8 +60,8 @@ class App extends Application_Abstract
         );
 
         // Locale
-        setlocale ( LC_TIME,    'rus', 'ru_RU.UTF-8', 'Russia');
-        setlocale ( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English');
+        setlocale ( LC_TIME,    'rus',  'ru_RU.UTF-8', 'Russia');
+        setlocale ( LC_NUMERIC, 'C',    'en_US.UTF-8', 'en_US', 'English');
 
         // TIME_ZONE
         date_default_timezone_set ( 'Europe/Moscow' );
@@ -212,7 +211,11 @@ class App extends Application_Abstract
                 }
             }
 
-            $this->getTpl()->display( $this->getRequest()->get('resource').$this->getRequest()->get('template') );
+            $layout = $this->getTpl()->fetch( $this->getRequest()->get('resource').$this->getRequest()->get('template') );
+            $layout = preg_replace('/[ \t]+/', ' ', $layout);
+            $layout = preg_replace('/\n[ \t]+/', "\n", $layout);
+            $layout = preg_replace('/\n+/', "\n", $layout);
+            print $layout;
         } else {
             // AJAX
             header('Cache-Control: no-store, no-cache, must-revalidate');

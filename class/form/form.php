@@ -160,7 +160,12 @@ class Form_Form implements ArrayAccess
      */
     function __set( $key, $value )
     {
-        $this->getField( $key )->setValue( $value );
+        try {
+            $this->getField( $key )->setValue( $value );
+            return true;
+        } catch ( Form_Exception $e ) {
+            return false;
+        }
     }
 
     /**

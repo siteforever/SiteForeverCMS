@@ -20,6 +20,14 @@ function smarty_function_href( $params )
     }
     unset($params['url']);
 
+//    if ( null == $url && isset($params['controller']) && isset($params['action']) ) {
+//        $controller = $params['controller'];
+//        $action     = $params['action'];
+//        unset($params['controller']);
+//        unset($params['action']);
+//        return App::getInstance()->getRouter()->createServiceLink( $controller, $action, $params );
+//    }
+
     return Siteforever::html()->href( $url, $params );
     //return href( $url, $params );
 }

@@ -13,7 +13,7 @@ class Controller_Gallery extends Controller
         $default = array(
             'dir' => DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'gallery',
             'thumb_prefix'  => 'thumb_',
-            'middle_prefix'  => 'middle_',
+            'middle_prefix' => 'middle_',
         );
         if ( defined('MAX_FILE_SIZE') ) {
             $default['max_file_size']   = MAX_FILE_SIZE;
@@ -31,7 +31,7 @@ class Controller_Gallery extends Controller
     {
         return array(
             'system'    => array(
-                'admin', 'edit', 'delete', 'deleteImage',
+                'admin', 'edit', 'delete', 'deleteImage', 'realias',
             ),
         );
     }
@@ -42,6 +42,7 @@ class Controller_Gallery extends Controller
      */
     public function indexAction()
     {
+        $this->request->setTemplate('inner');
         /**
          * @var model_gallery $model
          */
@@ -55,20 +56,11 @@ class Controller_Gallery extends Controller
         {
             $image  = $model->find( $img );
 
-            if ( $image ) {
-
-                $path   = json_decode( $this->page['path'] );
-                $path[] = array(
-                    'id'    => $this->page['id'],
-                    'name'  => $image->name,
-                    'url'   => $this->router->createLink('', array('img'=>$image->id))
-                );
-                $this->page['path'] =   json_encode( $path );
-                $this->request->set('tpldata.page.path', $this->page['path']);
+            if ( null !== $image ) {
 
                 $crit   = array(
                     'cond'  => 'category_id = ? AND pos > ?',
-                    'params'=> array($image->category_id, $image->pos),
+                    'params'=> array( $image->category_id, $image->pos ),
                     'order' => 'pos ASC',
                     'limit' => '1',
                 );
@@ -80,12 +72,18 @@ class Controller_Gallery extends Controller
 
                 $pred   = $model->find( $crit );
 
-                $category   = $model_category->find($image->category_id);
+                $category   = $model_category->find( $image->category_id );
 
                 $this->tpl->image   = $image;
                 $this->tpl->next    = $next;
                 $this->tpl->pred    = $pred;
                 $this->tpl->category= $category;
+
+                $bc     = $this->tpl->getBreadcrumbs();
+                $bc->clearPieces();
+                $bc->addPiece('index', 'Главная');
+                $bc->addPiece($category->getAlias(), $category->name);
+                $bc->addPiece('', $image->name);
 
                 $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
 
@@ -94,21 +92,34 @@ class Controller_Gallery extends Controller
                 );
 
                 return;
+            } else {
+                $this->request->setContent( t('Image not found') );
+                return;
             }
         }
 
-        $category = $model_category->find($this->page['link']);
+        $cat_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT, $this->page['link'] );
+        if ( $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
+            $cat_id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
+        }
+
+        if ( ! $cat_id ) {
+            $this->request->addFeedback('Не указан идентификатор категории');
+            return;
+        }
+
+        $category = $model_category->find( $cat_id );
 
         if ( $category ) {
 
             $crit   = array(
-                'cond'      => 'hidden = 0 AND category_id = :cat_id',
-                'params'    => array(':cat_id'=>$category->getId()),
+                'cond'      => 'hidden = 0 AND category_id = ?',
+                'params'    => array( $category->getId() ),
             );
 
-            $count  = $model->count($crit['cond'], $crit['params']);
+            $count  = $model->count( $crit['cond'], $crit['params'] );
 
-            $paging = $this->paging($count, $category->perpage, $this->page['alias'].'/cat='.$category['id']);
+            $paging = $this->paging( $count, $category->perpage, $this->page['alias'].'/cat='.$category['id'] );
 
             $crit['limit']  = $paging['limit'];
             $crit['order']  = 'pos';
@@ -126,7 +137,6 @@ class Controller_Gallery extends Controller
         } else {
             $this->request->addFeedback('Категория не определена');
         }
-
     }
 
     /**
@@ -159,7 +169,7 @@ class Controller_Gallery extends Controller
         }
 
         if ( $this->request->get('editimg') ) {
-            return $this->editImage($model);
+            return $this->editImage( $model );
         }
 
         if ( $switchimg = $this->request->get('switchimg', Request::INT) ) {
@@ -184,7 +194,7 @@ class Controller_Gallery extends Controller
             return 1;
         }
 
-        if ( $positions = $this->request->get('positions') ) {
+        if ( $this->request->get('positions') ) {
             print $model->reposition();
             return 1;
         }
@@ -255,10 +265,14 @@ class Controller_Gallery extends Controller
         }
 
         if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
-            $obj    = $model->find( $edit );
+            try {
+                $obj    = $model->find( $edit );
+            } catch ( Exception $e ) {
+                print $e->getMessage();
+            }
 
             $form->setData( $obj->getAttributes() );
-            $form->alias    = $obj->createAlias();
+            $form->alias    = $obj->getAlias();
         }
 
         $this->tpl->form    = $form;
@@ -332,22 +346,61 @@ class Controller_Gallery extends Controller
             if ( $form->validate() ) {
                 $obj    = $model->find( $this->request->get('editimg') );
                 $obj->setAttributes( $form->getData() );
-                $this->request->addFeedback(t('Data save successfully'));
+                $obj->save();
+                $this->request->addFeedback( $obj->getAlias() );
+                $this->request->addFeedback( t('Data save successfully') );
             }
             else {
-                $this->request->addFeedback($form->getFeedbackString());
+                $this->request->addFeedback( $form->getFeedbackString() );
             }
             //return;
+        } else {
+            $editimg    = $this->request->get('editimg');
+            if ( ! isset( $obj ) ) {
+                $obj = $model->find( $editimg );
+            }
+
+            $form->setData( $obj->getAttributes() );
+
+            $this->request->setContent( $form->html(false) );
         }
 
-        $editimg    = $this->request->get('editimg');
-        if ( ! isset( $obj ) )
-            $obj = $model->find( $editimg );
-
-        $form->setData( $obj->getAttributes() );
-        $this->request->setContent( $form->html(false) );
+//        $this->request->setContent( '' );
     }
 
+    /**
+     * @return void
+     */
+    public function realiasAction()
+    {
+        $model  = $this->getModel('Gallery');
+
+        $start  = microtime(1);
+
+//        $model->transaction();
+        try {
+            $images = $model->findAll();
+
+            print '<ol>';
+            /**
+             * @var Data_Object_GalleryCategory $cat
+             */
+            foreach ( $images as $img ) {
+                try {
+                    $img->save();
+                } catch ( Exception $e ) {
+                    print $e->getMessage();
+                }
+                print "<li><b>{$img->name}</b> {$img->getAlias()}</li>";
+            }
+            print '</ol>';
+//            $model->commit();
+        } catch ( Exception $e ) {
+//            $model->rollBack();
+            print   $e->getMessage();
+        }
+        $this->request->setContent( round( microtime(1) - $start, 3 ).' s.' );
+    }
 
     /**
      * Загрузка файлов

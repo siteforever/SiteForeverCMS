@@ -1,6 +1,4 @@
 <?php
-
-
 class Data_Object_AliasTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -13,7 +11,7 @@ class Data_Object_AliasTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->alias    = new Data_Object_Alias(Model::getModel('Alias'),
+        $this->alias    = Model::getModel('Alias')->createObject(
             array(
                 'id'        => 1,
                 'alias'     => '/catalog/dc_dc_convertory/p6au_2412elf_peak',

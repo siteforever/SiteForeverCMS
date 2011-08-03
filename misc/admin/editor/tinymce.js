@@ -35,9 +35,9 @@ var wysiwyg = {
 
         if ( $('#finder').length == 1 ) {
             $('#finder').elfinder({
-                url : '/?route=elfinder&connector=1',
-                lang : 'ru',
-                editorCallback : function(url) {
+                url             : '/?route=elfinder&connector=1',
+                lang            : 'ru',
+                editorCallback  : function(url) {
                     window.tinymceFileWin.document.forms[0].elements[window.tinymceFileField].value = url;
                     window.tinymceFileWin.focus();
                     window.close();

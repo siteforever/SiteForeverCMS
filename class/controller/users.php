@@ -185,9 +185,7 @@ class Controller_Users extends Controller
             return $this->cabinetAction();
         }
 
-
         $this->request->setTitle(t('Personal page'));
-
 
         if ( ! $user->getId() ) {
             // вход в систему
@@ -197,7 +195,7 @@ class Controller_Users extends Controller
                 if ( $form->validate() ) {
                     //print "login: {$form->login} pass:{$form->password}";
                     if ( $auth->login( $form->login, $form->password ) ) {
-                        redirect();
+                        redirect($_SERVER['HTTP_REFERER']);
                     }
                     else {
                         $this->request->addFeedback( $auth->getMessage() );
