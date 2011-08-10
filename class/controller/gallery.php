@@ -85,7 +85,20 @@ class Controller_Gallery extends Controller
                 $bc->addPiece($category->getAlias(), $category->name);
                 $bc->addPiece('', $image->name);
 
-                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
+                $title  =  $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
+                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
+
+                $description    = $image->meta_description ? $image->meta_description : null;
+                $keywords       = $image->meta_keywords ? $image->meta_keywords : null;
+                if( $description ){
+                    $this->request->set('tpldata.page.description',str_random_replace($h1, $description));
+                }
+                if( $keywords ) {
+                    $this->request->set('tpldata.page.keywords',str_random_replace($h1, $keywords));
+                }
+
+//                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
+                $this->request->setTitle( $title );
 
                 $this->request->setContent(
                     $this->tpl->fetch('gallery.image')
@@ -131,7 +144,18 @@ class Controller_Gallery extends Controller
             $this->tpl->page    = $this->page;
             $this->tpl->paging  = $paging;
 
-            $this->request->setTitle( $category->name );
+            $title  =   $category->meta_title ? $category->meta_title : $category->name;
+            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
+            $description    = $category->meta_description ? $category->meta_description : null;
+            $keywords       = $category->meta_keywords ? $category->meta_keywords : null;
+            if( $description ){
+                $this->request->set('tpldata.page.description',str_random_replace($h1, $description));
+            }
+            if( $keywords ) {
+                $this->request->set('tpldata.page.keywords',str_random_replace($h1, $keywords));
+            }
+
+            $this->request->setTitle( $title );
             $this->request->setContent( $this->tpl->fetch('gallery.category') );
 
         } else {

@@ -27,6 +27,10 @@ class Data_Table_GalleryCategory extends Data_Table
             new Data_Field_Varchar('target', 10),
             new Data_Field_Int('perpage'),
             new Data_Field_Varchar('color', 20),
+            new Data_Field_Text('meta_description'),
+            new Data_Field_Text('meta_keywords'),
+            new Data_Field_Text('meta_h1'),
+            new Data_Field_Text('meta_title'),
         );
     }
 

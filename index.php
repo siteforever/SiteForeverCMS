@@ -5,7 +5,7 @@
  * Этот файл вызывает сервер при запросах
  */
 
-ini_set('error_reporting', E_ALL);
+ini_set('error_reporting', E_ALL & ~E_NOTICE);
 ini_set('display_errors', true);
 
 

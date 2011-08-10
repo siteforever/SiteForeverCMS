@@ -86,8 +86,8 @@ class Controller_Catalog extends Controller
         // отрубаем breadcrumbs основной страницы
         $this->request->set('tpldata.page.path', '');
 
-        $page_number    = $this->request->get('page');
-        $this->tpl->page_number = $page_number ? $page_number : '1';
+//        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
+        $this->tpl->page_number = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
 
         try {
             // Если открывается раздел каталога
@@ -432,11 +432,13 @@ class Controller_Catalog extends Controller
 
         // загрузка прайса
         if ( $this->request->get('price') == 'load' ) {
-            return $this->loadPrice( $catalog );
+            $this->loadPrice( $catalog );
+            return;
         }
 
         if ( $this->request->get('delete') == 'group' ) {
-            return $this->groupAjaxDelete();
+            $this->groupAjaxDelete();
+            return;
         }
 //        print 'Work '.__FILE__.':'.__LINE__;
 
@@ -449,7 +451,8 @@ class Controller_Catalog extends Controller
                 null !== $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT )
         ) {
 //            print 'Work '.__FILE__.':'.__LINE__;
-            return $this->adminEdit();
+            $this->adminEdit();
+            return;
         }
 
 //        print 'Work '.__FILE__.':'.__LINE__;

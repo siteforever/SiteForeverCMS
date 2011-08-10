@@ -275,3 +275,14 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
      */
     return $return;
 }
+
+ /**
+ *  Заменяет в строке $replace подстроки $search на строку $subject
+ * @param $string
+ * @param $h1
+ * @return mixed
+ */
+function str_random_replace($subject,$replace,$search='%h1%')
+{
+    return str_replace($search, $subject, trim(array_rand(array_flip(explode("\n", $replace)))));
+}

@@ -74,6 +74,11 @@ class Forms_Gallery_Category extends form_Form
                         '-1'        => 'По первому пикселю',
                     ),
                 ),
+                'meta_description'  => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Description',),
+                'meta_keywords'     => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Keywords',),
+                'meta_h1'           => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'H1',),
+                'meta_title'        => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Title',),
+
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),
         ));

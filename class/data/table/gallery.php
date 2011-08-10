@@ -27,6 +27,10 @@ class Data_Table_Gallery extends Data_Table
             new Data_Field_Int('pos'),
             new Data_Field_Tinyint('main'),
             new Data_Field_Tinyint('hidden'),
+            new Data_Field_Text('meta_description'),
+            new Data_Field_Text('meta_keywords'),
+            new Data_Field_Text('meta_h1'),
+            new Data_Field_Text('meta_title'),
         );
     }
 
