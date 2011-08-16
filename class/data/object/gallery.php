@@ -13,6 +13,20 @@ class Data_Object_Gallery extends Data_Object
      */
     public function getAlias()
     {
+        /**
+         * @var Model_Alias $model
+         */
+        $model  = $this->getModel('Alias');
+        $result = $model->find(
+            array(
+                'cond'      => 'url = ?',
+                'params'    => array( $this->createUrl() ),
+            )
+        );
+        if ( $result &&  $result->alias) {
+            return $result->alias;
+        }
+
         $name   = $this->get('name');
         $name   = $name ? $name : $this->getId();
 

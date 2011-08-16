@@ -17,7 +17,7 @@ class forms_gallery_image extends form_Form
                 'meta_keywords'     => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Keywords',),
                 'meta_h1'           => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'H1',),
                 'meta_title'        => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Title',),
-
+                'alias'             => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Alias',),
                 'description'   => array('label'=>'Описание', 'type'=>'textarea'),
             ),
         ));

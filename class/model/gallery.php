@@ -62,7 +62,13 @@ class Model_Gallery extends Model
             $alias  = $alias_model->createObject();
         }
 
-        $alias->alias       = $obj->getAlias();
+        $data    = $obj->getAttributes();
+        if($alias && $data['alias']!=''){
+            $alias->alias   = $data['alias'];
+        } else {
+            $alias->alias   = $obj->getAlias();
+        }
+
         $alias->url         = $obj->createUrl();
         $alias->controller  = 'gallery';
         $alias->action      = 'index';

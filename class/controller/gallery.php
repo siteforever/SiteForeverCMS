@@ -369,7 +369,8 @@ class Controller_Gallery extends Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj    = $model->find( $this->request->get('editimg') );
-                $obj->setAttributes( $form->getData() );
+                $data = $form->getData();
+                $obj->setAttributes( $data );
                 $obj->save();
                 $this->request->addFeedback( $obj->getAlias() );
                 $this->request->addFeedback( t('Data save successfully') );
@@ -383,8 +384,9 @@ class Controller_Gallery extends Controller
             if ( ! isset( $obj ) ) {
                 $obj = $model->find( $editimg );
             }
-
-            $form->setData( $obj->getAttributes() );
+            $atr = $obj->getAttributes();
+            $atr['alias'] = $obj->getAlias();
+            $form->setData( $atr );
 
             $this->request->setContent( $form->html(false) );
         }

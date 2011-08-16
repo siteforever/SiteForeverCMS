@@ -18,7 +18,8 @@
         {if $category.target != '_none'}</a>{/if} {* _none *}
         {if $img.name}
             {if $category.target == '_self'}
-            <a {href img=$img.id}>{$img.name}</a>
+{*            <a {href img=$img.id}>{$img.name}</a>*}
+            <a href="/{$img->getAddr()}">{$img.name}</a>
             {else}
             <div>{$img.name}</div>
             {/if}
