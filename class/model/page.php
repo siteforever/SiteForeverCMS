@@ -105,6 +105,12 @@ class Model_Page extends Model
                 }
             }
         }
+
+        if ( null !== $obj ) {
+            $path   = $obj->createPath();
+            $obj->path  = $path;
+        }
+
         return true;
     }
 
