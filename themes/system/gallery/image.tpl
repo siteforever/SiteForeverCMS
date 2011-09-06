@@ -25,7 +25,7 @@
             </a>
         </td>
         <td style="vertical-align: top;">
-            {$image->description|nl2br}
+            {str_replace("><br />",">",$image->description|nl2br)}
         </td>
     </tr>
 </table>

@@ -86,7 +86,9 @@ class Controller_Gallery extends Controller
                 $bc->addPiece('', $image->name);
 
                 $title  =  $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
-                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
+//                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
+                $h1       = $image->meta_h1 ? $image->meta_h1 : $title;
+                $this->tpl->meta_h1= $h1;
 
                 $description    = $image->meta_description ? $image->meta_description : null;
                 $keywords       = $image->meta_keywords ? $image->meta_keywords : null;
@@ -139,15 +141,20 @@ class Controller_Gallery extends Controller
 
             $rows   = $model->findAll( $crit );
 
+
+//              print_r($rows);
             $this->tpl->category= $category->getAttributes();
             $this->tpl->rows    = $rows;
             $this->tpl->page    = $this->page;
             $this->tpl->paging  = $paging;
 
             $title  =   $category->meta_title ? $category->meta_title : $category->name;
-            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
+//            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
+            $h1       = $category->meta_h1 ? $category->meta_h1 : $title;
+
             $description    = $category->meta_description ? $category->meta_description : null;
             $keywords       = $category->meta_keywords ? $category->meta_keywords : null;
+            $this->tpl->meta_h1= $h1;
             if( $description ){
                 $this->request->set('tpldata.page.description',str_random_replace($h1, $description));
             }

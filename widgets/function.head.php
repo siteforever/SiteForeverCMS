@@ -15,7 +15,8 @@ function smarty_function_head( $params )
     $config     = App::getInstance()->getConfig();
 
     $head = array();
-    $head[] = "<title>".$config->get('sitename').': '.strip_tags( $request->getTitle() )."</title>";
+//    $head[] = "<title>".$config->get('sitename').': '.strip_tags( $request->getTitle() )."</title>";
+    $head[] = "<title>".strip_tags( $request->getTitle() ).': '.$config->get('sitename')."</title>";
 
     if ( $request->get('tpldata.page.keywords') ) {
         $head[] = "<meta name=\"keywords\" content=\"".$request->get('tpldata.page.keywords')."\" />";

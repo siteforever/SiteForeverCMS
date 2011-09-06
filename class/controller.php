@@ -83,7 +83,7 @@ abstract class Controller
                  && 'page' != $this->request->get('controller')
                  && $this->app()->getRouter()->isAlias()
             ) {
-                $page   = $this->getModel('Page')->find(array('cond'=>'link = ? AND deleted = 0','params'=>array($id)));
+                $page   = $this->getModel('Page')->find(array('cond'=>'link = ? AND controller = ? AND deleted = 0','params'=>array($id,$this->request->get('controller'))));
             }
             elseif ( 'page' == $this->request->get('controller') && $id ) {
                 $page   = $this->getModel('Page')->find( $id );

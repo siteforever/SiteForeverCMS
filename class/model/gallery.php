@@ -63,7 +63,7 @@ class Model_Gallery extends Model
         }
 
         $data    = $obj->getAttributes();
-        if($alias && $data['alias']!=''){
+        if( $data['alias']!=''){
             $alias->alias   = $data['alias'];
         } else {
             $alias->alias   = $obj->getAlias();
