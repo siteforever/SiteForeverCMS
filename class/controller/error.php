@@ -1,14 +1,17 @@
 <?php
 /**
- * îïèñàíèå êëàññà
+ * Ğ¾Ğ¿Ğ¸ÑĞ°Ğ½Ğ¸Ğµ ĞºĞ»Ğ°ÑÑĞ°
  * @author keltanas aka Nikolay Ermin 
  * @link http://ermin.ru
  */
 
-class controller_Error extends Controller
+class Controller_Error extends Controller
 {
     function indexAction()
     {
-        return true;
+        $this->request->setTemplate('inner');
+        $this->request->setTitle( "Error" );
+        $this->request->setContent( $this->tpl->fetch('error') );
+//        return true;
     }
 }

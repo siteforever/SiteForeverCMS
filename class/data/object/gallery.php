@@ -29,6 +29,7 @@ class Data_Object_Gallery extends Data_Object
 
         $name   = $this->get('name');
         $name   = $name ? $name : $this->getId();
+        //***********
 
         $alias  = $this->getCategory()->getAlias();
 
@@ -59,6 +60,9 @@ class Data_Object_Gallery extends Data_Object
         return $result;
     }
 
+    /**
+     * @return string
+     */
     public function getAddr()
     {
         if ( $this->get('alias_id') ) {

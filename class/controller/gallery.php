@@ -31,7 +31,7 @@ class Controller_Gallery extends Controller
     {
         return array(
             'system'    => array(
-                'admin', 'edit', 'delete', 'deleteImage', 'realias',
+                'admin', 'edit', 'delete', 'deleteImage', 'realias', 'viewcat', 'editimage', 'delcat', 'editcat',
             ),
         );
     }
@@ -187,21 +187,21 @@ class Controller_Gallery extends Controller
 
         $category = $this->getModel('GalleryCategory');
 
-        if ( $this->request->get( 'viewcat', Request::INT ) ) {
-            return $this->viewCat( $category );
-        }
+//        if ( $this->request->get( 'viewcat', Request::INT ) ) {
+//            return $this->viewCat( $category );
+//        }
 
-        if ( $this->request->get('newcat') || $this->request->get('editcat') ) {
-            return $this->editCat( $category );
-        }
+//        if ( $this->request->get('newcat') || $this->request->get('editcat') ) {
+//            return $this->editCat( $category );
+//        }
 
-        if ( $this->request->get('delcat') ) {
-            $this->deleteCat( $category );
-        }
+//        if ( $this->request->get('delcat') ) {
+//            $this->deleteCat( $category );
+//        }
 
-        if ( $this->request->get('editimg') ) {
-            return $this->editImage( $model );
-        }
+//        if ( $this->request->get('editimg') ) {
+//            return $this->editImage( $model );
+//        }
 
         if ( $switchimg = $this->request->get('switchimg', Request::INT) ) {
 
@@ -271,8 +271,9 @@ class Controller_Gallery extends Controller
      * @param model_GalleryCategory $model
      * @return
      */
-    function editCat( Model_GalleryCategory $model )
-    {
+//    function editCat( Model_GalleryCategory $model )
+    function editcatAction( )
+    {   $model = $this->getModel('GalleryCategory');
         $form = $model->getForm();
 
         if ( $form->getPost() ) {
@@ -295,7 +296,8 @@ class Controller_Gallery extends Controller
             }
         }
 
-        if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
+//        if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
+        if ( $edit = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
             try {
                 $obj    = $model->find( $edit );
             } catch ( Exception $e ) {
@@ -303,9 +305,11 @@ class Controller_Gallery extends Controller
             }
 
             $form->setData( $obj->getAttributes() );
-            $form->alias    = $obj->getAlias();
+            if(get_class($obj)!=='Data_Object_GalleryCategory'){
+               $form->alias    = $obj->getAlias();
+            }
         }
-
+//    printVar($form);
         $this->tpl->form    = $form;
         $this->request->setContent( $this->tpl->fetch('system:gallery.admin_category_edit') );
     }
@@ -315,9 +319,11 @@ class Controller_Gallery extends Controller
      * @param Model_GalleryCategory $model
      * @return void
      */
-    function deleteCat( Model_GalleryCategory $model )
-    {
-        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
+//    function deleteCat( Model_GalleryCategory $model )
+    function delcatAction( )
+    {   $model = $this->getModel('GalleryCategory');
+//        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
+        $id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
         if ( $id ) {
             $model->remove( $id );
         }
@@ -328,14 +334,16 @@ class Controller_Gallery extends Controller
      * Просмотр категории
      * @return void
      */
-    function viewCat()
+//    function viewCat()
+    function viewcatAction()
     {
         /**
          * @var model_galleryCategory $category
          */
         $category   = $this->getModel('GalleryCategory');
         
-        $cat_id = $this->request->get('viewcat', Request::INT);
+//        $cat_id = $this->request->get('viewcat', Request::INT);
+        $cat_id = $this->request->get('id', Request::INT);
 
         $cat    = $category->find( $cat_id );
         
@@ -367,15 +375,19 @@ class Controller_Gallery extends Controller
      * @var model_gallery $model
      * @return void
      */
-    function editImage( model_gallery $model )
+//    function editImage( model_gallery $model )
+    function editimgAction( )
     {
+        $model = $this->getModel('Gallery');
+
         $this->request->setAjax(1, Request::TYPE_ANY);
 
         $form   = $this->getForm('gallery_image');
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $obj    = $model->find( $this->request->get('editimg') );
+//                $obj    = $model->find( $this->request->get('editimg') );
+                $obj    = $model->find( $this->request->get('id') );
                 $data = $form->getData();
                 $obj->setAttributes( $data );
                 $obj->save();
@@ -387,7 +399,8 @@ class Controller_Gallery extends Controller
             }
             //return;
         } else {
-            $editimg    = $this->request->get('editimg');
+//            $editimg    = $this->request->get('editimg');
+            $editimg    = $this->request->get('id');
             if ( ! isset( $obj ) ) {
                 $obj = $model->find( $editimg );
             }
@@ -494,7 +507,7 @@ class Controller_Gallery extends Controller
                         if ( isset( $names[ $i ] ) ) {
                             $image->name    = $names[ $i ];
                         }
-                        
+
                         $model->save( $image );
                         $g_id = $image->getId();
 

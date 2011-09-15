@@ -57,8 +57,8 @@ class ControllerResolver
             }
         }
 
-        if ( class_exists( $command['controller'] ) )
-        {
+        if (! class_exists( $command['controller'] ))
+        { $command['controller']='Controller_Error';}
             $ref    = new ReflectionClass( $command['controller'] );
             /**
              * @var Controller $controller
@@ -90,12 +90,13 @@ class ControllerResolver
                 $result = $controller->$command['action']();
             }
             else {
-                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
+                redirect('/error');
+//                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
             }
-        }
-        else {
-            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
-        }
+//        }
+//        else {
+//            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
+//        }
         return $result;
     }
 

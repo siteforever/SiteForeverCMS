@@ -32,9 +32,13 @@ class Data_Object_GalleryCategory extends Data_Object
     public function getPage()
     {
         $model  = $this->getModel('Page');
+//        $result = $model->find( array(
+//            'cond'  => '`controller` = ? AND `action` = ? AND `link` = ? AND `deleted` = 0 ',
+//            'params'=> array('gallery', 'index', $this->getId()),
+//        ));
         $result = $model->find( array(
-            'cond'  => '`controller` = ? AND `action` = ? AND `link` = ? AND `deleted` = 0 ',
-            'params'=> array('gallery', 'index', $this->getId()),
+            'cond'  => '`action` = ? AND `link` = ? AND `deleted` = 0 ',
+            'params'=> array('index', $this->getId()),
         ));
         if ( null === $result  )
             throw new Data_Exception(t('Page not found for gallery'));

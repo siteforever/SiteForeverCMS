@@ -12,6 +12,7 @@ class Controller_News extends Controller
     function indexAction()
     {
         $model = $this->getModel('News');
+//        $this->request->setTitle('Новости');
 
         if ( $this->request->get('doc', FILTER_VALIDATE_INT) ) {
             return $this->getNews($model);
@@ -77,7 +78,7 @@ class Controller_News extends Controller
             );
             return;
         }
-        
+
         $cond   = '`deleted` = 0 AND `hidden` = 0 AND `cat_id` = ?';
         $params = array($cat->getId());
 
@@ -127,7 +128,7 @@ class Controller_News extends Controller
         $category   = $model->category;
 //        die(__FILE__.':'.__LINE__);
 
-        if ( $this->request->get('catid', FILTER_VALIDATE_INT) !== null ) {
+      /*  if ( $this->request->get('catid', FILTER_VALIDATE_INT) !== null ) {
             $this->newsList( $model );
             return;
         }
@@ -137,7 +138,7 @@ class Controller_News extends Controller
             return;
         }
 
-        if ( $this->request->get('newsedit', FILTER_VALIDATE_INT) !== null ) {
+        if ( $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT) !== null  ) {
             $this->newsEdit( $model );
             return;
         }
@@ -150,7 +151,7 @@ class Controller_News extends Controller
         if ( $this->request->get('newsdel', FILTER_VALIDATE_INT) !== null ) {
             $this->newsDelete( $model );
             return;
-        }
+        }     */
 
         $list   = $category->findAll(array('cond'=>'deleted = 0'));
         $this->tpl->assign(array(
@@ -167,14 +168,20 @@ class Controller_News extends Controller
      * @param model_News $model
      * @return void
      */
-    function newsList( $model )
+//    function newsList( $model )
+    function newslistAction()
     {
+        /**/
+        $this->request->setTitle('Материалы');
+        $model      = $this->getModel('News');
+        /**/
         $cat_id =  $this->request->get('catid', FILTER_SANITIZE_NUMBER_INT);
 
         $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$cat_id));
         //die(__FILE__.':'.__LINE__);
         //$paging = $this->paging($count, 20, 'admin/news/catid='.$cat_id);
-        $paging = new Pager( $count, 20, 'admin/news/catid='.$cat_id);
+//        $paging = new Pager( $count, 20, 'admin/news/catid='.$cat_id);
+        $paging = new Pager( $count, 20, 'news/newslist/catid/'.$cat_id);
 
         $list = $model->findAll(array(
             'cond'      => 'cat_id = :cat_id AND deleted = 0',
@@ -199,8 +206,13 @@ class Controller_News extends Controller
      * @param model_News $model
      * @return
      */
-    function newsEdit( $model )
+//    function newsEdit( $model )
+    function newseditAction( )
     {
+        /**/
+        $this->request->setTitle('Материалы');
+        $model      = $this->getModel('News');
+        /**/
         $form   = $model->getForm();
 
         if ( $form->getPost() )
@@ -215,7 +227,8 @@ class Controller_News extends Controller
                 if ( $model->save( $obj ) ) {
                     $this->request->addFeedback('Сохранено успешно');
                     if ( ! $data['id'] ) {
-                        reload('admin/news', array('catid'=>$data['cat_id'],));
+//                        reload('admin/news/', array('catid'=>$data['cat_id'],));
+                        reload('news/newslist/', array('catid'=>$data['cat_id'],));
                     }
                 }
                 else {
@@ -229,7 +242,8 @@ class Controller_News extends Controller
             return;
         }
 
-        $edit   = $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT);
+//        $edit   = $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT);
+        $edit   = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
 
         if ( $edit ) {
             $news   = $model->find( $edit );
@@ -262,8 +276,13 @@ class Controller_News extends Controller
      * @param model_News $model
      * @return void
      */
-    function catEdit( $model )
+//    function catEdit( $model )
+    function cateditAction( )
     {
+        /**/
+        $this->request->setTitle('Материалы');
+        $model      = $this->getModel('News');
+        /**/
         $category   = $model->category;
 
         $form   = $category->getForm();
@@ -297,7 +316,8 @@ class Controller_News extends Controller
         }
 
 
-        $edit   = $this->request->get('catedit', FILTER_SANITIZE_NUMBER_INT);
+//        $edit   = $this->request->get('catedit', FILTER_SANITIZE_NUMBER_INT);
+        $edit   = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
 
         if ( $edit ) {
             $news   = $category->find( $edit );
@@ -318,8 +338,13 @@ class Controller_News extends Controller
      * @param model_News $model
      * @return void
      */
-    function catDelete( $model )
+//    function catDelete( $model )
+    function catdeleteAction( )
     {
+        /**/
+        $this->request->setTitle('Материалы');
+        $model      = $this->getModel('News');
+        /**/
         $category   = $this->getModel('NewsCategory');
         $cat_id     = $this->request->get('catdel', FILTER_SANITIZE_NUMBER_INT);
 
@@ -343,8 +368,13 @@ class Controller_News extends Controller
      * @param model_News $model
      * @return void
      */
-    function newsDelete( $model )
+//    function newsDelete( $model )
+    function newsdeleteAction(  )
     {
+        /**/
+        $this->request->setTitle('Материалы');
+        $model      = $this->getModel('News');
+        /**/
         $news_id    = $this->request->get('newsdel', FILTER_SANITIZE_NUMBER_INT);
 
         $obj    = $model->find( $news_id );
@@ -354,6 +384,16 @@ class Controller_News extends Controller
         $obj->deleted = 1;
 
         reload('admin/news', array('catid'=>$cat_id));
+    }
+
+     /**
+     * @return array
+     */
+    function access()
+    {
+        return array(
+            'system'    => array('admin','newslist','newsedit','catedit','catdelete','newsdelete'),
+        );
     }
 
 }

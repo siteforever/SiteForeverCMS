@@ -7,10 +7,15 @@ class Model_Gallery extends Model
 {
     protected $form;
 
+    /**
+     * Получает следующую позицию для сортировки
+     * @param $category_id
+     * @return string
+     */
     function getNextPosition( $category_id )
     {
         return $this->db->fetchOne(
-             "SELECT MAX(pos)+1"
+             "SELECT MAX(pos)+1 "
             ."FROM `{$this->getTable()}` "
             ."WHERE category_id = ? "
             ."LIMIT 1",

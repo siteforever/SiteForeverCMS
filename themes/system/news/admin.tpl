@@ -1,6 +1,6 @@
 <p><a {href url="admin/news"}>Категории материалов</a>
-&gt; {$cat.name} <a {href url="admin/news" catedit=$cat.id}>{icon name="pencil"}</a>
-&gt; <a {href url="admin/news" newsedit="0" cat=$cat.id}>Создать материал</a></p>
+&gt; {$cat.name} <a {href controller="news" action="catedit" id=$cat.id}>{icon name="pencil"}</a>
+&gt; <a {href controller="news" action="newsedit" cat=$cat.id}>Создать материал</a></p>
 <table class="dataset fullWidth">
 <tr>
     <th width="20">#</th>
@@ -11,12 +11,13 @@
 {foreach from=$list item="item"}
 <tr>
     <td>{$item.id}</td>
-    <td><a {href url="admin/news" newsedit=$item.id}>{$item.name|truncate:100}</a></td>
+{*    <td><a {href controller="news" action="newsedit" newsedit=$item.id}>{$item.name|truncate:100}</a></td>*}
+    <td><a {href controller="news" action="newsedit" id=$item.id}>{$item.name|truncate:100}</a></td>
     <td>{$item.date|date_format:"%x"}</td>
     <td>
         {if $item.hidden}{icon name="lightbulb_off" title="Выкл"}{else}{icon name="lightbulb" title="Вкл"}{/if}
         {if $item.protected}{icon name="lock" title="Закрыто"}{/if}
-        <a {href url="admin/news" newsdel=$item.id} class="delete">{icon name="delete" title="Удалить"}</a>
+        <a {href controller="news" action="newsdelete" newsdel=$item.id} class="delete">{icon name="delete" title="Удалить"}</a>
     </td>
 </tr>
 {foreachelse}

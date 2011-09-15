@@ -2,6 +2,7 @@
 {$form->html()}
 <br />
 <p>
-    <a {href}>&laquo; Список категорий галерея</a>
+{*    <a {href}>&laquo; Список категорий галерея</a>*}
+    <a {href url="admin/gallery"}>&laquo; Список категорий галерея</a>
     {if $form->id}| <a {href viewcat=$form->id}>Изображения в галереи &raquo;</a>{/if}
 </p>

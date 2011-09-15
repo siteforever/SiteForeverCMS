@@ -1,5 +1,5 @@
 
-<h2>Галерея: {$category.name} <a {href editcat=$category.id}>{icon name="pencil" title="Править"}</a></h2>
+<h2>Галерея: {$category.name} <a {href controller="gallery" action="editcat" id=$category.id}>{icon name="pencil" title="Править"}</a></h2>
 
 <p><a {href url="admin/gallery"}>&laquo; Вернуться к списку категорий</a></p>
 <br />
@@ -20,7 +20,8 @@
             
             <div class="gallery_float_layer">
                 <div class="gallery_control">
-                    <a {href editimg=$img.id} class="gallery_picture_edit">
+{*                    <a {href editimg=$img.id} class="gallery_picture_edit">*}
+                    <a {href controller="gallery" action="editimg" id=$img.id} class="gallery_picture_edit">
                         {icon name="picture_edit" title="Изменить"}
                     </a>
                     <a {href switchimg=$img.id} class="gallery_picture_switch">
@@ -30,7 +31,8 @@
                             {icon name="lightbulb" title="Вкл"}
                         {/if}
                     </a>
-                    <a {href url="admin" controller="gallery" action="deleteImage"  id=$img.id} class="gallery_picture_delete">
+{*                    <a {href url="admin" controller="gallery" action="deleteImage"  id=$img.id} class="gallery_picture_delete">*}
+                    <a {href controller="gallery" action="deleteImage"  id=$img.id} class="gallery_picture_delete">
                         {icon name="delete" title="Удалить"}
                     </a>
                 </div>
@@ -50,7 +52,8 @@
 <tr>
     <td>
 
-        <form id="load_images" action="{link viewcat=$category.id}" method="post" enctype="multipart/form-data">
+{*        <form id="load_images" action="{link viewcat=$category.id}" method="post" enctype="multipart/form-data">*}
+        <form id="load_images" action="{link}" method="post" enctype="multipart/form-data">
         <div class="newimage">
             Наименование: <input type="text" name="name[]" />
             Файл: <input type="file" name="image[]" />
