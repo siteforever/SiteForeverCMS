@@ -14,7 +14,7 @@
 {if $cats}
 <ul class="b-cat-list">
     {foreach from=$cats item="cat"}
-    <li><a {href cat=$cat.id}>{$cat.name} {*({$cat.sub_count})*}</a></li>
+    <li><a {href id=$cat.id}>{$cat.name} {*({$cat.sub_count})*}</a></li>
     {/foreach}
 </ul>
 {/if}
@@ -27,7 +27,7 @@
 
         <div class="b-catalog-product-thumb">
             {if $item.thumb}
-                <a {href cat=$item.id}>
+                <a {href id=$item.id}>
                     <img class="left" src="{$item.thumb}" alt="{$item.name}" bprder="0" width="100" height="100" />
                 </a>
                 {else}
@@ -37,7 +37,7 @@
 
         <div class="b-catalog-product-block">
 
-            <div class="b-catalog-product-title"><a {href cat=$item.id}>{$item.name}</a></div>
+            <div class="b-catalog-product-title"><a {href id=$item.id}>{$item.name}</a></div>
 
             {if $item.articul}<div class="b-catalog-product-articul">Артикул <big>{$item.articul}</big></div>{/if}
 

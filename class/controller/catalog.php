@@ -29,62 +29,66 @@ class Controller_Catalog extends Controller
      */
     function indexAction()
     {
-        $cat_id = $this->request->get('cat', Request::INT);
-
-        // Пытаемся получить из страницы, если link не 0
-        if ( ! $cat_id && $this->page['link'] ) {
-            $cat_id = $this->page['link'];
-            $this->request->set('cat', $cat_id);
+        $cat_id = $this->request->get('id', Request::INT);
+        if ( ! $cat_id ) {
+            $cat_id = $this->request->get('cat', Request::INT);
         }
 
-
-        $catalog    = $this->getModel('Catalog');
+        $catalog_model  = $this->getModel('Catalog');
+        $page_model     = $this->getModel('Page');
 
         // без параметров
         if ( ! $cat_id ) {
             $criteria   = new Db_Criteria();
             $criteria->condition    = 'parent = 0 AND cat = 1 AND deleted = 0 AND hidden = 0';
             $criteria->order        = 'pos DESC';
-            $list   = $catalog->findAll($criteria);
+            $list   = $catalog_model->findAll($criteria);
             $this->tpl->list    = $list;
+
             $this->request->setContent($this->tpl->fetch('catalog.category_first'));
             return;
         }
 
-        $item       = $catalog->find( $cat_id );
-        if ( ! $item ) {
+        $item       = $catalog_model->find( $cat_id );
+        if ( null === $item ) {
             $this->request->addFeedback(t('Catalogue part not found with id ').$cat_id);
             return;
         }
 
-
         // хлебные крошки для каталога
-        $html       = array();
-        $pathes    = @unserialize( $item->path );
+        $bc = $this->tpl->getBreadcrumbs();
 
-        if ( is_array($pathes) ) {
-            foreach( $pathes as $key => $path ) {
-                if ( $key == 0 && $this->page['link'] != 0 ) {
-                    continue;
-                }
-                $html[] = "<a ".href($this->page['alias'], array('cat'=>$path['id'])).">{$path['name']}</a>";
+        if ( null === $this->page ) {
+
+            //        $bc->addPiece('index', 'Главная');
+            $pathes    = @unserialize( $item->path );
+
+            $page_id    = $pathes[0]['id'];
+            $page = $page_model->find(array(
+                 'condition' => '`controller` = ? AND `link` = ?',
+                 'params'    => array('catalog', $page_id),
+            ));
+            // Если страница на весь каталог разом
+            if ( null === $page ) {
+                $page = $page_model->find(array(
+                     'condition' => '`controller` = ? AND `link` = ?',
+                     'params'    => array('catalog', 0),
+                ));
+            }
+            if ( null !== $page ) {
+                $this->page = $page->getAttributes();
             }
         }
-
-        $html_page = array();
-        $page_pathes    = @unserialize( $this->page['path'] );
-
-        if( $page_pathes && is_array( $page_pathes ) ) {
-            foreach( $page_pathes as $path ) {
-                $html_page[] = "<a ".href($path['url']).">{$path['name']}</a>";
-            }
+        $bc->fromJson( $page->path );
+        foreach ( $pathes as $path ) {
+            $bc->addPiece(
+                $this->router->createLink( $page->getAlias(), array('id'=>$path['id']) ),
+                $path['name']);
         }
-        $html = array_merge( $html_page, $html );
 
-        $this->tpl->assign('breadcrumbs', '<div class="b-breadcrumbs">'.join(' &gt; ', $html).'</div>');
+        $this->request->setTitle( $item->name );
 
-        // отрубаем breadcrumbs основной страницы
-        $this->request->set('tpldata.page.path', '');
+
 
 //        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
         $this->tpl->page_number = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
@@ -93,7 +97,7 @@ class Controller_Catalog extends Controller
             // Если открывается раздел каталога
             if ( $item->cat )
             {
-                $parent = $catalog->find( $item->getId() );
+                $parent = $catalog_model->find( $item->getId() );
 
                 // количество товаров
                 $criteria   = array(
@@ -101,7 +105,7 @@ class Controller_Catalog extends Controller
                     'params'    => array($item->getId()),
                 );
 
-                $count  = $catalog->count( $criteria['cond'], $criteria['params'] );
+                $count  = $catalog_model->count( $criteria['cond'], $criteria['params'] );
                 
                 $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$item->getId()) ) );
 
@@ -127,7 +131,7 @@ class Controller_Catalog extends Controller
                     $criteria['order']  = $order;
                 }
 
-                $list   = $catalog->findAll( $criteria );
+                $list   = $catalog_model->findAll( $criteria );
 
                 $properties = array();
 
@@ -137,7 +141,7 @@ class Controller_Catalog extends Controller
                     }
                 }
 
-                $cats   = $catalog->findAll(array(
+                $cats   = $catalog_model->findAll(array(
                     'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
                     'params'    => array($item->getId()),
                 ));
@@ -164,7 +168,7 @@ class Controller_Catalog extends Controller
                 $properties = array();
 
                 if ( $item->parent ) {
-                    $category       = $catalog->find( $item['parent'] );
+                    $category       = $catalog_model->find( $item['parent'] );
                     $properties = $this->buildParamView($category, $item);
                 }
 

@@ -85,7 +85,37 @@ class App extends Application_Abstract
         }
 
         if ( ! defined('MAX_FILE_SIZE') )
-            define('MAX_FILE_SIZE', 2*1024*1024);
+            define( 'MAX_FILE_SIZE', 2*1024*1024 );
+
+        if ( ! is_dir( ROOT.DIRECTORY_SEPARATOR.'images' ) ) {
+            $this->copyDir( SF_PATH.DIRECTORY_SEPARATOR.'images', ROOT.DIRECTORY_SEPARATOR.'images' );
+            //print 'Created '.ROOT.DIRECTORY_SEPARATOR.'images<br>';
+        }
+        if ( ! is_dir( ROOT.DIRECTORY_SEPARATOR.'misc' ) ) {
+            $this->copyDir( SF_PATH.DIRECTORY_SEPARATOR.'misc', ROOT.DIRECTORY_SEPARATOR.'misc' );
+            //print 'Created '.ROOT.DIRECTORY_SEPARATOR.'misc<br>';
+        }
+    }
+
+    /**
+     * Создание рекурсивной копии каталога
+     * @param $from
+     * @param $to
+     * @return void
+     */
+    private function copyDir( $from, $to )
+    {
+        if ( ! is_dir( $to ) ) {
+            @mkdir( $to, 0755, 1 );
+        }
+        $files  = glob( $from.DIRECTORY_SEPARATOR.'*' );
+        foreach ( $files as $file ) {
+            if ( is_dir( $file ) ) {
+                $this->copyDir( $file, $to.DIRECTORY_SEPARATOR.basename( $file ) );
+            } elseif ( is_file( $file ) ) {
+                @copy( $file, $to.DIRECTORY_SEPARATOR.basename( $file ) );
+            }
+        }
     }
 
     /**
@@ -172,7 +202,8 @@ class App extends Application_Abstract
                 $this->getRequest()->addStyle( $path_misc.'/smoothness/jquery-ui.css');
                 $this->getRequest()->addStyle( $path_misc.'/admin/admin.css');
                 // jQuery
-                $this->getRequest()->addScript( $path_misc.'/jquery-ui.min.js' );
+//                $this->getRequest()->addScript( $path_misc.'/jquery-ui.min.js' );
+                $this->getRequest()->addScript( $path_misc.'/jquery-ui-1.8.13.custom.min.js' );
                 $this->getRequest()->addScript( $path_misc.'/jquery.form.js' );
                 //$request->addScript( $path_misc.'/jquery.cookie.js' );
                 //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
@@ -211,7 +242,11 @@ class App extends Application_Abstract
                 }
             }
 
-            $layout = $this->getTpl()->fetch( $this->getRequest()->get('resource').$this->getRequest()->get('template') );
+            $layout = $this->getTpl()->fetch(
+                $this->getRequest()->get('resource')
+               .$this->getRequest()->get('template')
+            );
+//            ob_clean();
             $layout = preg_replace('/[ \t]+/', ' ', $layout);
             $layout = preg_replace('/\n[ \t]+/', "\n", $layout);
             $layout = preg_replace('/\n+/', "\n", $layout);

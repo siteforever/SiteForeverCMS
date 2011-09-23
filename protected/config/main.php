@@ -27,6 +27,7 @@ return array(
         'host'      => 'localhost',
         'database'  => 'siteforever',
         'debug'     => 1,
+//        'migration' => 1,
     ),
 
     // тема

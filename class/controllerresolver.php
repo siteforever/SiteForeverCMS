@@ -113,6 +113,7 @@ class ControllerResolver
         $this->app->getRequest()->addFeedback( t('Protected page') );
         $this->app->getRequest()->set('controller', 'users');
         $this->app->getRequest()->set('action', 'login');
+        $this->app->getRequest()->setTitle(t('Access denied'));
         throw new ControllerException(t('Access denied'));
     }
 }

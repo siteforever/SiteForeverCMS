@@ -12,10 +12,18 @@ class Data_Object_Page extends Data_Object
      */
     public function getAlias()
     {
-        if ( ! $this->getId() ) {
-            return null;
+//        if ( ! $this->getId() ) {
+//            return null;
+//        }
+        $result = '';
+        if ( $this->data['alias'] ) {
+            $result = $this->data['alias'];
+        } else {
+            $result = translit($this->data['name']);
+            $this->data['alias']    = $result;
         }
-        return $this->data['alias'];
+
+        return $result;
     }
 
     /**
@@ -23,7 +31,7 @@ class Data_Object_Page extends Data_Object
      */
     public function createUrl()
     {
-        if ( ! $this->get('link') ) {
+        if ( 'page' == $this->get('controller') ) {
             return App::getInstance()->getRouter()->createServiceLink('page','index',array('id'=>$this->getId()));
         }
         return App::getInstance()->getRouter()->createServiceLink(

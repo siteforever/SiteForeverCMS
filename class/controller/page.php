@@ -208,21 +208,23 @@ class Controller_Page extends Controller
                 $form->update   = time();
                 $obj    = $model->createObject( $form->getData() );
 
-                // Если с таким маршрутом уже есть страница, то не сохранять
-                if ( $page = $model->findByRoute( $obj->alias ) )
-                {
-                    if ( $page->id != $obj->getId() ) {
-                        $this->request->addFeedback(t('The page with this address already exists'));
-                        $this->request->addFeedback(t('Data not saved'));
-                        $obj->markClean();
-                        return;
-                    }
+//                var_dump((string)$obj->controller);
 
-                    if ( ! $obj->getId() ) {
-                        $this->request->addFeedback(t('The page with this address already exists'));
-                        return;
-                    }
-                }
+                // Если с таким маршрутом уже есть страница, то не сохранять
+//                if ( $page = $model->findByRoute( $obj->alias ) )
+//                {
+//                    if ( $page->id != $obj->getId() ) {
+//                        $this->request->addFeedback(t('The page with this address already exists'));
+//                        $this->request->addFeedback(t('Data not saved'));
+//                        $obj->markClean();
+//                        return;
+//                    }
+//
+//                    if ( ! $obj->getId() ) {
+//                        $this->request->addFeedback(t('The page with this address already exists'));
+//                        return;
+//                    }
+//                }
 
                 $old_id = $obj->getId();
 

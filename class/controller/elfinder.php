@@ -14,6 +14,19 @@ class Controller_Elfinder extends Controller
         $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
     }
 
+    /**
+     * Правила, определяющие доступ к приложениям
+     * @return array
+     */
+    function access()
+    {
+        return array(
+            'system'    => array(
+                'admin','index',
+            ),
+        );
+    }
+
     function indexAction()
     {
         if ( $this->request->get('connector') ) {
@@ -88,7 +101,7 @@ class Controller_Elfinder extends Controller
 
         $fm = new elFinder($opts);
         $fm->run();
-        printVar($opts);
+//        printVar($opts);
         return;
     }
 

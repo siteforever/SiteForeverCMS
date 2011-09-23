@@ -87,30 +87,38 @@ class Model_Page extends Model
      */
     public function onSaveStart($obj = null)
     {
+        if ( null === $obj ) {
+            return false;
+        }
+
         // Проверить алиас страницы
+        $page   = $this->find(array('condition'=>'`alias`=?','params'=>array( $obj->getAlias() )));
+        if ( $page && $page->getId() != $obj->getId() ) {
+            throw new ModelException(t('The page with this address already exists'));
+        }
+
         /**
          * @var Model_Alias $alias_model
          */
         $alias_model    = $this->getModel('Alias');
-        $alias  = $alias_model->findByAlias( $obj->alias );
+        if ( $obj->alias_id ) {
+            $alias  = $alias_model->find( $obj->alias_id );
+        } else {
+            $alias  = $alias_model->findByAlias( $obj->getAlias() );
+        }
+
         if ( null !== $alias ) {
-            if ( null === $obj ) {
+            if ( ! $obj->getId() ) {
                 // если наш объект еще не создан, значит у кого-то уже есть такой алиас
-                throw new ModelException('Такой алиас уже существует');
-            } else {
-                $route  = $obj->createUrl();
-                if ( $alias->url != $route ) {
-                    // если адреса не соответствуют
-                    throw new ModelException('Такой алиас уже существует');
-                }
+                throw new ModelException(t('The alias with this address already exists'), 1);
+            }
+
+            if ( $obj->alias_id && $obj->alias_id != $alias->getId() ) {
+                throw new ModelException(t('The alias with this address already exists'), 2);
             }
         }
 
-        if ( null !== $obj ) {
-            $path   = $obj->createPath();
-            $obj->path  = $path;
-        }
-
+        $obj->path  = $obj->createPath();
         return true;
     }
 
@@ -125,19 +133,19 @@ class Model_Page extends Model
          */
         $alias_model    = $this->getModel('Alias');
 
-        $url    = $obj->createUrl();
-
-        $alias  = $alias_model->findByUrl($url);
+        if ( $obj->alias_id ) {
+            $alias  = $alias_model->find( $obj->alias_id );
+        } else {
+            $alias  = $alias_model->findByAlias( $obj->getAlias() );
+        }
 
         if ( null === $alias ) {
             $alias  = $alias_model->createObject();
         }
 
-        $alias->alias       = $obj->alias;
+        $alias->alias       = $obj->getAlias();
         $alias->url         = $obj->createUrl();
-//        $alias->controller  = $obj->controller;
-//        $alias->action      = $obj->action;
-//        $alias->params      = serialize(array('id'=>$obj->getId()));
+
         $alias->save();
         return true;
     }

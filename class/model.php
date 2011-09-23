@@ -389,8 +389,14 @@ abstract class Model
         $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit['params'] );
 
         if ( $data ) {
-            $obj_data   = $this->createObject( $data );
-            return $obj_data;
+            $obj    = $this->getFromMap( $data['id'] );
+
+            if ( null !== $obj ) {
+                return $obj;
+            } else {
+                $obj_data   = $this->createObject( $data );
+                return $obj_data;
+            }
         }
         return null;
     }
@@ -507,7 +513,7 @@ abstract class Model
     public function save( Data_Object $obj )
     {
         if ( ! $this->onSaveStart( $obj ) ) {
-            return null;
+            return false;
         }
         $data   = $obj->getAttributes();
 
@@ -525,8 +531,8 @@ abstract class Model
         }
 
         $ret    = null;
-        if ( $obj->getId() ) {
-            $ret = $this->db->update( $this->getTableName(), $save_data, 'id = '.$obj->getId() );
+        if ( null !== $obj->getId() ) {
+            $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = '.$obj->getId() );
             $obj->markClean();
         }
         else {
@@ -534,6 +540,7 @@ abstract class Model
             $obj->id  = $ret;
             $this->addToMap( $obj );
         }
+//        var_dump($ret);
         if ( null !== $ret ) {
             $this->onSaveSuccess( $obj );
         }

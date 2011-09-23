@@ -13,7 +13,7 @@ abstract class Controller
     protected $params;
 
     /**
-     * @var array
+     * @var array|Data_Object_Page
      */
     protected $page;
 
@@ -74,16 +74,18 @@ abstract class Controller
         $this->basket   = $app->getBasket();
         $this->params = $this->request->get('params');
 
-        //print "id = {$this->request->get('id')}\n";
-
         try {
             $id     = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
-
-            if (    $id
+            if (    null   !== $id
                  && 'page' != $this->request->get('controller')
-                 && $this->app()->getRouter()->isAlias()
+//                 && $this->app()->getRouter()->isAlias()
             ) {
-                $page   = $this->getModel('Page')->find(array('cond'=>'link = ? AND controller = ? AND deleted = 0','params'=>array($id,$this->request->get('controller'))));
+                $page   = $this->getModel('Page')->find(
+                    array(
+                         'cond'     => 'link = ? AND controller = ? AND deleted = 0',
+                         'params'   => array($id,$this->request->get('controller'))
+                    )
+                );
             }
             elseif ( 'page' == $this->request->get('controller') && $id ) {
                 $page   = $this->getModel('Page')->find( $id );
@@ -95,7 +97,7 @@ abstract class Controller
             $page   = null;
         }
 
-        if ( $page ) {
+        if ( null !== $page ) {
             if ( ! $page->title ) {
                 $page->title    = $page->name;
             }

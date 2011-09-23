@@ -65,13 +65,13 @@ class Model_Catalog extends Model
     function findAllByParent( $parent, $limit = 'LIMIT 100' )
     {
         $list = $this->db->fetchAll(
-            "SELECT cat.*, COUNT(child.id) child_count
-            FROM {$this->getTable()} cat
-                LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0
-            WHERE cat.parent = :parent AND cat.deleted = 0
-            GROUP BY cat.id
-            ORDER BY  cat.cat DESC, cat.pos DESC
-            {$limit}",
+            "SELECT cat.*, COUNT(child.id) child_count "
+           ."FROM {$this->getTable()} cat "
+           ."   LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0 "
+           ."WHERE cat.parent = :parent AND cat.deleted = 0 "
+           ."GROUP BY cat.id "
+           ."ORDER BY  cat.cat DESC, cat.pos DESC "
+           .$limit,
             true, db::F_ASSOC, array(':parent'=>$parent)
         );
         return $list;
@@ -107,17 +107,17 @@ class Model_Catalog extends Model
         $gallery_table  = $this->gallery()->getTable();
 
         $list = $this->db->fetchAll(
-            "SELECT cat.*, cg.image, cg.middle, cg.thumb
-            FROM {$this->getTable()} cat
-            LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id
-                                         AND cg.hidden = 0
-                                         AND cg.main = 1
-            WHERE cat.parent = '$parent'
-                AND cat.cat = 0
-                AND cat.deleted = 0
-                AND cat.hidden = 0 ".
-            ($order ? " ORDER BY {$order}" : "").
-            "{$limit}"
+            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
+            ."FROM {$this->getTable()} cat "
+            ."LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+                                        ." AND cg.hidden = 0 "
+                                        ." AND cg.main = 1 "
+            ."WHERE cat.parent = '$parent' "
+            ."    AND cat.cat = 0 "
+            ."    AND cat.deleted = 0 "
+            ."    AND cat.hidden = 0 "
+            .($order ? " ORDER BY {$order}" : "")
+            ."{$limit}"
         );
         return $list;
     }
@@ -131,18 +131,18 @@ class Model_Catalog extends Model
     function findCatsByParent( $parent, $limit = '' )
     {
         $list = $this->db->fetchAll(
-            "SELECT cat.*, COUNT(sub.id) sub_count
-            FROM {$this->getTable()} cat
-                LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id
-                    AND sub.cat = 0
-                    AND sub.deleted = 0
-                    AND sub.hidden = 0
-            WHERE cat.parent = '$parent'
-                AND cat.cat = 1
-                AND cat.deleted = 0
-                AND cat.hidden = 0
-            GROUP BY cat.id
-            {$limit}"
+            "SELECT cat.*, COUNT(sub.id) sub_count "
+           ."FROM {$this->getTable()} cat  "
+           ."    LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id "
+           ."       AND sub.cat = 0 "
+           ."       AND sub.deleted = 0 "
+           ."       AND sub.hidden = 0 "
+           ."WHERE cat.parent = '$parent' "
+           ."   AND cat.cat = 1 "
+           ."   AND cat.deleted = 0 "
+           ."   AND cat.hidden = 0 "
+           ."GROUP BY cat.id "
+           ."{$limit}"
         );
         return $list;
     }
@@ -162,12 +162,12 @@ class Model_Catalog extends Model
         $gallery_table  = $this->gallery()->getTable();
 
         $list = $this->db->fetchAll(
-            "SELECT cat.*, cg.image, cg.middle, cg.thumb
-             FROM {$this->getTable()} cat
-             LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id
-                                         AND cg.hidden = 0
-                                         AND cg.main = 1
-             WHERE cat.id IN (".join(',', $id_list).")",
+            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
+           ."FROM {$this->getTable()} cat "
+           ."LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+           ."                            AND cg.hidden = 0 "
+           ."                            AND cg.main = 1 "
+           ."WHERE cat.id IN (".join(',', $id_list).")",
             true);
         return $list;
     }
@@ -290,18 +290,68 @@ class Model_Catalog extends Model
 
     /**
      * Создает дерево $this->tree по данным из $this->all
-     * @param $parent
+     * @return array
      */
-    function createTree( $parent = 0 )
+    function createTree()
     {
-        $this->parents = array();
-        if ( count( $this->all ) == 0 ) {
-            $this->all = $this->findAll(array('cond'=>'cat = 1'));
+        if ( ! $this->parents ) {
+            $this->parents = array();
+            if ( count( $this->all ) == 0 ) {
+                $this->all = $this->findAll(array('cond'=>'cat = 1'));
+            }
+            // создаем массив, индексируемый по родителям
+            foreach( $this->all as $obj ) {
+                $this->parents[ $obj['parent'] ][ $obj['id'] ] = $obj;
+            }
         }
-        // создаем массив, индексируемый по родителям
-        foreach( $this->all as $obj ) {
-            $this->parents[ $obj['parent'] ][ $obj['id'] ] = $obj;
+        return $this->parents;
+    }
+
+    /**
+     * Вернет список id активных разделов
+     * @return array
+     */
+    private function createActivePath( $cur_id )
+    {
+        $result = array();
+
+        if ( count($this->parents) == 0 ) {
+            $this->createTree();
         }
+
+        $result[]   = $cur_id;
+
+//        $cur_id = $this->getActiveCategory();
+
+        foreach ( $this->all as $key => $obj ) {
+
+            if ( $cur_id == $obj->id && 0 != $obj->parent ) {
+                $result = array_merge( $result, $this->createActivePath( $obj->parent ) );
+            }
+//
+//            print "{$key} <= {$obj->id} <= {$obj->parent}<br>";
+        }
+        return $result;
+    }
+
+    /**
+     * Определяет id активной категории
+     * @return bool|int|mixed
+     */
+    private function getActiveCategory()
+    {
+        $result     = null;
+        $id         = $this->request->get( 'id' );
+        $cat        = $this->request->get( 'cat' );
+        $controller = $this->request->get( 'controller' );
+
+        if ( null !== $cat ) {
+            $result = $cat;
+        }
+        elseif ( 'catalog' == $controller && null !== $id ) {
+            $result = $id;
+        }
+        return  $result;
     }
 
     /**
@@ -312,13 +362,14 @@ class Model_Catalog extends Model
      */
     function getMenu( $url, $parent, $levelback, $chain = array() )
     {
-        $html = "";
+        $html = '';
 
-        $cur_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT );
+        $cur_id = $this->getActiveCategory();
+
+        $path   = $this->createActivePath( $cur_id );
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
-            //printVar($this->all);
         }
 
         if ( $levelback <= 0 ) {
@@ -329,45 +380,34 @@ class Model_Catalog extends Model
             return '';
         }
 
-        if ( count( $chain ) == 0 ) {
-            //$chain[]    = $cur_id;
-            if ( $this->data['id'] == $cur_id ) {
-                $step_id = $cur_id;
-            } else {
-                $step_id = $this->data['id'];
+        $build_list = array();
+        foreach( $this->parents[ $parent ] as $branch ) {
+            if ( $branch['hidden'] ) {
+                continue;
             }
-            //$step_id = $this->data['id'];
-            while( isset( $this->all[ $step_id ] ) ) {
-                $chain[] = $step_id;
-                $step_id = $this->all[ $step_id ]['parent'];
-            }
+            $build_list[]   = $branch;
         }
 
-        //printVar($chain);
-
         $html .= "<ul>";
-        foreach( $this->parents[ $parent ] as $branch )
+        $counter    = 1;
+        foreach( $build_list as $branch )
         {
-            //print $branch['id'];
-            $active = in_array( $branch['id'], $chain ) ? ' active' : '';
+            $active = in_array( $branch['id'], $path ) || $branch['id'] == $cur_id
+                    ? ' active'
+                    : '';
 
-            //printVar($cur_cat['parent']);
-            //printVar($chain);
+            $last   = count($build_list) == $counter ? ' last' : '';
+            $first  = 1 == $counter++ ? ' first' : '';
 
-            if ( $branch['icon'] ) {
-                $html .= "<li class='cat-{$branch['id']}{$active}' style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'>";
-            } else {
-                $html .= "<li class='cat-{$branch['id']}{$active}'>";
-            }
+            $html .= "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
+                     .( $branch['icon'] ? "style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'" : "" )
+                     .">";
 
-            if ( $branch['id'] == $cur_id )
-            {
-                //$html .= $branch['name'];
-                $active = true;
-            }
-            //else {
-            $html .= "<a ".href($url, array('cat'=>$branch['id'])).($active?" class='active'":'').">{$branch['name']}</a>";
-            //}
+            $html .= "<a ".href($url, array('id'=>$branch['id']))
+                     .($active
+                            ?" class='active'"
+                            :'')
+                     .">{$branch['name']}</a>";
 
             $html .= $this->getMenu( $url, $branch['id'], $levelback - 1, $chain );
             $html .= "</li>";
@@ -375,6 +415,7 @@ class Model_Catalog extends Model
         $html .= "</ul>";
         return $html;
     }
+
 
     /**
      * Выдаст HTML для выбора раздела в select
@@ -486,24 +527,6 @@ class Model_Catalog extends Model
             $this->form = new Forms_Catalog_Edit();
         }
         return $this->form;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Catalog';
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_Catalog';
     }
 }
 

@@ -6,6 +6,8 @@ return array(
 
     'Access denied' => 'Доступ запрещен',
 
+    'Page not found'    => 'Страница не найдена',
+
     'Control panel' => 'Панель управления',
     'Memory'        => 'Память',
     'Generation'    => 'Генерация',

@@ -63,16 +63,11 @@ class Router
             if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
                 $this->request->set( $matches[1], $matches[2] );
                 unset( $params[$key] );
+                continue;
             }
         }
-
         $this->request->set('params', $params);
-
         $this->route = join('/', $params);
-
-        //print $this->route;
-        //printVar( App::$request->get('email') );
-        //printVar( App::$request->get('code') );
 
         $this->request->set('route', $this->route);
     }
@@ -192,7 +187,6 @@ class Router
         if ( ! $this->findRoute() )
         {
             if ( ! $this->findStructure() ) {
-
                 $route_pieces   = explode( '/', $this->route );
 
                 if ( count( $route_pieces ) == 1 ) {
@@ -209,7 +203,9 @@ class Router
                         $key    = '';
                         foreach ( $route_pieces as $i => $r ) {
                             if ( $i % 2 ) {
-                                $this->request->set( $key, $r );
+                                if ( null === $this->request->get($key) ) {
+                                    $this->request->set( $key, $r );
+                                }
                             } else {
                                 $key    = $r;
                             }
@@ -224,8 +220,12 @@ class Router
 
         $this->request->set('controller', $this->controller);
         $this->request->set('action',     $this->action);
-        if ( $this->id )        $this->request->set('id',         $this->id);
-        if ( $this->template )  $this->request->set('template',   $this->template);
+        if ( $this->id && null === $this->request->get('id') ) {
+            $this->request->set('id', $this->id);
+        }
+        if ( $this->template ) {
+            $this->request->set('template',   $this->template);
+        }
         return true;
     }
 
@@ -246,11 +246,11 @@ class Router
         $model  = Model::getModel('Alias');
         $alias  = $model->find(
             array(
-                'cond'  => 'alias = ?',
+                'cond'  => '`alias` = ?',
                 'params'=> array($this->route),
             )
         );
-        if ( $alias ) {
+        if ( null !== $alias ) {
             $this->setRoute( $alias->url );
             $this->_isAlias = true;
             return true;

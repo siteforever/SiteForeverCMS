@@ -17,6 +17,11 @@ function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $templat
     }
 
     $breadcrumbs    = App::getInstance()->getView()->getBreadcrumbs();
+
+    if ( isset( $params['separator'] ) ) {
+        $breadcrumbs->setSeparator($params['separator']);
+    }
+
     if ( isset( $params['path'] ) ) {
         $breadcrumbs->fromJson( $params['path'] );
     }

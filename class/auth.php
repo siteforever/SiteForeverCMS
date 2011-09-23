@@ -110,6 +110,7 @@ abstract class Auth
                 $this->message  = t('Not enough permissions');
                 return false;
             }
+
             if ( $user->status == 0 ) {
                 $this->error    = true;
                 $this->message  = t('Your account has been disabled');
