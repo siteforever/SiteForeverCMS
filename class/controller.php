@@ -74,6 +74,10 @@ abstract class Controller
         $this->basket   = $app->getBasket();
         $this->params = $this->request->get('params');
 
+//        print "id = {$this->request->get('id')}\n";
+//        print "controller = {$this->request->get('controller')}\n";
+//        print "action = {$this->request->get('action')}\n";
+
         try {
             $id     = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
             if (    null   !== $id

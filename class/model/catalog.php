@@ -360,7 +360,7 @@ class Model_Catalog extends Model
      * @param int $parent
      * @param int $level
      */
-    function getMenu( $url, $parent, $levelback, $chain = array() )
+    function getMenu( $url, $parent, $levelback )
     {
         $html = '';
 
@@ -402,14 +402,13 @@ class Model_Catalog extends Model
             $html .= "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
                      .( $branch['icon'] ? "style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'" : "" )
                      .">";
-
-            $html .= "<a ".href($url, array('id'=>$branch['id']))
+            $html .= "<a href='".$this->app()->getRouter()->createLink( $url, array('id'=>$branch['id']) )."'"
                      .($active
                             ?" class='active'"
                             :'')
                      .">{$branch['name']}</a>";
 
-            $html .= $this->getMenu( $url, $branch['id'], $levelback - 1, $chain );
+            $html .= $this->getMenu( $url, $branch['id'], $levelback - 1 );
             $html .= "</li>";
         }
         $html .= "</ul>";

@@ -6,37 +6,17 @@
  * @link http://siteforever.ru
  */
 
-class controller_feedback extends Controller
+class Controller_Feedback extends Controller
 {
     function indexAction()
     {
-        $form = new form_Form(array(
-            'name'      => 'feedback',
-            'fields'    => array(
-                'name'      => array(
-                    'type'      => 'text',
-                    'label'     => 'Ваше имя',
-                    'required',
-                ),
-                'email'     => array(
-                    'type'      => 'text',
-                    'label'     => 'Email',
-                    'required',
-                ),
-                'title'     => array(
-                    'type'      => 'text',
-                    'label'     => 'Тема',
-                ),
-                'message'   => array(
-                    'type'      => 'textarea',
-                    'label'     => 'Сообщение'
-                ),
-                'submit'    => array(
-                    'type'      => 'submit',
-                    'value'     => 'Отправить',
-                ),
-            ),
-        ));
+        $this->request->setTitle('Контакты');
+        $this->request->setTemplate('inner');
+        $bc = $this->tpl->getBreadcrumbs();
+        $bc->addPiece('index', 'Главная');
+        $bc->addPiece('feedback', $this->request->getTitle());
+
+        $form = $this->getForm();
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
@@ -62,5 +42,36 @@ class controller_feedback extends Controller
     function adminAction()
     {
 
+    }
+
+    function getForm()
+    {
+        return new form_Form(array(
+                    'name'      => 'feedback',
+                    'fields'    => array(
+                        'name'      => array(
+                            'type'      => 'text',
+                            'label'     => 'Ваше имя',
+                            'required',
+                        ),
+                        'email'     => array(
+                            'type'      => 'text',
+                            'label'     => 'Email',
+                            'required',
+                        ),
+                        'title'     => array(
+                            'type'      => 'text',
+                            'label'     => 'Тема',
+                        ),
+                        'message'   => array(
+                            'type'      => 'textarea',
+                            'label'     => 'Сообщение'
+                        ),
+                        'submit'    => array(
+                            'type'      => 'submit',
+                            'value'     => 'Отправить',
+                        ),
+                    ),
+                ));
     }
 }

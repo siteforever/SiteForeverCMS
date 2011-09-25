@@ -26,7 +26,6 @@ class Controller_Elfinder extends Controller
             ),
         );
     }
-
     function indexAction()
     {
         if ( $this->request->get('connector') ) {

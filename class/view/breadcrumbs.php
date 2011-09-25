@@ -13,7 +13,7 @@ class View_Breadcrumbs
     /**
      * @var string
      */
-    private $_separator = ' &rarr; ';
+    private $_separator = ' &gt; ';
 
     public function __construct( array $pieces = array() )
     {

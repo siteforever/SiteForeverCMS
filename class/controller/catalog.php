@@ -471,21 +471,23 @@ class Controller_Catalog extends Controller
         }
 
         // включение/выключение
-        if ( $this->request->get('item') && $this->request->get('switch') )
-        {
-            if ( $item = $catalog->find( $this->request->get('item') ) )
+        if (    $this->request->get('item')
+             && $this->request->get('switch')
+        ) {
+            if ( $obj = $catalog->find( $this->request->get('item') ) )
             {
                 switch ( $this->request->get('switch') )
                 {
                     case 'on':
-                        $item->hidden   = 0;
+                        $obj->hidden   = 0;
                         $switch = 'off';
                         break;
                     case 'off':
-                        $item->hiden    = 1;
+                        $obj->hidden    = 1;
                         $switch = 'on';
                         break;
                 }
+                $obj->save();
                 //$catalog->update();
                 if ( $this->getAjax() ) {
                     die(json_encode(array(
@@ -497,7 +499,7 @@ class Controller_Catalog extends Controller
                         'img'   => $switch == 'on' ? icon('lightbulb_off', 'Включить') : icon('lightbulb', 'Выключить'),
                     )));
                 } else {
-                    redirect( 'admin/catalog', array('part'=>$item->parent ) );
+                    redirect( 'admin/catalog', array('part'=>$obj->parent ) );
                 }
             }
             return;

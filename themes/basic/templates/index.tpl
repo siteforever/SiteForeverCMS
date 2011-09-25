@@ -18,12 +18,10 @@
                 {menu parent=0 level=5}
             </div>
 
-            {if isset($page.controller) && $page.controller == 'catalog'}
             <div class="b-left-catmenu">
                 <h3>Каталог</h3>
-                {catmenu parent=0 level=2 url=$page.alias}
+                {catmenu parent=0 level=2}
             </div>
-            {/if}
         </div>
 
         <div class="b-content">

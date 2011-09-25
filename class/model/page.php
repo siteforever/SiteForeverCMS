@@ -91,11 +91,16 @@ class Model_Page extends Model
             return false;
         }
 
+//        $attributes = $obj->getAttributes();
+
         // Проверить алиас страницы
         $page   = $this->find(array('condition'=>'`alias`=?','params'=>array( $obj->getAlias() )));
         if ( $page && $page->getId() != $obj->getId() ) {
             throw new ModelException(t('The page with this address already exists'));
         }
+
+//        $obj->setAttributes( $attributes ); // Т.к. поиск $page может переписать параметры
+//        var_dump($obj->controller);
 
         /**
          * @var Model_Alias $alias_model
@@ -106,6 +111,8 @@ class Model_Page extends Model
         } else {
             $alias  = $alias_model->findByAlias( $obj->getAlias() );
         }
+//        var_dump($alias->getAttributes());
+
 
         if ( null !== $alias ) {
             if ( ! $obj->getId() ) {
@@ -116,6 +123,15 @@ class Model_Page extends Model
             if ( $obj->alias_id && $obj->alias_id != $alias->getId() ) {
                 throw new ModelException(t('The alias with this address already exists'), 2);
             }
+//            else {
+//                $route  = $obj->createUrl();
+//                var_dump($route);
+//                var_dump($alias->url);
+//                if ( $alias->url != $route ) {
+//                    // если адреса не соответствуют
+//                    throw new ModelException('Такой алиас уже существует');
+//                }
+//            }
         }
 
         $obj->path  = $obj->createPath();
@@ -146,6 +162,9 @@ class Model_Page extends Model
         $alias->alias       = $obj->getAlias();
         $alias->url         = $obj->createUrl();
 
+//        $alias->controller  = $obj->controller;
+        //        $alias->action      = $obj->action;
+        //        $alias->params      = serialize(array('id'=>$obj->getId()));
         $alias->save();
         return true;
     }
@@ -388,24 +407,25 @@ class Model_Page extends Model
                 //&& $this->app()->getUser()->hasPermission( $branch['protected'] )
                 && $branch['deleted'] == 0 )
             {
+                if ( $branch['alias'] == $this->request->get('route') ) {
+                    $active = true;
+                } else {
+                    $active = false;
+                }
+
                 $html[] = "<li class='item-{$branch['id']}"
-                         .($counter == $total_count
+                            .($counter == $total_count
                                  ? " first"
                                  : ($counter==1
                                          ? " last"
                                          : ""
                                    )
-                          )
+                            )
+                            .($active ? ' active' : '')
                          ."'>";
-                if (    /*$branch['id'] == $this->request->get('id')
-                     ||*/ $branch['alias'] == $this->request->get('route')
-                ) {
-                    $html[] = '<span>'.$branch['name'].'</span>';
-                    //$html .= "<a ".href($branch['alias'])." class='active'>{$branch['name']}</a>";
-                }
-                else {
-                    $html[] = '<a '.href($branch['alias']).">{$branch['name']}</a>";
-                }
+
+                $html[] = '<a '.href($branch['alias']).
+                    ($active ? ' class="active"' : '').">{$branch['name']}</a>";
                 $html[] = $this->getMenu( $branch['id'], $levelback - 1 );
                 $html[] = '</li>';
             }

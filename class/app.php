@@ -89,11 +89,11 @@ class App extends Application_Abstract
 
         if ( ! is_dir( ROOT.DIRECTORY_SEPARATOR.'images' ) ) {
             $this->copyDir( SF_PATH.DIRECTORY_SEPARATOR.'images', ROOT.DIRECTORY_SEPARATOR.'images' );
-            //print 'Created '.ROOT.DIRECTORY_SEPARATOR.'images<br>';
+            print 'Created '.ROOT.DIRECTORY_SEPARATOR.'images<br>';
         }
         if ( ! is_dir( ROOT.DIRECTORY_SEPARATOR.'misc' ) ) {
             $this->copyDir( SF_PATH.DIRECTORY_SEPARATOR.'misc', ROOT.DIRECTORY_SEPARATOR.'misc' );
-            //print 'Created '.ROOT.DIRECTORY_SEPARATOR.'misc<br>';
+            print 'Created '.ROOT.DIRECTORY_SEPARATOR.'misc<br>';
         }
     }
 

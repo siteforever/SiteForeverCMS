@@ -106,7 +106,7 @@ class Router
             }
         }
 
-        if ( 'index' == $result ) {
+        if ( 'index' == $result && count($par) == 0 ) {
             $result = '';
         }
 

@@ -113,7 +113,7 @@ abstract class Form_Field
 
     function __toString()
     {
-        return $this->getValue();
+        return (string) $this->getValue();
     }
 
     /**

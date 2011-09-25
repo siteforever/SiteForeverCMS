@@ -115,10 +115,10 @@ class Controller_Gallery extends Controller
 
         $cat_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT, $this->page['link'] );
         if ( $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
-            $cat_id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
+            $cat_id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT, $this->page['link']);
         }
 
-        if ( ! $cat_id ) {
+        if ( null === $cat_id ) {
             $this->request->addFeedback('Не указан идентификатор категории');
             return;
         }
@@ -143,7 +143,7 @@ class Controller_Gallery extends Controller
 
 
 //              print_r($rows);
-            $this->tpl->category= $category->getAttributes();
+            $this->tpl->category= $category;
             $this->tpl->rows    = $rows;
             $this->tpl->page    = $this->page;
             $this->tpl->paging  = $paging;
@@ -152,9 +152,12 @@ class Controller_Gallery extends Controller
 //            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
             $h1       = $category->meta_h1 ? $category->meta_h1 : $title;
 
-            $description    = $category->meta_description ? $category->meta_description : null;
-            $keywords       = $category->meta_keywords ? $category->meta_keywords : null;
+            $description    = $category->meta_description ? $category->meta_description : '';
+            $keywords       = $category->meta_keywords ? $category->meta_keywords : '';
+
+
             $this->tpl->meta_h1= $h1;
+
             if( $description ){
                 $this->request->set('tpldata.page.description',str_random_replace($h1, $description));
             }
@@ -162,11 +165,18 @@ class Controller_Gallery extends Controller
                 $this->request->set('tpldata.page.keywords',str_random_replace($h1, $keywords));
             }
 
+            $bc = $this->tpl->getBreadcrumbs();
+            $bc->addPiece('index', 'Главная');
+            $bc->addPiece($this->router->createServiceLink('gallery','index',array('id'=>$cat_id)), $category->name);
+
             $this->request->setTitle( $title );
             $this->request->setContent( $this->tpl->fetch('gallery.category') );
 
         } else {
-            $this->request->addFeedback('Категория не определена');
+//            $this->request->addFeedback('Категория не определена');
+            $categories = $model_category->findAll();
+            $this->tpl->categories    = $categories;
+            $this->request->setContent( $this->tpl->fetch('gallery.categories') );
         }
     }
 
