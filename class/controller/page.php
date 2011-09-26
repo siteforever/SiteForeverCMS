@@ -24,7 +24,7 @@ class Controller_Page extends Controller
             $this->request->setContent(t('Access denied'));
             return;
         }
-        
+
         // создаем замыкание страниц
         while ( $this->page['link'] != 0 )
         {

@@ -122,8 +122,9 @@ class Controller_Basket extends Controller
     public function addAction()
     {
         $basket_prod_id     = $this->request->get('basket_prod_id', FILTER_SANITIZE_NUMBER_INT);
-        $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
-
+        $basket_prod_name   = $this->request->get('basket_prod_name');
+//        $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
+//        print $basket_prod_id.' ok '.$basket_prod_name;
         if ( $basket_prod_id || $basket_prod_name )
         {
             $basket_prod_count      = $this->request->get('basket_prod_count');

@@ -20,7 +20,7 @@ class Data_Object_PageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('index', $this->page->getAlias());
 
         $this->page = Model::getModel('Page')->find(3);
-        $this->assertEquals('gallery', $this->page->getAlias());
+        $this->assertEquals('supplies', $this->page->getAlias());
     }
 
     public function testCreateUrl()

@@ -37,7 +37,7 @@ class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
     public function testGetAlias()
     {
         $this->assertEquals(
-            'gallery/panasonik',
+            'supplies/panasonik',
             $this->gallery->getAlias()
         );
     }

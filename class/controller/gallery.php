@@ -197,22 +197,6 @@ class Controller_Gallery extends Controller
 
         $category = $this->getModel('GalleryCategory');
 
-//        if ( $this->request->get( 'viewcat', Request::INT ) ) {
-//            return $this->viewCat( $category );
-//        }
-
-//        if ( $this->request->get('newcat') || $this->request->get('editcat') ) {
-//            return $this->editCat( $category );
-//        }
-
-//        if ( $this->request->get('delcat') ) {
-//            $this->deleteCat( $category );
-//        }
-
-//        if ( $this->request->get('editimg') ) {
-//            return $this->editImage( $model );
-//        }
-
         if ( $switchimg = $this->request->get('switchimg', Request::INT) ) {
 
             $switch_result = $model->hideSwitch( $switchimg );
@@ -224,7 +208,6 @@ class Controller_Gallery extends Controller
                 elseif ( $switch_result == 2 ) {
                     $switch_icon = icon('lightbulb', 'Выкл');
                 }
-                //$this->request->
                 $this->request->setResponseError(0);
                 $this->request->setResponse('id', $switchimg);
                 $this->request->setResponse('img', $switch_icon);
@@ -289,9 +272,6 @@ class Controller_Gallery extends Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
-//                var_dump($obj->getAttributes());
-                //$obj->markNew();
-
                 $model->save( $obj );
 
                 if (  $obj && ! $obj->getId() ) {
@@ -306,7 +286,6 @@ class Controller_Gallery extends Controller
             }
         }
 
-//        if ( $edit = $this->request->get('editcat', FILTER_SANITIZE_NUMBER_INT) ) {
         if ( $edit = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
             try {
                 $obj    = $model->find( $edit );
@@ -319,7 +298,6 @@ class Controller_Gallery extends Controller
                $form->alias    = $obj->getAlias();
             }
         }
-//    printVar($form);
         $this->tpl->form    = $form;
         $this->request->setContent( $this->tpl->fetch('system:gallery.admin_category_edit') );
     }
@@ -352,7 +330,6 @@ class Controller_Gallery extends Controller
          */
         $category   = $this->getModel('GalleryCategory');
         
-//        $cat_id = $this->request->get('viewcat', Request::INT);
         $cat_id = $this->request->get('id', Request::INT);
 
         $cat    = $category->find( $cat_id );
@@ -385,18 +362,13 @@ class Controller_Gallery extends Controller
      * @var model_gallery $model
      * @return void
      */
-//    function editImage( model_gallery $model )
     function editimgAction( )
     {
         $model = $this->getModel('Gallery');
-
         $this->request->setAjax(1, Request::TYPE_ANY);
-
         $form   = $this->getForm('gallery_image');
-
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-//                $obj    = $model->find( $this->request->get('editimg') );
                 $obj    = $model->find( $this->request->get('id') );
                 $data = $form->getData();
                 $obj->setAttributes( $data );
@@ -407,9 +379,7 @@ class Controller_Gallery extends Controller
             else {
                 $this->request->addFeedback( $form->getFeedbackString() );
             }
-            //return;
         } else {
-//            $editimg    = $this->request->get('editimg');
             $editimg    = $this->request->get('id');
             if ( ! isset( $obj ) ) {
                 $obj = $model->find( $editimg );
@@ -417,11 +387,8 @@ class Controller_Gallery extends Controller
             $atr = $obj->getAttributes();
             $atr['alias'] = $obj->getAlias();
             $form->setData( $atr );
-
             $this->request->setContent( $form->html(false) );
         }
-
-//        $this->request->setContent( '' );
     }
 
     /**
@@ -430,13 +397,9 @@ class Controller_Gallery extends Controller
     public function realiasAction()
     {
         $model  = $this->getModel('Gallery');
-
         $start  = microtime(1);
-
-//        $model->transaction();
         try {
             $images = $model->findAll();
-
             print '<ol>';
             /**
              * @var Data_Object_GalleryCategory $cat
@@ -450,9 +413,7 @@ class Controller_Gallery extends Controller
                 print "<li><b>{$img->name}</b> {$img->getAlias()}</li>";
             }
             print '</ol>';
-//            $model->commit();
         } catch ( Exception $e ) {
-//            $model->rollBack();
             print   $e->getMessage();
         }
         $this->request->setContent( round( microtime(1) - $start, 3 ).' s.' );
@@ -469,27 +430,20 @@ class Controller_Gallery extends Controller
          * @var Model_Gallery $model
          */
         $model  = $this->getModel('Gallery');
-
         $max_file_size = $this->config->get('gallery.max_file_size');
-
         $upload_ok = 0;
-
         $thumb_prefix   = $this->config->get('gallery.thumb_prefix');
         $middle_prefix  = $this->config->get('gallery.middle_prefix');
 
         if ( isset( $_FILES['image'] ) && is_array($_FILES['image']) )
         {
             $images = $_FILES['image'];
-
             $names  = array();
-
             if ( $this->request->get('name') ) {
                 $names  = $this->request->get('name');
             }
-
             $pos    = $model->getNextPosition($cat->getId());
             $pos    = $pos ? $pos : 0;
-
             foreach ( $images['error'] as $i => $err )
             {
                 if ( $err == UPLOAD_ERR_OK )
@@ -499,36 +453,26 @@ class Controller_Gallery extends Controller
                         'main'  => '0',
                         'hidden'=> '0',
                     ));
-
                     $pos++;
-
                     if ( $images['size'][$i] <= $max_file_size &&
                             in_array( $images['type'][$i], array('image/jpeg', 'image/gif', 'image/png') )
                     ) {
                         $upload_ok = 1;
-
                         $dest = $this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$cat->getId(), -4, 4 );
                         if ( ! is_dir( ROOT.$dest ) ) {
                             mkdir( ROOT.$dest, 0777, true );
                         }
                         $src  = $images['tmp_name'][$i];
-
                         $image->category_id = $cat->getId();
                         if ( isset( $names[ $i ] ) ) {
                             $image->name    = $names[ $i ];
                         }
-
                         $model->save( $image );
                         $g_id = $image->getId();
-
                         $img = $dest.DIRECTORY_SEPARATOR.$g_id.'_'.$images['name'][$i];
                         $tmb = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
                         $mdl = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
-
                         $image->image   = str_replace( DIRECTORY_SEPARATOR, '/', $img );
-
-                        //$model->set('image', str_replace( DIRECTORY_SEPARATOR, '/', $img ) );
-
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
                             // обработка
@@ -538,17 +482,14 @@ class Controller_Gallery extends Controller
                             $middle_w   = $cat->middle_width;
                             $t_method   = $cat->thumb_method;
                             $m_method   = $cat->middle_method;
-
                             try {
                                 $img_full   = new Image(ROOT.$img);
-
                                 $img_mid    = $img_full->createThumb($middle_w, $middle_h, $m_method, $cat->color);
                                 if ( $img_mid ) {
                                     $img_mid->saveToFile( ROOT.$mdl );
                                     $image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
                                     unset( $img_mid );
                                 }
-
                                 $img_thmb   = $img_full->createThumb($thumb_w, $thumb_h, $t_method, $cat->color);
                                 if ( $img_thmb ) {
                                     $img_thmb->saveToFile( ROOT.$tmb );
@@ -583,7 +524,6 @@ class Controller_Gallery extends Controller
                 }
             }
         }
-
         if ( $upload_ok ) {
             $this->request->addFeedback(t('Images are loaded'));
         }
@@ -591,7 +531,6 @@ class Controller_Gallery extends Controller
             $this->request->addFeedback(t('Image not loaded'));
         }
         return;
-        //redirect('admin/catalog', array('edit'=>$upload));
     }
 }
 
