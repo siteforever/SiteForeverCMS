@@ -9,7 +9,7 @@ class Model_Catalog extends Model
      * Массив, индексируемый по $parent
      * @var array
      */
-    protected $parents;
+    protected $parents = null;
 
     /**
      * Списков разделов в кэше
@@ -294,7 +294,7 @@ class Model_Catalog extends Model
      */
     function createTree()
     {
-        if ( ! $this->parents ) {
+        if ( null === $this->parents ) {
             $this->parents = array();
             if ( count( $this->all ) == 0 ) {
                 $this->all = $this->findAll(array('cond'=>'cat = 1'));
@@ -309,6 +309,7 @@ class Model_Catalog extends Model
 
     /**
      * Вернет список id активных разделов
+     * @param $cur_id
      * @return array
      */
     private function createActivePath( $cur_id )
@@ -325,11 +326,14 @@ class Model_Catalog extends Model
 
         foreach ( $this->all as $key => $obj ) {
 
+//            print "key:{$key}; cur_id:{$cur_id}; obj_id:{$obj->id}; parent:{$obj->parent}<br>";
+
             if ( $cur_id == $obj->id && 0 != $obj->parent ) {
-                $result = array_merge( $result, $this->createActivePath( $obj->parent ) );
+                $active_path    = $this->createActivePath( $obj->parent );
+                if ( $active_path )
+                    $result = array_merge( $result, $active_path );
             }
-//
-//            print "{$key} <= {$obj->id} <= {$obj->parent}<br>";
+            //
         }
         return $result;
     }
@@ -360,10 +364,8 @@ class Model_Catalog extends Model
      * @param int $parent
      * @param int $level
      */
-    function getMenu( $url, $parent, $levelback )
+    function getMenu( $url, $parent, $levelback = 0 )
     {
-        $html = '';
-
         $cur_id = $this->getActiveCategory();
 
         $path   = $this->createActivePath( $cur_id );
@@ -372,6 +374,7 @@ class Model_Catalog extends Model
             $this->createTree();
         }
 
+//        printVar($levelback);
         if ( $levelback <= 0 ) {
             return '';
         }
@@ -388,7 +391,8 @@ class Model_Catalog extends Model
             $build_list[]   = $branch;
         }
 
-        $html .= "<ul>";
+        $start  = microtime(1);
+        $html = array('<ul>');
         $counter    = 1;
         foreach( $build_list as $branch )
         {
@@ -399,20 +403,22 @@ class Model_Catalog extends Model
             $last   = count($build_list) == $counter ? ' last' : '';
             $first  = 1 == $counter++ ? ' first' : '';
 
-            $html .= "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
+            $html[] = "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
                      .( $branch['icon'] ? "style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'" : "" )
                      .">";
-            $html .= "<a href='".$this->app()->getRouter()->createLink( $url, array('id'=>$branch['id']) )."'"
+            $html[] = "<a href='".$this->app()->getRouter()->createLink( $url, array('id'=>$branch['id']) )."'"
                      .($active
                             ?" class='active'"
                             :'')
                      .">{$branch['name']}</a>";
 
-            $html .= $this->getMenu( $url, $branch['id'], $levelback - 1 );
-            $html .= "</li>";
+            if ( $active )
+                $html[] = $this->getMenu( $url, $branch['id'], $levelback - 1 );
+            $html[] = '</li>';
         }
-        $html .= "</ul>";
-        return $html;
+        $html[] = '</ul>';
+//        print __METHOD__.round( microtime(1) - $start, 3 );
+        return implode('',$html);
     }
 
 

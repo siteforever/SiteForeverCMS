@@ -188,6 +188,7 @@ abstract class Model
      */
     final public function createObject( $data = array() )
     {
+        $start  = microtime(1);
         if ( isset( $data['id'] ) ) {
             $obj    = $this->getFromMap( $data['id'] );
             if ( $obj ) {
@@ -196,11 +197,12 @@ abstract class Model
             }
         }
         $class_name = $this->objectClass();
-        $obj    = new $class_name( $this, $data );
+        $obj    = new $class_name( $this, &$data );
         if ( ! is_null( $obj->getId() ) ) {
             $this->addToMap( $obj );
             $obj->markClean();
         }
+//        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
         return $obj;
     }
 
@@ -422,14 +424,21 @@ abstract class Model
             throw new ModelException('Not valid criteria');
         }
 
+
         $raw    = $this->db->fetchAll($criteria->getSQL());
+
         $collection = array();
 
+//        $start  = microtime(1);
         if ( $raw ) {
-            foreach ( $raw as $key => $data ) {
-                $collection[$key]   = $this->createObject( $data );
-            }
+
+            $collection = new Data_Collection( $raw, $this );
+//            foreach ( $raw as $key => $data ) {
+//                $collection[$key]   = $this->createObject( &$data );
+////                $collection[$key]   = $data;
+//            }
         }
+//        print __METHOD__.round( microtime(1) - $start, 3 );
 
         if ( count( $raw ) && count( $with ) ) {
             $relation   = $this->relation();

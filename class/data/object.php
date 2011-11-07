@@ -35,9 +35,9 @@ abstract class Data_Object implements ArrayAccess//, Iterator
         $this->model    = $model;
         $this->table    = $model->getTable();
 
-        foreach ( $this->table->getFields() as $field ) {
-            $this->field_names[ $field->getName() ]    = $field;
-        }
+//        foreach ( $this->table->getFields() as $field ) {
+//            $this->field_names[ $field->getName() ]    = $field;
+//        }
 
         $this->setAttributes( $data );
 
@@ -184,6 +184,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     public function setAttributes( $data = array() )
     {
         foreach( $data as $k => $d ) {
+//            $this->data[ $k ] = $d;
             $this->set( $k, $d );
         }
     }

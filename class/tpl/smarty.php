@@ -66,11 +66,30 @@ class TPL_Smarty extends TPL_Driver
      */
     function display( $tpl, $cache_id = null )
     {
+        $start  = microtime(1);
         $tpl = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
         $tpl = str_replace('.', '/', $tpl).'.'.$this->ext;
         $tpl = $this->convertTpl($tpl);
 
         $this->engine->display( $tpl, $cache_id );
+//        print "Genegated: ".round( microtime(1) - $start, 3 );
+    }
+
+    /**
+     * Получить HTML шаблона
+     * @param string $tpl
+     * @param int $cache_id
+     */
+    function fetch( $tpl, $cache_id = null )
+    {
+//        $start  = microtime(1);
+        $tpl    = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
+        $tpl    = str_replace('.', '/', $tpl).'.'.$this->ext;
+        $tpl    = $this->convertTpl($tpl);
+
+        $result = $this->engine->fetch( $tpl, $cache_id );
+//        print "Genegated: ".round( microtime(1) - $start, 3 );
+        return $result;
     }
 
     /**
@@ -105,20 +124,6 @@ class TPL_Smarty extends TPL_Driver
         return false;
     }
     
-    /**
-     * Получить HTML шаблона
-     * @param string $tpl
-     * @param int $cache_id
-     */
-    function fetch( $tpl, $cache_id = null )
-    {
-        $tpl = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
-        $tpl = str_replace('.', '/', $tpl).'.'.$this->ext;
-        $tpl = $this->convertTpl($tpl);
-        
-        return $this->engine->fetch( $tpl, $cache_id );
-    }
-
     /**
      * Проверяет, кэшированный ли шаблон
      * @param  $tpl_file
