@@ -200,6 +200,7 @@ class Model_Catalog extends Model
 
     /**
      * Обновить информацию
+     * @param Data_Object_Catalog $obj
      * @return int идентификатор записи
      */
     function update( Data_Object_Catalog $obj )
@@ -257,7 +258,10 @@ class Model_Catalog extends Model
         return serialize( $path );
     }
 
-
+    /**
+     * @param $id
+     * @return bool
+     */
     function onDeleteStart( $id )
     {
         $this->remove( $id );
@@ -266,6 +270,7 @@ class Model_Catalog extends Model
 
     /**
      * Удалить в базе
+     * @param $id
      * @return void
      */
     function remove( $id )
@@ -278,6 +283,7 @@ class Model_Catalog extends Model
 
     /**
      * Восстановить в базе
+     * @param $id
      * @return void
      */
     function unremove( $id )

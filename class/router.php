@@ -68,6 +68,7 @@ class Router
         if ( count($params) ) {
             foreach( $params as $k => $v ) {
                 $par[] = $k.'='.$v;
+                $result = preg_replace("@/{$k}=\d+@", '', $result);
             }
         }
 

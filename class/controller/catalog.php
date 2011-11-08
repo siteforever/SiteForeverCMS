@@ -79,11 +79,12 @@ class Controller_Catalog extends Controller
             }
         }
         $bc->fromJson( $page->path );
-        foreach ( $pathes as $path ) {
-            $bc->addPiece(
-                $this->router->createLink( $page->getAlias(), array('id'=>$path['id']) ),
-                $path['name']);
-        }
+        if ( $pathes )
+            foreach ( $pathes as $path ) {
+                $bc->addPiece(
+                    $this->router->createLink( $page->getAlias(), array('id'=>$path['id']) ),
+                    $path['name']);
+            }
 
         $this->request->setTitle( $item->name );
 
