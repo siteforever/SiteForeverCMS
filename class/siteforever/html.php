@@ -41,6 +41,7 @@ class Siteforever_Html
      */
     public function href( $url = '', $params = array() )
     {
+//        var_dump( $url, $params );
         return 'href="'.App::getInstance()->getRouter()->createLink( $url, $params ).'"';
     }
 }

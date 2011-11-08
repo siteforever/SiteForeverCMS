@@ -142,7 +142,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     public function testFindAll()
     {
         $all    = $this->object->findAll();
-        $this->assertEquals( count($all), 2 );
+        $this->assertEquals( $all->count(), 2 );
         /*$this->assertEquals( $all, array(
             array('id'=>1,'value'=>'val1'),
             array('id'=>2,'value'=>'val2'),

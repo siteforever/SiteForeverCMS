@@ -97,20 +97,16 @@ $(function(){
 
     // Галлерея каталога
     if ( $('a.gallery-item-add').length ) {
+
         $('a.gallery-item-add').live('click',function(){
             if ( $('#gallery_dialog').length == 0 ) {
-                $('body').append('<div id="gallery_dialog"></div>');
+                $('body').append('<div id="gallery_dialog"/>');
                 $('#gallery_dialog').dialog({
                     autoOpen    : false,
                     modal       : true,
                     title       : "Добавить изображения",
                     buttons     : {
                         "Закрыть"   : function() {
-                            if ( $(this).find('form').length == 0 ) {
-                                $.get('/admin/catgallery/reload='+$('#form_catalog_id').val(), function(data) {
-                                    $('div.a-gallery:first').replaceWith(data);
-                                });
-                            };
                             $(this).dialog('close');
                         },
                         "Загрузить" : function() {
@@ -118,6 +114,11 @@ $(function(){
                                 target  : '#gallery_dialog'
                             });
                         }
+                    },
+                    close: function() {
+                        $.get('/catgallery/index/id/'+$('#catalog_id').val(), function(data) {
+                            $('div.a-gallery').replaceWith(data);
+                        });
                     }
                 });
             };
@@ -130,47 +131,27 @@ $(function(){
 
         // удалить изображение
         $('a.del_gallery_image').live('click', function(){
-            if ( confirm('Действительно хотите удалить изображение?') ) {
-                $.blockUI({
-                    message:'Удаление',
-                    css: {
-                        border: 'none',
-                        padding: '15px',
-                        backgroundColor: '#000',
-                        '-webkit-border-radius': '10px',
-                        '-moz-border-radius': '10px',
-                        opacity: .5,
-                        color: '#fff'
-                    }
-                });
-                $.get($(this).attr('href'), function(data){
-                    $('div.a-gallery:first').replaceWith(data);
-                    $.unblockUI();
-                });
+            if ( ! confirm('Действительно хотите удалить изображение?') ) {
+                return false;
             }
+            siteforever.alert('Удаление');
+            $.get($(this).attr('href'), function(data){
+                $('div.a-gallery:first').replaceWith(data);
+                siteforever.alert.close();
+            });
             return false;
         });
 
         // сделать изображение главным
         $('a.main_gallery_image').live('click', function(){
-            $.blockUI({
-                message:'Сохранение',
-                css: {
-                    border: 'none',
-                    padding: '15px',
-                    backgroundColor: '#000',
-                    '-webkit-border-radius': '10px',
-                    '-moz-border-radius': '10px',
-                    opacity: .5,
-                    color: '#fff'
-                }
-            });
+
+            siteforever.alert( 'Сохранение', null );
             $.get($(this).attr('href'), function(data){
                 $('div.a-gallery:first').replaceWith(data);
-                $.unblockUI();
+                siteforever.alert.close();
             });
             return false;
         });
     }
 
-})
+});

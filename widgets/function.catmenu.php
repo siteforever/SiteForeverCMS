@@ -34,5 +34,8 @@ function smarty_function_catmenu($params, $smarty)
     $catalog = Model::getModel('Catalog');
     
     
-    return $catalog->getMenu( $url, $parent, $level );
+    $start  = microtime(1);
+    $result = $catalog->getMenu( $url, $parent, $level );
+//    print __FUNCTION__.' '.round( microtime(1) - $start, 3 );
+    return $result;
 }

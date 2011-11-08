@@ -1,4 +1,4 @@
-<p><a {href url="admin/catalog"}><span>Каталог</span></a> &gt; <span>Загрузить прайслист</span></p>
+<p><a {href url="catalog/admin"}><span>Каталог</span></a> &gt; <span>Загрузить прайслист</span></p>
 
 <br />
 

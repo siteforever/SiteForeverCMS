@@ -5,6 +5,7 @@
  */
 class Controller_Catalog extends Controller
 {
+
     function init()
     {
         $config = array(
@@ -20,8 +21,6 @@ class Controller_Catalog extends Controller
         );
         $this->config->setDefault('catalog', $config);
     }
-
-
 
     /**
      * Действие по умолчанию
@@ -266,13 +265,13 @@ class Controller_Catalog extends Controller
          */
         $form = $catalog->getForm();
 
-        if ( '' != $id ) // если раздел существует
+        if ( $id ) // если раздел существует
         {
             $item       = $catalog->find( $id );
             $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
             $form->setData( $item->getAttributes() );
         }
-        elseif( '' !== $type /*&& '' !== $parent_id*/ )
+        elseif( $type /*&& '' !== $parent_id*/ )
         {
             $item       = $catalog->createObject();
             $form->parent   = $parent_id;
@@ -312,7 +311,7 @@ class Controller_Catalog extends Controller
             return;
         }
 
-        // если товар
+        // ЕСЛИ ТОВАР
         if (    ! ( $id || $type ) ||
                 ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 )
         ) {
@@ -337,16 +336,11 @@ class Controller_Catalog extends Controller
                 }
             }
 
-            if ( $id ) {
-                $gallery    = $catalog_gallery->findAll(array(
-                    'cond'  => ' cat_id = ? ',
-                    'params'=> array($id),
-                ));
-                $this->tpl->gallery = $gallery;
-            }
+            $catgallery = new Controller_CatGallery( $this->app() );
+            $gallery_panel  = $catgallery->getAdminPanel( $id );
+            $this->tpl->gallery_panel = $gallery_panel;
         }
         else { // если каталог
-
             $icon_dir = 'files/catalog/icons';
             if ( ! is_dir( $icon_dir ) ) {
                 mkdir($icon_dir, 0777, true);

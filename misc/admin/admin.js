@@ -66,7 +66,7 @@ $(function() {
     });
 
     // Галлерея
-    $('a.gallery, a.fancybox').fancybox();
+    $('a.gallery, a.fancybox').lightBox();
 
     $('div.b-main-structure ul').sortable({
         stop:

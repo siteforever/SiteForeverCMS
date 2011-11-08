@@ -26,5 +26,7 @@ function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $templat
         $breadcrumbs->fromJson( $params['path'] );
     }
 
-    return '<div class="b-breadcrumbs">'.$breadcrumbs->render().'</div>';
+    $result = '<div class="b-breadcrumbs">'.$breadcrumbs->render().'</div>';
+//    print microtime(1) - $start;
+    return $result;
 }

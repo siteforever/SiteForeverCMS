@@ -53,7 +53,8 @@ class Model_CatGallery extends Model
             if ( $data['image'] && file_exists(ROOT.$data['image']) ) {
                 @unlink ( ROOT.$data['image'] );
             }
-            $data->markDeleted();
+            $this->delete( $id );
+//            $data->markDeleted();
         }
     }
 

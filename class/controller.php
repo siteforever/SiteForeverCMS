@@ -184,6 +184,7 @@ abstract class Controller
     function setAjax( $ajax = true )
     {
         App::$ajax  = $ajax;
+//        $this->request->setAjax( true, Request::TYPE_ANY );
     }
 
     /**

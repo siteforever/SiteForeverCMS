@@ -22,10 +22,10 @@
     <td>
         {if $item.cat}
             {icon name="folder" title="Каталог"}
-            <a {href url="admin/catalog" part=$item.id}>{$item.name}</a>
+            <a {href url="catalog/admin" part=$item.id}>{$item.name}</a>
         {else}
             {icon name="page" title="Товар"}
-            <a {href url="admin/catalog" edit=$item.id}>{$item.name}</a>
+            <a {href url="catalog/admin" edit=$item.id}>{$item.name}</a>
         {/if}
     </td>
     <td class="trade_pos">{if $item.cat == 0}
@@ -33,11 +33,11 @@
         {/if}</td>
     <td>{if $item.cat == 1}{$item.child_count}{else}{$item.articul}{/if}</td>
     <td>
-        <a {href url="admin/catalog" edit=$item.id}>{icon name="pencil" title="Править"}</a>
+        <a {href url="catalog/admin" edit=$item.id}>{icon name="pencil" title="Править"}</a>
         {if $item.hidden}
-            <a {href url="admin/catalog" item=$item.id switch="on"} class="catalog_switch">{icon name="lightbulb_off" title="Включить"}</a>
+            <a {href url="catalog/admin" item=$item.id switch="on"} class="catalog_switch">{icon name="lightbulb_off" title="Включить"}</a>
         {else}
-            <a {href url="admin/catalog" item=$item.id switch="off"} class="catalog_switch">{icon name="lightbulb" title="Выключить"}</a>
+            <a {href url="catalog/admin" item=$item.id switch="off"} class="catalog_switch">{icon name="lightbulb" title="Выключить"}</a>
         {/if}
         {*{if $item.protected}{icon name="lock" title="Снять защиту"}{else}{icon name="lock_add" title="Добавить защиту"}{/if}*}
         {if $item.cat == 1}

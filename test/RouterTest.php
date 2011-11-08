@@ -130,8 +130,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $request->get('controller'), 'page' );
         $this->assertEquals( $request->get('action'), 'nameconvert' );
 
-        $this->assertEquals( 7, $request->get('page') );
-        $this->assertEquals( 123, $request->get('id') );
+        $this->assertEquals( '7', $request->get('page') );
+        $this->assertEquals( '123', $request->get('id') );
     }
 
     public function testFindRouteUsersCabinet()
@@ -193,6 +193,22 @@ class RouterTest extends PHPUnit_Framework_TestCase
         App::getInstance()->getRequest()->set('controller', null);
         $this->router->setRoute('index');
         $this->router->routing();
+    }
+
+    public function testFindRouteCatalogWithId()
+    {
+        $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
+        $this->router->setRoute('catalog/id=3');
+        $this->router->routing();
+
+        $this->assertEquals('3', $request->get('id', FILTER_SANITIZE_NUMBER_INT));
+    }
+
+    public function testCreateLinkCatGallery()
+    {
+        $url    = $this->router->createLink('', array('controller'=>'catgallery','id'=>5));
+        $this->assertEquals( '/catgallery/index/id/5', $url );
     }
 
     /**

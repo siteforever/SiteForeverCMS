@@ -32,44 +32,9 @@ class Router
         $this->request = $request;
         $route = $this->request->get('route');
 
-        if ( is_array( $route ) ) {
-            $route = 'index';
-        }
+        $this->setRoute( $route );
 
-        $this->route = trim( $route, '/' );
-
-        /*if ( $this->route == 'index' ) {
-            header("location: /");
-            exit();
-        }*/
-
-        if ( ! $this->route ) {
-            $this->route = 'index';
-        }
-
-        if ( preg_match( '/[\w\d\/_-]+/i', $this->route ) ) {
-            $this->route = trim( $this->route, ' /' );
-        }
-
-        // выделяем указатель на страницы
-        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
-            $this->request->set('page', $match_page[1]);
-            $this->route = trim( str_replace( $match_page[0], '', $this->route ), '/' );
-        }
-
-        $params = explode('/', $this->route);
-
-        foreach( $params as $key => $param ) {
-            if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
-                $this->request->set( $matches[1], $matches[2] );
-                unset( $params[$key] );
-                continue;
-            }
-        }
-        $this->request->set('params', $params);
-        $this->route = join('/', $params);
-
-        $this->request->set('route', $this->route);
+//        $this->request->set('route', $this->route);
     }
 
     /**
@@ -89,7 +54,7 @@ class Router
      */
     public function createLink( $result = '', $params = array() )
     {
-        if ( null === $result && isset( $params['controller'] ) ) {
+        if ( ! $result && isset( $params['controller'] ) ) {
             return $this->createDirectRequest( $params );
         }
 
@@ -182,12 +147,44 @@ class Router
             return true;
         }
 
+
+        $this->route = trim( $this->route, '/' );
+
+        if ( ! $this->route ) {
+            $this->route = 'index';
+        }
+
+        if ( preg_match( '/[\w\d\/_-]+/i', $this->route ) ) {
+            $this->route = trim( $this->route, ' /' );
+        }
+
+//        // выделяем указатель на страницы
+//        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
+//            $this->request->set('page', $match_page[1]);
+//            $this->route = trim( str_replace( $match_page[0], '', $this->route ), '/' );
+//        }
+
+        // ----------------
+
         $this->findAlias();
 
         if ( ! $this->findRoute() )
         {
             if ( ! $this->findStructure() ) {
                 $route_pieces   = explode( '/', $this->route );
+
+                foreach( $route_pieces as $key => $param ) {
+                    if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
+                        $this->request->set( $matches[1], $matches[2] );
+                        unset( $route_pieces[$key] );
+                        continue;
+                    }
+                }
+
+        //        $this->request->set('params', $route_pieces);
+        //        $this->route = join('/', $route_pieces);
+        //
+        //        var_dump( $this->route );
 
                 if ( count( $route_pieces ) == 1 ) {
                     $this->controller   = $route_pieces[0];
@@ -199,13 +196,14 @@ class Router
 
                     $route_pieces       = array_slice( $route_pieces, 2 );
 
-                    if ( 0 == count( $route_pieces ) % 2 ) {
+                   if ( 0 == count( $route_pieces ) % 2 ) {
                         $key    = '';
                         foreach ( $route_pieces as $i => $r ) {
                             if ( $i % 2 ) {
-                                if ( null === $this->request->get($key) ) {
-                                    $this->request->set( $key, $r );
-                                }
+//                                if ( null === $this->request->get($key) ) {
+                                $this->request->set( $key, $r );
+//                                print "key=$key,val=$r\n";
+//                                }
                             } else {
                                 $key    = $r;
                             }

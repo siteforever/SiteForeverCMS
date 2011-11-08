@@ -13,11 +13,12 @@
  */
 function smarty_function_href( $params )
 {
-    if ( empty($params['url']) ) {
-        $url = null;
-    } else {
-        $url = $params['url'];
-    }
+    $url    = $params['url'];
+//    if ( empty($params['url']) ) {
+//        $url = null;
+//    } else {
+//        $url = $params['url'];
+//    }
     unset($params['url']);
 
 //    if ( null == $url && isset($params['controller']) && isset($params['action']) ) {
