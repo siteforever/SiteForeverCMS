@@ -50,10 +50,15 @@ siteforever.request = function( options )
     }, type);
 }
 
-siteforever.alert   = function( msg )
+siteforever.alert   = function( msg, timeout )
 {
+    if ( null !== timeout ) {
+        if ( ! timeout )
+            timeout = 2000;
+    }
+
     if ( $('#siteforever_alert').length == 0 ) {
-        $('body').append('<div id="siteforever_alert" style="display:none;"></div>');
+        $('body').append('<div id="siteforever_alert" style="display:none;"/>');
         $('#siteforever_alert').css({
             background: '#666',
             color:      'white',
@@ -65,9 +70,9 @@ siteforever.alert   = function( msg )
         });
     }
 
-    if ( siteforever.alert.timeout ) {
+    if ( null !== timeout && siteforever.alert.timeout ) {
         clearTimeout( siteforever.alert.timeout );
-        $('#siteforever_alert').hide();
+        siteforever.alert.close();
     }
 
     //alert($(window).scrollTop());
@@ -77,9 +82,16 @@ siteforever.alert   = function( msg )
         left:   Math.round( $(window).width() / 2 - $('#siteforever_alert').width() / 2 )
     }).fadeTo( 'slow', 0.8 );
 
-    siteforever.alert.timeout = setTimeout(function(){
-        $('#siteforever_alert').hide();
-    }, 2000);
+    if ( null !== timeout ) {
+        siteforever.alert.timeout = setTimeout(function(){
+            siteforever.alert.close();
+        }, timeout);
+    }
+};
+
+siteforever.alert.close = function()
+{
+    $('#siteforever_alert').hide();
 }
 
 

@@ -12,9 +12,13 @@ class Data_Object_Catalog extends Data_Object
 
     protected $_image   = null;
 
+    /**
+     * Вернет список изображений для товара
+     * @return Data_Collection
+     */
     public function getGallery()
     {
-        if ( null === $this->_gallery ) {
+        if ( null === $this->_gallery && $this->getId() ) {
             $gallery_model  = $this->getModel('CatGallery');
 
             $this->_gallery = $gallery_model->findAll(array(
@@ -25,10 +29,17 @@ class Data_Object_Catalog extends Data_Object
         return $this->_gallery;
     }
 
-    public function  getMainImage()
+    /**
+     * Вернет главную картинку для товара
+     * @return Data_Object_CatGallery|null
+     */
+    public function getMainImage()
     {
         if ( null === $this->_image ) {
             $gallery    = $this->getGallery();
+            if ( null === $gallery ) {
+                return null;
+            }
             foreach ( $gallery as $image ) {
                 if ( $image->main == 1 ) {
                     $this->_image   = $image;
@@ -39,6 +50,10 @@ class Data_Object_Catalog extends Data_Object
         return $this->_image;
     }
 
+    /**
+     * Вернет строку для маленькой картинки
+     * @return string
+     */
     public function getThumb()
     {
         $image  = $this->getMainImage();
@@ -47,6 +62,10 @@ class Data_Object_Catalog extends Data_Object
         return '';
     }
 
+    /**
+     * Вернет строку для средней картинки
+     * @return string
+     */
     public function getMiddle()
     {
         $image  = $this->getMainImage();
@@ -55,6 +74,10 @@ class Data_Object_Catalog extends Data_Object
         return '';
     }
 
+    /**
+     * Вернет строку для полной картинки
+     * @return string
+     */
     public function getImage()
     {
         $image  = $this->getMainImage();

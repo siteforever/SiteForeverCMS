@@ -262,17 +262,17 @@ class Controller_Catalog extends Controller
         $parent_id  = $this->request->get('add', Request::INT, 0);
 
         /**
-         * @var form_Form
+         * @var Form_Form
          */
         $form = $catalog->getForm();
 
-        if ( $id ) // если раздел существует
+        if ( null !== $id ) // если раздел существует
         {
             $item       = $catalog->find( $id );
             $parent_id  = isset( $item['parent'] ) ? $item['parent'] : 0;
             $form->setData( $item->getAttributes() );
         }
-        elseif( $type /*&& '' !== $parent_id*/ )
+        elseif( null !== $type /*&& '' !== $parent_id*/ )
         {
             $item       = $catalog->createObject();
             $form->parent   = $parent_id;
@@ -307,15 +307,15 @@ class Controller_Catalog extends Controller
                 $catalog->update( $object );
             }
             else {
-                $this->request->addFeedback($form->getFeedbackString());
+                $this->request->addFeedback( $form->getFeedbackString() );
             }
             return;
         }
 
         // ЕСЛИ ТОВАР
-        if (    ! ( $id || $type ) ||
-                ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 )
-        ) {
+        if (    ( ! $id && ! $type )
+             || ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 ) )
+        {
             //$form->image->show();
             $form->getField('icon')->hide();
             $form->getField('articul')->show();
@@ -327,6 +327,7 @@ class Controller_Catalog extends Controller
             $form->getField('byorder')->show();
             $form->getField('absent')->show();
 
+            // показываем поля родителя
             $parent = $catalog->find( $parent_id );
             if ( $parent ) {
                 foreach( $parent->getAttributes() as $k => $p ) {
@@ -335,11 +336,17 @@ class Controller_Catalog extends Controller
                         trim($p) ? $field->setLabel( $p ) : $field->hide();
                     }
                 }
+            } else {
+                for ( $i = 0; $i<10; $i++ ) {
+                    $form->getField( 'p'.$i )->hide();
+                }
             }
 
-            $catgallery = new Controller_CatGallery( $this->app() );
-            $gallery_panel  = $catgallery->getAdminPanel( $id );
-            $this->tpl->gallery_panel = $gallery_panel;
+            if ( $id ) {
+                $catgallery = new Controller_CatGallery( $this->app() );
+                $gallery_panel  = $catgallery->getAdminPanel( $id );
+                $this->tpl->gallery_panel = $gallery_panel;
+            }
         }
         else { // если каталог
             $icon_dir = 'files/catalog/icons';
@@ -364,6 +371,16 @@ class Controller_Catalog extends Controller
         $this->request->setContent($this->tpl->fetch('system:catalog.admin_edit'));
     }
 
+
+    public function tradeEditAction()
+    {
+        $id     = $this->request->get('id');
+
+        $model  = $this->getModel('Catalog');
+
+
+    }
+
     /**
      * Генерит хлебные крошки для админки каталога
      * @param json $path
@@ -371,7 +388,7 @@ class Controller_Catalog extends Controller
      */
     function adminBreadcrumbs( $path )
     {
-        $bc = array('<a '.href('').'>Каталог</a>'); // breadcrumbs
+        $bc = array('<a '.href('/catalog/admin').'>Каталог</a>'); // breadcrumbs
 
         if ( $from_string =  @unserialize( $path ) ) {
             if ( $from_string && is_array( $from_string ) ) {
@@ -418,6 +435,7 @@ class Controller_Catalog extends Controller
             $this->request->setResponseError( 0, $catalog->moveList() );
             return;
         }
+
         // Сохранение позиций
         if ( $save_pos = $this->request->get('save_pos') ) {
             foreach ( $save_pos as $pos ) {
@@ -487,14 +505,14 @@ class Controller_Catalog extends Controller
                 if ( $this->getAjax() ) {
                     die(json_encode(array(
                         'error' => '0',
-                        'href'  => $this->router->createLink('admin/catalog', array(
+                        'href'  => $this->router->createLink('catalog/admin', array(
                             'item'      => $this->request->get('item'),
                             'switch'    => $switch,
                         )),
                         'img'   => $switch == 'on' ? icon('lightbulb_off', 'Включить') : icon('lightbulb', 'Выключить'),
                     )));
                 } else {
-                    redirect( 'admin/catalog', array('part'=>$obj->parent ) );
+                    redirect( 'catalog/admin', array('part'=>$obj->parent ) );
                 }
             }
             return;
