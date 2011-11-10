@@ -51,10 +51,7 @@ class Controller_Gallery extends Controller
          * @var model_galleryCategory $model_category
          */
         $model_category = $this->getModel('GalleryCategory');
-        /**
-         * @var model_galleryPage $model_structure
-         */
-        $model_structure = $this->getModel('Page');
+
 
         if ( $img = $this->request->get('img', Request::INT) )
         {
@@ -128,7 +125,6 @@ class Controller_Gallery extends Controller
         }
 
         $category = $model_category->find( $cat_id );
-        $struct   = $model_structure->find();
         if ( $category ) {
 
             $crit   = array(
