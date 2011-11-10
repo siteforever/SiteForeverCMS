@@ -63,10 +63,14 @@ class Controller_Catalog extends Controller
             $pathes    = @unserialize( $item->path );
 
             $page_id    = $pathes[0]['id'];
-            $page = $page_model->find(array(
-                 'condition' => '`controller` = ? AND `link` = ?',
-                 'params'    => array('catalog', $page_id),
-            ));
+            if ( $page_id ) {
+                $page = $page_model->find(array(
+                     'condition' => '`controller` = ? AND `link` = ?',
+                     'params'    => array('catalog', $page_id),
+                ));
+            } else {
+                $page = null;
+            }
             // Если страница на весь каталог разом
             if ( null === $page ) {
                 $page = $page_model->find(array(

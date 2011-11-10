@@ -31,7 +31,11 @@ class Data_Object_Gallery extends Data_Object
         $name   = $name ? $name : $this->getId();
         //***********
 
-        $alias  = $this->getCategory()->getAlias();
+        try {
+            $alias  = $this->getCategory()->getAlias();
+        } catch ( Data_Exception $e ) {
+            return '';
+        }
 
         $alias  .= '/'.$this->getModel('Alias')->generateAlias( $name );
 

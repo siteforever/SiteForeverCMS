@@ -79,9 +79,9 @@ class App extends Application_Abstract
             require_once 'functionsTest.php';
         } else {
             require_once 'functions.php';
-            $firephp = FirePHP::getInstance(true);
-            $firephp->registerErrorHandler();
-            $firephp->registerExceptionHandler();
+//            $firephp = FirePHP::getInstance(true);
+//            $firephp->registerErrorHandler();
+//            $firephp->registerExceptionHandler();
         }
 
         if ( ! defined('MAX_FILE_SIZE') )
