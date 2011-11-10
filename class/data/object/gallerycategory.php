@@ -44,4 +44,18 @@ class Data_Object_GalleryCategory extends Data_Object
             throw new Data_Exception(t('Page not found for gallery'));
         return $result;
     }
+
+    public function getImage()
+    {
+        $model  = $this->getModel('Gallery');
+        $crit   = array(
+            'cond'      => 'category_id = ?',
+            'params'    => array( $this->id ),
+            'limit'     => 1,
+        );
+        $image = $model->find($crit);
+        if ( $image )
+            return $image->thumb;
+        return '';
+    }
 }

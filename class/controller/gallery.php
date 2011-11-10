@@ -52,7 +52,6 @@ class Controller_Gallery extends Controller
          */
         $model_category = $this->getModel('GalleryCategory');
 
-
         if ( $img = $this->request->get('img', Request::INT) )
         {
             $image  = $model->find( $img );
@@ -175,15 +174,6 @@ class Controller_Gallery extends Controller
         } else {
 //            $this->request->addFeedback('Категория не определена');
             $categories = $model_category->findAll();
-            foreach($categories as $cat){
-                $crit   = array(
-                    'cond'      => 'category_id = ?',
-                    'params'    => array( $cat->id ),
-                    'limit'     => 1,
-                );
-                $pic = $model->find($crit);
-                $cat['image'] = $pic->thumb;
-            }
             $this->tpl->categories    = $categories;
             $this->request->setContent( $this->tpl->fetch('gallery.categories') );
         }
