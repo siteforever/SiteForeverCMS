@@ -80,7 +80,7 @@ class Pager implements ArrayAccess
         $this->html     = count($p) > 1 ? 'Страницы: '.join(' - ',$p) : '';
         $this->from     = ($page - 1) * $perpage;
         $this->to       = $this->from + $perpage;
-        $this->offset   = $this->to;
+        $this->offset   = $this->from;
         $this->perpage  = $perpage;
         $this->limit    = ($pages > 1) ? $this->from.','.$this->perpage : '';
 

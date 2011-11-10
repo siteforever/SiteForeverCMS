@@ -29,7 +29,7 @@
 <p class="page">{$paging.html}</p>
 <a class="cat_add" {href controller="banner" action="editcat"}>Добавить категорию</a>
 
-<div id="dlg-form" title="Редактирование баннеров.">
+<div id="dlg-form" title="Редактирование категории баннеров.">
 </div>
 
 

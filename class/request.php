@@ -263,7 +263,7 @@ class Request
         if (is_array($get)) {
             return $get;
         }
-        //print $key.':'.$get.' => filtered: '.filter_var( $get, $type )."<br />\n";
+
         return  filter_var( $get, $type )
                 ? filter_var( $get, $type )
                 : $default;

@@ -31,13 +31,7 @@ class Controller_Banner extends Controller
      public function adminAction()
     {
         $this->request->setTitle("Управление баннерами");
-//        $model = $this->getModel('Banner');
         $category = $this->getModel('CategoryBanner');
-
-//        $formcat = $category->getForm();
-
-
-
         $cat_list = $category->findAll();
         $this->tpl->categories  = $cat_list;
         $this->request->setContent( $this->tpl->fetch('banner.category') );
@@ -66,7 +60,6 @@ class Controller_Banner extends Controller
     {
         $model = $this->getModel('CategoryBanner');
         $form = $model->getForm();
-
         $this->request->setAjax(1, Request::TYPE_ANY);
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
@@ -79,22 +72,6 @@ class Controller_Banner extends Controller
             }
             return;
         }
-
-//        if ( $form->getPost() ) {
-//            if ( $form->validate() ) {
-//                $obj = $model->createObject( $form->getData() );
-//                $model->save( $obj );
-//                if (  $obj && ! $obj->getId() ) {
-//                    reload('banner/admin');
-//                }
-//                $this->request->addFeedback(t('Data save successfully'));
-//                return;
-//            }
-//            else {
-//                print $form->getFeedbackString();
-//                return;
-//            }
-//        }
         if ( $edit = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
             try {
                 $obj    = $model->find( $edit );
@@ -108,7 +85,7 @@ class Controller_Banner extends Controller
         return 1;
     }
 
-    function delcatAction( )
+    function delcatAction()
     {
         $model = $this->getModel('CategoryBanner');
         $id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
@@ -118,7 +95,7 @@ class Controller_Banner extends Controller
         redirect('banner/admin');
     }
 
-    function delAction( )
+    function delAction()
     {
         $model = $this->getModel('Banner');
         $id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
@@ -138,13 +115,15 @@ class Controller_Banner extends Controller
     {
         $model = $this->getModel('Banner');
         $category = $this->getModel('CategoryBanner');
-
         if ( $id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
-            $banners = $model->findAll(array(
-                'cond'  => 'cat_id = :catid',
-                'params'=> array(':catid'=>$id),
-                'order' => 'name',
-            ));
+            $this->request->setTitle('Управление баннерами');
+            $count  = $model->count('`cat_id`='.$id);
+            $paging = $this->paging( $count, 20, $this->router->createServiceLink('banner','cat', array('id'=>$id)) );
+            $crit   = array();
+            $crit['where']  = "`cat_id` = '$id'";
+            $crit['limit']  = $paging->limit;
+            $crit['order']  = 'name';
+            $banners   = $model->findAll( $crit );
             $cat            = $category->find($id);
             if ( isset( $_FILES['image'] ) ) {
                 $this->upload( $cat );
@@ -152,6 +131,7 @@ class Controller_Banner extends Controller
             }
             $this->tpl->cat      = $cat;
             $this->tpl->banners  = $banners;
+            $this->tpl->paging   = $paging;
             $this->request->setContent( $this->tpl->fetch('banner.banners') );
             return 1;
         } else {
@@ -163,13 +143,11 @@ class Controller_Banner extends Controller
     {
         $model = $this->getModel('Banner');
         $form = $model->getForm();
-
         $this->request->setAjax(1, Request::TYPE_ANY);
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $model->save( $obj );
-
                 $this->request->addFeedback(t('Data save successfully'));
             }
             else {
@@ -218,16 +196,13 @@ class Controller_Banner extends Controller
         $model  = $this->getModel('Banner');
         $max_file_size = 1000000;
         $upload_ok = 0;
-
         if ( isset( $_FILES['image'] ) && is_array($_FILES['image']) )
         {
             $images = $_FILES['image'];
             $names  = array();
-
             if ( $this->request->get('name') ) {
                 $names  = $this->request->get('name');
             }
-
             foreach ( $images['error'] as $i => $err )
             {
                 if ( $err == UPLOAD_ERR_OK )
@@ -247,12 +222,10 @@ class Controller_Banner extends Controller
                         if ( isset( $names[ $i ] ) ) {
                             $image->name    = $names[ $i ];
                         }
-
                         $model->save( $image );
                         $g_id = $image->getId();
                         $img = $dest.DIRECTORY_SEPARATOR.$g_id.'_'.$images['name'][$i];
                         $image->image   = str_replace( DIRECTORY_SEPARATOR, '/', $img );
-
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
                             $image->path  = str_replace( DIRECTORY_SEPARATOR, '/', $img );
@@ -282,7 +255,6 @@ class Controller_Banner extends Controller
                 }
             }
         }
-
         if ( $upload_ok ) {
             $this->request->addFeedback(t('Images are loaded'));
         }
