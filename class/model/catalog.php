@@ -320,6 +320,15 @@ class Model_Catalog extends Model
      */
     private function createActivePath( $cur_id )
     {
+        if ( ! $cur_id ) {
+            return array();
+        }
+        $current    = $this->find($cur_id);
+
+        if ( 0 == $current->cat ) {
+            $cur_id = $current->parent;
+        }
+
         $result = array();
 
         if ( count($this->parents) == 0 ) {
@@ -333,11 +342,12 @@ class Model_Catalog extends Model
         foreach ( $this->all as $key => $obj ) {
 
 //            print "key:{$key}; cur_id:{$cur_id}; obj_id:{$obj->id}; parent:{$obj->parent}<br>";
-
+            // Добавляем для раздела
             if ( $cur_id == $obj->id && 0 != $obj->parent ) {
                 $active_path    = $this->createActivePath( $obj->parent );
-                if ( $active_path )
+                if ( $active_path ) {
                     $result = array_merge( $result, $active_path );
+                }
             }
             //
         }
@@ -375,6 +385,7 @@ class Model_Catalog extends Model
         $cur_id = $this->getActiveCategory();
 
         $path   = $this->createActivePath( $cur_id );
+//        printVar($path);
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
@@ -410,16 +421,19 @@ class Model_Catalog extends Model
             $first  = 1 == $counter++ ? ' first' : '';
 
             $html[] = "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
-                     .( $branch['icon'] ? "style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'" : "" )
-                     .">";
-            $html[] = "<a href='".$this->app()->getRouter()->createLink( $url, array('id'=>$branch['id']) )."'"
-                     .($active
-                            ?" class='active'"
-                            :'')
-                     .">{$branch['name']}</a>";
+                         .( $branch['icon']
+                            ? "style='background:url(/".$branch['icon'].") no-repeat 6px 4px;'"
+                            : "" ) . ">";
 
-            if ( $active )
+            $html[] = "<a href='".$this->app()->getRouter()->createLink( $url, array('id'=>$branch['id']) )."'"
+                        .($active
+                            ? " class='active'"
+                            : '')
+                        . ">{$branch['name']}</a>";
+
+            if ( $active ) {
                 $html[] = $this->getMenu( $url, $branch['id'], $levelback - 1 );
+            }
             $html[] = '</li>';
         }
         $html[] = '</ul>';
