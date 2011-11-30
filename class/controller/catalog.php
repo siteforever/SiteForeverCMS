@@ -23,6 +23,19 @@ class Controller_Catalog extends Controller
     }
 
     /**
+     * Правила, определяющие доступ к приложениям
+     * @return array
+     */
+    function access()
+    {
+        return array(
+            'system'    => array(
+                'admin','delete',
+            ),
+        );
+    }
+
+    /**
      * Действие по умолчанию
      * @return void
      */
@@ -199,8 +212,15 @@ class Controller_Catalog extends Controller
         }
     }
 
+    /**
+     * Удалит раздел или товар
+     */
+    public function deleteAction()
+    {
+        $id = $this->request->get('id');
 
 
+    }
 
 
     /**

@@ -20,8 +20,8 @@ function smarty_function_banner( $params )
         $banner  = $modelBanner->find(array());
     }
     else{
-        $banners = $modelBanner->findAll();
-        $banner  = $banners[rand(0,$countBanner-1)];
+        $banner = $modelBanner->find(array('order'=>'RAND()'));
+//        $banner  = $banners[rand(0,$countBanner-1)];
     }
     $banner['count_show']=$banner['count_show']+1;
     $modelBanner->save( $banner );
