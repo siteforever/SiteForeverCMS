@@ -36,10 +36,10 @@ class Data_Object_GalleryCategory extends Data_Object
         }
 
         if ( $strpage ) {
-            return $strpage->alias;
+            return $strpage->get('alias');
         }
         else {
-            return $alias_model->generateAlias( $this->name );
+            return $alias_model->generateAlias( $this->get('name') );
         }
     }
 
@@ -79,7 +79,7 @@ class Data_Object_GalleryCategory extends Data_Object
             );
             $image = $model->find($crit);
             if ( $image ) {
-                $this->_image   = $image->thumb;
+                $this->_image   = $image->get('thumb');
             }
         }
         return $this->_image;
