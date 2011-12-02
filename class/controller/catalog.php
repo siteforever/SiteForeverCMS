@@ -6,7 +6,7 @@
 class Controller_Catalog extends Controller
 {
 
-    function init()
+    public function init()
     {
         $config = array(
             // сортировка товаров
@@ -26,7 +26,7 @@ class Controller_Catalog extends Controller
      * Правила, определяющие доступ к приложениям
      * @return array
      */
-    function access()
+    public function access()
     {
         return array(
             'system'    => array(
@@ -39,7 +39,7 @@ class Controller_Catalog extends Controller
      * Действие по умолчанию
      * @return void
      */
-    function indexAction()
+    public function indexAction()
     {
         $cat_id = $this->request->get('id', Request::INT);
         if ( ! $cat_id ) {
@@ -229,7 +229,7 @@ class Controller_Catalog extends Controller
      * @param array $item
      * @return array
      */
-    function buildParamView( Data_Object_Catalog $cat, Data_Object_Catalog $item )
+    public function buildParamView( Data_Object_Catalog $cat, Data_Object_Catalog $item )
     {
         $properties = array( $item->getId() => array() );
 
@@ -272,7 +272,7 @@ class Controller_Catalog extends Controller
      * Редактирование / добавление раздела / товара каталога
      * @return void
      */
-    function adminEdit()
+    public function adminEdit()
     {
         /**
          * @var Model_Catalog $catalog
@@ -410,7 +410,7 @@ class Controller_Catalog extends Controller
      * @param json $path
      * @return string
      */
-    function adminBreadcrumbs( $path )
+    public function adminBreadcrumbs( $path )
     {
         $bc = array('<a '.href('/catalog/admin').'>Каталог</a>'); // breadcrumbs
 
@@ -430,7 +430,7 @@ class Controller_Catalog extends Controller
      * Действие панели администратора
      * @return void
      */
-    function adminAction()
+    public function adminAction()
     {
         /**
          * @var model_Catalog $catalog
@@ -614,9 +614,10 @@ class Controller_Catalog extends Controller
 
     /**
      * Загрузка прайса
+     * @param Model_Catalog $model
      * @return void
      */
-    function loadPrice( model_Catalog $model )
+    public function loadPrice( Model_Catalog $model )
     {
         $this->request->setTitle('Загрузить прайслист');
 
@@ -726,7 +727,7 @@ class Controller_Catalog extends Controller
      * Групповой аяксовый делит по id из поста
      * @return void
      */
-    function groupAjaxDelete()
+    public function groupAjaxDelete()
     {
         $delete_list    = $this->request->get('trade_delete');
         App::$ajax  = true;

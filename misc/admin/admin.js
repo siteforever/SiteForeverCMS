@@ -28,6 +28,15 @@ $(function() {
         return confirm('Данные будут потеряны. Действительно хотите удалить?');
     });
 
+    $('a.order_hidden').live('click', function(){
+        var a   = this;
+//        alert($(a).attr('href'));
+        $.get( $(a).attr('href'), function(data) {
+            $(a).replaceWith( data );
+        });
+        return false;
+    });
+
     $('table.dataset tr').hover(function(){
         $(this).addClass('select');
     },function(){

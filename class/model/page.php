@@ -257,12 +257,14 @@ class Model_Page extends Model
     public function getNextPos( $parent_id )
     {
         $max   = $this->db->fetchOne(
-            "SELECT MAX(pos)
-            FROM {$this->table}
-            WHERE parent = :parent AND deleted = 0",
-            array(':parent'=>$parent_id)
+            "SELECT MAX(pos) "
+            ."FROM {$this->table} "
+            ."WHERE parent = ? AND deleted = 0",
+            array($parent_id)
         );
-        if ( ! $max ) return 0;
+        if ( ! $max ) {
+            return 0;
+        }
         return ++$max;
     }
 
@@ -372,18 +374,28 @@ class Model_Page extends Model
          */
         foreach( $this->all as $data ) {
             $this->parents[ $data['parent'] ][ $data['id'] ] = $data;
+
+
         }
     }
 
     /**
      * Вернет HTML-меню
-     * @param int $parent родитель
-     * @param int $level уровень вложенности
+     * @param int $parent
+     * @param int $levelback
+     * @param DOMElement|null $node
      * @return string
      */
-    public function getMenu( $parent, $levelback = 1 )
+    public function getMenu( $parent, $levelback = 1, DOMElement $node = null )
     {
-        $html = array();
+        $do_return  = false;
+        if ( null === $node ) {
+            $do_return  = true;
+            $dom    = new DOMDocument('1.0','utf-8');
+            $dom->appendChild( $node = $dom->createElement('div') );
+        } else {
+            $dom    = $node->ownerDocument;
+        }
 
         if ( count($this->parents) == 0 ) {
             $this->createTree();
@@ -397,42 +409,61 @@ class Model_Page extends Model
             return '';
         }
 
-        $html[]         = '<ul>';
+        /**
+         * @var DOMElement $ul
+         */
+        $node->appendChild( $ul = $dom->createElement('ul') );
+
         $counter        = count( $this->parents[ $parent ] );
         $total_count    = $counter;
 
+        foreach ( array_reverse( $this->parents[ $parent ], 1 ) as $obj ) {
+            if ( $obj['hidden'] == 0 && $obj['deleted'] == 0 ) {
+                break;
+            }
+        }
+
         foreach ( $this->parents[ $parent ] as $branch )
         {
-            if (   $branch['hidden'] == 0
-                //&& $this->app()->getUser()->hasPermission( $branch['protected'] )
-                && $branch['deleted'] == 0 )
+            if (   $branch['hidden'] == 0 && $branch['deleted'] == 0 )
             {
-                if ( $branch['alias'] == $this->request->get('route') ) {
-                    $active = true;
-                } else {
-                    $active = false;
+                $active = $branch['alias'] == $this->request->get('route');
+
+                /**
+                 * @var DOMElement $li
+                 */
+                $ul->appendChild( $li = $dom->createElement('li') );
+                /**
+                 * @var DOMElement $a
+                 */
+                $li->appendChild( $a = $dom->createElement('a', $branch['name']) );
+                $a->setAttribute('href', $this->app()->getRouter()->createLink($branch['alias']));
+
+                $classes  = array('item-'.$branch['id']);
+
+                if ( $counter == $total_count ) {
+                    $classes[]  = 'first';
                 }
 
-                $html[] = "<li class='item-{$branch['id']}"
-                            .($counter == $total_count
-                                 ? " first"
-                                 : ($counter==1
-                                         ? " last"
-                                         : ""
-                                   )
-                            )
-                            .($active ? ' active' : '')
-                         ."'>";
+                if ( $branch['id'] == $obj['id'] ) {
+                    $classes[]  = 'last';
+                }
 
-                $html[] = '<a '.href($branch['alias']).
-                    ($active ? ' class="active"' : '').">{$branch['name']}</a>";
-                $html[] = $this->getMenu( $branch['id'], $levelback - 1 );
-                $html[] = '</li>';
+                if ( $active ) {
+                    $classes[]  = 'active';
+                    $a->setAttribute('class', 'active');
+                }
+                $li->setAttribute('class', join(' ', $classes));
+                $this->getMenu( $branch['id'], $levelback - 1, $li );
             }
             $counter--;
         }
-        $html[] = '</ul>';
-        return implode( $html );
+
+        if ( ! $do_return ) {
+            return '';
+        }
+        $dom->formatOutput = true;
+        return $dom->saveHTML();
     }
 
     /**
@@ -502,10 +533,7 @@ class Model_Page extends Model
                             ? ''
                             : '<a class="link_del" page="'.$branch['id'].'" '.href('').'>'.icon('link', 'Внешняя связь').'</a>'
                         )
-                        .($branch['hidden']
-                            ? " <a ".href('admin', array('do'=>'on','part'=>$branch['id'])).">".icon('lightbulb_off', 'Выключен')."</a>"
-                            : " <a ".href('admin', array('do'=>'off','part'=>$branch['id'])).">".icon('lightbulb', 'Включен')
-                        )."</a>"
+                        .$this->getOrderHidden($branch['id'],$branch['hidden'])
                         ."<a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>"
                             .icon('arrow_up', 'Вверх')."</a>"
                         ."<a class='order-down' ".href('admin', array('do'=>'down','part'=>$branch['id']))." title='Вниз'>"
@@ -519,6 +547,20 @@ class Model_Page extends Model
             $this->html[] = $prefix."</li>";
         }
         $this->html[] = $prefix."</ul>";
+    }
+
+    /**
+     * Вернет HTML для лампочки в меню админки
+     * @param $id
+     * @param $hidden
+     * @return string
+     */
+    public function getOrderHidden( $id, $hidden )
+    {
+        $return = "<a href='".$this->app()->getRouter()->createServiceLink('page','hidden',array('id'=>$id))."' class='order_hidden'>";
+        $return.= $hidden ? icon('lightbulb_off', 'Выключен') : icon('lightbulb', 'Включен');
+        $return.= "</a>";
+        return $return;
     }
 
     /**

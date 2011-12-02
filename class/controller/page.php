@@ -208,24 +208,6 @@ class Controller_Page extends Controller
                 $form->update   = time();
                 $obj    = $model->createObject( $form->getData() );
 
-//                var_dump((string)$obj->controller);
-
-                // Если с таким маршрутом уже есть страница, то не сохранять
-//                if ( $page = $model->findByRoute( $obj->alias ) )
-//                {
-//                    if ( $page->id != $obj->getId() ) {
-//                        $this->request->addFeedback(t('The page with this address already exists'));
-//                        $this->request->addFeedback(t('Data not saved'));
-//                        $obj->markClean();
-//                        return;
-//                    }
-//
-//                    if ( ! $obj->getId() ) {
-//                        $this->request->addFeedback(t('The page with this address already exists'));
-//                        return;
-//                    }
-//                }
-
                 $old_id = $obj->getId();
 
                 try {
@@ -287,6 +269,23 @@ class Controller_Page extends Controller
         else {
             $this->request->setContent(t('Data not valid'));
         }
+    }
+
+    /**
+     * Меняет св-во hidden у страницы
+     */
+    public function hiddenAction()
+    {
+        $id = $this->request->get('id');
+        $page   = $this->getModel('Page')->find( $id );
+
+        $page->set('hidden', 0 == $page->get('hidden') ? 1 : 0 );
+
+        $page->save();
+
+        $this->request->setContent(
+            $this->getModel('Page')->getOrderHidden( $id, $page->get('hidden') )
+        );
     }
 
     /**
