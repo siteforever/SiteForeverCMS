@@ -1,7 +1,7 @@
 <?php
 // класс шаблонизатора
 App::autoloadUnRegister(array('App', 'autoload'));
-require_once 'Smarty-3.0.7'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
+require_once 'Smarty-3.1.5'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
 App::autoloadRegister(array('App','autoload'));
 
 /**
@@ -142,7 +142,7 @@ class TPL_Smarty extends TPL_Driver
      */
     function setTplDir( $dir )
     {
-        $this->engine->template_dir = $dir;
+        $this->engine->setTemplateDir($dir);
     }
     
     /**
@@ -150,7 +150,7 @@ class TPL_Smarty extends TPL_Driver
      */
     function getTplDir()
     {
-        return $this->engine->template_dir;
+        return $this->engine->getTemplateDir(0);
     }
     
     /**
@@ -159,7 +159,7 @@ class TPL_Smarty extends TPL_Driver
      */
     function setCplDir( $dir )
     {
-        $this->engine->compile_dir = $dir;
+        $this->engine->setCompileDir($dir);
     }
 
     /**
@@ -169,7 +169,7 @@ class TPL_Smarty extends TPL_Driver
      */
     function setCacheDir( $dir )
     {
-        $this->engine->cache_dir = $dir;
+        $this->engine->setCacheDir($dir);
     }
     
     /**
@@ -178,6 +178,6 @@ class TPL_Smarty extends TPL_Driver
      */
     function setWidgetsDir( $dir )
     {
-        $this->engine->plugins_dir[] = $dir;
+        $this->engine->addPluginsDir($dir);
     }
 }
