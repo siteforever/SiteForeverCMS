@@ -49,7 +49,6 @@ class Controller_Page extends Controller
             if ( $subpages ) {
                 $this->tpl->assign('subpages', $subpages);
                 $this->tpl->assign('page', $this->page);
-//                $this->page['content']  = $this->tpl->fetch('page.index');
                 $this->request->setContent( $this->tpl->fetch('page.index') );
             }
         }

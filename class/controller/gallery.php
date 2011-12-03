@@ -42,16 +42,17 @@ class Controller_Gallery extends Controller
      */
     public function indexAction()
     {
-        $this->request->setTemplate('inner');
         /**
          * @var model_gallery $model
-         */
-        $model  = $this->getModel('Gallery');
-        /**
          * @var model_galleryCategory $model_category
          */
+        $this->request->setTemplate('inner');
+        $model  = $this->getModel('Gallery');
         $model_category = $this->getModel('GalleryCategory');
 
+        /*
+         * Вывести изображение
+         */
         if ( $img = $this->request->get('img', Request::INT) )
         {
             $image  = $model->find( $img );
@@ -113,6 +114,9 @@ class Controller_Gallery extends Controller
             }
         }
 
+        /**
+         * Вывести категорию
+         */
         $cat_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT, $this->page['link'] );
         if ( $this->request->get('id', FILTER_SANITIZE_NUMBER_INT) ) {
             $cat_id = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT, $this->page['link']);
@@ -173,8 +177,28 @@ class Controller_Gallery extends Controller
 
         } else {
 //            $this->request->addFeedback('Категория не определена');
-            $categories = $model_category->findAll();
-            $this->tpl->categories    = $categories;
+            $page_model = $this->getModel('Page');
+            $sub_pages  = $page_model->findAll(array(
+                'condition' => ' parent = ? AND deleted = 0 ',
+                'params'    => array( $this->page['id'] ),
+            ));
+//            printVar($this->page);
+            /**
+             * @var Data_Object_Page $sp_obj
+             */
+            $list_page_id   = array();
+            foreach ( $sub_pages as $sp_obj ) {
+                if ( $sp_obj->get('link') && $sp_obj->get('controller') == 'gallery' ) {
+                    $list_page_id[] = $sp_obj->get('link');
+                }
+            }
+//            printVar($sub_pages);
+            if ( count( $list_page_id ) ) {
+                $categories = $model_category->findAll(array(
+                    'condition' => ' id IN ( '.implode(',', $list_page_id).' ) ',
+                ));
+                $this->tpl->assign('categories', $categories);
+            }
             $this->request->setContent( $this->tpl->fetch('gallery.categories') );
         }
     }

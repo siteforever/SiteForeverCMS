@@ -16,13 +16,14 @@ function smarty_function_banner( $params )
         print "Error! Banner not found!";
         return;
     }
-    if($countBanner==1){
-        $banner  = $modelBanner->find(array());
+
+    $criteria   = array('order'=>'RAND()');
+    if ( isset( $params['parent'] ) && is_numeric( $params['parent'] ) && $params['parent'] ) {
+        $criteria['condition']  = 'cat_id = ?';
+        $criteria['params']     = array( $params['parent'] );
     }
-    else{
-        $banner = $modelBanner->find(array('order'=>'RAND()'));
-//        $banner  = $banners[rand(0,$countBanner-1)];
-    }
+
+    $banner = $modelBanner->find($criteria);
     $banner['count_show']=$banner['count_show']+1;
     $modelBanner->save( $banner );
 
