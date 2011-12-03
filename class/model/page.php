@@ -579,7 +579,7 @@ class Model_Page extends Model
 
     /**
      * Вернет объект формы
-     * @return Form_Form
+     * @return Forms_Page_Page
      */
     public function getForm()
     {

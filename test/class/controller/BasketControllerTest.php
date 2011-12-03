@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 23.09.11
- * Time: 13:50
- * To change this template use File | Settings | File Templates.
+ * Тест контроллера корзины
  */
  
 class BasketControllerTest extends PHPUnit_Framework_TestCase
@@ -42,7 +38,6 @@ class BasketControllerTest extends PHPUnit_Framework_TestCase
     {
         $_REQUEST['basket_prod_id']=1;
         $this->object->addAction();
-
     }
 
 }

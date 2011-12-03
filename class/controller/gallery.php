@@ -260,20 +260,24 @@ class Controller_Gallery extends Controller
 
     /**
      * Редактирование категории
-     * @param model_GalleryCategory $model
      * @return
      */
-//    function editCat( Model_GalleryCategory $model )
-    function editcatAction( )
-    {   $model = $this->getModel('GalleryCategory');
+    public function editcatAction()
+    {
+        /**
+         * @var Model_GalleryCategory $model
+         * @var Data_Object_GalleryCategory $obj
+         */
+        $model = $this->getModel('GalleryCategory');
         $form = $model->getForm();
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
+                $obj_id = $obj->getId();
                 $model->save( $obj );
 
-                if (  $obj && ! $obj->getId() ) {
+                if ( $obj && ! $obj_id ) {
                     reload('admin/gallery');
                 }
                 $this->request->addFeedback(t('Data save successfully'));
@@ -293,7 +297,7 @@ class Controller_Gallery extends Controller
             }
 
             $form->setData( $obj->getAttributes() );
-            if(get_class($obj)!=='Data_Object_GalleryCategory'){
+            if ( get_class($obj) !== 'Data_Object_GalleryCategory' ){
                $form->alias    = $obj->getAlias();
             }
         }

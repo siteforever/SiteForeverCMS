@@ -10,7 +10,7 @@ class Controller_Page extends Controller
     function access()
     {
         return array(
-            'system'    => array('admin','edit','add','correct','move','nameconvert','save','realias',),
+            'system'    => array('admin','edit','add','correct','move','nameconvert','save','realias','hidden'),
         );
     }
 
@@ -19,6 +19,8 @@ class Controller_Page extends Controller
      */
     public function indexAction()
     {
+        $page_model = $this->getModel('Page');
+
         if ( ! $this->user->hasPermission( $this->page['protected'] ) )
         {
             $this->request->setContent(t('Access denied'));
@@ -28,7 +30,7 @@ class Controller_Page extends Controller
         // создаем замыкание страниц
         while ( $this->page['link'] != 0 )
         {
-            $page = $this->getModel('Page')->find( $this->page['link'] );
+            $page = $page_model->find( $this->page['link'] );
 
             if ( ! $this->user->hasPermission( $page['protected'] ) ) {
                 $this->request->setContent(t('Access denied'));
@@ -36,6 +38,20 @@ class Controller_Page extends Controller
             }
             $this->page['content']  = $page['content'];
             $this->page['link']     = $page['link'];
+        }
+
+        if ( $this->page['controller'] == 'page' ) {
+            $subpages   = $page_model->findAll(array(
+                'condition' => ' parent = ? AND hidden = 0 AND deleted = 0 ',
+                'params'    => array( $this->page['id'] ),
+            ));
+
+            if ( $subpages ) {
+                $this->tpl->assign('subpages', $subpages);
+                $this->tpl->assign('page', $this->page);
+//                $this->page['content']  = $this->tpl->fetch('page.index');
+                $this->request->setContent( $this->tpl->fetch('page.index') );
+            }
         }
     }
 

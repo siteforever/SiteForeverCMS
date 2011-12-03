@@ -1,6 +1,6 @@
 <?php
 
-class model_GalleryCategory extends Model
+class Model_GalleryCategory extends Model
 {
     protected $form;
 
