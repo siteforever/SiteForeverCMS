@@ -40,7 +40,7 @@ class Controller_Page extends Controller
             $this->page['link']     = $page['link'];
         }
 
-        if ( $this->page['controller'] == 'page' ) {
+        if ( $this->page['controller'] == 'page' && $this->page['id'] != 1 ) {
             $subpages   = $page_model->findAll(array(
                 'condition' => ' parent = ? AND hidden = 0 AND deleted = 0 ',
                 'params'    => array( $this->page['id'] ),
