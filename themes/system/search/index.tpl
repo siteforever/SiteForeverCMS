@@ -10,3 +10,5 @@
 {foreachelse}
 <div>Ничего не найдено</div>
 {/foreach}
+
+<p>{$page_list}</p>

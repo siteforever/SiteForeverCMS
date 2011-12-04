@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * Рисует карту сайта по средствам модели страницы
  */
 class Controller_Sitemap extends Controller
 {
@@ -10,7 +10,7 @@ class Controller_Sitemap extends Controller
         $this->request->setTemplate('inner');
         $bc = $this->tpl->getBreadcrumbs();
         $bc->addPiece('index', 'Главная');
-        $bc->addPiece('feedback', $this->request->getTitle());
+        $bc->addPiece('sitemap', $this->request->getTitle());
 
 
         $tree   = $this->getModel('Page')->getMenu(0, 3);

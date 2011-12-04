@@ -14,32 +14,64 @@ class Controller_Search extends Controller
 
         $search = urldecode( $search );
 
+        $query  = $search;
+
         $_GET['sword'] = trim( str_replace('%', ' ', $search) );
 
 
         $search = preg_replace('/\&\w+?\;/ui', '%', $search); // спецсимволы
         $search = preg_replace('/[^\wа-я]+/ui', '%', $search);// все, что не буквы и цифры
+        $search = str_replace(array('%34', '%39'), '', $search); // хвосты от кавычек
+        $selected   = explode( '|', preg_replace('/%+/u', '|', $search) );
         $search = preg_replace('/[аийеёоуыъьэюя]+/ui', '%', $search);// все гласные
         $search = preg_replace('/%+/u', '%', $search); // повторяющиеся
-        $search = str_replace(array('%34', '%39'), '', $search); // хвосты от кавычек
         $search = '%'.preg_replace('/^%+|%+$/u', '', $search).'%'; // формируем запрос
         $search  = trim( $search, ' ' );
+
+        $page   = $this->request->get('page', FILTER_VALIDATE_INT, 1);
+        $perpage= 10;
+        $offset = ( $page-1 ) * $perpage;
 
         $protected  = $this->app()->getAuth()->currentUser()->perm;
         $search_list    = Model::getModel('Page')->findAll(
             array(
-                'condition' => ' ( name LIKE :search OR title LIKE :search OR notice LIKE :search OR content LIKE :search ) '
-                .' AND hidden = 0 AND protected <= :perm AND system = 0 AND deleted = 0 ',
+                'condition' => ' ( name LIKE :search OR title LIKE :search '
+                                .' OR notice LIKE :search OR content LIKE :search ) '
+                            .' AND hidden = 0 AND protected <= :perm AND system = 0 AND deleted = 0 ',
                 'params'    => array( ':search' => $search, ':perm' => $protected ),
-                'limit'     => 50,
+                'limit'     => " {$offset}, {$perpage} ",
             )
         );
+        
+        $page_list  = array();
+        $max_page   = $search_list ? $page + 1 : $page;
+        if ( $page > 1 ) {
+            $page_list[] = "<a href='/search?query={$query}&page=".($page-1)."'>Пред.</a>";
+        }
+        for ( $i = 1; $i <= $max_page; $i++ ) {
+            if ( $page == $i ) {
+                $page_list[] = $i;
+            } else {
+                $page_list[] = "<a href='/search?query={$query}&page=".($i)."'>$i</a>";
+            }
+        }
+        if ( $page != $max_page ) {
+            $page_list[] = "<a href='/search?query={$query}&page=".($page+1)."'>След.</a>";;
+        }
+
 
         $this->tpl->assign(array(
+            'page_list' => 'Страницы: '.implode(' ', $page_list),
             'sword'   => $_GET['sword'],
             'list'    => $search_list,
         ));
-        $this->request->setContent( $this->tpl->fetch('search.index') );
+
+        $content    = $this->tpl->fetch('search.index');
+//        print $selected;
+        foreach ( $selected as $do_select ) {
+            $content    = str_replace($do_select, "<b>{$do_select}</b>", $content);
+        }
+        $this->request->setContent( $content );
 
         $this->request->setTitle('Поиск');
         $this->request->set('template', 'inner');
