@@ -41,10 +41,7 @@ class Controller_Catalog extends Controller
      */
     public function indexAction()
     {
-        $cat_id = $this->request->get('id', Request::INT);
-        if ( ! $cat_id ) {
-            $cat_id = $this->request->get('cat', Request::INT);
-        }
+        $cat_id = $this->getCatId();
 
         $catalog_model  = $this->getModel('Catalog');
         $page_model     = $this->getModel('Page');
@@ -69,39 +66,46 @@ class Controller_Catalog extends Controller
 
         // хлебные крошки для каталога
         $bc = $this->tpl->getBreadcrumbs();
+        $bc->fromSerialize( $item->path );
 
-        if ( null === $this->page ) {
-
-            //        $bc->addPiece('index', 'Главная');
-            $pathes    = @unserialize( $item->path );
-
-            $page_id    = $pathes[0]['id'];
-            if ( $page_id ) {
-                $page = $page_model->find(array(
-                     'condition' => '`controller` = ? AND `link` = ?',
-                     'params'    => array('catalog', $page_id),
-                ));
-            } else {
-                $page = null;
-            }
-            // Если страница на весь каталог разом
-            if ( null === $page ) {
-                $page = $page_model->find(array(
-                     'condition' => '`controller` = ? AND `link` = ?',
-                     'params'    => array('catalog', 0),
-                ));
-            }
-            if ( null !== $page ) {
-                $this->page = $page->getAttributes();
-            }
-        }
-        $bc->fromJson( $page->path );
-        if ( $pathes )
-            foreach ( $pathes as $path ) {
-                $bc->addPiece(
-                    $this->router->createLink( $page->getAlias(), array('id'=>$path['id']) ),
-                    $path['name']);
-            }
+//        $page   = null;
+//        if ( null === $this->page ) {
+//
+//            //        $bc->addPiece('index', 'Главная');
+//            $pathes    = @unserialize( $item->path );
+//
+//            $page_id    = $pathes[0]['id'];
+//            if ( $page_id ) {
+//                $page = $page_model->find(array(
+//                     'condition' => '`controller` = ? AND `link` = ?',
+//                     'params'    => array('catalog', $page_id),
+//                ));
+//            } else {
+//                $page = null;
+//            }
+//            // Если страница на весь каталог разом
+//            if ( null === $page ) {
+//                $page = $page_model->find(array(
+//                     'condition' => '`controller` = ? AND `link` = ?',
+//                     'params'    => array('catalog', 0),
+//                ));
+//            }
+//            if ( null !== $page ) {
+//                $this->page = $page->getAttributes();
+//            }
+//        }
+//
+//        if ( $page ) {
+//            $bc->fromJson( $page->path );
+//            foreach ( $pathes as $path ) {
+//                $bc->addPiece(
+//                    $this->router->createLink( $page->getAlias(), array( 'id'=> $path[ 'id' ] ) ),
+//                    $path[ 'name' ]
+//                );
+//            }
+//        } else {
+//            $bc->fromSerialize( $item->path );
+//        }
 
         $this->request->setTitle( $item->name );
 
@@ -114,102 +118,157 @@ class Controller_Catalog extends Controller
             // Если открывается раздел каталога
             if ( $item->cat )
             {
-                $parent = $catalog_model->find( $item->getId() );
-
-                // количество товаров
-                $criteria   = array(
-                    'cond'      => ' parent = ? AND deleted = 0 AND hidden = 0 AND cat = 0 ',
-                    'params'    => array($item->getId()),
-                );
-
-                $count  = $catalog_model->count( $criteria['cond'], $criteria['params'] );
-                
-                $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$item->getId()) ) );
-
-                $criteria['limit']  = $paging->limit;
-
-
-                $order = $this->config->get('catalog.order_default');
-
-                // Примеряем способ сортировки к списку из конфига
-                $order_list = $this->config->get('catalog.order_list');
-                if ( $order_list && is_array($order_list) ) {
-                    $set = $this->request->get('order');
-                    if ( $set && $this->config->get('catalog.order_list.'.$set) ) {
-                        $order = $set;
-                    }
-                    else {
-                        $order  = reset( array_keys($order_list) );
-                    }
-                    $this->request->set('order', $order);
-                }
-
-                if ( $order ) {
-                    $criteria['order']  = $order;
-                }
-
-                $list   = $catalog_model->findAll( $criteria );
-
-                $properties = array();
-
-                foreach ( $list as $l ) {
-                    for ( $i = 0; $i <= 9; $i++ ) {
-                        $properties[ $l->getId() ][ $parent['p'.$i] ]  = $l['p'.$i];
-                    }
-                }
-
-                $cats   = $catalog_model->findAll(array(
-                    'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
-                    'params'    => array($item->getId()),
-                ));
-
-                //$cats   = $catalog->findCatsByParent( $cat_id );
-
-                $this->tpl->assign(array(
-                    'parent'    => $parent,
-                    'properties'=> $properties,
-                    'category'  => $item,
-                    'list'      => $list,
-                    'cats'      => $cats,
-                    'paging'    => $paging,
-                    'user'      => $this->user,
-                    'order_list'=> $this->config->get('catalog.order_list'),
-                    'order_val' => $this->request->get('order'),
-                ));
-
-                $this->request->setContent( $this->tpl->fetch('catalog.goods') );
+                $this->indexCategories( $item );
             }
             else {
                 // Открывается товар
-
-                $properties = array();
-
-                if ( $item->parent ) {
-                    $category       = $catalog_model->find( $item['parent'] );
-                    $properties = $this->buildParamView($category, $item);
-                }
-
-                $gallery_model  = $this->getModel('CatGallery');
-                //$gallery        = $gallery_model->findGalleryByProduct( $cat_id, 0 );
-
-                $gallery    = $gallery_model->findAll(array(
-                    'cond'      => ' cat_id = ? AND hidden = 0 ',
-                    'params'    => array( $cat_id ),
-                ));
-
-                $this->tpl->assign(array(
-                    'item'      => $item,
-                    'properties'=> $properties,
-                    'gallery'   => $gallery,
-                    'user'      => $this->user,
-                ));
-
-                $this->request->setTitle( $this->page['title'] . ' &mdash; '.$item['name'] );
-                $this->request->setContent( $this->tpl->fetch('catalog.product') );
+                $this->indexTrade( $item );
             }
         } catch ( Exception $e ) {
             $this->request->setContent( $e->getMessage().'<br />'.$e->getFile().' in '.$e->getLine() );
         }
+    }
+
+    /**
+     * Вернет Cat_id запроса
+     * @return int
+     */
+    protected function getCatId()
+    {
+        $result = $this->request->get('id', Request::INT);
+        if ( ! $result ) {
+            $result = $this->request->get('cat', Request::INT);
+        }
+        return $result;
+    }
+
+    /**
+     * Открывается категория
+     */
+    protected function indexCategories( Data_Object_Catalog $item )
+    {
+        /**
+         * @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
+         */
+
+        $cat_id         = $this->getCatId();
+        $catalog_model  = $this->getModel('Catalog');
+
+        $parent = $catalog_model->find( $item->getId() );
+
+
+        // количество товаров
+        $criteria   = array(
+            'cond'      => ' parent = ? AND deleted = 0 AND hidden = 0 AND cat = ? ',
+        );
+
+        $criteria['params'] = array($item->getId(), 1);
+        $subcats    = $catalog_model->findAll( $criteria );
+        $subcats_id = array();
+        foreach( $subcats as $scat ) {
+            $subcats_id[]   = $scat['id'];
+        }
+
+        if ( count( $subcats_id ) ) {
+            $criteria['cond']   = ' ( parent = ? OR parent IN ('.implode(',',$subcats_id).') )'
+                                    .' AND deleted = 0 AND hidden = 0 AND cat = ? ';
+        }
+
+        $criteria['params'] = array($item->getId(), 0);
+
+        $count  = $catalog_model->count( $criteria['cond'], $criteria['params'] );
+
+        $paging = $this->paging( $count, 10, $this->router->createLink( $this->page['alias'], array('cat'=>$item->getId()) ) );
+
+        $criteria['limit']  = $paging->limit;
+
+
+        $order = $this->config->get('catalog.order_default');
+
+        // Примеряем способ сортировки к списку из конфига
+        $order_list = $this->config->get('catalog.order_list');
+        if ( $order_list && is_array($order_list) )
+        {
+            $set = $this->request->get('order');
+            if ( $set && $this->config->get('catalog.order_list.'.$set) ) {
+                $order = $set;
+            }
+            else {
+                $order  = reset( array_keys($order_list) );
+            }
+            $this->request->set('order', $order);
+        }
+
+        if ( $order ) {
+            $criteria['order']  = $order;
+        }
+
+        $list   = $catalog_model->findAll( $criteria );
+
+        $properties = array();
+
+        foreach ( $list as $l ) {
+            for ( $i = 0; $i <= 9; $i++ ) {
+                $properties[ $l->getId() ][ $parent['p'.$i] ]  = $l['p'.$i];
+            }
+        }
+
+        $cats   = $catalog_model->findAll(array(
+            'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
+            'params'    => array($item->getId()),
+        ));
+
+        //$cats   = $catalog->findCatsByParent( $cat_id );
+
+        $this->tpl->assign(array(
+            'parent'    => $parent,
+            'properties'=> $properties,
+            'category'  => $item,
+            'list'      => $list,
+            'cats'      => $cats,
+            'paging'    => $paging,
+            'user'      => $this->user,
+            'order_list'=> $this->config->get('catalog.order_list'),
+            'order_val' => $this->request->get('order'),
+        ));
+
+        $this->request->setContent( $this->tpl->fetch('catalog.goods') );
+    }
+
+    /**
+     * Открывается товар
+     * @param Data_Object_Catalog $item
+     */
+    protected function indexTrade( Data_Object_Catalog $item )
+    {
+        $cat_id         = $this->getCatId();
+        $catalog_model  = $this->getModel('Catalog');
+
+        $properties = array();
+
+        if ( $item->parent ) {
+            $category       = $catalog_model->find( $item['parent'] );
+            $properties = $this->buildParamView($category, $item);
+        }
+
+        $gallery_model  = $this->getModel('CatGallery');
+        //$gallery        = $gallery_model->findGalleryByProduct( $cat_id, 0 );
+
+        $gallery    = $gallery_model->findAll(array(
+            'cond'      => ' cat_id = ? AND hidden = 0 ',
+            'params'    => array( $cat_id ),
+        ));
+
+        $this->tpl->assign(array(
+            'item'      => $item,
+            'properties'=> $properties,
+            'gallery'   => $gallery,
+            'user'      => $this->user,
+        ));
+
+        $this->request->setTitle( $this->page['title'] . ' &mdash; '.$item['name'] );
+        $this->request->setContent( $this->tpl->fetch('catalog.product') );
+
     }
 
     /**
