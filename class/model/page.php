@@ -171,28 +171,31 @@ class Model_Page extends Model
 
     /**
      * Вернет список доступных модулей
-     * @return array
+     * @return array|null
      */
     public function getAvaibleModules()
     {
         if ( is_null( $this->available_modules ) ) {
-            $this->available_modules = array(
-                'page'      => array(
-                    'label'     => 'Страница',
-                ),
-                'news'      => array(
-                    'label'     => 'Новости',
-                ),
-                'catalog'   => array(
-                    'label'     => 'Каталог',
-                ),
-                'gallery'   => array(
-                    'label'     => 'Галерея',
-                ),
-                'feedback'  => array(
-                    'label'     => 'Обратная связь',
-                ),
-            );
+
+            $content    = '';
+            $controllers_file   = '/protected/controllers.xml';
+            if ( file_exists(ROOT.$controllers_file) ) {
+                $content    = file_get_contents(ROOT.$controllers_file);
+            } elseif ( ROOT != SF_PATH && file_exists( SF_PATH.$controllers_file ) ) {
+                $content    = file_get_contents(SF_PATH.$controllers_file);
+            }
+
+            if ( !$content ) {
+                return array();
+            }
+
+            $xml_controllers    = new SimpleXMLElement( $content );
+
+            $this->available_modules    = array();
+
+            foreach ( $xml_controllers->children() as $child ) {
+                $this->available_modules[ (string) $child['name'] ] = array('label'=>(string) $child->label);
+            }
         }
 
         $ret    = array();

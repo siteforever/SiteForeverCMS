@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<controllers>
+    <controller name="page">
+        <label>Страница</label>
+    </controller>
+    <controller name="news">
+        <label>Новости</label>
+    </controller>
+    <controller name="catalog">
+        <label>Каталог</label>
+    </controller>
+    <controller name="gallery">
+        <label>Галерея</label>
+    </controller>
+    <controller name="feedback">
+        <label>Обратная связь</label>
+    </controller>
+</controllers>
