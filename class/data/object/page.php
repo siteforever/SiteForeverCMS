@@ -27,6 +27,22 @@ class Data_Object_Page extends Data_Object
     }
 
     /**
+     * Вернет выделенный контент
+     * @param array $words
+     * @return array|Data_Object|mixed|null
+     */
+    public function getHlContent( array $words )
+    {
+        $result = $this->get('content');
+        foreach ( $words as $word ) {
+            if ( strlen( $word ) > 3 ) {
+                $result = str_ireplace( $word, '<b class="highlight">'.$word.'</b>', $result );
+            }
+        }
+        return $result;
+    }
+
+    /**
      * @return string
      */
     public function createUrl()

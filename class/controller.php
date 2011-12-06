@@ -61,10 +61,9 @@ abstract class Controller
 
     private static $forms = array();
 
-    function __construct( Application_Abstract $app )
+    public function __construct( Application_Abstract $app )
     {
         $this->app      = $app;
-
         $this->config   = $app->getConfig();
         $this->request  = $app->getRequest();
         $this->router   = $app->getRouter();

@@ -39,12 +39,14 @@
         {else}
             <a {href url="catalog/admin" item=$item.id switch="off"} class="catalog_switch">{icon name="lightbulb" title="Выключить"}</a>
         {/if}
-        {*{if $item.protected}{icon name="lock" title="Снять защиту"}{else}{icon name="lock_add" title="Добавить защиту"}{/if}*}
         {if $item.cat == 1}
         <a {href type="1" add=$item.id}>{icon name="folder_add" title="Добавить подраздел"}</a>
         <a {href type="0" add=$item.id}>{icon name="page_add" title="Добавить товар"}</a>
         {/if}
-        <a {href del=$item.id} class="do_delete">{icon name="delete" title="Удалить"}</a></td>
+        <a {href controller="catalog" action="delete" id=$item.id} class="do_delete">
+            {icon name="delete" title="Удалить"}
+        </a>
+    </td>
 </tr>
 {foreachelse}
 <tr>

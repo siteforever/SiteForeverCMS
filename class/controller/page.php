@@ -20,7 +20,6 @@ class Controller_Page extends Controller
     public function indexAction()
     {
         $page_model = $this->getModel('Page');
-
         if ( ! $this->user->hasPermission( $this->page['protected'] ) )
         {
             $this->request->setContent(t('Access denied'));

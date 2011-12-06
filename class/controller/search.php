@@ -59,18 +59,15 @@ class Controller_Search extends Controller
             $page_list[] = "<a href='/search?query={$query}&page=".($page+1)."'>След.</a>";;
         }
 
-
         $this->tpl->assign(array(
             'page_list' => 'Страницы: '.implode(' ', $page_list),
-            'sword'   => $_GET['sword'],
-            'list'    => $search_list,
+            'hl'        => $selected,
+            'sword'     => $_GET['sword'],
+            'list'      => $search_list,
+            'offset'    => $offset,
         ));
 
         $content    = $this->tpl->fetch('search.index');
-//        print $selected;
-        foreach ( $selected as $do_select ) {
-            $content    = str_replace($do_select, "<b>{$do_select}</b>", $content);
-        }
         $this->request->setContent( $content );
 
         $this->request->setTitle('Поиск');

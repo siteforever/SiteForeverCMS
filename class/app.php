@@ -149,16 +149,17 @@ class App extends Application_Abstract
 
         self::$controller_time  = microtime(1);
         $controller_resolver    = new ControllerResolver( $this );
-
         try {
             $result = $controller_resolver->dispatch();
         } catch ( ControllerException $e ) {
             $result = false;
             $this->getRequest()->setTemplate('inner');
             $this->getRequest()->setContent($e->getMessage());
+        } catch ( Exception $e ) {
+            $this->getRequest()->setTemplate('inner');
+            $this->getRequest()->setContent($e->getMessage());
         }
         self::$controller_time  = microtime(1) - self::$controller_time;
-
         $this->invokeView( $result );
 
         // Выполнение операций по обработке объектов

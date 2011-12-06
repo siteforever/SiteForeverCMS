@@ -17,23 +17,24 @@ class Tpl_Factory
      * Вернет инстанс шаблонизатора
      * @return TPL_Smarty
      */
-    static function create()
+    static function create( Application_Abstract $app )
     {
-        $cfg = App::$config->get('template');
+        $cfg = $app->getConfig()->get('template');
 
         if ( ! $cfg ) {
             throw new Tpl_Exception('Config for templates not defined');
         }
-        
+
         $driver = $cfg['driver'];
         $theme  = $cfg['theme'];
 
+        /**
+         * @var TPL_Driver $obj
+         */
         if ( class_exists( $driver ) ) {
             $obj = new $driver();
             //Register::setTpl( $obj );
-
             $obj->setTplDir(ROOT."/themes/{$theme}/templates");
-
             $tpl_c  = ROOT."/protected/_runtime/_templates_c";
             $cache  = ROOT."/protected/_runtime/_cache";
 
@@ -46,7 +47,10 @@ class Tpl_Factory
             $obj->setCplDir($tpl_c);
             $obj->setCacheDir($cache);
 
-            $obj->setWidgetsDir( $cfg['widgets'] );
+            $obj->setWidgetsDir( SF_PATH.'/widgets' );
+            if ( ROOT != SF_PATH ) {
+                $obj->setWidgetsDir( ROOT.'/widgets' );
+            }
             return $obj;
         }
         else {

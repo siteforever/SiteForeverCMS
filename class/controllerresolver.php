@@ -13,9 +13,9 @@ class ControllerResolver
      */
     private $app;
 
-    function __construct( Application_Abstract $app )
+    function __construct(Application_Abstract $app)
     {
-        $this->app  = $app;
+        $this->app = $app;
     }
 
     /**
@@ -23,12 +23,12 @@ class ControllerResolver
      */
     function resolveController()
     {
-        $request    = $this->app->getRequest();
+        $request = $this->app->getRequest();
 
-        $controller_class   = 'Controller_'.ucfirst($request->get('controller'));
-        $action             = $request->get('action').'Action';
+        $controller_class = 'Controller_' . ucfirst($request->get('controller'));
+        $action = $request->get('action') . 'Action';
 
-        return array( 'controller' => $controller_class, 'action' => $action );
+        return array('controller' => $controller_class, 'action' => $action);
     }
 
     /**
@@ -37,11 +37,11 @@ class ControllerResolver
      * @throws ControllerExeption
      * @return mixed
      */
-    function dispatch( array $command = array() )
+    function dispatch(array $command = array())
     {
         $result = null;
-        if ( ! $command ) {
-            if ( ! $command = $this->resolveController() ) {
+        if (!$command) {
+            if (!$command = $this->resolveController()) {
                 throw new ControllerException('Controller not resolved');
             }
         }
@@ -49,68 +49,72 @@ class ControllerResolver
 
 
         // если запрос является системным
-        if ( $this->app->getRouter()->isSystem() ) {
-            if ( $this->app->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
+        if ($this->app->getRouter()->isSystem()) {
+            if ($this->app->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage();
             } else {
                 $this->setProtectedPage();
             }
         }
 
-        if (! class_exists( $command['controller'] ))
-        { $command['controller']='Controller_Error';}
-            $ref    = new ReflectionClass( $command['controller'] );
-            /**
-             * @var Controller $controller
-             */
-            $controller     = $ref->newInstance( $this->app );
+        if (!class_exists($command['controller'])) {
+            $command['controller']  = 'Controller_Page';
+            $command['action']      = 'errorAction';
+        }
 
-            if ( $ref->hasMethod( 'init' ) ) {
-                $controller->init();
-            }
+        $ref = new ReflectionClass($command['controller']);
+        /**
+         * @var Controller $controller
+         */
+        $controller = $ref->newInstance( $this->app );
+        if ($ref->hasMethod('init')) {
+            $controller->init();
+        }
 
-            // Защита системных действий
-            $rules  = $controller->access();
+        // Защита системных действий
+        $rules = $controller->access();
 
-            if ( $rules && is_array($rules['system']) ) {
-                foreach ( $rules['system'] as $rule ) {
-                    if ( strtolower( $rule.'action' ) == strtolower( $command['action'] ) ) {
-                        if ( $this->app->getUser()->hasPermission( USER_ADMIN ) ) {
-                            $this->setSystemPage();
-                        } else {
-                            $this->setProtectedPage();
-                        }
-                        break;
+        if ($rules && is_array($rules['system'])) {
+            foreach ($rules['system'] as $rule) {
+                if (strtolower($rule . 'action') == strtolower($command['action'])) {
+                    if ($this->app->getUser()->hasPermission(USER_ADMIN)) {
+                        $this->setSystemPage();
+                    } else {
+                        $this->setProtectedPage();
                     }
+                    break;
                 }
             }
+        }
 
-            if ( $ref->hasMethod( $command['action'] ) ) {
+        if ($ref->hasMethod($command['action'])) {
 //                printVar($command);
-                $result = $controller->$command['action']();
-            }
-            else {
-                redirect('/error');
-//                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
-            }
-//        }
-//        else {
-//            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
-//        }
+            $result = call_user_func( array( $controller, $command['action']) );
+//            $result = $controller->$command['action']();
+        }
+        else {
+            $result = call_user_func( array( $controller, 'indexAction') );
+//            redirect('/error');
+            //                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
+        }
+        //        }
+        //        else {
+        //            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
+        //        }
         return $result;
     }
 
 
     private function setSystemPage()
     {
-        $this->app->getRequest()->set('template', 'index' );
+        $this->app->getRequest()->set('template', 'index');
         $this->app->getRequest()->set('resource', 'system:');
         $this->app->getRequest()->set('modules', @include('modules.php'));
     }
 
     private function setProtectedPage()
     {
-        $this->app->getRequest()->addFeedback( t('Protected page') );
+        $this->app->getRequest()->addFeedback(t('Protected page'));
         $this->app->getRequest()->set('controller', 'users');
         $this->app->getRequest()->set('action', 'login');
         $this->app->getRequest()->setTitle(t('Access denied'));

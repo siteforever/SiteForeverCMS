@@ -222,7 +222,7 @@ abstract class Application_Abstract
     function getTpl()
     {
         if ( is_null( self::$tpl ) ) {
-            self::$tpl  = Tpl_Factory::create();
+            self::$tpl  = Tpl_Factory::create( $this );
         }
         return self::$tpl;
     }

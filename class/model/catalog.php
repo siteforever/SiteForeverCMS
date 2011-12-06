@@ -278,6 +278,7 @@ class Model_Catalog extends Model
         $obj    = $this->find( $id );
         if ( $obj ) {
             $obj->deleted   = 1;
+            $this->save( $obj );
         }
     }
 

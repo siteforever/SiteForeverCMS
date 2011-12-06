@@ -277,8 +277,18 @@ class Controller_Catalog extends Controller
     public function deleteAction()
     {
         $id = $this->request->get('id');
+        /**
+         * @var Model_Catalog $catalog
+         */
+        $catalog    = $this->getModel('Catalog');
 
-
+        $item = $catalog->find( $id );
+        if ( $item ) {
+            $catalog->remove( $id );
+        }
+//        var_dump($item->getAttributes());
+//        $this->adminAction();
+        redirect( 'catalog/admin', array('part'=>$item->parent) );
     }
 
 
@@ -335,7 +345,10 @@ class Controller_Catalog extends Controller
     {
         /**
          * @var Model_Catalog $catalog
+         * @var Form_Field $field
+         * @var Form_Form $form
          */
+
         $catalog = $this->getModel('Catalog');
         $catalog_gallery = $this->getModel('CatGallery');
 
@@ -397,8 +410,8 @@ class Controller_Catalog extends Controller
 
         // ЕСЛИ ТОВАР
         if (    ( ! $id && ! $type )
-             || ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 ) )
-        {
+             || ( isset($item) && $item instanceof Data_Object_Catalog && $item->cat == 0 )
+        ) {
             //$form->image->show();
             $form->getField('icon')->hide();
             $form->getField('articul')->show();
@@ -444,6 +457,20 @@ class Controller_Catalog extends Controller
                 }
             }
             $form->getField('icon')->setVariants( array_merge(array(''=>'нет иконки'), $icon_list ) );
+
+            // наследуем поля родителя
+            $parent = $catalog->find( $parent_id );
+            if ( $parent ) {
+                foreach( $parent->getAttributes() as $k => $p ) {
+                    if ( preg_match('/p\d+/', $k) ) {
+                        $field  = $form->getField( $k );
+                        if ( trim($p) && ! $field->getValue() ) {
+                            $field->setValue( $p );
+                        }
+                    }
+                }
+            }
+
         }
 
         $this->tpl->breadcrumbs = $this->adminBreadcrumbs($item['path']);
@@ -556,15 +583,6 @@ class Controller_Catalog extends Controller
         }
 
 //        print 'Work '.__FILE__.':'.__LINE__;
-
-        // удаление
-        if ( $del_id = $this->request->get('del', FILTER_SANITIZE_NUMBER_INT) )
-        {
-            $item = $catalog->find( $del_id );
-            if ( $item )
-                $catalog->delete( $item->getId() );
-            redirect( 'admin/catalog', array('part'=>$item->parent) );
-        }
 
         // включение/выключение
         if (    $this->request->get('item')

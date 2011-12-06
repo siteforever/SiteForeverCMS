@@ -11,6 +11,7 @@ function smarty_function_banner( $params )
 {
     $modelBanner = Model::GetModel('Banner');
     $countBanner = $modelBanner->count();
+
     if($countBanner==0)
     {
         print "Error! Banner not found!";
