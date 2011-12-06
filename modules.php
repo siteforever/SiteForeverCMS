@@ -30,7 +30,7 @@ return array(
         'sub'   => array(
             array(
                 'name'  => 'Добавить раздел',
-                'url'   => 'admin/catalog/add=0/type=1',
+                'url'   => 'catalog/category/add=0',
                 'icon'  => 'folder_add',
             ),
         ),

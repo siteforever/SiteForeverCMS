@@ -38,6 +38,9 @@ abstract class Data_Object implements ArrayAccess//, Iterator
 //        foreach ( $this->table->getFields() as $field ) {
 //            $this->field_names[ $field->getName() ]    = $field;
 //        }
+//        foreach ( $data as $key => $value ) {
+//            $this->data[$key]    = $value;
+//        }
 
         $this->setAttributes( $data );
 

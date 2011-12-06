@@ -63,6 +63,7 @@ class Controller_CatGallery extends Controller
      */
     function deleteAction()
     {
+        $this->setAjax();
         $catalog_gallery = $this->getModel('CatGallery');
         $id     = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
 
@@ -92,6 +93,7 @@ class Controller_CatGallery extends Controller
      */
     function markdefaultAction()
     {
+        $this->setAjax();
         /**
          * @var Model_CatGallery $catalog_gallery
          */
@@ -120,9 +122,9 @@ class Controller_CatGallery extends Controller
      * @param $cat_id
      * @return string
      */
-    function getAdminPanel( $cat_id )
+    public function getAdminPanel( $cat_id )
     {
-        $this->setAjax();
+//        $this->setAjax();
         /**
          * @var Model_CatGallery $catalog_gallery
          */
@@ -132,6 +134,7 @@ class Controller_CatGallery extends Controller
              'cond'      => ' cat_id = ? ',
              'params'    => array( $cat_id ),
         ));
+//        print __METHOD__;
         //$gallery = $catalog_gallery->findGalleryByProduct($cat);
         $this->tpl->gallery = $images;
         $this->tpl->cat     = $cat_id;

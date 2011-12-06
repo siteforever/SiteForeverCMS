@@ -20,25 +20,32 @@ $(function(){
                         positions.push( $(this).attr('rel') );
                     });
                     positions.reverse();
-                    $.post('/admin/catalog', {sort:positions}, function( data ){
+                    $.post('/catalog/saveorder', {sort:positions}, function( data ){
                         try {
-                            if ( data.error ) alert( data.error );
+                            if ( data.errno ) alert( data.error );
                         } catch (e) {};
                     }, 'json');
                 }
         });
         $('table.catalog_data tr.cat').disableSelection();
 
+
+
         $('#catalog_save_position').click(function(){
+
+            siteforever.alert('Сохранение...');
             var pos = [];
             $('input.trade_pos').each(function(){
                 pos.push({key:$(this).attr('rel'), val:$(this).val()});
             });
-            $.post($('input.trade_pos:gt(0)').attr('href'), { save_pos: pos }, function(){
+            $.post($(this).attr('href'), { "save_pos": pos }, function( data ){
+//                siteforever.alert.close();
                 document.location.reload();
             });
             //alert(pos);
         });
+
+
 
         $('#catalog_move_to_category').click(function(){
             var move_list = [];
@@ -47,9 +54,9 @@ $(function(){
             });
             var target = $('#catalog_move_target').val();
             if ( move_list.length ) {
-                $.post('/admin/catalog', {move_list:move_list, target:target}, function(data){
+                $.post($(this).attr('href'), {move_list:move_list, target:target}, function(data){
                     try {
-                        if (data.error == '') {
+                        if (! data.errno) {
                             document.location.reload();
                         } else {
                             alert(data.error);

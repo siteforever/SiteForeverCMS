@@ -189,7 +189,7 @@ class App extends Application_Abstract
         $this->getTpl()->exec        = number_format( microtime(true) - self::$start_time, 3, ',', ' ' ).' sec.';
         $this->getTpl()->request     = $this->getRequest();
 
-        if ( ! $this->getRequest()->getAjax() )
+        if ( ! $this->getRequest()->getAjax() && $_SERVER['X-Requested-With'] != 'XMLHttpRequest' )
         {
             header('Content-type: text/html; charset=utf-8');
 

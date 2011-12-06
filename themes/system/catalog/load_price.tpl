@@ -2,7 +2,7 @@
 
 <br />
 
-<form action="{link price="load"}" method="post" enctype="multipart/form-data">
+<form action="{link controller="catalog" action="price" price="load"}" method="post" enctype="multipart/form-data">
     <input type="hidden" name="MAX_FILE_SIZE" value="2097152" />
 
     <p>Выберите XML файл:</p>

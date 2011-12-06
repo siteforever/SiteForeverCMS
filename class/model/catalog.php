@@ -188,13 +188,6 @@ class Model_Catalog extends Model
                 ($type != -1 ? ' AND cat = :type' : ''),
             array(':parent'=>$parent, ':type'=>$type)
         );
-        /*$count = App::$db->fetchOne(
-            "SELECT COUNT(id)
-            FROM {$this->getTable()}
-            WHERE
-                parent = '{$parent}' ".
-                    ($type != -1 ? " AND cat = {$type} " : "").
-                    "AND deleted = 0 AND hidden = 0");*/
         return $count;
     }
 
@@ -207,17 +200,17 @@ class Model_Catalog extends Model
     {
         $obj_id = $obj->getId();
 
+        $path   = null;
         if ( $obj_id ) {
-            if ( $obj->path ) {
-                $path = unserialize( $obj->path );
+            if ( $obj->get('path') ) {
+                $path = unserialize( $obj->get('path') );
             }
-
             //printVar( $path );
             //printVar( $obj->getAttributes() );
 
-            if ( ! $obj->path || ( $path && is_array( $path ) && $path[0]['name'] != $obj->name ) )
+            if ( ! $obj->get('path') || ( $path && is_array( $path ) && $path[0]['name'] != $obj->get('name') ) )
             {
-                $obj->path  = $this->findPathSerialize( $obj->getId() );
+                $obj->set('path', $this->findPathSerialize( $obj->getId() ));
             }
         }
         //unset($obj['image']);
@@ -277,7 +270,7 @@ class Model_Catalog extends Model
     {
         $obj    = $this->find( $id );
         if ( $obj ) {
-            $obj->deleted   = 1;
+            $obj->set('deleted', 1);
             $this->save( $obj );
         }
     }
@@ -291,7 +284,7 @@ class Model_Catalog extends Model
     {
         $obj    = $this->find( $id );
         if ( $obj ) {
-            $obj->deleted   = 0;
+            $obj->set('deleted', 0);
         }
     }
 
@@ -326,8 +319,8 @@ class Model_Catalog extends Model
         }
         $current    = $this->find($cur_id);
 
-        if ( 0 == $current->cat ) {
-            $cur_id = $current->parent;
+        if ( 0 == $current->get('cat') ) {
+            $cur_id = $current->get('parent');
         }
 
         $result = array();
@@ -377,9 +370,10 @@ class Model_Catalog extends Model
 
     /**
      * Вернет меню для раздела каталога
-     * @param string $url
-     * @param int $parent
-     * @param int $level
+     * @param $url
+     * @param $parent
+     * @param int $levelback
+     * @return string
      */
     function getMenu( $url, $parent, $levelback = 0 )
     {
@@ -438,14 +432,14 @@ class Model_Catalog extends Model
             $html[] = '</li>';
         }
         $html[] = '</ul>';
-//        print __METHOD__.round( microtime(1) - $start, 3 );
         return implode('',$html);
     }
 
-
     /**
      * Выдаст HTML для выбора раздела в select
-     * @return array
+     * @param $parent
+     * @param $levelback
+     * @return array|bool
      */
     function getSelectTree( $parent, $levelback )
     {
@@ -468,10 +462,9 @@ class Model_Catalog extends Model
             return false;
         }
 
-
         foreach( $this->parents[ $parent ] as $branch ) {
 
-            if ( ! $branch['cat'] ) {
+            if ( 0 == $branch['cat'] || $branch['deleted'] ) {
                 continue;
             }
 
@@ -479,7 +472,9 @@ class Model_Catalog extends Model
             $sublist    = $this->getSelectTree( $branch['id'], $levelback-1 );
             if ( $sublist ) {
                 foreach( $sublist as $i => $item ) {
-                    $list[$i]   = $item;
+                    if ( 0 == $item->deleted ) {
+                        $list[$i]   = $item;
+                    }
                 }
             }
         }
@@ -553,6 +548,20 @@ class Model_Catalog extends Model
             $this->form = new Forms_Catalog_Edit();
         }
         return $this->form;
+    }
+
+    /**
+     * Вернет HTML для лампочки в меню админки
+     * @param $id
+     * @param $hidden
+     * @return string
+     */
+    public function getOrderHidden( $id, $hidden )
+    {
+        $return = "<a href='".$this->app()->getRouter()->createServiceLink('catalog','hidden',array('id'=>$id))."' class='order_hidden'>";
+        $return.= $hidden ? icon('lightbulb_off', 'Выключен') : icon('lightbulb', 'Включен');
+        $return.= "</a>";
+        return $return;
     }
 }
 
