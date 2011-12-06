@@ -36,6 +36,7 @@ class Forms_Banners_Banner extends Form_Form
                                 '_top'      =>'Отменяет фреймы и загружает в текущее окно',
                             ),
                 ),
+                'content'           => array('type'=>'textarea', 'label'=>'Содержимое'),
 
 //                'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),

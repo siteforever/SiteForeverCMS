@@ -34,21 +34,22 @@
 </table>
 <p class="page">{$paging.html}</p>
 {*<a class="add_meta" {href controller="banner" action="edit"}>Добавить баннер</a>*}
-<br/>
-<form id="load_images" action="{link}" method="post" enctype="multipart/form-data">
+{*<br/>*}
+{*<form id="load_images" action="{link}" method="post" enctype="multipart/form-data">*}
 {*<form id="load_images" action={href controller="banner" action="edit" id=$cat.id} method="post" enctype="multipart/form-data">*}
-    <div class="newimage">
-        Наименование: <input type="text" name="name[]"/>
-        Файл: <input type="file" name="image[]"/>
-    </div>
-</form>
+    {*<div class="newimage">*}
+        {*Наименование: <input type="text" name="name[]"/>*}
+        {*Файл: <input type="file" name="image[]"/>*}
+    {*</div>*}
+{*</form>*}
 
-<br/>
-<p>
-    <button id="add_image">{icon name="picture_add"} Добавить</button>
-    |
-    <button id="send_images">{icon name="picture_save"} Отправить</button>
-</p>
+{*<br/>*}
+{*<p>*}
+    <button id="add_ban">{icon name="picture_add"} Добавить</button>
+    {*<button id="add_image">{icon name="picture_add"} Добавить</button>*}
+    {*|*}
+    {*<button id="send_images">{icon name="picture_save"} Отправить</button>*}
+{*</p>*}
 <div id="dialog-form" title="Редактирование баннеров.">
 </div>
 
@@ -56,6 +57,14 @@
 <script type="text/javascript">
     $(function () {
         var reserv_img = $("div.newimage:last").clone();
+        $("#add_ban").click(function(){
+            page_a = this;
+            $("#dialog-form").dialog("close");
+            $.post({href controller="banner" action="edit" id="0"}, function (response, textStatus, jqXHR) {
+                $("#dialog-form").append('<div>' + response + '</div>').dialog("open");
+            });
+            return false;
+        });
         $("#add_image").click(function () {
             $(reserv_img).clone().appendTo("#load_images");
             return false;

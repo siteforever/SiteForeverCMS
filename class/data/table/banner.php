@@ -35,6 +35,7 @@ class Data_Table_Banner extends Data_Table
             new Data_Field_Int('count_show'),
             new Data_Field_Int('count_click'),
             new Data_Field_Varchar('target', 255),
+            new Data_Field_Text('content'),
         );
     }
 
