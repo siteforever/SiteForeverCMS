@@ -15,7 +15,7 @@ class Forms_Catalog_Edit extends Form_Form
         parent::__construct(array(
                     'name'  => 'catalog',
                     'title' => 'Раздел каталога',
-                    'action'=> 'catalog/save',
+                    'action'=> App::getInstance()->getRouter()->createServiceLink('catalog','save'),
                     'fields'=> array(
 
                         'id'        => array('type'=>'hidden', 'value'=>'0'),

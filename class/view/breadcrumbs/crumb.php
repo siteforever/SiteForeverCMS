@@ -16,7 +16,7 @@ class View_Breadcrumbs_Crumb
         if ( null === $alias ) {
             $this->_alias   = null;
         } else {
-            $this->_alias   = App::getInstance()->getRouter()->createLink( $alias );
+            $this->_alias   = $alias;
         }
     }
 

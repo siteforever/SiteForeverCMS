@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 15.09.11
- * Time: 13:38
- * To change this template use File | Settings | File Templates.
+ * Форма для редактирования баннера
  */
  
 class Forms_Banners_Banner extends Form_Form
@@ -25,7 +21,7 @@ class Forms_Banners_Banner extends Form_Form
                         ),
                 'name'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Название баннера',),
                 'url'               => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Адрес перехода',),
-                'path'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Путь к картинке баннера',),
+//                'path'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Путь к картинке баннера',),
                 'target'            => array(
                             'type'  => 'select',
                             'label' => 'Куда загружать ссылки',

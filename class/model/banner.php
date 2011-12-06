@@ -1,10 +1,5 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 15.09.11
- * Time: 13:09
- * To change this template use File | Settings | File Templates.
  * Модель баннеров
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
@@ -12,12 +7,12 @@
 class Model_Banner extends Model
 {
      /**
-     * @return form_Form
+     * @return Form_Form
      */
     function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new forms_banners_banner();
+            $this->form = new Forms_Banners_Banner();
         }
         return $this->form;
     }

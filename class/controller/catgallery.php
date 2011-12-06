@@ -222,12 +222,30 @@ class Controller_CatGallery extends Controller
                                 $t_method   = $this->config->get('catalog.gallery_thumb_method');
                                 $m_method   = $this->config->get('catalog.gallery_middle_method');
 
-                                if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
-                                    $obj_image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
-                                };
-                                if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
-                                    $obj_image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
-                                };
+                                try {
+                                    $img_full   = new Image(ROOT.$img);
+                                    $img_mid    = $img_full->createThumb($middle_w, $middle_h, $m_method, $cat->color);
+                                    if ( $img_mid ) {
+                                        $img_mid->saveToFile( ROOT.$mdl );
+                                        $obj_image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
+                                        unset( $img_mid );
+                                    }
+                                    $img_thmb   = $img_full->createThumb($thumb_w, $thumb_h, $t_method, $cat->color);
+                                    if ( $img_thmb ) {
+                                        $img_thmb->saveToFile( ROOT.$tmb );
+                                        $obj_image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb);
+                                        unset( $img_thmb );
+                                    }
+                                } catch ( Exception $e ) {
+                                    $this->request->addFeedback($e->getMessage());
+                                }
+//
+//                                if ( createThumb( ROOT.$img, ROOT.$mdl, $middle_w, $middle_h, $m_method) ) {
+//                                    $obj_image->middle  = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
+//                                };
+//                                if ( createThumb( ROOT.$img, ROOT.$tmb, $thumb_w, $thumb_h, $t_method) ) {
+//                                    $obj_image->thumb   = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
+//                                };
                             }
                             $obj_image->save();
 //                            printVar($obj_image->getAttributes());

@@ -65,8 +65,8 @@ class Controller_Catalog extends Controller
         }
 
         // хлебные крошки для каталога
-        $bc = $this->tpl->getBreadcrumbs();
-        $bc->fromSerialize( $item->path );
+        $this->breadcrumbById( $cat_id );
+
 
 //        $page   = null;
 //        if ( null === $this->page ) {
@@ -253,7 +253,6 @@ class Controller_Catalog extends Controller
         }
 
         $gallery_model  = $this->getModel('CatGallery');
-        //$gallery        = $gallery_model->findGalleryByProduct( $cat_id, 0 );
 
         $gallery    = $gallery_model->findAll(array(
             'cond'      => ' cat_id = ? AND hidden = 0 ',
@@ -267,7 +266,7 @@ class Controller_Catalog extends Controller
             'user'      => $this->user,
         ));
 
-        $this->request->setTitle( $this->page['title'] . ' &mdash; '.$item['name'] );
+        $this->request->setTitle( $item['name'] );
         $this->request->setContent( $this->tpl->fetch('catalog.product') );
 
     }
@@ -351,6 +350,7 @@ class Controller_Catalog extends Controller
         $form = $catalog->getForm();
 
         $this->setAjax();
+
         // Если форма отправлена
         if ( $form->getPost() )
         {
@@ -360,23 +360,28 @@ class Controller_Catalog extends Controller
 
                 if ( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
-                    $this->request->addFeedback(t('The section can not be in myself'));
+                    print t('The section can not be in myself');
                     return;
                 }
 
-                $this->request->addFeedback(t('Data save successfully'));
-
-                if ( ! $object->getId() ) {
-                    $catalog->update( $object );
-                    reload('', array('part'=>$object->parent));
+                if (!$object->getId()) {
+                    $object->save();
+                    reload(
+                        '', array(
+                                'controller'=> 'catalog',
+                                'action'    => 'admin',
+                                'part'      => $object->parent
+                            )
+                    );
                 }
 
-                $catalog->update( $object );
+                $object->save();
+
+                print t('Data save successfully');
             }
             else {
-                $this->request->addFeedback( $form->getFeedbackString() );
+                print $form->getFeedbackString();
             }
-            return;
         }
     }
 
@@ -422,6 +427,37 @@ class Controller_Catalog extends Controller
         }
 
         return $this->adminBreadcrumbs( serialize( array_reverse( $path ) ) );
+    }
+
+    /**
+     * Создание хлебных крошек для страницы каталога
+     * @param $id
+     */
+    public function breadcrumbById( $id )
+    {
+        $bc = $this->tpl->getBreadcrumbs();
+
+        $item   = $this->getModel('Catalog')->find($id);
+
+        $path   = array();
+
+        while ( $item ) {
+            $path[] = $item;
+            if ( $item->parent ) {
+                $item   = $this->getModel('Catalog')->find( $item->parent );
+            } else {
+                $item   = false;
+            }
+        }
+
+        $path   = array_reverse( $path );
+
+        foreach ( $path as $item ) {
+            $bc->addPiece(
+                $this->router->createLink('catalog', array('id'=>$item->id)),
+                $item->name
+            );
+        }
     }
 
 
@@ -667,7 +703,7 @@ class Controller_Catalog extends Controller
             }
         }
 
-        $this->tpl->breadcrumbs = $this->adminBreadcrumbsById($parent_id);
+        $this->tpl->breadcrumbs = $this->adminBreadcrumbsById($id);
         $this->tpl->form        = $form;
         $this->tpl->cat         = $form->id;
 
