@@ -415,17 +415,17 @@ class Controller_Catalog extends Controller
     {
         $path   = array();
 
-        $item   = $this->getModel('Catalog')->find($id);
-
-        while ( $item ) {
-            $path[] = array('id'=>$item->getId(),'name'=>$item->name);
-            if ( $item->parent ) {
-                $item   = $this->getModel('Catalog')->find( $item->parent );
-            } else {
-                $item   = false;
+        if ( $id ) {
+            $item   = $this->getModel('Catalog')->find($id);
+            while ( $item ) {
+                $path[] = array('id'=>$item->getId(),'name'=>$item->name);
+                if ( $item->parent ) {
+                    $item   = $this->getModel('Catalog')->find( $item->parent );
+                } else {
+                    $item   = false;
+                }
             }
         }
-
         return $this->adminBreadcrumbs( serialize( array_reverse( $path ) ) );
     }
 
@@ -436,27 +436,28 @@ class Controller_Catalog extends Controller
     public function breadcrumbById( $id )
     {
         $bc = $this->tpl->getBreadcrumbs();
-
-        $item   = $this->getModel('Catalog')->find($id);
-
         $path   = array();
 
-        while ( $item ) {
-            $path[] = $item;
-            if ( $item->parent ) {
-                $item   = $this->getModel('Catalog')->find( $item->parent );
-            } else {
-                $item   = false;
+        if ( $id ) {
+            $item   = $this->getModel('Catalog')->find($id);
+
+            while ( $item ) {
+                $path[] = $item;
+                if ( $item->parent ) {
+                    $item   = $this->getModel('Catalog')->find( $item->parent );
+                } else {
+                    $item   = false;
+                }
             }
-        }
 
-        $path   = array_reverse( $path );
+            $path   = array_reverse( $path );
 
-        foreach ( $path as $item ) {
-            $bc->addPiece(
-                $this->router->createLink('catalog', array('id'=>$item->id)),
-                $item->name
-            );
+            foreach ( $path as $item ) {
+                $bc->addPiece(
+                    $this->router->createLink('catalog', array('id'=>$item->id)),
+                    $item->name
+                );
+            }
         }
     }
 
@@ -656,7 +657,6 @@ class Controller_Catalog extends Controller
          */
 
         $catalog = $this->getModel('Catalog');
-        $catalog_gallery = $this->getModel('CatGallery');
 
         $id         = $this->request->get('edit', Request::INT);
         $parent_id  = $this->request->get('add', Request::INT, 0);
