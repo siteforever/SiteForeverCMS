@@ -2,16 +2,16 @@
 /**
  * Объект Категории Галереи
  * @author Nikolay Ermin (nikolay@ermin.ru)
- * @link http://ermin.ru
- * @link http://siteforever.ru
+ * @link   http://ermin.ru
+ * @link   http://siteforever.ru
  */
- 
+
 class Data_Object_GalleryCategory extends Data_Object
 {
     /**
      * @var Data_Object_Page
      */
-    private $_page  = null;
+    private $_page = null;
 
     /**
      * @var string
@@ -27,19 +27,22 @@ class Data_Object_GalleryCategory extends Data_Object
         /**
          * @var Model_Alias $alias_model
          */
-        $alias_model    = $this->getModel('Alias');
+        $alias_model = $this->getModel( 'Alias' );
 
         try {
-            $strpage    = $this->getPage();
-        } catch ( Exception $e ) {
-            return App::getInstance()->getRouter()->createServiceLink( 'gallery','index',array('id'=>$this->getId()) );
+            $strpage = $this->getPage();
+        }
+        catch ( Exception $e ) {
+            return App::getInstance()->getRouter()->createServiceLink(
+                'gallery', 'index', array( 'id'=> $this->getId() )
+            );
         }
 
-        if ( $strpage ) {
-            return $strpage->get('alias');
+        if ($strpage) {
+            return $strpage->get( 'alias' );
         }
         else {
-            return $alias_model->generateAlias( $this->get('name') );
+            return $alias_model->generateAlias( $this->get( 'name' ) );
         }
     }
 
@@ -49,15 +52,17 @@ class Data_Object_GalleryCategory extends Data_Object
      */
     public function getPage()
     {
-        if ( null === $this->_page ) {
-            $model  = $this->getModel('Page');
+        if (null === $this->_page) {
+            $model = $this->getModel( 'Page' );
 
-            $this->_page = $model->find( array(
-                 'cond'  => 'action = ? AND controller = ? AND link = ? AND deleted = 0 ',
-                 'params'=> array('index', 'gallery', $this->getId()),
-            ));
-            if ( null === $this->_page  ) {
-                throw new Data_Exception(t('Page not found for gallery'));
+            $this->_page = $model->find(
+                array(
+                    'cond'  => 'action = ? AND controller = ? AND link = ? AND deleted = 0 ',
+                    'params'=> array( 'index', 'gallery', $this->getId() ),
+                )
+            );
+            if (null === $this->_page) {
+                throw new Data_Exception( t( 'Page not found for gallery' ) );
             }
         }
         return $this->_page;
@@ -69,17 +74,18 @@ class Data_Object_GalleryCategory extends Data_Object
      */
     public function getImage()
     {
-        if ( null === $this->_image ) {
-            $this->_image   = '';
-            $model  = $this->getModel('Gallery');
-            $crit   = array(
+        if (null === $this->_image) {
+            $this->_image = '';
+            $model        = $this->getModel( 'Gallery' );
+            $crit         = array(
                 'cond'      => 'category_id = ?',
                 'params'    => array( $this->getId() ),
+                'order'     => 'pos',
                 'limit'     => 1,
             );
-            $image = $model->find($crit);
-            if ( $image ) {
-                $this->_image   = $image->get('thumb');
+            $image        = $model->find( $crit );
+            if ($image) {
+                $this->_image = $image->get( 'thumb' );
             }
         }
         return $this->_image;
