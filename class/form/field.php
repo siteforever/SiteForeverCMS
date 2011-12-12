@@ -46,7 +46,6 @@ abstract class Form_Field
      * @param Form_Form $form
      * @param string $name
      * @param array $params
-     * @return void
      */
     function __construct( Form_Form $form, $name, $params )
     {
@@ -435,6 +434,7 @@ abstract class Form_Field
 
     /**
      * Вернет HTML для поля
+     * @param $field
      * @return string
      */
     protected function doInput( $field )
@@ -450,5 +450,21 @@ abstract class Form_Field
     protected function doInputHidden()
     {
         return "<input type='hidden' name='{$this->_form->name()}[{$this->_name}]' id='{$this->getId()}' value='{$this->_value}' />";
+    }
+
+    /**
+     * @param $readonly
+     */
+    public function setReadonly( $readonly )
+    {
+        $this->_readonly = $readonly;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getReadonly()
+    {
+        return $this->_readonly;
     }
 }

@@ -170,7 +170,8 @@ class Form_Form implements ArrayAccess
 
     /**
      * Вернет поле формы по имени
-     * @return form_Field
+     * @param $key
+     * @return Form_Field
      */
     function getField( $key )
     {
@@ -184,6 +185,7 @@ class Form_Form implements ArrayAccess
 
     /**
      * Дернет из запроса значения полей
+     * @return bool
      */
     function getPost()
     {
@@ -214,6 +216,7 @@ class Form_Form implements ArrayAccess
 
     /**
      * Отправлена ли форма?
+     * @return bool
      */
     function isSent()
     {
@@ -231,17 +234,20 @@ class Form_Form implements ArrayAccess
      */
     function name( $name = '' )
     {
-            if ( $name ) {
-                $this->_name = $name;
-            }
-            else {
-                return $this->_name;
-            }
+        if ( $name ) {
+            $this->_name = $name;
+        }
+        else {
+            return $this->_name;
+        }
     }
 
 
     /**
      * html - код формы
+     * @param $hint
+     * @param $buttons
+     * @return string
      */
     function html( $hint = true, $buttons = true )
     {
@@ -281,6 +287,7 @@ class Form_Form implements ArrayAccess
     /**
      * Вернет массив значений
      * Как правило, нужно для использования с базой данных
+     * @param $toString
      * @return array
      */
     function getData( $toString = false )
@@ -310,6 +317,7 @@ class Form_Form implements ArrayAccess
     /**
      * Установит массив значений
      * Как правило, нужно для использования с базой данных
+     * @param $data
      * @return array
      */
     function setData( $data )
