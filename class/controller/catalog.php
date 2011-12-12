@@ -67,46 +67,6 @@ class Controller_Catalog extends Controller
         // хлебные крошки для каталога
         $this->breadcrumbById( $cat_id );
 
-
-        //        $page   = null;
-        //        if ( null === $this->page ) {
-        //
-        //            //        $bc->addPiece('index', 'Главная');
-        //            $pathes    = @unserialize( $item->path );
-        //
-        //            $page_id    = $pathes[0]['id'];
-        //            if ( $page_id ) {
-        //                $page = $page_model->find(array(
-        //                     'condition' => '`controller` = ? AND `link` = ?',
-        //                     'params'    => array('catalog', $page_id),
-        //                ));
-        //            } else {
-        //                $page = null;
-        //            }
-        //            // Если страница на весь каталог разом
-        //            if ( null === $page ) {
-        //                $page = $page_model->find(array(
-        //                     'condition' => '`controller` = ? AND `link` = ?',
-        //                     'params'    => array('catalog', 0),
-        //                ));
-        //            }
-        //            if ( null !== $page ) {
-        //                $this->page = $page->getAttributes();
-        //            }
-        //        }
-        //
-        //        if ( $page ) {
-        //            $bc->fromJson( $page->path );
-        //            foreach ( $pathes as $path ) {
-        //                $bc->addPiece(
-        //                    $this->router->createLink( $page->getAlias(), array( 'id'=> $path[ 'id' ] ) ),
-        //                    $path[ 'name' ]
-        //                );
-        //            }
-        //        } else {
-        //            $bc->fromSerialize( $item->path );
-        //        }
-
         $this->request->setTitle( $item->name );
 
 
@@ -537,7 +497,7 @@ class Controller_Catalog extends Controller
             $crit[ 'params' ] = array( ':parent'=> $part );
         }
         else {
-            $crit[ 'cond' ]   = 'deleted = 0 AND articul LIKE :filter';
+            $crit[ 'cond' ]   = 'deleted = 0 AND ( articul LIKE :filter OR name LIKE :filter )';
             $crit[ 'params' ] = array( ':filter'=> '%' . $filter . '%' );
         }
 
@@ -647,7 +607,12 @@ class Controller_Catalog extends Controller
 
                     if (isset( $fvalues[ $m[ 1 ] ] )) {
                         if (is_array( $fvalues[ $m[ 1 ] ][ 1 ] ) && !$field->getValue()) {
-                            $form->getField( $k )->setValue( implode( '|', $fvalues[ $m[ 1 ] ][ 1 ] ) );
+                            $form->getField( $k )->setValue(
+                                str_ireplace(
+                                    'Все|', '',
+                                    implode( '|', $fvalues[ $m[ 1 ] ][ 1 ] )
+                                )
+                            );
                         }
                     }
                     //                    print $m[1];

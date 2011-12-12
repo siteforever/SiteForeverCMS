@@ -10,7 +10,17 @@ class Controller_Page extends Controller
     function access()
     {
         return array(
-            'system'    => array('admin','edit','add','correct','move','nameconvert','save','realias','hidden'),
+            'system'    => array(
+                'admin',
+                'edit',
+                'add',
+                'correct',
+                'move',
+                'nameconvert',
+                'save',
+                'realias',
+                'hidden'
+            ),
         );
     }
 
@@ -19,36 +29,38 @@ class Controller_Page extends Controller
      */
     public function indexAction()
     {
-        $page_model = $this->getModel('Page');
-        if ( ! $this->user->hasPermission( $this->page['protected'] ) )
-        {
-            $this->request->setContent(t('Access denied'));
+        $page_model = $this->getModel( 'Page' );
+        if (!$this->user->hasPermission( $this->page[ 'protected' ] )) {
+            $this->request->setContent( t( 'Access denied' ) );
             return;
         }
 
         // создаем замыкание страниц
-        while ( $this->page['link'] != 0 )
+        while ( $this->page[ 'link' ] != 0 )
         {
-            $page = $page_model->find( $this->page['link'] );
+            $page = $page_model->find( $this->page[ 'link' ] );
 
-            if ( ! $this->user->hasPermission( $page['protected'] ) ) {
-                $this->request->setContent(t('Access denied'));
+            if (!$this->user->hasPermission( $page[ 'protected' ] )) {
+                $this->request->setContent( t( 'Access denied' ) );
                 return;
             }
-            $this->page['content']  = $page['content'];
-            $this->page['link']     = $page['link'];
+            $this->page[ 'content' ] = $page[ 'content' ];
+            $this->page[ 'link' ]    = $page[ 'link' ];
         }
 
-        if ( $this->page['controller'] == 'page' && $this->page['id'] != 1 ) {
-            $subpages   = $page_model->findAll(array(
-                'condition' => ' parent = ? AND hidden = 0 AND deleted = 0 ',
-                'params'    => array( $this->page['id'] ),
-            ));
+        if ($this->page[ 'controller' ] == 'page' && $this->page[ 'id' ] != 1) {
+            $subpages = $page_model->findAll(
+                array(
+                    'condition' => ' parent = ? AND hidden = 0 AND deleted = 0 ',
+                    'params'    => array( $this->page[ 'id' ] ),
+                    'order'     => 'pos',
+                )
+            );
 
-            if ( $subpages ) {
-                $this->tpl->assign('subpages', $subpages);
-                $this->tpl->assign('page', $this->page);
-                $this->request->setContent( $this->tpl->fetch('page.index') );
+            if ($subpages) {
+                $this->tpl->assign( 'subpages', $subpages );
+                $this->tpl->assign( 'page', $this->page );
+                $this->request->setContent( $this->tpl->fetch( 'page.index' ) );
             }
         }
     }
@@ -59,9 +71,9 @@ class Controller_Page extends Controller
      */
     public function errorAction()
     {
-        $this->request->set('template', 'inner');
-        $this->request->setTitle('Ошибка 404. Страница не найдена');
-        $this->request->setContent('Ошибка 404.<br />Страница не найдена.');
+        $this->request->set( 'template', 'inner' );
+        $this->request->setTitle( 'Ошибка 404. Страница не найдена' );
+        $this->request->setContent( 'Ошибка 404.<br />Страница не найдена.' );
     }
 
     /**
@@ -71,58 +83,49 @@ class Controller_Page extends Controller
     function adminAction()
     {
         // используем шаблон админки
-        $this->request->set('template', 'index');
-        $this->request->setTitle('Управление сайтом');
+        $this->request->set( 'template', 'index' );
+        $this->request->setTitle( 'Управление сайтом' );
 
         /**
          * @var Model_Page $model
          */
-        $model  = $this->getModel('Page');
-
-        // добавление
-        if ( $this->request->get('add') ) {
-            return $this->addAction();
-        }
-
-        // правка
-        if ( $this->request->get('edit') ) {
-            return $this->correctAction();
-        }
+        $model = $this->getModel( 'Page' );
 
         // обновление
-        if ( $this->request->get('up') || $this->request->get('down') ) {
-           return $this->moveAction();
+        if ($this->request->get( 'up' ) || $this->request->get( 'down' )) {
+            return $this->moveAction();
         }
 
-        if ( $get_link_add = $this->request->get('get_link_add') ) {
+        if ($get_link_add = $this->request->get( 'get_link_add' )) {
             $this->tpl->id = $get_link_add;
-            die($this->tpl->fetch('system:get_link_add'));
+            die( $this->tpl->fetch( 'system:get_link_add' ) );
         }
 
         // проверка на правильность алиаса
-        if ( $test_alias = $this->request->get('test_alias') ) {
+        if ($test_alias = $this->request->get( 'test_alias' )) {
 
-            if (  $model->findByRoute( $test_alias ) ) {
-                die('0');
-            } else {
-                die('yes');
+            if ($model->findByRoute( $test_alias )) {
+                die( '0' );
+            }
+            else {
+                die( 'yes' );
             }
         }
 
 
         $this->request->setTitle( 'Структура сайта' );
 
-        $sort   = $this->request->get( 'sort' );
-        if ( $sort ) {
-            return  $model->resort( $sort );
+        $sort = $this->request->get( 'sort' );
+        if ($sort) {
+            return $model->resort( $sort );
         }
 
-        $do     = $this->request->get( 'do' );
-        $part   = $this->request->get( 'part' );
+        $do   = $this->request->get( 'do' );
+        $part = $this->request->get( 'part' );
 
-        if ( $do && $part ) {
+        if ($do && $part) {
             $model->switching( $do, $part );
-            redirect('admin');
+            redirect( 'admin' );
         }
 
         $model->createTree();
@@ -130,8 +133,8 @@ class Controller_Page extends Controller
         //printVar($model->parents);
         $model->createHtmlList();
 
-        $this->tpl->html    = join( "\n", $model->html );
-        $this->request->setContent( $this->tpl->fetch('system:page.admin') );
+        $this->tpl->html = join( "\n", $model->html );
+        $this->request->setContent( $this->tpl->fetch( 'system:page.admin' ) );
     }
 
     /**
@@ -152,55 +155,57 @@ class Controller_Page extends Controller
         /**
          * @var Model_Page $model
          */
-        $model  = $this->getModel('Page');
+        $model = $this->getModel( 'Page' );
 
         // идентификатор раздела, в который надо добавить
-        $parent_id  = $this->request->get('add');
+        $parent_id = $this->request->get( 'add' );
 
         // родительский раздел
-        if( $parent_id ) {
-            $parent     = $model->find( $parent_id );
+        if ($parent_id) {
+            $parent = $model->find( $parent_id );
         }
         else {
-            $parent     = $model->createObject( array(
-                'controller'    => 'page',
-                'action'        => 'index',
-                'sort'          => 'pos',
-            ));
+            $parent = $model->createObject(
+                array(
+                    'controller'    => 'page',
+                    'action'        => 'index',
+                    'sort'          => 'pos',
+                )
+            );
         }
 
-        $form  = $model->getForm();
+        $form = $model->getForm();
 
-        $form->parent      = $parent_id;
-        $form->template    = 'inner';
+        $form->parent   = $parent_id;
+        $form->template = 'inner';
 
-        if ( isset($parent['alias']) ) {
-            $form->alias   = $parent['alias'];
+        if (isset( $parent[ 'alias' ] )) {
+            $form->alias = $parent[ 'alias' ];
         }
 
         $form->author  = '1';
-        $form->content = t('Home page for the filling');
+        $form->content = t( 'Home page for the filling' );
 
-        $form->date    = time();
-        $form->update  = time();
+        $form->date   = time();
+        $form->update = time();
 
-        if ( isset($parent['controller']) ) {
-            $form->controller  = $parent['controller'];
+        if (isset( $parent[ 'controller' ] )) {
+            $form->controller = $parent[ 'controller' ];
         }
 
-        if ( isset($parent['action']) ) {
-            $form->action      = $parent['action'];
+        if (isset( $parent[ 'action' ] )) {
+            $form->action = $parent[ 'action' ];
         }
 
-        $form->pos     = $model->getNextPos($parent_id);
+        $form->pos = $model->getNextPos( $parent_id );
 
-        if ( isset($parent['sort']) ) {
-            $form->sort    = $parent['sort'];
+        if (isset( $parent[ 'sort' ] )) {
+            $form->sort = $parent[ 'sort' ];
         }
 
         $this->request->setTitle( 'Добавить страницу' );
-        $this->tpl->form    = $form;
-        $this->request->setContent($this->tpl->fetch('system:page.edit'));
+        $this->tpl->form = $form;
+        $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
     }
 
     /**
@@ -211,32 +216,39 @@ class Controller_Page extends Controller
         /**
          * @var Model_Page $model
          */
-        $model  = $this->getModel('Page');
+        $model = $this->getModel( 'Page' );
 
-        $form   = $model->getForm();
+        $form = $model->getForm();
 
-        if ( $form->getPost() )
-        {
-            if ( $form->validate() )
-            {
-                $form->update   = time();
-                $obj    = $model->createObject( $form->getData() );
+        if ($form->getPost()) {
+            if ($form->validate()) {
+                $form->update = time();
+                $obj          = $model->createObject( $form->getData() );
 
                 $old_id = $obj->getId();
 
                 try {
-                    if ( $obj->save() ) {
-                        $this->request->addFeedback(t('Data save successfully'));
-                        if ( ! $old_id ) {
-                            reload(null, array('controller'=>'page','action'=>'edit','edit'=>$obj->getId()));
+                    if ($obj->save()) {
+                        $this->request->addFeedback( t( 'Data save successfully' ) );
+                        if (!$old_id) {
+                            reload(
+                                null, array(
+                                'controller'=> 'page',
+                                'action'    => 'edit',
+                                'edit'      => $obj->getId()
+                            )
+                            );
                         }
-                    } else {
-                        $this->request->addFeedback(t('Data not saved'));
                     }
-                } catch ( ModelException $e ) {
+                    else {
+                        $this->request->addFeedback( t( 'Data not saved' ) );
+                    }
+                }
+                catch ( ModelException $e ) {
                     $this->request->addFeedback( $e->getMessage() );
                 }
-            } else {
+            }
+            else {
                 $this->request->addFeedback( $form->getFeedback() );
             }
         }
@@ -250,38 +262,38 @@ class Controller_Page extends Controller
         /**
          * @var Model_Page $model
          */
-        $model  = $this->getModel('Page');
+        $model = $this->getModel( 'Page' );
 
-        $form   = $model->getForm();
+        $form = $model->getForm();
 
         // используем шаблон админки
-        $this->request->set('template', 'index');
-        $this->request->setTitle('Управление сайтом');
+        $this->request->set( 'template', 'index' );
+        $this->request->setTitle( 'Управление сайтом' );
 
         // идентификатор раздела, который надо редактировать
-        $edit_id = $this->request->get('edit', FILTER_SANITIZE_NUMBER_INT);
+        $edit_id = $this->request->get( 'edit', FILTER_SANITIZE_NUMBER_INT );
 
         // идентификатор раздела, в который надо добавить
-        $add_id  = $this->request->get('add', FILTER_SANITIZE_NUMBER_INT);
+        $add_id = $this->request->get( 'add', FILTER_SANITIZE_NUMBER_INT );
 
         // родительский раздел
-        if( $add_id ) {
-            $parent     = $model->find( $add_id );
+        if ($add_id) {
+            $parent = $model->find( $add_id );
         }
 
-        if ( $edit_id ) {
+        if ($edit_id) {
             // данные раздела
             $part = $model->find( $edit_id );
 
-            if ( $part ) {
+            if ($part) {
                 $form->setData( $part->getAttributes() );
             }
 
-            $this->tpl->form    = $form;
-            $this->request->setContent($this->tpl->fetch('system:page.edit'));
+            $this->tpl->form = $form;
+            $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
         }
         else {
-            $this->request->setContent(t('Data not valid'));
+            $this->request->setContent( t( 'Data not valid' ) );
         }
     }
 
@@ -290,15 +302,15 @@ class Controller_Page extends Controller
      */
     public function hiddenAction()
     {
-        $id = $this->request->get('id');
-        $page   = $this->getModel('Page')->find( $id );
+        $id   = $this->request->get( 'id' );
+        $page = $this->getModel( 'Page' )->find( $id );
 
-        $page->set('hidden', 0 == $page->get('hidden') ? 1 : 0 );
+        $page->set( 'hidden', 0 == $page->get( 'hidden' ) ? 1 : 0 );
 
         $page->save();
 
         $this->request->setContent(
-            $this->getModel('Page')->getOrderHidden( $id, $page->get('hidden') )
+            $this->getModel( 'Page' )->getOrderHidden( $id, $page->get( 'hidden' ) )
         );
     }
 
@@ -309,17 +321,17 @@ class Controller_Page extends Controller
     public function moveAction()
     {
         // используем шаблон админки
-        $this->request->set('template', 'index');
-        $this->request->setTitle('Управление сайтом');
+        $this->request->set( 'template', 'index' );
+        $this->request->setTitle( 'Управление сайтом' );
 
-        $model  = $this->getModel('Page');
-        if ( $up = $this->request->get('up') ) {
+        $model = $this->getModel( 'Page' );
+        if ($up = $this->request->get( 'up' )) {
             $model->moveUp( $up );
         }
-        if ( $down = $this->request->get('down') ) {
+        if ($down = $this->request->get( 'down' )) {
             $model->moveDown( $down );
         }
-        reload('admin');
+        reload( 'admin' );
     }
 
     /**
@@ -328,9 +340,9 @@ class Controller_Page extends Controller
      */
     public function realiasAction()
     {
-        $this->request->setTitle('Пересчет алиасов');
-        $pages  = $this->getModel('Page')->findAll(array('cond'=>'deleted = 0'));
-        ob_implicit_flush(1);
+        $this->request->setTitle( 'Пересчет алиасов' );
+        $pages = $this->getModel( 'Page' )->findAll( array( 'cond'=> 'deleted = 0' ) );
+        ob_implicit_flush( 1 );
 
         /**
          * @var Data_Object_Page $page
@@ -338,15 +350,16 @@ class Controller_Page extends Controller
         foreach ( $pages as $page ) {
             try {
                 $page->save();
-                print('Алиас &laquo;' . $page->alias .'&raquo; пересчитан<br />');
+                print( 'Алиас &laquo;' . $page->alias . '&raquo; пересчитан<br />' );
                 //$this->request->addFeedback('Алиас &laquo;' . $page->alias .'&raquo; пересчитан');
-            } catch ( Exception $e ) {
-                print( $e->getMessage() . ' &laquo;' . $page->alias .'&raquo;<br />' );
+            }
+            catch ( Exception $e ) {
+                print( $e->getMessage() . ' &laquo;' . $page->alias . '&raquo;<br />' );
                 //$this->request->addFeedback( $e->getMessage() . ' &laquo;' . $page->alias .'&raquo;' );
             }
         }
 
-        $this->request->setContent('Пересчет алиасов завершен');
+        $this->request->setContent( 'Пересчет алиасов завершен' );
     }
 
 }
