@@ -22,7 +22,7 @@ function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $templat
         $breadcrumbs->setSeparator($params['separator']);
     }
 
-    if ( isset( $params['path'] ) ) {
+    if ( isset( $params['path'] ) && $params['path'] ) {
         $breadcrumbs->fromJson( $params['path'] );
     }
 

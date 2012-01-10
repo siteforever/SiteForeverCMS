@@ -79,8 +79,6 @@ class Forms_Page_Page extends Form_Form
                         'required', 'hidden'
                     ),
 
-                    //'sep1'       => array('type'=>'separator'),
-
                     'title'      => array(
                         'type' => 'text',
                         'label'=> 'Заголовок'
@@ -103,8 +101,6 @@ class Forms_Page_Page extends Form_Form
                         'type' => 'textarea',
                         'label'=> 'Текст',
                     ),
-
-                    //'sep2'       => array('type'=>'separator'),
 
                     'thumb'      => array(
                         'type' => 'text',
@@ -142,8 +138,6 @@ class Forms_Page_Page extends Form_Form
                         'value'     => '0',
                         'variants'  => array( 'Нет', 'Да' ),
                     ),
-
-                    //'sep3'       => array('type'=>'separator'),
 
                     'submit'     => array(
                         'type' => 'submit',

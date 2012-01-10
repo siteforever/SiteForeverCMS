@@ -27,7 +27,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     protected function tearDown()
     {
+        App::getInstance()->getRequest()->clearAll();
     }
+
+
+    public function testFilterEqParams()
+    {
+        $this->assertEquals(
+            'news/view',
+            $this->router->filterEqParams('news/view/doc=35/page=10')
+        );
+    }
+
 
     /**
      * @todo Implement testCreateLink().
@@ -132,6 +143,19 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals( '7', $request->get('page') );
         $this->assertEquals( '123', $request->get('id') );
+    }
+
+    public function testFindRouteNews()
+    {
+        $request    = App::getInstance()->getRequest();
+        $request->set('controller', null);
+
+        $this->router->setRoute('news/doc=35')->routing();
+        $this->assertEquals( $request->get('controller'), 'news' );
+        $this->assertEquals( $request->get('action'), 'index' );
+
+        $this->assertEquals( '35', $request->get('doc') );
+        $this->assertEquals( '1', $request->get('id') );
     }
 
     public function testFindRouteUsersCabinet()

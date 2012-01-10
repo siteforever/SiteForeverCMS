@@ -84,7 +84,7 @@ class Controller_Gallery extends Controller
                 $bc->clearPieces();
                 $bc->addPiece('index', 'Главная');
                 $bc->addPiece($category->getAlias(), $category->name);
-                $bc->addPiece('', $image->name);
+                $bc->addPiece(null, $image->name);
 
                 $title  =  $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
 //                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;

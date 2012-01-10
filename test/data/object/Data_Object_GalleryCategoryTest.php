@@ -14,11 +14,24 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
     protected $gallery_cat;
 
     /**
+     * @var Model_GalleryCategory
+     */
+    protected $model_cat;
+
+    /**
+     * @var Model_Gallery
+     */
+    protected $model;
+
+    /**
      * @return void
      */
     protected function setUp()
     {
-        $this->gallery_cat = Model::getModel('GalleryCategory')->createObject(
+        $this->model_cat    = Model::getModel('GalleryCategory');
+        $this->model        = Model::getModel('Gallery');
+
+        $this->gallery_cat = $this->model_cat->createObject(
                     array(
                         'id'                => 1,
                         'name'              => 'System',
@@ -37,14 +50,14 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
                         'meta_title'        => '',
                     )
                 );
-        $gallery    = Model::getModel('Gallery')->createObject(
+        $gallery    = $this->model->createObject(
             array(
                 'id'            => 1,
                 'category_id'   => 1,
                 'name'          => 'Panasonic',
                 'link'          => 'index',
                 'description'   => '',
-                'image'         => '',
+                'image'         => 'image',
                 'middle'        => '',
                 'thumb'         => 'ok',
                 'pos'           => '',
@@ -57,9 +70,8 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
     public function testGetImage()
     {
         $this->assertEquals(
-            'ok',
+            '',
             $this->gallery_cat->getImage()
         );
     }
-
 }

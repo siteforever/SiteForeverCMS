@@ -33,22 +33,22 @@ class Controller_News extends Controller
         $id = $this->request->get('doc', FILTER_SANITIZE_NUMBER_INT);
         $news = $model->find( $id );
 
-        // работаем над хлебными крошками
-        $path = json_decode( $this->page['path'] );
-        $path_part = array();
-        $path_part['id']      = false;
-        $path_part['name']    = $news['title'] ? $news['title'] : $news['name'];
-        $path_part['url']     = $this->page['alias'].'/doc='.$id;
-        $path[] = $path_part;
-        $this->page['path'] =   json_encode( $path );
+        if ( ! $news ) {
+            $this->request->addFeedback('Материал не найден');
+            return;
+        }
 
-        $this->request->set('tpldata.page.path', $this->page['path']);
+        // работаем над хлебными крошками
+        $bc = $this->tpl->getBreadcrumbs();
+        $bc->clearPieces();
+        $bc->fromJson( $this->page['path'] );
+        $bc->addPiece( null, $news['title'] ? $news['title'] : $news['name'] );
+
+        $this->request->set('tpldata.page.path',$bc->toJson());
 
         $this->tpl->news = $news->getAttributes();
 
         $this->request->setTitle(
-            ( $this->page['title'] ? $this->page['title'] : $this->page['name'] ) .
-            ' &rarr; ' .
             ( $news['title'] ? $news['title'] : $news['name'] )
         );
 
@@ -96,11 +96,11 @@ class Controller_News extends Controller
         }
 
         $this->tpl->assign(array(
-                'paging'    => $paging,
-                'list'      => $list,
-                'page'      => $this->page,
-                'cat'       => $cat->getAttributes(),
-           ));
+            'paging'    => $paging,
+            'list'      => $list,
+            'page'      => $this->page,
+            'cat'       => $cat->getAttributes(),
+        ));
 
         switch ( $cat['type_list'] ) {
             case 2:

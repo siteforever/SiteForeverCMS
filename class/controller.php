@@ -77,28 +77,33 @@ abstract class Controller
 //        print "controller = {$this->request->get('controller')}\n";
 //        print "action = {$this->request->get('action')}\n";
 
+        $id         = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
+        $controller = $this->request->get( 'controller' );
+        $action     = $this->request->get( 'action' );
+
         try {
-            $id     = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
             if (    null   !== $id
-                 && 'page' != $this->request->get('controller')
+                 && 'page' != $controller
 //                 && $this->app()->getRouter()->isAlias()
             ) {
                 $page   = $this->getModel('Page')->find(
                     array(
                          'cond'     => 'link = ? AND controller = ? AND deleted = 0',
-                         'params'   => array($id,$this->request->get('controller'))
+                         'params'   => array($id,$controller)
                     )
                 );
             }
-            elseif ( 'page' == $this->request->get('controller') && $id ) {
+            elseif ( 'page' == $controller && $id ) {
                 $page   = $this->getModel('Page')->find( $id );
             }
             else {
-                $page   = null;
+                throw new Exception('Page not found');
             }
-        } catch ( ModelException $e ) {
+        } catch ( Exception $e ) {
             $page   = null;
         }
+
+//        var_dump( $id, $controller, $action, $page );
 
         if ( null !== $page ) {
             if ( ! $page->title ) {

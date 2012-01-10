@@ -24,15 +24,15 @@ class Form_Form implements ArrayAccess
         /**
          * Массив объектов полей формы
          */
-        $_fields,
+        $_fields    = array(),
         /**
          * Массив кнопок
          */
-        $_buttons,
+        $_buttons   = array(),
         /**
          * Данные, полученные из _POST или _GET
          */
-        $_data;
+        $_data      = array();
 
     private $_err_required  = 0;
     private $_err_untype    = 0;
@@ -42,6 +42,7 @@ class Form_Form implements ArrayAccess
     /**
      * Создает форму согласно конфигу
      * @param $config
+     * @param Request $request
      */
     function __construct( $config, Request $request = null )
     {
@@ -51,84 +52,110 @@ class Form_Form implements ArrayAccess
             //$request->addScript( $request->get('path.misc').'/forms.js' );
         }
 
-
         if ( ! isset( $config['name'] ) ) {
-            throw new Exception('Для формы нужно определить обязательный параметр name');
+            throw new Form_Exception('Для формы нужно определить обязательный параметр name');
         }
-        if ( ! isset( $config['fields'] ) ) {
-            throw new Exception('Для формы нужно определить массив полей fields');
-        }
-        $this->_name    = $config['name'];
-        $this->_method  = isset( $config['method'] ) ? $config['method'] : 'post';
-        $this->_action  = isset( $config['action'] ) ? $config['action'] : '';
-        $this->_class   = isset( $config['class'] ) ? $config['class'] : 'standart ajax';
+//        if ( ! isset( $config['fields'] ) ) {
+//            throw new Exception('Для формы нужно определить массив полей fields');
+//        }
+        $this->_name   = $config[ 'name' ];
+        $this->_method = isset( $config[ 'method' ] ) ? $config[ 'method' ] : 'post';
+        $this->_action = isset( $config[ 'action' ] ) ? $config[ 'action' ] : '';
+        $this->_class  = isset( $config[ 'class' ] ) ? $config[ 'class' ] : 'standart ajax';
 
-        foreach( $config['fields'] as $fname => $field )
-        {
-            // Обработка разделителей
-            if ( in_array( $fname, array('separate', 'separator', 'sep') ) ||
-                     in_array( $field, array('separate', 'separator', 'sep') )
-            ) {
-                $this->_fields[] = "<hr class='separator' />";
-                continue;
+        if ( isset( $config['fields'] ) ) {
+            foreach ( $config[ 'fields' ] as $fname => $field )
+            {
+                // Обработка HTML
+                if ( is_string( $field ) ) {
+                    $this->_fields[ ] = $field;
+                    continue;
+                }
+
+                try {
+                    $obj_field = $this->createField( $fname, $field );
+                } catch ( Form_Exception $e ) {
+                    $this->addFeedback('Field "'.$fname.'" has undefined type');
+                }
+
+                if ( in_array( $field[ 'type' ], array( 'submit', 'reset', 'button' ) ) ) {
+                    $this->addButton( $obj_field );
+                }
+                else {
+                    $this->addField( $obj_field );
+                }
             }
-
-            // Обработка HTML
-            if ( is_string( $field ) ) {
-                $this->_fields[] = $field;
-                continue;
-            }
-
-            $hidden = false;
-
-            $field['type'] = isset( $field['type'] ) ? $field['type'] : 'text';
-
-            // тип hidden преобразовать в скрытый text
-            if ( $field['type'] == 'hidden' /*|| in_array( 'hidden', $field )*/ ) {
-                self::DEBUG ? print 'hidden' : false;
-                $hidden = true;
-                $field['type']  = 'text';
-            }
-
-            // физический класс обработки поля
-            $field_class = 'Form_Field_'.$field['type'];
-
-            if ( self::DEBUG ) {
-                print '('.$field_class.($hidden?', hidden':'').') '.$fname.'<br />';
-            }
-
-            // экземпляр поля
-            if ( ! class_exists( $field_class ) ) {
-                throw new Exception( 'Class not found '.$field_class );
-            }
-
-            $obj_field   = new $field_class( $this, $fname, $field );
-
-            // идентификатор поля
-            $field_id    = $obj_field->getId();
-
-            if ( in_array( $field['type'], array('submit','reset','button') ) ) {
-                $this->_buttons[ $field_id ] = $obj_field;
-                continue;
-            }
-
-            $this->_fields[ $field_id ] = $obj_field;
-
-            if ( $hidden )
-                $this->_fields[ $field_id ]->hide();
         }
     }
 
     /**
-     * @return form_Uploader
+     * @param Form_Field $field
+     * @param string $after
+     * @return void
      */
-    function uploader()
+    public function addField( Form_Field $field, $after = '' )
     {
-        if ( !isset( $this->uploader ) )
-        {
-            $this->uploader = new form_uploader( $this );
+        if ( ! $after ) {
+            $this->_fields[ $field->getId() ]   = $field;
+            return;
         }
-        return $this->uploader;
+
+        $fields = $this->_fields;
+        $this->_fields  = array();
+
+        foreach ( $fields as $key => $field ) {
+            $this->_fields[ $key ]  = $field;
+            if ( $key == $after ) {
+                $this->_fields[ $field->getId() ]   = $field;
+            }
+        }
+        return;
+    }
+
+    /**
+     * @param Form_Field $field
+     */
+    public function addButton( Form_Field $field ) {
+        $this->_buttons[ $field->getId() ]  = $field;
+    }
+
+    /**
+     * Создаст поле для формы
+     * @param $name
+     * @param $field
+     * @return Form_Field
+     */
+    public function createField( $name, $field )
+    {
+        $hidden = false;
+
+        $field[ 'type' ] = isset( $field[ 'type' ] ) ? $field[ 'type' ] : 'text';
+
+        // тип hidden преобразовать в скрытый text
+        if ( $field[ 'type' ] == 'hidden' /*|| in_array( 'hidden', $field )*/ ) {
+            $hidden            = true;
+            $field[ 'type' ]   = 'text';
+            $field[ 'hidden' ] = 1;
+        }
+
+        // физический класс обработки поля
+        $field_class = 'Form_Field_' . $field[ 'type' ];
+
+        // экземпляр поля
+        if ( !class_exists( $field_class ) ) {
+            throw new  Form_Exception( 'Class not found ' . $field_class );
+        }
+
+        /**
+         * @var Form_Field $obj_field
+         */
+        $obj_field = new $field_class( $this, $name, $field );
+
+        if ( $hidden ) {
+            $obj_field->hide();
+        }
+
+        return $obj_field;
     }
 
     /**
@@ -180,7 +207,8 @@ class Form_Form implements ArrayAccess
         {
             return $this->_fields[$id];
         }
-        throw new Form_Exception("Field '{$key}' not found");
+        return null;
+//        throw new Form_Exception("Field '{$key}' not found");
     }
 
     /**
@@ -399,6 +427,16 @@ class Form_Form implements ArrayAccess
     function getFeedbackString( $sep = "<br />\n" )
     {
         return join( $sep, $this->_feedback );
+    }
+
+
+    /**
+     * Изменит тип поля
+     * @param $type
+     */
+    public function changeFieldType( $type )
+    {
+
     }
 
 

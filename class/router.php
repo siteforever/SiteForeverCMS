@@ -137,6 +137,28 @@ class Router
     }
 
     /**
+     * Фильтрует параметры, указанные через key=val
+     * @param $route
+     * @return string
+     */
+    public function filterEqParams( $route )
+    {
+        $result = $route;
+
+        if ( preg_match_all( '@(\/\w+=\w+)@xui', $route, $m ) ) {
+            foreach ( $m[0] as $par ) {
+                $result = str_replace( $par, '', $result );
+                $par    = trim($par,'/');
+                list( $key, $val ) = explode( '=', $par );
+                $this->request->set($key, $val);
+            }
+//            var_export( $m );
+        }
+
+        return $result;
+    }
+
+    /**
      * Маршрутизация
      * @return bool
      */
@@ -161,6 +183,8 @@ class Router
             $this->route = trim( $this->route, ' /' );
         }
 
+        $this->route    = $this->filterEqParams( $this->route );
+
 //        // выделяем указатель на страницы
 //        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
 //            $this->request->set('page', $match_page[1]);
@@ -176,13 +200,13 @@ class Router
             if ( ! $this->findStructure() ) {
                 $route_pieces   = explode( '/', $this->route );
 
-                foreach( $route_pieces as $key => $param ) {
-                    if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
-                        $this->request->set( $matches[1], $matches[2] );
-                        unset( $route_pieces[$key] );
-                        continue;
-                    }
-                }
+//                foreach( $route_pieces as $key => $param ) {
+//                    if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
+//                        $this->request->set( $matches[1], $matches[2] );
+//                        unset( $route_pieces[$key] );
+//                        continue;
+//                    }
+//                }
 
         //        $this->request->set('params', $route_pieces);
         //        $this->route = join('/', $route_pieces);
@@ -230,6 +254,10 @@ class Router
         return true;
     }
 
+    /**
+     * Создать ошибку 404
+     * @param string $error
+     */
     public function activateError( $error = '404' )
     {
         $this->controller   = 'page';
@@ -240,6 +268,7 @@ class Router
     }
 
     /**
+     * Если найдет алиас, то пререопределит маршрут
      * @return bool
      */
     private function findAlias()
@@ -247,11 +276,12 @@ class Router
         $model  = Model::getModel('Alias');
         $alias  = $model->find(
             array(
-                'cond'  => '`alias` = ?',
+                'cond'  => 'alias = ?',
                 'params'=> array($this->route),
             )
         );
-        if ( null !== $alias ) {
+
+        if ( $alias ) {
             $this->setRoute( $alias->url );
             $this->_isAlias = true;
             return true;

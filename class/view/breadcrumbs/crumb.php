@@ -25,6 +25,6 @@ class View_Breadcrumbs_Crumb
         if ( null === $this->_alias ) {
             return $this->_name;
         }
-        return  "<a href='{$this->_alias}'>{$this->_name}</a>";
+        return  "<a href='/{$this->_alias}'>{$this->_name}</a>";
     }
 }

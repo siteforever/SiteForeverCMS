@@ -471,4 +471,12 @@ class Request
     {
         printVar($this->request);
     }
+
+    /**
+     * Очистит все параметры запроса
+     */
+    public function clearAll()
+    {
+        $this->request  = array();
+    }
 }

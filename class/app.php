@@ -138,6 +138,8 @@ class App extends Application_Abstract
         // запуск сессии
         session_start();
 
+        $result = '';
+
         // маршрутизатор
         $this->getRouter()->routing();
 

@@ -126,6 +126,7 @@ abstract class Form_Field
 
     /**
      * Вернет идентификатор поля
+     * @return string
      */
     function getId()
     {
@@ -466,5 +467,13 @@ abstract class Form_Field
     public function getReadonly()
     {
         return $this->_readonly;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getHidden()
+    {
+        return $this->_hidden;
     }
 }
