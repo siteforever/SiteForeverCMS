@@ -16,7 +16,7 @@ class View_Breadcrumbs_CrumbTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->object = new View_Breadcrumbs_Crumb( 'Заголовок', '/path/to/page' );
+        $this->object = new View_Breadcrumbs_Crumb( 'Заголовок', 'path/to/page' );
     }
 
     /**
@@ -29,7 +29,7 @@ class View_Breadcrumbs_CrumbTest extends PHPUnit_Framework_TestCase
 
     public function testToString()
     {
-        $this->assertEquals("<a href='/path/to/page'>Заголовок</a>", (string) $this->object);
+        $this->assertEquals( "<a href='/path/to/page'>Заголовок</a>", (string)$this->object );
     }
 
 }

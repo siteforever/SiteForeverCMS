@@ -12,16 +12,18 @@ class Router
     private $route_table = array();
 
     private $controller = 'page';
-    private $action     = 'index';
+    private $action = 'index';
     private $id;
 
     private $request;
 
     private $system = 0;
 
-    private $template   = 'index';
+    private $template = 'index';
 
-    private $_isAlias   = false;
+    private $_isAlias = false;
+
+    private $_params = array();
 
     /**
      * Создаем маршрутизатор
@@ -30,11 +32,11 @@ class Router
     public function __construct( Request $request )
     {
         $this->request = $request;
-        $route = $this->request->get('route');
+        $route         = $this->request->get( 'route' );
 
         $this->setRoute( $route );
 
-//        $this->request->set('route', $this->route);
+        //        $this->request->set('route', $this->route);
     }
 
     /**
@@ -43,7 +45,7 @@ class Router
      */
     public function isAlias()
     {
-        return  $this->_isAlias;
+        return $this->_isAlias;
     }
 
     /**
@@ -54,38 +56,38 @@ class Router
      */
     public function createLink( $result = '', $params = array() )
     {
-        if ( ! $result && isset( $params['controller'] ) ) {
+        if( ! $result && isset( $params[ 'controller' ] ) ) {
             return $this->createDirectRequest( $params );
         }
 
-        $result = trim($result, '/');
-        if ( '' === $result ) {
-            $result = $this->request->get('route');
+        $result = trim( $result, '/' );
+        if( '' === $result ) {
+            $result = $this->request->get( 'route' );
         }
 
         $par = array();
 
-        $result = preg_replace('@/[\w\d]+=[\d]+@i', '', $result);
+        $result = preg_replace( '@/[\w\d]+=[\d]+@i', '', $result );
 
-        if ( count($params) ) {
+        if( count( $params ) ) {
             foreach( $params as $k => $v ) {
-                $par[] = $k.'='.$v;
-//                $result = preg_replace("@/{$k}=\d+@", '', $result);
+                $par[ ] = $k . '=' . $v;
+                //                $result = preg_replace("@/{$k}=\d+@", '', $result);
             }
         }
 
-        if ( 'index' == $result && count($par) == 0 ) {
+        if( 'index' == $result && count( $par ) == 0 ) {
             $result = '';
         }
 
-        if ( App::getInstance()->getConfig()->get('url.rewrite') ) {
-            $result = '/'.$result.( count($par) ? '/'.join('/', $par) : '' );
+        if( App::getInstance()->getConfig()->get( 'url.rewrite' ) ) {
+            $result = '/' . $result . ( count( $par ) ? '/' . join( '/', $par ) : '' );
         }
         else {
-            $result = '/?route='.$result.( count($par) ? '&'.join('&', $par) : '' );
+            $result = '/?route=' . $result . ( count( $par ) ? '&' . join( '&', $par ) : '' );
         }
 
-        return strtolower($result);
+        return strtolower( $result );
     }
 
     /**
@@ -96,26 +98,26 @@ class Router
      */
     public function createServiceLink( $controller, $action = 'index', $params = array() )
     {
-        $result     = '';
-        $parstring  = '';
-        foreach ( $params as $key => $param ) {
-            $parstring .= '/'.$key.'/'.$param;
+        $result    = '';
+        $parstring = '';
+        foreach( $params as $key => $param ) {
+            $parstring .= '/' . $key . '/' . $param;
         }
 
-        $result .= '/'.$controller;
-        if ('index' != $action || '' != $parstring ) {
-            $result .= '/'.$action . $parstring;
+        $result .= '/' . $controller;
+        if( 'index' != $action || '' != $parstring ) {
+            $result .= '/' . $action . $parstring;
         }
 
-        if ( ! App::getInstance()->getConfig()->get('url.rewrite') ) {
-            $result = '/?route='.trim( $result, '/' );
+        if( ! App::getInstance()->getConfig()->get( 'url.rewrite' ) ) {
+            $result = '/?route=' . trim( $result, '/' );
         }
 
-        if ('index' == $action && 'index' == $controller && '' == $parstring ) {
+        if( 'index' == $action && 'index' == $controller && '' == $parstring ) {
             $result = '/';
         }
 
-        return strtolower($result);
+        return strtolower( $result );
     }
 
     /**
@@ -124,11 +126,11 @@ class Router
      */
     private function createDirectRequest( $params )
     {
-        $controller = $params['controller'];
-        unset( $params['controller'] );
-        if ( isset( $params['action'] ) ) {
-            $action = $params['action'];
-            unset( $params['action'] );
+        $controller = $params[ 'controller' ];
+        unset( $params[ 'controller' ] );
+        if( isset( $params[ 'action' ] ) ) {
+            $action = $params[ 'action' ];
+            unset( $params[ 'action' ] );
         } else {
             $action = 'index';
         }
@@ -145,14 +147,14 @@ class Router
     {
         $result = $route;
 
-        if ( preg_match_all( '@(\/\w+=\w+)@xui', $route, $m ) ) {
-            foreach ( $m[0] as $par ) {
+        if( preg_match_all( '@(\/\w+=\w+)@xui', $route, $m ) ) {
+            foreach( $m[ 0 ] as $par ) {
                 $result = str_replace( $par, '', $result );
-                $par    = trim($par,'/');
+                $par    = trim( $par, '/' );
                 list( $key, $val ) = explode( '=', $par );
-                $this->request->set($key, $val);
+                $this->_params[ $key ] = $val;
+                //                $this->request->set($key, $val);
             }
-//            var_export( $m );
         }
 
         return $result;
@@ -164,10 +166,12 @@ class Router
      */
     public function routing()
     {
+        $this->_params = array();
+
         // Если контроллер и действие указаны явно, то не производить маршрутизацию
-        if ( $this->request->get('controller') ) {
-            if ( ! $this->request->get('action') ) {
-                $this->request->set('action', 'index');
+        if( $this->request->get( 'controller' ) ) {
+            if( ! $this->request->get( 'action' ) ) {
+                $this->request->set( 'action', 'index' );
             }
             return true;
         }
@@ -175,64 +179,49 @@ class Router
 
         $this->route = trim( $this->route, '/' );
 
-        if ( ! $this->route ) {
+        if( ! $this->route ) {
             $this->route = 'index';
         }
 
-        if ( preg_match( '/[\w\d\/_-]+/i', $this->route ) ) {
+        if( preg_match( '/[\w\d\/_-]+/i', $this->route ) ) {
             $this->route = trim( $this->route, ' /' );
         }
 
-        $this->route    = $this->filterEqParams( $this->route );
+        $this->route = $this->filterEqParams( $this->route );
 
-//        // выделяем указатель на страницы
-//        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
-//            $this->request->set('page', $match_page[1]);
-//            $this->route = trim( str_replace( $match_page[0], '', $this->route ), '/' );
-//        }
+        //        // выделяем указатель на страницы
+        //        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
+        //            $this->request->set('page', $match_page[1]);
+        //            $this->route = trim( str_replace( $match_page[0], '', $this->route ), '/' );
+        //        }
 
         // ----------------
 
         $this->findAlias();
 
-        if ( ! $this->findRoute() )
-        {
-            if ( ! $this->findStructure() ) {
-                $route_pieces   = explode( '/', $this->route );
+        if( ! $this->findRoute() ) {
+            if( ! $this->findStructure() ) {
+                $route_pieces = explode( '/', $this->route );
 
-//                foreach( $route_pieces as $key => $param ) {
-//                    if ( preg_match( '/(\w+)=(.+)/xui', $param, $matches ) ) {
-//                        $this->request->set( $matches[1], $matches[2] );
-//                        unset( $route_pieces[$key] );
-//                        continue;
-//                    }
-//                }
-
-        //        $this->request->set('params', $route_pieces);
-        //        $this->route = join('/', $route_pieces);
-        //
-        //        var_dump( $this->route );
-
-                if ( count( $route_pieces ) == 1 ) {
-                    $this->controller   = $route_pieces[0];
-                    $this->action   = 'index';
+                if( count( $route_pieces ) == 1 ) {
+                    $this->controller = $route_pieces[ 0 ];
+                    $this->action     = 'index';
                 }
-                elseif ( count( $route_pieces ) > 1 ) {
-                    $this->controller   = $route_pieces[0];
-                    $this->action       = $route_pieces[1];
+                elseif( count( $route_pieces ) > 1 ) {
+                    $this->controller = $route_pieces[ 0 ];
+                    $this->action     = $route_pieces[ 1 ];
 
-                    $route_pieces       = array_slice( $route_pieces, 2 );
+                    $route_pieces = array_slice( $route_pieces, 2 );
 
-                   if ( 0 == count( $route_pieces ) % 2 ) {
-                        $key    = '';
-                        foreach ( $route_pieces as $i => $r ) {
-                            if ( $i % 2 ) {
-//                                if ( null === $this->request->get($key) ) {
-                                $this->request->set( $key, $r );
-//                                print "key=$key,val=$r\n";
-//                                }
+                    if( 0 == count( $route_pieces ) % 2 ) {
+                        $key = '';
+                        foreach( $route_pieces as $i => $r ) {
+                            if( $i % 2 ) {
+                                if( ! $this->request->get( $key ) ) {
+                                    $this->request->set( $key, $r );
+                                }
                             } else {
-                                $key    = $r;
+                                $key = $r;
                             }
                         }
                     }
@@ -243,14 +232,20 @@ class Router
             }
         }
 
-        $this->request->set('controller', $this->controller);
-        $this->request->set('action',     $this->action);
-        if ( $this->id && null === $this->request->get('id') ) {
-            $this->request->set('id', $this->id);
+        $this->_params[ 'controller' ] = $this->controller;
+        $this->_params[ 'action' ]     = $this->action;
+
+        //        if ( $this->id && null === $this->request->get('id') ) {
+        //            $this->request->set('id', $this->id);
+        //        }
+        if( $this->template ) {
+            $this->request->set( 'template', $this->template );
         }
-        if ( $this->template ) {
-            $this->request->set('template',   $this->template);
+
+        foreach( $this->_params as $key => $val ) {
+            $this->request->set( $key, $val );
         }
+
         return true;
     }
 
@@ -260,11 +255,11 @@ class Router
      */
     public function activateError( $error = '404' )
     {
-        $this->controller   = 'page';
-        $this->action       = 'error';
-        $this->id           = $error;
-        $this->template     = App::getInstance()->getConfig()->get('template.404');
-        $this->system       = 0;
+        $this->controller = 'page';
+        $this->action     = 'error';
+        $this->id         = $error;
+        $this->template   = App::getInstance()->getConfig()->get( 'template.404' );
+        $this->system     = 0;
     }
 
     /**
@@ -273,15 +268,15 @@ class Router
      */
     private function findAlias()
     {
-        $model  = Model::getModel('Alias');
-        $alias  = $model->find(
+        $model = Model::getModel( 'Alias' );
+        $alias = $model->find(
             array(
                 'cond'  => 'alias = ?',
-                'params'=> array($this->route),
+                'params'=> array( $this->route ),
             )
         );
 
-        if ( $alias ) {
+        if( $alias ) {
             $this->setRoute( $alias->url );
             $this->_isAlias = true;
             return true;
@@ -295,9 +290,9 @@ class Router
      */
     private function findRoute()
     {
-        if ( $this->findXMLRoute() ) {
+        if( $this->findXMLRoute() ) {
             return true;
-        } elseif ( $this->findTableRoute() ) {
+        } elseif( $this->findTableRoute() ) {
             return true;
         }
         return false;
@@ -309,17 +304,17 @@ class Router
      */
     private function findXMLRoute()
     {
-        $xml_routes_file    = SF_PATH.'/protected/routes.xml';
-        if ( file_exists( $xml_routes_file ) ) {
+        $xml_routes_file = SF_PATH . '/protected/routes.xml';
+        if( file_exists( $xml_routes_file ) ) {
             $xml_routes = new SimpleXMLIterator( file_get_contents( $xml_routes_file ) );
-            if ( $xml_routes ) {
-                foreach ( $xml_routes as $route ) {
-                    if ( $route['active'] !== "0" && preg_match( '@^'.$route['alias'].'$@ui', $this->route ) ) {
-                        $this->controller   = (string) $route->controller;
-                        $this->action       = isset($route->action) ? (string) $route->action : 'index';
-                        $this->id           = $route['id'];
-                        $this->protected    = $route['protected'];
-                        $this->system       = $route['system'];
+            if( $xml_routes ) {
+                foreach( $xml_routes as $route ) {
+                    if( $route[ 'active' ] !== "0" && preg_match( '@^' . $route[ 'alias' ] . '$@ui', $this->route ) ) {
+                        $this->controller = (string)$route->controller;
+                        $this->action     = isset( $route->action ) ? (string)$route->action : 'index';
+                        $this->id         = $route[ 'id' ];
+                        $this->protected  = $route[ 'protected' ];
+                        $this->system     = $route[ 'system' ];
                         return true;
                     }
                 }
@@ -334,22 +329,21 @@ class Router
      */
     private function findTableRoute()
     {
-        $routes = Model::getModel('Routes');
+        $routes = Model::getModel( 'Routes' );
 
         $this->route_table = $routes->findAll( array(
             'cond' => 'active = 1',
-        ));
+        ) );
 
         // индексируем маршруты
         foreach( $this->route_table as $route )
         {
             // если маршрут совпадает с алиасом, то сохраняем
-            if ( preg_match( '@^'.$route['alias'].'$@ui', $this->route ) )
-            {
-                $this->controller   = $route['controller'];
-                $this->action       = $route['action'];
-                if ( isset($route['id']) )      $this->id       = $route['id'];
-                if ( isset($route['system']) )  $this->system   = $route['system'];
+            if( preg_match( '@^' . $route[ 'alias' ] . '$@ui', $this->route ) ) {
+                $this->controller = $route[ 'controller' ];
+                $this->action     = $route[ 'action' ];
+                if( isset( $route[ 'id' ] ) ) $this->id = $route[ 'id' ];
+                if( isset( $route[ 'system' ] ) ) $this->system = $route[ 'system' ];
 
                 return true;
             }
@@ -363,20 +357,19 @@ class Router
      */
     private function findStructure()
     {
-        $model  = Model::getModel('Page');
+        $model = Model::getModel( 'Page' );
 
-        $data   = $model->find(array(
+        $data = $model->find( array(
             'cond'  => 'alias = ? AND deleted = 0',
-            'params'=> array($this->route),
-        ));
+            'params'=> array( $this->route ),
+        ) );
 
-        if ( $data )
-        {
-            $this->controller   = $data['controller'];
-            $this->action       = $data['action'];
-            $this->id           = $data['id'];
-            $this->template     = $data['template'];
-            $this->system       = $data['system'];
+        if( $data ) {
+            $this->controller = $data[ 'controller' ];
+            $this->action     = $data[ 'action' ];
+            $this->id         = $data[ 'id' ];
+            $this->template   = $data[ 'template' ];
+            $this->system     = $data[ 'system' ];
             return true;
         }
         return false;
@@ -392,11 +385,12 @@ class Router
 
     /**
      * @param $route
+     * @param array $params
      * @return Router
      */
-    public function setRoute($route)
+    public function setRoute( $route, array $params = array() )
     {
-        $this->route = trim($route,'/');
+        $this->route = trim( $route, '/' );
         return $this;
     }
 

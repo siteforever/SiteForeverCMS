@@ -1,18 +1,22 @@
 <?php
 
-class ModelException extends Exception {};
+class ModelException extends Exception
+{
+}
+
+;
 
 /**
  * Интерфейс модели
  */
 abstract class Model
 {
-    const HAS_MANY  = 'has_many';   // содержет много
-    const HAS_ONE   = 'has_one';    // содержет один
-    const BELONGS   = 'belongs';    // принадлежит
-    const MANY_MANY = 'many_many';  // много ко многим
+    const HAS_MANY = 'has_many'; // содержет много
+    const HAS_ONE = 'has_one'; // содержет один
+    const BELONGS = 'belongs'; // принадлежит
+    const MANY_MANY = 'many_many'; // много ко многим
 
-    const STAT      = 'stat';       // статистическая связь
+    const STAT = 'stat'; // статистическая связь
 
     /**
      * @var db
@@ -48,7 +52,7 @@ abstract class Model
      */
     protected $data;
 
-    protected static $fields   = array();
+    protected static $fields = array();
 
     protected static $all_class = array();
 
@@ -72,26 +76,26 @@ abstract class Model
      */
     final private function __construct()
     {
-        $this->request  = $this->app()->getRequest();
-        $this->config   = $this->app()->getConfig();
+        $this->request = $this->app()->getRequest();
+        $this->config  = $this->app()->getConfig();
         //$this->user     = $this->app()->getAuth()->currentUser();
 
 
         // база данных
         // определяется только в моделях
-        if ( is_null( self::$dao ) ) {
-            self::$dao  = db::getInstance( $this->config->get('db') );
+        if( is_null( self::$dao ) ) {
+            self::$dao = db::getInstance( $this->config->get( 'db' ) );
             self::$dao->setLoggerClass( $this->app()->getLogger() );
         }
-        $this->db   = self::$dao;
-        $this->pdo  = $this->db->getResource();
-        
+        $this->db  = self::$dao;
+        $this->pdo = $this->db->getResource();
 
-        if ( ! isset( self::$exists_tables ) ) {
-            self::$exists_tables    = array();
-            $tables = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
-            foreach ( $tables as $t ) {
-                self::$exists_tables[]  = $t[0];
+
+        if( ! isset( self::$exists_tables ) ) {
+            self::$exists_tables = array();
+            $tables              = $this->db->fetchAll( "SHOW TABLES", false, DB::F_ARRAY );
+            foreach( $tables as $t ) {
+                self::$exists_tables[ ] = $t[ 0 ];
             }
         }
 
@@ -112,8 +116,8 @@ abstract class Model
      */
     final function app()
     {
-        if ( is_null( $this->app ) ) {
-            $this->app  = App::getInstance();
+        if( is_null( $this->app ) ) {
+            $this->app = App::getInstance();
         }
         return $this->app;
     }
@@ -142,7 +146,7 @@ abstract class Model
      */
     private function isExistTable( Data_Table $table )
     {
-        return in_array( (string) $table, self::$exists_tables );
+        return in_array( (string)$table, self::$exists_tables );
     }
 
     /**
@@ -153,7 +157,7 @@ abstract class Model
     private function addNewTable( Data_Table $table )
     {
         $this->getDB()->query( $this->table->getCreateTable() );
-        self::$exists_tables[]  = (string) $table;
+        self::$exists_tables[ ] = (string)$table;
     }
 
     /**
@@ -164,18 +168,17 @@ abstract class Model
      */
     final static public function getModel( $class_name )
     {
-        if ( strpos( strtolower( $class_name ), 'model_' ) === false ) {
-            $class_name = 'Model_'.$class_name;
+        if( strpos( strtolower( $class_name ), 'model_' ) === false ) {
+            $class_name = 'Model_' . $class_name;
         }
         //var_dump( isset( self::$all_class[ $class_name ] ) );
 
-        if ( ! isset( self::$all_class[ $class_name ] ) )
-        {
-            if ( class_exists($class_name, true) ) {
+        if( ! isset( self::$all_class[ $class_name ] ) ) {
+            if( class_exists( $class_name, true ) ) {
                 self::$all_class[ $class_name ] = new $class_name();
             }
             else {
-                throw new Exception('Model "'.$class_name.'" not found');
+                throw new Exception( 'Model "' . $class_name . '" not found' );
             }
         }
         return self::$all_class[ $class_name ];
@@ -188,21 +191,21 @@ abstract class Model
      */
     final public function createObject( $data = array() )
     {
-        $start  = microtime(1);
-        if ( isset( $data['id'] ) ) {
-            $obj    = $this->getFromMap( $data['id'] );
-            if ( $obj ) {
+        $start = microtime( 1 );
+        if( isset( $data[ 'id' ] ) ) {
+            $obj = $this->getFromMap( $data[ 'id' ] );
+            if( $obj ) {
                 $obj->setAttributes( $data );
                 return $obj;
             }
         }
         $class_name = $this->objectClass();
-        $obj    = new $class_name( $this, &$data );
-        if ( ! is_null( $obj->getId() ) ) {
+        $obj        = new $class_name( $this, &$data );
+        if( ! is_null( $obj->getId() ) ) {
             $this->addToMap( $obj );
             $obj->markClean();
         }
-//        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
+        //        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
         return $obj;
     }
 
@@ -234,7 +237,7 @@ abstract class Model
     //public abstract function objectClass();
     public function objectClass()
     {
-        return 'Data_Object_'.substr( get_class( $this ), 6 );
+        return 'Data_Object_' . substr( get_class( $this ), 6 );
     }
 
     /**
@@ -245,7 +248,7 @@ abstract class Model
     //abstract public function tableClass();
     public function tableClass()
     {
-        return 'Data_Table_'.substr( get_class( $this ), 6 );
+        return 'Data_Table_' . substr( get_class( $this ), 6 );
     }
 
     /**
@@ -254,15 +257,15 @@ abstract class Model
      */
     final public function getTable()
     {
-        if ( is_null( $this->table ) ) {
+        if( is_null( $this->table ) ) {
             $class_name = $this->tableClass();
 
-            $this->table    = new $class_name();
+            $this->table = new $class_name();
 
-            if ( ! $this->isExistTable( $this->table ) ) {
+            if( ! $this->isExistTable( $this->table ) ) {
                 $this->addNewTable( $this->table );
                 $this->onCreateTable();
-            } elseif ( $this->config->get('db.migration') ) {
+            } elseif( $this->config->get( 'db.migration' ) ) {
                 $this->migration();
             }
         }
@@ -276,40 +279,40 @@ abstract class Model
      */
     private function migration()
     {
-        $sys_fields     = $this->getTable()->getFields();
-        $have_fields    = $this->getDB()->getFields((string)$this->getTable());
+        $sys_fields  = $this->getTable()->getFields();
+        $have_fields = $this->getDB()->getFields( (string)$this->getTable() );
 
-        $txtsys_fields  = array();
-        foreach ( $sys_fields as $sfield ) {
+        $txtsys_fields = array();
+        foreach( $sys_fields as $sfield ) {
             /**
              * @var Data_Field $sfield
              */
-            $txtsys_fields[]    = $sfield->getName();
+            $txtsys_fields[ ] = $sfield->getName();
         }
 
         $add_array = array_diff( $txtsys_fields, $have_fields );
         $del_array = array_diff( $have_fields, $txtsys_fields );
 
 
-        $sql    = array();
+        $sql = array();
 
-        if ( count($add_array) || count($del_array) ) {
+        if( count( $add_array ) || count( $del_array ) ) {
 
-            foreach ( $del_array as $col ) {
-                $sql[]  = "ALTER TABLE `{$this->getTable()}` DROP COLUMN `$col`";
+            foreach( $del_array as $col ) {
+                $sql[ ] = "ALTER TABLE `{$this->getTable()}` DROP COLUMN `$col`";
             }
-            foreach ( $add_array as $key => $col ) {
-                $after  = '';
-                if ( $key == 0 ) {
-                    $after  = ' FIRST';
+            foreach( $add_array as $key => $col ) {
+                $after = '';
+                if( $key == 0 ) {
+                    $after = ' FIRST';
                 }
-                if ( $key > 0 ) {
-                    $after  = ' AFTER `'.$sys_fields[$key-1]->getName().'`';
+                if( $key > 0 ) {
+                    $after = ' AFTER `' . $sys_fields[ $key - 1 ]->getName() . '`';
                 }
-                $sql[]  = "ALTER TABLE `{$this->getTable()}` ADD COLUMN ".$sys_fields[$key].$after;
+                $sql[ ] = "ALTER TABLE `{$this->getTable()}` ADD COLUMN " . $sys_fields[ $key ] . $after;
             }
 
-            foreach ( $sql as $query ) {
+            foreach( $sql as $query ) {
                 $this->getDB()->query( $query );
             }
         }
@@ -329,7 +332,7 @@ abstract class Model
      */
     final public function getTableName()
     {
-        return (string) $this->getTable();
+        return (string)$this->getTable();
     }
 
     /**
@@ -352,51 +355,51 @@ abstract class Model
     {
         $this->with = array();
 
-        if ( is_object( $crit ) ) {
-            if ( $crit instanceof Db_Criteria ) {
-                $criteria   = new Data_Criteria($this->getTable(), $crit);
+        if( is_object( $crit ) ) {
+            if( $crit instanceof Db_Criteria ) {
+                $criteria = new Data_Criteria( $this->getTable(), $crit );
             }
-            elseif ( $crit instanceof Data_Criteria ) {
-                $criteria   = $crit;
+            elseif( $crit instanceof Data_Criteria ) {
+                $criteria = $crit;
             }
         }
         // не определился критерий, но параметр - число
         // тогда полагаем, что параметр - это ID объекта
-        if ( ! isset ( $criteria ) && is_numeric( $crit ) ) {
+        if( ! isset ( $criteria ) && is_numeric( $crit ) ) {
             $obj = $this->getFromMap( $crit );
-            if ( $obj ) {
+            if( $obj ) {
                 return $obj;
             }
-            $crit   = array(
+            $crit = array(
                 'cond'  => 'id = :id',
-                'params'=> array(':id'=>$crit),
+                'params'=> array( ':id'=> $crit ),
                 'limit' => '1',
             );
-        } elseif ( is_array( $crit ) ) {
+        } elseif( is_array( $crit ) ) {
             $default = array(
                 'select'    => '*',
                 'cond'      => 'id = :id',
-                'params'    => array(':id'=>1),
+                'params'    => array( ':id'=> 1 ),
                 'limit'     => '1',
             );
-            $crit   = array_merge($default,$crit);
+            $crit    = array_merge( $default, $crit );
         } else {
-            throw new ModelException('Not valid criteria');
+            throw new ModelException( 'Not valid criteria' );
         }
 
-        if ( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
-            $criteria   = new Data_Criteria( $this->getTable(), $crit );
+        if( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
+            $criteria = new Data_Criteria( $this->getTable(), $crit );
         }
 
-        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit['params'] );
+        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit[ 'params' ] );
 
-        if ( $data ) {
-            $obj    = $this->getFromMap( $data['id'] );
+        if( $data ) {
+            $obj = $this->getFromMap( $data[ 'id' ] );
 
-            if ( null !== $obj ) {
+            if( null !== $obj ) {
                 return $obj;
             } else {
-                $obj_data   = $this->createObject( $data );
+                $obj_data = $this->createObject( $data );
                 return $obj_data;
             }
         }
@@ -404,58 +407,66 @@ abstract class Model
     }
 
     /**
-     * Поиск по критерию
      * @param array $crit
-     * @param bool $do_index
-     * @return array
+     * @param array $params
+     * @param string $order
+     * @param string $limit
+     * @return array|Data_Collection
+     * @throws ModelException
      */
-    final public function findAll( $crit = array() )
+    final public function findAll( $crit = array(), $params = array(), $order = '', $limit = '' )
     {
-        $with   = $this->with;
+        $with       = $this->with;
         $this->with = array();
 
-        if ( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Db_Criteria ) ) {
-            $criteria   = new Data_Criteria( $this->getTable(), $crit );
-        }
-        elseif ( is_object( $crit ) && $crit instanceof Data_Criteria ) {
-            $criteria   = $crit;
-        }
-        else {
-            throw new ModelException('Not valid criteria');
+        if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Db_Criteria ) ) {
+            $criteria = new Data_Criteria( $this->getTable(), $crit );
+        } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
+            $criteria = new Data_Criteria( $this->getTable(),
+                array(
+                    'cond'  => $crit,
+                    'params'=> $params,
+                    'order' => $order,
+                    'limit' => $limit,
+                )
+            );
+        } elseif( is_object( $crit ) && $crit instanceof Data_Criteria ) {
+            $criteria = $crit;
+        } else {
+            throw new ModelException( 'Not valid criteria' );
         }
 
-
-        $raw    = $this->db->fetchAll($criteria->getSQL());
+        $raw = $this->db->fetchAll( $criteria->getSQL() );
 
         $collection = array();
 
-//        $start  = microtime(1);
-        if ( $raw ) {
+        //        $start  = microtime(1);
+        if( $raw ) {
 
             $collection = new Data_Collection( $raw, $this );
-//            foreach ( $raw as $key => $data ) {
-//                $collection[$key]   = $this->createObject( &$data );
-////                $collection[$key]   = $data;
-//            }
+            //            foreach ( $raw as $key => $data ) {
+            //                $collection[$key]   = $this->createObject( &$data );
+            ////                $collection[$key]   = $data;
+            //            }
         }
-//        print __METHOD__.round( microtime(1) - $start, 3 );
+        //        print __METHOD__.round( microtime(1) - $start, 3 );
 
-        if ( count( $raw ) && count( $with ) ) {
-            $relation   = $this->relation();
+        if( count( $raw ) && count( $with ) ) {
+            $relation = $this->relation();
 
-            $keys   = array_keys( $collection );
-            foreach ( $with as $rel ) {
+            $keys = array_keys( $collection );
+            foreach( $with as $rel ) {
 
-                $model  = self::getModel( $relation[ $rel ][1] );
-                $key    = $relation[ $rel ][2];
+                $model = self::getModel( $relation[ $rel ][ 1 ] );
+                $key   = $relation[ $rel ][ 2 ];
 
-                switch ( $relation[$rel][0] ) {
+                switch ( $relation[ $rel ][ 0 ] ) {
                     case self::HAS_ONE:
 
-                        $objects    = $model->findAll(array(
+                        $objects = $model->findAll( array(
                             'cond'      => " $key IN ( ? ) ",
-                            'params'    => array( implode(",", $keys) ),
-                        ));
+                            'params'    => array( implode( ",", $keys ) ),
+                        ) );
 
                         break;
                 }
@@ -473,26 +484,26 @@ abstract class Model
      */
     final public function findByRelation( $rel, $data )
     {
-        if ( is_object( $data ) && $data instanceof Data_Object ) {
-            $obj    = $data;
+        if( is_object( $data ) && $data instanceof Data_Object ) {
+            $obj = $data;
         }
 
-        $relation   = $this->relation();
+        $relation = $this->relation();
 
-        $key        = $relation[ $rel ][2];
+        $key = $relation[ $rel ][ 2 ];
 
-        $model  = self::getModel( $relation[ $rel ][1] );
+        $model = self::getModel( $relation[ $rel ][ 1 ] );
 
-        if (    $relation[ $rel ][0] == self::HAS_ONE ||
-                $relation[ $rel ][0] == self::HAS_MANY
+        if( $relation[ $rel ][ 0 ] == self::HAS_ONE
+            || $relation[ $rel ][ 0 ] == self::HAS_MANY
         ) {
             $criteria = array(
                 'cond'  => " {$key} IN (:key) ",
-                'params'=> array(":key"=>$obj->getId()),
+                'params'=> array( ":key"=> $obj->getId() ),
             );
         }
 
-        switch ( $relation[$rel][0] )
+        switch ( $relation[ $rel ][ 0 ] )
         {
             case self::HAS_ONE:
                 return $model->find( $criteria );
@@ -501,7 +512,7 @@ abstract class Model
                 return $model->findAll( $criteria );
 
             case self::BELONGS:
-                if ( $obj->$key ) {
+                if( $obj->$key ) {
                     return $model->find( $obj->$key );
                 }
                 return null;
@@ -510,7 +521,7 @@ abstract class Model
                 return null;
 
             case self::STAT:
-                return $model->count( $criteria['cond'], $criteria['params'] );
+                return $model->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
         }
     }
 
@@ -521,36 +532,36 @@ abstract class Model
      */
     public function save( Data_Object $obj )
     {
-        if ( ! $this->onSaveStart( $obj ) ) {
+        if( ! $this->onSaveStart( $obj ) ) {
             return false;
         }
-        $data   = $obj->getAttributes();
+        $data = $obj->getAttributes();
 
         $fields = $this->table->getFields();
 
-        $save_data  = array();
+        $save_data = array();
 
         /**
          * @var Data_Field $field
          */
-        foreach ( $fields as $field ) {
-            if ( isset( $data[ $field->getName() ] ) ) {
+        foreach( $fields as $field ) {
+            if( isset( $data[ $field->getName() ] ) ) {
                 $save_data[ $field->getName() ] = $data[ $field->getName() ];
             }
         }
 
-        $ret    = null;
-        if ( null !== $obj->getId() ) {
-            $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = '.$obj->getId() );
+        $ret = null;
+        if( null !== $obj->getId() ) {
+            $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = ' . $obj->getId() );
             $obj->markClean();
         }
         else {
-            $ret = $this->db->insert( $this->getTableName(), $save_data );
-            $obj->id  = $ret;
+            $ret     = $this->db->insert( $this->getTableName(), $save_data );
+            $obj->id = $ret;
             $this->addToMap( $obj );
         }
-//        var_dump($ret);
-        if ( null !== $ret ) {
+        //        var_dump($ret);
+        if( null !== $ret ) {
             $this->onSaveSuccess( $obj );
         }
         return $ret;
@@ -581,14 +592,14 @@ abstract class Model
      */
     final public function delete( $id )
     {
-        if ( $this->onDeleteStart( $id ) === false ) {
+        if( $this->onDeleteStart( $id ) === false ) {
             return false;
         }
 
-        $obj    = $this->find( $id );
-        if ( $obj ) {
+        $obj = $this->find( $id );
+        if( $obj ) {
             Data_Watcher::del( $obj );
-            if ( $this->getDB()->delete($this->getTableName(), 'id = :id', array(':id'=>$obj->getId())) ) {
+            if( $this->getDB()->delete( $this->getTableName(), 'id = :id', array( ':id'=> $obj->getId() ) ) ) {
                 $this->onDeleteSuccess( $id );
                 return true;
             }
@@ -624,18 +635,19 @@ abstract class Model
      */
     final public function count( $cond = '', $params = array() )
     {
-        $criteria   = new Data_Criteria($this->getTable(), array(
+        $criteria = new Data_Criteria( $this->getTable(), array(
             'select'    => 'COUNT(*)',
             'cond'      => $cond,
             'params'    => $params,
-        ));
+        ) );
 
-        $sql    = $criteria->getSQL();
+        $sql = $criteria->getSQL();
 
-        $count  = $this->db->fetchOne( $sql );
-        
-        if ( $count )
+        $count = $this->db->fetchOne( $sql );
+
+        if( $count ) {
             return $count;
+        }
 
         return 0;
     }
@@ -646,7 +658,7 @@ abstract class Model
      */
     public function transaction()
     {
-        $pdo    = $this->db->getResource();
+        $pdo = $this->db->getResource();
         $pdo->beginTransaction();
     }
 
@@ -656,7 +668,7 @@ abstract class Model
      */
     public function commit()
     {
-        $pdo    = $this->db->getResource();
+        $pdo = $this->db->getResource();
         $pdo->commit();
     }
 
@@ -666,7 +678,7 @@ abstract class Model
      */
     public function rollBack()
     {
-        $pdo    = $this->db->getResource();
+        $pdo = $this->db->getResource();
         $pdo->rollBack();
     }
 

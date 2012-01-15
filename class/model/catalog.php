@@ -51,11 +51,9 @@ class Model_Catalog extends Model
     function findAllFiltered( $filter )
     {
         return $this->findAll(
-            array(
-                'cond'      => "deleted = 0 AND articul LIKE :filter",
-                'params'    => array( ':filter'=> '%' . $filter . '%' ),
-                'order'     => 'cat DECS, pos DESC'
-            ), true
+            "deleted = 0 AND articul LIKE :filter",
+            array( ':filter'=> '%' . $filter . '%' ),
+            'cat DECS, pos DESC'
         );
     }
 
@@ -70,12 +68,12 @@ class Model_Catalog extends Model
     {
         $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(child.id) child_count "
-                . "FROM {$this->getTable()} cat "
-                . "   LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0 "
-                . "WHERE cat.parent = :parent AND cat.deleted = 0 "
-                . "GROUP BY cat.id "
-                . "ORDER BY  cat.cat DESC, cat.pos DESC "
-                . $limit,
+            . "FROM {$this->getTable()} cat "
+            . "   LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0 "
+            . "WHERE cat.parent = :parent AND cat.deleted = 0 "
+            . "GROUP BY cat.id "
+            . "ORDER BY  cat.cat DESC, cat.pos DESC "
+            . $limit,
             true, db::F_ASSOC, array( ':parent'=> $parent )
         );
         return $list;
@@ -96,9 +94,9 @@ class Model_Catalog extends Model
         $order_list = $this->config->get( 'catalog.order_list' );
 
 
-        if ($order_list && is_array( $order_list )) {
+        if( $order_list && is_array( $order_list ) ) {
             $set = $this->request->get( 'order' );
-            if ($set && $this->config->get( 'catalog.order_list.' . $set )) {
+            if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
             }
             else {
@@ -113,16 +111,16 @@ class Model_Catalog extends Model
 
         $list = $this->db->fetchAll(
             "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-                . "FROM {$this->getTable()} cat "
-                . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-                . " AND cg.hidden = 0 "
-                . " AND cg.main = 1 "
-                . "WHERE cat.parent = '$parent' "
-                . "    AND cat.cat = 0 "
-                . "    AND cat.deleted = 0 "
-                . "    AND cat.hidden = 0 "
-                . ( $order ? " ORDER BY {$order}" : "" )
-                . "{$limit}"
+            . "FROM {$this->getTable()} cat "
+            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+            . " AND cg.hidden = 0 "
+            . " AND cg.main = 1 "
+            . "WHERE cat.parent = '$parent' "
+            . "    AND cat.cat = 0 "
+            . "    AND cat.deleted = 0 "
+            . "    AND cat.hidden = 0 "
+            . ( $order ? " ORDER BY {$order}" : "" )
+            . "{$limit}"
         );
         return $list;
     }
@@ -138,17 +136,17 @@ class Model_Catalog extends Model
     {
         $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(sub.id) sub_count "
-                . "FROM {$this->getTable()} cat  "
-                . "    LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id "
-                . "       AND sub.cat = 0 "
-                . "       AND sub.deleted = 0 "
-                . "       AND sub.hidden = 0 "
-                . "WHERE cat.parent = '$parent' "
-                . "   AND cat.cat = 1 "
-                . "   AND cat.deleted = 0 "
-                . "   AND cat.hidden = 0 "
-                . "GROUP BY cat.id "
-                . "{$limit}"
+            . "FROM {$this->getTable()} cat  "
+            . "    LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id "
+            . "       AND sub.cat = 0 "
+            . "       AND sub.deleted = 0 "
+            . "       AND sub.hidden = 0 "
+            . "WHERE cat.parent = '$parent' "
+            . "   AND cat.cat = 1 "
+            . "   AND cat.deleted = 0 "
+            . "   AND cat.hidden = 0 "
+            . "GROUP BY cat.id "
+            . "{$limit}"
         );
         return $list;
     }
@@ -163,7 +161,7 @@ class Model_Catalog extends Model
      */
     function findGoodsById( $id_list )
     {
-        if (!is_array( $id_list )) {
+        if( ! is_array( $id_list ) ) {
             throw new Exception( 'Аргумент должен быть массивом' );
         }
 
@@ -171,11 +169,11 @@ class Model_Catalog extends Model
 
         $list = $this->db->fetchAll(
             "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-                . "FROM {$this->getTable()} cat "
-                . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-                . "                            AND cg.hidden = 0 "
-                . "                            AND cg.main = 1 "
-                . "WHERE cat.id IN (" . join( ',', $id_list ) . ")",
+            . "FROM {$this->getTable()} cat "
+            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+            . "                            AND cg.hidden = 0 "
+            . "                            AND cg.main = 1 "
+            . "WHERE cat.id IN (" . join( ',', $id_list ) . ")",
             true
         );
         return $list;
@@ -196,7 +194,7 @@ class Model_Catalog extends Model
     {
         $count = $this->count(
             'parent = :parent AND deleted = 0 AND hidden = 0 ' .
-                ( $type != -1 ? ' AND cat = :type' : '' ),
+            ( $type != - 1 ? ' AND cat = :type' : '' ),
             array(
                 ':parent'=> $parent,
                 ':type'  => $type
@@ -216,14 +214,15 @@ class Model_Catalog extends Model
         $obj_id = $obj->getId();
 
         $path = null;
-        if ($obj_id) {
-            if ($obj->get( 'path' )) {
+        if( $obj_id ) {
+            if( $obj->get( 'path' ) ) {
                 $path = unserialize( $obj->get( 'path' ) );
             }
             //printVar( $path );
             //printVar( $obj->getAttributes() );
 
-            if (!$obj->get( 'path' ) || ( $path && is_array( $path ) && $path[ 0 ][ 'name' ] != $obj->get( 'name' ) )) {
+            if( ! $obj->get( 'path' ) || ( $path && is_array( $path ) && $path[ 0 ][ 'name' ] != $obj->get( 'name' ) )
+            ) {
                 $obj->set( 'path', $this->findPathSerialize( $obj->getId() ) );
             }
         }
@@ -234,7 +233,7 @@ class Model_Catalog extends Model
         $ret = $this->save( $obj );
 
         // Если мы не знали своего ID (новый), то надо пересоздать путь и сохранить снова
-        if (!$obj_id) {
+        if( ! $obj_id ) {
             $this->update( $obj );
         }
         return $ret;
@@ -250,9 +249,9 @@ class Model_Catalog extends Model
     function findPathSerialize( $id )
     {
         $path = array();
-        while ( $id ) {
+        while( $id ) {
             $obj = $this->find( $id );
-            if ($obj) {
+            if( $obj ) {
 
                 $path[ ] = array(
                     'id'  => $obj[ 'id' ],
@@ -290,7 +289,7 @@ class Model_Catalog extends Model
     function remove( $id )
     {
         $obj = $this->find( $id );
-        if ($obj) {
+        if( $obj ) {
             $obj->set( 'deleted', 1 );
             $this->save( $obj );
         }
@@ -305,7 +304,7 @@ class Model_Catalog extends Model
     function unremove( $id )
     {
         $obj = $this->find( $id );
-        if ($obj) {
+        if( $obj ) {
             $obj->set( 'deleted', 0 );
         }
     }
@@ -316,18 +315,13 @@ class Model_Catalog extends Model
      */
     function createTree()
     {
-        if (null === $this->parents) {
+        if( null === $this->parents ) {
             $this->parents = array();
-            if (count( $this->all ) == 0) {
-                $this->all = $this->findAll(
-                    array(
-                        'cond' => 'cat = 1',
-                        'order'=> 'pos DESC'
-                    )
-                );
+            if( count( $this->all ) == 0 ) {
+                $this->all = $this->findAll( 'cat = 1', array(), 'pos DESC' );
             }
             // создаем массив, индексируемый по родителям
-            foreach ( $this->all as $obj ) {
+            foreach( $this->all as $obj ) {
                 $this->parents[ $obj[ 'parent' ] ][ $obj[ 'id' ] ] = $obj;
             }
         }
@@ -343,18 +337,18 @@ class Model_Catalog extends Model
      */
     private function createActivePath( $cur_id )
     {
-        if (!$cur_id) {
+        if( ! $cur_id ) {
             return array();
         }
         $current = $this->find( $cur_id );
 
-        if (0 == $current->get( 'cat' )) {
+        if( 0 == $current->get( 'cat' ) ) {
             $cur_id = $current->get( 'parent' );
         }
 
         $result = array();
 
-        if (count( $this->parents ) == 0) {
+        if( count( $this->parents ) == 0 ) {
             $this->createTree();
         }
 
@@ -362,13 +356,13 @@ class Model_Catalog extends Model
 
         //        $cur_id = $this->getActiveCategory();
 
-        foreach ( $this->all as $key => $obj ) {
+        foreach( $this->all as $key => $obj ) {
 
             //            print "key:{$key}; cur_id:{$cur_id}; obj_id:{$obj->id}; parent:{$obj->parent}<br>";
             // Добавляем для раздела
-            if ($cur_id == $obj->id && 0 != $obj->parent) {
+            if( $cur_id == $obj->id && 0 != $obj->parent ) {
                 $active_path = $this->createActivePath( $obj->parent );
-                if ($active_path) {
+                if( $active_path ) {
                     $result = array_merge( $result, $active_path );
                 }
             }
@@ -388,10 +382,10 @@ class Model_Catalog extends Model
         $cat        = $this->request->get( 'cat' );
         $controller = $this->request->get( 'controller' );
 
-        if (null !== $cat) {
+        if( null !== $cat ) {
             $result = $cat;
         }
-        elseif ('catalog' == $controller && null !== $id) {
+        elseif( null !== strpos( $controller, 'catalog' ) && null !== $id ) {
             $result = $id;
         }
         return $result;
@@ -412,22 +406,22 @@ class Model_Catalog extends Model
         $path = $this->createActivePath( $cur_id );
         //        printVar($path);
 
-        if (count( $this->parents ) == 0) {
+        if( count( $this->parents ) == 0 ) {
             $this->createTree();
         }
 
         //        printVar($levelback);
-        if ($levelback <= 0) {
+        if( $levelback <= 0 ) {
             return '';
         }
 
-        if (!isset( $this->parents[ $parent ] )) {
+        if( ! isset( $this->parents[ $parent ] ) ) {
             return '';
         }
 
         $build_list = array();
-        foreach ( $this->parents[ $parent ] as $branch ) {
-            if ($branch[ 'hidden' ]) {
+        foreach( $this->parents[ $parent ] as $branch ) {
+            if( $branch[ 'hidden' ] ) {
                 continue;
             }
             $build_list[ ] = $branch;
@@ -436,29 +430,29 @@ class Model_Catalog extends Model
         $start   = microtime( 1 );
         $html    = array( '<ul>' );
         $counter = 1;
-        foreach ( $build_list as $branch )
+        foreach( $build_list as $branch )
         {
             $active = in_array( $branch[ 'id' ], $path ) || $branch[ 'id' ] == $cur_id
                 ? ' active'
                 : '';
 
             $last  = count( $build_list ) == $counter ? ' last' : '';
-            $first = 1 == $counter++ ? ' first' : '';
+            $first = 1 == $counter ++ ? ' first' : '';
 
             $html[ ] = "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
-                . ( $branch[ 'icon' ]
+                       . ( $branch[ 'icon' ]
                     ? "style='background:url(/" . $branch[ 'icon' ] . ") no-repeat 6px 4px;'"
                     : "" ) . ">";
 
             $html[ ] = "<a href='" . $this->app()->getRouter()->createLink(
                 $url, array( 'id'=> $branch[ 'id' ] )
             ) . "'"
-                . ( $active
+                       . ( $active
                     ? " class='active'"
                     : '' )
-                . ">{$branch['name']}</a>";
+                       . ">{$branch['name']}</a>";
 
-            if ($active) {
+            if( $active ) {
                 $html[ ] = $this->getMenu( $url, $branch[ 'id' ], $levelback - 1 );
             }
             $html[ ] = '</li>';
@@ -478,35 +472,35 @@ class Model_Catalog extends Model
     function getSelectTree( $parent, $levelback )
     {
         static $maxlevelback;
-        if ($maxlevelback < $levelback) {
+        if( $maxlevelback < $levelback ) {
             $maxlevelback = $levelback;
         }
 
         $list = array();
 
-        if (count( $this->parents ) == 0) {
+        if( count( $this->parents ) == 0 ) {
             $this->createTree();
         }
 
-        if ($levelback <= 0) {
+        if( $levelback <= 0 ) {
             return false;
         }
 
-        if (!isset( $this->parents[ $parent ] )) {
+        if( ! isset( $this->parents[ $parent ] ) ) {
             return false;
         }
 
-        foreach ( $this->parents[ $parent ] as $branch ) {
+        foreach( $this->parents[ $parent ] as $branch ) {
 
-            if (0 == $branch[ 'cat' ] || $branch[ 'deleted' ]) {
+            if( 0 == $branch[ 'cat' ] || $branch[ 'deleted' ] ) {
                 continue;
             }
 
             $list[ $branch[ 'id' ] ] = str_repeat( '&nbsp;', 8 * ( $maxlevelback - $levelback ) ) . $branch[ 'name' ];
             $sublist                 = $this->getSelectTree( $branch[ 'id' ], $levelback - 1 );
-            if ($sublist) {
-                foreach ( $sublist as $i => $item ) {
-                    if (0 == $item->deleted) {
+            if( $sublist ) {
+                foreach( $sublist as $i => $item ) {
+                    if( 0 == $item->deleted ) {
                         $list[ $i ] = $item;
                     }
                 }
@@ -523,9 +517,9 @@ class Model_Catalog extends Model
     function resort()
     {
         $sort = $this->request->get( 'sort' );
-        if ($sort && is_array( $sort )) {
+        if( $sort && is_array( $sort ) ) {
             $data = array();
-            foreach ( $sort as $pos => $item_id ) {
+            foreach( $sort as $pos => $item_id ) {
                 $data[ ] = array(
                     'id' => $item_id,
                     'pos'=> $pos
@@ -549,9 +543,9 @@ class Model_Catalog extends Model
         $target = $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT );
         // TODO Не происходит пересчета порядка позиций
 
-        if ($target !== "" && is_numeric( $target ) && $list && is_array( $list )) {
+        if( $target !== "" && is_numeric( $target ) && $list && is_array( $list ) ) {
             //printVar($list);
-            foreach ( $list as $item_id ) {
+            foreach( $list as $item_id ) {
                 $item         = $this->find( $item_id );
                 $item->parent = $target;
                 $item->path   = '';
@@ -569,8 +563,8 @@ class Model_Catalog extends Model
     {
         $parents     = array( 'Корневой раздел' );
         $select_tree = $this->getSelectTree( 0, 10 );
-        if ($select_tree) {
-            foreach ( $select_tree as $i => $item ) {
+        if( $select_tree ) {
+            foreach( $select_tree as $i => $item ) {
                 $parents[ $i ] = $item;
             }
         }
@@ -582,7 +576,7 @@ class Model_Catalog extends Model
      */
     function getForm()
     {
-        if (is_null( $this->form )) {
+        if( is_null( $this->form ) ) {
             $this->form = new Forms_Catalog_Edit();
         }
         return $this->form;
