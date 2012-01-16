@@ -59,7 +59,7 @@ class App extends Application_Abstract
     {
         // Language
         $this->getConfig()->setDefault( 'language', 'ru' );
-        translate::getInstance()->setLanguage(
+        \sfcms\i18n::getInstance()->setLanguage(
             $this->getConfig()->get( 'language' )
         );
 
@@ -81,15 +81,10 @@ class App extends Application_Abstract
         }
 
 
-        if (defined( 'TEST' )) {
-            require_once 'functionsTest.php';
-        }
-        else {
-            require_once 'functions.php';
-            //            $firephp = FirePHP::getInstance(true);
-            //            $firephp->registerErrorHandler();
-            //            $firephp->registerExceptionHandler();
-        }
+        require_once 'functions.php';
+//            $firephp = FirePHP::getInstance(true);
+//            $firephp->registerErrorHandler();
+//            $firephp->registerExceptionHandler();
 
         if (!defined( 'MAX_FILE_SIZE' )) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );

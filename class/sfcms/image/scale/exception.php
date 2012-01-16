@@ -4,7 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Image_Scale_Exception extends Image_Exception {
+
+namespace sfcms\Image\Scale;
+
+class Exception extends \sfcms\Image\Scale\Exception
+{
 
 }

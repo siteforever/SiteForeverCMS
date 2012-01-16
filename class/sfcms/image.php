@@ -4,6 +4,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
+namespace sfcms;
 
 class Image
 {
@@ -33,7 +34,7 @@ class Image
         $scale  = $this->getScale( $method );
         $thumb  = $scale->getScalingImage( $width, $height, $color );
         if ( $thumb ) {
-            return new self( $thumb );
+            return new Image( $thumb );
         }
     }
 
@@ -41,11 +42,11 @@ class Image
     {
         switch ( $method ) {
             case '1':
-                $scale = new Image_Scale(Image_Scale::METHOD_ADD, $this->img);
+                $scale = new Image\Scale(Image\Scale::METHOD_ADD, $this->img);
                 break;
             case '2':
             default:
-                $scale = new Image_Scale(Image_Scale::METHOD_CROP, $this->img);
+                $scale = new Image\Scale(Image\Scale::METHOD_CROP, $this->img);
         }
         return $scale;
     }
@@ -58,7 +59,7 @@ class Image
      */
     static protected function loadFromFile( $filename )
     {
-        return Image_Loader::load( $filename );
+        return Image\Loader::load( $filename );
     }
 
     /**
@@ -68,7 +69,7 @@ class Image
      */
     function saveToFile( $filename )
     {
-        Image_Loader::save( $this->img, $filename );
+        Image\Loader::save( $this->img, $filename );
     }
 
 }

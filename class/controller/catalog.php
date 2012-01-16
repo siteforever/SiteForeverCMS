@@ -881,7 +881,9 @@ class Controller_Catalog extends Controller
         $content     = 'ничего не удалено';
         if( is_array( $delete_list ) && count( $delete_list ) ) {
             $search = join( ',', $delete_list );
-            if( App::$db->update( DBCATALOG, array( 'deleted'=> 1 ), "id IN ({$search})", '' ) ) {
+            if( App::$db->update( $this->getModel('Catalog')->getTableName(),
+                    array( 'deleted'=> 1 ), "id IN ({$search})", '' )
+            ) {
                 $content = $search;
             }
         }

@@ -56,7 +56,7 @@ class Model_Alias extends Model
     public function generateAlias( $string )
     {
         $string = mb_strtolower( trim( $string ) );
-        $string = translit( $string );
+        $string = \sfcms\i18n::getInstance()->translit( $string );
         $string = preg_replace( '@[^a-z0-9]+@', '_', $string );
         $string = trim( $string, '_' );
         return $string;

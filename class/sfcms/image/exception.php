@@ -4,8 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Image_Exception extends Exception
+
+namespace sfcms\Image;
+
+class Exception extends \Exception
 {
 
 }

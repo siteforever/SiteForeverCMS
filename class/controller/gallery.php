@@ -496,10 +496,10 @@ class Controller_Gallery extends Controller
                         }
                         $model->save( $image );
                         $g_id = $image->getId();
-                        $img = $dest.DIRECTORY_SEPARATOR.$g_id.'_'.$images['name'][$i];
-                        $tmb = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$thumb_prefix.$images['name'][$i];
-                        $mdl = $dest.DIRECTORY_SEPARATOR.'_'.$g_id.'_'.$middle_prefix.$images['name'][$i];
-                        $image->image   = str_replace( DIRECTORY_SEPARATOR, '/', $img );
+                        $img  = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
+                        $tmb  = $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $thumb_prefix . $images[ 'name' ][ $i ];
+                        $mdl  = $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $middle_prefix . $images[ 'name' ][ $i ];
+                        $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
                         if ( move_uploaded_file( $src, ROOT.$img ) )
                         {
                             // обработка
@@ -510,7 +510,7 @@ class Controller_Gallery extends Controller
                             $t_method   = $cat->thumb_method;
                             $m_method   = $cat->middle_method;
                             try {
-                                $img_full   = new Image(ROOT.$img);
+                                $img_full   = new \sfcms\Image(ROOT.$img);
                                 $img_mid    = $img_full->createThumb($middle_w, $middle_h, $m_method, $cat->color);
                                 if ( $img_mid ) {
                                     $img_mid->saveToFile( ROOT.$mdl );

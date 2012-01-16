@@ -4,13 +4,13 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Image_Scale
+namespace sfcms\Image;
+class Scale
 {
     /**
      * @var Image_Scale_Abstract
      */
-    private $scaller;
+    private $_scaller;
 
     const   METHOD_CROP = 'crop';
     const   METHOD_ADD  = 'add';
@@ -24,10 +24,10 @@ class Image_Scale
     {
         switch ( $method ) {
             case self::METHOD_CROP:
-                $this->scaller  = new Image_Scale_Crop( $image );
+                $this->_scaller  = new Scale\Crop( $image );
                 break;
             case self::METHOD_ADD:
-                $this->scaller  = new Image_Scale_Add( $image );
+                $this->_scaller  = new Scale\Add( $image );
                 break;
             default:
                 throw new Image_Scale_Exception('Undefined scalling method');
@@ -43,6 +43,6 @@ class Image_Scale
      */
     function getScalingImage( $width, $height, $color = '-1' )
     {
-        return $this->scaller->getScalingImage( $width, $height, $color );
+        return $this->_scaller->getScalingImage( $width, $height, $color );
     }
 }

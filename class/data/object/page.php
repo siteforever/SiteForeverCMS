@@ -19,7 +19,7 @@ class Data_Object_Page extends Data_Object
         if ( $this->data['alias'] ) {
             $result = $this->data['alias'];
         } else {
-            $result = translit($this->data['name']);
+            $result = \sfcms\i18n::getInstance()->translit($this->data['name']);
             $this->data['alias']    = $result;
         }
 

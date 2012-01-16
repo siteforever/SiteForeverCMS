@@ -8,6 +8,6 @@
 function smarty_block_t( $params, $content, $smarty )
 {
     if ( $content ) {
-        return translate::getInstance()->write( $content );
+        return \sfcms\i18n::getInstance()->write( $content );
     }
 }

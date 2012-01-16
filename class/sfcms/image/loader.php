@@ -4,8 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Image_Loader {
+namespace sfcms\Image;
+
+class Loader
+{
 
     /**
      * Загрузит изображение
@@ -30,12 +32,12 @@ class Image_Loader {
                     $image  = imagecreatefrompng( $filename );
                     break;
                 default:
-                    throw new Image_Exception('Undefined type');
+                    throw new Exception('Undefined type');
             }
 
             return $image;
         }
-        throw new Image_Exception('Image file not found');
+        throw new Exception('Image file not found');
     }
 
     /**

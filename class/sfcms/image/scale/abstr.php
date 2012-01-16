@@ -1,11 +1,14 @@
 <?php
 /**
- *
+ * Интерфейс масштабера
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
 
-abstract class Image_Scale_Abstract {
+namespace sfcms\Image\Scale;
+
+abstract class Abstr
+{
 
     protected $image;
     protected $width;

@@ -293,14 +293,13 @@ class Controller_CatGallery extends Controller
             $mid_file = SF_PATH . $img[ 'middle' ];
             $tmb_file = SF_PATH . $img[ 'thumb' ];
 
-            if (file_exists( SF_PATH . $img[ 'image' ] )) {
-                if ($img[ 'middle' ] && file_exists( SF_PATH . $img[ 'middle' ] )) {
-                    createThumb( $img_file, $mid_file, $middle_w, $middle_h, $m_method );
-                }
-                if ($img[ 'thumb' ] && file_exists( SF_PATH . $img[ 'thumb' ] )) {
-                    createThumb( $img_file, $tmb_file, $thumb_w, $thumb_h, $t_method );
-                }
-            }
+            $image = new \sfcms\Image( $img_file );
+
+            $middle = $image->createThumb( $middle_w, $middle_h, $m_method );
+            $middle->saveToFile( $mid_file );
+
+            $thumb  = $image->createThumb( $thumb_w, $thumb_h, $t_method );
+            $thumb->saveToFile( $tmb_file );
         }
 
         $this->request->addFeedback( 'Регенерация изображений закончена' );

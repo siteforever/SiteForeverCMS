@@ -4,17 +4,18 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Image_Scale_Add extends Image_Scale_Abstract
-{
 
+namespace sfcms\Image\Scale;
+
+class Add extends Abstr
+{
     /**
      * Создаст отмасштабированное изображение
-     * @param resource $image
-     * @param int $width
-     * @param int $height
-     * @param string $color
-     * @return resource
+     * @param $width
+     * @param $height
+     * @param $color
+     * @return \resource
+     * @throws Exception
      */
     function getScalingImage($width, $height, $color)
     {
@@ -24,11 +25,11 @@ class Image_Scale_Add extends Image_Scale_Abstract
 
         $this->k = max( array( $kw, $kh ) );
 
+        $from_x = 0;
+        $from_y = 0;
         if ( $this->scalledHeight() == $height ) {
-            $from_y = 0;
             $from_x = round( abs( $this->scalledWidth() - $width ) / 2 );
         } elseif ( $this->scalledWidth() == $width ) {
-            $from_x = 0;
             $from_y = round( abs( $this->scalledHeight() - $height ) / 2 );
         }
 
@@ -48,6 +49,6 @@ class Image_Scale_Add extends Image_Scale_Abstract
                 return $thumb;
             }
         }
-        throw new Image_Scale_Exception('Image not scalled');
+        throw new Exception('Image not scalled');
     }
 }
