@@ -328,8 +328,11 @@ class App extends Application_Abstract
             throw new Exception( 'Autoload Register class' );
         }
 
+
         // PEAR format autoload
-        $file = str_replace( '_', DIRECTORY_SEPARATOR, $class_name ) . '.php';
+        $class_name = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $class_name );
+        $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
+        $file       = $class_name . '.php';
 
         if (@include_once $file) {
             if (defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD) {
