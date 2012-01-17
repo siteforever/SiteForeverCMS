@@ -384,10 +384,11 @@ class Model_Catalog extends Model
 
         if( null !== $cat ) {
             $result = $cat;
-        }
-        elseif( null !== strpos( $controller, 'catalog' ) && null !== $id ) {
+        } elseif( strpos( $controller, 'catalog' ) && null !== $id ) {
             $result = $id;
         }
+
+//        var_dump($result);
         return $result;
     }
 
@@ -428,6 +429,7 @@ class Model_Catalog extends Model
         }
 
         $start   = microtime( 1 );
+
         $html    = array( '<ul>' );
         $counter = 1;
         foreach( $build_list as $branch )
