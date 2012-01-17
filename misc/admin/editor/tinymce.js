@@ -18,7 +18,7 @@ var wysiwyg = {
             "plugins" :         "paste",
             "paste_auto_cleanup_on_paste" : true,
             "theme_advanced_buttons2_add_before" : "pastetext,pasteword,|",
-
+            "extended_valid_elements" : "div[*],p[*]",
             // Theme options
             "theme_advanced_toolbar_location" : "top",
             "theme_advanced_toolbar_align" : "left",
