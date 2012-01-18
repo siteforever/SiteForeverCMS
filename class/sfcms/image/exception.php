@@ -5,9 +5,7 @@
  * @link http://ermin.ru
  */
 
-namespace sfcms\Image;
-
-class Exception extends \Exception
+class Sfcms_Image_Exception extends Exception
 {
 
 }

@@ -5,9 +5,7 @@
  * @link http://ermin.ru
  */
 
-namespace sfcms\Image\Scale;
-
-class Add extends Abstr
+class Sfcms_Image_Scale_Add extends Sfcms_Image_Scale_Abstr
 {
     /**
      * Создаст отмасштабированное изображение
@@ -17,7 +15,7 @@ class Add extends Abstr
      * @return \resource
      * @throws Exception
      */
-    function getScalingImage($width, $height, $color)
+    function getScalingImage( $width, $height, $color )
     {
         // 1. пропорции
         $kh = $this->height / $height;
@@ -27,28 +25,29 @@ class Add extends Abstr
 
         $from_x = 0;
         $from_y = 0;
-        if ( $this->scalledHeight() == $height ) {
+        if( $this->scalledHeight() == $height ) {
             $from_x = round( abs( $this->scalledWidth() - $width ) / 2 );
-        } elseif ( $this->scalledWidth() == $width ) {
+        } elseif( $this->scalledWidth() == $width ) {
             $from_y = round( abs( $this->scalledHeight() - $height ) / 2 );
         }
 
-        $thumb  = imagecreatetruecolor( $width, $height );
+        $thumb = imagecreatetruecolor( $width, $height );
 
-        $bgcolor    = $this->getColorFromHex( $thumb, $color );
-        if ( $bgcolor ) {
+        $bgcolor = $this->getColorFromHex( $thumb, $color );
+        if( $bgcolor ) {
             imagefill( $thumb, 0, 0, $bgcolor ); // заливаем
         }
 
-        if ($this->image && $thumb ) {
-            if ( imagecopyresampled ( $thumb, $this->image,
+        if( $this->image && $thumb ) {
+            if( imagecopyresampled( $thumb, $this->image,
                 $from_x, $from_y, 0, 0,
                 $this->scalledWidth(), $this->scalledHeight(),
                 $this->width, $this->height
-            ) ) {
+            )
+            ) {
                 return $thumb;
             }
         }
-        throw new Exception('Image not scalled');
+        throw new Exception( 'Image not scalled' );
     }
 }

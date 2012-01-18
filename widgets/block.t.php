@@ -4,10 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
+
 function smarty_block_t( $params, $content, $smarty )
 {
-    if ( $content ) {
-        return \sfcms\i18n::getInstance()->write( $content );
+    if( $content ) {
+        return Sfcms_i18n::getInstance()->write( $content );
     }
 }

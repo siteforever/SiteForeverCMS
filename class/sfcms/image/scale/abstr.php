@@ -5,9 +5,8 @@
  * @link http://ermin.ru
  */
 
-namespace sfcms\Image\Scale;
 
-abstract class Abstr
+abstract class Sfcms_Image_Scale_Abstr
 {
 
     protected $image;
@@ -22,9 +21,9 @@ abstract class Abstr
      */
     function __construct( $image )
     {
-        $this->image    = $image;
-        $this->width    = imagesx( $this->image );
-        $this->height   = imagesy( $this->image );
+        $this->image  = $image;
+        $this->width  = imagesx( $this->image );
+        $this->height = imagesy( $this->image );
     }
 
 
@@ -45,15 +44,15 @@ abstract class Abstr
      */
     protected function getColorFromHex( $image, $hex_color )
     {
-        if ( $hex_color == '-1' ) {
-            $bgcolor = imagecolorat($this->image, 0, 0);
-        } elseif ( strlen( $hex_color ) == 6 ) {
-            $hred   = hexdec( substr($hex_color, 0, 2) );
-            $hgr    = hexdec( substr($hex_color, 2, 2) );
-            $hblue  = hexdec( substr($hex_color, 4, 2) );
-            $bgcolor    = imagecolorallocate($image, $hred, $hgr, $hblue);
+        if( $hex_color == '-1' ) {
+            $bgcolor = imagecolorat( $this->image, 0, 0 );
+        } elseif( strlen( $hex_color ) == 6 ) {
+            $hred    = hexdec( substr( $hex_color, 0, 2 ) );
+            $hgr     = hexdec( substr( $hex_color, 2, 2 ) );
+            $hblue   = hexdec( substr( $hex_color, 4, 2 ) );
+            $bgcolor = imagecolorallocate( $image, $hred, $hgr, $hblue );
         } else {
-            $bgcolor    = null;
+            $bgcolor = null;
         }
         return $bgcolor;
     }
@@ -74,6 +73,6 @@ abstract class Abstr
     {
         return round( $this->width / $this->k );
     }
-    
+
 
 }

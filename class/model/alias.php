@@ -9,7 +9,7 @@ class Model_Alias extends Model
 {
     private $_aliases_cache = array();
 
-    private $_url_cache     = array();
+    private $_url_cache = array();
 
     /**
      * @param $path
@@ -17,16 +17,16 @@ class Model_Alias extends Model
      */
     public function findByAlias( $path )
     {
-        if ( isset( $this->_aliases_cache[$path] ) ) {
-            return $this->_aliases_cache[$path];
+        if( isset( $this->_aliases_cache[ $path ] ) ) {
+            return $this->_aliases_cache[ $path ];
         }
-        $result  = $this->find(
+        $result                        = $this->find(
             array(
                 'cond'      => ' `alias` = ? ',
                 'params'    => array( $path ),
             )
         );
-        $this->_aliases_cache[$path]    = $result;
+        $this->_aliases_cache[ $path ] = $result;
         return $result;
     }
 
@@ -36,16 +36,16 @@ class Model_Alias extends Model
      */
     public function findByUrl( $path )
     {
-        if ( isset( $this->_url_cache[$path] ) ) {
-            return $this->_url_cache[$path];
+        if( isset( $this->_url_cache[ $path ] ) ) {
+            return $this->_url_cache[ $path ];
         }
-        $result  = $this->find(
+        $result                    = $this->find(
             array(
                 'cond'      => ' `url` = ? ',
                 'params'    => array( $path ),
             )
         );
-        $this->_url_cache[$path]    = $result;
+        $this->_url_cache[ $path ] = $result;
         return $result;
     }
 
@@ -56,7 +56,7 @@ class Model_Alias extends Model
     public function generateAlias( $string )
     {
         $string = mb_strtolower( trim( $string ) );
-        $string = \sfcms\i18n::getInstance()->translit( $string );
+        $string = Sfcms_i18n::getInstance()->translit( $string );
         $string = preg_replace( '@[^a-z0-9]+@', '_', $string );
         $string = trim( $string, '_' );
         return $string;
@@ -69,7 +69,7 @@ class Model_Alias extends Model
      */
     public function generateAliasFromArray( $data, $separator = '/' )
     {
-        foreach ( $data as $k => $v ) {
+        foreach( $data as $k => $v ) {
             $data[ $k ] = $this->generateAlias( $v );
         }
 

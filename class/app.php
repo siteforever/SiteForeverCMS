@@ -28,14 +28,14 @@ class App extends Application_Abstract
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
-        if ($this->getConfig()->get( 'db.debug' )) {
+        if( $this->getConfig()->get( 'db.debug' ) ) {
             Model::getDB()->saveLog();
         }
 
-        if ($this->getConfig()->get( 'debug.profile' )) {
+        if( $this->getConfig()->get( 'debug.profile' ) ) {
             $this->logger->log(
                 "Total SQL: " . count( Model::getDB()->getLog() )
-                    . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
+                . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
             );
             $this->logger->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
             $this->logger->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
@@ -59,7 +59,7 @@ class App extends Application_Abstract
     {
         // Language
         $this->getConfig()->setDefault( 'language', 'ru' );
-        \sfcms\i18n::getInstance()->setLanguage(
+        Sfcms_i18n::getInstance()->setLanguage(
             $this->getConfig()->get( 'language' )
         );
 
@@ -71,8 +71,8 @@ class App extends Application_Abstract
         date_default_timezone_set( 'Europe/Moscow' );
 
         // DB prefix
-        if (!defined( 'DBPREFIX' )) {
-            if ($this->getConfig()->get( 'db.prefix' )) {
+        if( ! defined( 'DBPREFIX' ) ) {
+            if( $this->getConfig()->get( 'db.prefix' ) ) {
                 define( 'DBPREFIX', $this->getConfig()->get( 'db.prefix' ) );
             }
             else {
@@ -82,19 +82,19 @@ class App extends Application_Abstract
 
 
         require_once 'functions.php';
-//            $firephp = FirePHP::getInstance(true);
-//            $firephp->registerErrorHandler();
-//            $firephp->registerExceptionHandler();
+        //            $firephp = FirePHP::getInstance(true);
+        //            $firephp->registerErrorHandler();
+        //            $firephp->registerExceptionHandler();
 
-        if (!defined( 'MAX_FILE_SIZE' )) {
+        if( ! defined( 'MAX_FILE_SIZE' ) ) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
 
-        if (!is_dir( ROOT . DIRECTORY_SEPARATOR . 'images' )) {
+        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'images' ) ) {
             $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'images', ROOT . DIRECTORY_SEPARATOR . 'images' );
             print 'Created ' . ROOT . DIRECTORY_SEPARATOR . 'images<br>';
         }
-        if (!is_dir( ROOT . DIRECTORY_SEPARATOR . 'misc' )) {
+        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'misc' ) ) {
             $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'misc', ROOT . DIRECTORY_SEPARATOR . 'misc' );
             print 'Created ' . ROOT . DIRECTORY_SEPARATOR . 'misc<br>';
         }
@@ -109,15 +109,15 @@ class App extends Application_Abstract
      */
     private function copyDir( $from, $to )
     {
-        if (!is_dir( $to )) {
+        if( ! is_dir( $to ) ) {
             @mkdir( $to, 0755, 1 );
         }
         $files = glob( $from . DIRECTORY_SEPARATOR . '*' );
-        foreach ( $files as $file ) {
-            if (is_dir( $file )) {
+        foreach( $files as $file ) {
+            if( is_dir( $file ) ) {
                 $this->copyDir( $file, $to . DIRECTORY_SEPARATOR . basename( $file ) );
             }
-            elseif (is_file( $file )) {
+            elseif( is_file( $file ) ) {
                 @copy( $file, $to . DIRECTORY_SEPARATOR . basename( $file ) );
             }
         }
@@ -139,12 +139,12 @@ class App extends Application_Abstract
         $this->getRouter()->routing();
 
         // возможность использовать кэш
-        if ($this->getConfig()->get( 'caching' )
-            && !$this->getRequest()->getAjax()
-            && !self::$ajax
-            && !$this->getRouter()->isSystem()
+        if( $this->getConfig()->get( 'caching' )
+            && ! $this->getRequest()->getAjax()
+            && ! self::$ajax
+            && ! $this->getRouter()->isSystem()
         ) {
-            if ($this->getRequest()->get( 'controller' ) == 'page'
+            if( $this->getRequest()->get( 'controller' ) == 'page'
                 && $this->getAuth()->currentUser()->perm == USER_GUEST
                 && $this->getBasket()->count() == 0
             ) {
@@ -159,12 +159,12 @@ class App extends Application_Abstract
         try {
             $result = $controller_resolver->dispatch();
         }
-        catch ( ControllerException $e ) {
+        catch( ControllerException $e ) {
             $result = false;
             $this->getRequest()->setTemplate( 'inner' );
             $this->getRequest()->setContent( $e->getMessage() );
         }
-        catch ( Exception $e ) {
+        catch( Exception $e ) {
             $this->getRequest()->setTemplate( 'inner' );
             $this->getRequest()->setContent( $e->getMessage() );
         }
@@ -175,7 +175,7 @@ class App extends Application_Abstract
         Data_Watcher::instance()->performOperations();
 
         // Заголовок по-умолчанию
-        if ($this->getRequest()->getTitle() == '') {
+        if( $this->getRequest()->getTitle() == '' ) {
             $this->getRequest()->setTitle( $this->getRequest()->get( 'tpldata.page.name' ) );
         }
     }
@@ -199,14 +199,14 @@ class App extends Application_Abstract
         $this->getTpl()->exec     = number_format( microtime( true ) - self::$start_time, 3, ',', ' ' ) . ' sec.';
         $this->getTpl()->request  = $this->getRequest();
 
-        if (!$this->getRequest()->getAjax() && $_SERVER[ 'X-Requested-With' ] != 'XMLHttpRequest') {
+        if( ! $this->getRequest()->getAjax() && $_SERVER[ 'X-Requested-With' ] != 'XMLHttpRequest' ) {
             header( 'Content-type: text/html; charset=utf-8' );
 
             $theme_css = $this->getRequest()->get( 'path.css' );
             $theme_js  = $this->getRequest()->get( 'path.js' );
             $path_misc = $this->getRequest()->get( 'path.misc' );
 
-            if ($this->getRequest()->get( 'resource' ) == 'system:') {
+            if( $this->getRequest()->get( 'resource' ) == 'system:' ) {
                 // подключение админских стилей и скриптов
 
                 $this->getRequest()->addStyle( $path_misc . '/smoothness/jquery-ui.css' );
@@ -247,20 +247,20 @@ class App extends Application_Abstract
 
             }
             else {
-                if (file_exists( trim( $theme_css, '/' ) . '/style.css' )) {
+                if( file_exists( trim( $theme_css, '/' ) . '/style.css' ) ) {
                     $this->getRequest()->addStyle( $theme_css . '/style.css' );
                 }
-                if (file_exists( trim( $theme_css, '/' ) . '/print.css' )) {
+                if( file_exists( trim( $theme_css, '/' ) . '/print.css' ) ) {
                     $this->getRequest()->addStyle( $theme_css . '/print.css' );
                 }
-                if (file_exists( trim( $theme_js . '/script.js', '/' ) )) {
+                if( file_exists( trim( $theme_js . '/script.js', '/' ) ) ) {
                     $this->getRequest()->addScript( $theme_js . '/script.js' );
                 }
             }
 
             $layout = $this->getTpl()->fetch(
                 $this->getRequest()->get( 'resource' )
-                    . $this->getRequest()->get( 'template' )
+                . $this->getRequest()->get( 'template' )
             );
             //            ob_clean();
             $layout = preg_replace( '/[ \t]+/', ' ', $layout );
@@ -274,14 +274,14 @@ class App extends Application_Abstract
             header( 'Cache-Control: post-check=0, pre-check=0', false );
             header( 'Pragma: no-cache' );
 
-            if ($this->getRequest()->getAjaxType() == Request::TYPE_JSON) {
+            if( $this->getRequest()->getAjaxType() == Request::TYPE_JSON ) {
                 header( 'Content-type: text/json; charset=utf-8' );
-                if ($result) {
-                    if (is_object( $result ) || is_array( $result )) {
+                if( $result ) {
+                    if( is_object( $result ) || is_array( $result ) ) {
                         $result = json_encode( $result );
                     }
-                    elseif (is_string( $result )) {
-                        if (!@json_decode( $result )) {
+                    elseif( is_string( $result ) ) {
+                        if( ! @json_decode( $result ) ) {
                             throw new Application_Exception( 'Result is not valid and can not convert to json' );
                         }
                     }
@@ -291,15 +291,15 @@ class App extends Application_Abstract
                     print $this->getRequest()->getResponseAsJson();
                 }
             }
-            elseif ($this->getRequest()->getAjaxType() == Request::TYPE_XML) {
+            elseif( $this->getRequest()->getAjaxType() == Request::TYPE_XML ) {
                 header( 'Content-type: text/xml; charset=utf-8' );
                 print $this->getRequest()->getContent();
             }
             else {
-                if (count( $this->getRequest()->getFeedback() )) {
+                if( count( $this->getRequest()->getFeedback() ) ) {
                     print '<div class="feedback">' . $this->getRequest()->getFeedbackString() . '</div>';
                 }
-                if ($this->getRequest()->getContent()) {
+                if( $this->getRequest()->getContent() ) {
                     print $this->getRequest()->getContent();
                 }
             }
@@ -320,11 +320,11 @@ class App extends Application_Abstract
 
         $class_name = strtolower( $class_name );
 
-        if (in_array( $class_name, array( 'finfo' ) )) {
+        if( in_array( $class_name, array( 'finfo' ) ) ) {
             return false;
         }
 
-        if ($class_name == 'register') {
+        if( $class_name == 'register' ) {
             throw new Exception( 'Autoload Register class' );
         }
 
@@ -334,9 +334,9 @@ class App extends Application_Abstract
         $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
         $file       = $class_name . '.php';
 
-        if (@include_once $file) {
-            if (defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD) {
-                $class_count++;
+        if( @include_once $file ) {
+            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
+                $class_count ++;
                 print "{$class_count}. include {$file}\n";
             }
             return true;

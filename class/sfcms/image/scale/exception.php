@@ -5,9 +5,8 @@
  * @link http://ermin.ru
  */
 
-namespace sfcms\Image\Scale;
 
-class Exception extends \sfcms\Image\Scale\Exception
+class Sfcms_Image_Scale_Exception extends Sfcms_Image_Exception
 {
 
 }

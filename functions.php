@@ -8,11 +8,11 @@
  */
 function redirect( $url = '', $params = array() )
 {
-    if ( preg_match('@^http@', $url) ) {
-        header("Location: ".$url);
+    if( preg_match( '@^http@', $url ) ) {
+        header( "Location: " . $url );
     } else {
         Data_Watcher::instance()->performOperations();
-        header("Location: ".App::getInstance()->getRouter()->createLink( $url, $params ));
+        header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
     }
     die();
 }
@@ -26,8 +26,8 @@ function redirect( $url = '', $params = array() )
 function reload( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-    die('<script type="text/javascript">window.location.href = "'.
-        App::getInstance()->getRouter()->createLink( $url, $params ).'";</script>');
+    die( '<script type="text/javascript">window.location.href = "' .
+         App::getInstance()->getRouter()->createLink( $url, $params ) . '";</script>' );
 }
 
 /**
@@ -47,7 +47,7 @@ function printVar( $var )
  */
 function href( $url, $params = array() )
 {
-    return 'href="'.App::getInstance()->getRouter()->createLink( $url, $params ).'"';
+    return 'href="' . App::getInstance()->getRouter()->createLink( $url, $params ) . '"';
 }
 
 
@@ -57,7 +57,7 @@ function href( $url, $params = array() )
  * @param string $title
  * @return string
  */
-function icon( $name, $title='' )
+function icon( $name, $title = '' )
 {
     $title = $title ? $title : $name;
     return "<img title='{$title}' alt='{$title}' src='/images/admin/icons/{$name}.png' />";
@@ -70,7 +70,7 @@ function icon( $name, $title='' )
  */
 function ensure( $cond, $msg )
 {
-    if ( !$cond ) {
+    if( ! $cond ) {
         print $msg;
     }
 }
@@ -84,13 +84,13 @@ function ensure( $cond, $msg )
  */
 function sendmail( $from, $to, $subject, $message )
 {
-    $header="Content-type: text/plain; charset=\"UTF-8\"\n";
-    $header.="From: {$from}\n";
-    $header.="Subject: $subject\n";
-    $header.="X-Mailer: SiteForeverCMS\n";
-    $header.="Content-type: text/plain; charset=\"UTF-8\"\n";
+    $header = "Content-type: text/plain; charset=\"UTF-8\"\n";
+    $header .= "From: {$from}\n";
+    $header .= "Subject: $subject\n";
+    $header .= "X-Mailer: SiteForeverCMS\n";
+    $header .= "Content-type: text/plain; charset=\"UTF-8\"\n";
 
-    return mail($to, $subject, $message, $header);
+    return mail( $to, $subject, $message, $header );
 }
 
 /**
@@ -98,9 +98,9 @@ function sendmail( $from, $to, $subject, $message )
  * @param string $text
  * @return void
  */
-function t($text)
+function t( $text )
 {
-    return \sfcms\i18n::getInstance()->write($text);
+    return Sfcms_i18n::getInstance()->write( $text );
 }
 
 /**
@@ -119,19 +119,19 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
     * Создание миниатюр
     */
     // размеры исходного изображения
-    $isize = getimagesize ( $srcfile );
-    $iw = $isize [0];
-    $ih = $isize [1];
+    $isize = getimagesize( $srcfile );
+    $iw    = $isize [ 0 ];
+    $ih    = $isize [ 1 ];
 
-    switch( $isize[2] ) {
+    switch ( $isize[ 2 ] ) {
         case IMAGETYPE_GIF:
-            $im = imagecreatefromgif ( $srcfile );
+            $im = imagecreatefromgif( $srcfile );
             break;
         case IMAGETYPE_PNG:
-            $im = imagecreatefrompng ( $srcfile );
+            $im = imagecreatefrompng( $srcfile );
             break;
         case IMAGETYPE_JPEG:
-            $im = imageCreateFromJpeg ( $srcfile );
+            $im = imageCreateFromJpeg( $srcfile );
             break;
         default:
             return false;
@@ -142,9 +142,9 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
     $kw = $iw / $thumb_w;
 
     // 2. выбираем коэффициент
-    if ($method == 1) { // добавление полей
+    if( $method == 1 ) { // добавление полей
         $k = $kw < $kh ? $kh : $kw;
-    } elseif ($method == 2) { // обрезание лишнего
+    } elseif( $method == 2 ) { // обрезание лишнего
         $k = $kw > $kh ? $kh : $kw;
     }
     // вычисляем размеры миниатюры
@@ -156,50 +156,50 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
     // 3. вычисляем координаты
     $m = array( // матрица распределения значений
         1 => array( // method 1
-            'x' => array( 1 , 0 ),
-            'y' => array( 0 , 1 ),
+            'x' => array( 1, 0 ),
+            'y' => array( 0, 1 ),
         ),
         2 => array( // method 2
-            'x' => array( -0.5 , 0 ),
-            'y' => array( 0 , 0.5 ),
+            'x' => array( - 0.5, 0 ),
+            'y' => array( 0, 0.5 ),
         ),
     );
 
     //$otrez = round ( ($thumb_w - $thumb_h) / 2 );
     $variant = $thumb_w > $thumb_h ? 0 : 1;
 
-    if ( $variant ) {
-        $otrez  = round( ($thumb_h - $th) / 2 );
+    if( $variant ) {
+        $otrez = round( ( $thumb_h - $th ) / 2 );
     } else {
-        $otrez  = round( ($thumb_w - $tw) / 2 );
+        $otrez = round( ( $thumb_w - $tw ) / 2 );
     }
 
-    $ix = intval( $m[ $method ]['x'][ $variant ] * $otrez );
-    $iy = intval( $m[ $method ]['y'][ $variant ] * $otrez );
+    $ix = intval( $m[ $method ][ 'x' ][ $variant ] * $otrez );
+    $iy = intval( $m[ $method ][ 'y' ][ $variant ] * $otrez );
 
     //printVar(array( $variant, $ix, $iy, $otrez));
 
     // 4.
-    $newim = imagecreatetruecolor ( $thumb_w, $thumb_h );
+    $newim = imagecreatetruecolor( $thumb_w, $thumb_h );
 
-    if ( $color == '-1' ) {
-        $bgcolor = imagecolorat($im, 0, 0);
-    } elseif ( strlen( $color ) == 6 ) {
-        $hred   = hexdec( substr($color, 0, 2) );
-        $hgr    = hexdec( substr($color, 2, 2) );
-        $hblue  = hexdec( substr($color, 4, 2) );
-        $bgcolor    = imagecolorallocate($newim, $hred, $hgr, $hblue);
+    if( $color == '-1' ) {
+        $bgcolor = imagecolorat( $im, 0, 0 );
+    } elseif( strlen( $color ) == 6 ) {
+        $hred    = hexdec( substr( $color, 0, 2 ) );
+        $hgr     = hexdec( substr( $color, 2, 2 ) );
+        $hblue   = hexdec( substr( $color, 4, 2 ) );
+        $bgcolor = imagecolorallocate( $newim, $hred, $hgr, $hblue );
     }
 
-    if ( isset( $bgcolor ) ) {
+    if( isset( $bgcolor ) ) {
         imagefill( $newim, 0, 0, $bgcolor ); // заливаем
     }
 
-    if ($newim && $im) {
-        imagecopyresampled ( $newim, $im, $ix, $iy, 0, 0, $tw, $th, $iw, $ih );
+    if( $newim && $im ) {
+        imagecopyresampled( $newim, $im, $ix, $iy, 0, 0, $tw, $th, $iw, $ih );
     }
 
-    switch( $isize[2] ) {
+    switch ( $isize[ 2 ] ) {
         case IMAGETYPE_GIF:
             $return = @imagegif( $newim, $thumbfile );
             break;
@@ -208,14 +208,16 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
             break;
         case IMAGETYPE_JPEG:
         default:
-            $return = @imageJpeg ( $newim, $thumbfile, 80 );
+            $return = @imageJpeg( $newim, $thumbfile, 80 );
     }
 
-    if ($im)
-        imagedestroy ( $im );
+    if( $im ) {
+        imagedestroy( $im );
+    }
 
-    if ($newim)
-        imagedestroy ( $newim );
+    if( $newim ) {
+        imagedestroy( $newim );
+    }
 
     /*
      * Миниатюра создана
@@ -223,13 +225,13 @@ function createThumb( $srcfile, $thumbfile, $thumb_w, $thumb_h, $method, $color 
     return $return;
 }
 
- /**
+/**
  *  Заменяет в строке $replace подстроки $search на строку $subject
  * @param $string
  * @param $h1
  * @return mixed
  */
-function str_random_replace($subject,$replace,$search='%h1%')
+function str_random_replace( $subject, $replace, $search = '%h1%' )
 {
-    return str_replace($search, $subject, trim(array_rand(array_flip(explode("\n", $replace)))));
+    return str_replace( $search, $subject, trim( array_rand( array_flip( explode( "\n", $replace ) ) ) ) );
 }

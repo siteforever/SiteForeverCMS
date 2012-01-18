@@ -4,8 +4,8 @@
  */
 return array(
     array(
-        'name'  => 'Сайт',
-        'url'  => '/',
+        'name'      => 'Сайт',
+        'url'       => '/',
         'norefact'  => true,
         'target'    => '_blank',
     ),
@@ -41,11 +41,11 @@ return array(
     ),
     array(
         'name'  => 'Пользователи',
-        'url'   => 'admin/users',
+        'url'   => 'users/admin',
         'sub'   => array(
             array(
                 'name'  => 'Добавить пользователя',
-                'url'   => 'admin/users/add=1',
+                'url'   => 'users/admin/add/1',
                 'icon'  => 'user_add',
             ),
         ),

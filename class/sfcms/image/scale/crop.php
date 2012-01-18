@@ -4,9 +4,8 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-namespace sfcms\Image\Scale;
 
-class Crop extends Abstr
+class Sfcms_Image_Scale_Crop extends Sfcms_Image_Scale_Abstr
 {
     /**
      * Создаст отмасштабированное изображение
@@ -16,7 +15,7 @@ class Crop extends Abstr
      * @return \resource
      * @throws Exception
      */
-    public function getScalingImage($width, $height, $color)
+    public function getScalingImage( $width, $height, $color )
     {
         // 1. пропорции
         $kh = $this->height / $height;
@@ -27,24 +26,25 @@ class Crop extends Abstr
         $from_x = 0;
         $from_y = 0;
 
-        if ( $this->scalledHeight() == $height ) {
+        if( $this->scalledHeight() == $height ) {
             $from_x = - round( abs( $this->scalledWidth() - $width ) / 2 );
-        } elseif ( $this->scalledWidth() == $width ) {
+        } elseif( $this->scalledWidth() == $width ) {
             $from_y = - round( abs( $this->scalledHeight() - $height ) / 2 );
         }
 
-        $thumb  = imagecreatetruecolor( $width, $height );
+        $thumb = imagecreatetruecolor( $width, $height );
 
-        if ($this->image && $thumb ) {
-            if ( imagecopyresampled ( $thumb, $this->image,
+        if( $this->image && $thumb ) {
+            if( imagecopyresampled( $thumb, $this->image,
                 $from_x, $from_y, 0, 0,
                 $this->scalledWidth(), $this->scalledHeight(),
                 $this->width, $this->height
-            ) ) {
+            )
+            ) {
                 return $thumb;
             }
         }
-        throw new Exception('Image not scalled');
+        throw new Exception( 'Image not scalled' );
     }
 
 }

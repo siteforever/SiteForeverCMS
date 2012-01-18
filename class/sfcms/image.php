@@ -4,20 +4,18 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-namespace sfcms;
-
-class Image
+class Sfcms_Image
 {
-    protected $img  = null;
+    protected $img = null;
 
 
     function __construct( $img = null )
     {
-        if ( is_string( $img ) && file_exists( $img ) ) {
-            $this->img    = self::loadFromFile( $img );
+        if( is_string( $img ) && file_exists( $img ) ) {
+            $this->img = self::loadFromFile( $img );
         }
         else {
-            $this->img  = $img;
+            $this->img = $img;
         }
     }
 
@@ -31,10 +29,10 @@ class Image
      */
     function createThumb( $width, $height, $method, $color = '-1' )
     {
-        $scale  = $this->getScale( $method );
-        $thumb  = $scale->getScalingImage( $width, $height, $color );
-        if ( $thumb ) {
-            return new Image( $thumb );
+        $scale = $this->getScale( $method );
+        $thumb = $scale->getScalingImage( $width, $height, $color );
+        if( $thumb ) {
+            return new Sfcms_Image( $thumb );
         }
     }
 
@@ -42,11 +40,11 @@ class Image
     {
         switch ( $method ) {
             case '1':
-                $scale = new Image\Scale(Image\Scale::METHOD_ADD, $this->img);
+                $scale = new Sfcms_Image_Scale( Sfcms_Image_Scale::METHOD_ADD, $this->img );
                 break;
             case '2':
             default:
-                $scale = new Image\Scale(Image\Scale::METHOD_CROP, $this->img);
+                $scale = new Sfcms_Image_Scale( Sfcms_Image_Scale::METHOD_CROP, $this->img );
         }
         return $scale;
     }
@@ -59,7 +57,7 @@ class Image
      */
     static protected function loadFromFile( $filename )
     {
-        return Image\Loader::load( $filename );
+        return Sfcms_Image_Loader::load( $filename );
     }
 
     /**
@@ -69,7 +67,7 @@ class Image
      */
     function saveToFile( $filename )
     {
-        Image\Loader::save( $this->img, $filename );
+        Sfcms_Image_Loader::save( $this->img, $filename );
     }
 
 }

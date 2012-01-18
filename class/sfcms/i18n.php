@@ -2,14 +2,16 @@
 /**
  * Переводчик
  */
-namespace sfcms;
 
-class i18n
+class Sfcms_i18n
 {
 
     private $_lang;
     private $_dictionary;
 
+    /**
+     * @var Sfcms_i18n
+     */
     private static $_instance;
 
     protected $_table = array(
@@ -59,20 +61,20 @@ class i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
-        $dict_file  = 'protected'.DIRECTORY_SEPARATOR.'lang'.DIRECTORY_SEPARATOR.$this->_lang.'.php';
-        if ( ! $this->_dictionary = @include($dict_file) ) {
-            throw new Exception('Dictionary for language '.$this->_lang.' not found in file '.$dict_file);
+        $dict_file   = 'protected' . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR . $this->_lang . '.php';
+        if( ! $this->_dictionary = @include( $dict_file ) ) {
+            throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dict_file );
         }
     }
 
     /**
      * @static
-     * @return i18n
+     * @return Sfcms_i18n
      */
     public static function getInstance()
     {
-        if ( is_null( self::$_instance ) ) {
-            self::$_instance = new i18n();
+        if( is_null( self::$_instance ) ) {
+            self::$_instance = new Sfcms_i18n();
         }
         return self::$_instance;
     }
@@ -83,8 +85,8 @@ class i18n
      */
     public function write( $text )
     {
-        if ( isset( $this->_dictionary[$text] ) ) {
-            return $this->_dictionary[$text];
+        if( isset( $this->_dictionary[ $text ] ) ) {
+            return $this->_dictionary[ $text ];
         }
         return $text;
     }
@@ -96,7 +98,7 @@ class i18n
      */
     public function translit( $str )
     {
-        foreach ( $this->_table as $rus => $eng ) {
+        foreach( $this->_table as $rus => $eng ) {
             $str = str_replace( $rus, $eng, $str );
         }
         return $str;
