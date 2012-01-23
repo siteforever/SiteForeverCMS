@@ -2,7 +2,7 @@
 /**
  * Файловый менеджер
  */
-class Controller_Elfinder extends Controller
+class Controller_Elfinder extends Sfcms_Controller
 {
     
     function init()

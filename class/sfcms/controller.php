@@ -1,6 +1,6 @@
 <?php
 /**
- *
+ * Интерфейс контроллера
  * @author: keltanas <keltanas@gmail.com>
  */
 abstract class Sfcms_Controller

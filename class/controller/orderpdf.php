@@ -1,15 +1,11 @@
 <?php
 /**
- * 
- * @author Ermin Nikolay <nikolay@ermin.ru>
- * @link http://ermin.ru
+ * Выводит заказ в PDF для печати
+ * @author Ermin Nikolay <keltanas@gmail.com>
  * @link http://siteforever.ru
- * $Rev$:     Revision of last commit
- * $Author$:  Author of last commit
- * $Date$:    Date of last commit
  */
 
-class controller_OrderPdf extends Controller
+class Controller_OrderPdf extends Sfcms_Controller
 {
     function indexAction()
     {

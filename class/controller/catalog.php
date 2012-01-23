@@ -3,7 +3,7 @@
  * Контроллер каталога
  * @author KelTanas
  */
-class Controller_Catalog extends Controller
+class Controller_Catalog extends Sfcms_Controller
 {
 
     public function init()

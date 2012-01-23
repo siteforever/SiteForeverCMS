@@ -3,7 +3,7 @@
  * Контроллер баннеров
  */
 
-class Controller_Banner extends Controller
+class Controller_Banner extends Sfcms_Controller
 {
 
     /**

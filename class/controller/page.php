@@ -4,7 +4,7 @@
  * @author keltanas <nikolay@ermin.ru>
  */
 
-class Controller_Page extends Controller
+class Controller_Page extends Sfcms_Controller
 {
 
     function access()

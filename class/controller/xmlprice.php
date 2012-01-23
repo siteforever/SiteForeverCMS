@@ -1,5 +1,8 @@
 <?php
-class controller_XMLPrice extends Controller
+/**
+ * Контроллер импорта прайса в виде XML
+ */
+class Controller_XMLPrice extends Sfcms_Controller
 {
     function indexAction()
     {

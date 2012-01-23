@@ -2,7 +2,7 @@
 /**
  * Рисует карту сайта по средствам модели страницы
  */
-class Controller_Sitemap extends Controller
+class Controller_Sitemap extends Sfcms_Controller
 {
     function indexAction()
     {

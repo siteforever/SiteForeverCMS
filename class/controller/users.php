@@ -1,11 +1,21 @@
 <?php
-class Controller_Users extends Controller
+/**
+ * Контроллер управления пользователями
+ */
+class Controller_Users extends Sfcms_Controller
 {
+    /**
+     * Инициализация
+     */
     function init()
     {
         $this->request->set('template', 'inner' );
     }
 
+    /**
+     * Управление доступом
+     * @return array
+     */
     function access()
     {
         return array(
@@ -13,6 +23,9 @@ class Controller_Users extends Controller
         );
     }
 
+    /**
+     * Основное действие
+     */
     public function indexAction()
     {
         $auth   = $this->app()->getAuth();
@@ -37,7 +50,8 @@ class Controller_Users extends Controller
         $this->request->setTitle('Пользователи');
 
         if ( $this->request->get('userid') || $this->request->get('add') ) {
-            return $this->adminEditAction();
+            $this->adminEditAction();
+            return;
         }
 
         $model  = $this->getModel('user');
@@ -150,7 +164,7 @@ class Controller_Users extends Controller
         }
 
 
-        $this->tpl->user_form   = $user_form->html();
+        $this->tpl->assign('user_form', $user_form->html());
         $content = $this->tpl->fetch('system:users.edit');
 
 
@@ -194,7 +208,7 @@ class Controller_Users extends Controller
             if ( $form->getPost() ) {
                 if ( $form->validate() ) {
                     //print "login: {$form->login} pass:{$form->password}";
-                    if ( $auth->login( $form->login, $form->password ) ) {
+                    if ( $auth->login( $form->getField('login')->getValue(), $form->getField('password')->getValue() ) ) {
                         redirect($_SERVER['HTTP_REFERER']);
                     }
                     else {
@@ -220,7 +234,7 @@ class Controller_Users extends Controller
 
         if ( $user->getId() ) {
             // отображаем кабинет
-            $this->tpl->user    = $user->getAttributes();
+            $this->tpl->assign('user', $user->getAttributes());
             $this->request->setTitle('Кабинет пользователя');
 
             $this->request->setContent($this->tpl->fetch('users.cabinet'));
@@ -236,6 +250,9 @@ class Controller_Users extends Controller
      */
     public function editAction()
     {
+        /**
+         * @var Model_User $model
+         */
         $model  = $this->getModel('user');
 
         $this->request->set('tpldata.page.name', 'Edit Profile');
@@ -311,6 +328,10 @@ class Controller_Users extends Controller
      */
     public function restoreAction()
     {
+        /**
+         * @var Data_Object_User $user
+         * @var Model_User $model
+         */
         // @TODO Перевести под новую модель
         $this->request->set('tpldata.page.name', 'Restore');
         $this->request->setTemplate('inner');
@@ -421,7 +442,11 @@ class Controller_Users extends Controller
      */
     public function passwordAction()
     {
-        // @T ODO Перевести под новую модель
+        /**
+         * @var Form_Form $form
+         * @var Model_User $model
+         */
+        // @TODO Перевести под новую модель
         $this->request->setTitle('Изменить пароль');
 
         $model  = $this->getModel('User');
@@ -436,16 +461,17 @@ class Controller_Users extends Controller
         {
             if ( $form->validate() )
             {
-                $pass_hash  = $auth->generatePasswordHash( $form->password, $user->solt );
+                $pass_hash  = $auth->generatePasswordHash(
+                    $form->getField('password')->getValue(), $user->get('solt')
+                );
                 //$pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );
 
-                if ( $user->password == $pass_hash )
+                if ( $user->get('password') == $pass_hash )
                 {
                     //$this->request->addFeedback('Пароль введен верно');
 
-                    if ( strcmp( $form->password1, $form->password2 ) === 0 )
-                    {
-                        $user->changePassword( $form->password1 );
+                    if ( strcmp( $form->getField('password1')->getValue(), $form->getField('password2')->getValue() ) === 0 ) {
+                        $user->changePassword( $form->getField('password1')->getValue() );
                         $this->request->addFeedback('Пароль успешно изменен');
                         $this->request->setContent($this->tpl->fetch('system:users.password_success'));
                         return;

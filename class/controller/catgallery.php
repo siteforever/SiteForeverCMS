@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  * @link   http://ermin.ru
  */
-class Controller_CatGallery extends Controller
+class Controller_CatGallery extends Sfcms_Controller
 {
     function init()
     {

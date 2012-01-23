@@ -3,7 +3,7 @@
  * Контроллер для отображения конфигурации системы окружения
  * @author KelTanas
  */
-class Controller_System extends Controller
+class Controller_System extends Sfcms_Controller
 {
     function indexAction()
     {
@@ -22,17 +22,6 @@ class Controller_System extends Controller
             'zlib',
         );
 
-        $common = array(
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-            '',
-        );
-
         $msys   = array();
 
         foreach( $modules as $i => $module ) {
@@ -43,22 +32,16 @@ class Controller_System extends Controller
             }
         }
 
-        //printVar($msys);
-
         $sys = ini_get_all(null, false);
 
-        /*foreach( $sys as $key => $value ) {
-            if ( strpos( $key, '.' ) ) {
-                unset( $sys[ $key ] );
-                $key = str_replace('.', '_', $key);
-                $sys[ $key ] = $value;
-            }
-        }*/
-
-        $this->tpl->sys     = $sys;
-        $this->tpl->msys    = $msys;
-        $this->tpl->modules = $modules;
-        $this->tpl->ver = phpversion();
+        $this->tpl->assign(
+            array(
+                'sys'     => $sys,
+                'msys'    => $msys,
+                'modules' => $modules,
+                'ver'     => phpversion(),
+            )
+        );
 
         $this->request->setContent( $this->tpl->fetch('system:system.index') );
     }

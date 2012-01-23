@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class Controller_Basket extends Controller
+class Controller_Basket extends Sfcms_Controller
 {
 
     public function indexAction()

@@ -4,7 +4,7 @@
  * @author keltanas aka Nikolay Ermin
  */
 
-class Controller_Rss extends Controller
+class Controller_Rss extends Sfcms_Controller
 {
     function indexAction()
     {

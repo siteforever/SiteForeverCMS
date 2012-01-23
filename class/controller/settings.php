@@ -3,7 +3,7 @@
  * Контроллер управления настройками
  * @author keltanas
  */
-class Controller_Settings extends Controller
+class Controller_Settings extends Sfcms_Controller
 {
 
     /**

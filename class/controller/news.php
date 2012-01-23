@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class Controller_News extends Controller
+class Controller_News extends Sfcms_Controller
 {
 
     function indexAction()

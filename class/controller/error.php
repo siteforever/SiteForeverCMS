@@ -1,11 +1,11 @@
 <?php
 /**
- * описание класса
+ * Контроллер ошибки 404
  * @author keltanas aka Nikolay Ermin 
  * @link http://ermin.ru
  */
 
-class Controller_Error extends Controller
+class Controller_Error extends Sfcms_Controller
 {
     function indexAction()
     {

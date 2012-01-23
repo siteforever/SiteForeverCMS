@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class Controller_Search extends Controller
+class Controller_Search extends Sfcms_Controller
 {
 
     function indexAction()

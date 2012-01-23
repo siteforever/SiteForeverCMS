@@ -4,7 +4,7 @@
  * @author keltanas
  * @link http://ermin.ru
  */
-class Controller_Order extends Controller
+class Controller_Order extends Sfcms_Controller
 {
     function indexAction()
     {

@@ -1,12 +1,12 @@
 <?php
 /**
- *
+ * Rjynhjkkth обратной связи
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
 
-class Controller_Feedback extends Controller
+class Controller_Feedback extends Sfcms_Controller
 {
     function indexAction()
     {

@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
  
-class Controller_Captcha extends Controller
+class Controller_Captcha extends Sfcms_Controller
 {
     function init()
     {

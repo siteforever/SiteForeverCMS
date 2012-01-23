@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class controller_dumper extends Controller
+class Controller_Dumper extends Sfcms_Controller
 {
     private $backup_dir = 'backup';
 
