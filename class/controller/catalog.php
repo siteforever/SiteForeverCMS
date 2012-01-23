@@ -144,14 +144,15 @@ class Controller_Catalog extends Controller
         $order = $this->config->get( 'catalog.order_default' );
 
         // Примеряем способ сортировки к списку из конфига
-        $order_list = $this->config->get( 'catalog.order_list' );
-        if( $order_list && is_array( $order_list ) ) {
+        $orderList = $this->config->get( 'catalog.order_list' );
+        if( $orderList && is_array( $orderList ) ) {
             $set = $this->request->get( 'order' );
             if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
             }
             else {
-                $order = reset( array_keys( $order_list ) );
+                $orderListKeys    = array_keys( $orderList );
+                $order = reset( $orderListKeys );
             }
             $this->request->set( 'order', $order );
         }
