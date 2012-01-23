@@ -123,6 +123,8 @@ class Request
         if ( null == $this->ajax ) {
             if ( isset($_SERVER[ 'X-Requested-With' ]) && $_SERVER[ 'X-Requested-With' ] != 'XMLHttpRequest' ) {
                 $this->ajax = true;
+            } else {
+                $this->ajax = false;
             }
         }
         return $this->ajax;

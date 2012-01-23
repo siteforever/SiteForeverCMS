@@ -73,6 +73,6 @@ class Model_Alias extends Model
             $data[ $k ] = $this->generateAlias( $v );
         }
 
-        return $separator . implode( $separator, $data );
+        return implode( $separator, $data );
     }
 }

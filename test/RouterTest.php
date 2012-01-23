@@ -75,6 +75,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCreateLinkCatalog()
+    {
+        $this->assertEquals(
+            '/catalog/id=50/page=2',
+            $this->router->createLink('catalog', array('id'=>50,'page'=>2))
+        );
+    }
+
     public function testCreateServiceLink2()
     {
         $this->assertEquals(

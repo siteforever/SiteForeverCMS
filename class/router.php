@@ -25,6 +25,8 @@ class Router
 
     private $_params = array();
 
+    private $_db_aliases    = null;
+
     /**
      * Создаем маршрутизатор
      * @param Request $request
@@ -67,12 +69,19 @@ class Router
 
         $par = array();
 
-        $result = preg_replace( '@/[\w\d]+=[\d]+@i', '', $result );
+        if ( preg_match( '@/[\w\d]+=[\d]+@i', $result, $matches ) ) {
+            foreach ( $matches as $match ) {
+                $result = str_replace( $match, '', $result );
+                $match  = trim( $match, '/' );
+                list( $key ) = explode( '=', $match );
+                $par[ $key ] = $match;
+            }
+        }
 
         if( count( $params ) ) {
-            foreach( $params as $k => $v ) {
-                $par[ ] = $k . '=' . $v;
-                //                $result = preg_replace("@/{$k}=\d+@", '', $result);
+            foreach( $params as $key => $val ) {
+                $par[ $key ] = $key . '=' . $val;
+//                $result = preg_replace("@/{$k}=\d+@", '', $result);
             }
         }
 
@@ -153,7 +162,7 @@ class Router
                 $par    = trim( $par, '/' );
                 list( $key, $val ) = explode( '=', $par );
                 $this->_params[ $key ] = $val;
-                //                $this->request->set($key, $val);
+//                $this->request->set($key, $val);
             }
         }
 
@@ -269,6 +278,7 @@ class Router
     private function findAlias()
     {
         $model = Model::getModel( 'Alias' );
+
         $alias = $model->find(
             array(
                 'cond'  => 'alias = ?',
@@ -292,9 +302,10 @@ class Router
     {
         if( $this->findXMLRoute() ) {
             return true;
-        } elseif( $this->findTableRoute() ) {
-            return true;
         }
+//        elseif( $this->findTableRoute() ) {
+//            return true;
+//        }
         return false;
     }
 
