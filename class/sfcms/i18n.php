@@ -99,7 +99,7 @@ class Sfcms_i18n
     public function translit( $str )
     {
         foreach( $this->_table as $rus => $eng ) {
-            $str = str_replace( $rus, $eng, $str );
+            $str = str_ireplace( $rus, $eng, $str );
         }
         return $str;
     }

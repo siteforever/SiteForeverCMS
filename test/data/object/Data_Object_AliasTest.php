@@ -36,7 +36,7 @@ class Data_Object_AliasTest extends PHPUnit_Framework_TestCase
     public function testGenerateAlias()
     {
         $this->assertEquals(
-            $this->alias->alias,
+            trim( $this->alias->get('alias'), '/' ),
             $this->alias->generateAlias( 'Каталог' )
           . '/' . $this->alias->generateAlias( 'DC/DC конверторы' )
           . '/' . $this->alias->generateAlias( 'P6AU-2412ELF (PEAK)' )

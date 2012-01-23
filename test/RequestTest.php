@@ -37,7 +37,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAjax()
     {
-        $this->assertFalse( $this->request->getAjax(), 'Not ajax' );
+        $this->assertFalse( $this->request->getAjax() );
     }
 
     /**
@@ -45,7 +45,7 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     public function testIsAjax()
     {
-        $this->assertFalse( $this->request->isAjax(), 'Not ajax' );
+        $this->assertFalse( $this->request->isAjax() );
     }
 
     /**

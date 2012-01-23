@@ -19,6 +19,7 @@ $include_list   = array();
 //    $include_list[] = dirname(__FILE__);
 //}
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
+$include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
 $include_list[] = SF_PATH;
 $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));

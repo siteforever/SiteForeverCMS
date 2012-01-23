@@ -4,7 +4,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-class TestController extends Controller
+class TestController extends Sfcms_Controller
 {
     function indexAction()
     {

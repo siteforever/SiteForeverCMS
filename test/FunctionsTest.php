@@ -11,6 +11,6 @@ class FunctionsTest extends PHPUnit_Framework_TestCase
     public function testTranslit()
     {
         $str    = 'Привет мир!';
-        $this->assertEquals('privet_mir', translit( $str ));
+        $this->assertEquals('privet_mir', Sfcms_i18n::getInstance()->translit( $str ));
     }
 }
