@@ -5,6 +5,6 @@
  */
 class Form_Field_Int extends Form_Field_Text
 {
-	protected $_class   = 'int';
-	protected $_filter  = '/^-?\d*$/';
+    protected $_class   = 'int';
+    protected $_filter  = '/^-?\d*$/';
 }

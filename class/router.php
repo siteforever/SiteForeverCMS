@@ -185,7 +185,6 @@ class Router
             return true;
         }
 
-
         $this->route = trim( $this->route, '/' );
 
         if( ! $this->route ) {
@@ -197,14 +196,6 @@ class Router
         }
 
         $this->route = $this->filterEqParams( $this->route );
-
-        //        // выделяем указатель на страницы
-        //        if ( preg_match( '/\/page(\d+)/i', $this->route, $match_page ) ) {
-        //            $this->request->set('page', $match_page[1]);
-        //            $this->route = trim( str_replace( $match_page[0], '', $this->route ), '/' );
-        //        }
-
-        // ----------------
 
         $this->findAlias();
 

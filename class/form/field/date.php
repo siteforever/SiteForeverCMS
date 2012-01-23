@@ -20,7 +20,7 @@ class Form_Field_Date extends Form_Field
     /**
      * Проверит значение на валидность типа
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function checkValue( $value )
     {
@@ -43,7 +43,7 @@ class Form_Field_Date extends Form_Field
      * а метод вернет false
      *
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function setValue( $value )
     {
@@ -64,9 +64,10 @@ class Form_Field_Date extends Form_Field
 
     /**
      * Вернет HTML для поля
+     * @var array $filed
      * @return string
      */
-    function doInput( &$field )
+    function doInput( $field )
     {
         if ( $this->_readonly ) {
             $field['class']['class'] = 'date';

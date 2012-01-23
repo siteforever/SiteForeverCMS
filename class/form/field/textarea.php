@@ -10,9 +10,10 @@ class Form_Field_Textarea extends Form_Field
 
     /**
      * Вернет HTML для поля
+     * @var array $field
      * @return string
      */
-    function doInput( &$field )
+    function doInput( $field )
     {
         $value = $field['value'];
         unset( $field['value'] );
@@ -24,7 +25,7 @@ class Form_Field_Textarea extends Form_Field
     /**
      * Проверит значение на валидность типа
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function checkValue( $value )
     {

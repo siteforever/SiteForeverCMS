@@ -30,10 +30,10 @@
         <td>{$user.date|date_format:"%x"}</td>
         <td>{$user.last|date_format:"%x"}</td>
         <td>
-            {if $user.perm == $smarty.const.USER_GUEST}{icon name="user_gray" title=$groups[$smarty.const.USER_GUEST]}{/if}
-            {if $user.perm == $smarty.const.USER_USER}{icon name="user_green" title=$groups[$smarty.const.USER_USER]}{/if}
-            {if $user.perm == $smarty.const.USER_WHOLE}{icon name="user_orange" title=$groups[$smarty.const.USER_WHOLE]}{/if}
-            {if $user.perm == $smarty.const.USER_ADMIN}{icon name="user_red" title=$groups[$smarty.const.USER_ADMIN]}{/if}
+            {if $user.perm == 0}{icon name="user_gray" title="Гость"}{/if}
+            {if $user.perm == 1}{icon name="user_green" title="Пользователь"}{/if}
+            {if $user.perm == 2}{icon name="user_orange" title="Опытный"}{/if}
+            {if $user.perm == 10}{icon name="user_red" title="Админ"}{/if}
         </td>
     </tr>
     {foreachelse}

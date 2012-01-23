@@ -12,11 +12,12 @@ class Form_Field_Select extends Form_Field_Composite
 
     /**
      * Вернет HTML для поля
+     * @var array $filed
      * @return string
      */
-    function doInput( &$field )
+    function doInput( $field )
     {
-    	$html = array();
+        $html = array();
 
         $multiple = in_array('multiple', $this->_params) ? ' multiple="multiple" ' : '';
         $size     = isset( $this->_params['size'] ) ? " size='{$this->_params['size']}' " : '';
@@ -25,8 +26,8 @@ class Form_Field_Select extends Form_Field_Composite
         $field['class'] = 'class="'.join(' ', $field['class']).'"';
 
         $html[] = "<select {$field['id']} {$field['class']} {$field['name']}{$multiple}{$size}>\n";
-    	if ( isset($this->_params['variants']) )
-    	{
+        if ( isset($this->_params['variants']) )
+        {
             foreach( $this->_params['variants'] as $value => $label )
             {
                 $field['id']       = " id='{$this->getId()}_{$value}' ";
@@ -35,7 +36,7 @@ class Form_Field_Select extends Form_Field_Composite
 
                 $html[]  = "<option {$field['value']} {$field['selected']}>{$label}</option>\n";
             }
-    	}
+        }
         $html[] = "</select>\n";
         return join("\n", $html);
     }

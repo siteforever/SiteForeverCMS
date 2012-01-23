@@ -13,9 +13,10 @@ class Form_Field_Checkbox extends Form_Field_Radio
 
     /**
      * Вернет HTML для поля
+     * @var array $filed
      * @return string
      */
-    function doInput( &$field )
+    function doInput( $field )
     {
         $html = array();
 
@@ -47,7 +48,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
     /**
      * Проверит значение на валидность типа
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function checkValue( $value )
     {
@@ -70,7 +71,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
      * а метод вернет false
      *
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function setValue( $value )
     {

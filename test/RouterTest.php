@@ -157,6 +157,25 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( '123', $request->get( 'id' ) );
     }
 
+    public function testFindRouteAdminUsers()
+    {
+        $request = App::getInstance()->getRequest();
+        $request->set( 'controller', null );
+
+        $this->router->setRoute('admin/users')->routing();
+
+        $this->assertEquals('users', $request->get('controller'));
+        $this->assertEquals('admin', $request->get('action'));
+
+        $request = App::getInstance()->getRequest();
+        $request->set( 'controller', null );
+
+        $this->router->setRoute('users/admin')->routing();
+
+        $this->assertEquals('users', $request->get('controller'));
+        $this->assertEquals('admin', $request->get('action'));
+    }
+
     public function testFindRouteNews()
     {
         $request = App::getInstance()->getRequest();
@@ -250,29 +269,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( '/catgallery/index/id/5', $url );
     }
 
-    /**
-     * @todo Implement testFindStructure().
-     */
-    public function testFindStructure()
-    {
-        // @TODO Remove the following lines when you implement this test.
-    }
-
-    /**
-     * @todo Implement testRouting().
-     */
-    public function testRouting()
-    {
-        // @TODO Remove the following lines when you implement this test.
-    }
-
-    /**
-     * @todo Implement testIsSystem().
-     */
-    public function testIsSystem()
-    {
-        // @TODO Remove the following lines when you implement this test.
-    }
 
     public function testSetRoute()
     {

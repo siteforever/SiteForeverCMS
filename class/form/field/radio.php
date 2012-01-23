@@ -12,14 +12,15 @@ class Form_Field_Radio extends Form_Field_Composite
 
     /**
      * Вернет HTML для поля
+     * @var array $filed
      * @return string
      */
-    function doInput( &$field )
+    function doInput( $field )
     {
-    	$html = array();
+        $html = array();
 
-    	if ( isset($this->_params['variants']) )
-    	{
+        if ( isset($this->_params['variants']) )
+        {
             foreach( $this->_params['variants'] as $value => $label )
             {
                 $field['id']     = "id='{$this->getId()}_{$value}'";
@@ -29,8 +30,8 @@ class Form_Field_Radio extends Form_Field_Composite
 
                 $html[]  = "<input ".join(' ', $field)." /> <label for='{$this->getId()}_{$value}'>{$label}</label>";
             }
-    	}
-    	$br = in_array('br', $this->_params) ? "<br />" : "";
+        }
+        $br = in_array('br', $this->_params) ? "<br />" : "";
         return join($br."\n", $html);
     }
 }

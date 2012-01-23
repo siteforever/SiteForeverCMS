@@ -71,40 +71,6 @@
         <controller>basket</controller>
     </route>
 
-
-    <!-- USERS -->
-    <route alias="users/logout" protected="1">
-        <controller>users</controller>
-        <action>logout</action>
-    </route>
-    <route alias="users/edit" protected="1">
-        <controller>users</controller>
-        <action>edit</action>
-    </route>
-    <route alias="users/restore">
-        <controller>users</controller>
-        <action>restore</action>
-    </route>
-    <route alias="users/register">
-        <controller>users</controller>
-        <action>register</action>
-    </route>
-    <route alias="users/login">
-        <controller>users</controller>
-        <action>login</action>
-    </route>
-    <route alias="users/cabinet" protected="1">
-        <controller>users</controller>
-        <action>cabinet</action>
-    </route>
-    <route alias="users/password" protected="1">
-        <controller>users</controller>
-        <action>password</action>
-    </route>
-    <route alias="users.*">
-        <controller>users</controller>
-    </route>
-
     <!-- EL FINDER -->
     <route alias="elfinder">
         <controller>elfinder</controller>

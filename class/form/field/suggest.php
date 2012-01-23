@@ -24,7 +24,11 @@ class Form_Field_Suggest extends Form_Field
         }
     }
 
-    function doInput( &$field )
+    /**
+     * @param $field
+     * @return string
+     */
+    function doInput( $field )
     {
         // выставляем статус OK
         if ( $this->_form->getField( $this->_params['field_value'] )->getValue() ) {

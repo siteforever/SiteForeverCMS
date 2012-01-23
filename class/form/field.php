@@ -12,7 +12,7 @@ abstract class Form_Field
     protected
             /**
              * Объект формы
-             * @var form_Form
+             * @var Form_Form
              */
             $_form     = null,
             $_name     = '',
@@ -32,7 +32,7 @@ abstract class Form_Field
 
     /**
      * Есть ли у поля ошибка
-     * @var bool
+     * @var boolean
      */
     protected   $_error = false;
     /**
@@ -98,7 +98,7 @@ abstract class Form_Field
      * Строгий поиск в массиве
      * @param mixed $val
      * @param array $array
-     * @return bool
+     * @return boolean
      */
     protected function in_array_strict( $val, &$array )
     {
@@ -206,7 +206,7 @@ abstract class Form_Field
      * а метод вернет false
      *
      * @param $value
-     * @return form_Field
+     * @return Form_Field
      */
     function setValue( $value )
     {
@@ -243,7 +243,7 @@ abstract class Form_Field
     /**
      * Проверит значение на валидность типа
      * @param $value
-     * @return bool
+     * @return boolean
      */
     function checkValue( $value )
     {
@@ -252,7 +252,7 @@ abstract class Form_Field
 
     /**
      * Проверка, является ли поле обязательным для заполнения
-     * @return bool
+     * @return boolean
      */
     function isRequired()
     {
@@ -264,7 +264,7 @@ abstract class Form_Field
 
     /**
      * Устанавливает поле, как требуемое
-     * @param bool $required
+     * @param boolean $required
      * @return void
      */
     function setRequired( $required = true )
@@ -274,7 +274,7 @@ abstract class Form_Field
 
     /**
      * Проверка, является ли значение поля "пустым"
-     * @return bool
+     * @return boolean
      */
     function isEmpty()
     {
@@ -305,7 +305,7 @@ abstract class Form_Field
     /**
      * Проверит значение поля на соответствие типу, а также заполнено ли
      * значение обязательного поля
-     * @return bool
+     * @return boolean
      */
     function validate()
     {
@@ -335,7 +335,7 @@ abstract class Form_Field
 
     /**
      * Проверка валидности
-     * @return bool
+     * @return boolean
      */
     protected function checkValid()
     {
@@ -350,7 +350,7 @@ abstract class Form_Field
 
     /**
      * Проверка типа
-     * @return bool
+     * @return boolean
      */
     protected function checkType()
     {
@@ -462,7 +462,7 @@ abstract class Form_Field
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     public function getReadonly()
     {
@@ -470,7 +470,7 @@ abstract class Form_Field
     }
 
     /**
-     * @return bool
+     * @return boolean
      */
     public function getHidden()
     {
