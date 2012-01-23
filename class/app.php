@@ -57,6 +57,8 @@ class App extends Application_Abstract
      */
     function init()
     {
+        std_error::init( new std_logger_plain() );
+
         // Language
         $this->getConfig()->setDefault( 'language', 'ru' );
         Sfcms_i18n::getInstance()->setLanguage(
@@ -156,6 +158,7 @@ class App extends Application_Abstract
 
         self::$controller_time = microtime( 1 );
         $controller_resolver   = new ControllerResolver( $this );
+
         try {
             $result = $controller_resolver->dispatch();
         }
@@ -199,7 +202,7 @@ class App extends Application_Abstract
         $this->getTpl()->exec     = number_format( microtime( true ) - self::$start_time, 3, ',', ' ' ) . ' sec.';
         $this->getTpl()->request  = $this->getRequest();
 
-        if( ! $this->getRequest()->getAjax() && $_SERVER[ 'X-Requested-With' ] != 'XMLHttpRequest' ) {
+        if( ! $this->getRequest()->getAjax() ) {
             header( 'Content-type: text/html; charset=utf-8' );
 
             $theme_css = $this->getRequest()->get( 'path.css' );

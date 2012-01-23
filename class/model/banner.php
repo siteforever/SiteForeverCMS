@@ -6,18 +6,27 @@
  
 class Model_Banner extends Model
 {
+    /**
+     * @var Forms_Banners_Banner
+     */
+    private $_form  = null;
+
      /**
      * @return Form_Form
      */
     function getForm()
     {
-        if ( is_null( $this->form ) ) {
-            $this->form = new Forms_Banners_Banner();
+        if (  null === $this->_form ) {
+            $this->_form = new Forms_Banners_Banner();
         }
-        return $this->form;
+        return $this->_form;
     }
 
-    public function onDeleteStart( $id )
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function onDeleteStart( $id = null )
     {
         $data = $this->find( $id );
         if ( $data ) {

@@ -36,7 +36,7 @@ function reload( $url = '', $params = array() )
  */
 function printVar( $var )
 {
-    Error::dump( $var );
+    print '<pre>'.print_r( $var, 1 ).'</pre>';
 }
 
 /**

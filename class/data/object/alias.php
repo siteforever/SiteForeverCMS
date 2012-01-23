@@ -34,6 +34,15 @@ class Data_Object_Alias extends Data_Object
     }
 
     /**
+     * @param string $model
+     * @return Model_Alias
+     */
+    public function getModel( $model = '' )
+    {
+        return parent::getModel( $model );
+    }
+
+    /**
      * @param array $data
      * @param string $separator
      * @return string

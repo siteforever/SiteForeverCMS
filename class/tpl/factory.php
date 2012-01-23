@@ -24,7 +24,6 @@ class Tpl_Factory
         if ( ! $cfg ) {
             throw new Tpl_Exception('Config for templates not defined');
         }
-
         $driver = $cfg['driver'];
         $theme  = $cfg['theme'];
 

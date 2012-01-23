@@ -45,8 +45,6 @@ class ControllerResolver
                 throw new ControllerException('Controller not resolved');
             }
         }
-//        printVar($command);
-
 
         // если запрос является системным
         if ($this->app->getRouter()->isSystem()) {
@@ -63,6 +61,8 @@ class ControllerResolver
         }
 
         $ref = new ReflectionClass($command['controller']);
+//        printVar($command);
+
         /**
          * @var Controller $controller
          */
@@ -70,7 +70,6 @@ class ControllerResolver
         if ($ref->hasMethod('init')) {
             $controller->init();
         }
-
         // Защита системных действий
         $rules = $controller->access();
 
@@ -86,7 +85,6 @@ class ControllerResolver
                 }
             }
         }
-
         if ($ref->hasMethod($command['action'])) {
 //                printVar($command);
             $result = call_user_func( array( $controller, $command['action']) );

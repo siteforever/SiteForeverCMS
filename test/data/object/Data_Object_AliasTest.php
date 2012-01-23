@@ -37,9 +37,9 @@ class Data_Object_AliasTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             $this->alias->alias,
-            '/'.$this->alias->generateAlias('Каталог')
-            .'/'.$this->alias->generateAlias('DC/DC конверторы')
-            .'/'.$this->alias->generateAlias('P6AU-2412ELF (PEAK)')
+            $this->alias->generateAlias( 'Каталог' )
+          . '/' . $this->alias->generateAlias( 'DC/DC конверторы' )
+          . '/' . $this->alias->generateAlias( 'P6AU-2412ELF (PEAK)' )
         );
     }
 

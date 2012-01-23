@@ -18,7 +18,7 @@ class Request
 
     private $_assets = null;
 
-    private $ajax = false;
+    private $ajax = null;
     private $ajax_type = self::TYPE_ANY;
 
     private $error = 0;
@@ -120,6 +120,11 @@ class Request
      */
     function getAjax()
     {
+        if ( null == $this->ajax ) {
+            if ( isset($_SERVER[ 'X-Requested-With' ]) && $_SERVER[ 'X-Requested-With' ] != 'XMLHttpRequest' ) {
+                $this->ajax = true;
+            }
+        }
         return $this->ajax;
     }
 

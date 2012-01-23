@@ -138,6 +138,13 @@ abstract class Application_Abstract
         return self::$instance;
     }
 
+    static public function import( $path )
+    {
+        $include_list    = array_reverse( explode( PATH_SEPARATOR, get_include_path() ) );
+        $include_list[ ] = $path;
+        set_include_path( implode( PATH_SEPARATOR, array_reverse( $include_list ) ) );
+    }
+
     function __set($name, $value)
     {
         $this->logger->log( "$name = $value", 'app_set' );

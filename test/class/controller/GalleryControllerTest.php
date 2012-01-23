@@ -36,21 +36,13 @@ class GalleryControllerTest extends PHPUnit_Framework_TestCase
     {
     }
 
-    public function testInit()
-    {
-          $this->object->init();
-          $config = $this->app->getConfig();
-          $this->assertEquals(2*1024*1024,$config->get('gallery.max_file_size'));
-          $this->assertEquals(DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'gallery',$config->get('gallery.dir'));
-    }
-
-    public function testAccess()
-    {
-        $acs    = $this->object->access();
-        $this->assertEquals($acs['system'][1],'edit');
-        $this->assertEquals($acs['system'][0],'admin');
-        $this->assertEquals($acs['system'][4],'realias');
-    }
+//    public function testAccess()
+//    {
+//        $acs    = $this->object->access();
+//        $this->assertEquals($acs['system'][1],'edit');
+//        $this->assertEquals($acs['system'][0],'admin');
+//        $this->assertEquals($acs['system'][4],'realias');
+//    }
 
     public function testIndexAction()
     {

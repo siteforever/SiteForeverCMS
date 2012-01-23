@@ -274,7 +274,7 @@ class Model_Catalog extends Model
      *
      * @return bool
      */
-    function onDeleteStart( $id )
+    function onDeleteStart( $id = null )
     {
         $this->remove( $id );
         return false;
@@ -602,8 +602,3 @@ class Model_Catalog extends Model
         return $return;
     }
 }
-
-
-
-
-
