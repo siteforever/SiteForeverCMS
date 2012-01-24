@@ -7,7 +7,8 @@
     <property name="destdir" value="${user.home}/siteforever"></property>
 
     <property name="version" value="0.3"></property>
-    <property name="svnrepository" value="http://svn.stdel.ru/svn/siteforever/trunk"></property>
+    <property name="svn" value="http://svn.stdel.ru/svn/siteforever/trunk"></property>
+    <property name="git" value="git://github.com/keltanas/SiteForeverCMS.git"></property>
 
     <property name="theme" value="basic"></property>
 
@@ -22,8 +23,13 @@
     </target>
 
     <target name="svn">
-        <svnlastrevision workingcopy="." repositoryurl="${svnrepository}" propertyname="revision" />
+        <svnupdate todir="${basedir}"/>
+        <svnlastrevision workingcopy="." repositoryurl="${svn}" propertyname="revision" />
         <echo>Revision: ${revision}</echo>
+    </target>
+
+    <target name="git">
+        <gitpull repository="${git}" all="true" />
     </target>
 
     <!-- Setup on this server -->
