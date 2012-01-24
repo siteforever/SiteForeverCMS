@@ -161,7 +161,7 @@ class Data_Watcher
         /**
          * @var Data_Object $obj
          */
-        $pdo    = Model::getDB()->getResource();
+        $pdo    = Sfcms_Model::getDB()->getResource();
         $pdo->beginTransaction();
         try {
             if ( is_array( $this->dirty ) ) {

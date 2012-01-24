@@ -36,7 +36,7 @@ function smarty_function_thumb( $params )
     $tpl  = $app->getTpl();
     $user = $app->getAuth()->currentUser();
 
-    $tpl->assign( 'form', Model::getModel( 'User' )->getLoginForm() );
+    $tpl->assign( 'form', Sfcms_Model::getModel( 'User' )->getLoginForm() );
     $tpl->assign( 'user', $user->getAttributes() );
     if( $user->perm == USER_GUEST ) {
         $tpl->assign( 'auth', '1' );

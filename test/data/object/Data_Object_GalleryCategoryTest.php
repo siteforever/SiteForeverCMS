@@ -28,8 +28,8 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->model_cat    = Model::getModel('GalleryCategory');
-        $this->model        = Model::getModel('Gallery');
+        $this->model_cat    = Sfcms_Model::getModel('GalleryCategory');
+        $this->model        = Sfcms_Model::getModel('Gallery');
 
         $this->gallery_cat = $this->model_cat->createObject(
                     array(

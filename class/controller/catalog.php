@@ -458,7 +458,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         try {
             $parent = $catalog->find( $part );
-        } catch( ModelException $e ) {
+        } catch( Sfcms_Model_Exception $e ) {
             $parent = null;
         }
 

@@ -244,7 +244,7 @@ class Controller_Page extends Sfcms_Controller
                         $this->request->addFeedback( t( 'Data not saved' ) );
                     }
                 }
-                catch ( ModelException $e ) {
+                catch ( Sfcms_Model_Exception $e ) {
                     $this->request->addFeedback( $e->getMessage() );
                 }
             }

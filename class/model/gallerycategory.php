@@ -1,6 +1,6 @@
 <?php
 
-class Model_GalleryCategory extends Model
+class Model_GalleryCategory extends Sfcms_Model
 {
     protected $form;
 

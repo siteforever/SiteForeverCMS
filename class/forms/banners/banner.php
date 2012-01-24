@@ -7,7 +7,7 @@ class Forms_Banners_Banner extends Form_Form
 {
 
     function __construct() {
-        $parents    = Model::getModel('CategoryBanner')->getCategoryBanner();
+        $parents    = Sfcms_Model::getModel('CategoryBanner')->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
             'action'    => App::getInstance()->getRouter()->createServiceLink('banner', 'edit'),

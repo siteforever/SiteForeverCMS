@@ -13,5 +13,5 @@ function smarty_function_menu($params, $smarty)
     $parent = isset( $params['parent'] ) ? $params['parent'] : '0';
     $level  = isset( $params['level'] ) ? $params['level'] : '1';
 
-    return Model::getModel('Page')->getMenu( $parent, $level );
+    return Sfcms_Model::getModel('Page')->getMenu( $parent, $level );
 }

@@ -18,7 +18,7 @@ function smarty_function_catmenu($params, $smarty)
     if ( isset($params['url']) ) {
         $url    = $params['url'];
     } else {
-        $page_model = Model::getModel('Page');
+        $page_model = Sfcms_Model::getModel('Page');
         $page   = $page_model->find(array(
             'condition' => ' controller = ? AND link = ? ',
             'params'    => array( 'catalog', $parent ),
@@ -31,7 +31,7 @@ function smarty_function_catmenu($params, $smarty)
         }
     }
 
-    $catalog = Model::getModel('Catalog');
+    $catalog = Sfcms_Model::getModel('Catalog');
     
     
     $start  = microtime(1);

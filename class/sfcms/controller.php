@@ -176,11 +176,11 @@ abstract class Sfcms_Controller
     /**
      * Вернет указанную модель
      * @param string $model
-     * @return Model
+     * @return Sfcms_Model
      */
     function getModel($model)
     {
-        return Model::getModel($model);
+        return Sfcms_Model::getModel($model);
     }
 
     /**

@@ -3,7 +3,7 @@
  * Модель каталога
  * @author KelTanas
  */
-class Model_Catalog extends Model
+class Model_Catalog extends Sfcms_Model
 {
     /**
      * Массив, индексируемый по $parent

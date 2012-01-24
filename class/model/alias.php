@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Model_Alias extends Model
+class Model_Alias extends Sfcms_Model
 {
     private $_aliases_cache = array();
 

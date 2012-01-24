@@ -7,7 +7,7 @@
  */
 
 
-class Model_News extends Model
+class Model_News extends Sfcms_Model
 {
     private $form = null;
 

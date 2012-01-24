@@ -44,7 +44,7 @@ class Data_Collection implements Iterator
      * @param $raw
      * @param mapper_Mapper $mapper
      */
-    function __construct( $raw = null, Model $mapper = null )
+    function __construct( $raw = null, Sfcms_Model $mapper = null )
     {
         if ( ! is_null( $raw ) && $raw && ! is_null( $mapper ) ) {
             $this->_raw      = array_values( $raw );

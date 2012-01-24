@@ -33,7 +33,7 @@ class Controller_Search extends Sfcms_Controller
         $offset = ( $page-1 ) * $perpage;
 
         $protected  = $this->app()->getAuth()->currentUser()->perm;
-        $search_list    = Model::getModel('Page')->findAll(
+        $search_list    = Sfcms_Model::getModel('Page')->findAll(
             array(
                 'condition' => ' ( name LIKE :search OR title LIKE :search '
                                 .' OR notice LIKE :search OR content LIKE :search ) '

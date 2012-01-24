@@ -9,7 +9,7 @@
  */
 function smarty_function_banner( $params )
 {
-    $modelBanner = Model::GetModel('Banner');
+    $modelBanner = Sfcms_Model::GetModel('Banner');
     $countBanner = $modelBanner->count();
 
     if($countBanner==0)

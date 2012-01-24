@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Model_Order extends Model
+class Model_Order extends Sfcms_Model
 {
     protected $positions = array();
 

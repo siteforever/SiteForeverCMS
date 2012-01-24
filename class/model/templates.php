@@ -2,7 +2,7 @@
 /**
  * Модель шаблонов
  */
-class model_Templates extends Model
+class model_Templates extends Sfcms_Model
 {
     /**
      * Форма редактирования

@@ -10,7 +10,7 @@ class Forms_Catalog_Edit extends Form_Form
 {
     function __construct()
     {
-        $parents    = Model::getModel('Catalog')->getCategoryList();
+        $parents    = Sfcms_Model::getModel('Catalog')->getCategoryList();
 
         parent::__construct(array(
                     'name'  => 'catalog',
@@ -85,7 +85,7 @@ class Forms_Catalog_Edit extends Form_Form
                             'type'      => 'radio',
                             'label'     => 'Защита страницы',
                             'value'     => USER_GUEST,
-                            'variants'  => Model::getModel('User')->getGroups()
+                            'variants'  => Sfcms_Model::getModel('User')->getGroups()
                         ),
                         'sep'       => array('type'=>'separator'),
                         'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),

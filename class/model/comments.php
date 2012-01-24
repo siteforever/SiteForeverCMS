@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
 
-class Model_Comments extends Model
+class Model_Comments extends Sfcms_Model
 {
 
 }

@@ -2,7 +2,7 @@
 /**
  * Модель структуры
  */
-class Model_Page extends Model
+class Model_Page extends Sfcms_Model
 {
 
     /**
@@ -112,7 +112,7 @@ class Model_Page extends Model
             )
         );
         if ($page && $page->getId() != $obj->getId()) {
-            throw new ModelException( t( 'The page with this address already exists' ) );
+            throw new Sfcms_Model_Exception( t( 'The page with this address already exists' ) );
         }
 
         //        $obj->setAttributes( $attributes ); // Т.к. поиск $page может переписать параметры
@@ -134,11 +134,11 @@ class Model_Page extends Model
         if (null !== $alias) {
             if (!$obj->getId()) {
                 // если наш объект еще не создан, значит у кого-то уже есть такой алиас
-                throw new ModelException( t( 'The alias with this address already exists' ), 1 );
+                throw new Sfcms_Model_Exception( t( 'The alias with this address already exists' ), 1 );
             }
 
             if ($obj->alias_id && $obj->alias_id != $alias->getId()) {
-                throw new ModelException( t( 'The alias with this address already exists' ), 2 );
+                throw new Sfcms_Model_Exception( t( 'The alias with this address already exists' ), 2 );
             }
             //            else {
             //                $route  = $obj->createUrl();
@@ -676,7 +676,7 @@ class Model_Page extends Model
         if (!isset( $this->form )) {
             $this->form = new Forms_Page_Page();
             $this->form->getField( 'controller' )->setVariants( $this->getAvaibleModules() );
-            $this->form->getField( 'protected' )->setVariants( Model::getModel( 'User' )->getGroups() );
+            $this->form->getField( 'protected' )->setVariants( Sfcms_Model::getModel( 'User' )->getGroups() );
         }
         return $this->form;
     }

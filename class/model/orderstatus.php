@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
  
-class Model_OrderStatus extends Model
+class Model_OrderStatus extends Sfcms_Model
 {
 
 }

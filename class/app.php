@@ -29,13 +29,13 @@ class App extends Application_Abstract
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
         if( $this->getConfig()->get( 'db.debug' ) ) {
-            Model::getDB()->saveLog();
+            Sfcms_Model::getDB()->saveLog();
         }
 
         if( $this->getConfig()->get( 'debug.profile' ) ) {
             $this->logger->log(
-                "Total SQL: " . count( Model::getDB()->getLog() )
-                . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
+                "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
+                . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
             );
             $this->logger->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
             $this->logger->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
