@@ -95,9 +95,9 @@ class Model_Gallery extends Sfcms_Model
     /**
      * Удалить изображения перед удаление объекта
      * @param int $id
-     * @return void
+     * @return boolean
      */
-    public function onDeleteStart( $id )
+    public function onDeleteStart( $id = null )
     {
         $data = $this->find( $id );
         if ( $data ) {
