@@ -36,7 +36,7 @@ abstract class Sfcms_Model
     protected $app;
 
     /**
-     * @var form_Form
+     * @var Form_Form
      */
     //protected $form;
 
@@ -135,7 +135,7 @@ abstract class Sfcms_Model
     /**
      * Проверяет существование таблицы
      * @param Data_Table $table
-     * @return bool
+     * @return boolean
      */
     private function isExistTable( Data_Table $table )
     {
@@ -193,7 +193,7 @@ abstract class Sfcms_Model
             }
         }
         $class_name = $this->objectClass();
-        $obj        = new $class_name( $this, &$data );
+        $obj        = new $class_name( $this, $data );
         if( ! is_null( $obj->getId() ) ) {
             $this->addToMap( $obj );
             $obj->markClean();
@@ -206,7 +206,7 @@ abstract class Sfcms_Model
     /**
      * Адаптер к наблюдателю для получения объекта
      * @param int $id
-     * @return Data_Object|null
+     * @return Data_Object
      */
     private function getFromMap( $id )
     {
@@ -246,7 +246,7 @@ abstract class Sfcms_Model
 
     /**
      * Вернет таблицу модели
-     * @return Data_Table|null
+     * @return Data_Table
      */
     final public function getTable()
     {
@@ -405,7 +405,7 @@ abstract class Sfcms_Model
      * @param string $order
      * @param string $limit
      * @return array|Data_Collection
-     * @throws ModelException
+     * @throws Sfcms_Model_Exception
      */
     final public function findAll( $crit = array(), $params = array(), $order = '', $limit = '' )
     {
@@ -473,10 +473,11 @@ abstract class Sfcms_Model
      * Поиск по отношению
      * @param string $rel
      * @param mixed $data
-     * @return array|Data_Object
+     * @return array|Data_Object|boolean
      */
     final public function findByRelation( $rel, $data )
     {
+        $obj    = null;
         if( is_object( $data ) && $data instanceof Data_Object ) {
             $obj = $data;
         }
@@ -550,7 +551,7 @@ abstract class Sfcms_Model
         }
         else {
             $ret     = $this->db->insert( $this->getTableName(), $save_data );
-            $obj->id = $ret;
+            $obj->set('id', $ret);
             $this->addToMap( $obj );
         }
         //        var_dump($ret);
@@ -562,7 +563,7 @@ abstract class Sfcms_Model
 
     /**
      * @param Data_Object $obj
-     * @return bool
+     * @return boolean
      */
     public function onSaveStart( $obj = null )
     {
@@ -571,7 +572,7 @@ abstract class Sfcms_Model
 
     /**
      * @param Data_Object $obj
-     * @return bool
+     * @return boolean
      */
     public function onSaveSuccess( $obj = null )
     {
@@ -581,7 +582,7 @@ abstract class Sfcms_Model
     /**
      * Удаляет строку из таблицы
      * @param int $id
-     * @return bool|mixed
+     * @return boolean|mixed
      */
     final public function delete( $id )
     {
@@ -603,7 +604,7 @@ abstract class Sfcms_Model
      * Событие, вызывается перед удалением объекта
      * Если вернет false, объект не будет удален
      * @param int $id
-     * @return bool
+     * @return boolean
      */
     public function onDeleteStart( $id = null )
     {
@@ -613,7 +614,7 @@ abstract class Sfcms_Model
     /**
      * Событие, вызывается после успешного удаления объекта
      * @param int $id
-     * @return bool
+     * @return boolean
      */
     public function onDeleteSuccess( $id = null )
     {
