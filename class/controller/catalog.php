@@ -136,7 +136,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         $count = $catalog_model->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
 
-        $paging = $this->paging( $count, 10, $this->router->createLink( $this->page[ 'alias' ], array( 'cat'=> $item->getId() ) ) );
+        $paging = $this->paging( $count, 10, $this->router->createLink( $this->page[ 'alias' ], array( 'id'=> $item->getId() ) ) );
 
         $criteria[ 'limit' ] = $paging->limit;
 
@@ -149,12 +149,8 @@ class Controller_Catalog extends Sfcms_Controller
             $set = $this->request->get( 'order' );
             if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
+                $this->request->set( 'order', $order );
             }
-            else {
-                $orderListKeys    = array_keys( $orderList );
-                $order = reset( $orderListKeys );
-            }
-            $this->request->set( 'order', $order );
         }
 
         if( $order ) {
