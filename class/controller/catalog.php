@@ -350,7 +350,7 @@ class Controller_Catalog extends Sfcms_Controller
             '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">Каталог</a>'
         ); // breadcrumbs
 
-        if( $from_string = @unserialize( $path ) ) {
+        if( $from_string = @json_decode( $path ) ) {
             if( $from_string && is_array( $from_string ) ) {
                 foreach( $from_string as $val ) {
                     $bc[ ] = '<a href="'

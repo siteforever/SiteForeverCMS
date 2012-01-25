@@ -108,7 +108,11 @@ class std_error
             return true;
         }
 
-        $msg      = "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}\n\n"
+        $address = isset( $_SERVER[ 'HTTP_HOST' ] )
+            ? "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}\n\n"
+            : '';
+
+        $msg      =  $address
                     . self::$types[$errno] . " $errstr in $errfile:$errline\n\n"
                     .join("\n", $trace);
 
