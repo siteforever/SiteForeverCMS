@@ -98,7 +98,7 @@ class std_error
      * @param $errfile
      * @param $errline
      * @param $errcontext
-     * @return bool
+     * @return boolean
      */
     static function handler( $errno = 0, $errstr = '', $errfile = '', $errline = 0, $errcontext = array() )
     {
