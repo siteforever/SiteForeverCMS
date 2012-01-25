@@ -34,14 +34,15 @@ class Tpl_Factory
             $obj = new $driver();
             //Register::setTpl( $obj );
             $obj->setTplDir(ROOT."/themes/{$theme}/templates");
-            $tpl_c  = ROOT."/protected/_runtime/_templates_c";
-            $cache  = ROOT."/protected/_runtime/_cache";
+            $runtime    = ROOT."/protected/_runtime";
+            $tpl_c  = $runtime."/_templates_c";
+            $cache  = $runtime."/_cache";
 
             if ( ! is_dir( $tpl_c ) ) {
-                mkdir( $tpl_c, 0666, true );
+                @mkdir( $tpl_c, 0755, true );
             }
             if ( ! is_dir( $cache ) ) {
-                mkdir( $cache, 0666, true );
+                @mkdir( $cache, 0755, true );
             }
             $obj->setCplDir($tpl_c);
             $obj->setCacheDir($cache);
