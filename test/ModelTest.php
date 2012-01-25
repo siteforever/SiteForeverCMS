@@ -1,6 +1,6 @@
 <?php
 
-class Model_Test extends Model {}
+class Model_Test extends Sfcms_Model {}
 
 /**
  * Test class for Model.
@@ -9,7 +9,7 @@ class Model_Test extends Model {}
 class ModelTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Model
+     * @var Sfcms_Model
      */
     protected $object;
 
@@ -20,7 +20,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( is_null( $this->object ) ) {
-            $this->object = Model::getModel('Test');
+            $this->object = Sfcms_Model::getModel('Test');
         }
     }
 

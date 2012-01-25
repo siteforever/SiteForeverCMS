@@ -11,7 +11,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     protected $data   = array();
 
     /**
-     * @var Model
+     * @var Sfcms_Model
      */
     protected $model  = null;
 
@@ -27,10 +27,10 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     protected $field_names   = array();
 
     /**
-     * @param Model $model
+     * @param Sfcms_Model $model
      * @param array $data
      */
-    public function __construct( Model $model, $data )
+    public function __construct( Sfcms_Model $model, $data )
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
@@ -195,14 +195,14 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     /**
      * Вернет модель данных
      * @param string $model
-     * @return Model
+     * @return Sfcms_Model
      */
     public function getModel( $model = '' )
     {
         if ( '' === $model )
             return $this->model;
         else
-            return Model::getModel($model);
+            return Sfcms_Model::getModel($model);
     }
 
     public function getTable()

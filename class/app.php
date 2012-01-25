@@ -29,13 +29,13 @@ class App extends Application_Abstract
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
         if( $this->getConfig()->get( 'db.debug' ) ) {
-            Model::getDB()->saveLog();
+            Sfcms_Model::getDB()->saveLog();
         }
 
         if( $this->getConfig()->get( 'debug.profile' ) ) {
             $this->logger->log(
-                "Total SQL: " . count( Model::getDB()->getLog() )
-                . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
+                "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
+                . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
             );
             $this->logger->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
             $this->logger->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
@@ -64,10 +64,6 @@ class App extends Application_Abstract
         Sfcms_i18n::getInstance()->setLanguage(
             $this->getConfig()->get( 'language' )
         );
-
-        // Locale
-        setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
-        setlocale( LC_NUMERIC, 'C', 'en_US.UTF-8', 'en_US', 'English' );
 
         // TIME_ZONE
         date_default_timezone_set( 'Europe/Moscow' );
@@ -147,7 +143,7 @@ class App extends Application_Abstract
             && ! $this->getRouter()->isSystem()
         ) {
             if( $this->getRequest()->get( 'controller' ) == 'page'
-                && $this->getAuth()->currentUser()->perm == USER_GUEST
+                && $this->getAuth()->currentUser()->get('perm') == USER_GUEST
                 && $this->getBasket()->count() == 0
             ) {
                 $this->getTpl()->caching( true );
@@ -195,12 +191,12 @@ class App extends Application_Abstract
          * Данные шаблона
          */
         $this->getTpl()->assign( $this->getRequest()->get( 'tpldata' ) );
-        $this->getTpl()->config   = $this->getConfig();
-        $this->getTpl()->feedback = $this->getRequest()->getFeedbackString();
-        $this->getTpl()->host     = $_SERVER[ 'HTTP_HOST' ];
-        $this->getTpl()->memory   = number_format( memory_get_usage() / 1024, 2, ',', ' ' ) . ' Kb';
-        $this->getTpl()->exec     = number_format( microtime( true ) - self::$start_time, 3, ',', ' ' ) . ' sec.';
-        $this->getTpl()->request  = $this->getRequest();
+        $this->getTpl()->assign('config', $this->getConfig());
+        $this->getTpl()->assign('feedback', $this->getRequest()->getFeedbackString());
+        $this->getTpl()->assign('host', $_SERVER[ 'HTTP_HOST' ]);
+        $this->getTpl()->assign('memory', number_format( memory_get_usage() / 1024, 2, ',', ' ' ) . ' Kb');
+        $this->getTpl()->assign('exec', number_format( microtime( true ) - self::$start_time, 3, ',', ' ' ) . ' sec.');
+        $this->getTpl()->assign('request', $this->getRequest());
 
         if( ! $this->getRequest()->getAjax() ) {
             header( 'Content-type: text/html; charset=utf-8' );
@@ -315,7 +311,7 @@ class App extends Application_Abstract
      *
      * @param  $class_name
      *
-     * @return bool
+     * @return boolean
      */
     static function autoload( $class_name )
     {

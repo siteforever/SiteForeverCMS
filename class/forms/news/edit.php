@@ -13,7 +13,7 @@ class forms_news_Edit extends form_Form
     {
         $app    = App::getInstance();
 
-        $category   = Model::getModel('model_NewsCategory');
+        $category   = Sfcms_Model::getModel('model_NewsCategory');
         $cats_data = $category->findAll();
 
 
@@ -51,7 +51,7 @@ class forms_news_Edit extends form_Form
                     'type'      => 'radio',
                     'label'     => 'Защита страницы',
                     'value'     => USER_GUEST,
-                    'variants'  => Model::getModel('User')->getGroups(),
+                    'variants'  => Sfcms_Model::getModel('User')->getGroups(),
                 ),
 
                 'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

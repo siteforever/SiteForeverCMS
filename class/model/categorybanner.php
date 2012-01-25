@@ -9,7 +9,7 @@
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
  
-class Model_CategoryBanner extends Model
+class Model_CategoryBanner extends Sfcms_Model
 {
      /**
      * Массив с категориями для select

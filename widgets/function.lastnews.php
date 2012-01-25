@@ -45,7 +45,7 @@ function smarty_function_lastnews( $params, $smarty )
     /**
      * @var model_news $model
      */
-    $model = Model::getModel('News');
+    $model = Sfcms_Model::getModel('News');
 
     //$model->setCond( implode(' AND ', $where) );
 

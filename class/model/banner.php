@@ -4,7 +4,7 @@
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
  
-class Model_Banner extends Model
+class Model_Banner extends Sfcms_Model
 {
     /**
      * @var Forms_Banners_Banner

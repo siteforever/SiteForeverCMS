@@ -12,7 +12,7 @@ class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->gallery    = Model::getModel('Gallery')->createObject(
+        $this->gallery    = Sfcms_Model::getModel('Gallery')->createObject(
             array(
                 'id'            => 1,
                 'category_id'   => 1,

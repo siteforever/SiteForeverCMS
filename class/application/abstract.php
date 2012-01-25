@@ -297,11 +297,11 @@ abstract class Application_Abstract
     /**
      * Вернет модель
      * @param string $model
-     * @return Model
+     * @return Sfcms_Model
      */
     function getModel( $model )
     {
-        return Model::getModel( $model );
+        return Sfcms_Model::getModel( $model );
     }
 
     /**

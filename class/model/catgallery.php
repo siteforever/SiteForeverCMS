@@ -4,7 +4,7 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class Model_CatGallery extends Model
+class Model_CatGallery extends Sfcms_Model
 {
     // Массив, проиднексированный по продуктам
     protected $data_all = array();

@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
  
-class Model_OrderPosition extends Model
+class Model_OrderPosition extends Sfcms_Model
 {
     function relation()
     {

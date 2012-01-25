@@ -3,6 +3,14 @@
  * Объект Страницы
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
+ *
+ * @property int $id
+ * @property int $parent
+ * @property string $name
+ * @property string $template
+ * @property string $alias
+ * @property int $alias_id
+ * @property string $path
  */
 
 class Data_Object_Page extends Data_Object
@@ -19,7 +27,7 @@ class Data_Object_Page extends Data_Object
         if ( $this->data['alias'] ) {
             $result = $this->data['alias'];
         } else {
-            $result = \sfcms\i18n::getInstance()->translit($this->data['name']);
+            $result = Sfcms_i18n::getInstance()->translit($this->data['name']);
             $this->data['alias']    = $result;
         }
 

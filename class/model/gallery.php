@@ -3,7 +3,7 @@
  * Модель для изображений галереи
  */
 
-class Model_Gallery extends Model
+class Model_Gallery extends Sfcms_Model
 {
     protected $form;
 
@@ -38,12 +38,12 @@ class Model_Gallery extends Model
         if ( null !== $alias ) {
             if ( null === $obj ) {
                 // если наш объект еще не создан, значит у кого-то уже есть такой алиас
-                throw new ModelException('Такой алиас уже существует');
+                throw new Sfcms_Model_Exception('Такой алиас уже существует');
             } else {
                 $route  = $obj->createUrl();
                 if ( $alias->url != $route ) {
                     // если адреса не соответствуют
-                    throw new ModelException('Такой алиас уже существует');
+                    throw new Sfcms_Model_Exception('Такой алиас уже существует');
                 }
             }
         }
@@ -95,9 +95,9 @@ class Model_Gallery extends Model
     /**
      * Удалить изображения перед удаление объекта
      * @param int $id
-     * @return void
+     * @return boolean
      */
-    public function onDeleteStart( $id )
+    public function onDeleteStart( $id = null )
     {
         $data = $this->find( $id );
         if ( $data ) {

@@ -74,6 +74,9 @@ class Sfcms_i18n
     public static function getInstance()
     {
         if( is_null( self::$_instance ) ) {
+            // Locale
+            setlocale( LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C' );
+            setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
             self::$_instance = new Sfcms_i18n();
         }
         return self::$_instance;
@@ -99,7 +102,7 @@ class Sfcms_i18n
     public function translit( $str )
     {
         foreach( $this->_table as $rus => $eng ) {
-            $str = str_ireplace( $rus, $eng, $str );
+            $str    = preg_replace('/'.$rus.'/ui', $eng, $str); // For uft8 support
         }
         return $str;
     }

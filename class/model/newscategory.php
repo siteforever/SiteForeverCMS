@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
  
-class model_NewsCategory extends Model
+class model_NewsCategory extends Sfcms_Model
 {
     private $form = null;
 

@@ -1,5 +1,5 @@
 <?php
-class Model_User extends Model
+class Model_User extends Sfcms_Model
 {
     /**
      * Форма входа в систему

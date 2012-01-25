@@ -268,7 +268,7 @@ class Router
      */
     private function findAlias()
     {
-        $model = Model::getModel( 'Alias' );
+        $model = Sfcms_Model::getModel( 'Alias' );
 
         $alias = $model->find(
             array(
@@ -331,7 +331,7 @@ class Router
      */
     private function findTableRoute()
     {
-        $routes = Model::getModel( 'Routes' );
+        $routes = Sfcms_Model::getModel( 'Routes' );
 
         $this->route_table = $routes->findAll( array(
             'cond' => 'active = 1',
@@ -359,7 +359,7 @@ class Router
      */
     private function findStructure()
     {
-        $model = Model::getModel( 'Page' );
+        $model = Sfcms_Model::getModel( 'Page' );
 
         $data = $model->find( array(
             'cond'  => 'alias = ? AND deleted = 0',
