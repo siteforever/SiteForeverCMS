@@ -108,7 +108,7 @@ class std_error
             return true;
         }
 
-        $address = isset( $_SERVER[ 'HTTP_HOST' ] )
+        $address = isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['REQUEST_URI'] )
             ? "http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}\n\n"
             : '';
 
