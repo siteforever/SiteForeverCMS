@@ -216,10 +216,11 @@ abstract class Sfcms_Model
     /**
      * Адаптер к наблюдателю для добавления объекта
      * @param Data_Object $obj
+     * @return void;
      */
     private function addToMap( Data_Object $obj )
     {
-        return Data_Watcher::add( $obj );
+        Data_Watcher::add( $obj );
     }
 
 
@@ -227,7 +228,6 @@ abstract class Sfcms_Model
      * Класс для контейнера данных
      * @return string
      */
-    //public abstract function objectClass();
     public function objectClass()
     {
         return 'Data_Object_' . substr( get_class( $this ), 6 );
@@ -238,7 +238,6 @@ abstract class Sfcms_Model
      * @abstract
      * @return string
      */
-    //abstract public function tableClass();
     public function tableClass()
     {
         return 'Data_Table_' . substr( get_class( $this ), 6 );
