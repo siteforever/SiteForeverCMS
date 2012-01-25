@@ -4,8 +4,9 @@
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
+ *
+ * @property int $parent
  */
- 
 class Data_Object_Catalog extends Data_Object
 {
     protected $_gallery = null;

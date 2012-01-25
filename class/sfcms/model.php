@@ -399,7 +399,7 @@ abstract class Sfcms_Model
     }
 
     /**
-     * @param array $crit
+     * @param array|string $crit
      * @param array $params
      * @param string $order
      * @param string $limit
