@@ -87,7 +87,6 @@ class Forms_Catalog_Edit extends Form_Form
                             'value'     => USER_GUEST,
                             'variants'  => Sfcms_Model::getModel('User')->getGroups()
                         ),
-                        'sep'       => array('type'=>'separator'),
                         'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
                     ),
                 ));

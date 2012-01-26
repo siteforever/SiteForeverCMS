@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 15.09.11
- * Time: 17:48
- * To change this template use File | Settings | File Templates.
+ * Форма категорий баннеров
  */
  
 class Forms_Banners_CategoryBanner extends Form_Form

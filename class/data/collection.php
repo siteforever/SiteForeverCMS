@@ -23,7 +23,7 @@ class Data_Collection implements Iterator
 
     /**
      * Объект маппера
-     * @var mappers_Mapper
+     * @var Sfcms_Model
      */
     protected $_mapper;
 
@@ -42,7 +42,7 @@ class Data_Collection implements Iterator
     /**
      * Создаст коллекцию
      * @param $raw
-     * @param mapper_Mapper $mapper
+     * @param Sfcms_Model $mapper
      */
     function __construct( $raw = null, Sfcms_Model $mapper = null )
     {
@@ -76,14 +76,14 @@ class Data_Collection implements Iterator
 
     /**
      * Удалит элемент из коллекции
-     * @param bool|int|domain_Object $key
+     * @param boolean|int|Data_Object $key
      */
     function del( $key = false )
     {
         if ( $key === false ) {
             $key = $this->_pointer;
         }
-        if ( $key instanceof domain_Object ) {
+        if ( $key instanceof Data_Object ) {
             foreach ( $this->_raw as $k => $a ) {
                 if ( $a['id'] == $key->getId() ) {
                     $key    = $k;
@@ -113,7 +113,6 @@ class Data_Collection implements Iterator
 
     /**
      * Расчитает сумму по нужной колонке
-     * @throws Mapper_Exeption
      * @param string $key
      * @return int
      */
@@ -126,7 +125,6 @@ class Data_Collection implements Iterator
             }
         }
         return $summa;
-        //throw new Mapper_Exeption('Key field "'.$key.'" not found');
     }
 
     /**
@@ -154,9 +152,9 @@ class Data_Collection implements Iterator
     /**
      * Вернуть объект
      * @param int $num
-     * @return domain_Object
+     * @return Data_Object
      */
-    protected function getRow( $num )
+    public function getRow( $num )
     {
         $this->notifyAccess();
 

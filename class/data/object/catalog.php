@@ -5,7 +5,12 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  *
+ * @property int $id
  * @property int $parent
+ * @property int $cat
+ * @property string $name
+ * @property string $path
+ * @property int deleted
  */
 class Data_Object_Catalog extends Data_Object
 {

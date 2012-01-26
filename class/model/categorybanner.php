@@ -1,22 +1,24 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 15.09.11
- * Time: 13:10
- * To change this template use File | Settings | File Templates.
  * Модель категории баннеров
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
  
 class Model_CategoryBanner extends Sfcms_Model
 {
+
+    /**
+     * @var Forms_Banners_CategoryBanner
+     */
+    protected $form = null;
+
      /**
      * Массив с категориями для select
      * @return array
      */
     function getCategoryBanner()
     {
+        $parents = array();
         foreach( $this->findAll() as $branch ){
             $parents[$branch['id']] = $branch['name'];
         }
@@ -24,12 +26,12 @@ class Model_CategoryBanner extends Sfcms_Model
     }
 
      /**
-     * @return form_Form
+     * @return Forms_Banners_CategoryBanner
      */
     function getForm()
     {
-        if ( is_null( $this->form ) ) {
-            $this->form = new forms_banners_categorybanner();
+        if ( null === $this->form ) {
+            $this->form = new Forms_Banners_CategoryBanner();
         }
         return $this->form;
     }

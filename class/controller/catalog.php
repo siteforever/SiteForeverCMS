@@ -514,27 +514,27 @@ class Controller_Catalog extends Sfcms_Controller
     public function tradeAction()
     {
         /**
-         * @var Model_Catalog $catalog
+         * @var Model_Catalog $catalogFinder
+         * @var Data_Object_Catalog $pitem
          * @var Form_Field $field
          * @var Form_Form $form
+         * @var Sfcms_Filter_Collection $filter
+         * @var Sfcms_Filter $fvalues
          */
 
-        $catalog = $this->getModel( 'Catalog' );
+        $catalogFinder = $this->getModel( 'Catalog' );
 
         $id        = $this->request->get( 'edit', Request::INT );
         $parent_id = $this->request->get( 'add', Request::INT, 0 );
 
-        $form = $catalog->getForm();
+        $form = $catalogFinder->getForm();
 
-        if( $id ) // если раздел существует
-        {
-            $item      = $catalog->find( $id );
+        if( $id ) { // если раздел существует
+            $item      = $catalogFinder->find( $id );
             $parent_id = $item[ 'parent' ];
             $form->setData( $item->getAttributes() );
-        }
-        else
-        {
-            $item = $catalog->createObject();
+        } else {
+            $item = $catalogFinder->createObject();
             $form->getField( 'parent' )->setValue( $parent_id );
             $form->getField( 'cat' )->setValue( 0 );
         }
@@ -552,28 +552,27 @@ class Controller_Catalog extends Sfcms_Controller
         $form->getField( 'absent' )->show();
 
         // показываем поля родителя
-        $parent = $catalog->find( $parent_id );
+        $parent = $catalogFinder->find( $parent_id );
 
-        $filter = array();
         if( file_exists( ROOT . '/protected/filters.php' ) ) {
             $filter = include( ROOT . '/protected/filters.php' );
         }
 
         if( $parent ) {
 
-            $pitem = $this->getModel( 'Catalog' )->find( $parent_id );
+            $pitem = $catalogFinder->find( $parent_id );
 
-            while( $pitem && ! isset( $filter[ $pitem->id ] ) ) {
+            while( $pitem && ! $filter->getFilter( $pitem->id ) ) {
                 if( $pitem->parent ) {
-                    $pitem = $this->getModel( 'Catalog' )->find( $pitem->parent );
+                    $pitem = $catalogFinder->find( $pitem->parent );
                 } else {
                     $pitem = false;
                 }
             }
 
-            $fvalues = array();
-            if( $pitem && isset( $filter[ $pitem->id ] ) ) {
-                $fvalues = $filter[ $pitem->id ];
+            $fvalues = null;
+            if( $pitem && $filter->getFilter( $pitem->id ) ) {
+                $fvalues = $filter->getFilter( $pitem->id );
             }
             //            printVar($fvalues);
             //            printVar($parent->getAttributes());
@@ -583,12 +582,15 @@ class Controller_Catalog extends Sfcms_Controller
                     $field = $form->getField( $k );
                     trim( $p ) ? $field->setLabel( $p ) : $field->hide();
 
-                    if( isset( $fvalues[ $m[ 1 ] ] ) ) {
-                        if( is_array( $fvalues[ $m[ 1 ] ][ 1 ] ) && ! $field->getValue() ) {
+                    /**
+                     * @var Sfcms_Filter_Group $fGroup
+                     */
+                    if ( $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
+                        if (  is_array( $fGroup->getData() ) && ! $field->getValue() ) {
                             $form->getField( $k )->setValue(
                                 str_ireplace(
                                     'Все|', '',
-                                    implode( '|', $fvalues[ $m[ 1 ] ][ 1 ] )
+                                    implode( '|', $fGroup->getData() )
                                 )
                             );
                         }

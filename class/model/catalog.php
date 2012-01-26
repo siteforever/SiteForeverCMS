@@ -13,7 +13,7 @@ class Model_Catalog extends Sfcms_Model
 
     /**
      * Списков разделов в кэше
-     * @var array
+     * @var Data_Collection
      */
     protected $all = array();
 
@@ -272,7 +272,7 @@ class Model_Catalog extends Sfcms_Model
     /**
      * @param $id
      *
-     * @return bool
+     * @return boolean
      */
     function onDeleteStart( $id = null )
     {
@@ -322,7 +322,7 @@ class Model_Catalog extends Sfcms_Model
             }
             // создаем массив, индексируемый по родителям
             foreach( $this->all as $obj ) {
-                $this->parents[ $obj[ 'parent' ] ][ $obj[ 'id' ] ] = $obj;
+                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
             }
         }
         return $this->parents;
@@ -373,7 +373,7 @@ class Model_Catalog extends Sfcms_Model
 
     /**
      * Определяет id активной категории
-     * @return bool|int|mixed
+     * @return boolean|int|mixed
      */
     private function getActiveCategory()
     {
@@ -469,7 +469,7 @@ class Model_Catalog extends Sfcms_Model
      * @param $parent
      * @param $levelback
      *
-     * @return array|bool
+     * @return array|boolean
      */
     function getSelectTree( $parent, $levelback )
     {
@@ -480,7 +480,7 @@ class Model_Catalog extends Sfcms_Model
 
         $list = array();
 
-        if( count( $this->parents ) == 0 ) {
+        if( count( $this->all ) == 0 ) {
             $this->createTree();
         }
 
@@ -492,19 +492,30 @@ class Model_Catalog extends Sfcms_Model
             return false;
         }
 
+        /**
+         * @var Data_Object_Catalog $branch
+         * @var Data_Object_Catalog $obj
+         */
         foreach( $this->parents[ $parent ] as $branch ) {
 
-            if( 0 == $branch[ 'cat' ] || $branch[ 'deleted' ] ) {
+//            var_dump( get_class( $branch ) . $branch->id );
+
+            if( 0 == $branch->cat || 1 == $branch->deleted ) {
                 continue;
             }
 
-            $list[ $branch[ 'id' ] ] = str_repeat( '&nbsp;', 8 * ( $maxlevelback - $levelback ) ) . $branch[ 'name' ];
-            $sublist                 = $this->getSelectTree( $branch[ 'id' ], $levelback - 1 );
+            $list[ $branch->id ] = str_repeat( '&nbsp;', 8 * ( $maxlevelback - $levelback ) ) . $branch->name;
+            $sublist             = $this->getSelectTree( $branch->id, $levelback - 1 );
             if( $sublist ) {
                 foreach( $sublist as $i => $item ) {
-                    if( 0 == $item->deleted ) {
-                        $list[ $i ] = $item;
+                    $obj    = $this->all->getRow( $i );
+                    if ( null === $obj ) {
+                        continue;
                     }
+                    if( 1 === $obj->deleted ) {
+                        continue;
+                    }
+                    $list[ $i ] = $item;
                 }
             }
         }
@@ -537,10 +548,13 @@ class Model_Catalog extends Sfcms_Model
 
     /**
      * Переместить товары в нужный раздел
-     * @return mixed
+     * @return void
      */
     function moveList()
     {
+        /**
+         * @var Data_Object_Catalog $item
+         */
         $list   = $this->request->get( 'move_list' );
         $target = $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT );
         // TODO Не происходит пересчета порядка позиций
@@ -554,7 +568,6 @@ class Model_Catalog extends Sfcms_Model
                 $this->update( $item );
             }
         }
-        return '';
     }
 
     /**
