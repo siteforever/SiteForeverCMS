@@ -1,0 +1,418 @@
+@CHARSET "UTF-8";
+
+html, body {
+    font-family: Verdana !important;
+    font-size: 12px;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    margin-bottom: 0.5em;
+}
+
+a {
+    color: #0072bc;
+}
+
+h1 {
+    font-size: 18px;
+    /*color: #005b7f;*/
+    color: #fff;
+    text-shadow: black 0px 0px 5px;
+    margin: 0px;
+    padding: 10px;
+    border-bottom: 1px #005B7F solid;
+    margin-bottom: 20px;
+    /*background: #c7e2fe;*/
+    background: #ddd url('/images/admin/h1.gif') repeat-x 0 0;
+}
+h2 {font-size: 16px;}
+h3 {font-size: 14px;}
+h4 {font-size: 12px;}
+h5 {font-size: 10px;}
+h6 {font-size: 8px;}
+
+small, span.small {
+    font-size: 10px;
+}
+
+fieldset {
+    border: 1px #ddd solid;
+    border-radius: 0.5em;
+    padding: 1em;
+    margin-bottom: 1em;
+}
+
+
+div.ui-tabs ul {
+    display: inline-block;
+}
+
+input, select, textarea {
+    padding: 0.2em 0.1em;
+    width: 150px;
+}
+
+input.ui-button, .ui-button-text-only .ui-button-text {
+    padding: 0.2em 1em;
+}
+
+div.b-request-feedback {
+    padding: 0;
+    border: none;
+    color: #333;
+}
+
+.blockMsg div.feedback {
+    margin: 0;
+}
+
+div.l-wrapper {
+    min-height: 100%;
+    min-width: 1000px;
+    height: auto !important;
+    height: 100%;
+    margin-bottom: -30px;
+}
+    div.l-wrapper div.l-footer-wrapper {
+        height: 50px;
+    }
+
+div.l-footer {
+    height: 30px;
+    min-width: 1000px;
+    line-height: 30px;
+    background: #ddd;
+}
+    div.l-footer a {
+        margin-left: 10px;
+    }
+
+div.ui-dialog {
+    font-size: 12px;
+}
+    div.ui-dialog ul li {
+        margin-bottom: 0.5em;
+    }
+
+div.l-main-panel {
+}
+    div.l-panel {
+        float: left;
+        width: 240px;
+    }
+    div.l-content {
+        margin-left: 250px;
+        margin-right: 20px;
+        min-width: 700px;
+        /*float: left;*/
+    }
+        div.l-content-wrapper {
+            width: 700px;
+        }
+
+div.paging {
+    font: 12px Arial, Helvetica, sans-serif;
+    margin: 0 0 5px 0;
+}
+
+
+/* список модулей */
+div.b-module-menu {
+    clear: both;
+    background: #e6e6e7 url("/images/admin/tab_bg.gif") repeat-x bottom left;
+    border: 1px #999 solid;
+    padding: 5px;
+    font-size: 12px;
+    margin: 0 0 5px 0;
+}
+    div.b-module-menu ul {
+    }
+        div.b-module-menu li {
+            float: left;
+            padding: 2px 10px;
+        }
+            div.b-module-menu li a {
+                color: #000;
+                font-weight: bold;
+            }
+
+
+
+
+/* меню админки */
+.b-admin-menu {
+    margin-left: 10px;
+}
+    .b-admin-menu li {
+        padding: 0px;
+        margin-bottom: 5px;
+    }
+    .b-admin-menu li.add {
+        background: url(/images/admin/icons/add.png) no-repeat 2px center;
+    }
+        .b-admin-menu li span, .b-admin-menu li a {
+            display: block;
+            padding: 5px 2px;
+            /*background: #eee;*/
+            color: #0076a3;
+            font-weight: bold;
+            /*border: 1px #666 solid;*/
+            text-decoration: none;
+
+            /*border-radius: 5px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;*/
+        }
+        .b-admin-menu li a.active {
+            color: green !important;
+            /*background: url(/images/admin/icons/bullet_go.png) no-repeat 2px center;*/
+            /*padding-left: 20px;*/
+        }
+
+        .b-admin-menu li a:hover {
+            color: #00bff3;
+        }
+
+        .b-admin-menu ul li {
+            padding: 5px 0 5px 20px;
+        }
+            .b-admin-menu ul li span, .b-admin-menu ul li a {
+                background: none;
+                border: none;
+                display: inline;
+                font-weight: normal;
+            }
+                .b-admin-menu ul li ul {
+
+                }
+
+                    .b-admin-menu ul li ul li {
+
+                    }
+
+
+
+
+
+/* наборы данных */
+table.dataset {
+    width: 100%;
+    font-size: 12px;
+    margin: 0 0 5px 0;
+    border: 1px #bbd solid;
+    background: #ffd;
+}
+    table.dataset td, table.dataset th {
+        padding: 5px;
+        border-bottom: 1px #bbd solid;
+        line-height: 1.5em;
+        background: #fff;
+    }
+    table.dataset th {
+        font-weight: bold;
+        background: #7bb1e9 url("/images/admin/table.gif") repeat-x 0 0;
+        color: #fff;
+        text-align: left;
+    }
+        table.dataset th a {
+            color: yellow;
+        }
+
+    table.dataset tr.select td {
+        background: #e7f2ff;
+    }
+
+
+.catalog_data input.trade_pos {
+    width:50px;
+    text-align:right;
+}
+.catalog_data td.trade_pos {
+    width:50px;
+}
+
+
+/* формы */
+
+form.standart {
+    width: 100%;
+    max-width:700px;
+    font-size: 12px;
+    padding: 10px;
+    background: #eee;
+    border: 1px solid #666;
+
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+form.standart label {
+    cursor: pointer;
+}
+
+form.standart textarea.elcatalog-meta {
+    height: 200px;
+}
+
+form.standart input,
+form.standart select,
+form.standart textarea {
+    width:  100%;
+    border: 1px #999 solid;
+    background: #fff;
+}
+form.standart textarea {
+    height: 300px;
+}
+form.standart input.submit {
+    width: 100px;
+}
+form.standart input.radio,
+form.standart input.checkbox {
+    width: 16px;
+    height: 16px;
+    border: none;
+    background: none;
+}
+form.standart input.datepicker {
+    width: 80px;
+}
+
+    div.b-form-field {
+        margin-bottom: 1em;
+    }
+        div.b-form-field label  {
+            width: 145px;
+            float: left;
+        }
+        div.b-form-field div  {
+            margin-left: 150px;
+        }
+        div.b-form-field div.b-form-field-textarea  {
+            margin-left: 0;
+            padding-top: 1.5em;
+        }
+            div.b-form-field div div  {
+                margin: 0;
+            }
+
+        div.b-form-field-radio label,
+        div.b-form-field-checkbox label {
+            float: none;
+        }
+
+
+/* Основная структура */
+
+div.b-main-structure {
+    width: 80%;
+}
+    /*div.b-main-structure li.level_one {
+        padding: 0;
+    }*/
+    div.b-main-structure li {
+        /*display: block;*/
+        margin: 0px;
+        padding: 0 0 0 25px;
+        /*background:url(/images/admin/cross_li.gif) repeat-y 0 0;*/
+    }
+
+    .placeholder {
+        height: 30px;
+        background: #cae4ff;
+    }
+    /*
+    div.b-main-structure li.level_one { background: none; }
+    div.b-main-structure li span.cross1 { background:url(/images/admin/cross1.gif) no-repeat 0 0; }
+    div.b-main-structure li span.cross2 { background:url(/images/admin/cross2.gif) no-repeat 0 0; }
+    div.b-main-structure li span.cross3 { background:url(/images/admin/cross3.gif) no-repeat 0 0; }
+    */
+        div.b-main-structure li span {
+            display: block;
+            padding: 3px 5px 5px 5px;
+        }
+            div.b-main-structure li span span.tools {
+                visibility: hidden;
+                padding: 0 10px;
+                margin: 0;
+                display: inline;
+                background: none;
+            }
+            div.b-main-structure li span span.id_number {
+                text-align: right;
+                overflow: hidden;
+                width: 50px;
+                float: right;
+            }
+            div.b-main-structure li span span.order {
+                text-align:right;
+                display: block;
+                float: left;
+                position:relative;
+                left: 100%;
+                margin: 0 0 0 -200px;
+                width: 200px;
+                padding: 0;
+                background: none;
+            }
+        div.b-main-structure li span.active {
+            background-color: #cae4ff;
+        }
+            div.b-main-structure li span.active span.tools {
+                visibility: visible;
+            }
+        div.b-main-structure li span.open {
+            background-image: url(/images/admin/icons/folder_explore.png);
+        }
+        div.b-main-structure li span.page {
+            background-image: url(/images/admin/icons/page.png);
+        }
+
+
+/* Галлерея каталога */
+.a-gallery {
+
+}
+    .a-gallery-item {
+        float: left;
+        width: 100px;
+        height: 120px;
+        border: 1px #999 solid;
+        margin: 0 10px 10px 0;
+        overflow: hidden;
+    }
+
+    .a-gallery-item-add {
+        height: 100px;
+    }
+
+.filemanager {
+
+}
+    .filemanager li {
+        float: left;
+        width: 105px;
+        height: 150px;
+        overflow: hidden;
+        margin: 0 20px 20px 0;
+    }
+        .filemanager li img {
+            border: 1px solid #ddd;
+        }
+        .filemanager li div {
+            text-align: center;
+        }
+
+    .tile a {
+        text-decoration: none;
+    }
+
+.ui-datepicker-trigger {
+    cursor:pointer;
+}
+
+.el-paddinginput input, .el-paddinginput select {
+    width: auto;
+}

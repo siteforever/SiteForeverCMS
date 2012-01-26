@@ -15,8 +15,9 @@ var wysiwyg = {
             "skin" :            'default',
             "language":         'ru',
             "convert_urls" :    false,
-            "plugins" :         "paste",
+            "plugins" :         "paste,table,media",
             "paste_auto_cleanup_on_paste" : true,
+            "theme_advanced_buttons1_add" : "|,table,media",
             "theme_advanced_buttons2_add_before" : "pastetext,pasteword,|",
             "extended_valid_elements" : "div[*],p[*]",
             // Theme options
