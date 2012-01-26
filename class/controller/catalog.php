@@ -41,6 +41,9 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function indexAction()
     {
+        /**
+         * @var Data_Object_Catalog $item
+         */
         $cat_id = $this->getCatId();
 
         $catalog_model = $this->getModel( 'Catalog' );
@@ -52,7 +55,7 @@ class Controller_Catalog extends Sfcms_Controller
             $criteria->condition = 'parent = 0 AND cat = 1 AND deleted = 0 AND hidden = 0';
             $criteria->order     = 'pos DESC';
             $list                = $catalog_model->findAll( $criteria );
-            $this->tpl->list     = $list;
+            $this->tpl->assign('list', $list );
 
             $this->request->setContent( $this->tpl->fetch( 'catalog.category_first' ) );
             return;
@@ -71,7 +74,7 @@ class Controller_Catalog extends Sfcms_Controller
 
 
         //        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
-        $this->tpl->page_number = $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 );
+        $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
 
         try {
             // Если открывается раздел каталога
@@ -110,9 +113,9 @@ class Controller_Catalog extends Sfcms_Controller
          */
 
         $cat_id        = $this->getCatId();
-        $catalog_model = $this->getModel( 'Catalog' );
+        $catalogFinder = $this->getModel( 'Catalog' );
 
-        $parent = $catalog_model->find( $item->getId() );
+        $parent = $catalogFinder->find( $item->getId() );
 
 
         // количество товаров
@@ -121,7 +124,7 @@ class Controller_Catalog extends Sfcms_Controller
         );
 
         $criteria[ 'params' ] = array( $item->getId(), 1 );
-        $subcats              = $catalog_model->findAll( $criteria );
+        $subcats              = $catalogFinder->findAll( $criteria );
         $subcats_id           = array();
         foreach( $subcats as $scat ) {
             $subcats_id[ ] = $scat[ 'id' ];
@@ -134,7 +137,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         $criteria[ 'params' ] = array( $item->getId(), 0 );
 
-        $count = $catalog_model->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
+        $count = $catalogFinder->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
 
         $paging = $this->paging( $count, 10, $this->router->createLink( $this->page[ 'alias' ], array( 'id'=> $item->getId() ) ) );
 
@@ -157,17 +160,20 @@ class Controller_Catalog extends Sfcms_Controller
             $criteria[ 'order' ] = $order;
         }
 
-        $list = $catalog_model->findAll( $criteria );
+        $list = $catalogFinder->findAll( $criteria );
 
         $properties = array();
 
+        /**
+         * @var Data_Object_Catalog $l
+         */
         foreach( $list as $l ) {
             for( $i = 0; $i <= 9; $i ++ ) {
                 $properties[ $l->getId() ][ $parent[ 'p' . $i ] ] = $l[ 'p' . $i ];
             }
         }
 
-        $cats = $catalog_model->findAll( array(
+        $cats = $catalogFinder->findAll( array(
                 'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
                 'params'    => array( $item->getId() ),
                 'order'     => 'pos DESC',
@@ -231,6 +237,10 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function deleteAction()
     {
+        /**
+         * @var Data_Object_Catalog $item
+         */
+
         $id = $this->request->get( 'id' );
         /**
          * @var Model_Catalog $catalog
@@ -297,19 +307,20 @@ class Controller_Catalog extends Sfcms_Controller
     public function saveAction()
     {
         /**
-         * @var Model_Catalog $catalog
+         * @var Model_Catalog $catalogFinder
          * @var Form_Field $field
          * @var Form_Form $form
+         * @var Data_Object_Catalog $object
          */
-        $catalog = $this->getModel( 'Catalog' );
-        $form    = $catalog->getForm();
+        $catalogFinder = $this->getModel( 'Catalog' );
+        $form    = $catalogFinder->getForm();
 
         $this->setAjax();
 
         // Если форма отправлена
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $object = $catalog->createObject( $form->getData() );
+                $object = $catalogFinder->createObject( $form->getData() );
 
                 if( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
@@ -340,7 +351,7 @@ class Controller_Catalog extends Sfcms_Controller
 
     /**
      * Генерит хлебные крошки для админки каталога
-     * @param serialize $path { {item{id}} {item{id}} {item{id}} }
+     * @param string $path serrialized array [ item{id}, item{id}, item{id} ]
      *
      * @return string
      */
@@ -373,6 +384,9 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function adminBreadcrumbsById( $id )
     {
+        /**
+         * @var Data_Object_Catalog $item
+         */
         $path = array();
 
         if( $id ) {
@@ -398,6 +412,9 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function breadcrumbById( $id )
     {
+        /**
+         * @var Data_Object_Catalog $item
+         */
         $bc   = $this->tpl->getBreadcrumbs();
         $path = array();
 
@@ -432,9 +449,10 @@ class Controller_Catalog extends Sfcms_Controller
     public function adminAction()
     {
         /**
-         * @var model_Catalog $catalog
+         * @var Model_Catalog $catalogFinder
+         * @var Data_Object_Catalog $parent
          */
-        $catalog = $this->getModel( 'Catalog' );
+        $catalogFinder = $this->getModel( 'Catalog' );
 
         $filter = trim( $this->request->get( 'goods_filter' ) );
         if( $filter ) {
@@ -453,14 +471,14 @@ class Controller_Catalog extends Sfcms_Controller
         $part = $part ? $part : '0';
 
         try {
-            $parent = $catalog->find( $part );
+            $parent = $catalogFinder->find( $part );
         } catch( Sfcms_Model_Exception $e ) {
             $parent = null;
         }
 
         // Если корневой раздел
         if( ! $parent ) {
-            $parent = $catalog->createObject( array(
+            $parent = $catalogFinder->createObject( array(
                 'id'    => 0,
                 'parent'=> 0,
                 'path'  => '[]'
@@ -482,13 +500,13 @@ class Controller_Catalog extends Sfcms_Controller
             $crit[ 'params' ] = array( ':filter'=> '%' . $filter . '%' );
         }
 
-        $count  = $catalog->count( $crit[ 'cond' ], $crit[ 'params' ] );
+        $count  = $catalogFinder->count( $crit[ 'cond' ], $crit[ 'params' ] );
         $paging = $this->paging( $count, 25, 'admin/catalog/part=' . $part );
 
         $crit[ 'limit' ] = $paging->limit;
         $crit[ 'order' ] = 'cat DESC, pos DESC';
 
-        $list = $catalog->findAll( $crit );
+        $list = $catalogFinder->findAll( $crit );
 
         $this->tpl->assign( array(
             'filter'         => trim( $this->request->get( 'goods_filter' ) ),
@@ -498,7 +516,7 @@ class Controller_Catalog extends Sfcms_Controller
             'breadcrumbs'    => $this->adminBreadcrumbs( $parent[ 'path' ] ),
             'list'           => $list,
             'paging'         => $paging,
-            'moving_list'    => $catalog->getCategoryList(),
+            'moving_list'    => $catalogFinder->getCategoryList(),
         ) );
 
 
@@ -610,9 +628,9 @@ class Controller_Catalog extends Sfcms_Controller
             $this->tpl->assign( 'gallery_panel', $gallery_panel );
         }
 
-        $this->tpl->breadcrumbs = $this->adminBreadcrumbsById( $parent_id );
-        $this->tpl->form        = $form;
-        $this->tpl->cat         = $form->id;
+        $this->tpl->assign( 'breadcrumbs', $this->adminBreadcrumbsById( $parent_id ) );
+        $this->tpl->assign( 'form', $form );
+        $this->tpl->assign( 'cat', $form->getField( 'id' )->getValue() );
 
         $this->request->setTitle( 'Каталог' );
         $this->request->setContent( $this->tpl->fetch( 'system:catalog.admin_edit' ) );
@@ -676,9 +694,9 @@ class Controller_Catalog extends Sfcms_Controller
             }
         }
 
-        $this->tpl->breadcrumbs = $this->adminBreadcrumbsById( $id );
-        $this->tpl->form        = $form;
-        $this->tpl->cat         = $form->id;
+        $this->tpl->assign( 'breadcrumbs', $this->adminBreadcrumbsById( $id ) );
+        $this->tpl->assign( 'form', $form );
+        $this->tpl->assign( 'cat', $form->getField( 'id' )->getValue() );
 
         $this->request->setTitle( 'Каталог' );
         $this->request->setContent( $this->tpl->fetch( 'system:catalog.admin_edit' ) );
@@ -689,13 +707,16 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function moveAction()
     {
-        $catalog = $this->getModel( 'Catalog' );
+        /**
+         * @var Model_Catalog $catalogFinder
+         */
+        $catalogFinder = $this->getModel( 'Catalog' );
         // перемещение
         if( $this->request->get( 'move_list' ) ) {
             $this->request->setContent(
                 $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT )
             );
-            $this->request->setResponseError( 0, $catalog->moveList() );
+            $this->request->setResponseError( 0, $catalogFinder->moveList() );
             return;
         }
     }
@@ -706,19 +727,20 @@ class Controller_Catalog extends Sfcms_Controller
     public function saveorderAction()
     {
         /**
-         * @var Model_Catalog $catalog
+         * @var Model_Catalog $catalogFinder
+         * @var Data_Object_Catalog $item
          */
-        $catalog = $this->getModel( 'Catalog' );
+        $catalogFinder = $this->getModel( 'Catalog' );
         // пересортировка
         if( $this->request->get( 'sort' ) ) {
-            $this->request->setResponseError( 0, $catalog->resort() );
+            $this->request->setResponseError( 0, $catalogFinder->resort() );
             return;
         }
 
         // Сохранение позиций
         if( $save_pos = $this->request->get( 'save_pos' ) ) {
             foreach( $save_pos as $pos ) {
-                $item = $catalog->find( $pos[ 'key' ] );
+                $item = $catalogFinder->find( $pos[ 'key' ] );
                 if( $item ) {
                     $item->pos = $pos[ 'val' ];
                     $item->save();

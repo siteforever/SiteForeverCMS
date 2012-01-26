@@ -58,7 +58,7 @@ class Model_CategoryBanner extends Sfcms_Model
                 $this->banner()->delete( $img['id'] );
             }
 //            $dir = ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$category['id'], -4, 4 );
-            $this->app()->getLogger()->log('del: '.$id.' dir: '.$dir);
+//            $this->app()->getLogger()->log('del: '.$id.' dir: '.$dir);
 //            @rmdir( $dir );
             $category->markDeleted();
         }
