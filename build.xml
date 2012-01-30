@@ -86,7 +86,7 @@
     </target>
 
     <!-- Build an autonomous project  -->
-    <target name="build" depends="svn">
+    <target name="build" depends="test">
 
         <property name="distribname" value="siteforever_${version}.${revision}.tgz"></property>
         <echo>Distribution file: ${distribname}</echo>
@@ -155,7 +155,7 @@
 
     </target>
 
-    <target name="test">
+    <target name="test" depends="git">
         <phpunit bootstrap="test/bootstrap.php">
             <formatter type="plain" usefile="false"/>
             <batchtest>

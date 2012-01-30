@@ -47,10 +47,10 @@ class std_error
     /**
      * @var std_logger_logger
      */
-    static $logger;
+    static $logger = null;
 
 
-    static function init( std_logger_logger $logger )
+    static function init( std_logger_logger $logger = null )
     {
         self::$logger   = $logger;
         set_error_handler( array( 'std_error', 'handler' ) );
@@ -116,7 +116,9 @@ class std_error
                     . self::$types[$errno] . " $errstr in $errfile:$errline\n\n"
                     .join("\n", $trace);
 
-        self::$logger->log( $msg );
+        if ( self::$logger ) {
+            self::$logger->log( $msg );
+        }
 
         return true;
     }
