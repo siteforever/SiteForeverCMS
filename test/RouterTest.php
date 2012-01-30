@@ -186,7 +186,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $request->get( 'action' ), 'index' );
 
         $this->assertEquals( '35', $request->get( 'doc' ) );
-        $this->assertEquals( '1', $request->get( 'id' ) );
+//        $this->assertEquals( '1', $request->get( 'id' ) );
     }
 
     public function testFindRouteUsersCabinet()
