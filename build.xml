@@ -3,19 +3,20 @@
 
 <project name="main" default="main">
 
-    <property name="basedir" value="${project.basedir}"></property>
-    <property name="destdir" value="${user.home}/siteforever"></property>
+    <property name="basedir" value="${project.basedir}"/>
+    <property name="destdir" value="${user.home}/siteforever"/>
 
-    <property name="version" value="0.3"></property>
-    <property name="svn" value="http://svn.stdel.ru/svn/siteforever/trunk"></property>
-    <property name="git" value="git://github.com/keltanas/SiteForeverCMS.git"></property>
+    <property name="version" value="0.3"/>
+    <property name="svn" value="http://svn.stdel.ru/svn/siteforever/trunk"/>
+    <!--<property name="git" value="git://github.com/keltanas/SiteForeverCMS.git"></property>-->
+    <property name="git" value="${project.basedir}"/>
 
-    <property name="theme" value="basic"></property>
+    <property name="theme" value="basic"/>
 
-    <property name="db_login" value="siteforever"></property>
-    <property name="db_password" value="siteforever"></property>
-    <property name="db_server" value="localhost"></property>
-    <property name="db_name" value="siteforever"></property>
+    <property name="db_login" value="siteforever"/>
+    <property name="db_password" value="siteforever"/>
+    <property name="db_server" value="localhost"/>
+    <property name="db_name" value="siteforever"/>
 
 
     <target name="main">
@@ -36,38 +37,38 @@
     <target name="setup">
 
         <!-- clear properties and cache -->
-        <echo message="Clear properties and cache"></echo>
+        <echo message="Clear properties and cache"/>
 
-        <delete dir="${destdir}/protected"></delete>
-        <delete file="${destdir}/images"></delete>
-        <delete file="${destdir}/misc"></delete>
-        <delete file="${destdir}/themes/basic"></delete>
+        <delete dir="${destdir}/protected"/>
+        <delete file="${destdir}/images"/>
+        <delete file="${destdir}/misc"/>
+        <delete file="${destdir}/themes/basic"/>
 
-        <echo message="Create application structure"></echo>
+        <echo message="Create application structure"/>
 
-        <mkdir dir="${destdir}/files"></mkdir>
+        <mkdir dir="${destdir}/files"/>
 
-        <mkdir dir="${destdir}/protected"></mkdir>
-        <mkdir dir="${destdir}/protected/_runtime"></mkdir>
-        <mkdir dir="${destdir}/protected/_runtime/_templates_c"></mkdir>
-        <mkdir dir="${destdir}/protected/config"></mkdir>
+        <mkdir dir="${destdir}/protected"/>
+        <mkdir dir="${destdir}/protected/_runtime"/>
+        <mkdir dir="${destdir}/protected/_runtime/_templates_c"/>
+        <mkdir dir="${destdir}/protected/config"/>
 
-        <symlink link="${destdir}/images" target="${basedir}/images"></symlink>
-        <symlink link="${destdir}/misc" target="${basedir}/misc"></symlink>
+        <symlink link="${destdir}/images" target="${basedir}/images"/>
+        <symlink link="${destdir}/misc" target="${basedir}/misc"/>
 
-        <mkdir dir="${destdir}/themes"></mkdir>
-        <mkdir dir="${destdir}/themes/${phing.project.name}"></mkdir>
-        <mkdir dir="${destdir}/themes/${phing.project.name}/css"></mkdir>
-        <mkdir dir="${destdir}/themes/${phing.project.name}/images"></mkdir>
-        <mkdir dir="${destdir}/themes/${phing.project.name}/js"></mkdir>
-        <mkdir dir="${destdir}/themes/${phing.project.name}/templates"></mkdir>
+        <mkdir dir="${destdir}/themes"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/css"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/images"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/js"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/templates"/>
 
-        <symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"></symlink>
+        <symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"/>
 
 
-        <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"></copy>
-        <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"></copy>
-        <copy file="${basedir}/bootstrap.php" tofile="${destdir}/bootstrap.php" overwrite="true"></copy>
+        <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"/>
+        <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"/>
+        <copy file="${basedir}/bootstrap.php" tofile="${destdir}/bootstrap.php" overwrite="true"/>
 
         <!-- config -->
         <copy file="${basedir}/protected/config/sample.php"
@@ -75,11 +76,11 @@
               overwrite="true">
             <filterchain>
                 <replacetokens>
-                    <token key="theme"      value="${theme}"></token>
-                    <token key="db_login"   value="${db_login}"></token>
-                    <token key="db_password" value="${db_password}"></token>
-                    <token key="db_server"  value="${db_server}"></token>
-                    <token key="db_name"    value="${db_name}"></token>
+                    <token key="theme"      value="${theme}"/>
+                    <token key="db_login"   value="${db_login}"/>
+                    <token key="db_password" value="${db_password}"/>
+                    <token key="db_server"  value="${db_server}"/>
+                    <token key="db_name"    value="${db_name}"/>
                 </replacetokens>
             </filterchain>
         </copy>
@@ -88,40 +89,40 @@
     <!-- Build an autonomous project  -->
     <target name="build" depends="test">
 
-        <property name="distribname" value="siteforever_${version}.${revision}.tgz"></property>
+        <property name="distribname" value="siteforever_${version}.${revision}.tgz"/>
         <echo>Distribution file: ${distribname}</echo>
 
-        <delete file="${user.home}/projects/${distribname}"></delete>
+        <delete file="${user.home}/projects/${distribname}"/>
 
-        <delete dir="${destdir}"></delete>
+        <delete dir="${destdir}"/>
 
-        <mkdir dir="${destdir}"></mkdir>
+        <mkdir dir="${destdir}"/>
 
         <copy todir="${destdir}">
             <fileset dir="${basedir}">
-                <exclude name=".idea/**"></exclude>
-                <exclude name="files/**"></exclude>
-                <exclude name="test/**"></exclude>
-                <exclude name="protected/_runtime/**"></exclude>
-                <exclude name="protected/config/**"></exclude>
-                <exclude name="functionsTest.php"></exclude>
-                <exclude name="build.xml"></exclude>
-                <exclude name="info.php"></exclude>
-                <exclude name="install.php"></exclude>
-                <exclude name="pack.php"></exclude>
-                <exclude name="todo.txt"></exclude>
+                <exclude name=".idea/**"/>
+                <exclude name="files/**"/>
+                <exclude name="test/**"/>
+                <exclude name="protected/_runtime/**"/>
+                <exclude name="protected/config/**"/>
+                <exclude name="functionsTest.php"/>
+                <exclude name="build.xml"/>
+                <exclude name="info.php"/>
+                <exclude name="install.php"/>
+                <exclude name="pack.php"/>
+                <exclude name="todo.txt"/>
             </fileset>
             <filterchain>
                 <replacetokens>
-                    <token key="version" value="${version}.${revision}"></token>
+                    <token key="version" value="${version}.${revision}"/>
                 </replacetokens>
             </filterchain>
         </copy>
 
         <!-- make other dirs -->
-        <mkdir dir="${destdir}/protected/_runtime/_templates_c"></mkdir>
-        <mkdir dir="${destdir}/protected/config"></mkdir>
-        <mkdir dir="${destdir}/files"></mkdir>
+        <mkdir dir="${destdir}/protected/_runtime/_templates_c"/>
+        <mkdir dir="${destdir}/protected/config"/>
+        <mkdir dir="${destdir}/files"/>
 
         <!-- config -->
         <copy file="${basedir}/protected/config/sample.php"
@@ -129,11 +130,11 @@
               overwrite="true">
             <filterchain>
                 <replacetokens>
-                    <token key="theme"      value="${theme}"></token>
-                    <token key="db_login"   value="${db_login}"></token>
-                    <token key="db_password" value="${db_password}"></token>
-                    <token key="db_server"  value="${db_server}"></token>
-                    <token key="db_name"    value="${db_name}"></token>
+                    <token key="theme"      value="${theme}"/>
+                    <token key="db_login"   value="${db_login}"/>
+                    <token key="db_password" value="${db_password}"/>
+                    <token key="db_server"  value="${db_server}"/>
+                    <token key="db_name"    value="${db_name}"/>
                 </replacetokens>
             </filterchain>
         </copy>
@@ -141,7 +142,7 @@
         <!-- coping .htaccess files -->
         <copy todir="${destdir}">
             <fileset dir="${basedir}">
-                <include name="**/.htaccess"></include>
+                <include name="**/.htaccess"/>
             </fileset>
         </copy>
 
