@@ -156,7 +156,7 @@ class Router
     {
         $result = $route;
 
-        if( preg_match_all( '@(\/\w+=\w+)@xui', $route, $m ) ) {
+        if( preg_match_all( '@(\/\w+=[\w-]+)@xui', $route, $m ) ) {
             foreach( $m[ 0 ] as $par ) {
                 $result = str_replace( $par, '', $result );
                 $par    = trim( $par, '/' );

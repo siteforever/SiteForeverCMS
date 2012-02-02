@@ -86,14 +86,12 @@ class Controller_News extends Sfcms_Controller
 
         $paging     = new Pager( $count, $cat->per_page, $this->page['alias'] );
 
-        if ( $count ) {
-            $list   = $model->findAllWithLinks(array(
-                   'cond'     => $cond,
-                   'params'   => $params,
-                   'limit'    => $paging['limit'],
-                   'order'    => '`date` DESC',
-              ));
-        }
+        $list   = $model->findAllWithLinks(array(
+            'cond'     => $cond,
+            'params'   => $params,
+            'limit'    => $paging['limit'],
+            'order'    => '`date` DESC',
+        ));
 
         $this->tpl->assign(array(
             'paging'    => $paging,

@@ -11,6 +11,6 @@ class Sfcms_i18nTest extends PHPUnit_Framework_TestCase
     public function testTranslit()
     {
         $str    = 'Привет мир!';
-        $this->assertEquals('privet_mir!', Sfcms_i18n::getInstance()->translit( $str ));
+        $this->assertEquals('privet-mir', Sfcms_i18n::getInstance()->translit( $str ));
     }
 }

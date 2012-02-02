@@ -104,6 +104,8 @@ class Sfcms_i18n
         foreach( $this->_table as $rus => $eng ) {
             $str    = preg_replace('/'.$rus.'/ui', $eng, $str); // For uft8 support
         }
+        $str    = preg_replace('/[^a-z0-9]+/i', '-', $str);
+        $str    = trim( $str, '-' );
         return $str;
     }
 }
