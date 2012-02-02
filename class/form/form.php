@@ -76,9 +76,10 @@ class Form_Form implements ArrayAccess
                     $obj_field = $this->createField( $fname, $field );
                 } catch ( Form_Exception $e ) {
                     $this->addFeedback('Field "'.$fname.'" has undefined type');
+                    continue;
                 }
 
-                if ( in_array( $field[ 'type' ], array( 'submit', 'reset', 'button' ) ) ) {
+                if ( isset($field['type']) && in_array( $field[ 'type' ], array( 'submit', 'reset', 'button' ) ) ) {
                     $this->addButton( $obj_field );
                 }
                 else {
