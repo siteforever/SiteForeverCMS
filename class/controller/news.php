@@ -14,7 +14,7 @@ class Controller_News extends Sfcms_Controller
         $model = $this->getModel('News');
 //        $this->request->setTitle('Новости');
 
-        if ( $this->request->get('doc', FILTER_VALIDATE_INT) ) {
+        if ( $this->request->get('doc') ) {
             return $this->getNews($model);
         }
         else {
@@ -30,7 +30,7 @@ class Controller_News extends Sfcms_Controller
      */
     function getNews($model)
     {
-        $id = $this->request->get('doc', FILTER_SANITIZE_NUMBER_INT);
+        $id = intval( $this->request->get('doc') );
         $news = $model->find( $id );
 
         if ( ! $news ) {

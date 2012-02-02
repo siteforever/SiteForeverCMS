@@ -40,8 +40,6 @@ function smarty_function_lastnews( $params, $smarty )
         $param[':cat']  = $params['cat'];
     }
 
-    $cat = '';
-
     /**
      * @var model_news $model
      */
@@ -49,26 +47,23 @@ function smarty_function_lastnews( $params, $smarty )
 
     //$model->setCond( implode(' AND ', $where) );
 
-    $list   = $model->findAllWithLinks(array(
-        'cond'  => join(" AND ", $where),
-        'params'=> $param,
-        'order' => $sort,
-        'limit' => $params['limit'],
-    ));
+    $list = $model->findAll( join( " AND ", $where ), $param, $sort, $params[ 'limit' ] );
+
+//    $list   = $model->findAll('');
 
     //$list   = $model->findAllWithLinks($params['limit']);
 
-    $tpl    = App::$tpl;
+    $tpl    = App::getInstance()->getTpl();
 
     if ( isset( $params['template'] ) ) {
-        $tpl->list  = $list;
+        $tpl->assign('list', $list);
         //return $params['template'];
         $content    = $tpl->fetch( $params['template'] );
     }
     else {
         $content     = array('<ul>');
         foreach ( $list as $l ) {
-            $content[]  = "<li><a ".href($l['link'], array('doc'=>$l['id'])).">{$l['name']}</a></li>";
+            $content[]  = "<li><a href='".$l->getAlias()."'>{$l['name']}</a></li>";
         }
         $content[]  = '</ul>';
         $content    = join('', $content);

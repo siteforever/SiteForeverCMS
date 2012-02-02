@@ -27,8 +27,7 @@ class Data_Object_News extends Data_Object
         $result = App::getInstance()->getRouter()->createLink(
             $page->get('alias'),
             array(
-                 'doc'  => $this->getId(),
-                 'title'=> Sfcms_i18n::getInstance()->translit( $this->get('name') ),
+                 'doc'  => $this->getId().'-'.Sfcms_i18n::getInstance()->translit( $this->get('name') )
             )
         );
 
