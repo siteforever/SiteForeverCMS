@@ -3,8 +3,14 @@
  * Объект пользователя
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
+ *
+ * @property $id
+ * @property $name
+ * @property $fname
+ * @property $lname
+ * @property $email
+ * @property $phone
  */
-
 class Data_Object_User extends Data_Object
 {
     /**

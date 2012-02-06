@@ -36,7 +36,7 @@ abstract class Sfcms_Controller
     protected $tpl;
 
     /**
-     * @var Data_Object
+     * @var Data_Object_User
      */
     protected $user;
 

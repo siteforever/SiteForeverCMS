@@ -35,7 +35,7 @@ function smarty_function_command( $params )
 
         $command    = new $controller( $app );
 
-        if ( $command instanceof Controller && method_exists( $command, $action ) ) {
+        if ( $command instanceof Sfcms_Controller && method_exists( $command, $action ) ) {
             call_user_func(array($command, $action));
         }
 

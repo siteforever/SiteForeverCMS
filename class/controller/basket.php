@@ -26,25 +26,10 @@ class Controller_Basket extends Sfcms_Controller
         $basket_prod_id     = $this->request->get('basket_prod_id', FILTER_SANITIZE_NUMBER_INT);
         $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
 
-//        var_dump(__METHOD__);
-//
-//        var_dump($basket_prod_id, $basket_prod_name);
-
         if ( $basket_prod_id || $basket_prod_name )
         {
             return $this->addAction();
         }
-
-        // удаление товара из корзины
-        /*$remove_prod_id = $this->request->get('remove_prod_id');
-        if ( $remove_prod_id )
-        {
-            //$product = $cat->find( $remove_prod_id );
-            $count = $this->basket->getCount( $remove_prod_id );
-            $this->basket->del( $remove_prod_id, $count );
-            $this->basket->save();
-            redirect("catalog", array('cat'=>$product['parent']));
-        }*/
 
         // обновляем количества
         $basket_counts = $this->request->get('basket_counts');
@@ -83,8 +68,6 @@ class Controller_Basket extends Sfcms_Controller
                 $all_keys[] = $prod['id'];
             }
             // товары
-            //$goods = $cat->findGoodsById( $all_keys );
-            //printVar($goods);
             foreach( $all_product as $key => &$product )
             {
                 if ( ! @$product['id'] )
@@ -124,8 +107,6 @@ class Controller_Basket extends Sfcms_Controller
         $basket_prod_id     = $this->request->get('basket_prod_id', FILTER_SANITIZE_NUMBER_INT);
         $basket_prod_name   = $this->request->get('basket_prod_name');
 
-//        $basket_prod_name   = $this->request->get('basket_prod_name', FILTER_SANITIZE_NUMBER_INT);
-//        print $basket_prod_id.' ok '.$basket_prod_name;
         if ( $basket_prod_id || $basket_prod_name )
         {
             $basket_prod_count      = $this->request->get('basket_prod_count');
