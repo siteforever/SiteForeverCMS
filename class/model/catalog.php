@@ -318,7 +318,7 @@ class Model_Catalog extends Sfcms_Model
         if( null === $this->parents ) {
             $this->parents = array();
             if( count( $this->all ) == 0 ) {
-                $this->all = $this->findAll( 'cat = 1', array(), 'pos DESC' );
+                $this->all = $this->findAll( 'cat = 1 AND deleted = 0', array(), 'pos DESC' );
             }
             // создаем массив, индексируемый по родителям
             foreach( $this->all as $obj ) {
