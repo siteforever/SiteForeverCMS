@@ -10,13 +10,14 @@
  * @property $lname
  * @property $email
  * @property $phone
+ * @property $basket
  */
 class Data_Object_User extends Data_Object
 {
     /**
      * Поменять пароль пользователя
      * @param string $password
-     * @return void
+     * @return Data_Object_User
      */
     function changePassword( $password )
     {

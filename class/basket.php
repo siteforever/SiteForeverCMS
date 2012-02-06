@@ -1,7 +1,4 @@
 <?php
-
-class Basket_Exception extends Exception {};
-
 /**
  * Интерфейс корзины
  * @author KelTanas
@@ -10,10 +7,17 @@ class Basket_Exception extends Exception {};
  */
 abstract class Basket
 {
+    /**
+     * @var array
+     */
     protected $data = array();
-    protected $user;
 
-    function __construct( Data_Object $user )
+    /**
+     * @var Data_Object_User
+     */
+    protected $user = null;
+
+    public function __construct( Data_Object $user )
     {
         $request    = App::getInstance()->getRequest();
         $request->addScript('/misc/etc/basket.js');
@@ -28,21 +32,25 @@ abstract class Basket
     /**
      * Добавить товар в корзину
      * @param string $id
+     * @param string $name
      * @param int $count
      * @param float $price
      * @param string $details
+     *
+     * @return boolean
      */
-    function add( $id = '', $name, $count, $price, $details = '' )
+    public function add( $id = '', $name = '', $count = 0, $price = 0.0, $details = '' )
     {
         if ( ! is_array( $this->data ) ) {
-            throw new Basket_Exception('Basket data corrupted');
+            $this->data = array();
         }
 
         if ( ! $id )
             $id = $name;
 
-        if ( $id && ! $name )
+        if ( $id && ! $name ) {
             $name   = $id;
+        }
 
         foreach ( $this->data as &$prod ) {
             if ( @$prod['name'] == $name || @$prod['id'] == $id ) {
@@ -52,6 +60,7 @@ abstract class Basket
                 return true;
             }
         }
+
         $this->data[] = array(
             'id'    => $id,
             'name'  => $name,
@@ -59,15 +68,16 @@ abstract class Basket
             'price' => $price,
             'details'=>$details,
         );
+        return true;
     }
 
     /**
      * Установить новое значение товара
      * @param  $id
      * @param  $count
-     * @return void
+     * @return boolean
      */
-    function setCount( $name, $count )
+    public function setCount( $name, $count )
     {
         foreach ( $this->data as $i => &$prod ) {
             if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
@@ -86,7 +96,7 @@ abstract class Basket
      * Количество данного товара в корзине
      * @param string $id
      */
-    function getCount( $name = '' )
+    public function getCount( $name = '' )
     {
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
@@ -108,7 +118,7 @@ abstract class Basket
         }
     }
     
-    function getPrice( $name )
+    public function getPrice( $name )
     {
         foreach ( $this->data as $prod ) {
             if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
@@ -119,12 +129,11 @@ abstract class Basket
     }
     
     /**
-
-    {* Удалить из корзины указанное количество тавара
+     * Удалить из корзины указанное количество тавара
      * @param string $id
      * @param int $count
      */
-    function del( $name, $count = 0 )
+    public function del( $name, $count = 0 )
     {
         $old_count  = $this->getCount( $name );
         $new_count  = $old_count - $count;
@@ -139,7 +148,7 @@ abstract class Basket
     /**
      * Вся информация о товарах в корзине
      */
-    function getAll()
+    public function getAll()
     {
         if ( ! $this->data ) {
             $this->data = array();
@@ -151,7 +160,7 @@ abstract class Basket
      * Количество позиций
      * @return int
      */
-    function count()
+    public function count()
     {
         return count($this->data);
     }
@@ -160,7 +169,7 @@ abstract class Basket
      * Сумма заказа
      * @return float
      */
-    function getSum( $name = '' )
+    public function getSum( $name = '' )
     {
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
@@ -185,7 +194,7 @@ abstract class Basket
      * Очистить корзину
      * @return void
      */
-    function clear()
+    public function clear()
     {
         $this->data = array();
     }

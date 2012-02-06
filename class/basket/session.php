@@ -6,7 +6,7 @@
  */
 class Basket_Session extends Basket
 {
-    function load()
+    public function load()
     {
         if ( isset($_SESSION['basket']) ) {
             $this->data = $_SESSION['basket'];
@@ -17,7 +17,7 @@ class Basket_Session extends Basket
         }
     }
     
-    function save()
+    public function save()
     {
         $_SESSION['basket'] = $this->data;
     }
