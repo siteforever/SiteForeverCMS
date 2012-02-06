@@ -361,7 +361,7 @@ class Controller_Catalog extends Sfcms_Controller
             '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">Каталог</a>'
         ); // breadcrumbs
 
-        if( $from_string = @json_decode( $path ) ) {
+        if( $from_string = @unserialize( $path ) ) {
             if( $from_string && is_array( $from_string ) ) {
                 foreach( $from_string as $val ) {
                     $bc[ ] = '<a href="'
@@ -387,23 +387,11 @@ class Controller_Catalog extends Sfcms_Controller
         /**
          * @var Data_Object_Catalog $item
          */
-        $path = array();
-
-        if( $id ) {
-            $item = $this->getModel( 'Catalog' )->find( $id );
-            while( $item ) {
-                $path[ ] = array(
-                    'id'  => $item->getId(),
-                    'name'=> $item->name
-                );
-                if( $item->parent ) {
-                    $item = $this->getModel( 'Catalog' )->find( $item->parent );
-                } else {
-                    $item = false;
-                }
-            }
+        $item = $this->getModel( 'Catalog' )->find( $id );
+        if ( $item ) {
+            return $this->adminBreadcrumbs( $item->path() );
         }
-        return $this->adminBreadcrumbs( serialize( array_reverse( $path ) ) );
+        return null;
     }
 
     /**
@@ -416,26 +404,16 @@ class Controller_Catalog extends Sfcms_Controller
          * @var Data_Object_Catalog $item
          */
         $bc   = $this->tpl->getBreadcrumbs();
-        $path = array();
+        $bc->addPiece('index', 'Главная');
 
-        if( $id ) {
-            $item = $this->getModel( 'Catalog' )->find( $id );
+        $item   = $this->getModel( 'Catalog' )->find( $id );
+        $path   = @unserialize( $item->path() );
 
-            while( $item ) {
-                $path[ ] = $item;
-                if( $item->parent ) {
-                    $item = $this->getModel( 'Catalog' )->find( $item->parent );
-                } else {
-                    $item = false;
-                }
-            }
-
-            $path = array_reverse( $path );
-
-            foreach( $path as $item ) {
+        if ( is_array( $path ) ) {
+            foreach( $path as $p ) {
                 $bc->addPiece(
-                    trim( $this->router->createLink( 'catalog', array( 'id'=> $item->id ) ), '/' ),
-                    $item->name
+                    trim( $this->router->createLink( 'catalog', array( 'id'=> $p['id'] ) ), '/' ),
+                    $p['name']
                 );
             }
         }
@@ -471,18 +449,18 @@ class Controller_Catalog extends Sfcms_Controller
         $part = $part ? $part : '0';
 
         try {
+            if ( ! $part ) {
+                throw new Sfcms_Model_Exception();
+            }
             $parent = $catalogFinder->find( $part );
         } catch( Sfcms_Model_Exception $e ) {
-            $parent = null;
-        }
-
-        // Если корневой раздел
-        if( ! $parent ) {
-            $parent = $catalogFinder->createObject( array(
-                'id'    => 0,
-                'parent'=> 0,
-                'path'  => '[]'
-            ) );
+            $parent = $catalogFinder->createObject(
+                array(
+                    'id'    => 0,
+                    'parent'=> 0,
+                    'path'  => '[]'
+                )
+            );
         }
 
         // Если смотрим список в товаре, то переместить на редактирование
@@ -508,12 +486,18 @@ class Controller_Catalog extends Sfcms_Controller
 
         $list = $catalogFinder->findAll( $crit );
 
+        if ( $parent->get('path') ) {
+            $breadcrumbs    = $this->adminBreadcrumbs( $parent[ 'path' ] );
+        } else {
+            $breadcrumbs    = $this->adminBreadcrumbsById( $parent->getId() );
+        }
+
         $this->tpl->assign( array(
             'filter'         => trim( $this->request->get( 'goods_filter' ) ),
             'parent'         => $parent,
             'id'             => $part,
             'part'           => $part,
-            'breadcrumbs'    => $this->adminBreadcrumbs( $parent[ 'path' ] ),
+            'breadcrumbs'    => $breadcrumbs,
             'list'           => $list,
             'paging'         => $paging,
             'moving_list'    => $catalogFinder->getCategoryList(),

@@ -20,6 +20,42 @@ class Data_Object_Catalog extends Data_Object
     protected $_image   = null;
 
     /**
+     * Вернет path для текущего объекта
+     * @return string
+     */
+    public function path()
+    {
+        if ( $this->get('path') && $path = @unserialize($this->get('path')) ) {
+            if ( is_array( $path ) ) {
+                return $this->get('path');
+            }
+        }
+
+        $path = array();
+
+        if( $this->getId() ) {
+            $item = $this;
+            while( $item ) {
+                $path[ ] = array(
+                    'id'  => $item->getId(),
+                    'name'=> $item->name
+                );
+                if( $item->parent ) {
+                    $item = $this->getModel( 'Catalog' )->find( $item->parent );
+                } else {
+                    $item = null;
+                }
+            }
+        }
+
+        $return = serialize( array_reverse( $path ) );
+        $this->set('path', $return);
+        $this->getModel()->save( $this );
+
+        return $return;
+    }
+
+    /**
      * Вернет список изображений для товара
      * @return Data_Collection
      */
