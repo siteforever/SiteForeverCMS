@@ -57,7 +57,9 @@ class App extends Application_Abstract
      */
     function init()
     {
-        std_error::init( new std_logger_plain() );
+        if( $this->getConfig()->get( 'db.debug' ) ) {
+            std_error::init( new std_logger_plain() );
+        }
 
         // Language
         $this->getConfig()->setDefault( 'language', 'ru' );
