@@ -7,7 +7,7 @@
 <body class="body">
 <div class="l-wrapper">
 
-    <h1>{t}Control panel{/t} :: {$page.title}</h1>
+    <h1>{t}Control panel{/t} :: {if isset($page.title)}{$page.title}{else}untitled{/if}</h1>
 
     <div class="l-main-panel">
         <div class="l-panel">

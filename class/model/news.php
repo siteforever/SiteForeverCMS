@@ -37,9 +37,12 @@ class Model_News extends Sfcms_Model
 
         //printVar( Data_Watcher::instance()->dumpDirty() );
         $page_data_all = $structure->findAll(array(
-              'select'  => 'id, link, alias',
-              'cond'    => "deleted = 0 AND alias != 'index' AND controller = 'news' AND link IN (".join(',', $list_id).")"
-          ));
+            'select'  => 'id, link, alias',
+            'cond'    => "deleted = 0 AND alias != 'index' AND controller = 'news' "
+                            . ( count( $list_id )
+                                ? " AND link IN (".join(',', $list_id).")"
+                                : "" )
+        ));
 
         foreach( $data_all as $news ) {
             /**
