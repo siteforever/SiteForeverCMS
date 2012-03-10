@@ -131,7 +131,7 @@ abstract class Sfcms_Controller
      * Правила, определяющие доступ к приложениям
      * @return array
      */
-    function access()
+    public function access()
     {
         return array(
             'system'    => array(
@@ -143,7 +143,7 @@ abstract class Sfcms_Controller
     /**
      * Уничтожение контроллера
      */
-    function __destruct()
+    public function __destruct()
     {
         $this->deInit();
     }
@@ -152,7 +152,7 @@ abstract class Sfcms_Controller
      * Приложение
      * @return Application_Abstract
      */
-    function app()
+    public function app()
     {
         return $this->app;
     }
@@ -161,7 +161,7 @@ abstract class Sfcms_Controller
      * Инициализация
      * @return void
      */
-    function init()
+    public function init()
     {
     }
 
@@ -169,7 +169,7 @@ abstract class Sfcms_Controller
      * Деинициализация
      * @return void
      */
-    function deInit()
+    public function deInit()
     {
     }
 
@@ -178,7 +178,7 @@ abstract class Sfcms_Controller
      * @param string $model
      * @return Sfcms_Model
      */
-    function getModel($model)
+    public function getModel($model)
     {
         return Sfcms_Model::getModel($model);
     }
@@ -188,7 +188,7 @@ abstract class Sfcms_Controller
      * @param $ajax
      * @return void
      */
-    function setAjax( $ajax = true )
+    public function setAjax( $ajax = true )
     {
         App::$ajax  = $ajax;
         $this->request->setAjax( true, Request::TYPE_ANY );
@@ -199,7 +199,7 @@ abstract class Sfcms_Controller
      * @param $name
      * @return Form_Form
      */
-    function getForm( $name )
+    public function getForm( $name )
     {
         if ( ! isset( self::$forms[ $name ] ) ) {
             try {
@@ -218,7 +218,7 @@ abstract class Sfcms_Controller
      * Вернет статус обработки ajax
      * @return boolean
      */
-    function getAjax()
+    public function getAjax()
     {
         return App::getInstance()->getRequest()->getAjax();
     }
@@ -228,7 +228,7 @@ abstract class Sfcms_Controller
      * @deprecated
      * @return db
      */
-    function getDB()
+    public function getDB()
     {
         return Db::getInstance();
     }
@@ -240,12 +240,15 @@ abstract class Sfcms_Controller
      * @param $link
      * @return Pager
      */
-    function paging( $count, $perpage, $link )
+    public function paging( $count, $perpage, $link )
     {
         return new Pager( $count, $perpage, $link );
     }
 
-    abstract function indexAction();
+    /**
+     * Index Action
+     */
+    abstract public function indexAction();
 
     /**
      * @param Data_Object_Page $page
