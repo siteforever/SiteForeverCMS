@@ -18,8 +18,8 @@ h1 {
     font-size: 18px;
     /*color: #005b7f;*/
     color: #fff;
-    text-shadow: black 0px 0px 5px;
-    margin: 0px;
+    text-shadow: black 0 0 5px;
+    margin: 0;
     padding: 10px;
     border-bottom: 1px #005B7F solid;
     margin-bottom: 20px;
@@ -145,7 +145,7 @@ div.b-module-menu {
     margin-left: 10px;
 }
     .b-admin-menu li {
-        padding: 0px;
+        padding: 0;
         margin-bottom: 5px;
     }
     .b-admin-menu li.add {
@@ -314,7 +314,7 @@ div.b-main-structure {
     }*/
     div.b-main-structure li {
         /*display: block;*/
-        margin: 0px;
+        margin: 0;
         padding: 0 0 0 25px;
         /*background:url(/images/admin/cross_li.gif) repeat-y 0 0;*/
     }
@@ -415,4 +415,9 @@ div.b-main-structure {
 
 .el-paddinginput input, .el-paddinginput select {
     width: auto;
+}
+
+
+.sfcms_generation_table {
+
 }
