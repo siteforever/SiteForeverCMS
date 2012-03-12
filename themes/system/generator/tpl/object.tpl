@@ -1,6 +1,6 @@
 <?php
 /**
- * Domain ovject {$name}
+ * Domain object {$name}
  * @author SiteForeverCMS Generator
  * @link http://siteforever.ru
  */
