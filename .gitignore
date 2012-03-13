@@ -1,4 +1,5 @@
 .idea/*
 index.php
-misc/sxd*
+misc/sxd
+sxd/*
 protected/_runtime/*

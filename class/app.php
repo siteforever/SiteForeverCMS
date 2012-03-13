@@ -92,11 +92,16 @@ class App extends Application_Abstract
 
         if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'images' ) ) {
             $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'images', ROOT . DIRECTORY_SEPARATOR . 'images' );
-            print 'Created ' . ROOT . DIRECTORY_SEPARATOR . 'images<br>';
+            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR . 'images');
         }
         if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'misc' ) ) {
             $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'misc', ROOT . DIRECTORY_SEPARATOR . 'misc' );
-            print 'Created ' . ROOT . DIRECTORY_SEPARATOR . 'misc<br>';
+            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR . 'misc');
+        }
+        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' ) ) {
+            $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'sxd',
+                ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' );
+            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' );
         }
     }
 

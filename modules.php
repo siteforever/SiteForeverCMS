@@ -61,7 +61,7 @@ return array(
     ),
     array(
         'name'  => 'Архивация базы',
-        'url'   => '/misc/dumper/dumper.php',
+        'url'   => '/_runtime/sxd',
         'class' => 'dumper',
     ),
     array(
