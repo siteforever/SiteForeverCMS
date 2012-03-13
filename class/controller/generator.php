@@ -17,6 +17,11 @@ class Controller_Generator extends Sfcms_Controller
         );
     }
 
+    public function init()
+    {
+        $this->request->setTitle(t('Generator'));
+    }
+
     /**
      * Index Action
      */
