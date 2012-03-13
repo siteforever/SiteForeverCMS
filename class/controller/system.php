@@ -10,17 +10,9 @@ class Controller_System extends Sfcms_Controller
         $this->request->setTitle('Конфигурация системы');
         $this->request->set('tpldata.page.template', 'index');
 
-        $modules    = array(
-            'mbstring',
-            'pdo_mysql',
-            'iconv',
-            'pcre',
-            'date',
-            'apc',
-            'xdebug',
-            'zend',
-            'zlib',
-        );
+        $modules = get_loaded_extensions();
+
+        $this->app()->getLogger()->log( $modules );
 
         $msys   = array();
 

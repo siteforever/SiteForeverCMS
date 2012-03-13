@@ -90,6 +90,15 @@ class App extends Application_Abstract
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
 
+        $this->installationStatic();
+    }
+
+
+    /**
+     * Инсталлирует каталоги со статикой, если еще не инсталлированы
+     */
+    private function installationStatic()
+    {
         if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'images' ) ) {
             $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'images', ROOT . DIRECTORY_SEPARATOR . 'images' );
             $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR . 'images');
