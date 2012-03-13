@@ -93,9 +93,9 @@ abstract class Application_Abstract
     static $init_time   = 0;
 
     /**
-     * @var Logger_Interface
+     * @var std_logger
      */
-    protected $logger;
+    protected $_logger = null;
 
     /**
      * Список установленных в систему модулей
@@ -147,7 +147,7 @@ abstract class Application_Abstract
 
     function __set($name, $value)
     {
-        $this->logger->log( "$name = $value", 'app_set' );
+        $this->_logger->log( "$name = $value", 'app_set' );
     }
 
     /**
@@ -264,25 +264,30 @@ abstract class Application_Abstract
     /**
      * @return Logger_Interface
      */
-    function getLogger()
+    public function getLogger()
     {
-        if ( ! isset( $this->logger ) ) {
-            switch ( strtolower( trim( $this->getConfig()->get('logger') ) ) ) {
-                case 'firephp':
-                    $this->logger   = new Logger_Firephp();
-                    break;
-                case 'html':
-                    $this->logger   = new Logger_Html();
-                    break;
-                case 'plain':
-                    $this->logger   = new Logger_Plain();
-                    break;
-                default:
-                    $this->logger   = new Logger_Blank();
+        if ( null !== $this->_logger ) {
+            return $this->_logger;
+        }
+
+        if ( ! isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
+            $this->_logger = std_logger::getInstance( new std_logger_plain() );
+//            return $this->_logger;
+        } else if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+            if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
+                $this->_logger = std_logger::getInstance( new std_logger_chrome() );
+            }
+            elseif ( !( false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
+                || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' ) )
+            ) {
+                $this->_logger = std_logger::getInstance( new std_logger_firephp() );
+            }
+            else {
+                $this->_logger = std_logger::getInstance();
             }
         }
 
-        return $this->logger;
+        return $this->_logger;
     }
 
     /**
@@ -338,4 +343,5 @@ abstract class Application_Abstract
     {
         return $this->_modules;
     }
+
 }

@@ -6,14 +6,14 @@
  * @link   http://standart-electronics.ru
  */
 
-require_once 'ChromePhp.php';
+require_once 'vendors/ChromePhp.php';
 
 class std_logger_chrome implements std_logger_logger
 {
 
     public function __construct()
     {
-        ChromePhp::useFile( ROOT . '/tmp/chrome.log', '/tmp/chrome.log' );
+//        ChromePhp::useFile( ROOT . '/tmp/chrome.log', '/tmp/chrome.log' );
     }
 
     public function log( $message, $label = '' )

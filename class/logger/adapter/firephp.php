@@ -17,6 +17,6 @@ class Logger_Adapter_Firephp extends FirePHP implements Logger_Interface
         if($AutoCreate===true && !self::$instance) {
             self::init();
         }
-    return self::$instance;
+        return self::$instance;
     }
 }

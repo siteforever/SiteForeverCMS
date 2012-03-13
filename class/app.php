@@ -33,18 +33,18 @@ class App extends Application_Abstract
         }
 
         if( $this->getConfig()->get( 'debug.profile' ) ) {
-            $this->logger->log(
+            $this->getLogger()->log(
                 "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
                 . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
             );
-            $this->logger->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
-            $this->logger->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
             $exec_time = microtime( true ) - self::$start_time;
-            $this->logger->log(
+            $this->getLogger()->log(
                 "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
             );
-            $this->logger->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
-            $this->logger->log( "Required memory: " . round( memory_get_usage() / 1024, 3 ) . " kb.", 'app' );
+            $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Required memory: " . round( memory_get_usage() / 1024, 3 ) . " kb.", 'app' );
         }
         ob_end_flush();
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
@@ -58,7 +58,7 @@ class App extends Application_Abstract
     function init()
     {
         if( $this->getConfig()->get( 'db.debug' ) ) {
-            std_error::init( new std_logger_plain() );
+            std_error::init( $this->getLogger() );
         }
 
         // Language

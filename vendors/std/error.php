@@ -117,7 +117,7 @@ class std_error
                     .join("\n", $trace);
 
         if ( self::$logger ) {
-            self::$logger->log( $msg );
+            self::$logger->log( $msg, 'error' );
         }
 
         return true;

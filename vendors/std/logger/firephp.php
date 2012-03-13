@@ -6,7 +6,7 @@
  * @link   http://standart-electronics.ru
  */
 
-require_once 'firephp.php';
+require_once 'vendors/FirePHPCore/FirePHP.class.php';
  
 class std_logger_firephp implements std_logger_logger
 {

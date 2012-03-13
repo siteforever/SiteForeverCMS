@@ -33,6 +33,8 @@ class Controller_Generator extends Sfcms_Controller
 
         $this->tpl->assign('tables', $table_list);
 
+        $this->app()->getLogger()->log( $table_list );
+
         $this->request->setContent($this->tpl->fetch('generator.index'));
     }
 

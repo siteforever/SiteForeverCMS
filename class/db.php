@@ -81,10 +81,10 @@ class DB
 
     /**
      * Устанавливает класс логгер
-     * @param  $logger
+     * @param std_logger $logger
      * @return void
      */
-    function setLoggerClass( $logger )
+    function setLoggerClass( std_logger $logger )
     {
         $this->logger   = $logger;
     }
@@ -97,7 +97,6 @@ class DB
         if ( ! is_null($this->logger) ) {
             foreach ( $this->log as $l ) {
                 $this->logger->log( $l, 'sql' );
-                //print '<p style="text-align: left;">'.nl2br($l).'</p>';
             }
         }
     }
