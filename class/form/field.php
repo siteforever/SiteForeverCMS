@@ -345,6 +345,12 @@ abstract class Form_Field
             $this->_error   = 2;
             $this->_error_string    = "&laquo;{$this->_label}&raquo; нужно заполнить";
         }
+
+        if ( ! $this->checkValue( $this->getValue() ) ) {
+            $this->_error   = 3;
+            $this->_error_string    = "&laquo;{$this->_label}&raquo; не соответсвует типу";
+        }
+
         return ! $this->_error;
     }
 

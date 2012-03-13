@@ -33,8 +33,6 @@ class Controller_Generator extends Sfcms_Controller
 
         $this->tpl->assign('tables', $table_list);
 
-        $this->app()->getLogger()->log( $table_list );
-
         $this->request->setContent($this->tpl->fetch('generator.index'));
     }
 
@@ -92,9 +90,9 @@ class Controller_Generator extends Sfcms_Controller
         if ( ! file_exists( $fmodel ) ) {
             file_put_contents( $fmodel, $omodel );
         }
-//        if ( ! file_exists( $fobject ) ) {
+        if ( ! file_exists( $fobject ) ) {
             file_put_contents( $fobject, $oobject );
-//        }
+        }
         file_put_contents( $ftable, $otable );
 
         if ( ! file_exists( dirname( $fbase ) ) ) {
@@ -103,10 +101,6 @@ class Controller_Generator extends Sfcms_Controller
 
         file_put_contents( $fbase, $obase );
 
-//        print "Model: {$fmodel}\n{$omodel}\n\n"
-//            . "Object: {$fobject}\n{$oobject}\n\n"
-//            . "Table: {$ftable}\n{$otable}\n\n"
-//            . "Base: {$fbase}\n{$obase}\n\n";
         print "Model: {$fmodel}\n"
             . "Object: {$fobject}\n"
             . "Table: {$ftable}\n"

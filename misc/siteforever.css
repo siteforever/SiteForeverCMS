@@ -166,3 +166,15 @@ div.siteforever_logger {
     div.siteforever_logger strong {
         color: yellow;
     }
+
+
+div.sfcms_guestbook_message {
+    padding: 10px;
+    border: 1px green solid;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+    div.sfcms_guestbook_title {
+        font-style: italic;
+        margin-bottom: 15px;
+    }

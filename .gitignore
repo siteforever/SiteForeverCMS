@@ -1,3 +1,4 @@
-.gitignore
 .idea/*
 index.php
+misc/sxd*
+protected/_runtime/*

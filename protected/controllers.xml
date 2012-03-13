@@ -6,6 +6,9 @@
     <controller name="news">
         <label>Новости</label>
     </controller>
+    <controller name="guestbook">
+        <label>Гостевая</label>
+    </controller>
     <controller name="catalog">
         <label>Каталог</label>
     </controller>

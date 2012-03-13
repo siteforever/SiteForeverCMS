@@ -13,7 +13,7 @@
  * @property string $path
  */
 
-class Data_Object_Page extends Data_Object
+class Data_Object_Page extends Data_Base_Page
 {
     /**
      * @return string
