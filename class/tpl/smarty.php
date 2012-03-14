@@ -1,7 +1,7 @@
 <?php
 // класс шаблонизатора
 App::autoloadUnRegister(array('App', 'autoload'));
-require_once 'Smarty-3.0.7'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
+require_once 'Smarty-3.1.8'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
 App::autoloadRegister(array('App','autoload'));
 
 /**

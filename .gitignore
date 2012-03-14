@@ -1,4 +1,4 @@
-.idea/*
-index.php
-_runtime/*
-protected/_runtime/*
+/.idea*
+/index.php
+/_runtime*
+/protected/_runtime*

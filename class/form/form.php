@@ -353,8 +353,8 @@ class Form_Form implements ArrayAccess
     {
         if ( count($this->_fields) == 0 ) {
             throw new Exception( 'Форма не содержит полей' );
-            return false;
         }
+
         foreach( $this->_fields as $field )
         {
             if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) )

@@ -7,6 +7,7 @@
  * @property string site
  * @property string city
  * @property int date
+ * @property string ip
  * @property string message
  */
 abstract class Data_Base_Guestbook extends Data_Object

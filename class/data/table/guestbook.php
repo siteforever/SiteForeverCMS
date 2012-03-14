@@ -21,6 +21,7 @@ class Data_Table_Guestbook extends Data_Table
             new Data_Field_Varchar( 'site', 250, true, null, false ),
             new Data_Field_Varchar( 'city', 250, true, null, false ),
             new Data_Field_Int( 'date', 11, true, null, false ),
+            new Data_Field_Varchar( 'ip', 15, true, null, false ),
             new Data_Field_Text( 'message', 11, true, null, false ),
         );
     }

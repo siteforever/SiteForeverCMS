@@ -13,7 +13,7 @@ class ControllerResolver
      */
     private $app;
 
-    function __construct(Application_Abstract $app)
+    public function __construct(Application_Abstract $app)
     {
         $this->app = $app;
     }
@@ -21,7 +21,7 @@ class ControllerResolver
     /**
      * @return array
      */
-    function resolveController()
+    public function resolveController()
     {
         $request = $this->app->getRequest();
 
@@ -34,10 +34,10 @@ class ControllerResolver
     /**
      * Запуск контроллера
      * @params array $command
-     * @throws ControllerExeption
+     * @throws ControllerException
      * @return mixed
      */
-    function dispatch(array $command = array())
+    public function dispatch(array $command = array())
     {
         $result = null;
         if (!$command) {
@@ -61,7 +61,6 @@ class ControllerResolver
         }
 
         $ref = new ReflectionClass($command['controller']);
-//        printVar($command);
 
         /**
          * @var Controller $controller
@@ -86,19 +85,11 @@ class ControllerResolver
             }
         }
         if ($ref->hasMethod($command['action'])) {
-//                printVar($command);
             $result = call_user_func( array( $controller, $command['action']) );
-//            $result = $controller->$command['action']();
         }
         else {
             $result = call_user_func( array( $controller, 'indexAction') );
-//            redirect('/error');
-            //                throw new ControllerException(t('Could not start the controller').' '.$command['controller'] . ':' . $command['action'] . '()');
         }
-        //        }
-        //        else {
-        //            throw new ControllerException(t('Unable to find controller').' '.$command['controller']);
-        //        }
         return $result;
     }
 

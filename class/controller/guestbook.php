@@ -12,6 +12,14 @@ class Controller_Guestbook extends Sfcms_Controller
         $this->request->setTitle( t('Guestbook module') );
     }
 
+    public function access()
+    {
+        return array(
+            'system'    => array('admin','edit'),
+        );
+    }
+
+
     /**
      * Index Action
      */
@@ -41,6 +49,8 @@ class Controller_Guestbook extends Sfcms_Controller
                 $obj->set( 'message', strip_tags( $form->getField( 'message' )->getValue() ) );
                 $obj->set( 'link', $link );
                 $obj->set( 'date', time() );
+                $obj->set( 'ip', $_SERVER['REMOTE_ADDR'] );
+
                 $model->save( $obj );
             }
         }
@@ -52,7 +62,7 @@ class Controller_Guestbook extends Sfcms_Controller
 
         $count  = $model->count( $crit['cond'], $crit['params'] );
 
-        $paging = $this->paging( $count, 2, $this->page['alias'] );
+        $paging = $this->paging( $count, 10, $this->page['alias'] );
 
         $crit['order'] = ' date DESC ';
         $crit['limit'] = $paging->limit;
@@ -71,4 +81,75 @@ class Controller_Guestbook extends Sfcms_Controller
 
         $this->request->setContent( $this->tpl->fetch('guestbook.index') );
     }
+
+
+    /**
+     * Админка
+     */
+    public function adminAction()
+    {
+        $this->request->addScript('/misc/admin/guestbook.js');
+        $id   = $this->request->get('id');
+
+        if ( ! $id ) {
+            $this->request->setContent('Param Id not defined');
+            return;
+        }
+
+        $crit   = array(
+            'cond'  => ' link = ? ',
+            'params'=> array( $id ),
+        );
+
+        $model  = $this->getModel('Guestbook');
+
+        $count  = $model->count( $crit['cond'], $crit['params'] );
+
+        $paging = $this->paging( $count, 10, $this->page['alias'] );
+
+        $crit['order'] = ' date DESC ';
+        $crit['limit'] = $paging->limit;
+
+        $this->app()->getLogger()->log( $crit );
+
+        $messages   = $model->findAll( $crit );
+
+        $this->tpl->assign(array(
+            'messages'  => $messages,
+            'paging'    => $paging,
+        ));
+
+        $this->request->setContent( $this->tpl->fetch('system:guestbook.admin') );
+    }
+
+
+    /**
+     * Редактирование сообщения
+     */
+    public function editAction()
+    {
+        $this->request->getTitle( t('Edit') );
+
+        $id = $this->request->get('id');
+
+        $model  = $this->getModel('Guestbook');
+
+        $msg    = $model->find( $id );
+
+        $form   = new Forms_Guestbook_Edit();
+        if ( $form->getPost() ) {
+            if ( $form->validate() ) {
+
+            }
+        } else {
+            $form->setData( $msg );
+        }
+
+        $this->tpl->assign( array(
+            'msg'   => $msg,
+            'form'  => $form,
+        ) );
+        $this->request->setContent( $this->tpl->fetch('guestbook.edit') );
+    }
+
 }
