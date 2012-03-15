@@ -14,7 +14,7 @@ class Controller_Banner extends Sfcms_Controller
     {
         return array(
             'system' => array(
-                'admin', 'redirectbanner', 'editcat', 'delcat', 'edit', 'del', 'cat'
+                'admin', 'editcat', 'delcat', 'edit', 'del', 'cat'
             ),
         );
     }
