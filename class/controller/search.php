@@ -7,6 +7,8 @@
  */
 class Controller_Search extends Sfcms_Controller
 {
+    private $_selected = null;
+
 
     function indexAction()
     {
@@ -18,21 +20,14 @@ class Controller_Search extends Sfcms_Controller
 
         $_GET['sword'] = trim( str_replace('%', ' ', $search) );
 
-
-        $search = preg_replace('/\&\w+?\;/ui', '%', $search); // спецсимволы
-        $search = preg_replace('/[^\wа-я]+/ui', '%', $search);// все, что не буквы и цифры
-        $search = str_replace(array('%34', '%39'), '', $search); // хвосты от кавычек
-        $selected   = explode( '|', preg_replace('/%+/u', '|', $search) );
-        $search = preg_replace('/[аийеёоуыъьэюя]+/ui', '%', $search);// все гласные
-        $search = preg_replace('/%+/u', '%', $search); // повторяющиеся
-        $search = '%'.preg_replace('/^%+|%+$/u', '', $search).'%'; // формируем запрос
-        $search  = trim( $search, ' ' );
+        $search = $this->filterSearchQuery( $search );
 
         $page   = $this->request->get('page', FILTER_VALIDATE_INT, 1);
         $perpage= 10;
         $offset = ( $page-1 ) * $perpage;
 
         $protected  = $this->app()->getAuth()->currentUser()->perm;
+        $this->app()->getLogger()->log( $search );
         $search_list    = Sfcms_Model::getModel('Page')->findAll(
             array(
                 'condition' => ' ( name LIKE :search OR title LIKE :search '
@@ -42,7 +37,7 @@ class Controller_Search extends Sfcms_Controller
                 'limit'     => " {$offset}, {$perpage} ",
             )
         );
-        
+
         $page_list  = array();
         $max_page   = $search_list ? $page + 1 : $page;
         if ( $page > 1 ) {
@@ -61,7 +56,7 @@ class Controller_Search extends Sfcms_Controller
 
         $this->tpl->assign(array(
             'page_list' => 'Страницы: '.implode(' ', $page_list),
-            'hl'        => $selected,
+            'hl'        => $this->_selected,
             'sword'     => $_GET['sword'],
             'list'      => $search_list,
             'offset'    => $offset,
@@ -72,6 +67,30 @@ class Controller_Search extends Sfcms_Controller
 
         $this->request->setTitle('Поиск');
         $this->request->set('template', 'inner');
+    }
+
+
+    /**
+     * Отфильтрует символы в строке, установит св-во $_selected
+     * @param $search
+     * @return mixed|string
+     */
+    private function filterSearchQuery( $search )
+    {
+        $search = preg_replace('/\&\w+?\;/ui', '%', $search); // спецсимволы
+        $search = preg_replace('/[^a-zA-Zа-яА-Я0-9]+/u', '%', $search);// все, что не буквы и цифры
+        $search = str_replace(array('%34', '%39'), '', $search); // хвосты от кавычек
+        $this->_selected = explode( '|', preg_replace('/%+/u', '|', $search) );
+        $oldsearch  = $search;
+        $search = preg_replace('/[аийеёоуыъьэюя]+$/ui', '', $search);// все гласные
+        $this->app()->getLogger()->log( mb_strlen( $search ) );
+        if ( mb_strlen( $search ) < 3 ) {
+            $search = $oldsearch;
+        }
+        $search = preg_replace('/%+/u', '%', $search); // повторяющиеся
+        $search = '%'.preg_replace('/^%+|%+$/u', '', $search).'%'; // формируем запрос
+        $search  = trim( $search, ' ' );
+        return $search;
     }
 
 }
