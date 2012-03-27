@@ -27,7 +27,7 @@
     </tr>
 {/foreach}
 </table>
-<p class="page">{$paging.html}</p>
+<p class="page">{if isset($paging)}{$paging.html}{/if}</p>
 <a class="cat_add" {href controller="banner" action="editcat"}>Добавить категорию</a>
 
 <div id="dlg-form" title="Редактирование категории баннеров.">

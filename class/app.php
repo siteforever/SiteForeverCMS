@@ -228,7 +228,7 @@ class App extends Application_Abstract
                 $this->getRequest()->addStyle( $path_misc . '/admin/admin.css' );
                 // jQuery
                 //                $this->getRequest()->addScript( $path_misc.'/jquery-ui.min.js' );
-                $this->getRequest()->addScript( $path_misc . '/jquery-ui-1.8.13.custom.min.js' );
+                $this->getRequest()->addScript( $path_misc . '/jquery-ui-1.8.18.custom.min.js' );
                 $this->getRequest()->addScript( $path_misc . '/jquery.form.js' );
                 //$request->addScript( $path_misc.'/jquery.cookie.js' );
                 //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
