@@ -20,9 +20,9 @@ $(function () {
     });
 
     // обработчик сабмита
-
     $('form.module_form, form.ajax').ajaxForm({
-        beforeSubmit:function () {
+        beforeSubmit:function ( arr, $form, options ) {
+            options.url = $($form)[0].action;
             $.showBlock('Отправка данных...');
         },
         success:function (data) {
@@ -31,7 +31,7 @@ $(function () {
         },
         iframe:false
     }).find("input:text").live('keypress', function (e) {
-            if (e.keyCode == 13 /*|| e.keyCode == 9*/) {
+            if (e.keyCode == 13) {
                 return false;
             }
         });

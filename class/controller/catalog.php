@@ -573,11 +573,7 @@ class Controller_Catalog extends Sfcms_Controller
             }
 
             $fvalues = null;
-            if( $pitem && $filter->getFilter( $pitem->id ) ) {
-                $fvalues = $filter->getFilter( $pitem->id );
-            }
-            //            printVar($fvalues);
-            //            printVar($parent->getAttributes());
+            $pitem && $fvalues = $filter->getFilter( $pitem->id );
 
             foreach( $parent->getAttributes() as $k => $p ) {
                 if( preg_match( '/p(\d+)/', $k, $m ) ) {
@@ -587,7 +583,7 @@ class Controller_Catalog extends Sfcms_Controller
                     /**
                      * @var Sfcms_Filter_Group $fGroup
                      */
-                    if ( $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
+                    if ( $fvalues && $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
                         if (  is_array( $fGroup->getData() ) && ! $field->getValue() ) {
                             $form->getField( $k )->setValue(
                                 str_ireplace(
@@ -597,7 +593,6 @@ class Controller_Catalog extends Sfcms_Controller
                             );
                         }
                     }
-                    //                    print $m[1];
                 }
             }
         } else {

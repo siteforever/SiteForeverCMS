@@ -82,9 +82,6 @@ class App extends Application_Abstract
 
 
         require_once 'functions.php';
-        //            $firephp = FirePHP::getInstance(true);
-        //            $firephp->registerErrorHandler();
-        //            $firephp->registerExceptionHandler();
 
         if( ! defined( 'MAX_FILE_SIZE' ) ) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );

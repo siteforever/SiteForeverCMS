@@ -102,7 +102,7 @@ $(function(){
     });
 
 
-    // Галлерея каталога
+    // Галерея каталога
     if ( $('a.gallery-item-add').length ) {
 
         $('a.gallery-item-add').live('click',function(){
