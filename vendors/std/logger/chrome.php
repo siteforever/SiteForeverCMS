@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * Логгер ChromePHP
  * @author Nikolay Ermin <nikolay@ermin.ru>
@@ -24,5 +24,10 @@ class std_logger_chrome implements std_logger_logger
         else {
             return ChromePhp::log( $message );
         }
+    }
+
+    public function dump()
+    {
+        ChromePhp::log( print_r( func_get_args(), 1 ) );
     }
 }

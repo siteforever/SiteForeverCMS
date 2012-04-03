@@ -48,4 +48,11 @@ class std_logger implements std_logger_logger
             return $this->_logger->log( $message, $label );
         }
     }
+
+    public function dump( )
+    {
+        if ( $this->_logger && method_exists( $this->_logger, 'dump' ) ) {
+            return $this->_logger->dump( func_get_args() );
+        }
+    }
 }

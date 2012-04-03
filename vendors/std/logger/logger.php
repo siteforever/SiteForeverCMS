@@ -9,4 +9,6 @@
 interface std_logger_logger
 {
     public function log( $message, $label = '' );
+
+    public function dump( );
 }

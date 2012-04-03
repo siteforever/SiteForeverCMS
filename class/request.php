@@ -112,6 +112,24 @@ class Request
 
 
     /**
+     * @return string
+     */
+    public function getController()
+    {
+        return $this->get('controller');
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getAction()
+    {
+        return $this->get('action');
+    }
+
+
+    /**
      * Является ли запрос аяксовым
      * @return bool
      */

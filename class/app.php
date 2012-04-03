@@ -27,12 +27,11 @@ class App extends Application_Abstract
         // WARNING!!!
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
-
         if( $this->getConfig()->get( 'db.debug' ) ) {
             Sfcms_Model::getDB()->saveLog();
         }
 
-        if( $this->getConfig()->get( 'debug.profile' ) ) {
+        if( $this->getConfig()->get( 'debug.profiler' ) ) {
             $this->getLogger()->log(
                 "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
                 . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
@@ -170,6 +169,15 @@ class App extends Application_Abstract
 
         try {
             $result = $controller_resolver->dispatch();
+            if ( ! $this->getRequest()->getContent() ) {
+                if ( is_array( $result ) ) {
+                    $this->getTpl()->assign( $result );
+                    $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
+                    $this->getRequest()->setContent( $this->getTpl()->fetch( $template ) );
+                } else if ( is_string( $result ) ) {
+                    $this->getRequest()->setContent( $result );
+                }
+            }
         }
         catch( ControllerException $e ) {
             $result = false;
@@ -187,7 +195,7 @@ class App extends Application_Abstract
         Data_Watcher::instance()->performOperations();
 
         // Заголовок по-умолчанию
-        if( $this->getRequest()->getTitle() == '' ) {
+        if( '' == $this->getRequest()->getTitle() ) {
             $this->getRequest()->setTitle( $this->getRequest()->get( 'tpldata.page.name' ) );
         }
     }
@@ -200,122 +208,13 @@ class App extends Application_Abstract
      */
     function invokeView( $result )
     {
-        /**
-         * Данные шаблона
-         */
-        $this->getTpl()->assign( $this->getRequest()->get( 'tpldata' ) );
-        $this->getTpl()->assign('config', $this->getConfig());
-        $this->getTpl()->assign('feedback', $this->getRequest()->getFeedbackString());
-        $this->getTpl()->assign('host', $_SERVER[ 'HTTP_HOST' ]);
-        $this->getTpl()->assign('memory', number_format( memory_get_usage() / 1024, 2, ',', ' ' ) . ' Kb');
-        $this->getTpl()->assign('exec', number_format( microtime( true ) - self::$start_time, 3, ',', ' ' ) . ' sec.');
-        $this->getTpl()->assign('request', $this->getRequest());
-
         if( ! $this->getRequest()->getAjax() ) {
-            header( 'Content-type: text/html; charset=utf-8' );
-
-            $theme_css = $this->getRequest()->get( 'path.css' );
-            $theme_js  = $this->getRequest()->get( 'path.js' );
-            $path_misc = $this->getRequest()->get( 'path.misc' );
-
-            if( $this->getRequest()->get( 'resource' ) == 'system:' ) {
-                // подключение админских стилей и скриптов
-
-                $this->getRequest()->addStyle( $path_misc . '/smoothness/jquery-ui.css' );
-                $this->getRequest()->addStyle( $path_misc . '/admin/admin.css' );
-                // jQuery
-                //                $this->getRequest()->addScript( $path_misc.'/jquery-ui.min.js' );
-                $this->getRequest()->addScript( $path_misc . '/jquery-ui-1.8.18.custom.min.js' );
-                $this->getRequest()->addScript( $path_misc . '/jquery.form.js' );
-                //$request->addScript( $path_misc.'/jquery.cookie.js' );
-                //$request->addScript( $path_misc.'/jquery.mousewheel-3.0.2.pack.js' );
-                $this->getRequest()->addScript( $path_misc . '/jquery.blockUI.js' );
-
-                switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
-                    case 'tinymce':
-                        // TinyMCE
-                        $this->getRequest()->addScript( $path_misc . '/tinymce/jscripts/tiny_mce/jquery.tinymce.js' );
-                        $this->getRequest()->addScript( $path_misc . '/admin/editor/tinymce.js' );
-                        break;
-
-                    case 'ckeditor':
-                        // CKEditor
-                        $this->getRequest()->addScript( $path_misc . '/ckeditor/ckeditor.js' );
-                        $this->getRequest()->addScript( $path_misc . '/ckeditor/adapters/jquery.js' );
-                        $this->getRequest()->addScript( $path_misc . '/admin/editor/ckeditor.js' );
-                        break;
-
-                    default: // plain
-                }
-
-                $this->getRequest()->addStyle( $path_misc . '/elfinder/css/elfinder.css' );
-                $this->getRequest()->addScript( $path_misc . '/elfinder/js/elfinder.full.js' );
-                $this->getRequest()->addScript( $path_misc . '/elfinder/js/i18n/elfinder.ru.js' );
-
-
-                $this->getRequest()->addScript( $path_misc . '/forms.js' );
-                $this->getRequest()->addScript( $path_misc . '/admin/catalog.js' );
-                $this->getRequest()->addScript( $path_misc . '/admin/admin.js' );
-
-            }
-            else {
-                if( file_exists( trim( $theme_css, '/' ) . '/style.css' ) ) {
-                    $this->getRequest()->addStyle( $theme_css . '/style.css' );
-                }
-                if( file_exists( trim( $theme_css, '/' ) . '/print.css' ) ) {
-                    $this->getRequest()->addStyle( $theme_css . '/print.css' );
-                }
-                if( file_exists( trim( $theme_js . '/script.js', '/' ) ) ) {
-                    $this->getRequest()->addScript( $theme_js . '/script.js' );
-                }
-            }
-
-            $layout = $this->getTpl()->fetch(
-                $this->getRequest()->get( 'resource' )
-                . $this->getRequest()->get( 'template' )
-            );
-            //            ob_clean();
-            $layout = preg_replace( '/[ \t]+/', ' ', $layout );
-            $layout = preg_replace( '/\n[ \t]+/', "\n", $layout );
-            $layout = preg_replace( '/\n+/', "\n", $layout );
-            print $layout;
+            $Layout = new Sfcms_View_Layout( $this );
         }
         else {
-            // AJAX
-            header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-            header( 'Cache-Control: post-check=0, pre-check=0', false );
-            header( 'Pragma: no-cache' );
-
-            if( $this->getRequest()->getAjaxType() == Request::TYPE_JSON ) {
-                header( 'Content-type: text/json; charset=utf-8' );
-                if( $result ) {
-                    if( is_object( $result ) || is_array( $result ) ) {
-                        $result = json_encode( $result );
-                    }
-                    elseif( is_string( $result ) ) {
-                        if( ! @json_decode( $result ) ) {
-                            throw new Application_Exception( 'Result is not valid and can not convert to json' );
-                        }
-                    }
-                    print $result;
-                }
-                else {
-                    print $this->getRequest()->getResponseAsJson();
-                }
-            }
-            elseif( $this->getRequest()->getAjaxType() == Request::TYPE_XML ) {
-                header( 'Content-type: text/xml; charset=utf-8' );
-                print $this->getRequest()->getContent();
-            }
-            else {
-                if( count( $this->getRequest()->getFeedback() ) ) {
-                    print '<div class="feedback">' . $this->getRequest()->getFeedbackString() . '</div>';
-                }
-                if( $this->getRequest()->getContent() ) {
-                    print $this->getRequest()->getContent();
-                }
-            }
+            $Layout = new Sfcms_View_Xhr( $this );
         }
+        print $Layout->view( $result );
     }
 
     /**

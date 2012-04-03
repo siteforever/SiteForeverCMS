@@ -161,17 +161,17 @@ abstract class Sfcms_Model
      */
     final static public function getModel( $class_name )
     {
-        if( strpos( strtolower( $class_name ), 'model_' ) === false ) {
+        if ( ! $class_name ) {
+            throw new RuntimeException( 'Model is not defined' );
+        }
+        if ( ! preg_match('/^model_/i', $class_name) ) {
             $class_name = 'Model_' . $class_name;
         }
-        //var_dump( isset( self::$all_class[ $class_name ] ) );
-
         if( ! isset( self::$all_class[ $class_name ] ) ) {
             if( class_exists( $class_name, true ) ) {
                 self::$all_class[ $class_name ] = new $class_name();
-            }
-            else {
-                throw new Exception( 'Model "' . $class_name . '" not found' );
+            } else {
+                throw new RuntimeException( 'Model "' . $class_name . '" not found' );
             }
         }
         return self::$all_class[ $class_name ];
@@ -333,7 +333,11 @@ abstract class Sfcms_Model
      */
     function with()
     {
-        $this->with = func_get_args();
+        if ( func_get_arg(0) && is_array( func_get_arg(0) ) ) {
+            $this->with = func_get_arg(0);
+        } else {
+            $this->with = func_get_args();
+        }
         return $this;
     }
 
@@ -376,7 +380,7 @@ abstract class Sfcms_Model
             );
             $crit    = array_merge( $default, $crit );
         } else {
-            throw new Sfcms_Model_Exception( 'Not valid criteria' );
+            throw new Sfcms_Model_Exception( 'Not valid criteria "'.$crit.'"' );
         }
 
         if( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
@@ -432,34 +436,39 @@ abstract class Sfcms_Model
 
         $collection = array();
 
-        //        $start  = microtime(1);
         if( $raw ) {
-
             $collection = new Data_Collection( $raw, $this );
-            //            foreach ( $raw as $key => $data ) {
-            //                $collection[$key]   = $this->createObject( &$data );
-            ////                $collection[$key]   = $data;
-            //            }
         }
-        //        print __METHOD__.round( microtime(1) - $start, 3 );
 
         if( count( $raw ) && count( $with ) ) {
             $relation = $this->relation();
-
-            $keys = array_keys( $collection );
+            $keys   = array();
+            /** @var $obj Data_Object */
+            foreach ( $collection as $obj ) {
+                $keys[] = $obj->getId();
+            };
             foreach( $with as $rel ) {
-
                 $model = self::getModel( $relation[ $rel ][ 1 ] );
                 $key   = $relation[ $rel ][ 2 ];
-
                 switch ( $relation[ $rel ][ 0 ] ) {
                     case self::HAS_ONE:
-
-                        $objects = $model->findAll( array(
-                            'cond'      => " $key IN ( ? ) ",
-                            'params'    => array( implode( ",", $keys ) ),
-                        ) );
-
+                        $objects = $model->findAll( " $key IN ( ".implode( ",", $keys )." ) ");
+                        /** @var $o Data_Object */
+                        foreach ( $objects as $o ) {
+                            $this->find( $o->get( $key ) )->set( $rel, $o );
+                        };
+                        break;
+                    case self::HAS_MANY:
+                        $objects = $model->findAll( " $key IN ( ".implode( ",", $keys )." ) ");
+                        /** @var $o Data_Object */
+                        $indexes    = array();
+                        foreach ( $objects as $o ) {
+                            $indexes[ $o->get( $key ) ][ $o->getId() ] = $o;
+                        }
+                        foreach ( $indexes as $i => $col ) {
+                            $obj = $this->find( $i );
+                            $obj->set( $rel, $col );
+                        }
                         break;
                 }
             }
@@ -476,6 +485,7 @@ abstract class Sfcms_Model
      */
     final public function findByRelation( $rel, $data )
     {
+        /** @var $obj Data_Object */
         $obj    = null;
         if( is_object( $data ) && $data instanceof Data_Object ) {
             $obj = $data;
@@ -487,9 +497,8 @@ abstract class Sfcms_Model
 
         $model = self::getModel( $relation[ $rel ][ 1 ] );
 
-        if( $relation[ $rel ][ 0 ] == self::HAS_ONE
-            || $relation[ $rel ][ 0 ] == self::HAS_MANY
-        ) {
+        $criteria   = array();
+        if( in_array( $relation[ $rel ][ 0 ], array( self::HAS_ONE, self::HAS_MANY ) ) ) {
             $criteria = array(
                 'cond'  => " {$key} IN (:key) ",
                 'params'=> array( ":key"=> $obj->getId() ),

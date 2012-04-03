@@ -48,7 +48,7 @@
 
 </div>
 <div class="l-footer">
-    <a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a> <small>{t}Memory{/t}:{$memory}, {t}Generation{/t}:{$exec}</small>
+    <a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>
 </div>
 
 </body>

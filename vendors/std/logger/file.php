@@ -21,4 +21,8 @@ class std_logger_file implements std_logger_logger
     {
         file_put_contents( $this->_file, join("\n", $this->_log) );
     }
+
+    public function dump()
+    {
+    }
 }

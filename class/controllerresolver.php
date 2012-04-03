@@ -62,13 +62,9 @@ class ControllerResolver
 
         $ref = new ReflectionClass($command['controller']);
 
-        /**
-         * @var Controller $controller
-         */
+        /** @var Sfcms_Controller $controller */
         $controller = $ref->newInstance( $this->app );
-        if ($ref->hasMethod('init')) {
-            $controller->init();
-        }
+        $controller->init();
         // Защита системных действий
         $rules = $controller->access();
 

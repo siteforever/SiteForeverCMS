@@ -12,4 +12,9 @@ class std_logger_plain implements std_logger_logger
     {
         print "<pre>{$message}</pre>\n";
     }
+
+    public function dump()
+    {
+    }
+
 }

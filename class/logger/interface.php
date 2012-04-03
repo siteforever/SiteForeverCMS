@@ -8,4 +8,6 @@
 interface Logger_Interface
 {
     public function log( $message, $label = '' );
+
+    public function dump();
 }

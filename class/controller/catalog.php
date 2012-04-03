@@ -160,7 +160,7 @@ class Controller_Catalog extends Sfcms_Controller
             $criteria[ 'order' ] = $order;
         }
 
-        $list = $catalogFinder->findAll( $criteria );
+        $list = $catalogFinder->with('Gallery')->findAll( $criteria );
 
         $properties = array();
 

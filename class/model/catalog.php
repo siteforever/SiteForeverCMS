@@ -27,7 +27,7 @@ class Model_Catalog extends Sfcms_Model
     /**
      * @return Model_CatGallery
      */
-    function gallery()
+    public function gallery()
     {
         return self::getModel( 'CatGallery' );
     }
@@ -42,13 +42,21 @@ class Model_Catalog extends Sfcms_Model
         $this->request->addStyle( $this->request->get( 'path.misc' ) . '/etc/catalog.css' );
     }
 
+    function relation()
+    {
+        return array(
+            'Gallery' => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
+        );
+    }
+
+
     /**
      * Искать все в список по фильтру по артикулу
      * @param string $filter
      *
      * @return array
      */
-    function findAllFiltered( $filter )
+    public function findAllFiltered( $filter )
     {
         return $this->findAll(
             "deleted = 0 AND articul LIKE :filter",
@@ -64,7 +72,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return array
      */
-    function findAllByParent( $parent, $limit = 'LIMIT 100' )
+    public function findAllByParent( $parent, $limit = 'LIMIT 100' )
     {
         $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(child.id) child_count "
@@ -86,7 +94,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return array
      */
-    function findGoodsByParent( $parent, $limit = '' )
+    public function findGoodsByParent( $parent, $limit = '' )
     {
         $order = $this->config->get( 'catalog.order_default' );
 
@@ -132,7 +140,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return array
      */
-    function findCatsByParent( $parent, $limit = '' )
+    public function findCatsByParent( $parent, $limit = '' )
     {
         $list = $this->db->fetchAll(
             "SELECT cat.*, COUNT(sub.id) sub_count "
@@ -159,7 +167,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return array
      */
-    function findGoodsById( $id_list )
+    public function findGoodsById( $id_list )
     {
         if( ! is_array( $id_list ) ) {
             throw new Exception( 'Аргумент должен быть массивом' );
@@ -190,7 +198,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return string
      */
-    function getCountByParent( $parent, $type = -1 )
+    public function getCountByParent( $parent, $type = -1 )
     {
         $count = $this->count(
             'parent = :parent AND deleted = 0 AND hidden = 0 ' .
@@ -209,7 +217,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return int идентификатор записи
      */
-    function update( Data_Object_Catalog $obj )
+    public function update( Data_Object_Catalog $obj )
     {
         $obj_id = $obj->getId();
 
@@ -246,7 +254,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return string
      */
-    function findPathSerialize( $id )
+    public function findPathSerialize( $id )
     {
         $path = array();
         while( $id ) {
@@ -274,7 +282,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return boolean
      */
-    function onDeleteStart( $id = null )
+    public function onDeleteStart( $id = null )
     {
         $this->remove( $id );
         return false;
@@ -286,7 +294,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return void
      */
-    function remove( $id )
+    public function remove( $id )
     {
         $obj = $this->find( $id );
         if( $obj ) {
@@ -301,7 +309,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return void
      */
-    function unremove( $id )
+    public function unremove( $id )
     {
         $obj = $this->find( $id );
         if( $obj ) {
@@ -313,7 +321,7 @@ class Model_Catalog extends Sfcms_Model
      * Создает дерево $this->tree по данным из $this->all
      * @return array
      */
-    function createTree()
+    public function createTree()
     {
         if( null === $this->parents ) {
             $this->parents = array();
@@ -400,7 +408,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return string
      */
-    function getMenu( $url, $parent, $levelback = 0 )
+    public function getMenu( $url, $parent, $levelback = 0 )
     {
         $cur_id = $this->getActiveCategory();
 
@@ -471,7 +479,7 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return array|boolean
      */
-    function getSelectTree( $parent, $levelback )
+    public function getSelectTree( $parent, $levelback )
     {
         static $maxlevelback;
         if( $maxlevelback < $levelback ) {
@@ -527,7 +535,7 @@ class Model_Catalog extends Sfcms_Model
      * Пересортирует разделы
      * @return string
      */
-    function resort()
+    public function resort()
     {
         $sort = $this->request->get( 'sort' );
         if( $sort && is_array( $sort ) ) {
@@ -550,7 +558,7 @@ class Model_Catalog extends Sfcms_Model
      * Переместить товары в нужный раздел
      * @return void
      */
-    function moveList()
+    public function moveList()
     {
         /**
          * @var Data_Object_Catalog $item
@@ -574,7 +582,7 @@ class Model_Catalog extends Sfcms_Model
      * Массив с категориями для select
      * @return array
      */
-    function &getCategoryList()
+    public function &getCategoryList()
     {
         $parents     = array( 'Корневой раздел' );
         $select_tree = $this->getSelectTree( 0, 10 );
@@ -589,7 +597,7 @@ class Model_Catalog extends Sfcms_Model
     /**
      * @return Forms_Catalog_Edit
      */
-    function getForm()
+    public function getForm()
     {
         if( is_null( $this->form ) ) {
             $this->form = new Forms_Catalog_Edit();

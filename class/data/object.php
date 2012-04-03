@@ -69,7 +69,10 @@ abstract class Data_Object implements ArrayAccess//, Iterator
         if ( isset( $relation[ $key ] ) ) {
             return $this->model->findByRelation( $key, $this );
         }
-        if ( $this->offsetExists( $key ) ) {
+        if ( method_exists( $this, 'get'.$key ) && 'id' != $key ) {
+            $method = 'get'.$key;
+            $this->$method();
+        } elseif ( $this->offsetExists( $key ) ) {
             return $this->offsetGet( $key );
         }
         return null;
@@ -92,7 +95,10 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     function set( $key, $value )
     {
-        if ( isset( $this->field_names[ $key ] ) ) {
+        if ( method_exists( $this, 'set'.$key ) && 'id' != $key ) {
+            $method = 'set'.$key;
+            $this->$method( $value );
+        } elseif ( isset( $this->field_names[ $key ] ) ) {
             if ( $this->field_names[ $key ]->validate( $value ) !== false ) {
                 if ( ( $this->offsetExists( $key ) && $this->data[ $key ] !== $value ) ||
                      ! $this->offsetExists( $key )
@@ -101,8 +107,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
                     $this->markDirty();
                 }
             }
-        }
-        else {
+        } else {
             $this->data[$key]    = $value;
         }
         return $this;

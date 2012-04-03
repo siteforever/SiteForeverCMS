@@ -63,13 +63,21 @@ class Data_Object_Catalog extends Data_Object
     {
         if ( null === $this->_gallery && $this->getId() ) {
             $gallery_model  = $this->getModel('CatGallery');
-
             $this->_gallery = $gallery_model->findAll(array(
                  'cond'      => ' cat_id = ? ',
                  'params'    => array( $this->getId() ),
             ));
         }
         return $this->_gallery;
+    }
+
+
+    /**
+     * @param $gallery
+     */
+    public function setGallery( $gallery )
+    {
+        $this->_gallery = $gallery;
     }
 
     /**
