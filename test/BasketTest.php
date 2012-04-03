@@ -135,4 +135,3 @@ class BasketTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( count( $this->object->getAll() ), 0 );
     }
 }
-?>

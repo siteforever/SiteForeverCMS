@@ -45,4 +45,3 @@ function smarty_resource_theme_trusted($tpl_name, $smarty)
 {
     // не используется для шаблонов
 }
-?> 

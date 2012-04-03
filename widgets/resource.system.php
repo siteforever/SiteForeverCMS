@@ -41,4 +41,3 @@ function smarty_resource_system_trusted($tpl_name, $smarty)
 {
     // не используется для шаблонов
 }
-?> 

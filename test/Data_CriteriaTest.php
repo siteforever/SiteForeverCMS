@@ -82,4 +82,3 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $criteria->getParams(), array('test', ':test'=>'test'), 'Params not correspond' );
     }
 }
-?>

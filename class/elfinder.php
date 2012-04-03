@@ -1857,5 +1857,3 @@ class elFinder {
 	}
 
 }
-
-?>
