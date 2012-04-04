@@ -6,7 +6,7 @@ return array(
 
     // отладка
     'debug' => array(
-        'profile'   => true,
+        'profiler'   => true,
     ),
 
 //    'logger'    => 'firephp',
