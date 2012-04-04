@@ -1,7 +1,7 @@
 <?php
 /**
  * Интерфейс приложения
- * User: keltanas
+ * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
 abstract class Application_Abstract
@@ -105,11 +105,11 @@ abstract class Application_Abstract
 
     abstract public function run();
 
-    abstract function init();
+    abstract protected function init();
 
-    abstract function handleRequest();
+    abstract protected function handleRequest();
 
-    function __construct( $cfg_file = null )
+    public function __construct( $cfg_file = null )
     {
         App::autoloadRegister(array('App','autoload'));
 
@@ -145,7 +145,7 @@ abstract class Application_Abstract
         set_include_path( implode( PATH_SEPARATOR, array_reverse( $include_list ) ) );
     }
 
-    function __set($name, $value)
+    public function __set($name, $value)
     {
         $this->_logger->log( "$name = $value", 'app_set' );
     }
@@ -185,7 +185,7 @@ abstract class Application_Abstract
      * @throws Exception
      * @return Auth
      */
-    function getAuth()
+    public function getAuth()
     {
         if ( is_null( $this->auth ) ) {
             if ( ! $this->auth_format ) {
@@ -202,7 +202,7 @@ abstract class Application_Abstract
      * @throws Application_Exception
      * @return Basket
      */
-    function getBasket()
+    public function getBasket()
     {
         if ( is_null( self::$basket ) )
         {
@@ -214,7 +214,7 @@ abstract class Application_Abstract
     /**
      * @return Request
      */
-    function getRequest()
+    public function getRequest()
     {
         if ( is_null( self::$request ) ) {
             self::$request  = new Request();
@@ -226,7 +226,7 @@ abstract class Application_Abstract
     /**
      * @return TPL_Driver
      */
-    function getTpl()
+    public function getTpl()
     {
         if ( is_null( self::$tpl ) ) {
             self::$tpl  = Tpl_Factory::create( $this );
@@ -245,7 +245,7 @@ abstract class Application_Abstract
     /**
      * @return SysConfig
      */
-    function getConfig()
+    public function getConfig()
     {
         return self::$config;
     }
@@ -253,7 +253,7 @@ abstract class Application_Abstract
     /**
      * @return Router
      */
-    function getRouter()
+    public function getRouter()
     {
         if ( is_null( self::$router ) ) {
             self::$router   = new Router( $this->getRequest() );
@@ -294,7 +294,7 @@ abstract class Application_Abstract
      * Вернет текущего пользователя
      * @return Data_Object_User
      */
-    function getUser()
+    public function getUser()
     {
         return $this->getAuth()->currentUser();
     }
@@ -304,7 +304,7 @@ abstract class Application_Abstract
      * @param string $model
      * @return Sfcms_Model
      */
-    function getModel( $model )
+    public function getModel( $model )
     {
         return Sfcms_Model::getModel( $model );
     }
@@ -313,7 +313,7 @@ abstract class Application_Abstract
      * Настройки сайта
      * @return Settings
      */
-    function getSettings()
+    public function getSettings()
     {
         if (  is_null( $this->_settings ) ) {
             $this->_settings    = new Settings();
@@ -325,7 +325,7 @@ abstract class Application_Abstract
      * Загрузка конфигураций модулей
      * @return void
      */
-    function loadModules()
+    public function loadModules()
     {
         $files  = glob( SF_PATH.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'modules'.DIRECTORY_SEPARATOR.'*.xml');
 
@@ -339,7 +339,7 @@ abstract class Application_Abstract
      * Вернет список зарегистрированных модулей
      * @return array of Application_Module
      */
-    function getModules()
+    public function getModules()
     {
         return $this->_modules;
     }

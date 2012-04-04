@@ -15,7 +15,7 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    function run()
+    public function run()
     {
         ob_start();
         self::$start_time = microtime( true );
@@ -54,7 +54,7 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    function init()
+    protected function init()
     {
         if( $this->getConfig()->get( 'db.debug' ) ) {
             std_error::init( $this->getLogger() );
@@ -138,7 +138,7 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    function handleRequest()
+    protected function handleRequest()
     {
         // запуск сессии
         session_start();
@@ -169,7 +169,7 @@ class App extends Application_Abstract
 
         try {
             $result = $controller_resolver->dispatch();
-            if ( ! $this->getRequest()->getContent() ) {
+            if ( !$this->getRequest()->getAjax() && !$this->getRequest()->getContent() ) {
                 if ( is_array( $result ) ) {
                     $this->getTpl()->assign( $result );
                     $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
@@ -178,13 +178,11 @@ class App extends Application_Abstract
                     $this->getRequest()->setContent( $result );
                 }
             }
-        }
-        catch( ControllerException $e ) {
+        } catch ( ControllerException $e ) {
             $result = false;
             $this->getRequest()->setTemplate( 'inner' );
             $this->getRequest()->setContent( $e->getMessage() );
-        }
-        catch( Exception $e ) {
+        } catch ( Exception $e ) {
             $this->getRequest()->setTemplate( 'inner' );
             $this->getRequest()->setContent( $e->getMessage() );
         }
@@ -206,7 +204,7 @@ class App extends Application_Abstract
      *
      * @return void
      */
-    function invokeView( $result )
+    protected function invokeView( $result )
     {
         if( ! $this->getRequest()->getAjax() ) {
             $Layout = new Sfcms_View_Layout( $this );
