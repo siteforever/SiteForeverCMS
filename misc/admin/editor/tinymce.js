@@ -26,7 +26,7 @@ var wysiwyg = {
             "theme_advanced_statusbar_location" : "bottom",
             // Connect ElFinder
             "file_browser_callback" : function(field_name, url, type, win) {
-                var w = window.open('/?controller=elfinder&action=index&finder=1', null, 'width=600,height=420');
+                var w = window.open('/?controller=elfinder&action=finder', null, 'width=600,height=420');
                 // Сохраняем необходимые параметры в глобальных переменных окна (не самое лучшее решение, предложите другое?),
                 // или можете передавать параметры в GET и потом разбирать их в elfinder.html
                 w.tinymceFileField = field_name;
@@ -36,7 +36,7 @@ var wysiwyg = {
 
         if ( $('#finder').length == 1 ) {
             $('#finder').elfinder({
-                url             : '/?route=elfinder&connector=1',
+                url             : '/?controller=elfinder&action=connector',
                 lang            : 'ru',
                 editorCallback  : function(url) {
                     window.tinymceFileWin.document.forms[0].elements[window.tinymceFileField].value = url;

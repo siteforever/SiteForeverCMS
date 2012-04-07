@@ -15,14 +15,14 @@ class Model_Catalog extends Sfcms_Model
      * Списков разделов в кэше
      * @var Data_Collection
      */
-    protected $all = array();
+    protected $all = null;
 
     public $html = array();
 
     /**
      * @var Forms_Catalog_Edit
      */
-    protected $form;
+    protected $form = null;
 
     /**
      * @return Model_CatGallery
@@ -42,7 +42,8 @@ class Model_Catalog extends Sfcms_Model
         $this->request->addStyle( $this->request->get( 'path.misc' ) . '/etc/catalog.css' );
     }
 
-    function relation()
+
+    public function relation()
     {
         return array(
             'Gallery' => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
@@ -226,17 +227,10 @@ class Model_Catalog extends Sfcms_Model
             if( $obj->get( 'path' ) ) {
                 $path = unserialize( $obj->get( 'path' ) );
             }
-            //printVar( $path );
-            //printVar( $obj->getAttributes() );
-
-            if( ! $obj->get( 'path' ) || ( $path && is_array( $path ) && $path[ 0 ][ 'name' ] != $obj->get( 'name' ) )
-            ) {
+            if( !$obj->get( 'path' ) || ( $path && is_array( $path ) && $path[ 0 ][ 'name' ] != $obj->get( 'name' ) )){
                 $obj->set( 'path', $this->findPathSerialize( $obj->getId() ) );
             }
         }
-        //unset($obj['image']);
-        //unset($obj['middle']);
-        //unset($obj['thumb']);
 
         $ret = $this->save( $obj );
 
@@ -505,18 +499,14 @@ class Model_Catalog extends Sfcms_Model
          * @var Data_Object_Catalog $obj
          */
         foreach( $this->parents[ $parent ] as $branch ) {
-
-//            var_dump( get_class( $branch ) . $branch->id );
-
             if( 0 == $branch->cat || 1 == $branch->deleted ) {
                 continue;
             }
-
             $list[ $branch->id ] = str_repeat( '&nbsp;', 8 * ( $maxlevelback - $levelback ) ) . $branch->name;
             $sublist             = $this->getSelectTree( $branch->id, $levelback - 1 );
             if( $sublist ) {
                 foreach( $sublist as $i => $item ) {
-                    $obj    = $this->all->getRow( $i );
+                    $obj    = $this->find( $i );
                     if ( null === $obj ) {
                         continue;
                     }
@@ -527,7 +517,7 @@ class Model_Catalog extends Sfcms_Model
                 }
             }
         }
-
+        $this->app()->getLogger()->log( $list );
         return $list;
     }
 
@@ -547,8 +537,7 @@ class Model_Catalog extends Sfcms_Model
                 );
             }
             $this->db->insertUpdateMulti( $this->getTable(), $data );
-        }
-        else {
+        } else {
             return t( 'Error in sorting params' );
         }
         return '';
@@ -560,15 +549,12 @@ class Model_Catalog extends Sfcms_Model
      */
     public function moveList()
     {
-        /**
-         * @var Data_Object_Catalog $item
-         */
+        /** @var Data_Object_Catalog $item */
         $list   = $this->request->get( 'move_list' );
         $target = $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT );
         // TODO Не происходит пересчета порядка позиций
 
         if( $target !== "" && is_numeric( $target ) && $list && is_array( $list ) ) {
-            //printVar($list);
             foreach( $list as $item_id ) {
                 $item         = $this->find( $item_id );
                 $item->parent = $target;
@@ -582,10 +568,11 @@ class Model_Catalog extends Sfcms_Model
      * Массив с категориями для select
      * @return array
      */
-    public function &getCategoryList()
+    public function getCategoryList()
     {
         $parents     = array( 'Корневой раздел' );
-        $select_tree = $this->getSelectTree( 0, 10 );
+        $select_tree = $this->getSelectTree( 0, 3 );
+        $this->app()->getLogger()->log( $select_tree, 'select tree' );
         if( $select_tree ) {
             foreach( $select_tree as $i => $item ) {
                 $parents[ $i ] = $item;

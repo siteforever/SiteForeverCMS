@@ -86,8 +86,8 @@ class elFinder {
 		'duplicate' => '_duplicate',
 		'read'      => '_fread',
 		'edit'      => '_edit',
-		'archive'   => '_archive',
-		'extract'   => '_extract',
+//		'archive'   => '_archive',
+//		'extract'   => '_extract',
 		'resize'    => '_resize',
 		'tmb'       => '_thumbnails',
 		'ping'      => '_ping'

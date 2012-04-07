@@ -4,17 +4,17 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-class SysConfigTest extends PHPUnit_Framework_TestCase
+class SfcmsConfigTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var SysConfig
+     * @var Sfcms_Config
      */
     public $obj;
 
     protected function setUp()
     {
         //$this->obj  = new SysConfig( SF_PATH.'/protected/config/test.php' );
-        $this->obj  = new SysConfig( array(
+        $this->obj  = new Sfcms_Config( array(
             'sitename'  => 'SiteForeverCMS',
             'db'    => array(
                 'login' => 'siteforever',

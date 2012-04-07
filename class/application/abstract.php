@@ -15,7 +15,7 @@ abstract class Application_Abstract
     static $ajax = false;
 
     /**
-     * @var SysConfig
+     * @var Sfcms_Config
      */
     static $config;
     /**
@@ -119,7 +119,7 @@ abstract class Application_Abstract
             throw new Application_Exception('You can not create more than one instance of Application');
         }
         // Конфигурация
-        self::$config   = new SysConfig( $cfg_file );
+        self::$config   = new Sfcms_Config( $cfg_file );
 
         // Загрузка параметров модулей
         $this->loadModules();
@@ -243,7 +243,7 @@ abstract class Application_Abstract
     }
 
     /**
-     * @return SysConfig
+     * @return Sfcms_Config
      */
     public function getConfig()
     {
@@ -269,6 +269,7 @@ abstract class Application_Abstract
         if ( null !== $this->_logger ) {
             return $this->_logger;
         }
+//        return $this->_logger = std_logger::getInstance( new std_logger_plain() );
 
         if ( ! isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
             $this->_logger = std_logger::getInstance( new std_logger_plain() );

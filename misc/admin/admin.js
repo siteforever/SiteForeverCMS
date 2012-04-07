@@ -15,23 +15,12 @@ $(function () {
         });
 
     // Разделы
-    $('a.link_del').click(function () {
-        return false;
-        var page = $(this).attr('page');
-        var url = $(this).attr('href');
-        $.post(url, {link_del:page}, function (data) {
-            alert(data);
-        });
-        return false;
-    });
-
-    $('a.do_delete').click(function () {
+    $('a.link_del, a.do_delete').click(function () {
         return confirm('Данные будут потеряны. Действительно хотите удалить?');
     });
 
     $('a.order_hidden').live('click', function () {
         var a = this;
-//        alert($(a).attr('href'));
         $.get($(a).attr('href'), function (data) {
             $(a).replaceWith(data);
         });
@@ -44,9 +33,10 @@ $(function () {
         $(this).removeClass('select');
     });
 
-
     $('a.link_add').click(function () {
-        if ($('#link_add_dialog').length == 0) {
+        var page = $(this).attr('page'),
+            url  = $(this).attr('href');
+        if ( ! $('#link_add_dialog').length ) {
             $('body').append('<div id="link_add_dialog"></div>');
             $('#link_add_dialog').hide().dialog({
                 'modal':true,
@@ -56,19 +46,13 @@ $(function () {
                         $(this).dialog('close');
                     },
                     'Сохранить':function () {
-                        $.post(url, {link_add:page}, function (data) {
-                            //alert(data);
-                        });
+                        $.post(url, {link_add:page});
                         $(this).dialog('close');
                     }
                 },
                 'autoOpen':false
             });
         }
-
-
-        var page = $(this).attr('page');
-        var url = $(this).attr('href');
         $.post(url, {get_link_add:page}, function (data) {
             $('#link_add_dialog').html(data).dialog('open');
         });
@@ -76,8 +60,11 @@ $(function () {
     });
 
     // Галлерея
-    $('a.gallery, a.fancybox').lightBox();
+//    $('a.gallery, a.fancybox').lightBox();
 
+    /**
+     * Сортировка для структуры сайта
+     */
     $('div.b-main-structure ul').sortable({
         stop:function (event, ui) {
             var positions = [];
@@ -97,7 +84,7 @@ $(function () {
 
 
     // Добавляем окно для обработчика форм
-    if ($('#form_container').length == 0) {
+    if ( ! $('#form_container').length ) {
 
         $('body').append("<div id='form_container' title='Сохраняем...'></div>");
         //.append("<iframe id='form_frame' name='form_frame'></iframe>");
@@ -128,6 +115,9 @@ $(function () {
 
     $('a.realias').realias();
 
+    /**
+     * По 2х щелчку открыть менеджер файлов
+     */
     $('input.image').dblclick($.fn.filemanager.input);
 
 });
@@ -162,7 +152,7 @@ $.fn.filemanager = function () {
         }
 
         $("#filemanager_dialog").elfinder({
-            "url":"/?route=elfinder&connector=1",
+            "url":"/?controller=elfinder&action=connector",
             "lang":"ru",
             "dialog":$.fn.filemanager.dialog
         });
@@ -187,7 +177,7 @@ $.fn.filemanager.input = function () {
     }
 
     $("#filemanager_dialog").elfinder({
-        "url":"/?route=elfinder&connector=1",
+        "url":"/?controller=elfinder&action=connector",
         "lang":"ru",
         "dialog":$.fn.filemanager.dialog,
         "closeOnEditorCallback":true,

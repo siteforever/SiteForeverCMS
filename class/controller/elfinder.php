@@ -4,8 +4,10 @@
  */
 class Controller_Elfinder extends Sfcms_Controller
 {
-    
-    function init()
+    /**
+     * Initialize
+     */
+    public function init()
     {
         $this->request->setTitle('ElFinder');
 
@@ -14,34 +16,50 @@ class Controller_Elfinder extends Sfcms_Controller
         $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
     }
 
+
     /**
-     * Правила, определяющие доступ к приложениям
+     * Access rules
      * @return array
      */
-    function access()
+    public function access()
     {
         return array(
             'system'    => array(
-                'admin','index',
+                'connector','finder',
             ),
         );
     }
-    function indexAction()
-    {
-        if ( $this->request->get('connector') ) {
-            return $this->getConnector();
-        }
-        if ( $this->request->get('finder') ) {
-            return $this->getFinder();
-        }
-    }
+
 
     /**
-     * @return void
+     * Выводит поисковик
      */
-    function getConnector()
+    public function indexAction()
     {
-        $this->setAjax();
+        return 'Finder protected controller';
+//        if ( $this->request->get('connector') ) {
+//            return $this->getConnector();
+//        }
+//        if ( $this->request->get('finder') ) {
+//            return $this->getFinder();
+//        }
+//        return t('Finder not runned');
+    }
+
+
+    /**
+     * Вернет конфиг
+     * @return
+     */
+    public function connectorAction()
+    {
+        $this->app()->getLogger()->log( $_REQUEST, 'Request' );
+        $_POST  = $_POST + $_REQUEST;
+        $_GET   = $_GET + $_REQUEST;
+        $this->app()->getLogger()->log( $_POST, 'Post' );
+        $this->app()->getLogger()->log( $_GET, 'Get' );
+
+//        $this->setAjax();
         $opts = array(
             'root'            => ROOT.DIRECTORY_SEPARATOR.'files',  // path to root directory
             'URL'             => '/files/', // root directory URL
@@ -67,47 +85,52 @@ class Controller_Elfinder extends Sfcms_Controller
             // 'dateFormat'   => 'j M Y H:i',  // file modification date format
             // 'logger'       => null,         // object logger
             // 'defaults'     => array(        // default permisions
-            // 	'read'   => true,
-            // 	'write'  => true,
-            // 	'rm'     => true
-            // 	),
+            //  'read'   => true,
+            //  'write'  => true,
+            //  'rm'     => true
+            //  ),
             // 'perms'        => array(),      // individual folders/files permisions
-            // 'debug'        => true,         // send debug to client
-            // 'archiveMimes' => array(),      // allowed archive's mimetypes to create. Leave empty for all available types.
-            // 'archivers'    => array()       // info about archivers to use. See example below. Leave empty for auto detect
-            // 'archivers' => array(
-            // 	'create' => array(
-            // 		'application/x-gzip' => array(
-            // 			'cmd' => 'tar',
-            // 			'argc' => '-czf',
-            // 			'ext'  => 'tar.gz'
-            // 			)
-            // 		),
-            // 	'extract' => array(
-            // 		'application/x-gzip' => array(
-            // 			'cmd'  => 'tar',
-            // 			'argc' => '-xzf',
-            // 			'ext'  => 'tar.gz'
-            // 			),
-            // 		'application/x-bzip2' => array(
-            // 			'cmd'  => 'tar',
-            // 			'argc' => '-xjf',
-            // 			'ext'  => 'tar.bz'
-            // 			)
-            // 		)
-            // 	)
+//             'debug'        => true,         // send debug to client
+//             'archiveMimes' => array(),      // allowed archive's mimetypes to create. Leave empty for all available types.
+            'archivers' => false,
+//             'archivers'    => array(),       // info about archivers to use. See example below. Leave empty for auto detect
+//             'archivers' => array(
+//                'create' => array(
+//                    'application/x-gzip' => array(
+//                        'cmd' => 'tar',
+//                        'argc' => '-czf',
+//                        'ext'  => 'tar.gz'
+//                        )
+//                    ),
+//                'extract' => array(
+//                    'application/x-gzip' => array(
+//                        'cmd'  => 'tar',
+//                        'argc' => '-xzf',
+//                        'ext'  => 'tar.gz'
+//                      ),
+//                  'application/x-bzip2' => array(
+//                      'cmd'  => 'tar',
+//                      'argc' => '-xjf',
+//                      'ext'  => 'tar.bz'
+//                        )
+//                    )
+//                )
         );
 
         $fm = new elFinder($opts);
         $fm->run();
-//        printVar($opts);
         return;
     }
 
-    function getFinder()
+
+    /**
+     * Вернет страницу-контейнер
+     */
+    public function finderAction()
     {
         $this->request->set('resource', 'system:');
         $this->request->set('template', 'elfinder');
+        return;
     }
 
 }

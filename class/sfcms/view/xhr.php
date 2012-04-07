@@ -25,11 +25,12 @@ class Sfcms_View_Xhr extends Sfcms_View_IView
                 if( $result ) {
                     if( is_object( $result ) || is_array( $result ) ) {
                         $result = json_encode( $result );
-                    } elseif( is_string( $result ) ) {
-                        if( ! @json_decode( $result ) ) {
-                            throw new Application_Exception( 'Result is not valid and can not convert to json' );
-                        }
                     }
+//                    elseif( is_string( $result ) ) {
+//                        if( ! @json_decode( $result ) ) {
+//                            throw new Application_Exception( 'Result is not valid and can not convert to json' );
+//                        }
+//                    }
                     $return = $result;
                 } else {
                     $return = $this->getRequest()->getResponseAsJson();

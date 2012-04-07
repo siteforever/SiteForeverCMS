@@ -279,6 +279,13 @@ form.standart input.checkbox {
 form.standart input.datepicker {
     width: 80px;
 }
+form.standart input.image {
+    background-image: url("/images/admin/icons/picture.png");
+    background-position: 99% 2px;
+    background-repeat: no-repeat;
+}
+
+
 
     div.b-form-field {
         margin-bottom: 1em;

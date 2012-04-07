@@ -45,19 +45,14 @@ class ControllerResolver
                 throw new ControllerException('Controller not resolved');
             }
         }
-
+        $this->app->getLogger()->log( $command, 'Command' );
         // если запрос является системным
-        if ($this->app->getRouter()->isSystem()) {
-            if ($this->app->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
+        if ( $this->app->getRouter()->isSystem() ) {
+            if ( $this->app->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
                 $this->setSystemPage();
             } else {
                 $this->setProtectedPage();
             }
-        }
-
-        if (!class_exists($command['controller'])) {
-            $command['controller']  = 'Controller_Page';
-            $command['action']      = 'errorAction';
         }
 
         $ref = new ReflectionClass($command['controller']);

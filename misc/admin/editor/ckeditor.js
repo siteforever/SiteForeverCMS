@@ -8,8 +8,8 @@
 var wysiwyg = {
     init: function() {
         var editor = $('textarea').not('.plain').ckeditor({
-            filebrowserBrowseUrl 		: '/?controller=elfinder&action=index&finder=1',
-            filebrowserImageBrowseUrl 	: '/?controller=elfinder&action=index&finder=1',
+            filebrowserBrowseUrl 		: '/?controller=elfinder&action=finder',
+            filebrowserImageBrowseUrl 	: '/?controller=elfinder&action=finder',
             filebrowserWindowWidth : '530',
             filebrowserWindowHeight : '500',
             filebrowserImageWindowWidth : '530',
@@ -21,7 +21,7 @@ var wysiwyg = {
 
         if ( $('#finder').length == 1 ) {
             $('#finder').elfinder({
-                url : '/?route=elfinder&connector=1',
+                url : '/?route=elfinder&action=connector',
                 lang : langCode,
                 editorCallback : function(url) {
                     if ( funcNum ) {

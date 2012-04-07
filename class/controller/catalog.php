@@ -384,9 +384,7 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function adminBreadcrumbsById( $id )
     {
-        /**
-         * @var Data_Object_Catalog $item
-         */
+        /** @var Data_Object_Catalog $item */
         $item = $this->getModel( 'Catalog' )->find( $id );
         if ( $item ) {
             return $this->adminBreadcrumbs( $item->path() );
@@ -422,7 +420,7 @@ class Controller_Catalog extends Sfcms_Controller
 
     /**
      * Действие панели администратора
-     * @return void
+     * @return mixin
      */
     public function adminAction()
     {
@@ -492,7 +490,8 @@ class Controller_Catalog extends Sfcms_Controller
             $breadcrumbs    = $this->adminBreadcrumbsById( $parent->getId() );
         }
 
-        $this->tpl->assign( array(
+        $this->request->setTitle( 'Каталог' );
+        return array(
             'filter'         => trim( $this->request->get( 'goods_filter' ) ),
             'parent'         => $parent,
             'id'             => $part,
@@ -501,13 +500,12 @@ class Controller_Catalog extends Sfcms_Controller
             'list'           => $list,
             'paging'         => $paging,
             'moving_list'    => $catalogFinder->getCategoryList(),
-        ) );
+        );
 
 
-        $content = $this->tpl->fetch( 'system:catalog/admin' );
 
-        $this->request->setTitle( 'Каталог' );
-        $this->request->setContent( $content );
+        //        $content = $this->tpl->fetch( 'system:catalog/admin' );
+//        $this->request->setContent( $content );
     }
 
     /**
@@ -633,13 +631,11 @@ class Controller_Catalog extends Sfcms_Controller
 
         $form = $catalog->getForm();
 
-        if( $id ) // если редактировать
-        {
+        if( $id ) { // если редактировать
             $item      = $catalog->find( $id );
             $parent_id = isset( $item[ 'parent' ] ) ? $item[ 'parent' ] : 0;
             $form->setData( $item->getAttributes() );
-        }
-        else { // если новый
+        } else { // если новый
             $item = $catalog->createObject();
             $form->getField( 'parent' )->setValue( $parent_id );
             $form->getField( 'cat' )->setValue( 1 );
@@ -673,9 +669,11 @@ class Controller_Catalog extends Sfcms_Controller
             }
         }
 
-        $this->tpl->assign( 'breadcrumbs', $this->adminBreadcrumbsById( $id ) );
-        $this->tpl->assign( 'form', $form );
-        $this->tpl->assign( 'cat', $form->getField( 'id' )->getValue() );
+        $this->tpl->assign( array(
+            'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
+            'form' => $form,
+            'cat'  => $form->getField( 'id' )->getValue(),
+        ));
 
         $this->request->setTitle( 'Каталог' );
         $this->request->setContent( $this->tpl->fetch( 'system:catalog.admin_edit' ) );

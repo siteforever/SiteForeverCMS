@@ -16,7 +16,7 @@ abstract class Sfcms_Controller
     protected $page;
 
     /**
-     * @var SysConfig $config
+     * @var Sfcms_Config $config
      */
     protected $config;
 

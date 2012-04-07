@@ -105,12 +105,12 @@ class Forms_Page_Page extends Form_Form
                     'thumb'      => array(
                         'type' => 'text',
                         'label'=> 'Иконка',
-                        'class'=> 'image'
+                        'class'=> 'image',
                     ),
                     'image'      => array(
                         'type' => 'text',
                         'label'=> 'Изображение',
-                        'class'=> 'image'
+                        'class'=> 'image',
                     ),
 
 

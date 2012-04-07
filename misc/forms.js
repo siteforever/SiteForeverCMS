@@ -6,14 +6,12 @@
 $(function () {
     // вводим uri
     $('#structure_uri,#structure_alias').bind('keypress', function (event) {
-        if (event.keyCode == 8 || event.keyCode == 9 ||
+        if ( ! ( event.keyCode == 8 || event.keyCode == 9 ||
             ( event.keyCode >= 33 && event.keyCode <= 40 ) ||
             ( event.keyCode >= 45 && event.keyCode <= 47 ) ||
             ( event.charCode >= 47 && event.charCode <= 57 ) ||
             ( event.charCode >= 95 && event.charCode <= 122 && event.charCode != 96 )
-            ) {
-        }
-        else {
+            ) ) {
             event.preventDefault();
             return false;
         }

@@ -45,6 +45,7 @@ class App extends Application_Abstract
             $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
             $this->getLogger()->log( "Required memory: " . round( memory_get_usage() / 1024, 3 ) . " kb.", 'app' );
         }
+
         ob_end_flush();
         //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
     }
@@ -54,7 +55,7 @@ class App extends Application_Abstract
      * @static
      * @return void
      */
-    protected function init()
+    public function init()
     {
         if( $this->getConfig()->get( 'db.debug' ) ) {
             std_error::init( $this->getLogger() );
@@ -149,11 +150,7 @@ class App extends Application_Abstract
         $this->getRouter()->routing();
 
         // возможность использовать кэш
-        if( $this->getConfig()->get( 'caching' )
-            && ! $this->getRequest()->getAjax()
-            && ! self::$ajax
-            && ! $this->getRouter()->isSystem()
-        ) {
+        if( $this->getConfig()->get('caching') && ! $this->getRequest()->getAjax() && ! $this->getRouter()->isSystem()) {
             if( $this->getRequest()->get( 'controller' ) == 'page'
                 && $this->getAuth()->currentUser()->get('perm') == USER_GUEST
                 && $this->getBasket()->count() == 0
@@ -168,24 +165,12 @@ class App extends Application_Abstract
         $controller_resolver   = new ControllerResolver( $this );
 
         try {
-            $result = $controller_resolver->dispatch();
-            if ( !$this->getRequest()->getAjax() && !$this->getRequest()->getContent() ) {
-                if ( is_array( $result ) ) {
-                    $this->getTpl()->assign( $result );
-                    $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
-                    $this->getRequest()->setContent( $this->getTpl()->fetch( $template ) );
-                } else if ( is_string( $result ) ) {
-                    $this->getRequest()->setContent( $result );
-                }
-            }
-        } catch ( ControllerException $e ) {
-            $result = false;
-            $this->getRequest()->setTemplate( 'inner' );
-            $this->getRequest()->setContent( $e->getMessage() );
+            $result = $this->prepareResult( $controller_resolver->dispatch() );
+//            $this->getLogger()->log( var_export( $result, 1 ) );
         } catch ( Exception $e ) {
-            $this->getRequest()->setTemplate( 'inner' );
-            $this->getRequest()->setContent( $e->getMessage() );
+            $result = $e->getMessage();
         }
+
         self::$controller_time = microtime( 1 ) - self::$controller_time;
         $this->invokeView( $result );
 
@@ -196,6 +181,31 @@ class App extends Application_Abstract
         if( '' == $this->getRequest()->getTitle() ) {
             $this->getRequest()->setTitle( $this->getRequest()->get( 'tpldata.page.name' ) );
         }
+    }
+
+    /**
+     * Обработает и подготовитрезультат
+     * @param $result
+     * @return string
+     */
+    protected function prepareResult( $result )
+    {
+        if ( ! $result ) {
+            $result = ob_get_contents();
+            ob_clean();
+        }
+        if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
+            $result = json_encode( $result );
+        } else if ( ! $this->getRequest()->getContent() ) {
+            if ( is_array( $result ) ) {
+                $this->getTpl()->assign( $result );
+                $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
+                $this->getRequest()->setContent( $this->getTpl()->fetch( $template ) );
+            } else if ( is_string( $result ) ) {
+                $this->getRequest()->setContent( $result );
+            }
+        }
+        return $result;
     }
 
     /**
@@ -237,7 +247,6 @@ class App extends Application_Abstract
             throw new Exception( 'Autoload Register class' );
         }
 
-
         // PEAR format autoload
         $class_name = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $class_name );
         $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
@@ -246,7 +255,6 @@ class App extends Application_Abstract
         if( @include_once $file ) {
             if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
                 $class_count ++;
-                print "{$class_count}. include {$file}\n";
             }
             return true;
         }

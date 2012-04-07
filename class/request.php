@@ -110,7 +110,7 @@ class Request
         $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/lightbox/css/jquery.lightbox-0.5.css' );
         $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/siteforever.css' );
 
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery-1.7.2.js' );
+        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery-1.6.4.js' );
         $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/lightbox/jquery.lightbox-0.5.js' );
         $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/siteforever.js' );
     }

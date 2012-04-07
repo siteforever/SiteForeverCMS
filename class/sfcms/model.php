@@ -350,7 +350,6 @@ abstract class Sfcms_Model
     final public function find( $crit )
     {
         $this->with = array();
-
         if( is_object( $crit ) ) {
             if( $crit instanceof Db_Criteria ) {
                 $criteria = new Data_Criteria( $this->getTable(), $crit );
@@ -380,9 +379,8 @@ abstract class Sfcms_Model
             );
             $crit    = array_merge( $default, $crit );
         } else {
-            throw new Sfcms_Model_Exception( 'Not valid criteria "'.$crit.'"' );
+            throw new Sfcms_Model_Exception( 'Not valid criteria "'.$crit.'" in '.__METHOD__.'():'.__LINE__ );
         }
-
         if( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
             $criteria = new Data_Criteria( $this->getTable(), $crit );
         }

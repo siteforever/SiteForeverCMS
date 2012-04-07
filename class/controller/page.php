@@ -255,7 +255,7 @@ class Controller_Page extends Sfcms_Controller
     }
 
     /**
-     * @return void
+     * @return mixin
      */
     public function editAction()
     {
@@ -289,12 +289,11 @@ class Controller_Page extends Sfcms_Controller
                 $form->setData( $part->getAttributes() );
             }
 
-            $this->tpl->form = $form;
-            $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
+            return array( 'form' => $form );
+//            $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
         }
-        else {
-            $this->request->setContent( t( 'Data not valid' ) );
-        }
+
+        return t( 'Data not valid' );
     }
 
     /**
