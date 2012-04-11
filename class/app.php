@@ -165,11 +165,11 @@ class App extends Application_Abstract
         $controller_resolver   = new ControllerResolver( $this );
 
         try {
-            $result = $this->prepareResult( $controller_resolver->dispatch() );
-//            $this->getLogger()->log( var_export( $result, 1 ) );
+            $result = $controller_resolver->dispatch();
         } catch ( Exception $e ) {
-            $result = $e->getMessage();
+            $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
         }
+        $result = $this->prepareResult( $result );
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
         $this->invokeView( $result );
@@ -190,6 +190,9 @@ class App extends Application_Abstract
      */
     protected function prepareResult( $result )
     {
+        if ( ! $result ) {
+            $result = $this->getRequest()->getResponse();
+        }
         if ( ! $result ) {
             $result = ob_get_contents();
             ob_clean();

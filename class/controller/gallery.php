@@ -8,7 +8,7 @@
 class Controller_Gallery extends Sfcms_Controller
 {
 
-    function init()
+    public function init()
     {
         $default = array(
             'dir'           => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'gallery',
@@ -221,28 +221,32 @@ class Controller_Gallery extends Sfcms_Controller
 
         if( $switchimg = $this->request->get( 'switchimg', Request::INT ) ) {
 
-            $switch_result = $model->hideSwitch( $switchimg );
+            $obj    = $model->find( $switchimg );
+            $switch_result = $model->hideSwitch( $obj->getId() );
+            $obj->save();
 
             if( $switch_result !== false ) {
+                $switch_icon = '';
                 if( $switch_result == 1 ) {
                     $switch_icon = icon( 'lightbulb_off', 'Вкл' );
-                }
-                elseif( $switch_result == 2 ) {
+                } elseif( $switch_result == 2 ) {
                     $switch_icon = icon( 'lightbulb', 'Выкл' );
                 }
-                $this->request->setResponseError( 0 );
-                $this->request->setResponse( 'id', $switchimg );
-                $this->request->setResponse( 'img', $switch_icon );
+                return array(
+                    'id'    => $switchimg,
+                    'img'   => $switch_icon,
+                    'errno' => 0,
+                );
+            } else {
+                return array(
+                    'errno' => 1,
+                    'error' =>  t( 'Switch error' ),
+                );
             }
-            else {
-                $this->request->setResponseError( 1, t( 'Switch error' ) );
-            }
-            return 1;
         }
 
         if( $this->request->get( 'positions' ) ) {
-            print $model->reposition();
-            return 1;
+            return $model->reposition();
         }
 
         if( $editimage = $this->request->get( 'editimage', Request::INT ) ) {
@@ -250,8 +254,8 @@ class Controller_Gallery extends Sfcms_Controller
             $editname    = $this->request->get( 'name' );
             $image       = $model->find( $editimage );
             $image->name = $editname;
-            print "$editimage => $editname";
-            return 1;
+            $image->save();
+            return "$editimage => $editname";
         }
 
         $cat_list = $category->findAll();
@@ -330,11 +334,9 @@ class Controller_Gallery extends Sfcms_Controller
 
     /**
      * Удалить категорию
-     * @param Model_GalleryCategory $model
-     * @return void
+     * @return mixed
      */
-//    function deleteCat( Model_GalleryCategory $model )
-    function delcatAction()
+    public function delcatAction()
     {
         $model = $this->getModel( 'GalleryCategory' );
         //        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
@@ -347,23 +349,18 @@ class Controller_Gallery extends Sfcms_Controller
 
     /**
      * Просмотр категории
-     * @return void
+     * @return mixed
      */
-//    function viewCat()
-    function viewcatAction()
+    public function viewcatAction()
     {
-        /**
-         * @var model_galleryCategory $category
-         */
+        /** @var model_galleryCategory $category */
         $category = $this->getModel( 'GalleryCategory' );
 
         $cat_id = $this->request->get( 'id', Request::INT );
 
         $cat = $category->find( $cat_id );
 
-        /**
-         * @var model_Gallery $model
-         */
+        /** @var model_Gallery $model */
         $model = $this->getModel( 'Gallery' );
 
 
@@ -377,23 +374,26 @@ class Controller_Gallery extends Sfcms_Controller
             'order' => 'pos',
         ) );
 
-        $this->tpl->images   = $images;
-        $this->tpl->category = $cat->getAttributes();
+        $this->tpl->assign(array(
+            'images'   => $images,
+            'category' => $cat->getAttributes(),
+        ));
 
-        $this->request->setContent( $this->tpl->fetch( 'system:gallery.admin_images' ) );
+        return $this->tpl->fetch( 'system:gallery.admin_images' );
     }
 
 
     /**
      * Редактирование картинки
      * @var model_gallery $model
-     * @return void
+     * @return mixed
      */
     function editimgAction()
     {
         $model = $this->getModel( 'Gallery' );
         $this->request->setAjax( 1, Request::TYPE_ANY );
         $form = $this->getForm( 'gallery_image' );
+
         if( $form->getPost() ) {
             if( $form->validate() ) {
                 $obj  = $model->find( $this->request->get( 'id' ) );
@@ -414,7 +414,7 @@ class Controller_Gallery extends Sfcms_Controller
             $atr            = $obj->getAttributes();
             $atr[ 'alias' ] = $obj->getAlias();
             $form->setData( $atr );
-            $this->request->setContent( $form->html( false ) );
+            return $form->html( false );
         }
     }
 
@@ -441,7 +441,7 @@ class Controller_Gallery extends Sfcms_Controller
             }
             print '</ol>';
         } catch( Exception $e ) {
-            print   $e->getMessage();
+            return $e->getMessage();
         }
         $this->request->setContent( round( microtime( 1 ) - $start, 3 ) . ' s.' );
     }
@@ -453,10 +453,8 @@ class Controller_Gallery extends Sfcms_Controller
      */
     protected function upload( Data_Object_GalleryCategory $cat )
     {
-        /**
-         * @var Model_Gallery $model
-         */
-        $model         = $this->getModel( 'Gallery' );
+        /** @var Model_Gallery $model */
+        $model         = $this->getModel();
         $max_file_size = $this->config->get( 'gallery.max_file_size' );
         $upload_ok     = 0;
         $thumb_prefix  = $this->config->get( 'gallery.thumb_prefix' );
@@ -465,89 +463,91 @@ class Controller_Gallery extends Sfcms_Controller
         if( isset( $_FILES[ 'image' ] ) && is_array( $_FILES[ 'image' ] ) ) {
             $images = $_FILES[ 'image' ];
             $names  = array();
+
             if( $this->request->get( 'name' ) ) {
                 $names = $this->request->get( 'name' );
             }
+
             $pos = $model->getNextPosition( $cat->getId() );
             $pos = $pos ? $pos : 0;
-            foreach( $images[ 'error' ] as $i => $err )
-            {
-                if( $err == UPLOAD_ERR_OK ) {
-                    $image = $model->createObject( array(
-                        'pos'   => $pos,
-                        'main'  => '0',
-                        'hidden'=> '0',
-                    ) );
-                    $pos ++;
-                    if( $images[ 'size' ][ $i ] <= $max_file_size
-                        && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
-                    ) {
-                        $upload_ok = 1;
-                        $dest      = $this->config->get( 'gallery.dir' ) . DIRECTORY_SEPARATOR . substr(
-                            '0000' . $cat->getId(), - 4, 4 );
-                        if( ! is_dir( ROOT . $dest ) ) {
-                            mkdir( ROOT . $dest, 0777, true );
-                        }
-                        $src                = $images[ 'tmp_name' ][ $i ];
-                        $image->category_id = $cat->getId();
-                        if( isset( $names[ $i ] ) ) {
-                            $image->name = $names[ $i ];
-                        }
-                        $model->save( $image );
-                        $g_id         = $image->getId();
-                        $img          = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
-                        $tmb          =
-                            $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $thumb_prefix . $images[ 'name' ][ $i ];
-                        $mdl          =
-                            $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $middle_prefix . $images[ 'name' ][ $i ];
-                        $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
-                        if( move_uploaded_file( $src, ROOT . $img ) ) {
-                            // обработка
-                            $thumb_h  = $cat->thumb_height;
-                            $thumb_w  = $cat->thumb_width;
-                            $middle_h = $cat->middle_height;
-                            $middle_w = $cat->middle_width;
-                            $t_method = $cat->thumb_method;
-                            $m_method = $cat->middle_method;
-                            try {
-                                $img_full = new Sfcms_Image( ROOT . $img );
-                                $img_mid  = $img_full->createThumb( $middle_w, $middle_h, $m_method, $cat->color );
-                                if( $img_mid ) {
-                                    $img_mid->saveToFile( ROOT . $mdl );
-                                    $image->middle = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
-                                    unset( $img_mid );
-                                }
-                                $img_thmb = $img_full->createThumb( $thumb_w, $thumb_h, $t_method, $cat->color );
-                                if( $img_thmb ) {
-                                    $img_thmb->saveToFile( ROOT . $tmb );
-                                    $image->thumb = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
-                                    unset( $img_thmb );
-                                }
-                            } catch( Exception $e ) {
-                                $this->request->addFeedback( $e->getMessage() );
+
+
+            foreach( $images[ 'error' ] as $i => $err ) {
+                switch ( $err ) {
+                    case UPLOAD_ERR_OK:
+                        $image = $model->createObject( array(
+                            'pos'   => $pos,
+                            'main'  => '0',
+                            'hidden'=> '0',
+                        ) );
+                        $pos ++;
+                        if( $images[ 'size' ][ $i ] <= $max_file_size
+                            && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
+                        ) {
+                            $upload_ok = 1;
+                            $dest      = $this->config->get( 'gallery.dir' ) . DIRECTORY_SEPARATOR . substr(
+                                '0000' . $cat->getId(), - 4, 4 );
+                            if( ! is_dir( ROOT . $dest ) ) {
+                                mkdir( ROOT . $dest, 0777, true );
                             }
+                            $src                = $images[ 'tmp_name' ][ $i ];
+                            $image->category_id = $cat->getId();
+                            if( isset( $names[ $i ] ) ) {
+                                $image->name = $names[ $i ];
+                            }
+                            $model->save( $image );
+                            $g_id         = $image->getId();
+                            $img          = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
+                            $tmb          =
+                                $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $thumb_prefix . $images[ 'name' ][ $i ];
+                            $mdl          =
+                                $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $middle_prefix . $images[ 'name' ][ $i ];
+                            $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
+                            if( move_uploaded_file( $src, ROOT . $img ) ) {
+                                // обработка
+                                $thumb_h  = $cat->thumb_height;
+                                $thumb_w  = $cat->thumb_width;
+                                $middle_h = $cat->middle_height;
+                                $middle_w = $cat->middle_width;
+                                $t_method = $cat->thumb_method;
+                                $m_method = $cat->middle_method;
+                                try {
+                                    $img_full = new Sfcms_Image( ROOT . $img );
+                                    $img_mid  = $img_full->createThumb( $middle_w, $middle_h, $m_method, $cat->color );
+                                    if( $img_mid ) {
+                                        $img_mid->saveToFile( ROOT . $mdl );
+                                        $image->middle = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
+                                        unset( $img_mid );
+                                    }
+                                    $img_thmb = $img_full->createThumb( $thumb_w, $thumb_h, $t_method, $cat->color );
+                                    if( $img_thmb ) {
+                                        $img_thmb->saveToFile( ROOT . $tmb );
+                                        $image->thumb = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
+                                        unset( $img_thmb );
+                                    }
+                                } catch( Exception $e ) {
+                                    $this->request->addFeedback( $e->getMessage() );
+                                }
+                            }
+                            $model->save( $image );
+                        } else {
+                            $this->request->addFeedback( "Превышен максимальный предел {$images['size'][$i]} из $max_file_size" );
                         }
-                        $model->save( $image );
-                    } else {
-                        $this->request->addFeedback( "Превышен максимальный предел {$images['size'][$i]} из $max_file_size" );
-                    }
-                } else {
-                    switch ( $err ) {
-                        case UPLOAD_ERR_FORM_SIZE:
-                            $this->request->addFeedback( 'form size error' );
-                            break;
-                        case UPLOAD_ERR_EXTENSION:
-                            $this->request->addFeedback( 'extension error' );
-                            break;
-                        case UPLOAD_ERR_PARTIAL:
-                            $this->request->addFeedback( 'partial error' );
-                            break;
-                        case UPLOAD_ERR_NO_FILE:
-                            $this->request->addFeedback( 'no file' );
-                            break;
-                        default:
-                            $this->request->addFeedback( 'unknown error' );
-                    }
+                        break;
+                    case UPLOAD_ERR_FORM_SIZE:
+                        $this->request->addFeedback( 'form size error' );
+                        break;
+                    case UPLOAD_ERR_EXTENSION:
+                        $this->request->addFeedback( 'extension error' );
+                        break;
+                    case UPLOAD_ERR_PARTIAL:
+                        $this->request->addFeedback( 'partial error' );
+                        break;
+                    case UPLOAD_ERR_NO_FILE:
+                        $this->request->addFeedback( 'no file' );
+                        break;
+                    default:
+                        $this->request->addFeedback( 'unknown error' );
                 }
             }
         }

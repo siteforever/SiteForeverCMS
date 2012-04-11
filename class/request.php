@@ -34,7 +34,7 @@ class Request
     /**
      * Созание запроса
      */
-    function __construct()
+    public function __construct()
     {
         $this->_assets = new Siteforever_Assets();
 
@@ -138,7 +138,7 @@ class Request
      * Является ли запрос аяксовым
      * @return bool
      */
-    function getAjax()
+    public function getAjax()
     {
         if ( null === $this->ajax ) {
             if ( isset( $_SERVER[ 'X-Requested-With' ] ) && 'XMLHttpRequest' !== $_SERVER[ 'X-Requested-With' ] ) {
@@ -157,7 +157,7 @@ class Request
      *
      * @return void
      */
-    function setAjax( $ajax = false, $type = self::TYPE_ANY )
+    public function setAjax( $ajax = false, $type = self::TYPE_ANY )
     {
         $this->ajax = $ajax;
         if ( $ajax )
@@ -168,7 +168,7 @@ class Request
      * Является ли запрос аяксовым
      * @return bool
      */
-    function isAjax()
+    public function isAjax()
     {
         return $this->ajax;
     }
@@ -177,7 +177,7 @@ class Request
      * Тип запроса
      * @return string
      */
-    function getAjaxType()
+    public function getAjaxType()
     {
         return $this->ajax_type;
     }
@@ -188,7 +188,7 @@ class Request
      *
      * @return void
      */
-    function setError( $error )
+    public function setError( $error )
     {
         $this->error = $error;
     }
@@ -197,7 +197,7 @@ class Request
      * Вернуть состояние ошибки
      * @return int
      */
-    function getError()
+    public function getError()
     {
         return $this->error;
     }
@@ -206,7 +206,7 @@ class Request
      * Получить список файлов стилей
      * @return array
      */
-    function getStyle()
+    public function getStyle()
     {
         return $this->_assets->getStyle();
     }
@@ -217,27 +217,27 @@ class Request
      *
      * @return void
      */
-    function addStyle( $style )
+    public function addStyle( $style )
     {
         $this->_assets->addStyle( $style );
     }
 
-    function cleanStyle()
+    public function cleanStyle()
     {
         $this->_assets->cleanStyle();
     }
 
-    function getScript()
+    public function getScript()
     {
         return $this->_assets->getScript();
     }
 
-    function addScript( $script )
+    public function addScript( $script )
     {
         $this->_assets->addScript( $script );
     }
 
-    function cleanScript()
+    public function cleanScript()
     {
         $this->_assets->cleanScript();
     }
@@ -249,7 +249,7 @@ class Request
      *
      * @return void
      */
-    function set( $key, $val )
+    public function set( $key, $val )
     {
         $path = explode( '.', $key );
         if ( count( $path ) == 1 ) {
@@ -268,7 +268,7 @@ class Request
      *
      * @return mixed
      */
-    function get( $key, $type = FILTER_DEFAULT, $default = null )
+    public function get( $key, $type = FILTER_DEFAULT, $default = null )
     {
         $get  = '';
         $path = $key;
@@ -344,7 +344,7 @@ class Request
      *
      * @return void
      */
-    function setContent( $text )
+    public function setContent( $text )
     {
         $this->request[ 'tpldata' ][ 'page' ][ 'content' ] = $text;
     }
@@ -353,7 +353,7 @@ class Request
      * Вернет заголовок страницы
      * @return string
      */
-    function getContent()
+    public function getContent()
     {
         if ( isset( $this->request[ 'tpldata' ][ 'page' ][ 'content' ] ) ) {
             return $this->request[ 'tpldata' ][ 'page' ][ 'content' ];
@@ -368,7 +368,7 @@ class Request
      *
      * @return void
      */
-    function setTitle( $text )
+    public function setTitle( $text )
     {
         $this->request[ 'tpldata' ][ 'page' ][ 'title' ] = $text;
     }
@@ -377,7 +377,7 @@ class Request
      * Вернет заголовок страницы
      * @return string
      */
-    function getTitle()
+    public function getTitle()
     {
         if ( isset( $this->request[ 'tpldata' ][ 'page' ][ 'title' ] ) ) {
             return $this->request[ 'tpldata' ][ 'page' ][ 'title' ];
@@ -391,7 +391,7 @@ class Request
      *
      * @return void
      */
-    function setTemplate( $tpl )
+    public function setTemplate( $tpl )
     {
         $this->request[ 'template' ] = $tpl;
     }
@@ -400,7 +400,7 @@ class Request
      * Вернет имя текущего шаблона для вида
      * @return array|string
      */
-    function getTemplate()
+    public function getTemplate()
     {
         return $this->request[ 'template' ];
     }
@@ -411,7 +411,7 @@ class Request
      *
      * @return void
      */
-    function addFeedback( $msg )
+    public function addFeedback( $msg )
     {
         if ( is_string( $msg ) ) {
             $this->feedback[ ] = $msg;
@@ -426,12 +426,12 @@ class Request
         }
     }
 
-    function getFeedback()
+    public function getFeedback()
     {
         return $this->feedback;
     }
 
-    function getFeedbackString( $sep = "<br />\n" )
+    public function getFeedbackString( $sep = "<br />\n" )
     {
         $ret = '';
         if ( count( $this->feedback ) ) {
@@ -450,7 +450,7 @@ class Request
      *
      * @return void
      */
-    function setResponse( $key, $value )
+    public function setResponse( $key, $value )
     {
         $this->response[ $key ] = $value;
     }
@@ -462,7 +462,7 @@ class Request
      *
      * @return void
      */
-    function setResponseError( $errno, $error = '' )
+    public function setResponseError( $errno, $error = '' )
     {
         if ( !$errno && !$error ) {
             $error = t( 'No errors' );
@@ -472,10 +472,19 @@ class Request
     }
 
     /**
+     * Вернет респонс массивом
+     * @return array
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
+
+    /**
      * Вернет ответ как Json
      * @return string
      */
-    function getResponseAsJson()
+    public function getResponseAsJson()
     {
         return json_encode( $this->response );
     }
@@ -484,7 +493,7 @@ class Request
      * Вернет ответ как XML
      * @return mixed
      */
-    function getResponseAsXML()
+    public function getResponseAsXML()
     {
         $xml = new SimpleXMLElement( '<response></response>' );
 
@@ -501,12 +510,12 @@ class Request
      *
      * @return void
      */
-    function arrayWalkToXML( $item, $key, SimpleXMLElement $xml )
+    public function arrayWalkToXML( $item, $key, SimpleXMLElement $xml )
     {
         $xml->addChild( $key, $item );
     }
 
-    function debug()
+    public function debug()
     {
         printVar( $this->request );
     }

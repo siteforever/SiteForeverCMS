@@ -8,12 +8,18 @@
 class Data_Object_Alias extends Data_Object
 {
     /**
-     * @param array $params
+     * @param string|array $params
      * @return void
      */
     public function setParams( $params = array() )
     {
-        $this->__set( 'params', serialize( $params ) );
+        if ( is_array( $params ) ) {
+            $params = serialize( $params );
+        }
+        if ( ! is_string( $params ) ) {
+            throw new Exception('invalid params');
+        }
+        $this->data[ 'params' ]  = $params;
     }
 
     /**

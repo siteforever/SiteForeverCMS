@@ -24,7 +24,7 @@
                     <a {href controller="gallery" action="editimg" id=$img.id} class="gallery_picture_edit">
                         {icon name="picture_edit" title="Изменить"}
                     </a>
-                    <a {href switchimg=$img.id} class="gallery_picture_switch">
+                    <a {href controller="gallery" action="admin" switchimg=$img.id} class="gallery_picture_switch">
                         {if $img.hidden}
                             {icon name="lightbulb_off" title="Выкл"}
                         {else}

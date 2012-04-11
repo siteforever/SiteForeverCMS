@@ -12,7 +12,7 @@ class Model_Gallery extends Sfcms_Model
      * @param $category_id
      * @return string
      */
-    function getNextPosition( $category_id )
+    public function getNextPosition( $category_id )
     {
         return $this->db->fetchOne(
              "SELECT MAX(pos)+1 "
@@ -29,10 +29,7 @@ class Model_Gallery extends Sfcms_Model
      */
     public function onSaveStart($obj = null)
     {
-//        print "Проверить алиас страницы";
-        /**
-         * @var Model_Alias $alias_model
-         */
+        /** @var Model_Alias $alias_model */
         $alias_model    = $this->getModel('Alias');
         $alias          = $alias_model->findByAlias( $obj->getAlias() );
         if ( null !== $alias ) {
@@ -47,6 +44,7 @@ class Model_Gallery extends Sfcms_Model
                 }
             }
         }
+        debug::log(__METHOD__);
         return true;
     }
 
@@ -56,19 +54,17 @@ class Model_Gallery extends Sfcms_Model
      */
     public function onSaveSuccess( $obj = null )
     {
-        /**
-         * @var Model_Alias $alias_model
-         */
+        /** @var Model_Alias $alias_model */
         $alias_model    = $this->getModel('Alias');
-
         $alias  = $alias_model->findByUrl($obj->createUrl());
 
         if ( null === $alias ) {
             $alias  = $alias_model->createObject();
         }
 
+        /** @var Data_Object_Alias $alias */
         $data    = $obj->getAttributes();
-        if( $data['alias']!=''){
+        if( isset( $data['alias'] ) && '' != $data['alias'] ){
             $alias->alias   = $data['alias'];
         } else {
             $alias->alias   = $obj->getAlias();
@@ -77,7 +73,7 @@ class Model_Gallery extends Sfcms_Model
         $alias->url         = $obj->createUrl();
         $alias->controller  = 'gallery';
         $alias->action      = 'index';
-        $alias->params      = serialize(array('id'=>$obj->getId()));
+        $alias->params      = array('id'=>$obj->getId());
         $alias->save();
 
         try {
@@ -89,6 +85,7 @@ class Model_Gallery extends Sfcms_Model
             print $e->getMessage();
         }
 
+        debug::log(__METHOD__);
         return true;
     }
 

@@ -174,12 +174,15 @@ abstract class Sfcms_Controller
     }
 
     /**
-     * Вернет указанную модель
+     * Вернет указанную модель, либо модель, имя которой соответствует контроллеру
      * @param string $model
      * @return Sfcms_Model
      */
-    public function getModel($model)
+    public function getModel($model=null)
     {
+        if ( null === $model  ) {
+            $model = str_replace('Controller_', '', get_class( $this ) );
+        }
         return Sfcms_Model::getModel($model);
     }
 
