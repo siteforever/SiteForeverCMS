@@ -167,7 +167,10 @@ class App extends Application_Abstract
         try {
             $result = $controller_resolver->dispatch();
         } catch ( Exception $e ) {
-            $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
+            if ( $this->getConfig()->get('debug.profile') )
+                $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
+            else
+                $result = $e->getMessage();
         }
         $result = $this->prepareResult( $result );
 
