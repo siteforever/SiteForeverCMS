@@ -172,6 +172,8 @@ class App extends Application_Abstract
             else
                 $result = $e->getMessage();
         }
+
+
         $result = $this->prepareResult( $result );
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
@@ -200,16 +202,19 @@ class App extends Application_Abstract
             $result = ob_get_contents();
             ob_clean();
         }
+
         if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
             $result = json_encode( $result );
         } else if ( ! $this->getRequest()->getContent() ) {
             if ( is_array( $result ) ) {
                 $this->getTpl()->assign( $result );
                 $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
-                $this->getRequest()->setContent( $this->getTpl()->fetch( $template ) );
-            } else if ( is_string( $result ) ) {
-                $this->getRequest()->setContent( $result );
+                $result = $this->getTpl()->fetch( $template );
             }
+        }
+
+        if ( is_string( $result ) ) {
+            $this->getRequest()->setContent( $result );
         }
         return $result;
     }

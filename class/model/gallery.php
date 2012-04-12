@@ -123,6 +123,11 @@ class Model_Gallery extends Sfcms_Model
         foreach ( $positions as $pos => $id ) {
             $new_pos[] = array('id'=>$id, 'pos'=>$pos);
         }
+        $imgObj     = $this->find( $positions[0] );
+        $catModel   = self::getModel('GalleryCategory');
+        $catObj     = $catModel->find( $imgObj->get('category_id') );
+        $catObj->set('thumb', $imgObj->get('thumb'));
+        $catObj->save();
         return $this->db->insertUpdateMulti($this->getTable(), $new_pos);
     }
 

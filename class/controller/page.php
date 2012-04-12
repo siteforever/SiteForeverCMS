@@ -209,7 +209,8 @@ class Controller_Page extends Sfcms_Controller
     }
 
     /**
-     * @return void
+     * Сохраняет данные формы
+     * @return string
      */
     public function saveAction()
     {
@@ -228,28 +229,27 @@ class Controller_Page extends Sfcms_Controller
                 $old_id = $obj->getId();
 
                 try {
-                    if ($obj->save()) {
-                        $this->request->addFeedback( t( 'Data save successfully' ) );
-                        if (!$old_id) {
+                    if ( $obj->save() ) {
+                        if ( !$old_id ) {
                             reload(
                                 null, array(
-                                'controller'=> 'page',
-                                'action'    => 'edit',
-                                'edit'      => $obj->getId()
-                            )
+                                           'controller'=> 'page',
+                                           'action'    => 'edit',
+                                           'edit'      => $obj->getId()
+                                      )
                             );
                         }
-                    }
-                    else {
-                        $this->request->addFeedback( t( 'Data not saved' ) );
+                        return t( 'Data save successfully' );
+                    } else {
+                        return t( 'Data not saved' );
                     }
                 }
                 catch ( Sfcms_Model_Exception $e ) {
-                    $this->request->addFeedback( $e->getMessage() );
+                    return $e->getMessage();
                 }
             }
             else {
-                $this->request->addFeedback( $form->getFeedback() );
+                return $form->getFeedback();
             }
         }
     }

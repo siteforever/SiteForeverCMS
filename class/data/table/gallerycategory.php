@@ -25,6 +25,7 @@ class Data_Table_GalleryCategory extends Data_Table
             new Data_Field_Int('thumb_width'),
             new Data_Field_Int('thumb_height'),
             new Data_Field_Varchar('target', 10),
+            new Data_Field_Varchar('thumb', 250),
             new Data_Field_Int('perpage'),
             new Data_Field_Varchar('color', 20),
             new Data_Field_Text('meta_description'),

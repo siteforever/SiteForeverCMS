@@ -38,17 +38,18 @@ class Controller_Gallery extends Sfcms_Controller
 
     /**
      * Действие по-умолчанию
-     * @return void
+     * @return string|array
      */
     public function indexAction()
     {
         /**
+         * @var Data_Object_Gallery $image
          * @var model_gallery $model
-         * @var model_galleryCategory $model_category
+         * @var model_galleryCategory $catModel
          */
         $this->request->setTemplate( 'inner' );
         $model          = $this->getModel( 'Gallery' );
-        $model_category = $this->getModel( 'GalleryCategory' );
+        $catModel = $this->getModel( 'GalleryCategory' );
 
         /*
          * Вывести изображение
@@ -72,7 +73,7 @@ class Controller_Gallery extends Sfcms_Controller
 
                 $pred = $model->find( $crit );
 
-                $category = $model_category->find( $image->category_id );
+                $category = $catModel->find( $image->category_id );
 
                 $this->tpl->image    = $image;
                 $this->tpl->next     = $next;
@@ -102,14 +103,9 @@ class Controller_Gallery extends Sfcms_Controller
                 //                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
                 $this->request->setTitle( $title );
 
-                $this->request->setContent(
-                    $this->tpl->fetch( 'gallery.image' )
-                );
-
-                return;
+                return $this->tpl->fetch( 'gallery.image' );
             } else {
-                $this->request->setContent( t( 'Image not found' ) );
-                return;
+                return t( 'Image not found' );
             }
         }
 
@@ -122,12 +118,15 @@ class Controller_Gallery extends Sfcms_Controller
         }
 
         if( null === $cat_id ) {
-            $this->request->addFeedback( 'Не указан идентификатор категории' );
-            return;
+            return 'Не указан идентификатор категории';
         }
 
-        $category = $model_category->find( $cat_id );
-        if( $category ) {
+        $category = null;
+        if ( $cat_id ) {
+            $category = $catModel->find( $cat_id );
+        }
+
+        if ( $category ) {
 
             $crit = array(
                 'cond'      => 'hidden = 0 AND category_id = ?',
@@ -172,34 +171,38 @@ class Controller_Gallery extends Sfcms_Controller
             $bc->addPiece( $this->router->createServiceLink( 'gallery', 'index', array( 'id'=> $cat_id ) ), $category->name );
 
             $this->request->setTitle( $title );
-            $this->request->setContent( $this->tpl->fetch( 'gallery.category' ) );
-
-        } else {
-            //            $this->request->addFeedback('Категория не определена');
-            $page_model = $this->getModel( 'Page' );
-            $sub_pages  = $page_model->findAll( array(
-                'condition' => ' parent = ? AND deleted = 0 ',
-                'params'    => array( $this->page[ 'id' ] ),
-            ) );
-            //            printVar($this->page);
-            /**
-             * @var Data_Object_Page $sp_obj
-             */
-            $list_page_id = array();
-            foreach( $sub_pages as $sp_obj ) {
-                if( $sp_obj->get( 'link' ) && $sp_obj->get( 'controller' ) == 'gallery' ) {
-                    $list_page_id[ ] = $sp_obj->get( 'link' );
-                }
-            }
-            //            printVar($sub_pages);
-            if( count( $list_page_id ) ) {
-                $categories = $model_category->findAll( array(
-                    'condition' => ' id IN ( ' . implode( ',', $list_page_id ) . ' ) ',
-                ) );
-                $this->tpl->assign( 'categories', $categories );
-            }
-            $this->request->setContent( $this->tpl->fetch( 'gallery.categories' ) );
+            return $this->tpl->fetch( 'gallery.category' );
         }
+
+        /**
+         * Список категорий
+         */
+//        $page_model = $this->getModel( 'Page' );
+//        $sub_pages  = $page_model->findAll( array(
+//             'condition' => ' parent = ? AND deleted = 0 ',
+//             'params'    => array( $this->page[ 'id' ] ),
+//        ) );
+
+        /** @var Data_Object_Page $obj */
+//        $list_page_id = array();
+//        foreach ( $sub_pages as $obj ) {
+//            if ( $obj->get( 'link' ) && $obj->get( 'controller' ) == 'gallery' ) {
+//                $list_page_id[ ] = $obj->get( 'link' );
+//            }
+//        }
+
+
+//        if ( count( $list_page_id ) ) {
+//            $categories = $catModel->findAll( array(
+//                 'condition' => ' id IN ( ' . implode( ',', $list_page_id ) . ' ) ',
+//            ) );
+//            $this->tpl->assign( 'categories', $categories );
+//        }
+
+        $categories = $catModel->findAll();
+
+        $this->tpl->assign( 'categories', $categories );
+        return $this->tpl->fetch( 'gallery.categories' );
     }
 
     /**

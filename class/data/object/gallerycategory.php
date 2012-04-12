@@ -74,6 +74,9 @@ class Data_Object_GalleryCategory extends Data_Object
      */
     public function getImage()
     {
+        if ( $this->data['thumb'] ) {
+            return $this->data['thumb'];
+        }
         if (null === $this->_image) {
             $this->_image = '';
             $model        = $this->getModel( 'Gallery' );
@@ -86,6 +89,8 @@ class Data_Object_GalleryCategory extends Data_Object
             $image        = $model->find( $crit );
             if ($image) {
                 $this->_image = $image->get( 'thumb' );
+                $this->data['thumb'] = $this->_image;
+                $this->markDirty();
             }
         }
         return $this->_image;

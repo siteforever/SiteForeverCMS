@@ -45,7 +45,9 @@ class ControllerResolver
                 throw new ControllerException('Controller not resolved');
             }
         }
-        $this->app->getLogger()->log( $command, 'Command' );
+        if ( $this->app->getConfig()->get('debug.profile') ) {
+            $this->app->getLogger()->log( $command, 'Command' );
+        }
         // если запрос является системным
         if ( $this->app->getRouter()->isSystem() ) {
             if ( $this->app->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {

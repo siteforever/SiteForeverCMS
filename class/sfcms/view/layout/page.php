@@ -20,6 +20,7 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
         if( file_exists( trim( $this->getJs() . '/script.js', '/' ) ) ) {
             $this->getRequest()->addScript( $this->getJs() . '/script.js' );
         }
+
         $layout = $this->getTpl()->fetch(
             $this->getRequest()->get( 'resource' )
             . $this->getRequest()->get( 'template' )

@@ -94,11 +94,21 @@ class DB
      */
     function saveLog()
     {
-        if ( ! is_null($this->logger) ) {
+        if ( null !== $this->logger ) {
             foreach ( $this->log as $l ) {
                 $this->logger->log( $l, 'sql' );
             }
         }
+    }
+
+    /**
+     * Логирует запросы
+     * @param $msg
+     */
+    protected function log( $msg )
+    {
+        $this->log[] = $msg;
+//        App::getInstance()->getLogger()->log( $msg, 'sql' );
     }
 
     /**
@@ -236,7 +246,7 @@ class DB
         }
 
         $exec = round( microtime(true) - $start , 4 ).' сек.';
-        $this->log[] = $sql . " [{$exec}]";
+        $this->log( $sql . " [{$exec}]" );
         $this->time += $exec;
 
         $error = $this->resource->errorInfo();
@@ -332,7 +342,7 @@ class DB
             }
 
             $exec = round(microtime(1)-$start, 4);
-            $this->log[]    = $sql." [$exec сек.]";
+            $this->log( $sql." [$exec сек.]" );
             $this->time += $exec;
 
             return $data;
@@ -402,7 +412,7 @@ class DB
                 }
             }
             $exec = round(microtime(1)-$start, 4);
-            $this->log[]    = $sql." [$exec сек.]";
+            $this->log( $sql." [$exec сек.]" );
             $this->time += $exec;
             return $all_data;
         }
@@ -446,7 +456,7 @@ class DB
 
             $exec = round(microtime(1) - $start, 4);
             $this->time+= $exec;
-            $this->log[]    = $sql." [$exec сек]";
+            $this->log( $sql." [$exec сек]" );
             return $this->data[0];
         } else {
             return false;
@@ -472,7 +482,7 @@ class DB
         $count = $this->fetchOne($sql);
         $exec = round(microtime(1) - $start, 4);
         $this->time+= $exec;
-        $this->log[]    = $sql." [$exec сек]";
+        $this->log( $sql." [$exec сек]" );
         return $count;
     }
 
@@ -677,7 +687,7 @@ class DB
 
             $exec = round(microtime(true)-$start, 4);
             $this->time += $exec;
-            $this->log[] = $sql." [$exec сек]";
+            $this->log( $sql." [$exec сек]" );
             return $fields;
         } else {
             return false;
