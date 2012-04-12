@@ -52,6 +52,40 @@ class Model_Catalog extends Sfcms_Model
 
 
     /**
+     * Вернет прямых потомков для раздела
+     * @param int $parentId
+     * @return array
+     */
+    public function getChildrenFor( $parentId )
+    {
+        if ( null === $this->parents ) {
+            $this->createTree();
+        }
+        if ( ! isset( $this->parents[ $parentId ] ) ) {
+            return array();
+        }
+        return $this->parents[$parentId];
+    }
+
+
+    /**
+     * Вернет потомков всех поколений
+     * @param $parentId
+     * @return array
+     */
+    public function getAllChildrensIds( $parentId )
+    {
+        /** @var $child Data_Object_Catalog */
+        $categoriesId = array();
+        $children = $this->getChildrenFor( $parentId );
+        foreach ( $children as $child ) {
+            $categoriesId[] = $child->getId();
+            $categoriesId = array_merge( $categoriesId, $this->getAllChildrensIds( $child->getId() ) );
+        }
+        return $categoriesId;
+    }
+
+    /**
      * Искать все в список по фильтру по артикулу
      * @param string $filter
      *
@@ -320,7 +354,7 @@ class Model_Catalog extends Sfcms_Model
         if( null === $this->parents ) {
             $this->parents = array();
             if( count( $this->all ) == 0 ) {
-                $this->all = $this->findAll( 'cat = 1 AND deleted = 0', array(), 'pos DESC' );
+                $this->all = $this->findAll( 'cat = ? AND deleted = ?', array( 1, 0 ), 'pos DESC' );
             }
             // создаем массив, индексируемый по родителям
             foreach( $this->all as $obj ) {

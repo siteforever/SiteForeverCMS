@@ -37,7 +37,7 @@ class Controller_Catalog extends Sfcms_Controller
 
     /**
      * Действие по умолчанию
-     * @return void
+     * @return mixed
      */
     public function indexAction()
     {
@@ -76,16 +76,12 @@ class Controller_Catalog extends Sfcms_Controller
         //        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
         $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
 
-        try {
-            // Если открывается раздел каталога
-            if( $item->cat ) {
-                $this->indexCategories( $item );
-            } else {
-                // Открывается товар
-                $this->indexTrade( $item );
-            }
-        } catch( Exception $e ) {
-            $this->request->setContent( $e->getMessage() . '<br />' . $e->getFile() . ' in ' . $e->getLine() );
+        // Если открывается раздел каталога
+        if( $item->cat ) {
+            return $this->indexCategories( $item );
+        } else {
+            // Открывается товар
+            return $this->indexTrade( $item );
         }
     }
 
@@ -108,36 +104,22 @@ class Controller_Catalog extends Sfcms_Controller
      */
     protected function indexCategories( Data_Object_Catalog $item )
     {
-        /**
-         * @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
-         */
+        // @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
+        //$level = 3;
 
-        $cat_id        = $this->getCatId();
-        $catalogFinder = $this->getModel( 'Catalog' );
+        /** @var $catModel Model_Catalog */
+        $catModel     = $this->getModel( 'Catalog' );
+        $parent       = $catModel->find( $item->getId() );
 
-        $parent = $catalogFinder->find( $item->getId() );
-
+        $categoriesId = array( $item->getId() );
+        $categoriesId = array_merge( $categoriesId, $catModel->getAllChildrensIds( $item->getId() ) );
 
         // количество товаров
         $criteria = array(
-            'cond'      => ' parent = ? AND deleted = 0 AND hidden = 0 AND cat = ? ',
+            'cond'      => ' deleted = 0 AND hidden = 0 AND cat = 0 AND parent IN ('.implode(',', $categoriesId).') ',
         );
 
-        $criteria[ 'params' ] = array( $item->getId(), 1 );
-        $subcats              = $catalogFinder->findAll( $criteria );
-        $subcats_id           = array();
-        foreach( $subcats as $scat ) {
-            $subcats_id[ ] = $scat[ 'id' ];
-        }
-
-        if( count( $subcats_id ) ) {
-            $criteria[ 'cond' ] = ' ( parent = ? OR parent IN (' . implode( ',', $subcats_id ) . ') )'
-                                  . ' AND deleted = 0 AND hidden = 0 AND cat = ? ';
-        }
-
-        $criteria[ 'params' ] = array( $item->getId(), 0 );
-
-        $count = $catalogFinder->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
+        $count = $catModel->count( $criteria[ 'cond' ] );
 
         $paging = $this->paging( $count, 10, $this->router->createLink( $this->page[ 'alias' ], array( 'id'=> $item->getId() ) ) );
 
@@ -160,7 +142,7 @@ class Controller_Catalog extends Sfcms_Controller
             $criteria[ 'order' ] = $order;
         }
 
-        $list = $catalogFinder->with('Gallery')->findAll( $criteria );
+        $list = $catModel->with('Gallery')->findAll( $criteria );
 
         $properties = array();
 
@@ -173,7 +155,7 @@ class Controller_Catalog extends Sfcms_Controller
             }
         }
 
-        $cats = $catalogFinder->findAll( array(
+        $cats = $catModel->findAll( array(
                 'cond'      => ' parent = ? AND cat = 1 AND deleted = 0 AND hidden = 0 ',
                 'params'    => array( $item->getId() ),
                 'order'     => 'pos DESC',
