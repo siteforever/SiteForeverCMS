@@ -306,10 +306,8 @@ class Controller_Catalog extends Sfcms_Controller
 
                 if( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
-                    print t( 'The section can not be in myself' );
-                    return;
+                    return t( 'The section can not be in myself' );
                 }
-
                 if( ! $object->getId() ) {
                     $object->save();
                     reload(
@@ -320,13 +318,11 @@ class Controller_Catalog extends Sfcms_Controller
                         )
                     );
                 }
-
                 $object->save();
-
-                print t( 'Data save successfully' );
+                return t( 'Data save successfully' );
             }
             else {
-                print $form->getFeedbackString();
+                return $form->getFeedbackString();
             }
         }
     }

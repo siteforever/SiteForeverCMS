@@ -47,6 +47,15 @@ abstract class Sfcms_Filter_Group
     }
 
     /**
+     * Заполнить данные
+     * @param int $id
+     * @param Sfcms_Model $model
+     */
+    public function fillData( $id, Sfcms_Model $model )
+    {
+    }
+
+    /**
      * @param int $n
      */
     public function setN( $n )

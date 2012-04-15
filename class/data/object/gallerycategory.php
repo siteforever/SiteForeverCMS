@@ -6,7 +6,7 @@
  * @link   http://siteforever.ru
  */
 
-class Data_Object_GalleryCategory extends Data_Object
+class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
 {
     /**
      * @var Data_Object_Page

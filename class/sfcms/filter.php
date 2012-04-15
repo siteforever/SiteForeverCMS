@@ -14,9 +14,9 @@ class Sfcms_Filter implements Iterator
      */
     protected $_id = null;
     /**
-     * @var int
+     * @var array
      */
-    protected $_parent = null;
+    protected $_parent = array();
     /**
      * @var array
      */
@@ -59,9 +59,10 @@ class Sfcms_Filter implements Iterator
     }
 
     /**
-     * @param $n
-     * @param $name
-     * @param $data
+     * Установить группу фильтра
+     * @param $n     Номер фильтра
+     * @param $name  Наименования фильтра
+     * @param $data  Данные для фильтра
      * @return Sfcms_Filter
      */
     public function setFilterGroup( $n, $name, $data )
@@ -116,18 +117,41 @@ class Sfcms_Filter implements Iterator
     }
 
     /**
-     * @param $parent
+     * @param int|array $parent
      * @return Sfcms_Filter
      */
     public function setParent( $parent )
     {
         $this->_prepared = false;
-        $this->_parent = $parent;
+        if ( is_array( $parent ) ) {
+            $this->_parent = $parent;
+        } else {
+            $this->_parent = array( $parent );
+        }
+        foreach( $this->_parent as $id ) {
+            $filter = $this->_collection->getFilter( $id );
+            $this->_parent = array_merge( $this->_parent, $filter->getParent() );
+        }
         return $this;
     }
 
     /**
-     * @return int
+     * @param int|array $parent
+     * @return Sfcms_Filter
+     */
+    public function addParent( $parent )
+    {
+        $this->_prepared = false;
+        if ( is_array( $parent ) ) {
+            $this->_parent = array_merge( $this->_parent, $parent );
+        } else {
+            $this->_parent[] = $parent;
+        }
+        return $this;
+    }
+
+    /**
+     * @return array
      */
     public function getParent()
     {
@@ -141,30 +165,21 @@ class Sfcms_Filter implements Iterator
      */
     public function prepare( Model_Catalog $model )
     {
-        $this->fillCategories( $model );
+        $this->fillData( $this->_id, $model );
         $this->fillChildren();
     }
 
-    protected function fillCategories( Model_Catalog $model )
+
+    /**
+     * Заполнить данные
+     * @param int $id
+     * @param Sfcms_Model $model
+     */
+    public function fillData( $id, Sfcms_Model $model )
     {
-        /**
-         * @var Sfcms_Filter_Group $fGroup
-         */
+        /** @var Sfcms_Filter_Group $fGroup */
         foreach ( $this->_groups as $fGroup ) {
-            if ( $fGroup instanceof Sfcms_Filter_Group_Categories ) {
-                $result = null;
-                $categories = $model->findAll(
-                    'parent = ? AND deleted = 0 AND hidden = 0 AND cat = 1',
-                    array( $this->_id ), 'pos DESC'
-                );
-                if ( $categories->count() ) {
-                    $result = array( 0 => 'Все' );
-                    foreach ( $categories as $cat ) {
-                        $result[ $cat->id ] = $cat->name;
-                    }
-                }
-                $fGroup->setData( $result );
-            }
+            $fGroup->fillData( $id, $model );
         }
     }
 

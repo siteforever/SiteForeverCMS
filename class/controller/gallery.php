@@ -143,11 +143,12 @@ class Controller_Gallery extends Sfcms_Controller
             $rows = $model->findAll( $crit );
 
 
-            //              print_r($rows);
-            $this->tpl->category = $category;
-            $this->tpl->rows     = $rows;
-            $this->tpl->page     = $this->page;
-            $this->tpl->paging   = $paging;
+            $this->tpl->assign( array(
+                'category' => $category,
+                'rows' => $rows,
+                'page' => $this->page,
+                'paging' => $paging,
+            ));
 
             $title = $category->meta_title ? $category->meta_title : $category->name;
             //            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
@@ -397,6 +398,7 @@ class Controller_Gallery extends Sfcms_Controller
         $this->request->setAjax( 1, Request::TYPE_ANY );
         $form = $this->getForm( 'gallery_image' );
 
+        /** @var Data_Object_Gallery $obj */
         if( $form->getPost() ) {
             if( $form->validate() ) {
                 $obj  = $model->find( $this->request->get( 'id' ) );
@@ -422,7 +424,7 @@ class Controller_Gallery extends Sfcms_Controller
     }
 
     /**
-     * @return void
+     * @return mixed
      */
     public function realiasAction()
     {
@@ -431,9 +433,8 @@ class Controller_Gallery extends Sfcms_Controller
         try {
             $images = $model->findAll();
             print '<ol>';
-            /**
-             * @var Data_Object_GalleryCategory $cat
-             */
+            /** @var Data_Object_GalleryCategory $cat */
+            /** @var Data_Object_Gallery $img */
             foreach( $images as $img ) {
                 try {
                     $img->save();
@@ -478,11 +479,12 @@ class Controller_Gallery extends Sfcms_Controller
             foreach( $images[ 'error' ] as $i => $err ) {
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
+                        /** @var $image Data_Object_Gallery */
                         $image = $model->createObject( array(
-                            'pos'   => $pos,
-                            'main'  => '0',
-                            'hidden'=> '0',
-                        ) );
+                                                    'pos'   => $pos,
+                                                    'main'  => '0',
+                                                    'hidden'=> '0',
+                                                ) );
                         $pos ++;
                         if( $images[ 'size' ][ $i ] <= $max_file_size
                             && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
@@ -533,6 +535,10 @@ class Controller_Gallery extends Sfcms_Controller
                                 }
                             }
                             $model->save( $image );
+                            if ( 0 == $image->pos ) {
+                                $cat->thumb = $image->thumb;
+                                $cat->save();
+                            }
                         } else {
                             $this->request->addFeedback( "Превышен максимальный предел {$images['size'][$i]} из $max_file_size" );
                         }

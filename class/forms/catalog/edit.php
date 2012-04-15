@@ -8,10 +8,26 @@
  
 class Forms_Catalog_Edit extends Form_Form
 {
-    function __construct()
+    /**
+     * @param bool $hint
+     * @param bool $buttons
+     * @return string
+     */
+    public function html( $hint = true, $buttons = true )
     {
-        $parents    = Sfcms_Model::getModel('Catalog')->getCategoryList();
+        /** @var $model Model_Catalog */
+        $model   = Sfcms_Model::getModel( 'Catalog' );
+        $parents = $model->getCategoryList();
+        $this->getField('parent')->setVariants( $parents );
+        return parent::html( $hint, $buttons );
+    }
 
+
+    /**
+     * Создание формы
+     */
+    public function __construct()
+    {
         parent::__construct(array(
                     'name'  => 'catalog',
                     'title' => 'Раздел каталога',
@@ -26,7 +42,7 @@ class Forms_Catalog_Edit extends Form_Form
                             'type'      => 'select',
                             'label'     => 'Раздел',
                             'value'     => '0',
-                            'variants'  => $parents,
+                            'variants'  => array(),
                         ),
 
                         'url'       => array('type'=>'hidden', 'label'=>'Адрес',),

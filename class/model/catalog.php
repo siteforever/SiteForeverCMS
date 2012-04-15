@@ -551,7 +551,7 @@ class Model_Catalog extends Sfcms_Model
                 }
             }
         }
-        $this->app()->getLogger()->log( $list );
+//        $this->app()->getLogger()->log( $list );
         return $list;
     }
 
@@ -606,7 +606,7 @@ class Model_Catalog extends Sfcms_Model
     {
         $parents     = array( 'Корневой раздел' );
         $select_tree = $this->getSelectTree( 0, 3 );
-        $this->app()->getLogger()->log( $select_tree, 'select tree' );
+//        $this->app()->getLogger()->log( $select_tree, 'select tree' );
         if( $select_tree ) {
             foreach( $select_tree as $i => $item ) {
                 $parents[ $i ] = $item;

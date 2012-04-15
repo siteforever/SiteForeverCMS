@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 require_once 'class/data/object.php';
-class Data_Object_Gallery extends Data_Object
+class Data_Object_Gallery extends Data_Base_Gallery
 {
     /**
      * @return string

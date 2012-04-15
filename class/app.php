@@ -195,25 +195,25 @@ class App extends Application_Abstract
      */
     protected function prepareResult( $result )
     {
-        if ( ! $result ) {
+        if ( ! $result ) { // Сначала пытаемся достать из Response
             $result = $this->getRequest()->getResponse();
         }
-        if ( ! $result ) {
+        if ( ! $result ) { // Потом достаем из основного потока вывода
             $result = ob_get_contents();
             ob_clean();
         }
-
         if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
+            // Если надо вернуть JSON из массива
             $result = json_encode( $result );
-        } else if ( ! $this->getRequest()->getContent() ) {
-            if ( is_array( $result ) ) {
-                $this->getTpl()->assign( $result );
-                $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
-                $result = $this->getTpl()->fetch( $template );
-            }
         }
-
+        if ( is_array( $result ) && ! $this->getRequest()->getContent() ) {
+            // Если надо отпарсить шаблон с данными из массива
+            $this->getTpl()->assign( $result );
+            $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
+            $result = $this->getTpl()->fetch( $template );
+        }
         if ( is_string( $result ) ) {
+            // Просто установить итоговую строку как контент
             $this->getRequest()->setContent( $result );
         }
         return $result;

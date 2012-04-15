@@ -1,41 +1,40 @@
 <?php
 /**
- * Талблица изображений галереи
- * @author Nikolay Ermin (nikolay@ermin.ru)
- * @link http://ermin.ru
+ * DB Table Gallery
+ * @author SiteForeverCMS Generator
  * @link http://siteforever.ru
  */
- 
+
 class Data_Table_Gallery extends Data_Table
 {
     /**
-     * Создаст список полей
+     * Create field list
      * @return array
      */
     protected function doGetFields()
     {
         return array(
-            new Data_Field_Int('id',11,true,null,true),
-            new Data_Field_Int('category_id'),
-            new Data_Field_Int('alias_id'),
-            new Data_Field_Varchar('name', 250),
-            new Data_Field_Varchar('link', 250),
-            new Data_Field_Text('description'),
-            new Data_Field_Varchar('image', 250),
-            new Data_Field_Varchar('middle', 250),
-            new Data_Field_Varchar('thumb', 250),
-            new Data_Field_Int('pos'),
-            new Data_Field_Tinyint('main'),
-            new Data_Field_Tinyint('hidden'),
-            new Data_Field_Text('meta_description'),
-            new Data_Field_Text('meta_keywords'),
-            new Data_Field_Text('meta_h1'),
-            new Data_Field_Text('meta_title'),
+            new Data_Field_Int( 'id', 11, false, null, true ),
+            new Data_Field_Int( 'category_id', 11, true, null, false ),
+            new Data_Field_Int( 'alias_id', 11, true, null, false ),
+            new Data_Field_Varchar( 'name', 250, true, null, false ),
+            new Data_Field_Varchar( 'link', 250, true, null, false ),
+            new Data_Field_Text( 'description', 11, true, null, false ),
+            new Data_Field_Varchar( 'image', 250, true, null, false ),
+            new Data_Field_Varchar( 'middle', 250, true, null, false ),
+            new Data_Field_Varchar( 'thumb', 250, true, null, false ),
+            new Data_Field_Int( 'pos', 11, true, null, false ),
+            new Data_Field_Tinyint( 'main', 4, true, null, false ),
+            new Data_Field_Tinyint( 'hidden', 4, true, null, false ),
+            new Data_Field_Text( 'meta_description', 11, true, null, false ),
+            new Data_Field_Text( 'meta_keywords', 11, true, null, false ),
+            new Data_Field_Text( 'meta_h1', 11, true, null, false ),
+            new Data_Field_Text( 'meta_title', 11, true, null, false ),
         );
     }
 
     /**
-     * Вернет имя таблицы
+     * DB table name
      * @return string
      */
     protected function getTable()

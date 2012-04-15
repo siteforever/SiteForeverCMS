@@ -68,7 +68,10 @@ class Sfcms_Filter_Collection
          * @var Sfcms_Filter $filter
          */
         foreach ( $this->_filters as $filter ) {
-            $this->_parents[ $filter->getParent() ][ $filter->getId() ] = $filter;
+            $parents = $filter->getParent();
+            foreach ( $parents as $parent ) {
+                $this->_parents[ $parent ][ $filter->getId() ] = $filter;
+            }
         }
         $this->_prepared = true;
     }

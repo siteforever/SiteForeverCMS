@@ -77,6 +77,10 @@ return array(
         'url'   => 'admin/settings',
     ),
     array(
+        'name'  => 'Генератор',
+        'url'   => 'generator',
+    ),
+    array(
         'name'  => 'Выход',
         'url'   => 'users/logout',
     ),

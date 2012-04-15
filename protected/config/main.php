@@ -26,8 +26,8 @@ return array(
         'password'  => 'siteforever',
         'host'      => 'localhost',
         'database'  => 'siteforever',
-        'debug'     => 1,
-//        'migration' => 1,
+        'debug'     => true,
+        'migration' => true,
     ),
 
     // тема
@@ -44,12 +44,6 @@ return array(
 
     // настройки пользователей
     'users' => array(
-//        'groups' => array(
-//            USER_GUEST  => 'Гость',
-//            USER_USER   => 'Пользователь',
-//            USER_WHOLE  => 'Оптовый покупатель',
-//            USER_ADMIN  => 'Админ',
-//        ),
         'userdir' => DIRECTORY_SEPARATOR.'files',
     ),
 
@@ -72,38 +66,5 @@ return array(
             'price1'=> 'По цене',
             'articul'=>'По артикулу',
         ),
-    ),
-
-    // Реквизиты фирмы
-    'firm'  => array(
-        'name'      => 'Наименование фирмы',
-        'inn'       => 'номер инн',
-        'kpp'       => 'номер кпп',
-        'nch'       => 'номер счета',
-        'address'   => 'адрес фирмы',
-        'phone'     => '(812) 555-55-55',
-        'fax'       => '(812) 555-55-55',
-        'contact'   => 'Юрий Пронин',
-        'buh'       => 'Снежана Денисовна',
-        'gendir'    => 'Галина Георгиевна',
-        'bank'  => array(
-            'name'      => 'Наименование банка',
-            'bik'       => 'номер бик',
-            'ks'        => 'номер кор.счета',
-        ),
-    ),
-
-    'files' => array(
-        'include_types' => array( // разрешенные типы файлов
-            'application/x-tgz',
-            'application/zip',
-            'application/x-rar-compressed',
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-        ),
-        'max_size'      => 11000000, // максимальный размер файла
-        // вид для менеджера файлов
-        'manager_view'  => 'table', // table || tile
     ),
 );
