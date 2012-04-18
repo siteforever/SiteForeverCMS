@@ -31,4 +31,5 @@
 {/foreach}
 </table>
 <p></p>
-<p><a {href controller="news" action="catedit" id="0"}>Создать новый раздел</a></p>
+<p><a class="button" {href controller="news" action="catedit" id="0"}>
+    {icon name="add"} Создать новый раздел</a></p>
