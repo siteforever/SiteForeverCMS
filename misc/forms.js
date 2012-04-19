@@ -29,16 +29,17 @@ $(function () {
         },
         iframe:false
     }).find("input:text").live('keypress', function (e) {
-            if (e.keyCode == 13) {
-                return false;
-            }
-        });
+        if (e.keyCode == 13) {
+            return false;
+        }
+    });
 
 
     /*
      * Цепляем элементы календаря
      */
-    if (typeof window[$.datepicker] == 'function') {
+    // todo Разобраться с хаком
+//    if (typeof window[$.datepicker] == 'function') {
         $('.datepicker').datepicker({
             dateFormat:'dd.mm.yy',
             firstDay:1,
@@ -53,7 +54,7 @@ $(function () {
             monthNamesShort:['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
                 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
         });
-    }
+//    }
 
 
     $(':reset').click(function () {

@@ -8,10 +8,10 @@
  */
 function redirect( $url = '', $params = array() )
 {
+    Data_Watcher::instance()->performOperations();
     if( preg_match( '@^http@', $url ) ) {
         header( "Location: " . $url );
     } else {
-        Data_Watcher::instance()->performOperations();
         header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
     }
     die();

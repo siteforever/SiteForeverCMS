@@ -210,34 +210,32 @@ class Controller_News extends Sfcms_Controller
         /**/
         $this->request->setTitle('Материалы');
         $model      = $this->getModel('News');
-        /**/
+        /** @var $form Form_Form */
         $form   = $model->getForm();
 
-        if ( $form->getPost() )
-        {
+        if ( $form->getPost() ) {
             $this->setAjax();
 
-            if ( $form->validate() )
-            {
+            if ( $form->validate() ) {
                 $data   = $form->getData();
                 $obj    = $model->createObject( $data );
 
                 if ( $model->save( $obj ) ) {
-                    $this->request->addFeedback('Сохранено успешно');
+                    $this->request->addFeedback(t('Data save successfully'));
                     if ( ! $data['id'] ) {
 //                        reload('admin/news/', array('catid'=>$data['cat_id'],));
                         reload('news/newslist/', array('catid'=>$data['cat_id'],));
                     }
                 }
                 else {
-                    $this->request->addFeedback('Данные не были сохранены');
+                    $this->request->addFeedback(t('Data not saved'));
                 }
             }
             else {
                 //$this->request->addFeedback('Форма заполнена не правильно');
                 $this->request->addFeedback($form->getFeedbackString());
             }
-            return;
+            return $this->request->getFeedbackString();
         }
 
 //        $edit   = $this->request->get('newsedit', FILTER_SANITIZE_NUMBER_INT);
@@ -246,8 +244,7 @@ class Controller_News extends Sfcms_Controller
         if ( $edit ) {
             $news   = $model->find( $edit );
             $form->setData( $news->getAttributes() );
-        }
-        else {
+        } else {
             $news   = $model->createObject();
         }
 
@@ -264,8 +261,7 @@ class Controller_News extends Sfcms_Controller
                 'form'  => $form,
                 'cat'   => $cat,
             ));
-            $this->request->setContent($this->tpl->fetch('news.edit'));
-            return;
+            return $this->tpl->fetch('news.edit');
         }
     }
 
