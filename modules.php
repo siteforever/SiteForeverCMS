@@ -21,8 +21,12 @@ return array(
         ),
     ),
     array(
-        'name'  => 'Материалы',
-        'url'   => 'admin/news',
+        'name'  => 'Новости/статьи',
+        'url'   => 'news/admin',
+    ),
+    array(
+        'name'  => 'Баннеры',
+        'url'   => 'banner/admin',
     ),
     array(
         'name'  => 'Каталог',

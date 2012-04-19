@@ -532,33 +532,34 @@ class Controller_Catalog extends Sfcms_Controller
         // показываем поля родителя
         $parent = $catalogFinder->find( $parent_id );
 
-        if( file_exists( ROOT . '/protected/filters.php' ) ) {
+        $filter = null;
+        if( @file_exists( ROOT . '/protected/filters.php' ) ) {
             $filter = include( ROOT . '/protected/filters.php' );
         }
 
         if( $parent ) {
 
-            $pitem = $catalogFinder->find( $parent_id );
+            $pitem   = $catalogFinder->find( $parent_id );
+            $fvalues = null;
 
-            while( $pitem && ! $filter->getFilter( $pitem->id ) ) {
-                if( $pitem->parent ) {
-                    $pitem = $catalogFinder->find( $pitem->parent );
-                } else {
-                    $pitem = false;
+            if ( $filter ) {
+                while ( $pitem && !$filter->getFilter( $pitem->id ) ) {
+                    if ( $pitem->parent ) {
+                        $pitem = $catalogFinder->find( $pitem->parent );
+                    } else {
+                        $pitem = false;
+                    }
                 }
+                $pitem && $fvalues = $filter->getFilter( $pitem->id );
             }
 
-            $fvalues = null;
-            $pitem && $fvalues = $filter->getFilter( $pitem->id );
 
             foreach( $parent->getAttributes() as $k => $p ) {
                 if( preg_match( '/p(\d+)/', $k, $m ) ) {
                     $field = $form->getField( $k );
                     trim( $p ) ? $field->setLabel( $p ) : $field->hide();
 
-                    /**
-                     * @var Sfcms_Filter_Group $fGroup
-                     */
+                    /** @var Sfcms_Filter_Group $fGroup */
                     if ( $fvalues && $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
                         if (  is_array( $fGroup->getData() ) && ! $field->getValue() ) {
                             $form->getField( $k )->setValue(
