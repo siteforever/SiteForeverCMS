@@ -22,7 +22,7 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
         switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
             case 'tinymce':
                 // TinyMCE
-                $this->getRequest()->addScript( $this->getMisc() . '/tinymce/jscripts/tiny_mce/jquery.tinymce.js' );
+                $this->getRequest()->addScript( $this->getMisc() . '/tiny_mce/jquery.tinymce.js' );
                 $this->getRequest()->addScript( $this->getMisc() . '/admin/editor/tinymce.js' );
                 break;
 

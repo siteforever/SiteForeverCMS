@@ -9,7 +9,7 @@ var wysiwyg = {
     init : function() {
         $('textarea').not('.plain').tinymce({
             // Location of TinyMCE script
-            "script_url" :    '/misc/tinymce/jscripts/tiny_mce/tiny_mce.js',
+            "script_url" :    '/misc/tiny_mce/tiny_mce.js',
             // General options
             "theme" :           'advanced',
             "skin" :            'default',
