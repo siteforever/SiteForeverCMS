@@ -19,7 +19,7 @@ return array(
     'Deleted route # '  => 'Удален маршрут № ',
 
     'Data save successfully'    => 'Данные сохранены успешно',
-    'Data not saved'            => 'Данные не сохранены',
+    'Data not saved'            => 'Данные не изменились',
 
     'The section can not be in myself'  => 'Раздел не может находиться сам в себе',
 
@@ -69,5 +69,13 @@ return array(
     'Message' => 'Сообщение',
     'Captcha' => 'Введите код с картинки',
     'Send' => 'Отправить',
+
+
+    // Banner
+    'Banners category list' => 'Список категорий баннеров',
+    'Add category' => 'Добавить категорию',
+    'Edit category' => 'Править категорию',
+    'There are no sections' => 'Пока нет разделов',
+
 
 );

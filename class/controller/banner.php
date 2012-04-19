@@ -53,8 +53,6 @@ class Controller_Banner extends Sfcms_Controller
         $this->request->setTitle( "Управление баннерами" );
         $category              = $this->getModel( 'CategoryBanner' );
         $cat_list              = $category->findAll();
-//        $this->tpl->categories = $cat_list;
-//        $this->request->setContent( $this->tpl->fetch( 'banner.category' ) );
         return array(
             'categories' => $cat_list,
         );
@@ -86,9 +84,10 @@ class Controller_Banner extends Sfcms_Controller
     }
 
     /**
-     * @return array|void
+     * Сохранение категории
+     * @return array|string
      */
-    public function editcatAction()
+    public function saveCatAction()
     {
         /** @var Model_CategoryBanner $model */
         $model = $this->getModel( 'CategoryBanner' );
@@ -99,12 +98,12 @@ class Controller_Banner extends Sfcms_Controller
             if( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $model->save( $obj );
-                $this->request->addFeedback( t( 'Data save successfully' ) );
+                return t( 'Data save successfully' );
             }
             else {
                 return $form->getFeedbackString();
             }
-            return;
+            return 'Unkown error';
         }
         if ($edit = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT )) {
             try {
@@ -116,18 +115,17 @@ class Controller_Banner extends Sfcms_Controller
             }
             $form->setData( $obj->getAttributes() );
         }
-//        $this->tpl->assign("form", $form );
-//        $this->request->setContent( $this->tpl->fetch( 'system:banner.editcat' ) );
         return array(
             'form'  => $form,
         );
     }
 
     /**
-     *
+     * Удаление категории
      */
-    public function delcatAction()
+    public function delCatAction()
     {
+        /** @var $model Model_CategoryBanner */
         $model = $this->getModel( 'CategoryBanner' );
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         if ($id) {
@@ -137,22 +135,23 @@ class Controller_Banner extends Sfcms_Controller
     }
 
     /**
-     *
+     * Удалить баннер
      */
     public function delAction()
     {
+        /** @var $model Model_Banner */
         $model = $this->getModel( 'Banner' );
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         $cat   = $model->find( $id );
-        if ($id) {
-            if ($model->delete( $id )) {
+        if ( $id ) {
+            if ( $model->delete( $id ) ) {
                 $this->request->setResponse( 'id', $id );
                 $this->request->setResponseError( 0 );
             }
             else {
                 $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
-            redirect( 'banner/cat/id/' . $cat[ 'cat_id' ] );
+            redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
         }
     }
 

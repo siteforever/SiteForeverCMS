@@ -8,8 +8,10 @@ $( function () {
 
     $( 'a.cat_add,a.ban_add,#add_ban' ).each( function () {
         $( this ).bind( 'click', function ( event ) {
-            $.post( this.getAttribute( 'href' ), function ( response ) {
-                $( "#dialog-form" ).append( '<div>' + response + '</div>' ).dialog( "open" );
+            var href = $(this).attr('href');
+            var title = $(this).attr('title');
+            $.post( href, function ( response ) {
+                $( "#dialog-form" ).html( response ).dialog('option','title',title).dialog( "open" );
             } );
             return false;
         } );
@@ -37,14 +39,14 @@ $( function () {
                         $( self ).dialog( "close" );
                         $.showBlock( response );
                         $.hideBlock( 2000 );
-                        window.location.reload()
-                        return true;
+//                        window.location.reload()
+//                        return true;
                     },
                     error:   function ( XMLHttpRequest, textStatus, errorThrown ) {
                         $( self ).dialog( "close" );
                         $.showBlock( 'Данные не сохранены' );
                         $.hideBlock( 2000 );
-                        return true;
+//                        return true;
                     }
                 } );
             }
