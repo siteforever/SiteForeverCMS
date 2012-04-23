@@ -113,7 +113,7 @@ class Data_Watcher
     static function addDirty( Data_Object $obj )
     {
         $inst = self::instance();
-        if ( $obj->id && ! in_array( $obj, $inst->new, true ) ) {
+        if ( $obj->getId() && ! in_array( $obj, $inst->new, true ) ) {
             $inst->dirty[ $inst->globalKey( $obj ) ] = $obj;
         }
     }
@@ -166,16 +166,19 @@ class Data_Watcher
         try {
             if ( is_array( $this->dirty ) ) {
                 foreach( $this->dirty as $key => $obj ) {
+                    DEBUG && App::getInstance()->getLogger()->log('Save '.$key);
                     $obj->getModel()->save( $obj );
                 }
             }
             if ( is_array( $this->new ) ) {
                 foreach( $this->new as $key => $obj ) {
+                    DEBUG && App::getInstance()->getLogger()->log('New '.$key);
                     $obj->getModel()->save( $obj );
                 }
             }
             if ( is_array( $this->delete ) ) {
                 foreach( $this->delete as $key => $obj ) {
+                    DEBUG && App::getInstance()->getLogger()->log('Delete '.$key);
                     $obj->getModel()->delete( $obj->getId() );
                 }
             }

@@ -9,6 +9,8 @@ return array(
         'profiler'   => true,
     ),
 
+    'cache' => false,
+
 //    'logger'    => 'firephp',
 //    'logger'    => 'html',
 
@@ -20,6 +22,8 @@ return array(
         'rewrite'   => true,
     ),
 
+    'language'  => 'ru',
+
     // база данных
     'db' => array(
         'login'     => 'siteforever',
@@ -27,7 +31,7 @@ return array(
         'host'      => 'localhost',
         'database'  => 'siteforever',
         'debug'     => true,
-        'migration' => true,
+        'migration' => false,
     ),
 
     // тема

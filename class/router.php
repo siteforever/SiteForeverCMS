@@ -202,12 +202,10 @@ class Router
         if( ! $this->findRoute() ) {
             if( ! $this->findStructure() ) {
                 $route_pieces = explode( '/', $this->route );
-
-                if( count( $route_pieces ) == 1 ) {
+                if ( count( $route_pieces ) == 1 ) {
                     $this->controller = $route_pieces[ 0 ];
                     $this->action     = 'index';
-                }
-                elseif( count( $route_pieces ) > 1 ) {
+                } elseif( count( $route_pieces ) > 1 ) {
                     $this->controller = $route_pieces[ 0 ];
                     $this->action     = $route_pieces[ 1 ];
 
@@ -225,8 +223,7 @@ class Router
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     $this->activateError();
                 }
             }
@@ -235,9 +232,6 @@ class Router
         $this->_params[ 'controller' ] = $this->controller;
         $this->_params[ 'action' ]     = $this->action;
 
-        //        if ( $this->id && null === $this->request->get('id') ) {
-        //            $this->request->set('id', $this->id);
-        //        }
         if( $this->template ) {
             $this->request->set( 'template', $this->template );
         }

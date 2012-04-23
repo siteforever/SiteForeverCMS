@@ -3,19 +3,19 @@
  * Конфиг для системы
  */
 
-
-// отладка загрузки классов
-if ( ! defined('DEBUG_AUTOLOAD') ) {
-    define('DEBUG_AUTOLOAD', 0);
-}
-
-
 return array(
 
     // отладка
-    'debug' => true,
+    'debug' => array(
+        'profile'   => true,
+    ),
+
+    'cache' => false,
 
     'logger'    => 'plain',
+
+    'language'  => 'en',
+
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'example.test',
@@ -26,8 +26,8 @@ return array(
         'login'     => 'siteforever',
         'password'  => 'siteforever',
         'host'      => 'localhost',
-        'database'  => 'siteforever',
-        'migration' => true,
+        'database'  => 'sftest',
+        'migration' => false,
     ),
 
     // тема

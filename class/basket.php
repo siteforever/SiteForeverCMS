@@ -117,7 +117,12 @@ abstract class Basket
             return $count;
         }
     }
-    
+
+
+    /**
+     * @param $name
+     * @return int
+     */
     public function getPrice( $name )
     {
         foreach ( $this->data as $prod ) {
@@ -127,11 +132,13 @@ abstract class Basket
         }
         return 0;
     }
-    
+
+
     /**
      * Удалить из корзины указанное количество тавара
-     * @param string $id
+     * @param $name
      * @param int $count
+     * @return int|null
      */
     public function del( $name, $count = 0 )
     {
@@ -143,10 +150,12 @@ abstract class Basket
             return 0;
         }
         $this->setCount($name, $new_count);
+        return $new_count;
     }
 
     /**
      * Вся информация о товарах в корзине
+     * @return array
      */
     public function getAll()
     {
@@ -167,6 +176,7 @@ abstract class Basket
     
     /**
      * Сумма заказа
+     * @param $name
      * @return float
      */
     public function getSum( $name = '' )
@@ -202,10 +212,10 @@ abstract class Basket
     /**
      * Сохранить
      */
-    abstract function save();
+    abstract public function save();
     
     /**
      * Загрузить
      */
-    abstract function load();
+    abstract public function load();
 }

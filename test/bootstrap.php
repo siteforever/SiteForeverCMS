@@ -11,6 +11,9 @@ define('SF_PATH', realpath( dirname(__FILE__) . '/..' ));
 //корень сайта
 define('ROOT', SF_PATH );
 
+// Запущены тесты
+define('TEST', true);
+
 
 // директории для подключения
 $include_list   = array();

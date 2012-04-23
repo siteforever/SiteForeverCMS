@@ -32,14 +32,6 @@ class GalleryControllerTest extends PHPUnit_Framework_TestCase
     {
     }
 
-//    public function testAccess()
-//    {
-//        $acs    = $this->object->access();
-//        $this->assertEquals($acs['system'][1],'edit');
-//        $this->assertEquals($acs['system'][0],'admin');
-//        $this->assertEquals($acs['system'][4],'realias');
-//    }
-
     public function testIndexAction()
     {
 

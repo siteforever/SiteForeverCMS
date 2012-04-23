@@ -30,7 +30,7 @@ return array(
     ),
     array(
         'name'  => 'Каталог',
-        'url'   => 'admin/catalog',
+        'url'   => 'catalog/admin',
         'sub'   => array(
             array(
                 'name'  => 'Добавить раздел',
@@ -41,7 +41,7 @@ return array(
     ),
     array(
         'name'  => 'Галерея',
-        'url'   => 'admin/gallery',
+        'url'   => 'gallery/admin',
     ),
     array(
         'name'  => 'Пользователи',

@@ -10,9 +10,17 @@ function redirect( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
     if( preg_match( '@^http@', $url ) ) {
-        header( "Location: " . $url );
+        if ( defined('TEST') && TEST ) {
+            print "Location: " . $url;
+        } else {
+            header( "Location: " . $url );
+        }
     } else {
-        header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
+        if ( defined('TEST') && TEST ) {
+            print "Location: " . App::getInstance()->getRouter()->createLink( $url, $params );
+        } else {
+            header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
+        }
     }
     die();
 }

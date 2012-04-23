@@ -8,8 +8,10 @@
  */
 class Basket_User extends Basket
 {
-
-    function load()
+    /**
+     *
+     */
+    public function load()
     {
         if ( $this->user->basket )
         {
@@ -31,9 +33,15 @@ class Basket_User extends Basket
         $this->save();
     }
 
-    function save()
+
+    /**
+     * Сохраняем, если добавлено в корзину
+     */
+    public function save()
     {
-        $this->user->basket   = serialize( $this->data );
-        $this->user->getModel()->save( $this->user );
+        $basket = serialize( $this->data );
+        if ( $basket !== $this->user->basket ) {
+            $this->user->basket   = $basket;
+        }
     }
 }

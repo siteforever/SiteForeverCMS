@@ -40,6 +40,23 @@ class ControllerResolver
     public function dispatch(array $command = array())
     {
         $result = null;
+
+        // возможность использовать кэш
+        if( $this->app->getConfig()->get('cache') && ! $this->app->getRequest()->getAjax() && ! $this->app->getRouter()->isSystem()) {
+            if( $this->app->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
+                if ( ! $this->app->getBasket()->count() ) {
+                    define('CACHE', true);
+                    DEBUG && $this->app->getLogger()->log('Cache true');
+                    $cache = $this->app->getCacheManager();
+                    if ( $cache->isCached() ) {
+                        DEBUG && $this->app->getLogger()->log('Result from cache');
+                        return $cache->getCache();
+                    }
+                }
+            }
+        }
+        if ( ! defined('CACHE') ) define('CACHE', false);
+
         if (!$command) {
             if (!$command = $this->resolveController()) {
                 throw new ControllerException('Controller not resolved');

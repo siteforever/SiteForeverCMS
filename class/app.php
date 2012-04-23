@@ -24,14 +24,14 @@ class App extends Application_Abstract
 
         $this->handleRequest();
 
-        // WARNING!!!
+        // todo
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
-        if( $this->getConfig()->get( 'db.debug' ) ) {
-            Sfcms_Model::getDB()->saveLog();
-        }
+        if( DEBUG ) {
+            if( $this->getConfig()->get( 'db.debug' ) ) {
+                Sfcms_Model::getDB()->saveLog();
+            }
 
-        if( $this->getConfig()->get( 'debug.profiler' ) ) {
             $this->getLogger()->log(
                 "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
                 . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
@@ -43,11 +43,9 @@ class App extends Application_Abstract
                 "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
             );
             $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Required memory: " . round( memory_get_usage() / 1024, 3 ) . " kb.", 'app' );
+            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage() / 1024, 3 ) . " kb.", 'app' );
         }
-
         ob_end_flush();
-        //die( __FILE__.':'.__LINE__.'->'.__METHOD__.'()');
     }
 
     /**
@@ -57,12 +55,14 @@ class App extends Application_Abstract
      */
     public function init()
     {
+        define('DEBUG', $this->getConfig()->get( 'debug.profiler' ));
+
         if( $this->getConfig()->get( 'db.debug' ) ) {
             std_error::init( $this->getLogger() );
         }
 
         // Language
-        $this->getConfig()->setDefault( 'language', 'ru' );
+        $this->getConfig()->setDefault( 'language', 'en' );
         Sfcms_i18n::getInstance()->setLanguage(
             $this->getConfig()->get( 'language' )
         );
@@ -149,16 +149,6 @@ class App extends Application_Abstract
         // маршрутизатор
         $this->getRouter()->routing();
 
-        // возможность использовать кэш
-        if( $this->getConfig()->get('caching') && ! $this->getRequest()->getAjax() && ! $this->getRouter()->isSystem()) {
-            if( $this->getRequest()->get( 'controller' ) == 'page'
-                && $this->getAuth()->currentUser()->get('perm') == USER_GUEST
-                && $this->getBasket()->count() == 0
-            ) {
-                $this->getTpl()->caching( true );
-            }
-        }
-
         self::$init_time = microtime( 1 ) - self::$start_time;
 
         self::$controller_time = microtime( 1 );
@@ -167,7 +157,7 @@ class App extends Application_Abstract
         try {
             $result = $controller_resolver->dispatch();
         } catch ( Exception $e ) {
-            if ( $this->getConfig()->get('debug.profile') )
+            if ( DEBUG )
                 $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
             else
                 $result = $e->getMessage();
@@ -175,6 +165,12 @@ class App extends Application_Abstract
 
 
         $result = $this->prepareResult( $result );
+
+        if ( CACHE && $this->getRequest()->getContent() ) {
+            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
+            $this->getCacheManager()->save();
+        }
+
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
         $this->invokeView( $result );

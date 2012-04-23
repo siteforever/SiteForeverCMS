@@ -103,6 +103,12 @@ abstract class Application_Abstract
      */
     protected $_modules = array();
 
+    /**
+     * Вернет менеджер Кэша
+     * @var Sfcms_Cache
+     */
+    protected $_cache = null;
+
     abstract public function run();
 
     abstract protected function init();
@@ -197,6 +203,20 @@ abstract class Application_Abstract
         }
         return $this->auth;
     }
+
+
+    /**
+     * Вернет объект кэша
+     * @return Sfcms_Cache
+     */
+    public function getCacheManager()
+    {
+        if ( null === $this->_cache ) {
+            $this->_cache = new Sfcms_Cache();
+        }
+        return $this->_cache;
+    }
+
 
     /**
      * @throws Application_Exception

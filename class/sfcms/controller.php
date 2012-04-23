@@ -67,27 +67,18 @@ abstract class Sfcms_Controller
         $this->router   = $app->getRouter();
         $this->tpl      = $app->getTpl();
         $this->user     = $app->getAuth()->currentUser();
-        //$this->templates= $this->getModel('Templates');
         $this->basket   = $app->getBasket();
         $this->params = $this->request->get('params');
 
-//        print "id = {$this->request->get('id')}\n";
-//        print "controller = {$this->request->get('controller')}\n";
-//        print "action = {$this->request->get('action')}\n";
-
         $id         = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         $controller = $this->request->get( 'controller' );
-//        $action     = $this->request->get( 'action' );
 
         try {
-            if (    null   !== $id
-                 && 'page' != $controller
-//                 && $this->app()->getRouter()->isAlias()
-            ) {
+            if ( null !== $id && 'page' != $controller ) {
                 $page   = $this->getModel('Page')->find(
                     array(
                          'cond'     => 'link = ? AND controller = ? AND deleted = 0',
-                         'params'   => array($id,$controller)
+                         'params'   => array( $id, $controller )
                     )
                 );
             }
@@ -100,8 +91,6 @@ abstract class Sfcms_Controller
         } catch ( Exception $e ) {
             $page   = null;
         }
-
-//        var_dump( $id, $controller, $action, $page );
 
         if ( null !== $page ) {
             if ( ! $page->get('title') ) {

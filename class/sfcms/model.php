@@ -537,6 +537,8 @@ abstract class Sfcms_Model
         }
         $data = $obj->getAttributes();
 
+        DEBUG && $this->app()->getLogger()->log( get_class($obj) );
+
         $fields = $this->table->getFields();
 
         $save_data = array();

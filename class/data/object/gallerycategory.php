@@ -74,7 +74,7 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
      */
     public function getImage()
     {
-        if ( $this->data['thumb'] ) {
+        if ( isset( $this->data['thumb'] ) && $this->data['thumb'] ) {
             return $this->data['thumb'];
         }
         if (null === $this->_image) {
