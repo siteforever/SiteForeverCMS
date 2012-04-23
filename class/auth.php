@@ -44,6 +44,7 @@ abstract class Auth
             if ( $obj ) {
                 $this->user         = $obj;
                 $this->user->last   = time();
+                $this->user->markDirty();
                 return;
             }
         }
@@ -158,7 +159,7 @@ abstract class Auth
         $this->setId(0);
         $_SESSION['sxd_auth']   = 0; // Авторизация Sypex Dumper
         $_SESSION['sxd_conf']   = null;
-        setcookie('sxd', null, null, '/misc/sxd/');
+        setcookie('sxd', null, null, '/_runtime/sxd/');
         $this->user =$this->model->createObject(array(
             'login'  => 'guest',
             'perm'   => USER_GUEST,
@@ -218,8 +219,7 @@ abstract class Auth
 
         //$this->setData( $data );
         // Надо сохранить, чтобы знать id
-        if ( $this->model->save( $obj ) )
-        {
+        if ( $this->model->save( $obj ) ) {
             $tpl    = $this->app()->getTpl();
             $config = $this->app()->getConfig();
 

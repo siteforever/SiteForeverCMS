@@ -1,18 +1,16 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: keltanas
- * Date: 09.10.2010
- * Time: 1:47:15
- * To change this template use File | Settings | File Templates.
+ * Форма редактирования пользователя в админке
+ * @author E.Nikolay <keltanas@gmail.com>
  */
  
-class forms_user_edit extends form_Form
+class Forms_User_Edit extends form_Form
 {
-    function __construct()
+    public function __construct()
     {
         return  parent::__construct(array(
             'name'      => 'users',
+            'action'    => App::getInstance()->getRouter()->createServiceLink('users','save'),
             'fields'    => array(
                 'id'        => array('type'=>'hidden', 'value'=>'0'),
                 'login'     => array('type'=>'text', 'label'=>'Логин', 'required'),

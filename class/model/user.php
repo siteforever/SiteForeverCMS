@@ -83,7 +83,7 @@ class Model_User extends Sfcms_Model
      * @param Data_Object|null $obj
      * @return void
      */
-    function save( Data_Object $obj )
+    public function save( Data_Object $obj )
     {
         if ( empty( $obj->password ) ) {
             unset( $obj->password );
@@ -167,7 +167,7 @@ class Model_User extends Sfcms_Model
     function getEditForm()
     {
         if ( is_null( $this->edit_form ) ) {
-            $this->edit_form = new forms_user_edit();
+            $this->edit_form = new Forms_User_Edit();
         }
         return $this->edit_form;
 

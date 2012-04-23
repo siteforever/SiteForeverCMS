@@ -9,7 +9,7 @@
 {form action="admin/users" method="post"}
     <table class="dataset fullWidth">
     <tr>
-        <th>{icon name="delete" title="Удалить"}</th>
+        <th>{icon name="user_delete" title="Удалить"}</th>
         <th>Логин</th>
         <th>Email</th>
         <th>Фамилия</th>
@@ -17,24 +17,23 @@
         <th>Статус</th>
         <th>Зарегистрирован</th>
         <th>Последний вход</th>
-        <th>Группа</th>
     </tr>
     {foreach from=$users item="user"}
     <tr>
         <td><input type="checkbox" class="checkbox" name="users[{$user.id}][delete]" /></td>
-        <td><a {href url="admin/users" userid=$user.id}">{$user.login}</a></td>
+        <td>
+            {if $user.perm == 0}{icon name="user_gray" title="Гость"}{/if}
+            {if $user.perm == 1}{icon name="user_green" title="Пользователь"}{/if}
+            {if $user.perm == 2}{icon name="user_orange" title="Опытный"}{/if}
+            {if $user.perm == 10}{icon name="user_red" title="Админ"}{/if}
+            <a {href url="users/adminEdit" userid=$user.id}">{$user.login}</a>
+        </td>
         <td>{$user.email}</td>
         <td>{$user.lname}</td>
         <td>{$user.phone}</td>
         <td>{if $user.status}{icon name="accept" title="Вкл"}{else}{icon name="cross" title="Выкл"}{/if}</td>
         <td>{$user.date|date_format:"%x"}</td>
         <td>{$user.last|date_format:"%x"}</td>
-        <td>
-            {if $user.perm == 0}{icon name="user_gray" title="Гость"}{/if}
-            {if $user.perm == 1}{icon name="user_green" title="Пользователь"}{/if}
-            {if $user.perm == 2}{icon name="user_orange" title="Опытный"}{/if}
-            {if $user.perm == 10}{icon name="user_red" title="Админ"}{/if}
-        </td>
     </tr>
     {foreachelse}
     <tr>
