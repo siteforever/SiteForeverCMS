@@ -18,6 +18,8 @@ class Forms_Gallery_Category extends form_Form
                 'id'        => array('type'=>'int', 'hidden', 'value'=>'0'),
                 'name'      => array('type'=>'text', 'label'=>'Наименование', 'required'),
 
+                '<hr/>',
+
                 'middle_method' => array(
                     'type'  =>'select',
                     'label' =>'Метод создания средней картинки',
@@ -31,9 +33,12 @@ class Forms_Gallery_Category extends form_Form
                 ),
                 'middle_height' => array(
                     'type'  => 'int',
-                    'label' => 'Ширина средней картинки',
+                    'label' => 'Высота средней картинки',
                     'value' => '200',
                 ),
+
+                '<hr/>',
+
                 'thumb_method' => array(
                     'type'  =>'select',
                     'label' =>'Метод создания миниатюры',
@@ -47,9 +52,12 @@ class Forms_Gallery_Category extends form_Form
                 ),
                 'thumb_height' => array(
                     'type'  => 'int',
-                    'label' => 'Ширина миниатюры',
+                    'label' => 'Высота миниатюры',
                     'value' => '100',
                 ),
+
+                '<hr/>',
+
                 'target'        => array(
                     'type'  => 'select',
                     'label' => 'Цель ссылок',
@@ -74,6 +82,9 @@ class Forms_Gallery_Category extends form_Form
                         '-1'        => 'По первому пикселю',
                     ),
                 ),
+
+                '<hr/>',
+
                 'meta_description'  => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Description',),
                 'meta_keywords'     => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Keywords',),
                 'meta_h1'           => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'H1',),

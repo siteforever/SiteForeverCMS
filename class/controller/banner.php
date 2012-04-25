@@ -45,7 +45,8 @@ class Controller_Banner extends Sfcms_Controller
     }
 
     /**
-     * @return int
+     * Список категорий баннеров в админке
+     * @return mixed
      */
     public function adminAction()
     {
@@ -59,7 +60,9 @@ class Controller_Banner extends Sfcms_Controller
     }
 
     /**
-     * @return void
+     * Перенаправляет клик по баннеру на нужный сайт / страницу
+     * Подсчитывает статистику
+     * @return mixed
      */
     public function redirectBannerAction()
     {
@@ -74,13 +77,11 @@ class Controller_Banner extends Sfcms_Controller
         $model->save( $obj );
         if (substr( $obj[ 'url' ], 0, 4 ) == 'http') {
             $url = $obj[ 'url' ];
-        } elseif (isset( $_SERVER[ 'SSL' ] )) {
-            $url = "https://" . $_SERVER[ "HTTP_HOST" ] . $obj[ 'url' ];
+        } else {
+            $protocol = isset( $_SERVER[ 'SSL' ] ) ? "https://" : "http://";
+            $url = $protocol . $_SERVER[ "HTTP_HOST" ] . $obj[ 'url' ];
         }
-        else {
-            $url = "http://" . $_SERVER[ "HTTP_HOST" ] . $obj[ 'url' ];
-        }
-        redirect( $url );
+        return redirect( $url );
     }
 
     /**

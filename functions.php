@@ -12,12 +12,14 @@ function redirect( $url = '', $params = array() )
     if( preg_match( '@^http@', $url ) ) {
         if ( defined('TEST') && TEST ) {
             print "Location: " . $url;
+            return;
         } else {
             header( "Location: " . $url );
         }
     } else {
         if ( defined('TEST') && TEST ) {
             print "Location: " . App::getInstance()->getRouter()->createLink( $url, $params );
+            return;
         } else {
             header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
         }
@@ -29,13 +31,18 @@ function redirect( $url = '', $params = array() )
  * Перезагрузить страницу на нужную
  * @param string $url
  * @param array $params
- * @return void
+ * @return string
  */
 function reload( $url = '', $params = array() )
 {
     Data_Watcher::instance()->performOperations();
-    die( '<script type="text/javascript">window.location.href = "' .
-         App::getInstance()->getRouter()->createLink( $url, $params ) . '";</script>' );
+    $reload = '<script type="text/javascript">window.location.href = "' .
+             App::getInstance()->getRouter()->createLink( $url, $params ) . '";</script>';
+    if ( defined('TEST') && TEST ) {
+        return $reload;
+    } else {
+        die( $reload );
+    }
 }
 
 /**

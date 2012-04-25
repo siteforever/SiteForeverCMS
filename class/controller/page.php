@@ -6,8 +6,7 @@
 
 class Controller_Page extends Sfcms_Controller
 {
-
-    function access()
+    public function access()
     {
         return array(
             'system'    => array(
@@ -80,7 +79,7 @@ class Controller_Page extends Sfcms_Controller
      * Структура
      * @return void
      */
-    function adminAction()
+    public function adminAction()
     {
         // используем шаблон админки
         $this->request->set( 'template', 'index' );
@@ -103,15 +102,12 @@ class Controller_Page extends Sfcms_Controller
 
         // проверка на правильность алиаса
         if ($test_alias = $this->request->get( 'test_alias' )) {
-
             if ($model->findByRoute( $test_alias )) {
                 die( '0' );
-            }
-            else {
+            } else {
                 die( 'yes' );
             }
         }
-
 
         $this->request->setTitle( 'Структура сайта' );
 
@@ -150,7 +146,7 @@ class Controller_Page extends Sfcms_Controller
      * Добавления
      * @return void
      */
-    function addAction()
+    public function addAction()
     {
         /**
          * @var Model_Page $model
@@ -230,15 +226,7 @@ class Controller_Page extends Sfcms_Controller
 
                 try {
                     if ( $obj->save() ) {
-                        if ( !$old_id ) {
-                            reload(
-                                null, array(
-                                           'controller'=> 'page',
-                                           'action'    => 'edit',
-                                           'edit'      => $obj->getId()
-                                      )
-                            );
-                        }
+                        reload( '', array( 'controller'=> 'page', 'action'    => 'admin' ) );
                         return t( 'Data save successfully' );
                     } else {
                         return t( 'Data not saved' );

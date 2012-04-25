@@ -311,12 +311,9 @@ class Controller_Gallery extends Sfcms_Controller
                 if( $obj && ! $obj_id ) {
                     reload( 'admin/gallery' );
                 }
-                $this->request->addFeedback( t( 'Data save successfully' ) );
-                return;
-            }
-            else {
-                print $form->getFeedbackString();
-                return;
+                return t( 'Data save successfully' );
+            } else {
+                return $form->getFeedbackString();
             }
         }
 
@@ -333,7 +330,7 @@ class Controller_Gallery extends Sfcms_Controller
             }
         }
         $this->tpl->form = $form;
-        $this->request->setContent( $this->tpl->fetch( 'system:gallery.admin_category_edit' ) );
+        return $this->tpl->fetch( 'system:gallery.admin_category_edit' );
     }
 
     /**
@@ -405,11 +402,9 @@ class Controller_Gallery extends Sfcms_Controller
                 $data = $form->getData();
                 $obj->setAttributes( $data );
                 $obj->save();
-                $this->request->addFeedback( $obj->getAlias() );
-                $this->request->addFeedback( t( 'Data save successfully' ) );
-            }
-            else {
-                $this->request->addFeedback( $form->getFeedbackString() );
+                return t( 'Data save successfully' );
+            } else {
+                return $form->getFeedbackString();
             }
         } else {
             $editimg = $this->request->get( 'id' );
