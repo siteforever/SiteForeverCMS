@@ -231,8 +231,8 @@ class elFinder {
     {
 		foreach ($this->_options as $k=>$v) {
 			if (isset($options[$k])) {
-				$this->_options[$k] = is_array($this->_options[$k])
-					? array_merge($this->_options[$k], $options[$k])
+				$this->_options[$k] = is_array($this->_options[$k]) && is_array($options[$k])
+					? @array_merge($this->_options[$k], $options[$k])
 					: $options[$k];
 			}
 		}
