@@ -18,10 +18,10 @@
         <td width="20">{if $item->count_show}{$item->count_show}{else}0{/if}</td>
         <td width="20">{if $item->count_click}{$item->count_click}{else}0{/if}</td>
         <td>
-            <a class="ban_add" {href controller="banner" action="edit" id=$item.id}>{icon name="pencil" title="Править"}</a>
+            <a class="ban_add" {href controller="banner" action="edit" id=$item.id} title="Править баннер">{icon name="pencil" title="Править"}</a>
         </td>
         <td>
-            <a {href  controller="banner" action="del" id=$item.id} >{icon name="delete" title="Удалить"}</a>
+            <a {href controller="banner" action="del" id=$item.id}>{icon name="delete" title="Удалить"}</a>
         </td>
     </tr>
     {foreachelse}
@@ -31,4 +31,4 @@
 {/foreach}
 </table>
 <p class="page">{$paging.html}</p>
-<a class="ban_add button" {href controller="banner" action="edit"}>{icon name="picture_add"} Добавить</a>
+<a class="ban_add button" {href controller="banner" action="edit"} title="Добавить баннер">{icon name="picture_add"} Добавить</a>

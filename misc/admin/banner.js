@@ -2,22 +2,29 @@
  * Скрипты для баннеров
  * @author keltanas@gmail.com
  */
-$( function () {
+$(function(){
 
-    $('body').append('<div id="dialog-form"></div>');
+    var dialogForm = $('<div id="dialog-form"></div>').appendTo('body');
 
     $( 'a.cat_add,a.ban_add,#add_ban' ).each( function () {
         $( this ).bind( 'click', function ( event ) {
             var href = $(this).attr('href');
             var title = $(this).attr('title');
-            $.post( href, function ( response ) {
-                $( "#dialog-form" ).html( response ).dialog('option','title',title).dialog( "open" );
-            } );
+            $.post( href ).then(
+                $.proxy(function ( response ) {
+                    dialogForm.html( response );
+                    dialogForm.dialog( 'option', 'title', title );
+                    dialogForm.dialog( 'open' );
+                }, this),
+                $.proxy(function ( error ) {
+                    alert( error );
+                }, this)
+            );
             return false;
         } );
     } );
 
-    $( "#dialog-form" ).dialog( {
+    dialogForm.dialog( {
         autoOpen: false,
         width:    735,
         modal:    true,
@@ -59,4 +66,4 @@ $( function () {
             $( this ).find( 'div' ).remove();
         }
     } );
-} );
+});
