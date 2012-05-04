@@ -1,11 +1,7 @@
 <?php
 /**
  * Класс для обработки ошибок.
- * В связи с тесной интергацией с классами db и auth возможно использование только в системе Imotech
- * Класс использует для работы класс-расширение FirePHP @link http://www.firephp.org/
- * Все ошибки кроме критических выводяться в консоли FireBug @link http://getfirebug.com/
  *
- * 
  * <strong>set_error_handler( array("error", "handler" ) ); // инициализация</strong>
  *
  * <ul>
@@ -177,10 +173,10 @@ class std_error
                 }
             }
 
-            $bt['class']    = @$bt['class'] ?: 'null';
-            $bt['type']     = @$bt['type'] ?: '.';
-            $bt['file']     = @$bt['file'] ?: 'no file';
-            $bt['line']     = @$bt['line'] ?: '0';
+            $bt['class']    = isset( $bt['class'] ) ? $bt['class'] : 'null';
+            $bt['type']     = isset( $bt['type'] ) ? $bt['type'] : '.';
+            $bt['file']     = isset( $bt['file'] ) ? $bt['file'] : 'no file';
+            $bt['line']     = isset( $bt['line'] ) ? $bt['line'] : '0';
 
             if ( strpos($bt['file'], 'class.error.php') === false ) {
                 $output[] = "file: {$bt['file']}:{$bt['line']} in {$bt['class']}{$bt['type']}{$bt['function']} ($args)";
