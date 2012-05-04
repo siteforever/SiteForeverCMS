@@ -291,7 +291,7 @@ abstract class Sfcms_Controller
      * @param array $params
      * @return string
      */
-    protected function reload( $url = '', $params = array(), $timeout = 0 )
+    protected function reload( $url = '', $params = array(), $timeout = 0, $return = false )
     {
         Data_Watcher::instance()->performOperations();
 
@@ -301,10 +301,10 @@ abstract class Sfcms_Controller
             $script = "setTimeout( function(){ $script }, $timeout );";
         }
         $reload = '<script type="text/javascript">'.$script.'</script>';
-        if ( defined('TEST') && TEST ) {
+        if ( ( defined('TEST') && TEST ) || $return ) {
             return $reload;
         } else {
-            die( $reload );
+            print( $reload );
         }
     }
 }

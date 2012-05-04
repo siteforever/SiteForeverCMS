@@ -60,10 +60,10 @@ $(function(){
         },
 
         beforeClose: function ( event, ui ) {
-            $( this ).find( 'div' ).remove()
+//            $( this ).find( 'div' ).remove()
         },
         close:       function () {
-            $( this ).find( 'div' ).remove();
+//            $( this ).find( 'div' ).remove();
         }
     } );
 });

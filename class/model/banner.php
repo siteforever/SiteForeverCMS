@@ -12,7 +12,7 @@ class Model_Banner extends Sfcms_Model
     private $_form  = null;
 
      /**
-     * @return Form_Form
+     * @return Forms_Banners_Banner
      */
     function getForm()
     {

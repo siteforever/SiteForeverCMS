@@ -14,7 +14,7 @@ class Controller_Banner extends Sfcms_Controller
     {
         return array(
             'system' => array(
-                'admin', 'editcat', 'delcat', 'edit', 'del', 'cat'
+                'admin', 'editcat', 'delcat', 'edit', 'del', 'cat', 'save'
             ),
         );
     }
@@ -99,9 +99,9 @@ class Controller_Banner extends Sfcms_Controller
             if( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $model->save( $obj );
+                $this->reload('banner/admin', array(), 2000);
                 return t( 'Data save successfully' );
-            }
-            else {
+            } else {
                 return $form->getFeedbackString();
             }
             return 'Unkown error';
@@ -198,34 +198,56 @@ class Controller_Banner extends Sfcms_Controller
      */
     public function editAction()
     {
-        /**
-         * @var Model_Banner $model
-         */
+        /** @var Model_Banner $model */
         $model = $this->getModel( 'Banner' );
         $form  = $model->getForm();
         $this->request->setAjax( 1, Request::TYPE_ANY );
-        if ($form->getPost()) {
-            if ($form->validate()) {
-                $obj = $model->createObject( $form->getData() );
-                $model->save( $obj );
-                return t( 'Data save successfully' );
-            }
-            else {
-                return $form->getFeedbackString();
-            }
-        }
-        if ($edit = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT )) {
+        if ( $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
             try {
-                $obj = $model->find( $edit );
+                $obj = $model->find( $id );
             }
             catch ( ControllerException $e ) {
                 return $e->getMessage();
             }
+            $categoryModel   = $this->getModel( 'CategoryBanner' );
+            $cat             = $categoryModel->find( $obj[ 'cat_id' ] );
             $form->setData( $obj->getAttributes() );
-            $category            = $this->getModel( 'CategoryBanner' );
-            $cat                 = $category->find( $obj[ 'cat_id' ] );
+            $form->getField( 'cat_id' )->setValue( $cat->getId() );
+            return array( 'cat'     => $cat,
+                          'form'    => $form
+            );
         }
-        return array('cat'=>$cat, 'ban_name'=>$obj['cat_id'], 'form'=>$form);
+        if ( ! $cat_id = $this->request->get('cat') ) {
+            return 'error';
+        }
+        $cat = $this->getModel('CategoryBanner')->find( $cat_id );
+        $form->getField( 'cat_id' )->setValue( $cat->getId() );
+        return array( 'cat'     => $cat,
+                      'form'    => $form
+        );
+    }
+
+
+    /**
+     * Сохранение баннера
+     * @return string|void
+     */
+    public function saveAction()
+    {
+        /** @var Model_Banner $model */
+        $model = $this->getModel( 'Banner' );
+        $form  = $model->getForm();
+        if ($form->getPost()) {
+            if ($form->validate()) {
+                $obj = $model->createObject( $form->getData() );
+                $model->save( $obj );
+                $this->reload('banner/cat', array('id'=>$obj->get('cat_id')), 2000);
+                return t( 'Data save successfully' );
+            } else {
+                return $form->getFeedbackString();
+            }
+        }
+        return 'error';
     }
 
 }

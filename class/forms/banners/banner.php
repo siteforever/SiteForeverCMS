@@ -10,7 +10,7 @@ class Forms_Banners_Banner extends Form_Form
         $parents    = Sfcms_Model::getModel('CategoryBanner')->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('banner', 'edit'),
+            'action'    => App::getInstance()->getRouter()->createServiceLink('banner', 'save'),
             'title'     => 'Настройка баннеров',
             'fields'    => array(
                 'id'                => array('type'=>'int', 'hidden'),
@@ -26,10 +26,10 @@ class Forms_Banners_Banner extends Form_Form
                             'type'  => 'select',
                             'label' => 'Куда загружать ссылки',
                             'variants'  => array(
-                                '_parent'   =>'Старница в фрейм родителя',
-                                '_blank'    =>'Изображение в новом окне',
-                                '_self'     =>'Страница в текущем окне',
-                                '_top'      =>'Отменяет фреймы и загружает в текущее окно',
+//                                '_parent'   =>'Открыть в фрейм родителя',
+                                '_blank'    =>'Открыть в новом окне',
+                                '_self'     =>'Открыть в текущем окне',
+//                                '_top'      =>'Отменяет фреймы и загружает в текущее окно',
                             ),
                 ),
                 'content'           => array('type'=>'textarea', 'label'=>'Содержимое'),
