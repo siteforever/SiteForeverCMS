@@ -223,8 +223,8 @@ class Controller_News extends Sfcms_Controller
                 if ( $model->save( $obj ) ) {
                     $this->request->addFeedback(t('Data save successfully'));
                     if ( ! $data['id'] ) {
-//                        reload('admin/news/', array('catid'=>$data['cat_id'],));
-                        reload('news/newslist/', array('catid'=>$data['cat_id'],));
+//                        $this->reload('admin/news/', array('catid'=>$data['cat_id'],));
+                        $this->reload('news/newslist/', array('catid'=>$data['cat_id'],));
                     }
                 }
                 else {
@@ -295,7 +295,7 @@ class Controller_News extends Sfcms_Controller
                 {
                     $this->request->addFeedback('Сохранено успешно');
                     if ( ! $form->getField('id')->getValue() ) {
-                        reload('admin/news');
+                        $this->reload('admin/news');
                     }
                 }
                 else {
@@ -355,7 +355,7 @@ class Controller_News extends Sfcms_Controller
 
         $cat_obj->deleted   = 1;
 
-        reload('admin/news');
+        $this->reload('admin/news');
     }
 
     /**
@@ -377,7 +377,7 @@ class Controller_News extends Sfcms_Controller
 
         $obj->deleted = 1;
 
-        reload('admin/news', array('catid'=>$cat_id));
+        $this->reload('admin/news', array('catid'=>$cat_id));
     }
 
      /**

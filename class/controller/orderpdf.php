@@ -18,7 +18,7 @@ class Controller_OrderPdf extends Sfcms_Controller
         $order = $order_model->find( $order_id );
 
         if ( $this->user->id != $order->user_id ) {
-            redirect('order');
+            $this->redirect('order');
         }
 
 

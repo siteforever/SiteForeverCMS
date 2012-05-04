@@ -309,7 +309,7 @@ class Controller_Gallery extends Sfcms_Controller
                 $model->save( $obj );
 
                 if( $obj && ! $obj_id ) {
-                    reload( 'admin/gallery' );
+                    $this->reload( 'admin/gallery' );
                 }
                 return t( 'Data save successfully' );
             } else {
@@ -345,7 +345,7 @@ class Controller_Gallery extends Sfcms_Controller
         if( $id ) {
             $model->remove( $id );
         }
-        redirect( 'admin/gallery' );
+        $this->redirect( 'admin/gallery' );
     }
 
     /**

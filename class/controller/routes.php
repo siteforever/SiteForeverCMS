@@ -42,7 +42,7 @@ class Controller_Routes extends Sfcms_Controller
             }
             //App::$db->insertUpdateMulti( $model->getTable(), $routes );
             $this->request->addFeedback( t( 'Order recount' ) );
-            //redirect('admin/routes');
+            //$this->redirect('admin/routes');
         }
 
         $routes_data = $this->request->get( 'routes' );
@@ -91,7 +91,7 @@ class Controller_Routes extends Sfcms_Controller
                 }
             }
             $this->request->addFeedback( t( 'Data save successfully' ) );
-            //redirect('admin/routes');
+            //$this->redirect('admin/routes');
             //return;
         }
 

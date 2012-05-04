@@ -70,7 +70,7 @@ class Controller_Banner extends Sfcms_Controller
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT, null );
         $id_nt = $this->request->get( 'id' );
         if (( $id_nt !== null && $id === null ) || ( !is_numeric( $id_nt ) && $id_nt !== null )) {
-            redirect( '/error' );
+            $this->redirect( '/error' );
         }
         $obj                  = $model->find( $id );
         $obj[ 'count_click' ] = $obj[ 'count_click' ] + 1;
@@ -81,7 +81,7 @@ class Controller_Banner extends Sfcms_Controller
             $protocol = isset( $_SERVER[ 'SSL' ] ) ? "https://" : "http://";
             $url = $protocol . $_SERVER[ "HTTP_HOST" ] . $obj[ 'url' ];
         }
-        return redirect( $url );
+        return $this->redirect( $url );
     }
 
     /**
@@ -132,7 +132,7 @@ class Controller_Banner extends Sfcms_Controller
         if ($id) {
             $model->remove( $id );
         }
-        redirect( 'banner/admin' );
+        $this->redirect( 'banner/admin' );
     }
 
     /**
@@ -152,7 +152,7 @@ class Controller_Banner extends Sfcms_Controller
             else {
                 $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
-            redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
+            $this->redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
         }
     }
 
@@ -188,7 +188,7 @@ class Controller_Banner extends Sfcms_Controller
             );
         }
         else {
-            redirect( 'banner/admin' );
+            $this->redirect( 'banner/admin' );
             return true;
         }
     }

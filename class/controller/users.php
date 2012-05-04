@@ -168,7 +168,7 @@ class Controller_Users extends Sfcms_Controller
                     // если создан новый пользователь
                     $ins = $User->save();
                     print "Пользователь добавлен";
-                    reload( '/admin/users/edit/'.$ins );
+                    $this->reload( '/admin/users/edit/'.$ins );
                 }
                 $User->markDirty();
                 $this->request->addFeedback('Данные сохранены');
@@ -187,7 +187,7 @@ class Controller_Users extends Sfcms_Controller
     public function logoutAction()
     {
         $this->app()->getAuth()->logout();
-        redirect('users/login');
+        $this->redirect('users/login');
     }
 
     /**
@@ -213,7 +213,7 @@ class Controller_Users extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 if ( $auth->login( $form->getField('login')->getValue(), $form->getField('password')->getValue() ) ) {
-                    redirect($_SERVER['HTTP_REFERER']);
+                    $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
                     $this->request->addFeedback( $auth->getMessage() );
                 }
@@ -241,7 +241,7 @@ class Controller_Users extends Sfcms_Controller
             $this->request->setContent($this->tpl->fetch('users.cabinet'));
         }
         else {
-            reload('users/login');
+            $this->reload('users/login');
         }
     }
 

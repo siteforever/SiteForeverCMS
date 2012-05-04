@@ -257,4 +257,54 @@ abstract class Sfcms_Controller
     {
         return $this->page;
     }
+
+    /**
+     * Перенаправление на другой урл
+     * @param string $url
+     * @param array $params
+     * @return void
+     */
+    protected function redirect( $url = '', $params = array() )
+    {
+        Data_Watcher::instance()->performOperations();
+        if( preg_match( '@^http@', $url ) ) {
+            if ( defined('TEST') && TEST ) {
+                print "Location: " . $url;
+                return;
+            } else {
+                header( "Location: " . $url );
+            }
+        } else {
+            if ( defined('TEST') && TEST ) {
+                print "Location: " . App::getInstance()->getRouter()->createLink( $url, $params );
+                return;
+            } else {
+                header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
+            }
+        }
+        die();
+    }
+
+    /**
+     * Перезагрузить страницу на нужную
+     * @param string $url
+     * @param array $params
+     * @return string
+     */
+    protected function reload( $url = '', $params = array(), $timeout = 0 )
+    {
+        Data_Watcher::instance()->performOperations();
+
+        $script = 'window.location.href = "'
+                . App::getInstance()->getRouter()->createLink( $url, $params ) . '";';
+        if ( $timeout ) {
+            $script = "setTimeout( function(){ $script }, $timeout );";
+        }
+        $reload = '<script type="text/javascript">'.$script.'</script>';
+        if ( defined('TEST') && TEST ) {
+            return $reload;
+        } else {
+            die( $reload );
+        }
+    }
 }

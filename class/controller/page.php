@@ -121,7 +121,7 @@ class Controller_Page extends Sfcms_Controller
 
         if ($do && $part) {
             $model->switching( $do, $part );
-            redirect( 'admin' );
+            $this->redirect( 'admin' );
         }
 
         $model->createTree();
@@ -226,7 +226,7 @@ class Controller_Page extends Sfcms_Controller
 
                 try {
                     if ( $obj->save() ) {
-                        reload( '', array( 'controller'=> 'page', 'action'    => 'admin' ) );
+                        $this->reload( '', array( 'controller'=> 'page', 'action'    => 'admin' ) );
                         return t( 'Data save successfully' );
                     } else {
                         return t( 'Data not saved' );
@@ -318,7 +318,7 @@ class Controller_Page extends Sfcms_Controller
         if ($down = $this->request->get( 'down' )) {
             $model->moveDown( $down );
         }
-        reload( 'admin' );
+        $this->reload( 'admin' );
     }
 
     /**
