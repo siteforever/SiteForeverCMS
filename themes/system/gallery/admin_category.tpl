@@ -25,5 +25,11 @@
 {/foreach}
 </table>
 {*<p>{icon name="add"} <a {href newcat="1"}>Добавить категорию</a></p>*}
-<p>{icon name="add"} <a {href controller="gallery" action="editcat"}>Добавить категорию</a></p>
-<p>{icon name="arrow_refresh"} <a class="realias" {href controller="gallery" action="realias"}>Пересчитать алиасы изображений</a></p>
+<p>
+    <a {href controller="gallery" action="editcat"} class="button">
+        {icon name="add"} Добавить категорию
+    </a>
+    <a class="realias button" {href controller="gallery" action="realias"}>
+        {icon name="arrow_refresh"} Пересчитать алиасы изображений
+    </a>
+</p>

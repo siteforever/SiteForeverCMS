@@ -2,9 +2,10 @@
 {$form->html()}
 <br />
 <p>
-{*    <a {href}>&laquo; Список категорий галерея</a>*}
-    <a {href  controller="gallery" action="viewcat"}>&laquo; Список категорий галерея</a>
-    {if $form->id}| <a {href controller="gallery" action="viewcat" id=$form->id}>
-        Изображения в галереи &raquo;
-    </a>{/if}
+    <a {href  controller="gallery" action="admin"} class="button">{icon name="arrow_left"} Список категорий галерея</a>
+    {if $form->id}
+        <a {href controller="gallery" action="viewcat" id=$form->id} class="button">
+            Изображения в галереи {icon name="arrow_right"}
+        </a>
+    {/if}
 </p>

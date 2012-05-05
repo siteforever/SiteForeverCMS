@@ -54,7 +54,7 @@ input, select, textarea {
 }
 
 input.ui-button, .ui-button-text-only .ui-button-text {
-    padding: 0.2em 1em;
+    /*padding: 0.2em 1em;*/
 }
 
 div.b-request-feedback {

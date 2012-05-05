@@ -47,8 +47,8 @@ class Form_Form implements ArrayAccess
     function __construct( $config, Request $request = null )
     {
         if ( isset( $request )  ) {
-            $request->addScript( $request->get('path.misc').'/jquery.form.js' );
-            //$request->addScript( $request->get('path.misc').'/jquery.blockUI.js' );
+            $request->addScript( $request->get('path.misc').'/jquery/jquery.form.js' );
+            //$request->addScript( $request->get('path.misc').'/jquery/jquery.blockUI.js' );
             //$request->addScript( $request->get('path.misc').'/forms.js' );
         }
 

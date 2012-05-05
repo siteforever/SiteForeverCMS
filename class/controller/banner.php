@@ -66,6 +66,7 @@ class Controller_Banner extends Sfcms_Controller
      */
     public function redirectBannerAction()
     {
+        /** @var $model Model_Banner */
         $model = $this->getModel( 'Banner' );
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT, null );
         $id_nt = $this->request->get( 'id' );

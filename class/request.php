@@ -107,12 +107,11 @@ class Request
         $this->request[ 'template' ] = 'index';
 
         $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/reset.css' );
-        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/lightbox/css/jquery.lightbox-0.5.css' );
+        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
         $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/siteforever.css' );
 
-//        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery-1.6.4.js' );
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery-1.7.2.min.js' );
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/lightbox/jquery.lightbox-0.5.js' );
+        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery/jquery-1.7.2'.(DEBUG?'':'.min').'.js' );
+        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery/lightbox/jquery.lightbox-0.5.js' );
         $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/siteforever.js' );
     }
 

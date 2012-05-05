@@ -12,12 +12,12 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
     public function view( $result )
     {
         // подключение админских стилей и скриптов
-        $this->getRequest()->addStyle( $this->getMisc() . '/smoothness/jquery-ui.css' );
+        $this->getRequest()->addStyle( $this->getMisc() . '/jquery/smoothness/jquery-ui.css' );
         $this->getRequest()->addStyle( $this->getMisc() . '/admin/admin.css' );
         // jQuery
-        $this->getRequest()->addScript( $this->getMisc() . '/jquery-ui-1.8.18.custom.min.js' );
-        $this->getRequest()->addScript( $this->getMisc() . '/jquery.form.js' );
-        $this->getRequest()->addScript( $this->getMisc() . '/jquery.blockUI.js' );
+        $this->getRequest()->addScript( $this->getMisc() . '/jquery/jquery-ui-1.8.18.custom.min.js' );
+        $this->getRequest()->addScript( $this->getMisc() . '/jquery/jquery.form.js' );
+        $this->getRequest()->addScript( $this->getMisc() . '/jquery/jquery.blockUI.js' );
 
         switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
             case 'tinymce':

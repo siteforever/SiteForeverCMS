@@ -5,7 +5,8 @@
  * @link http://ermin.ru
  */
 
-var siteforever = {};
+var siteforever = {},
+    sf = siteforever;
 
 /**
  * Логер

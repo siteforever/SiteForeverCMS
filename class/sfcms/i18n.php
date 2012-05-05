@@ -61,8 +61,9 @@ class Sfcms_i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
-        $dict_file   = SF_PATH. DIRECTORY_SEPARATOR . 'protected' . DIRECTORY_SEPARATOR . 'lang'
-            . DIRECTORY_SEPARATOR . $this->_lang . '.php';
+        $dict_file   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
+                                . DIRECTORY_SEPARATOR . 'lang'
+                                . DIRECTORY_SEPARATOR . $this->_lang . '.php';
         if( ! file_exists( $dict_file ) ) {
             throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dict_file );
         }
