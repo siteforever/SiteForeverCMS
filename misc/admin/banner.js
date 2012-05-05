@@ -53,8 +53,10 @@ $(function(){
             event.stopPropagation();
             var href = $(this).attr('href');
             var title = $(this).attr('title');
+            $.showBlock("Загрузка данных");
             $.get( href, 'html' ).then(
                 $.proxy(function ( response ) {
+                    $.hideBlock();
                     dialogForm.html( response ).dialog( 'option', 'title', title );
                     dialogForm.dialog( 'open' );
                 }, this),
