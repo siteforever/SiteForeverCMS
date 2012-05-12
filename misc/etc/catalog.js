@@ -9,9 +9,9 @@ $(function(){
     /*
      * Управляет галереей картинок в товаре каталога
      */
-    $('ul.b-product-gallery a:has(img)').lightBox();
-    $('div.b-product-image a').lightBox();
-    $('a.gallery').lightBox();
+    $('ul.b-product-gallery a:has(img)').gallery();
+    $('div.b-product-image a').gallery();
+    $('a.gallery').gallery();
 
 
     // Управление сортировкой каталога

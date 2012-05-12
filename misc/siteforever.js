@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
 
-var siteforever = {},
+var siteforever = function(){},
     sf = siteforever;
 
 /**
@@ -95,8 +95,11 @@ siteforever.alert.close = function()
     $('#siteforever_alert').hide();
 }
 
-
-
+jQuery.fn.gallery = function() {
+    $(this).each(function(){
+        $(this).fancybox();
+    });
+}
 
 $(function(){
     if ( $('.siteforever_captcha_reload').length > 0 ) {
