@@ -97,7 +97,7 @@ siteforever.alert.close = function()
 
 jQuery.fn.gallery = function() {
     $(this).each(function(){
-        $(this).fancybox();
+        $(this).fancybox({titlePosition:'inside'});
     });
 }
 
