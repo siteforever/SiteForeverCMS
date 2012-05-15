@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 header("content-type: text/html; charset=cp866");
-
+require_once 'class/sfcms/installer.php';
 
 error_reporting( 0 );
 define('DS', DIRECTORY_SEPARATOR);
@@ -35,6 +35,8 @@ if ( ! $dest || ! $name ) {
     die();
 }
 
+$installer = new Sfcms_Installer();
+
 $location .= $dest;
 
 $src = __DIR__;
@@ -48,33 +50,33 @@ print 'Destenation path: '.$location."<br>\n";
 //    if ( file_exists( $location ) ) {
 //        unlink( $location );
 //    }
-@mkdir( $location, 0755, true );
+$installer->mkdir( $location, 0755, true );
 
 //system("mkdir $location");
 
 
-symlink( $src.DS.'misc', $location.DS.'misc' );
+$installer->symlink( $src.DS.'misc', $location.DS.'misc' );
 //    system("mklink /D {$location}\\misc {$src}\\misc");
 print "<br>\n";
 //    system("mklink /D {$location}\\images {$src}\\images");
-symlink( $src.DS.'images', $location.DS.'images' );
+$installer->symlink( $src.DS.'images', $location.DS.'images' );
 print "<br>\n";
 
-copy( $src.DS.'modules.php', $location.DS.'modules.php' );
-copy( $src.DS.'index.php', $location.DS.'index.php' );
+$installer->copy( $src.DS.'modules.php', $location.DS.'modules.php' );
+$installer->copy( $src.DS.'index.php', $location.DS.'index.php' );
 
-copy( $src.DS.'.htaccess', $location.DS.'.htaccess' );
+$installer->copy( $src.DS.'.htaccess', $location.DS.'.htaccess' );
 
-mkdir($location.DS.'files', 0777, true);
-mkdir($location.DS.'themes'.DS.$name, 0777, true);
-mkdir($location.DS.'themes'.DS.$name.DS.'css', 0777, true);
-copy( $src.DS.'themes'.DS.'basic'.DS.'css'.DS.'style.css', $location.DS.'themes'.DS.$name.DS.'css'.DS.'style.css' );
-mkdir($location.DS.'themes'.DS.$name.DS.'js', 0777, true);
-copy( $src.DS.'themes'.DS.'basic'.DS.'js'.DS.'script.js', $location.DS.'themes'.DS.$name.DS.'js'.DS.'script.js' );
-mkdir($location.DS.'themes'.DS.$name.DS.'images', 0777, true);
-mkdir($location.DS.'themes'.DS.$name.DS.'templates', 0777, true);
-copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'index.tpl', $location.DS.'themes'.DS.$name.DS.'templates'.DS.'index.tpl' );
-copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'inner.tpl', $location.DS.'themes'.DS.$name.DS.'templates'.DS.'inner.tpl' );
+$installer->mkdir($location.DS.'files', 0777, true);
+$installer->mkdir($location.DS.'themes'.DS.$name, 0777, true);
+$installer->mkdir($location.DS.'themes'.DS.$name.DS.'css', 0777, true);
+$installer->copy( $src.DS.'themes'.DS.'basic'.DS.'css'.DS.'style.css', $location.DS.'themes'.DS.$name.DS.'css'.DS.'style.css' );
+$installer->mkdir($location.DS.'themes'.DS.$name.DS.'js', 0777, true);
+$installer->copy( $src.DS.'themes'.DS.'basic'.DS.'js'.DS.'script.js', $location.DS.'themes'.DS.$name.DS.'js'.DS.'script.js' );
+$installer->mkdir($location.DS.'themes'.DS.$name.DS.'images', 0777, true);
+$installer->mkdir($location.DS.'themes'.DS.$name.DS.'templates', 0777, true);
+$installer->copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'index.tpl', $location.DS.'themes'.DS.$name.DS.'templates'.DS.'index.tpl' );
+$installer->copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'inner.tpl', $location.DS.'themes'.DS.$name.DS.'templates'.DS.'inner.tpl' );
 //    system("mkdir {$location}\\files");
 //    system("mkdir {$location}\\themes");
 //    system("xcopy themes {$location}\\themes /S/E/Y");
@@ -82,12 +84,12 @@ copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'inner.tpl', $location.DS.'t
 //system("mkdir {$location}\\protected\\_runtime");
 
 //    mkdir("{$location}\\protected\\_runtime\\_cache", 0777, true);
-mkdir($location.DS."protected".DS."_runtime".DS."_templates_c", 0777, true);
-mkdir($location.DS."protected".DS."config", 0777, true);
+$installer->mkdir($location.DS."protected".DS."_runtime".DS."_templates_c", 0777, true);
+$installer->mkdir($location.DS."protected".DS."config", 0777, true);
 
 //    system("mkdir {$location}\\protected\\_runtime\\_cache");
 //    system("mkdir {$location}\\protected\\_runtime\\_templates_c");
 //    system("mkdir {$location}\\protected\\config");
 //    system("mklink /D {$location}\\protected\\lang {$src}\\protected\\lang");
 
-copy( $src.DS.'protected'.DS.'config'.DS.'main.php', $location.DS.'protected'.DS.'config'.DS.$name.'.php' );
+$installer->copy( $src.DS.'protected'.DS.'config'.DS.'main.php', $location.DS.'protected'.DS.'config'.DS.$name.'.php' );

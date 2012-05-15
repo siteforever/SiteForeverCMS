@@ -31,7 +31,7 @@ class Sfcms_Config
             $this->config = require $cfg_file;
             return;
         }
-        throw new Application_Exception('SysConfig not found');
+        throw new Application_Exception('Configuration file "'.$cfg_file.'" not found');
     }
 
     /**

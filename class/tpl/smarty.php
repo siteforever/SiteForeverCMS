@@ -42,7 +42,7 @@ class TPL_Smarty extends TPL_Driver
      * @param String $tpl
      * @return string
      */
-    function convertTpl( $tpl )
+    function convertTplName( $tpl )
     {
         // Если у шаблона не указан ресурс, то выбираем между темой и системой
         if ( ! preg_match('/(\w+):(.*)/', $tpl, $m) ) {
@@ -53,7 +53,7 @@ class TPL_Smarty extends TPL_Driver
                 $tpl    = 'system:'.$tpl;
             }
             else {
-                die('Шаблон '.$tpl.' не найден');
+                throw new Exception('Шаблон '.$tpl.' не найден');
             }
         }
         return $tpl;
@@ -69,25 +69,28 @@ class TPL_Smarty extends TPL_Driver
         $start  = microtime(1);
         $tpl = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
         $tpl = str_replace('.', '/', $tpl).'.'.$this->ext;
-        $tpl = $this->convertTpl($tpl);
+        $tpl = $this->convertTplName($tpl);
 
         $this->engine->display( $tpl, $cache_id );
-//        print "Genegated: ".round( microtime(1) - $start, 3 );
+        App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Display tpl');
+        //        print "Genegated: ".round( microtime(1) - $start, 3 );
     }
 
     /**
      * Получить HTML шаблона
      * @param string $tpl
      * @param int $cache_id
+     * @return string
      */
     function fetch( $tpl, $cache_id = null )
     {
-//        $start  = microtime(1);
+        $start  = microtime(1);
         $tpl    = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
         $tpl    = str_replace('.', '/', $tpl).'.'.$this->ext;
-        $tpl    = $this->convertTpl($tpl);
+        $tpl    = $this->convertTplName($tpl);
 
         $result = $this->engine->fetch( $tpl, $cache_id );
+        App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
 //        print "Genegated: ".round( microtime(1) - $start, 3 );
         return $result;
     }

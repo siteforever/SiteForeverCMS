@@ -33,7 +33,12 @@ class Tpl_Factory
         if ( class_exists( $driver ) ) {
             $obj = new $driver();
             //Register::setTpl( $obj );
-            $obj->setTplDir(ROOT."/themes/{$theme}/templates");
+            $themeCat = ROOT."/themes/{$theme}/templates";
+            if ( is_dir( $themeCat ) ) {
+                $obj->setTplDir( $themeCat );
+            } else {
+                throw new Exception( 'Theme "'.$theme.'" not found' );
+            }
             $runtime    = ROOT."/protected/_runtime";
             $tpl_c  = $runtime."/_templates_c";
             $cache  = $runtime."/_cache";

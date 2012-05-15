@@ -282,7 +282,7 @@ abstract class Application_Abstract
     }
 
     /**
-     * @return Logger_Interface
+     * @return std_logger
      */
     public function getLogger()
     {

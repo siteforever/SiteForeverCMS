@@ -1,4 +1,5 @@
 <?php
+require_once 'functions.php';
 require_once 'application/abstract.php';
 
 /**
@@ -80,59 +81,14 @@ class App extends Application_Abstract
             }
         }
 
-
-        require_once 'functions.php';
-
         if( ! defined( 'MAX_FILE_SIZE' ) ) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
 
-        $this->installationStatic();
+        $installer = new Sfcms_Installer();
+        $installer->installationStatic();
     }
 
-
-    /**
-     * Инсталлирует каталоги со статикой, если еще не инсталлированы
-     */
-    private function installationStatic()
-    {
-        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'images' ) ) {
-            $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'images', ROOT . DIRECTORY_SEPARATOR . 'images' );
-            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR . 'images');
-        }
-        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR . 'misc' ) ) {
-            $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'misc', ROOT . DIRECTORY_SEPARATOR . 'misc' );
-            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR . 'misc');
-        }
-        if( ! is_dir( ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' ) ) {
-            $this->copyDir( SF_PATH . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'sxd',
-                ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' );
-            $this->getLogger()->log('Created ' . ROOT . DIRECTORY_SEPARATOR. '_runtime' . DIRECTORY_SEPARATOR . 'sxd' );
-        }
-    }
-
-    /**
-     * Создание рекурсивной копии каталога
-     * @param $from
-     * @param $to
-     *
-     * @return void
-     */
-    private function copyDir( $from, $to )
-    {
-        if( ! is_dir( $to ) ) {
-            @mkdir( $to, 0755, 1 );
-        }
-        $files = glob( $from . DIRECTORY_SEPARATOR . '*' );
-        foreach( $files as $file ) {
-            if( is_dir( $file ) ) {
-                $this->copyDir( $file, $to . DIRECTORY_SEPARATOR . basename( $file ) );
-            }
-            elseif( is_file( $file ) ) {
-                @copy( $file, $to . DIRECTORY_SEPARATOR . basename( $file ) );
-            }
-        }
-    }
 
     /**
      * Обработка запросов
