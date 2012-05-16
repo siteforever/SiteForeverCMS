@@ -144,7 +144,7 @@ class Controller_Page extends Sfcms_Controller
 
     /**
      * Добавления
-     * @return void
+     * @return mixed
      */
     public function addAction()
     {
@@ -172,18 +172,21 @@ class Controller_Page extends Sfcms_Controller
 
         $form = $model->getForm();
 
-        $form->parent   = $parent_id;
-        $form->template = 'inner';
+        $form->setData(
+            array(
+                'parent'    => $parent_id,
+                'template'    => 'inner',
+                'author'    => '1',
+                'content'   => t( 'Home page for the filling' ),
+                'date'      => time(),
+                'update'    => time(),
+                'pos'       => $model->getNextPos( $parent_id ),
+            )
+        );
 
         if (isset( $parent[ 'alias' ] )) {
-            $form->alias = $parent[ 'alias' ];
+            $form->alias = trim( $parent[ 'alias' ], ' /' );
         }
-
-        $form->author  = '1';
-        $form->content = t( 'Home page for the filling' );
-
-        $form->date   = time();
-        $form->update = time();
 
         if (isset( $parent[ 'controller' ] )) {
             $form->controller = $parent[ 'controller' ];
@@ -193,15 +196,13 @@ class Controller_Page extends Sfcms_Controller
             $form->action = $parent[ 'action' ];
         }
 
-        $form->pos = $model->getNextPos( $parent_id );
-
         if (isset( $parent[ 'sort' ] )) {
             $form->sort = $parent[ 'sort' ];
         }
 
         $this->request->setTitle( 'Добавить страницу' );
-        $this->tpl->form = $form;
-        $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
+        $this->tpl->assign('form', $form);
+        return $this->tpl->fetch( 'system:page.edit' );
     }
 
     /**

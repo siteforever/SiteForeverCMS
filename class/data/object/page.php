@@ -20,9 +20,6 @@ class Data_Object_Page extends Data_Base_Page
      */
     public function getAlias()
     {
-//        if ( ! $this->getId() ) {
-//            return null;
-//        }
         $result = '';
         if ( $this->data['alias'] ) {
             $result = $this->data['alias'];
@@ -31,7 +28,7 @@ class Data_Object_Page extends Data_Base_Page
             $this->data['alias']    = $result;
         }
 
-        return $result;
+        return trim( $result, '/ ' );
     }
 
     /**

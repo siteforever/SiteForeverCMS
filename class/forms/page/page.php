@@ -95,7 +95,8 @@ class Forms_Page_Page extends Form_Form
                     'notice'     => array(
                         'type' => 'textarea',
                         'label'=> 'Вступление',
-                        'value'=> '', 'hidden'
+                        'value'=> '',
+//                        'hidden'
                     ),
                     'content'    => array(
                         'type' => 'textarea',
