@@ -34,8 +34,10 @@ class Controller_Page extends Sfcms_Controller
             return;
         }
 
+        $this->app()->getLogger()->log( $this->page, 'page' );
+
         // создаем замыкание страниц
-        while ( $this->page[ 'link' ] != 0 )
+        while ( $this->page[ 'link' ] )
         {
             $page = $page_model->find( $this->page[ 'link' ] );
 

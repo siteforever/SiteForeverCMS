@@ -1,1 +1,3 @@
+{$request->getContent()}
+
 {$form->html()}
