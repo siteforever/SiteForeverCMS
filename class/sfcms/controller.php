@@ -268,21 +268,10 @@ abstract class Sfcms_Controller
     {
         Data_Watcher::instance()->performOperations();
         if( preg_match( '@^http@', $url ) ) {
-            if ( defined('TEST') && TEST ) {
-                print "Location: " . $url;
-                return;
-            } else {
-                header( "Location: " . $url );
-            }
+            $this->request->set('redirect', $url);
         } else {
-            if ( defined('TEST') && TEST ) {
-                print "Location: " . App::getInstance()->getRouter()->createLink( $url, $params );
-                return;
-            } else {
-                header( "Location: " . App::getInstance()->getRouter()->createLink( $url, $params ) );
-            }
+            $this->request->set('redirect', App::getInstance()->getRouter()->createLink( $url, $params ));
         }
-        die();
     }
 
     /**

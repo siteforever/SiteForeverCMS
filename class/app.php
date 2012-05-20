@@ -93,7 +93,7 @@ class App extends Application_Abstract
     /**
      * Обработка запросов
      * @static
-     * @return void
+     * @return mixed
      */
     protected function handleRequest()
     {
@@ -119,29 +119,37 @@ class App extends Application_Abstract
                 $result = $e->getMessage();
         }
 
+        // Выполнение операций по обработке объектов
+        Data_Watcher::instance()->performOperations();
+
+        // Redirect, if
+        if ( $this->getRequest()->get('redirect') ) {
+            if ( defined('TEST') && TEST ) {
+                print 'location: '.$this->getRequest()->get('redirect');
+            } else {
+                header('location: '.$this->getRequest()->get('redirect'));
+            }
+            return;
+        }
 
         $result = $this->prepareResult( $result );
 
-        if ( CACHE && $this->getRequest()->getContent() ) {
+        if ( $this->getRequest()->getContent() && CACHE ) {
             $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
             $this->getCacheManager()->save();
         }
-
-
-        self::$controller_time = microtime( 1 ) - self::$controller_time;
-        $this->invokeView( $result );
-
-        // Выполнение операций по обработке объектов
-        Data_Watcher::instance()->performOperations();
 
         // Заголовок по-умолчанию
         if( '' == $this->getRequest()->getTitle() ) {
             $this->getRequest()->setTitle( $this->getRequest()->get( 'tpldata.page.name' ) );
         }
+
+        self::$controller_time = microtime( 1 ) - self::$controller_time;
+        $this->invokeView( $result );
     }
 
     /**
-     * Обработает и подготовитрезультат
+     * Обработает и подготовит результат
      * @param $result
      * @return string
      */

@@ -188,6 +188,7 @@ class Controller_Users extends Sfcms_Controller
     {
         $this->app()->getAuth()->logout();
         $this->redirect('users/login');
+        return true;
     }
 
     /**
