@@ -18,36 +18,13 @@ class App extends Application_Abstract
      */
     public function run()
     {
-        ob_start();
         self::$start_time = microtime( true );
-
         $this->init();
-
-        $this->handleRequest();
-
-        // todo
-        // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
-        // Fatal error: Exception thrown without a stack frame in Unknown on line 0
-        if( DEBUG ) {
-            if( $this->getConfig()->get( 'db.debug' ) ) {
-                Sfcms_Model::getDB()->saveLog();
-            }
-
-            $this->getLogger()->log(
-                "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
-                . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
-            );
-            $this->getLogger()->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
-            $exec_time = microtime( true ) - self::$start_time;
-            $this->getLogger()->log(
-                "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
-            );
-            $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage() / 1024, 3 ) . " kb.", 'app' );
-        }
-        ob_end_flush();
+        $result = $this->handleRequest();
+        $this->flushDebug();
+        print $result;
     }
+
 
     /**
      * Инициализация
@@ -99,7 +76,7 @@ class App extends Application_Abstract
     {
         // запуск сессии
         session_start();
-
+        ob_start();
         $result = '';
 
         // маршрутизатор
@@ -122,10 +99,10 @@ class App extends Application_Abstract
         // Выполнение операций по обработке объектов
         Data_Watcher::instance()->performOperations();
 
-        // Redirect, if
+        // Redirect
         if ( $this->getRequest()->get('redirect') ) {
             if ( defined('TEST') && TEST ) {
-                print 'location: '.$this->getRequest()->get('redirect');
+                return 'location: '.$this->getRequest()->get('redirect');
             } else {
                 header('location: '.$this->getRequest()->get('redirect'));
             }
@@ -145,7 +122,8 @@ class App extends Application_Abstract
         }
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
-        $this->invokeView( $result );
+        ob_end_clean();
+        return $this->invokeView( $result );
     }
 
     /**
@@ -189,12 +167,42 @@ class App extends Application_Abstract
     {
         if( ! $this->getRequest()->getAjax() ) {
             $Layout = new Sfcms_View_Layout( $this );
-        }
-        else {
+        } else {
             $Layout = new Sfcms_View_Xhr( $this );
         }
-        print $Layout->view( $result );
+        return $Layout->view( $result );
     }
+
+
+    /**
+     * Flushing debug info
+     */
+    protected function flushDebug()
+    {
+        // todo
+        // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
+        // Fatal error: Exception thrown without a stack frame in Unknown on line 0
+
+        if ( DEBUG ) {
+            if ( $this->getConfig()->get( 'db.debug' ) ) {
+                Sfcms_Model::getDB()->saveLog();
+            }
+
+            $this->getLogger()->log(
+                "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
+                    . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'
+            );
+            $this->getLogger()->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
+            $exec_time = microtime( true ) - self::$start_time;
+            $this->getLogger()->log(
+                "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
+            );
+            $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage() / 1024, 3 ) . " kb.", 'app' );
+        }
+    }
+
 
     /**
      * @static
