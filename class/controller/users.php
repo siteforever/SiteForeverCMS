@@ -187,8 +187,7 @@ class Controller_Users extends Sfcms_Controller
     public function logoutAction()
     {
         $this->app()->getAuth()->logout();
-        $this->redirect('users/login');
-        return true;
+        return $this->redirect('users/login');
     }
 
     /**
@@ -214,7 +213,7 @@ class Controller_Users extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 if ( $auth->login( $form->getField('login')->getValue(), $form->getField('password')->getValue() ) ) {
-                    $this->redirect($_SERVER['HTTP_REFERER']);
+                    return $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
                     $this->request->addFeedback( $auth->getMessage() );
                 }

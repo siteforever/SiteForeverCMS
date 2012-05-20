@@ -345,7 +345,7 @@ class Controller_Gallery extends Sfcms_Controller
         if( $id ) {
             $model->remove( $id );
         }
-        $this->redirect( 'admin/gallery' );
+        return $this->redirect( 'admin/gallery' );
     }
 
     /**

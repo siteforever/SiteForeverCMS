@@ -123,7 +123,7 @@ class Controller_Page extends Sfcms_Controller
 
         if ($do && $part) {
             $model->switching( $do, $part );
-            $this->redirect( 'admin' );
+            return $this->redirect( 'admin' );
         }
 
         $model->createTree();

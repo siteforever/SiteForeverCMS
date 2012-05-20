@@ -12,7 +12,7 @@ class Controller_Basket extends Sfcms_Controller
     {
         // создать заказ
         if ( $this->request->get('do_order') ) {
-            $this->redirect("order/create");
+            return $this->redirect("order/create");
         }
 
         $cat    = $this->getModel('Catalog');

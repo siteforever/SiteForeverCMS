@@ -43,7 +43,7 @@ class Controller_CatGallery extends Sfcms_Controller
         //        if ( $upload )
         //        {
         //            return;
-        //            //$this->redirect('admin/catalog', array('edit'=>$upload));
+        //            //return $this->redirect('admin/catalog', array('edit'=>$upload));
         //        }
 
         //        $cat = $this->request->get('cat', FILTER_SANITIZE_NUMBER_INT);
@@ -85,7 +85,7 @@ class Controller_CatGallery extends Sfcms_Controller
         if( $cat_id ) {
             $this->request->setContent( $this->getAdminPanel( $cat_id ) );
         }
-        //$this->redirect('admin/catalog', array('edit'=>$cat));
+        //return $this->redirect('admin/catalog', array('edit'=>$cat));
 
     }
 
@@ -116,7 +116,7 @@ class Controller_CatGallery extends Sfcms_Controller
         if( $cat_id ) {
             $this->request->setContent( $this->getAdminPanel( $cat_id ) );
         }
-        //$this->redirect('admin/catalog', array('edit'=>$cat));
+        //return $this->redirect('admin/catalog', array('edit'=>$cat));
     }
 
     /**

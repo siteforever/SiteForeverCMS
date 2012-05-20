@@ -71,7 +71,7 @@ class Controller_Banner extends Sfcms_Controller
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT, null );
         $id_nt = $this->request->get( 'id' );
         if (( $id_nt !== null && $id === null ) || ( !is_numeric( $id_nt ) && $id_nt !== null )) {
-            $this->redirect( '/error' );
+            return $this->redirect( '/error' );
         }
         $obj                  = $model->find( $id );
         $obj[ 'count_click' ] = $obj[ 'count_click' ] + 1;
@@ -133,7 +133,7 @@ class Controller_Banner extends Sfcms_Controller
         if ($id) {
             $model->remove( $id );
         }
-        $this->redirect( 'banner/admin' );
+        return $this->redirect( 'banner/admin' );
     }
 
     /**
@@ -153,7 +153,7 @@ class Controller_Banner extends Sfcms_Controller
             else {
                 $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
-            $this->redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
+            return $this->redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
         }
     }
 
@@ -189,8 +189,7 @@ class Controller_Banner extends Sfcms_Controller
             );
         }
         else {
-            $this->redirect( 'banner/admin' );
-            return true;
+            return $this->redirect( 'banner/admin' );
         }
     }
 

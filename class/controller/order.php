@@ -18,7 +18,7 @@ class Controller_Order extends Sfcms_Controller
         $order  = $this->getModel('Order');
 
         if ( ! $user->getId() || $user->perm == USER_GUEST ) {
-            $this->redirect("users/login");
+            return $this->redirect("users/login");
         }
 
         if ( $cancel = $this->request->get('cancel') )
@@ -133,7 +133,7 @@ class Controller_Order extends Sfcms_Controller
             $order_model    = $this->getModel('Order');
             $order_model->createOrder( $all_product );
             $this->basket->clear();
-            $this->redirect('order');
+            return $this->redirect('order');
         }
 
 

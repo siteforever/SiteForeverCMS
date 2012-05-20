@@ -235,7 +235,7 @@ class Controller_Catalog extends Sfcms_Controller
         }
         //        var_dump($item->getAttributes());
         //        $this->adminAction();
-        $this->redirect( 'catalog/admin', array( 'part'=> $item->parent ) );
+        return $this->redirect( 'catalog/admin', array( 'part'=> $item->parent ) );
     }
 
 
@@ -441,7 +441,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         // Если смотрим список в товаре, то переместить на редактирование
         if( $parent->getId() && ! $parent->cat ) {
-            $this->redirect( '', array( 'edit'=> $parent->getId() ) );
+            return $this->redirect( '', array( 'edit'=> $parent->getId() ) );
         }
 
         $crit = array();

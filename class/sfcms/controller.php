@@ -272,6 +272,7 @@ abstract class Sfcms_Controller
         } else {
             $this->request->set('redirect', App::getInstance()->getRouter()->createLink( $url, $params ));
         }
+        return true;
     }
 
     /**
