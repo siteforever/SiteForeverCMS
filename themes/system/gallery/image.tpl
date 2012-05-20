@@ -1,4 +1,4 @@
-<style>
+<style type="text/css">
     .sf_gallery_panel {
         margin-bottom: 10px;
     }
@@ -11,11 +11,9 @@
 </style>
 
 <div class="sf_gallery_panel">
-    {if $pred}<div class="sf_gallery_pred"><a href="/{$pred->getAddr()}">&laquo; Пред.</a></div>{/if}
-    {if $next}<div class="sf_gallery_next"><a href="/{$next->getAddr()}">След. &raquo;</a></div>{/if}
-    <div class="clear"></div>
+    <div class="sf_gallery_pred">{if $pred}<a href="/{$pred->getAddr()}">&laquo; Пред.</a>{else}&nbsp;{/if}</div>
+    <div class="sf_gallery_next">{if $next}<a href="/{$next->getAddr()}">След. &raquo;</a>{else}&nbsp;{/if}</div>
 </div>
-
 
 <table>
     <tr>
@@ -30,4 +28,4 @@
     </tr>
 </table>
 
-
+<div class="clear"></div>
