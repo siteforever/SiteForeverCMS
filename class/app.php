@@ -109,6 +109,13 @@ class App extends Application_Abstract
             return;
         }
 
+        // If result is image. Need for captcha
+        if ( is_resource( $result ) && imageistruecolor( $result ) ) {
+            header('Content-type: image/png');
+            imagepng( $result );
+            return;
+        }
+
         $result = $this->prepareResult( $result );
 
         if ( $this->getRequest()->getContent() && CACHE ) {

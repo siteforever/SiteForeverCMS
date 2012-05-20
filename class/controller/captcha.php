@@ -8,6 +8,9 @@
  
 class Controller_Captcha extends Sfcms_Controller
 {
+    /**
+     * Init default config
+     */
     function init()
     {
         $this->config->setDefault('captcha', array(
@@ -20,6 +23,11 @@ class Controller_Captcha extends Sfcms_Controller
          ));
     }
 
+
+    /**
+     * Index action
+     * @return mixed
+     */
     function indexAction()
     {
         $h  = $this->config->get('captcha.height');
@@ -47,10 +55,6 @@ class Controller_Captcha extends Sfcms_Controller
                           $this->config->get('captcha.font'),
                           $text{$i} );
         }
-
-        header('Content-type: image/png');
-        imagepng( $img );
-        imagedestroy( $img );
-        die();
+        return $img;
     }
 }
