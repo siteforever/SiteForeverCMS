@@ -12,7 +12,7 @@ class Model_News extends Sfcms_Model
     private $form = null;
 
     /**
-     * @var model_NewsCategory
+     * @var Model_NewsCategory
      */
     public $category;
 

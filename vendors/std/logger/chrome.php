@@ -1,4 +1,4 @@
- <?php
+<?php
 /**
  * Логгер ChromePHP
  * @author Nikolay Ermin <nikolay@ermin.ru>

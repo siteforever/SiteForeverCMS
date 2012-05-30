@@ -6,17 +6,18 @@
  * @link http://siteforever.ru
  */
  
-class model_NewsCategory extends Sfcms_Model
+class Model_NewsCategory extends Sfcms_Model
 {
+    /** @var Forms_News_Category */
     private $form = null;
 
     /**
-     * @return form_Form
+     * @return Forms_News_Category
      */
     function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new forms_news_Category();
+            $this->form = new Forms_News_Category();
         }
         return $this->form;
     }

@@ -35,7 +35,7 @@ class App extends Application_Abstract
     {
         define('DEBUG', $this->getConfig()->get( 'debug.profiler' ));
 
-        if( $this->getConfig()->get( 'db.debug' ) ) {
+        if( DEBUG ) {
             std_error::init( $this->getLogger() );
         }
 
@@ -62,8 +62,8 @@ class App extends Application_Abstract
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
 
-        $installer = new Sfcms_Installer();
-        $installer->installationStatic();
+//        $installer = new Sfcms_Installer();
+//        $installer->installationStatic();
     }
 
 
@@ -77,6 +77,7 @@ class App extends Application_Abstract
         // запуск сессии
         session_start();
         ob_start();
+
         $result = '';
 
         // маршрутизатор
@@ -194,7 +195,6 @@ class App extends Application_Abstract
             if ( $this->getConfig()->get( 'db.debug' ) ) {
                 Sfcms_Model::getDB()->saveLog();
             }
-
             $this->getLogger()->log(
                 "Total SQL: " . count( Sfcms_Model::getDB()->getLog() )
                     . "; time: " . round( Sfcms_Model::getDB()->time, 3 ) . " sec.", 'app'

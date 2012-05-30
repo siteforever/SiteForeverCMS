@@ -28,6 +28,7 @@ class Controller_Page extends Sfcms_Controller
      */
     public function indexAction()
     {
+        /** @var $page_model Model_Page */
         $page_model = $this->getModel( 'Page' );
         if (!$this->user->hasPermission( $this->page[ 'protected' ] )) {
             $this->request->setContent( t( 'Access denied' ) );
@@ -37,8 +38,7 @@ class Controller_Page extends Sfcms_Controller
         $this->app()->getLogger()->log( $this->page, 'page' );
 
         // создаем замыкание страниц
-        while ( $this->page[ 'link' ] )
-        {
+        while ( $this->page[ 'link' ] ) {
             $page = $page_model->find( $this->page[ 'link' ] );
 
             if (!$this->user->hasPermission( $page[ 'protected' ] )) {
