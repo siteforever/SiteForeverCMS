@@ -185,10 +185,10 @@ abstract class Sfcms_Model
     final public function createObject( $data = array() )
     {
         $start = microtime( 1 );
-        if( isset( $data[ 'id' ] ) ) {
+        // TODO Если создаем существующий объект, то св-ва не перезаписываем
+        if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
             if( $obj ) {
-                $obj->setAttributes( $data );
                 return $obj;
             }
         }
@@ -535,17 +535,11 @@ abstract class Sfcms_Model
         if( ! $this->onSaveStart( $obj ) ) {
             return false;
         }
-        $data = $obj->getAttributes();
-
-        DEBUG && $this->app()->getLogger()->log( get_class($obj) );
-
-        $fields = $this->table->getFields();
-
+        $data      = $obj->getAttributes();
+        $fields    = $this->table->getFields();
         $save_data = array();
 
-        /**
-         * @var Data_Field $field
-         */
+        /** @var Data_Field $field */
         foreach( $fields as $field ) {
             if( isset( $data[ $field->getName() ] ) ) {
                 $save_data[ $field->getName() ] = $data[ $field->getName() ];
@@ -556,13 +550,11 @@ abstract class Sfcms_Model
         if( null !== $obj->getId() ) {
             $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = ' . $obj->getId() );
             $obj->markClean();
-        }
-        else {
+        } else {
             $ret     = $this->db->insert( $this->getTableName(), $save_data );
             $obj->set('id', $ret);
             $this->addToMap( $obj );
         }
-        //        var_dump($ret);
         if( null !== $ret ) {
             $this->onSaveSuccess( $obj );
         }

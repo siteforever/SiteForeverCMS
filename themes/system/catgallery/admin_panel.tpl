@@ -7,7 +7,8 @@
         <div>
             <img width="100" height="100" src="{$item.thumb}" alt="{$item.id}" title="{$item.image}" />
             <div>
-                <a {href controller="catgallery" action="markdefault" id=$item.id} class="main_gallery_image">{icon name="star" title="По умолчанию"}</a>
+                <a {href controller="catgallery" action="markdefault" id=$item.id} class="main_gallery_image">
+                    {if $item.main}{icon name="star" title="По умолчанию"}{else}{icon name="bullet_star" title="По умолчанию"}{/if}</a>
                 <a {href controller="catgallery" action="delete" id=$item.id} class="del_gallery_image">{icon name="delete" title="Удалить"}</a>
             </div>
         </div>

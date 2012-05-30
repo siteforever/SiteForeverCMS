@@ -1,6 +1,6 @@
 <?php
 /**
- * Объект галереи каталога
+ * Cataloge gallery object
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
@@ -9,6 +9,7 @@
  * @property $cat_id
  * @property $middle
  * @property $thumb
+ * @property $main
  */
 class Data_Object_CatGallery extends Data_Object
 {

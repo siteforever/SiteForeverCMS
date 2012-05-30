@@ -21,12 +21,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     protected $table  = null;
 
     /**
-     * Поля таблицы
-     * @var array
-     */
-    protected $field_names   = array();
-
-    /**
      * @param Sfcms_Model $model
      * @param array $data
      */
@@ -34,13 +28,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
-
-//        foreach ( $this->table->getFields() as $field ) {
-//            $this->field_names[ $field->getName() ]    = $field;
-//        }
-//        foreach ( $data as $key => $value ) {
-//            $this->data[$key]    = $value;
-//        }
 
         $this->setAttributes( $data );
 
@@ -54,7 +41,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $name
      * @return array|Data_Object|mixed|null
      */
-    function __get($name)
+    public function __get($name)
     {
         return $this->get( $name );
     }
@@ -63,7 +50,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $key
      * @return array|Data_Object|mixed|null
      */
-    function get( $key )
+    public function get( $key )
     {
         $relation = $this->model->relation();
         if ( isset( $relation[ $key ] ) ) {
@@ -83,7 +70,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $value
      * @return void
      */
-    function __set($name, $value)
+    public function __set($name, $value)
     {
         $this->set( $name, $value );
     }
@@ -93,22 +80,16 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $value
      * @return Data_Object
      */
-    function set( $key, $value )
+    public function set( $key, $value )
     {
         if ( method_exists( $this, 'set'.$key ) && 'id' != $key ) {
             $method = 'set'.$key;
             $this->$method( $value );
-        } elseif ( isset( $this->field_names[ $key ] ) ) {
-            if ( $this->field_names[ $key ]->validate( $value ) !== false ) {
-                if ( ( $this->offsetExists( $key ) && $this->data[ $key ] !== $value ) ||
-                     ! $this->offsetExists( $key )
-                ) {
-                    $this->data[ $key ]  = $value;
-                    $this->markDirty();
-                }
-            }
         } else {
-            $this->data[$key]    = $value;
+            if ( ! isset( $this->data[$key] ) || ( isset( $this->data[$key] ) && $this->data[$key] != $value ) ) {
+                $this->markDirty();
+            }
+            $this->data[$key] = $value;
         }
         return $this;
     }
@@ -117,7 +98,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $name
      * @return bool
      */
-    function __isset($name)
+    public function __isset($name)
     {
         return $this->offsetExists( $name );
     }
@@ -126,7 +107,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param $name
      * @return void
      */
-    function __unset($name)
+    public function __unset($name)
     {
         unset( $this->data[$name] );
         $this->markDirty();
@@ -135,7 +116,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     /**
      * @return void
      */
-    function __clone()
+    public function __clone()
     {
         unset( $this->data['id'] );
         $this->markNew();
@@ -144,17 +125,19 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     /**
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return get_class( $this );
     }
 
     /**
      * Установить id
-     * @param  $id
-     * @return void
+     * @param $id
+     *
+     * @return mixed
+     * @throws Exception
      */
-    function setId( $id )
+    public function setId( $id )
     {
         if ( ! isset( $this->data['id'] ) && is_numeric( $id ) ) {
             $this->data['id']   = $id;
@@ -167,7 +150,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * Вернет id
      * @return int|null
      */
-    function getId()
+    public function getId()
     {
         if ( isset( $this->data['id'] ) && $this->data['id'] ) {
             return $this->data['id'];
@@ -228,7 +211,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * Как новый
      * @return void
      */
-    function markNew()
+    public function markNew()
     {
         Data_Watcher::addNew( $this );
     }
@@ -237,7 +220,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * Как удаленный
      * @return void
      */
-    function markDeleted()
+    public function markDeleted()
     {
         Data_Watcher::addDelete( $this );
     }
@@ -246,7 +229,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * На обновление
      * @return void
      */
-    function markDirty()
+    public function markDirty()
     {
         Data_Watcher::addDirty( $this );
     }
@@ -255,7 +238,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * Стереть везде
      * @return void
      */
-    function markClean()
+    public function markClean()
     {
         Data_Watcher::addClean( $this );
     }
@@ -306,7 +289,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * @param mixed $value <p>
      * The value to set.
      * </p>
-     * @return void
+     * @return Data_Object
      */
     public function offsetSet($offset, $value)
     {

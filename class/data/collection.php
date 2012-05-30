@@ -168,13 +168,13 @@ class Data_Collection implements Iterator
 
         if ( isset( $this->_raw[$num] ) ) {
             $this->_objects[$num] = $this->_mapper->createObject( $this->_raw[$num] );
-            return $this->_objects[$num];
         }
+        return $this->_objects[$num];
     }
 
 
     /**
-     * @return Domain_Object
+     * @return Data_Object
      */
     function rewind()
     {
@@ -183,7 +183,7 @@ class Data_Collection implements Iterator
     }
 
     /**
-     * @return Domain_Object
+     * @return Data_Object
      */
     function current()
     {
@@ -199,7 +199,7 @@ class Data_Collection implements Iterator
     }
 
     /**
-     * @return Domain_Object
+     * @return Data_Object
      */
     function next()
     {

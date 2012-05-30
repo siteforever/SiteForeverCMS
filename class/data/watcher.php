@@ -154,19 +154,18 @@ class Data_Watcher
 
     /**
      * Выполнение операций
-     * @return void
+     * @return bool
      */
     function performOperations()
     {
-        /**
-         * @var Data_Object $obj
-         */
+        /** @var Data_Object $obj */
         $pdo    = Sfcms_Model::getDB()->getResource();
         $pdo->beginTransaction();
+
         try {
             if ( is_array( $this->dirty ) ) {
                 foreach( $this->dirty as $key => $obj ) {
-                    DEBUG && App::getInstance()->getLogger()->log('Save '.$key);
+                    DEBUG && App::getInstance()->getLogger()->log( $obj->getAttributes(), 'Save '.$key);
                     $obj->getModel()->save( $obj );
                 }
             }
@@ -190,6 +189,7 @@ class Data_Watcher
             return false;
         }
         $pdo->commit();
+        return true;
     }
 
     /**

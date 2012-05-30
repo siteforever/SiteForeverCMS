@@ -6,32 +6,23 @@
  */
 class Model_CatGallery extends Sfcms_Model
 {
-    // Массив, проиднексированный по продуктам
-    protected $data_all = array();
-
     /**
      * Вернет галлерею для продукта
      * @param $prod_id
      * @param $hidden
-     * @return array
+     * @return Data_Collection
      */
-    function findGalleryByProduct( $prod_id, $hidden = 1 )
+    public function findGalleryByProduct( $prod_id, $hidden = 1 )
     {
-        if ( ! isset( $this->data_all[ $prod_id ] ) ) {
-            $this->data_all[ $prod_id ] = $this->findAll(array(
-                'cond'  => 'cat_id = :cat_id AND hidden = :hidden',
-                'params'=> array(':cat_id'=>$prod_id, ':hidden'=>$hidden),
-            ));
+        if ( $hidden ) {
+            $cond = 'cat_id = :cat_id AND hidden = :hidden';
+        } else {
+            $cond = 'cat_id = :cat_id';
         }
-        $ret = array();
-        if (is_array($this->data_all[ $prod_id ])) {
-            foreach( $this->data_all[ $prod_id ] as $data ) {
-                if ( $hidden || (!$hidden && !$data['hidden']) ) {
-                    $ret[ $data->getId() ] = $data;
-                }
-            }
-        }
-        return $ret;
+        return $this->findAll(array(
+            'cond'  => $cond,
+            'params'=> array(':cat_id'=>$prod_id, ':hidden'=>$hidden),
+        ));
     }
 
     /**
@@ -39,7 +30,7 @@ class Model_CatGallery extends Sfcms_Model
      * @param int $id
      * @return void
      */
-    function remove( $id )
+    public function remove( $id )
     {
         $data   = $this->find( $id );
         //$data = $this->db->fetch("SELECT * FROM {$this->getTable()} WHERE id = {$id} LIMIT 1");
@@ -64,15 +55,15 @@ class Model_CatGallery extends Sfcms_Model
      * @param $cat
      * @return void
      */
-    function setDefault( $id, $cat )
+    public function setDefault( $id, $cat )
     {
-        $data = $this->find( $id );
-        if ( $data['main'] ) {
-            $data['main'] = 0;
-        } else {
-            $data['main'] = 1;
+        $images = $this->findGalleryByProduct( $cat, null );
+        foreach ( $images as $obj ) {
+            /** @var $obj Data_Object_CatGallery */
+            $obj->main = 0;
         }
-        $data['cat_id'] = $cat;
-        $this->save( $data );
+        /** @var $image Data_Object_CatGallery */
+        $image = $this->find( $id );
+        $image->main = 1;
     }
 }
