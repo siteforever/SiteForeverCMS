@@ -262,7 +262,7 @@ abstract class Sfcms_Controller
      * Перенаправление на другой урл
      * @param string $url
      * @param array $params
-     * @return void
+     * @return bool
      */
     protected function redirect( $url = '', $params = array() )
     {

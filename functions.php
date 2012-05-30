@@ -65,7 +65,7 @@ function sendmail( $from, $to, $subject, $message )
 /**
  * Напечатать переведенный текст
  * @param string $text
- * @return void
+ * @return mixed
  */
 function t( $text )
 {

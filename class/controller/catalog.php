@@ -398,7 +398,7 @@ class Controller_Catalog extends Sfcms_Controller
 
     /**
      * Действие панели администратора
-     * @return mixin
+     * @return mixed
      */
     public function adminAction()
     {
@@ -731,7 +731,7 @@ class Controller_Catalog extends Sfcms_Controller
 
     /**
      * Групповой аяксовый делит по id из поста
-     * @return void
+     * @return mixed
      */
     public function groupAjaxDelete()
     {
@@ -746,6 +746,6 @@ class Controller_Catalog extends Sfcms_Controller
                 $content = $search;
             }
         }
-        print $content;
+        return $content;
     }
 }

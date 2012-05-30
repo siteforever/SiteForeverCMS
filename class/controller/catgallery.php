@@ -163,7 +163,7 @@ class Controller_CatGallery extends Sfcms_Controller
         if( ! $form_sent ) {
             $this->tpl->prod_id       = $prod_id;
             $this->tpl->max_file_size = $max_file_size;
-            $this->tpl->display( 'system:catgallery.upload_form' );
+            return $this->tpl->fetch( 'system:catgallery.upload_form' );
         }
 
         $thumb_prefix  = $this->config->get( 'catalog.gallery_thumb_prefix' );
