@@ -151,7 +151,6 @@ $(function(){
 
         // сделать изображение главным
         $('a.main_gallery_image').live('click', function(){
-
             siteforever.alert( 'Сохранение', null );
             $.get($(this).attr('href'), function(data){
                 $('div.a-gallery:first').replaceWith(data);
