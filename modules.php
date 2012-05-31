@@ -40,6 +40,10 @@ return array(
         ),
     ),
     array(
+        'name'  => t('Manufacturers'),
+        'url'   => 'manufacturers/admin'
+    ),
+    array(
         'name'  => 'Галерея',
         'url'   => 'gallery/admin',
     ),

@@ -172,7 +172,7 @@ class App extends Application_Abstract
      * Вызвать отображение
      * @param mixed $result
      *
-     * @return void
+     * @return mixed
      */
     protected function invokeView( $result )
     {

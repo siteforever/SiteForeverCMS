@@ -49,6 +49,9 @@ class Sfcms_View_Xhr extends Sfcms_View_IView
                 if( $this->getRequest()->getContent() ) {
                     $return = $this->getRequest()->getContent();
                 }
+                if ( $reload = $this->getRequest()->get('reload') ) {
+                    $return .= $reload;
+                }
         }
         return $return;
     }

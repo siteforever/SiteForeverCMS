@@ -291,10 +291,11 @@ abstract class Sfcms_Controller
             $script = "setTimeout( function(){ $script }, $timeout );";
         }
         $reload = '<script type="text/javascript">'.$script.'</script>';
-        if ( ( defined('TEST') && TEST ) || $return ) {
-            return $reload;
-        } else {
-            print( $reload );
-        }
+        $this->request->set('reload', $reload);
+//        if ( ( defined('TEST') && TEST ) || $return ) {
+//            return $reload;
+//        } else {
+//            print( $reload );
+//        }
     }
 }

@@ -53,6 +53,7 @@ siteforever.request = function( options )
 
 siteforever.alert   = function( msg, timeout )
 {
+    var deferred = $.Deferred();
     if ( null !== timeout ) {
         if ( ! timeout )
             timeout = 2000;
@@ -86,8 +87,12 @@ siteforever.alert   = function( msg, timeout )
     if ( null !== timeout ) {
         siteforever.alert.timeout = setTimeout(function(){
             siteforever.alert.close();
+            deferred.resolve();
         }, timeout);
+    } else {
+        deferred.resolve();
     }
+    return deferred.promise();
 };
 
 siteforever.alert.close = function()
