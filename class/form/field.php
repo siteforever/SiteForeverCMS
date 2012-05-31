@@ -81,7 +81,7 @@ abstract class Form_Field
 
         if ( isset( $params['value'] ) ) {
             if ( $this->setValue( trim( $params['value'] ) ) ) {
-                if ( form_Form::DEBUG ) {
+                if ( Form_Form::DEBUG ) {
                     print $this->_name.' = '.$params['value'].'<br />';
                 }
             }

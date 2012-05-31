@@ -11,6 +11,9 @@ require_once 'application/abstract.php';
  */
 class App extends Application_Abstract
 {
+
+    static public $DEBUG;
+
     /**
      * Запуск приложения
      * @static
@@ -33,9 +36,9 @@ class App extends Application_Abstract
      */
     public function init()
     {
-        define('DEBUG', $this->getConfig()->get( 'debug.profiler' ));
+        self::$DEBUG = $this->getConfig()->get( 'debug.profiler' );
 
-        if( DEBUG ) {
+        if( self::$DEBUG ) {
             std_error::init( $this->getLogger() );
         }
 
@@ -91,7 +94,7 @@ class App extends Application_Abstract
         try {
             $result = $controller_resolver->dispatch();
         } catch ( Exception $e ) {
-            if ( DEBUG )
+            if ( self::$DEBUG )
                 $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
             else
                 $result = $e->getMessage();
@@ -191,7 +194,7 @@ class App extends Application_Abstract
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
-        if ( DEBUG ) {
+        if ( self::$DEBUG ) {
             if ( $this->getConfig()->get( 'db.debug' ) ) {
                 Sfcms_Model::getDB()->saveLog();
             }

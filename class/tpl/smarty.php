@@ -90,7 +90,7 @@ class TPL_Smarty extends TPL_Driver
         $tpl    = $this->convertTplName($tpl);
 
         $result = $this->engine->fetch( $tpl, $cache_id );
-        DEBUG && App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
+        App::$DEBUG && App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
         return $result;
     }
 

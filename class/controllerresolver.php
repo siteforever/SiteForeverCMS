@@ -46,10 +46,10 @@ class ControllerResolver
             if( $this->app->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
                 if ( ! $this->app->getBasket()->count() ) {
                     define('CACHE', true);
-                    DEBUG && $this->app->getLogger()->log('Cache true');
+                    App::$DEBUG && $this->app->getLogger()->log('Cache true');
                     $cache = $this->app->getCacheManager();
                     if ( $cache->isCached() ) {
-                        DEBUG && $this->app->getLogger()->log('Result from cache');
+                        App::$DEBUG && $this->app->getLogger()->log('Result from cache');
                         return $cache->getCache();
                     }
                 }
