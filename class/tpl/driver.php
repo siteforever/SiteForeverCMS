@@ -10,7 +10,7 @@ abstract class TPL_Driver
 
     protected $_breacrumbs  = null;
     
-    function __call( $fname, $args )
+    public function __call( $fname, $args )
     {
         throw new Exception("Интерфейс TPL_Driver пока не поддерживает метод {$fname}");
     }

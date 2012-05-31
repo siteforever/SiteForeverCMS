@@ -8,36 +8,26 @@
 * Назначение:  Получает шаблон из базы данных
 * -------------------------------------------------------------
 */
-function smarty_resource_db_source( $tpl_name, $tpl_source, $smarty )
+
+class Smarty_Resource_System extends Smarty_Resource_Custom
 {
-    // выполняем обращение к базе данных для получения шаблона
-    // и занесения полученного результата в в $tpl_source
-    if ( $tpl = App::$templates->findByName( $tpl_name )  )
+    /**
+     * fetch template and its modification time from data source
+     *
+     * @param string  $name    template name
+     * @param string  &$source template source
+     * @param integer &$mtime  template modification timestamp (epoch)
+     */
+    protected function fetch( $name, &$source, &$mtime )
     {
-        $tpl_source = $tpl['template'];
-        return true;
+        // выполняем обращение к базе данных для получения шаблона
+        // и занесения полученного результата в в $tpl_source
+        if ( $tpl = App::$templates->findByName( $name )  ) {
+            $source = $tpl['template'];
+            $mtime  = $tpl['update'];
+        } else {
+            $source = null;
+            $mtime  = null;
+        }
     }
-    return false;
-}
-
-function smarty_resource_db_timestamp($tpl_name, $tpl_timestamp, $smarty)
-{
-    // выполняем обращение к базе данных для присвоения значения $tpl_timestamp.
-    if ( $tpl = App::$templates->findByName( $tpl_name )  )
-    {
-        $tpl_timestamp = $tpl['update'];
-        return true;
-    }
-    return false;
-}
-
-function smarty_resource_db_secure($tpl_name, $smarty)
-{
-    // предполагаем, что шаблоны безопасны
-    return true;
-}
-
-function smarty_resource_db_trusted($tpl_name, $smarty)
-{
-    // не используется для шаблонов
 }

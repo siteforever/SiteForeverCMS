@@ -90,8 +90,7 @@ class TPL_Smarty extends TPL_Driver
         $tpl    = $this->convertTplName($tpl);
 
         $result = $this->engine->fetch( $tpl, $cache_id );
-        App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
-//        print "Genegated: ".round( microtime(1) - $start, 3 );
+        DEBUG && App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
         return $result;
     }
 
@@ -104,8 +103,6 @@ class TPL_Smarty extends TPL_Driver
     {
         $theme = App::$config->get('template.theme');
         $path = 'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'templates';
-
-        //print $path.DIRECTORY_SEPARATOR.$tpl_name;
 
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
             return true;
