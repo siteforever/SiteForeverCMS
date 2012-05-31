@@ -2,7 +2,7 @@
 /**
  * Модель шаблонов
  */
-class model_Templates extends Sfcms_Model
+class Model_Templates extends Sfcms_Model
 {
     /**
      * Форма редактирования
@@ -16,7 +16,7 @@ class model_Templates extends Sfcms_Model
      * Искать шаблон по названию
      * @param string $name
      */
-    function findByName( $name )
+    public function findByName( $name )
     {
         $data = $this->find(array(
              'cond'     => 'name = :name',
@@ -29,7 +29,7 @@ class model_Templates extends Sfcms_Model
      * Вернет объект формы
      * @return form_Form
      */
-    function getForm()
+    public function getForm()
     {
         if ( !isset($this->form) ) 
         {

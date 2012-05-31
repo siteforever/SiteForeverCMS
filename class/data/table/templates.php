@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ * Template table
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
@@ -8,7 +8,6 @@
 
 class Data_Table_Templates extends Data_Table
 {
-
     /**
      * Вернет список полей
      * @return array

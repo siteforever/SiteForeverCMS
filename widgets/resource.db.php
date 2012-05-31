@@ -9,7 +9,7 @@
 * -------------------------------------------------------------
 */
 
-class Smarty_Resource_System extends Smarty_Resource_Custom
+class Smarty_Resource_Db extends Smarty_Resource_Custom
 {
     /**
      * fetch template and its modification time from data source
