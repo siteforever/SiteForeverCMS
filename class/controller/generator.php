@@ -101,11 +101,9 @@ class Controller_Generator extends Sfcms_Controller
 
         file_put_contents( $fbase, $obase );
 
-        print "Model: {$fmodel}\n"
+        return "Model: {$fmodel}\n"
             . "Object: {$fobject}\n"
             . "Table: {$ftable}\n"
             . "Base: {$fbase}\n";
-
-
     }
 }

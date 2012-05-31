@@ -12,7 +12,7 @@ class TPL_Smarty extends TPL_Driver
 {
     private $ext = '';
 
-    function __construct()
+    public function __construct()
     {
         $config    = App::getInstance()->getConfig();
 
@@ -22,7 +22,7 @@ class TPL_Smarty extends TPL_Driver
         $this->ext    = $config->get('template.ext');
     }
     
-    function assign( $params, $value = null )
+    public function assign( $params, $value = null )
     {
         $this->engine->assign( $params, $value );
     }
@@ -32,27 +32,27 @@ class TPL_Smarty extends TPL_Driver
      * @param bool $state
      * @return void
      */
-    function caching( $state = false )
+    public function caching( $state = false )
     {
         $this->engine->caching = $state;
     }
 
     /**
      * Конвертирование шаблонов
-     * @param String $tpl
+     * @param $tpl
+     *
      * @return string
+     * @throws Exception
      */
-    function convertTplName( $tpl )
+    public function convertTplName( $tpl )
     {
         // Если у шаблона не указан ресурс, то выбираем между темой и системой
         if ( ! preg_match('/(\w+):(.*)/', $tpl, $m) ) {
             if ( $this->theme_exists( $tpl ) ) {
                 $tpl    = 'theme:'.$tpl;
-            }
-            elseif ( $this->system_exists( $tpl ) ) {
+            } elseif ( $this->system_exists( $tpl ) ) {
                 $tpl    = 'system:'.$tpl;
-            }
-            else {
+            } else {
                 throw new Exception('Шаблон '.$tpl.' не найден');
             }
         }
@@ -64,7 +64,7 @@ class TPL_Smarty extends TPL_Driver
      * @param string $tpl
      * @param int $cache_id
      */
-    function display( $tpl, $cache_id = null )
+    public function display( $tpl, $cache_id = null )
     {
         $start  = microtime(1);
         $tpl = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
@@ -82,7 +82,7 @@ class TPL_Smarty extends TPL_Driver
      * @param int $cache_id
      * @return string
      */
-    function fetch( $tpl, $cache_id = null )
+    public function fetch( $tpl, $cache_id = null )
     {
         $start  = microtime(1);
         $tpl    = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
@@ -99,7 +99,7 @@ class TPL_Smarty extends TPL_Driver
      * @param  $tpl_name
      * @return bool
      */
-    function theme_exists( $tpl_name )
+    public function theme_exists( $tpl_name )
     {
         $theme = App::$config->get('template.theme');
         $path = 'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'templates';
@@ -115,7 +115,7 @@ class TPL_Smarty extends TPL_Driver
      * @param  $tpl_name
      * @return bool
      */
-    function system_exists( $tpl_name )
+    public function system_exists( $tpl_name )
     {
         $path = App::$config->get('template.admin');
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
@@ -129,9 +129,9 @@ class TPL_Smarty extends TPL_Driver
      * @param  $tpl_file
      * @param  $cache_id
      * @param  $compile_id
-     * @return false|string
+     * @return mixed
      */
-    function is_cached( $tpl_file, $cache_id = null, $compile_id = null )
+    public function is_cached( $tpl_file, $cache_id = null, $compile_id = null )
     {
         return $this->engine->is_cached( $tpl_file, $cache_id, $compile_id );
     }
@@ -140,7 +140,7 @@ class TPL_Smarty extends TPL_Driver
      * Установить каталог шаблонов
      * @param $dir
      */
-    function setTplDir( $dir )
+    public function setTplDir( $dir )
     {
         $this->engine->setTemplateDir($dir);
     }
@@ -148,7 +148,7 @@ class TPL_Smarty extends TPL_Driver
     /**
      * Вывести каталог шаблонов
      */
-    function getTplDir()
+    public function getTplDir()
     {
         return $this->engine->getTemplateDir(0);
     }
@@ -157,7 +157,7 @@ class TPL_Smarty extends TPL_Driver
      * Установить каталог скомпилированных шаблонов
      * @param $dir
      */
-    function setCplDir( $dir )
+    public function setCplDir( $dir )
     {
         $this->engine->setCompileDir($dir);
     }
@@ -167,7 +167,7 @@ class TPL_Smarty extends TPL_Driver
      * @param  $dir
      * @return void
      */
-    function setCacheDir( $dir )
+    public function setCacheDir( $dir )
     {
         $this->engine->setCacheDir($dir);
     }
@@ -176,7 +176,7 @@ class TPL_Smarty extends TPL_Driver
      * Установить каталог плагинов
      * @param $dir
      */
-    function setWidgetsDir( $dir )
+    public function setWidgetsDir( $dir )
     {
         $this->engine->addPluginsDir($dir);
     }
