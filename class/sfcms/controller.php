@@ -182,25 +182,26 @@ abstract class Sfcms_Controller
      */
     public function setAjax( $ajax = true )
     {
-        App::$ajax  = $ajax;
-        $this->request->setAjax( true, Request::TYPE_ANY );
+        $this->request->setAjax( $ajax );
     }
 
     /**
-     * Вернет форму
+     * Return form by name/alias
      * @param $name
-     * @return Form_Form
+     *
+     * @return mixed
+     * @throws Exception
      */
     public function getForm( $name )
     {
         if ( ! isset( self::$forms[ $name ] ) ) {
             try {
-                $class_name = 'forms_'.$name;
-                $file   = str_replace('_', DIRECTORY_SEPARATOR, $class_name).'.php';
+                $class_name = 'Forms_'.$name;
+                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, strtolower( $class_name ) ).'.php';
                 require_once $file;
                 self::$forms[ $name ] = new $class_name();
             } catch ( Exception $e ) {
-                die('Form class '.$class_name.' not found');
+                throw new Exception('Form class '.$class_name.' not found');
             }
         }
         return self::$forms[ $name ];
@@ -212,7 +213,7 @@ abstract class Sfcms_Controller
      */
     public function getAjax()
     {
-        return App::getInstance()->getRequest()->getAjax();
+        return $this->app()->getRequest()->getAjax();
     }
 
     /**
@@ -270,7 +271,7 @@ abstract class Sfcms_Controller
         if( preg_match( '@^http@', $url ) ) {
             $this->request->set('redirect', $url);
         } else {
-            $this->request->set('redirect', App::getInstance()->getRouter()->createLink( $url, $params ));
+            $this->request->set('redirect', $this->app()->getRouter()->createLink( $url, $params ));
         }
         return true;
     }
@@ -286,16 +287,11 @@ abstract class Sfcms_Controller
         Data_Watcher::instance()->performOperations();
 
         $script = 'window.location.href = "'
-                . App::getInstance()->getRouter()->createLink( $url, $params ) . '";';
+                . $this->app()->getRouter()->createLink( $url, $params ) . '";';
         if ( $timeout ) {
             $script = "setTimeout( function(){ $script }, $timeout );";
         }
         $reload = '<script type="text/javascript">'.$script.'</script>';
         $this->request->set('reload', $reload);
-//        if ( ( defined('TEST') && TEST ) || $return ) {
-//            return $reload;
-//        } else {
-//            print( $reload );
-//        }
     }
 }

@@ -4,6 +4,15 @@
  */
 return array(
 
+    'edit' => 'править',
+    'delete' => 'удалить',
+    'list' => 'список',
+
+    'Edit' => 'Править',
+    'Delete' => 'Удалить',
+    'Want to delete?' => 'Желаете удалить?',
+    'Save' => 'Сохранить',
+
     'Access denied' => 'Доступ запрещен',
 
     'Page not found'    => 'Страница не найдена',
@@ -66,6 +75,7 @@ return array(
     // Guestbook
     'Name'  => 'Имя',
     'Email' => 'Адр. эл. почты',
+    'Phone' => 'Телефон',
     'Message' => 'Сообщение',
     'Captcha' => 'Введите код с картинки',
     'Send' => 'Отправить',
@@ -77,5 +87,9 @@ return array(
     'Edit category' => 'Править категорию',
     'There are no sections' => 'Пока нет разделов',
 
+
+    'Manufacturers' => 'Производители',
+    'Create manufacturer' => 'Создать приозводителя',
+    'Edit manufacturer' => 'Править приозводителя',
 
 );

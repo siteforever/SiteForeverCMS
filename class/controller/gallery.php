@@ -57,56 +57,56 @@ class Controller_Gallery extends Sfcms_Controller
         if( $img = $this->request->get( 'img', Request::INT ) ) {
             $image = $model->find( $img );
 
-            if( null !== $image ) {
-
-                $crit = array(
-                    'cond'  => 'category_id = ? AND pos > ?',
-                    'params'=> array( $image->category_id, $image->pos ),
-                    'order' => 'pos ASC',
-                    'limit' => '1',
-                );
-
-                $next = $model->find( $crit );
-
-                $crit[ 'cond' ]  = 'category_id = ? AND pos < ?';
-                $crit[ 'order' ] = 'pos DESC';
-
-                $pred = $model->find( $crit );
-
-                $category = $catModel->find( $image->category_id );
-
-                $this->tpl->image    = $image;
-                $this->tpl->next     = $next;
-                $this->tpl->pred     = $pred;
-                $this->tpl->category = $category;
-
-                $bc = $this->tpl->getBreadcrumbs();
-                $bc->clearPieces();
-                $bc->addPiece( 'index', 'Главная' );
-                $bc->addPiece( $category->getAlias(), $category->name );
-                $bc->addPiece( null, $image->name );
-
-                $title = $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
-                //                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
-                $h1                 = $image->meta_h1 ? $image->meta_h1 : $title;
-                $this->tpl->meta_h1 = $h1;
-
-                $description = $image->meta_description ? $image->meta_description : null;
-                $keywords    = $image->meta_keywords ? $image->meta_keywords : null;
-                if( $description ) {
-                    $this->request->set( 'tpldata.page.description', str_random_replace( $h1, $description ) );
-                }
-                if( $keywords ) {
-                    $this->request->set( 'tpldata.page.keywords', str_random_replace( $h1, $keywords ) );
-                }
-
-                //                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
-                $this->request->setTitle( $title );
-
-                return $this->tpl->fetch( 'gallery.image' );
-            } else {
+            if( null === $image ) {
                 return t( 'Image not found' );
             }
+
+            $crit = array(
+                'cond'  => 'category_id = ? AND pos > ?',
+                'params'=> array( $image->category_id, $image->pos ),
+                'order' => 'pos ASC',
+                'limit' => '1',
+            );
+
+            $next = $model->find( $crit );
+
+            $crit[ 'cond' ]  = 'category_id = ? AND pos < ?';
+            $crit[ 'order' ] = 'pos DESC';
+
+            $pred = $model->find( $crit );
+
+            /** @var $category Data_Object_GalleryCategory */
+            $category = $catModel->find( $image->category_id );
+
+            $this->tpl->assign('image', $image);
+            $this->tpl->assign('next', $next);
+            $this->tpl->assign('pred', $pred);
+            $this->tpl->assign('category', $category);
+
+            $bc = $this->tpl->getBreadcrumbs();
+            $bc->clearPieces();
+            $bc->addPiece( 'index', 'Главная' );
+            $bc->addPiece( $category->getAlias(), $category->name );
+            $bc->addPiece( null, $image->name );
+
+            $title = $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
+            //                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
+            $h1                 = $image->meta_h1 ? $image->meta_h1 : $title;
+            $this->tpl->assign('meta_h1', $h1);
+
+            $description = $image->meta_description ? $image->meta_description : null;
+            $keywords    = $image->meta_keywords ? $image->meta_keywords : null;
+            if( $description ) {
+                $this->request->set( 'tpldata.page.description', str_random_replace( $h1, $description ) );
+            }
+            if( $keywords ) {
+                $this->request->set( 'tpldata.page.keywords', str_random_replace( $h1, $keywords ) );
+            }
+
+//                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
+            $this->request->setTitle( $title );
+
+            return $this->tpl->fetch( 'gallery.image' );
         }
 
         /**
@@ -151,14 +151,13 @@ class Controller_Gallery extends Sfcms_Controller
             ));
 
             $title = $category->meta_title ? $category->meta_title : $category->name;
-            //            $h1       = $category->meta_h1 ? $category->meta_h1 : $category->name;
             $h1 = $category->meta_h1 ? $category->meta_h1 : $title;
 
             $description = $category->meta_description ? $category->meta_description : '';
             $keywords    = $category->meta_keywords ? $category->meta_keywords : '';
 
 
-            $this->tpl->meta_h1 = $h1;
+            $this->tpl->assign('meta_h1', $h1);
 
             if( $description ) {
                 $this->request->set( 'tpldata.page.description', str_random_replace( $h1, $description ) );

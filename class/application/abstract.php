@@ -9,12 +9,6 @@ abstract class Application_Abstract
     static protected $instance = null;
 
     /**
-     * Сигнализирует, как обрабатывать запрос
-     * @var bool
-     */
-    static $ajax = false;
-
-    /**
      * @var Sfcms_Config
      */
     static $config;
@@ -238,7 +232,6 @@ abstract class Application_Abstract
     {
         if ( is_null( self::$request ) ) {
             self::$request  = new Request();
-            self::$ajax     = self::$request->getAjax();
         }
         return self::$request;
     }

@@ -15,7 +15,7 @@ class Forms_Manufacturers_Edit extends Form_Form
                  'action'    => '/?route=manufacturers/save',
                  'fields' => array(
                      'id'   => array( 'type'=>'hidden', ),
-                     'name' => array( 'type'=>'text', 'label' => t('Name') ),
+                     'name' => array( 'type'=>'text', 'label' => t('Name'), 'required', ),
                      'email' => array( 'type'=>'text', 'label' => t('Email') ),
                      'phone' => array( 'type'=>'text', 'label' => t('Phone') ),
 

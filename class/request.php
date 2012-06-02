@@ -162,8 +162,9 @@ class Request
     public function setAjax( $ajax = false, $type = self::TYPE_ANY )
     {
         $this->ajax = $ajax;
-        if ( $ajax )
+        if ( $ajax ) {
             $this->ajax_type = $type;
+        }
     }
 
     /**

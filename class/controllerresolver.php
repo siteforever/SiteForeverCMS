@@ -95,10 +95,9 @@ class ControllerResolver
             }
         }
         if ($ref->hasMethod($command['action'])) {
-            $result = call_user_func( array( $controller, $command['action']) );
-        }
-        else {
-            $result = call_user_func( array( $controller, 'indexAction') );
+            $result = $controller->{$command['action']}();
+        } else {
+            $result = $controller->indexAction();
         }
         return $result;
     }

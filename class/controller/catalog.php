@@ -736,7 +736,7 @@ class Controller_Catalog extends Sfcms_Controller
     public function groupAjaxDelete()
     {
         $delete_list = $this->request->get( 'trade_delete' );
-        App::$ajax   = true;
+        $this->request->setAjax(true);
         $content     = 'ничего не удалено';
         if( is_array( $delete_list ) && count( $delete_list ) ) {
             $search = join( ',', $delete_list );
