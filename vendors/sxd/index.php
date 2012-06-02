@@ -1,10 +1,10 @@
 <?php
 /***************************************************************************\
-| Sypex Dumper               version 2.0.8                                  |
-| (c) 2003-2010 zapimir      zapimir@zapimir.net       http://sypex.net/    |
-| (c) 2005-2010 BINOVATOR    info@sypex.net                                 |
+| Sypex Dumper               version 2.0.9c                                 |
+| (c) 2003-2011 zapimir      zapimir@zapimir.net       http://sypex.net/    |
+| (c) 2005-2011 BINOVATOR    info@sypex.net                                 |
 |---------------------------------------------------------------------------|
-|     created: 2003.09.02 19:07              modified: 2010.12.07 08:26     |
+|     created: 2003.09.02 19:07              modified: 2011.11.15 17:51     |
 |---------------------------------------------------------------------------|
 | Sypex Dumper is released under the terms of the BSD license               |
 |   http://sypex.net/bsd_license.txt                                        |
@@ -30,9 +30,9 @@ class Sypex_Dumper {
 		define('C_WARNING', 4);
 		define('SXD_DEBUG', false);
 		define('TIMER', array_sum(explode(' ', microtime()))); 
-		define('V_SXD', 20008);
+		define('V_SXD', 20009);
 		define('V_PHP', sxd_ver2int(phpversion()));
-		$this->name = 'Sypex Dumper 2.0.8';
+		$this->name = 'Sypex Dumper 2.0.9';
 	}
 	function loadLang($lng_name = 'auto'){
 		if($lng_name == 'auto'){
@@ -87,6 +87,7 @@ class Sypex_Dumper {
 		            }
 		        }
 		    }
+		    $this->cron_mode = true;
 		    set_time_limit($CFG['time_cron']);
 		    // Загружаем конфиг файл, если нужно
 		    $auth = $this->connect();
@@ -115,7 +116,7 @@ class Sypex_Dumper {
 			if(!$auth) {
 				$user = !empty($_POST['user']) ? $_POST['user'] : '';
 				$pass = !empty($_POST['pass']) ? $_POST['pass'] : '';
-				$host = !empty($_POST['host']) ? $_POST['host'] : 'localhost';
+				$host = !empty($_POST['host']) ? $_POST['host'] : (!empty($this->CFG['my_host']) ? $this->CFG['my_host'] : 'localhost');
 				$port = !empty($_POST['port']) && is_numeric($_POST['port']) ? $_POST['port'] : 3306;
 				$temp = preg_split('/\s+/', $this->CFG['auth']);
 				if(!empty($_REQUEST['lang']) && preg_match('/^[a-z]{2}(-[a-z]{2})?$/', $_REQUEST['lang'])) {$this->loadLang($_REQUEST['lang']);}
@@ -125,6 +126,7 @@ class Sypex_Dumper {
 										$auth = !empty($CFG['user']) && isset($CFG['pass']) && $CFG['user']== $user && $CFG['pass'] == $pass;
 										break;
 						case 'mysql':	if(empty($user)) {continue;}
+										if($host != 'localhost' && !empty($this->CFG['my_host']) && $this->CFG['my_host'] != $host) {continue;}
 										$auth = $this->connect($host, $port, $user, $pass);
 										break;
 						default:		$file = 'auth_' . $a . '.php';
@@ -161,11 +163,6 @@ class Sypex_Dumper {
 				exit;
 			}
 		}
-		/*if(!empty($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] == 'exit') {
-			setcookie('sxd', '', 0);
-			header("Location: {$this->CFG['exitURL']}");
-			exit;
-		}*/
 		if(empty($_POST['ajax']['act']) || $_POST['ajax']['act'] != 'save_connect') $this->connect();
 		if(isset($_POST['ajax'])) $this->ajax($_POST['ajax']);
 		else $this->main();
@@ -238,8 +235,6 @@ class Sypex_Dumper {
 			$this->addCombo('services_db', $this->db, 11, 'db') .
 			$this->addCombo('services_check', 0, 5, 'check', array("- {$this->LNG['default']} -", 'QUICK', 'FAST', 'CHANGED', 'MEDIUM', 'EXTENDED')) .
 			$this->addCombo('services_repair', 0, 5, 'repair', array("- {$this->LNG['default']} -", 'QUICK', 'EXTENDED')) .
-			//$this->addCombo('services_charset', 0, 9, 'collation', $this->getCollationList()) .
-			//$this->addCombo('services_charset_col', 0, 15, 'collation:services_charset').
 			$this->addCombo('db_charset', 0, 9, 'collation', $this->getCollationList()) .
 			$this->addCombo('db_charset_col', 0, 15, 'collation:db_charset')
 		;
@@ -449,12 +444,12 @@ class Sypex_Dumper {
 	}
 	function closeConnect(){
 		//return;
-		ignore_user_abort(1); 
+		@ignore_user_abort(1); 
 		header("SXD: {$this->name}");
 		header("Connection: close"); 
 		header("Content-Length: 0"); 
-		ob_end_flush(); 
-		flush();
+		@ob_end_flush(); 
+		@flush();
 	}
 	function resumeJob($job){
 		$this->closeConnect();
@@ -523,9 +518,19 @@ class Sypex_Dumper {
 		$this->JOB['file_log'] = $this->CFG['backup_path'] . $this->JOB['job'] . '.log';
 		$this->JOB['file_stp'] = $this->CFG['backup_path'] . $this->JOB['job'] . '.stp';
 		if(file_exists($this->JOB['file_stp'])) unlink($this->JOB['file_stp']);
+		
+		$this->fh_tmp = $this->openFile($this->JOB['file_tmp'], 'r');
+		// Для чужих дампов определяем разделители строк
+		if(is_null($this->JOB['obj'])) {
+			$s = fread($this->fh_tmp, 2048);
+			if(strpos($s, "\r\n")) $this->JOB['eol'] = "\r\n";
+			elseif(strpos($s, "\n")) $this->JOB['eol'] = "\n";
+			else $this->JOB['eol'] = "\r";
+			$bom = strncmp($s, "\xEF\xBB\xBF", 3) == 0 ? 3 : ((strncmp($s, "\xFE\xFF", 2) == 0 || strncmp($s, "\xFF\xFE", 2) == 0) ? 2 : 0);
+			fseek($this->fh_tmp, $bom);
+		}
 		$this->JOB['todo'] = $todo;
 		$this->saveJob($this->JOB['job'], $this->JOB);
-		$this->fh_tmp = $this->openFile($this->JOB['file_tmp'], 'r');
 		$this->fh_rtl = fopen($this->JOB['file_rtl'], 'wb');
 		$this->fh_log = fopen($this->JOB['file_log'], 'wb');
 		$this->rtl = array(time(), time(), $rows, 0, '', '', '', 0, 0, 0, 0, TIMER, "\n");
@@ -686,19 +691,17 @@ class Sypex_Dumper {
 					$ex = 1;
 			}
 			if($ex) {
-				//error_log("[index.php]\n{$q}\n", 3, "error.log");
 				$this->rtl[3] = ftell($this->fh_tmp) - $seek;
 				fseek($this->fh_rtl, 0);
 				$this->rtl[1] = time();
 				fwrite($this->fh_rtl, implode("\t", $this->rtl));
-				//error_log("\n---------------------\n{$q}", 3, "sql.log");	
 				if(mysql_query($q)) {
 					if($insert) {
 						$c = 1;
 					}
 				}
 				else {
-					error_log("[index.php]\n{$q}\n", 3, "error.log");
+					error_log("----------\n{$q}\n", 3, "error.log");
 					sxd_my_error();
 				}
 				
@@ -759,8 +762,8 @@ class Sypex_Dumper {
 		$last_tab = '';
 		$time_old = time();
 		$exit_time = $time_old + $this->CFG['time_web'] - 1;
-		$delimiter = ";\n";
-		while($q = sxd_read_sql($this->fh_tmp, $seek, $ei, $delimiter)){
+		$delimiter = ";";
+		while($q = sxd_read_sql($this->fh_tmp, $seek, $ei, $delimiter, $this->JOB['eol'])){
 			$q = ltrim($q);
 			if(empty($q)) break;
 			if($time_old < time()) {
@@ -801,7 +804,7 @@ class Sypex_Dumper {
 						break;	
 					case 'I':
 					
-						if (preg_match('/^(INSERT( INTO `(.+?)`)\s+?VALUES)/', $q, $m)) {
+						if (preg_match('/^(INSERT( INTO `?(.+?)`?).+?\sVALUES)/s', $q, $m)) {
 							$insert = trim($m[1]) . ' ';
 							$tab = $m[3];
 							$this->rtl[7] = 0;
@@ -830,7 +833,7 @@ class Sypex_Dumper {
 					case '-' && $q{1} == '-':
 					case '#':
 						$repeat = true;
-						$q = ltrim(substr($q, strpos($q, "\n")));
+						$q = ltrim(substr($q, strpos($q, $this->JOB['eol'])));
 						$ex = 0;
 						break;
 					case '/':
@@ -849,7 +852,6 @@ class Sypex_Dumper {
 				}
 			}  while ($repeat);
 			if($ex) {
-				//error_log("-----------------\n{$q}\n", 3, "sql.log");
 				$this->rtl[3] = ftell($this->fh_tmp) - $seek;
 				fseek($this->fh_rtl, 0);
 				$this->rtl[1] = time();
@@ -1103,11 +1105,6 @@ class Sypex_Dumper {
 						$fcache = substr_replace($fcache, "\t;\n",  -2, 2);
 					break;
 
-					/*case 'VI':
-					case 'PR': 
-					case 'FU':
-					case 'EV':
-					case 'TR':*/
 					default:
 						if(V_MYSQL < 50121 && $n[0] == 'TR'){
 							// SHOW CREATE TRIGGER отсутствует до MySQL 5.1.21
@@ -1495,14 +1492,14 @@ class Sypex_Dumper {
 		}
 	}
 }
-function sxd_read_sql($f, &$seek, $ei, $delimiter = "\t;\n"){
+function sxd_read_sql($f, &$seek, $ei, $delimiter = "\t;", $eol = "\n"){
 	static $l = '';
 	static $r = 0;
 	$fs = ftell($f);
-	$delim_len = strlen($delimiter);
+	$delim_len = strlen($delimiter . $eol);
 	while($r || $s = fread($f, 61440)){
 		if(!$r) $l .= $s;
-		$pos = strpos($l, $delimiter);
+		$pos = strpos($l, $delimiter . $eol);
 		if ($pos !== false) {
 			// Есть окончание запроса
 			$q = substr($l, 0, $pos);
@@ -1512,11 +1509,11 @@ function sxd_read_sql($f, &$seek, $ei, $delimiter = "\t;\n"){
 			return $q;
 		}
 		if($ei) {
-			$pos = strrpos($l, "\n");
+			$pos = strrpos($l, $eol);
 			if($pos > 0 && $l{$pos-1} === ',') {
 				// Окончание не найдено
 				$q = substr($l, 0, $pos-1);
-				$l = substr($l, $pos+1);
+				$l = substr($l, $pos+ strlen($eol));
 				$seek = strlen($l);
 				$r = 0;
 				return $q;
@@ -1556,18 +1553,18 @@ function sxd_error_handler($errno, $errmsg, $filename, $linenum, $vars){
     if(strpos($errmsg, 'timezone settings')) return;
     $errortype = array(1 => 'Error', 2 => 'Warning', 4 => 'Parsing Error', 8 => 'Notice', 16 => 'Core Error', 32 => 'Core Warning', 64 => 'Compile Error', 
 					   128 => 'Compile Warning', 256 => 'MySQL Error', 512 => 'Warning', 1024 => 'Notice');
-	$str = "{$errortype[$errno]}: {$errmsg} ({$filename}:{$linenum})";
+	$str = mysql_escape_string("{$errortype[$errno]}: {$errmsg} ({$filename}:{$linenum})");
 	if(SXD_DEBUG) error_log("[index.php]\n{$str}\n", 3, "error.log");
 	
     if($errno == 8 || $errno == 1024) {
-    	if (!$SXD->fh_log && !$SXD->fh_rtl) echo isset($_POST['ajax']) ? "alert('" . mysql_escape_string($str) . "');" : $str;
+    	if (!$SXD->fh_log && !$SXD->fh_rtl) echo isset($_POST['ajax']) ? "alert('" . ($str) . "');" : $str;
     	else {
     		fwrite($SXD->fh_log, date('Y.m.d H:i:s') . "\t3\t{$str}\n");
 		}
 	}
     elseif($errno < 1024) {
     	$SXD->error = true;
-    	if (!$SXD->fh_log && !$SXD->fh_rtl) echo isset($_POST['ajax']) ? "alert('" . mysql_escape_string($str) . "');" : $str;
+    	if (!$SXD->fh_log && !$SXD->fh_rtl) echo isset($_POST['ajax']) ? "alert('" . ($str) . "');" : $str;
     	else {
     		$SXD->rtl[1] = time();
     		$SXD->rtl[9] = 5;

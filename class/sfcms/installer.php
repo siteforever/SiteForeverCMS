@@ -11,35 +11,21 @@ class Sfcms_Installer
     const DS = DIRECTORY_SEPARATOR;
 
     /**
-     * @return Application_Abstract
-     */
-//    protected function app()
-//    {
-//        return App::getInstance();
-//    }
-
-    /**
      * Инсталлирует каталоги со статикой, если еще не инсталлированы
      */
     public function installationStatic()
     {
         if( ! is_dir( ROOT . self::DS . 'images' ) ) {
-//            $this->copyDir( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' );
-            if( $this->symlink( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' ) ) {
-//                $this->app()->getLogger()->log( 'Created ' . ROOT . self::DS . 'images' );
-            }
+            $this->symlink( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' );
         }
 
         if( ! is_dir( ROOT . self::DS . 'misc' ) ) {
-//            $this->copyDir( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' );
-            if ( $this->symlink( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' ) ) {
-//                $this->app()->getLogger()->log( 'Created ' . ROOT . self::DS . 'misc' );
-            }
+            $this->symlink( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' );
         }
+
         if( ! is_dir( ROOT . self::DS. '_runtime' . self::DS . 'sxd' ) ) {
             $this->copyDir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd',
                 ROOT . self::DS. '_runtime' . self::DS . 'sxd' );
-//            $this->app()->getLogger()->log('Created ' . ROOT . self::DS. '_runtime' . self::DS . 'sxd' );
         }
     }
 

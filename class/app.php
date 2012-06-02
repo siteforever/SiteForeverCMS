@@ -64,9 +64,8 @@ class App extends Application_Abstract
         if( ! defined( 'MAX_FILE_SIZE' ) ) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
-
-//        $installer = new Sfcms_Installer();
-//        $installer->installationStatic();
+        $installer = new Sfcms_Installer();
+        $installer->installationStatic();
     }
 
 
