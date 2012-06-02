@@ -11,8 +11,8 @@
         <td>{$m.email}</td>
         <td>{$m.phone}</td>
         <td class="right">
-            <a {href url="manufacturers/edit" id=$m.id}>{icon name="pencil" title=t("edit")}</a>
-            <a {href url="manufacturers/delete" id=$m.id} class="delete">{icon name="delete" title=t("delete")}</a>
+            <a {href url="manufacturers/edit" id=$m.id} title="{t}Edit manufacturer{/t}">{icon name="pencil" title=t("edit")}</a>
+            <a {href url="manufacturers/delete" id=$m.id} title="{t}Want to delete?{/t}" class="delete">{icon name="delete" title=t("delete")}</a>
         </td>
     </tr>
     {foreachelse}

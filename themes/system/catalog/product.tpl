@@ -1,26 +1,20 @@
-
-{$breadcrumbs}
-
 <div class="b-product">
-
 
     <form action="/basket/" method="post">
 
         <div class="b-product">
 
             <div class="b-product-image">
-            {if $item.thumb}
-                <a {href cat=$item->getId()}>
-                    <img class="left" src="{$item.thumb}" alt="{$item.name}" bprder="0" width="100" height="100" />
+            {foreach from=$item.gallery item="img"}
+                <a title="{$img.title}" href="{$img.image}" rel="{$item.id}">
+                    <img src="{$img.thumb}" alt="{$img.title}" width="150" height="150">
                 </a>
-                {else}
-                <div class="b-product-noimage">Нет изображения</div>
-            {/if}
+            {foreachelse}
+                <div class="b-product-noimage">{t}Image not found{/t}</div>
+            {/foreach}
             </div>
 
             <div class="b-product-block">
-
-                <div class="b-product-title"><a {href cat=$item->getId()}>{$item.name}</a></div>
 
             {if $item.articul}<div class="b-product-articul">Артикул <big>{$item.articul}</big></div>{/if}
 
@@ -46,12 +40,11 @@
             {/if}
 
             {if $item.text}<div class="b-product-desc">{$item.text}</div>{/if}
-
-
             </div>
 
             <div class="b-product-basket">
-            {$item.item} <input type="text" name="basket_prod_count" class="b-product-basket-count" value="1" />
+                {$item.item}
+                <input type="text" name="basket_prod_count" class="b-product-basket-count" value="1" />
                 <input type="submit" class="submit" value="В корзину" />
             </div>
 
@@ -59,6 +52,6 @@
 
     </form>
 
-    <p><a {href cat=$item.parent}>&laquo; Вернуться к списку</a></p>
+    <p><a {href id=$item.parent}>&laquo; Вернуться к списку</a></p>
     
 </div>

@@ -79,13 +79,13 @@ class Controller_Page extends Sfcms_Controller
 
     /**
      * Структура
-     * @return void
+     * @return mixed
      */
     public function adminAction()
     {
         // используем шаблон админки
         $this->request->set( 'template', 'index' );
-        $this->request->setTitle( 'Управление сайтом' );
+        $this->request->setTitle( t('Site structure') );
 
         /**
          * @var Model_Page $model
@@ -99,19 +99,17 @@ class Controller_Page extends Sfcms_Controller
 
         if ($get_link_add = $this->request->get( 'get_link_add' )) {
             $this->tpl->id = $get_link_add;
-            die( $this->tpl->fetch( 'system:get_link_add' ) );
+            return $this->tpl->fetch( 'system:get_link_add' );
         }
 
         // проверка на правильность алиаса
         if ($test_alias = $this->request->get( 'test_alias' )) {
             if ($model->findByRoute( $test_alias )) {
-                die( '0' );
+                return '0';
             } else {
-                die( 'yes' );
+                return 'yes';
             }
         }
-
-        $this->request->setTitle( 'Структура сайта' );
 
         $sort = $this->request->get( 'sort' );
         if ($sort) {
@@ -127,12 +125,8 @@ class Controller_Page extends Sfcms_Controller
         }
 
         $model->createTree();
-
-        //printVar($model->parents);
         $model->createHtmlList();
-
-        $this->tpl->html = join( "\n", $model->html );
-        $this->request->setContent( $this->tpl->fetch( 'system:page.admin' ) );
+        $this->tpl->assign('html', join( "\n", $model->html ) );
     }
 
     /**
@@ -246,20 +240,18 @@ class Controller_Page extends Sfcms_Controller
     }
 
     /**
-     * @return mixin
+     * @return mixed
      */
     public function editAction()
     {
-        /**
-         * @var Model_Page $model
-         */
+        /** @var Model_Page $model */
         $model = $this->getModel( 'Page' );
 
         $form = $model->getForm();
 
         // используем шаблон админки
         $this->request->set( 'template', 'index' );
-        $this->request->setTitle( 'Управление сайтом' );
+        $this->request->setTitle( t('Site managment') );
 
         // идентификатор раздела, который надо редактировать
         $edit_id = $this->request->get( 'edit', FILTER_SANITIZE_NUMBER_INT );
@@ -281,7 +273,6 @@ class Controller_Page extends Sfcms_Controller
             }
 
             return array( 'form' => $form );
-//            $this->request->setContent( $this->tpl->fetch( 'system:page.edit' ) );
         }
 
         return t( 'Data not valid' );
@@ -306,7 +297,7 @@ class Controller_Page extends Sfcms_Controller
 
     /**
      * Перемещение раздела
-     * @return void
+     * @return mixed
      */
     public function moveAction()
     {

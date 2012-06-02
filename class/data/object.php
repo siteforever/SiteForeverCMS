@@ -55,12 +55,10 @@ abstract class Data_Object implements ArrayAccess//, Iterator
         $relation = $this->model->relation();
         if ( isset( $relation[ $key ] ) ) {
             return $this->model->findByRelation( $key, $this );
-        }
-        if ( method_exists( $this, 'get'.$key ) && 'id' != $key ) {
-            $method = 'get'.$key;
-            $this->$method();
-        } elseif ( $this->offsetExists( $key ) ) {
-            return $this->offsetGet( $key );
+        } else if ( method_exists( $this, 'get'.$key ) && 'id' != $key ) {
+            return $this->{'get'.$key}();
+        } else if ( isset( $this->data[ $key ] ) ) {
+            return $this->data[ $key ];
         }
         return null;
     }
@@ -109,7 +107,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     public function __unset($name)
     {
-        unset( $this->data[$name] );
+        $this->data[$name] = null;
         $this->markDirty();
     }
 
@@ -118,7 +116,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     public function __clone()
     {
-        unset( $this->data['id'] );
+        $this->data['id'] = null;
         $this->markNew();
     }
 
@@ -175,7 +173,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     public function setAttributes( $data = array() )
     {
         foreach( $data as $k => $d ) {
-//            $this->data[ $k ] = $d;
             $this->set( $k, $d );
         }
     }
@@ -253,13 +250,13 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      * An offset to check for.
      * </p>
      * @return boolean Returns true on success or false on failure.
-     * </p>
      * <p>
      * The return value will be casted to boolean if non-boolean was returned.
+     * </p>
      */
     public function offsetExists($offset)
     {
-        return isset( $this->data[ $offset ] );
+        return (bool) null !== $this->get( $offset );
     }
 
     /**
@@ -273,10 +270,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     public function offsetGet($offset)
     {
-        if ( $this->offsetExists( $offset ) ) {
-            return $this->data[ $offset ];
-        }
-        return null;
+        return $this->get( $offset );
     }
 
     /**
@@ -309,7 +303,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     public function offsetUnset($offset)
     {
         if ( isset ( $this->data[ $offset ] ) ) {
-            unset( $this->data[ $offset ] );
+            $this->data[ $offset ] = null;
             $this->markDirty();
         }
     }

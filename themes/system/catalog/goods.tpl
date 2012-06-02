@@ -1,5 +1,3 @@
-{$breadcrumbs}
-
 <div class="catalog_order">
     Сортировать
     <select class="catalog_select_order">
@@ -28,9 +26,9 @@
         <div class="b-catalog-product-thumb">
             {if $item.thumb}
                 <a {href id=$item.id}>
-                    <img class="left" src="{$item.thumb}" alt="{$item.name}" bprder="0" width="100" height="100" />
+                    <img class="left" src="{$item.thumb}" alt="{$item.name}" border="0" width="150" height="150" />
                 </a>
-                {else}
+            {else}
                 <div class="b-catalog-product-nothumb">Нет изображения</div>
             {/if}
         </div>
@@ -49,7 +47,7 @@
                 {/if}</big> {$item.currency}
             </div>
 
-            {*if count($properties[$item->getId()]) > 0}
+            {if count($properties[$item->getId()]) > 0}
             <div class="b-catalog-product-properties">
                 {foreach from=$properties[$item->getId()] key="pkey" item="pitem"}
                     {if $pitem}
@@ -60,10 +58,9 @@
                     {/if}
                 {/foreach}
             </div>
-            {/if*}
+            {/if}
 
             {if $item.text}<div class="b-catalog-product-desc">{$item.text}</div>{/if}
-
 
         </div>
 

@@ -412,7 +412,7 @@ class Model_Page extends Sfcms_Model
     public function createTree( $parent = 0 )
     {
         $this->parents = array();
-        if (count( $this->all ) == 0) {
+        if ( count( $this->all ) == 0 ) {
             $this->all = $this->findAll(
                 array(
                     'cond'  => 'deleted = 0',
@@ -421,13 +421,9 @@ class Model_Page extends Sfcms_Model
             );
         }
         // создаем массив, индексируемый по родителям
-        /**
-         * @var Data_Object_Page $data
-         */
+        /** @var Data_Object_Page $data */
         foreach ( $this->all as $data ) {
             $this->parents[ $data[ 'parent' ] ][ $data[ 'id' ] ] = $data;
-
-
         }
     }
 
@@ -543,8 +539,7 @@ class Model_Page extends Sfcms_Model
     {
         if (isset( $this->parents[ $parent ] )) {
             $branches = $this->parents[ $parent ];
-        }
-        else {
+        } else {
             $branches = array();
         }
 
@@ -582,47 +577,43 @@ class Model_Page extends Sfcms_Model
                     . "<span id='item{$branch['id']}' class='{$bicon}'>" . icon( $this->selectIcon( $branch ) )
                     . " <a " . href(
                     null, array(
-                    'controller'=> 'page',
-                    'action'    => 'edit',
-                    'edit'      => $branch[ 'id' ]
-                )
+                        'controller'=> 'page',
+                        'action'    => 'edit',
+                        'edit'      => $branch[ 'id' ]
+                    )
                 ) . ">{$branch['name']}</a>"
                     . "<span class='tools'>"
                     . "<a " . href(
                     null, array(
-                    'controller'=> 'page',
-                    'action'    => 'edit',
-                    'edit'      => $branch[ 'id' ]
-                )
+                        'controller'=> 'page',
+                        'action'    => 'edit',
+                        'edit'      => $branch[ 'id' ]
+                    )
                 ) . " title='Правка'>" . icon( 'pencil', 'Правка' ) . "</a>"
                     . "<a " . href(
                     null, array(
-                    'controller'=> 'page',
-                    'action'    => 'add',
-                    'add'       => $branch[ 'id' ]
-                )
+                        'controller'=> 'page',
+                        'action'    => 'add',
+                        'add'       => $branch[ 'id' ]
+                    )
                 ) . "    title='Добавить'>" . icon( 'add', 'Добавить' ) . "</a>"
                     . "<a " . href(
                     null, array(
-                    'controller'=> 'page',
-                    'action'    => 'admin',
-                    'do'        => 'delete',
-                    'part'      => $branch[ 'id' ]
-                )
+                        'controller'=> 'page',
+                        'action'    => 'admin',
+                        'do'        => 'delete',
+                        'part'      => $branch[ 'id' ]
+                    )
                 ) . " title='Удалить' class='do_delete'>" . icon( 'delete', 'Удалить' ) . "</a>"
                     . "</span>"
                     . "<span class='order'>"
                     . ( $branch[ 'controller' ] == 'page'
-                    ? ''
-                    : '<a class="link_del" page="' . $branch[ 'id' ] . '" ' . href( '' ) . '>' . icon(
-                        'link', 'Внешняя связь'
-                    ) . '</a>'
+                        ? ''
+                        : '<a class="link_del" page="' . $branch[ 'id' ] . '" ' . href( '' ) . '>' . icon(
+                            'link', 'Внешняя связь'
+                        ) . '</a>'
                 )
                     . $this->getOrderHidden( $branch[ 'id' ], $branch[ 'hidden' ] )
-                    //                        ."<a class='order-up'  ".href('admin', array('do'=>'up',  'part'=>$branch['id']))." title='Вверх'>"
-                    //                            .icon('arrow_up', 'Вверх')."</a>"
-                    //                        ."<a class='order-down' ".href('admin', array('do'=>'down','part'=>$branch['id']))." title='Вниз'>"
-                    //                            .icon('arrow_down', 'Вниз')."</a>"
 
                     . "<span class='id_number'>#{$branch['id']}</span>"
                     . "</span>"

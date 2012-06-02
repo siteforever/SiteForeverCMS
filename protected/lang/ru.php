@@ -15,6 +15,9 @@ return array(
 
     'Access denied' => 'Доступ запрещен',
 
+    'Site managment' => 'Управление сайтом',
+    'Site structure' => 'Структура сайта',
+
     'Page not found'    => 'Страница не найдена',
 
     'Control panel' => 'Панель управления',
