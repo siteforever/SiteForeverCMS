@@ -91,9 +91,17 @@ return array(
     'There are no sections' => 'Пока нет разделов',
 
 
+    // Manufacturers
     'Manufacturers' => 'Производители',
     'Manufacturer'  => 'Производитель',
     'Create manufacturer' => 'Создать приозводителя',
     'Edit manufacturer' => 'Править приозводителя',
+
+
+    // Goods
+    'Goods' => 'Товары',
+    'Price' => 'Цена',
+    'Category' => 'Категория',
+    'Articul' => 'Артикул',
 
 );

@@ -44,6 +44,10 @@ return array(
         'url'   => 'manufacturers/admin'
     ),
     array(
+        'name'  => t('Goods'),
+        'url'   => 'goods/admin'
+    ),
+    array(
         'name'  => 'Галерея',
         'url'   => 'gallery/admin',
     ),

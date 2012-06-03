@@ -37,25 +37,25 @@
 
             <div class="b-catalog-product-title"><a {href id=$item.id}>{$item.name}</a></div>
 
-            {if $item.articul}<div class="b-catalog-product-articul">Артикул <big>{$item.articul}</big></div>{/if}
+            {if $item.articul}<div class="b-catalog-product-articul">Артикул <strong>{$item.articul}</strong></div>{/if}
 
             <div class="b-catalog-product-price">
-                Цена <big>{if $user->getPermission() == $smarty.const.USER_WHOLE && $item.price2 > 0}
+                Цена <strong>{if $user->getPermission() == $smarty.const.USER_WHOLE && $item.price2 > 0}
                     {$item.price2|string_format:"%.2f"}
                 {else}
                     {$item.price1|string_format:"%.2f"}
-                {/if}</big> {$item.currency}
+                {/if}</strong> {$item.currency}
             </div>
 
-            {if $item->Manufacturer}<p>{t}Manufacturer{/t}: {$item->Manufacturer->name}</p>{/if}
+            {if $item->Manufacturer}<p>{t}Manufacturer{/t}: <strong>{$item->Manufacturer->name}</strong></p>{/if}
 
             {if count($properties[$item->getId()]) > 0}
             <div class="b-catalog-product-properties">
                 {foreach from=$properties[$item->getId()] key="pkey" item="pitem"}
                     {if $pitem}
                     <div class="b-catalog-product-properties-item">
-                        <div class="b-catalog-product-properties-key">{$pkey}</div>
-                        <div class="b-catalog-product-properties-val">{$pitem}</div>
+                        <div class="b-catalog-product-properties-key">{$pkey}:</div>
+                        <div class="b-catalog-product-properties-val"><strong>{$pitem}</strong></div>
                     </div>
                     {/if}
                 {/foreach}
