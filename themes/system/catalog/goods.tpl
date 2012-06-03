@@ -47,6 +47,8 @@
                 {/if}</big> {$item.currency}
             </div>
 
+            {if $item->Manufacturer}<p>{t}Manufacturer{/t}: {$item->Manufacturer->name}</p>{/if}
+
             {if count($properties[$item->getId()]) > 0}
             <div class="b-catalog-product-properties">
                 {foreach from=$properties[$item->getId()] key="pkey" item="pitem"}

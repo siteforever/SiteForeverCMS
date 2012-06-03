@@ -46,7 +46,8 @@ class Model_Catalog extends Sfcms_Model
     public function relation()
     {
         return array(
-            'Gallery' => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
+            'Gallery'       => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
+            'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
         );
     }
 

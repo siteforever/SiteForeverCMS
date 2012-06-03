@@ -19,6 +19,15 @@ class Forms_Catalog_Edit extends Form_Form
         $model   = Sfcms_Model::getModel( 'Catalog' );
         $parents = $model->getCategoryList();
         $this->getField('parent')->setVariants( $parents );
+
+        $manufModel = Sfcms_Model::getModel('Manufacturers');
+        $manufacturers = $manufModel->findAll(array('order'=>'name'));
+        $manufArray = array();
+        foreach( $manufacturers as $manuf ) {
+            $manufArray[ $manuf->getId() ] = $manuf->name;
+        }
+        $this->getField('manufacturer')->setVariants( $manufArray );
+
         return parent::html( $hint, $buttons );
     }
 
@@ -63,6 +72,9 @@ class Forms_Catalog_Edit extends Form_Form
                         'articul'   => array('type'=>'text', 'label'=>'Артикул', 'value'=>'', 'hidden'),
                         'price1'    => array('type'=>'text', 'label'=>'Цена роз.', 'value'=>'0', 'hidden'),
                         'price2'    => array('type'=>'text', 'label'=>'Цена опт.', 'value'=>'0', 'hidden'),
+                        'manufacturer' => array(
+                            'type'=>'select', 'label'=>'Производитель', 'value'=>'0', 'hidden',
+                        ),
                         'p0'        => array('type'=>'text', 'label'=>'Параметр 0'),
                         'p1'        => array('type'=>'text', 'label'=>'Параметр 1'),
                         'p2'        => array('type'=>'text', 'label'=>'Параметр 2'),

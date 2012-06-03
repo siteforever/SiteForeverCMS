@@ -12,6 +12,8 @@
  * @property string $name
  * @property string $path
  * @property int deleted
+ * @property Data_Object_Manufacturers Manufacturer
+ * @property Data_Object_CatGallery Gallery
  */
 class Data_Object_Catalog extends Data_Object
 {

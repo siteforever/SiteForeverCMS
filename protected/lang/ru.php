@@ -92,6 +92,7 @@ return array(
 
 
     'Manufacturers' => 'Производители',
+    'Manufacturer'  => 'Производитель',
     'Create manufacturer' => 'Создать приозводителя',
     'Edit manufacturer' => 'Править приозводителя',
 

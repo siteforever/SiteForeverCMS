@@ -309,16 +309,16 @@ class Controller_Catalog extends Sfcms_Controller
                     return t( 'The section can not be in myself' );
                 }
                 if( ! $object->getId() ) {
-                    $object->save();
-                    $this->reload(
-                        '', array(
-                            'controller'=> 'catalog',
-                            'action'    => 'admin',
-                            'part'      => $object->parent
-                        )
-                    );
+                    $object->markNew();
+                } else {
+                    $object->markDirty();
                 }
-                $object->save();
+                $this->reload( null, array(
+                        'controller'=> 'catalog',
+                        'action'    => 'admin',
+                        'part'      => $object->parent
+                    ), 1000
+                );
                 return t( 'Data save successfully' );
             }
             else {
@@ -521,6 +521,7 @@ class Controller_Catalog extends Sfcms_Controller
         //$form->image->show();
         $form->getField( 'icon' )->hide();
         $form->getField( 'articul' )->show();
+        $form->getField( 'manufacturer' )->show();
         $form->getField( 'price1' )->show();
         $form->getField( 'price2' )->show();
         $form->getField( 'sort_view' )->hide();
