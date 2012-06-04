@@ -49,6 +49,7 @@ class Model_Catalog extends Sfcms_Model
             'Gallery'       => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
             'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
+            'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
         );
     }
 

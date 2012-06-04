@@ -28,6 +28,10 @@ class Controller_Goods extends Sfcms_Controller
         $count = $model->count('cat=?', array(0));
         $pager = $this->paging( $count, 25, 'goods/admin' );
         $goods = $model->with('Category','Manufacturer')->findAll('cat=?', array(0), 'name', $pager->limit);
-        return array('list'=>$goods, 'pager'=>$pager);
+
+        return array(
+            'list'=>$goods,
+            'pager'=>$pager,
+        );
     }
 }

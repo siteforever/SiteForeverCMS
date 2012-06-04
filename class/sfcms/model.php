@@ -7,7 +7,6 @@ abstract class Sfcms_Model
     const HAS_MANY = 'has_many'; // содержет много
     const HAS_ONE = 'has_one'; // содержет один
     const BELONGS = 'belongs'; // принадлежит
-    const MANY_MANY = 'many_many'; // много ко многим
 
     const STAT = 'stat'; // статистическая связь
 
@@ -343,24 +342,24 @@ abstract class Sfcms_Model
 
     /**
      * Finding data by primary key
-     * @throws Exception
+     * @throws Sfcms_Model_Exception
      * @param int|array|Data_Criteria $crit
      * @return Data_Object
      */
     final public function find( $crit )
     {
         $this->with = array();
+        $criteria   = null;
         if( is_object( $crit ) ) {
             if( $crit instanceof Db_Criteria ) {
                 $criteria = new Data_Criteria( $this->getTable(), $crit );
-            }
-            elseif( $crit instanceof Data_Criteria ) {
+            } elseif( $crit instanceof Data_Criteria ) {
                 $criteria = $crit;
             }
         }
         // не определился критерий, но параметр - число
         // тогда полагаем, что параметр - это ID объекта
-        if( ! isset ( $criteria ) && is_numeric( $crit ) ) {
+        if( null === $criteria && is_numeric( $crit ) ) {
             $obj = $this->getFromMap( $crit );
             if( $obj ) {
                 return $obj;
@@ -370,7 +369,7 @@ abstract class Sfcms_Model
                 'params'=> array( ':id'=> $crit ),
                 'limit' => '1',
             );
-        } elseif( is_array( $crit ) ) {
+        } else if( is_array( $crit ) ) {
             $default = array(
                 'select'    => '*',
                 'cond'      => 'id = :id',
@@ -389,7 +388,6 @@ abstract class Sfcms_Model
 
         if( $data ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
-
             if( null !== $obj ) {
                 return $obj;
             } else {
@@ -432,97 +430,57 @@ abstract class Sfcms_Model
 
         $raw = $this->db->fetchAll( $criteria->getSQL() );
 
-        $collection = array();
-
-        if( $raw ) {
+        if( count( $raw ) ) {
             $collection = new Data_Collection( $raw, $this );
-        }
-
-        if( count( $raw ) && count( $with ) ) {
-            $relation = $this->relation();
-            $keys   = array();
-            /** @var $obj Data_Object */
-            foreach ( $collection as $obj ) {
-                $keys[] = $obj->getId();
-            };
-            foreach( $with as $rel ) {
-                $model = self::getModel( $relation[ $rel ][ 1 ] );
-                $key   = $relation[ $rel ][ 2 ];
-                switch ( $relation[ $rel ][ 0 ] ) {
-                    case self::HAS_ONE:
-                        $objects = $model->findAll( " $key IN ( ".implode( ",", $keys )." ) ");
-                        /** @var $o Data_Object */
-                        foreach ( $objects as $o ) {
-                            $this->find( $o->get( $key ) )->set( $rel, $o );
-                        };
-                        break;
-                    case self::HAS_MANY:
-                        $objects = $model->findAll( " $key IN ( ".implode( ",", $keys )." ) ");
-                        /** @var $o Data_Object */
-                        $indexes    = array();
-                        foreach ( $objects as $o ) {
-                            $indexes[ $o->get( $key ) ][ $o->getId() ] = $o;
-                        }
-                        foreach ( $indexes as $i => $col ) {
-                            $obj = $this->find( $i );
-                            $obj->set( $rel, $col );
-                        }
-                        break;
+            if( count( $with ) ) {
+                foreach( $with as $rel ) {
+                    $relation = $this->getRelation( $rel, $collection->getRow(0) );
+                    $relation->with( $collection );
                 }
             }
+        } else {
+            $collection = new Data_Collection();
         }
-
         return $collection;
     }
 
     /**
      * Поиск по отношению
      * @param string $rel
-     * @param mixed $data
-     * @return array|Data_Object|boolean
+     * @param mixed $obj
+     * @return array|Data_Object|null
      */
-    final public function findByRelation( $rel, $data )
+    final public function findByRelation( $rel, Data_Object $obj )
     {
-        /** @var $obj Data_Object */
-        $obj    = null;
-        if( is_object( $data ) && $data instanceof Data_Object ) {
-            $obj = $data;
+        $relation = $this->getRelation( $rel, $obj );
+        if ( $relation ) {
+            return $relation->find();
         }
+        return null;
+    }
 
-        $relation = $this->relation();
 
-        $key = $relation[ $rel ][ 2 ];
-
-        $model = self::getModel( $relation[ $rel ][ 1 ] );
-
-        $criteria   = array();
-        if( in_array( $relation[ $rel ][ 0 ], array( self::HAS_ONE, self::HAS_MANY ) ) ) {
-            $criteria = array(
-                'cond'  => " {$key} IN (:key) ",
-                'params'=> array( ":key"=> $obj->getId() ),
-            );
-        }
-
-        switch ( $relation[ $rel ][ 0 ] )
-        {
-            case self::HAS_ONE:
-                return $model->find( $criteria );
-
-            case self::HAS_MANY:
-                return $model->findAll( $criteria );
-
+    /**
+     * Фабрика отношений
+     * @param string      $rel
+     * @param Data_Object $obj
+     *
+     * @return null|Data_Relation
+     */
+    private function getRelation( $rel, Data_Object $obj )
+    {
+        $relation = $obj->getModel()->relation();
+        switch ( $relation[ $rel ][ 0 ] ) {
             case self::BELONGS:
-                if( $obj->$key ) {
-                    return $model->find( $obj->$key );
-                }
-                return null;
-
-            case self::MANY_MANY:
-                return null;
-
+                return new Data_Relation_Belongs( $rel, $obj );
+            case self::HAS_ONE:
+                return new Data_Relation_One( $rel, $obj );
+            case self::HAS_MANY:
+                return new Data_Relation_Many( $rel, $obj );
             case self::STAT:
-                return $model->count( $criteria[ 'cond' ], $criteria[ 'params' ] );
+                return new Data_Relation_Stat( $rel, $obj );
         }
+        return null;
     }
 
     /**
@@ -598,6 +556,7 @@ abstract class Sfcms_Model
                 return true;
             }
         }
+        return false;
     }
 
     /**

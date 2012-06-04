@@ -127,26 +127,12 @@ class Data_Collection implements Iterator
         return $summa;
     }
 
-    /**
-     * Вернет имя класса объекта
-     * @return string
-     */
-//    function targetClass()
-//    {
-//        if ( preg_match('/Mapper_(.*?)_Collection/', get_class( $this ), $match ) ) {
-//            return 'Domain_'.$match[1];
-//        }
-//        else {
-//            throw new Mapper_Exeption('Невозможно определить Target Class');
-//        }
-//    }
 
     /**
      * @return void
      */
     protected function notifyAccess()
     {
-
     }
 
     /**
