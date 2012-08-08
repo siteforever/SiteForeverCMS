@@ -31,33 +31,24 @@ class Controller_News extends Sfcms_Controller
     {
         $id = intval( $this->request->get('doc' ) );
         $alias = $this->request->get( 'alias' );
-
+        /** @var $news Data_Object_News */
         if ( $id ) {
             $news = $model->find( $id );
         } elseif ( $alias ) {
-            $criteria = $model->criteriaFactory();
-            $criteria->condition = 'alias = ? AND deleted = 0';
-            $criteria->params    = array($alias);
-            $this->log( $alias );
-            $news = $model->find($criteria);
-            $this->log( $alias );
+            $news = $model->findByAlias( $alias );
         }
 
         if ( ! $news ) {
-            throw new Sfcms_Http_Exception(t('Article not found'), 404);
+            throw new Sfcms_Http_Exception(t('news','Article not found'), 404);
         }
 
         // работаем над хлебными крошками
         $bc = $this->tpl->getBreadcrumbs();
-        $bc->clearPieces();
-        $bc->fromSerialize( $this->page->path );
-        $bc->addPiece( null, $news['title'] ? $news['title'] : $news['name'] );
-
-        $this->request->set('tpldata.page.path',$bc->toJson());
+        $bc->addPiece( null, $news->title );
 
         $this->tpl->assign('news', $news);
 
-        $this->request->setTitle( $news['title'] ?: $news['name'] );
+        $this->request->setTitle( $news->title );
 
         if ( ! $this->user->hasPermission( $news['protected'] ) ) {
             throw new Sfcms_Http_Exception( t('Access denied'), 403 );
@@ -117,7 +108,9 @@ class Controller_News extends Sfcms_Controller
      */
     public function adminAction()
     {
-        $this->request->setTitle(t('News'));
+        $this->request->setTitle(t('news','News'));
+        $this->app()->addScript('/misc/admin/news.js');
+
         /** @var model_News $model */
         $model      = $this->getModel('News');
         $category   = $model->category;
@@ -135,7 +128,9 @@ class Controller_News extends Sfcms_Controller
     public function listAction()
     {
         /**/
-        $this->request->setTitle(t('News'));
+        $this->request->setTitle(t('news','News'));
+        $this->app()->addScript('/misc/admin/news.js');
+
         $model      = $this->getModel('News');
         /**/
         $catId =  $this->request->get('id', Request::INT);
@@ -165,7 +160,7 @@ class Controller_News extends Sfcms_Controller
      */
     public function editAction( )
     {
-        $this->request->setTitle(t('News edit'));
+        $this->request->setTitle(t('news','News edit'));
         /** @var $model Model_News */
         $model      = $this->getModel('News');
         /** @var $form Form_Form */
@@ -181,10 +176,10 @@ class Controller_News extends Sfcms_Controller
                     $obj = $model->createObject( $data );
                     $obj->markNew();
                 }
-                $this->reload('news/list/', array('id'=>$data['cat_id'],));
-                return t('Data save successfully');
+//                $this->reload('news/list/', array('id'=>$data['cat_id'],));
+                return array('error'=>0, 'msg'=>t('Data save successfully'));
             }
-            return $this->request->getFeedbackString();
+            return array('error'=>1, 'msg'=>$this->request->getFeedbackString());
         }
 
         $edit   = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
@@ -216,7 +211,7 @@ class Controller_News extends Sfcms_Controller
      */
     public function cateditAction( )
     {
-        $this->request->setTitle(t('News category'));
+        $this->request->setTitle(t('news','News category'));
         /** @var $newsModel Model_News */
         $newsModel      = $this->getModel( 'News' );
         /** @var $categoryModel Model_NewsCategory */
@@ -234,10 +229,10 @@ class Controller_News extends Sfcms_Controller
                     $obj = $categoryModel->createObject( $data );
                     $obj->markNew();
                 }
-                $this->reload('news/admin', array(), 2000);
-                return t('Data save successfully');
+//                $this->reload('news/admin', array(), 2000);
+                return array( 'error'=>0, 'msg'=>t('Data save successfully') );
             } else {
-                return $form->getFeedbackString();
+                return array( 'error'=>1, 'msg'=>$form->getFeedbackString()) ;
             }
         }
 
@@ -264,7 +259,7 @@ class Controller_News extends Sfcms_Controller
     public function catdeleteAction( )
     {
         /**/
-        $this->request->setTitle(t('News category'));
+        $this->request->setTitle(t('news','News category'));
         $model      = $this->getModel('News');
         /**/
         $category   = $this->getModel('NewsCategory');
@@ -286,7 +281,7 @@ class Controller_News extends Sfcms_Controller
         $catObj->deleted   = 1;
 
         $this->reload('news/admin');
-        return t('News category was deleted');
+        return t('news','News category was deleted');
     }
 
     /**
@@ -300,6 +295,7 @@ class Controller_News extends Sfcms_Controller
         /**/
         $newsId    = $this->request->get('id', Request::INT);
 
+        /** @var $obj Data_Object_News */
         $obj    = $model->find( $newsId );
 
         $catId = $obj->cat_id;

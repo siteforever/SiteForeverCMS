@@ -16,20 +16,36 @@ class Model_News extends Sfcms_Model
      */
     public $category;
 
-    function Init()
+    public function Init()
     {
         $this->category = self::getModel( 'NewsCategory' );
     }
 
-    function findAllWithLinks($crit = array())
+    /**
+     * Поиск объекта по алиасу
+     * @param $alias
+     * @return Data_Object_News
+     */
+    public function findByAlias( $alias )
+    {
+        $criteria = $this->criteriaFactory();
+        $criteria->condition = 'alias = ? AND deleted = 0';
+        $criteria->params    = array($alias);
+        $obj = $this->find($criteria);
+        return $obj;
+    }
+
+    /**
+     * @param array|Db_Criteria $crit
+     * @return array|Data_Collection
+     */
+    public function findAllWithLinks($crit = array())
     {
         $data_all   = $this->findAll( $crit );
 
         $list_id    = array();
         foreach ( $data_all as $news ) {
-            /**
-             * @var Data_Object_News $news
-             */
+            /** @var Data_Object_News $news */
             $list_id[]  = $news->cat_id;
         }
 
@@ -57,36 +73,17 @@ class Model_News extends Sfcms_Model
             }
         }
 
-        //printVar( Data_Watcher::instance()->dumpNew() );
-
         return $data_all;
     }
 
     /**
      * @return form_Form
      */
-    function getForm()
+    public function getForm()
     {
         if ( is_null( $this->form ) ) {
             $this->form = new forms_news_Edit();
         }
         return $this->form;
-    }
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_News';
-    }
-
-    /**
-     * Класс для контейнера данных
-     * @return string
-     */
-    public function objectClass()
-    {
-        return 'Data_Object_News';
     }
 }

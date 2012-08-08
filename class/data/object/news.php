@@ -36,6 +36,14 @@ class Data_Object_News extends Data_Object
         return $this->data['alias'];
     }
 
+    public function getTitle()
+    {
+        if ( $this->data['title'] ) {
+            return $this->data['title'];
+        }
+        return $this->data['name'];
+    }
+
     public function getUrl()
     {
         /** @var $pageModel Model_Page */

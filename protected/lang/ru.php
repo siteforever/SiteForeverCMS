@@ -110,5 +110,10 @@ return array_merge(
         'Thumb'                                     => 'Миниатюра',
         'Thumbnail'                                 => 'Миниатюра',
 
+        'Nothing was found'                         => 'Ничего не найдено',
+
+        'On' => 'Вкл',
+        'Off' => 'Выкл',
+
         'Page :name' => 'Страница :name',
     ) );

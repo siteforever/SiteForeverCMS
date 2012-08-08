@@ -13,7 +13,7 @@ class forms_news_Edit extends form_Form
     {
         $app    = App::getInstance();
 
-        $category   = Sfcms_Model::getModel('model_NewsCategory');
+        $category   = Sfcms_Model::getModel('NewsCategory');
         $cats_data = $category->findAll();
 
 
@@ -24,6 +24,7 @@ class forms_news_Edit extends form_Form
 
         parent::__construct(array(
             'name'      => 'news',
+            'action'    => App::getInstance()->getRouter()->createServiceLink('news','edit'),
             'fields'    => array(
                 'id'        => array('type'=>'int', 'value'=>'0', 'hidden',),
                 'cat_id'    => array(

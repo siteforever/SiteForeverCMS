@@ -185,8 +185,8 @@ sf.page.createDialog = {
     'resizable': false,
     'width':     300,
     'height':    200,
-    'top':       100,
-    'position': 'center',
+//    'top':       100,
+//    'position': 'center',
     'open': function(){
         $(this ).html('Loading...');
         $( this ).dialog('option', 'title', $( sf.page.a ).attr('title'));
@@ -209,8 +209,8 @@ sf.page.editDialog = {
     'modal':     true,
     'resizable': false,
     'width':     700,
-    'top':       100,
-    'position': 'center',
+//    'top':       100,
+//    'position': 'center',
     'open'  :   function() {
         $( "#tabs" ).tabs();
         wysiwyg.init();
