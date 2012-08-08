@@ -134,7 +134,7 @@ class Sfcms_i18n
      * @return mixed
      * @throws Exception
      */
-    public function getCategoryTranslate( $category, $message, $params = array() )
+    protected function getCategoryTranslate( $category, $message, $params = array() )
     {
         $category = strtolower( $category );
         if ( $category && ! isset( $this->_dictionary[ $category ] ) ) {
@@ -146,10 +146,12 @@ class Sfcms_i18n
                 throw new Exception( 'Dictionary ' . $category . ' for language ' . $this->_lang
                     . ' not found in file ' . $dictFile );
             }
-            $this->_dictionary[ $category ] = @include( $dictFile );
+            $this->_dictionary[ 'cat_' . $category ] = @include( $dictFile );
         }
-        if ( isset( $this->_dictionary[ $category ][ $message ] ) ) {
-            $message = $this->_dictionary[ $category ][ $message ];
+        if ( null !== $category && isset( $this->_dictionary[ 'cat_' . $category ][ $message ] ) ) {
+            $message = $this->_dictionary[ 'cat_' . $category ][ $message ];
+        } elseif ( isset( $this->_dictionary[ $message ] ) ) {
+            $message = $this->_dictionary[ $message ];
         }
         foreach ( $params as $key => $val ) {
             $message = str_replace( $key, $val, $message );

@@ -14,7 +14,7 @@ return array(
 
     'logger'    => 'plain',
 
-    'language'  => 'en',
+    'language'  => 'ru',
 
 
     'sitename'  => 'SiteForeverCMS',

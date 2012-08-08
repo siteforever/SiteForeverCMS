@@ -26,4 +26,6 @@ return array(
     'The page with this address already exists' => 'Страница с таким адресом уже существует',
 
     'Protected page'                            => 'Защищенная страница',
+
+    'Page :name' => 'Страница :name',
 );
