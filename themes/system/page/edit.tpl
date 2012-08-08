@@ -3,10 +3,10 @@
 <div id="tabs" style="height: 100%">
 
     <ul>
-        <li><a href="#tabs-1">{t}Main settings{/t}</a></li>
-        <li><a href="#tabs-2">{t}Notice{/t}</a></li>
-        <li><a href="#tabs-3">{t}Content{/t}</a></li>
-        <li><a href="#tabs-4">{t}Constraints{/t}</a></li>
+        <li><a href="#tabs-1">{t cat="page"}Main settings{/t}</a></li>
+        <li><a href="#tabs-2">{t cat="page"}Notice{/t}</a></li>
+        <li><a href="#tabs-3">{t cat="page"}Content{/t}</a></li>
+        <li><a href="#tabs-4">{t cat="page"}Constraints{/t}</a></li>
     </ul>
 
 {form form=$form}
@@ -16,7 +16,7 @@
 
     <div id="tabs-1">
         <fieldset>
-            <legend>{t}System{/t}</legend>
+            <legend>{t cat="page"}System{/t}</legend>
             {$form->htmlFieldWrapped('name')}
             {$form->htmlFieldWrapped('template')}
             {$form->htmlFieldWrapped('alias')}
@@ -29,13 +29,13 @@
             {$form->htmlFieldWrapped('sort')}
         </fieldset>
         <fieldset>
-            <legend>{t}Seo{/t}</legend>
+            <legend>{t cat="page"}Seo{/t}</legend>
             {$form->htmlFieldWrapped('title')}
             {$form->htmlFieldWrapped('keywords')}
             {$form->htmlFieldWrapped('description')}
         </fieldset>
         <fieldset>
-            <legend>{t}Images{/t}</legend>
+            <legend>{t cat="page"}Images{/t}</legend>
             {$form->htmlFieldWrapped('thumb')}
             {$form->htmlFieldWrapped('image')}
         </fieldset>

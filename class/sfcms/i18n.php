@@ -72,12 +72,23 @@ class Sfcms_i18n
         // Prepare dictionary for JS
         $jsDictFile = ROOT.DIRECTORY_SEPARATOR.'_runtime'.DIRECTORY_SEPARATOR.'i18n.'.$this->_lang.'.js';
         $jsI18nFile = SF_PATH.DIRECTORY_SEPARATOR.'misc'.DIRECTORY_SEPARATOR.'siteforever'.DIRECTORY_SEPARATOR.'i18n.js';
+
+        if ( App::isDebug() ) {
+            unlink( $jsDictFile );
+        }
+
+        clearstatcache();
         if ( ! file_exists( $jsDictFile )
             || filemtime( $dictFile ) < filemtime( $jsDictFile )
             || filemtime( $jsI18nFile ) < filemtime( $jsDictFile ) )
         {
             $jsDict = array('// RUNTIME DICTIONARY FILE');
             $jsDict[] = file_get_contents( $jsI18nFile );
+
+            $dictList = glob( dirname( $dictFile ) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php' );
+            foreach( $dictList as $file ) {
+                $this->_dictionary[ 'cat_' . basename( $file, '.php' )] = @include( $file );
+            }
             $jsDict[] = "siteforever.i18n._dict = ".json_encode( $this->_dictionary ).';';
             file_put_contents( $jsDictFile, join("\n\n", $jsDict) );
         }

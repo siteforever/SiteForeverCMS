@@ -7,6 +7,7 @@
 
 var siteforever = function(){},
     sf = siteforever,
+    $s = siteforever,
     sfcms = siteforever;
 
 

@@ -27,5 +27,7 @@ return array(
 
     'Protected page'                            => 'Защищенная страница',
 
+    'Conversion of aliases'                     => 'Пересчет алиасов',
+
     'Page :name' => 'Страница :name',
 );

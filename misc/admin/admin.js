@@ -69,7 +69,7 @@ $(function () {
     $('div.b-main-structure a.edit' ).live('click',function(){
         sf.page.a = this;
         $.post( $(this).attr('href') ).then( $.proxy(function( response ){
-            $('#edit_page_dialog' ).html( response ).dialog('option','title',sf.i18n('Edit page')).dialog('open');
+            $('#edit_page_dialog' ).html( response ).dialog('option','title',sf.i18n('page','Edit page')).dialog('open');          //
         }, this));
         return false;
     });
@@ -185,6 +185,7 @@ sf.page.createDialog = {
     'resizable': false,
     'width':     300,
     'height':    200,
+    'top':       100,
     'position': 'center',
     'open': function(){
         $(this ).html('Loading...');
@@ -208,6 +209,7 @@ sf.page.editDialog = {
     'modal':     true,
     'resizable': false,
     'width':     700,
+    'top':       100,
     'position': 'center',
     'open'  :   function() {
         $( "#tabs" ).tabs();

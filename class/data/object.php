@@ -63,7 +63,7 @@ abstract class Data_Object extends \Sfcms\Component
      */
     public function set( $key, $value )
     {
-        $oldValue = isset( $this->data[$key] ) ? $this->data['key'] : null;
+        $oldValue = isset( $this->data[$key] ) ? $this->data[$key] : null;
         parent::set( $key, $value );
         if ( null === $oldValue || $oldValue != $value ) {
             $this->markDirty();
