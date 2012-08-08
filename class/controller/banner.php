@@ -162,7 +162,7 @@ class Controller_Banner extends Sfcms_Controller
      */
     public function catAction()
     {
-        $this->request->addScript('/misc/admin/banner.js');
+        $this->app()->addScript('/misc/admin/banner.js');
         /** @var $model Model_Banner */
         $model    = $this->getModel( 'Banner' );
         /** @var $category Model_CategoryBanner */

@@ -21,7 +21,7 @@
             <a class="ban_add" {href controller="banner" action="edit" id=$item.id} title="Править баннер">{icon name="pencil" title="Править"}</a>
         </td>
         <td>
-            <a {href controller="banner" action="del" id=$item.id}>{icon name="delete" title="Удалить"}</a>
+            <a {href controller="banner" action="del" id=$item.id} class="do_delete">{icon name="delete" title="Удалить"}</a>
         </td>
     </tr>
     {foreachelse}

@@ -7,15 +7,13 @@ siteforever.banner = {};
 
 siteforever.banner.dialogSettings = {
     autoOpen: false,
-    width:    735,
+    width:    700,
     modal:    true,
     open:     function () {
+        $( "#tabs" ).tabs();
         wysiwyg.init();
     },
     buttons:  {
-        "Отмена":    function () {
-            $( this ).dialog( "close" );
-        },
         "Сохранить": function () {
             var self = this,
                 url  = $('form', this )[0].getAttribute('action');
@@ -38,6 +36,9 @@ siteforever.banner.dialogSettings = {
                     return true;
                 }
             } );
+        },
+        "Отмена":    function () {
+            $( this ).dialog( "close" );
         }
     }
 };
