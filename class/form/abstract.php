@@ -50,7 +50,7 @@ abstract class Form_Abstract
     public function __construct( $config, Request $request = null )
     {
         if ( isset( $request )  ) {
-            $request->addScript( $request->get('path.misc').'/jquery/jquery.form.js' );
+            $request->app()->addScript( $request->get('path.misc').'/jquery/jquery.form.js' );
             //$request->addScript( $request->get('path.misc').'/jquery/jquery.blockUI.js' );
             //$request->addScript( $request->get('path.misc').'/forms.js' );
         }
@@ -91,6 +91,8 @@ abstract class Form_Abstract
             }
         }
     }
+
+
 
     /**
      * @param Form_Field $field
@@ -390,5 +392,45 @@ abstract class Form_Abstract
     public function changeFieldType( $type )
     {
 
+    }
+
+    public function setAction( $action )
+    {
+        $this->_action = $action;
+    }
+
+    public function getAction()
+    {
+        return $this->_action;
+    }
+
+    public function setClass( $class )
+    {
+        $this->_class = $class;
+    }
+
+    public function getClass()
+    {
+        return $this->_class;
+    }
+
+    public function setName( $name )
+    {
+        $this->_name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    public function setMethod( $method )
+    {
+        $this->_method = $method;
+    }
+
+    public function getMethod()
+    {
+        return $this->_method;
     }
 }

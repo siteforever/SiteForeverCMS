@@ -17,8 +17,8 @@ class Controller_Basket extends Sfcms_Controller
 
         $cat    = $this->getModel('Catalog');
 
-        $this->request->setTitle('Корзина');
-        $this->request->setContent('Корзина');
+        $this->request->setTitle(t('basket','Basket'));
+        $this->request->setContent(t('basket','Basket'));
         $this->request->set('template', 'inner');
 
 
@@ -88,8 +88,10 @@ class Controller_Basket extends Sfcms_Controller
             'all_summa'     => $all_summa,
         ));
 
-        $this->tpl->getBreadcrumbs()->addPiece('index','Главная')->addPiece(null,$this->request->getTitle());
-        $this->request->setContent($this->tpl->fetch('basket.index'));
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('/',t('Home'))
+            ->addPiece(null,$this->request->getTitle());
+        return $this->tpl->fetch('basket.index');
     }
 
 
@@ -100,7 +102,7 @@ class Controller_Basket extends Sfcms_Controller
      * @param $_REQUEST['basket_prod_count']
      * @param $_REQUEST['basket_prod_price']
      * @param $_REQUEST['basket_prod_details']
-     * @return void
+     * @return string
      */
     public function addAction()
     {
@@ -123,13 +125,14 @@ class Controller_Basket extends Sfcms_Controller
 
             $this->basket->save();
 
-            $this->tpl->assign(array(
-                'count'     => $this->basket->getCount(),
-                'summa'     => $this->basket->getSum(),
-                'number'    => $this->basket->count(),
-            ));
-
-            $this->request->setContent( $this->tpl->fetch('basket.widget') );
         }
+        $this->tpl->assign(array(
+                                'count'     => $this->basket->getCount(),
+                                'summa'     => $this->basket->getSum(),
+                                'number'    => $this->basket->count(),
+                                'path'      => $this->request->get('path'),
+                           ));
+
+        return $this->tpl->fetch('basket.widget');
     }
 }

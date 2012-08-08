@@ -27,13 +27,11 @@ class Controller_Generator extends Sfcms_Controller
      */
     public function indexAction()
     {
-        $this->request->addScript('/misc/admin/generator.js');
+        $this->app()->addScript('/misc/admin/generator.js');
 
         $table_list = $this->getDB()->fetchAll("SHOW TABLES", false, PDO::FETCH_COLUMN);
 
         $this->tpl->assign('tables', $table_list);
-
-        $this->request->setContent($this->tpl->fetch('generator.index'));
     }
 
 

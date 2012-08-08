@@ -6,6 +6,12 @@
  * @link http://siteforever.ru
  */
 require_once 'class/data/object.php';
+
+/**
+ * @property string title
+ * @property string h1
+ * @property \Data_Object_GalleryCategory Category
+ */
 class Data_Object_Gallery extends Data_Base_Gallery
 {
     /**
@@ -13,66 +19,38 @@ class Data_Object_Gallery extends Data_Base_Gallery
      */
     public function getAlias()
     {
-        /**
-         * @var Model_Alias $model
-         */
-        $model  = $this->getModel('Alias');
-        $result = $model->find(
-            array(
-                'cond'      => 'url = ?',
-                'params'    => array( $this->createUrl() ),
-            )
-        );
-        if ( $result &&  $result->alias) {
-            return $result->alias;
+        $alias = $this->get('name') ? Sfcms_i18n::getInstance()->translit( $this->get('name') ) : $this->getId();
+        if ( ! $this->data['alias'] || $this->data['alias'] != $alias ) {
+            $this->data['alias'] = $alias;
+            $this->markDirty();
         }
-
-        $name   = $this->get('name');
-        $name   = $name ? $name : $this->getId();
-        //***********
-
-        try {
-            $alias  = $this->getCategory()->getAlias();
-        } catch ( Data_Exception $e ) {
-            return '';
-        }
-
-        $alias  .= '/'.$this->getModel('Alias')->generateAlias( $name );
-
-        return $alias;
+        return $this->data['alias'];
     }
 
     /**
      * @return string
      */
-    public function createUrl()
+    public function getUrl()
     {
-        return App::getInstance()->getRouter()->createServiceLink('gallery','index',array('img'=>$this->getId()));
-    }
-
-    /**
-     * @return Data_Object_GalleryCategory
-     */
-    public function getCategory()
-    {
-        $model  = $this->getModel('GalleryCategory');
-
-        $result = $model->find( $this->get('category_id') );
-
-        if ( null === $result )
-            throw new Data_Exception(t('Category not found'));
-        return $result;
-    }
-
-    /**
-     * @return string
-     */
-    public function getAddr()
-    {
-        if ( $this->get('alias_id') ) {
-            return $this->getAlias();
+        /** @var $pageModel Model_Page */
+        $pageModel = $this->getModel('Page');
+        $page = $pageModel->findByControllerLink( 'gallery', $this->category_id );
+        if ( null !== $page ) {
+            return $page->alias . '/' . $this->alias;
         } else {
-            return trim( $this->createUrl(), '/' );
+            return $this->alias;
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        $title = '';
+        if ( $this->name ) {
+            $title = $this->name;
+        }
+        return $title;
     }
 }

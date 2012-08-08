@@ -2,90 +2,58 @@
 /**
  * Интерфейс контроллера
  * @author: keltanas <keltanas@gmail.com>
+ *
+ * @property \TPL_Driver $tpl
  */
-abstract class Sfcms_Controller
+abstract class Sfcms_Controller extends \Sfcms\Component
 {
-    /**
-     * @var array
-     */
-    protected $params;
-
-    /**
-     * @var array|Data_Object_Page
-     */
-    protected $page;
-
-    /**
-     * @var Sfcms_Config $config
-     */
-    protected $config;
-
-    /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
-     * @var router
-     */
-    protected $router;
-
-    /**
-     * @var TPL_Driver
-     */
-    protected $tpl;
-
-    /**
-     * @var Data_Object_User
-     */
-    protected $user;
-
-
-    /**
-     * @var Basket
-     */
-    protected $basket;
-
-    /**
-     * @var model_Templates
-     */
-    protected $templates;
-
-
-    /**
-     * @var Application_Abstract
-     */
-    private $app;
-
     private static $forms = array();
 
-    public function __construct( Application_Abstract $app )
+    /** @var TPL_Driver */
+    private $_tpl = null;
+
+    /** @var array */
+    protected $params;
+
+    /** @var array|Data_Object_Page */
+    protected $page;
+
+    /** @var Sfcms_Config $config */
+    protected $config;
+
+    /** @var Request */
+    protected $request;
+
+    /** @var router */
+    protected $router;
+
+    /** @var Data_Object_User */
+    protected $user;
+
+    /** @var Model_Templates */
+    protected $templates;
+
+    public function __construct()
     {
-        $this->app      = $app;
-        $this->config   = $app->getConfig();
-        $this->request  = $app->getRequest();
-        $this->router   = $app->getRouter();
-        $this->tpl      = $app->getTpl();
-        $this->user     = $app->getAuth()->currentUser();
-        $this->basket   = $app->getBasket();
+        $this->config   = $this->app()->getConfig();
+        $this->request  = $this->app()->getRequest();
+        $this->router   = $this->app()->getRouter();
+        $this->user     = $this->app()->getAuth()->currentUser();
         $this->params = $this->request->get('params');
 
-        $id         = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
-        $controller = $this->request->get( 'controller' );
+        // Basket should be initialized to connect the JavaScript module
+        $this->getBasket();
+
+        $id         = $this->request->get( 'id', Request::INT );
+        $controller = $this->request->getController();
+        $action     = $this->request->getAction();
 
         try {
-            if ( null !== $id && 'page' != $controller ) {
-                $page   = $this->getModel('Page')->find(
-                    array(
-                         'cond'     => 'link = ? AND controller = ? AND deleted = 0',
-                         'params'   => array( $id, $controller )
-                    )
-                );
-            }
-            elseif ( 'page' == $controller && $id ) {
+            if ( null !== $id && ! in_array($controller, array('page','guestbook','gallery')) && 'index' == $action ) {
+                $page   = $this->getModel('Page')->findByControllerLink($controller,$id);
+            } elseif ( in_array($controller, array('page','guestbook','gallery')) && 'index' == $action && $id ) {
                 $page   = $this->getModel('Page')->find( $id );
-            }
-            else {
+            } else {
                 throw new Exception('Page not found');
             }
         } catch ( Exception $e ) {
@@ -93,16 +61,22 @@ abstract class Sfcms_Controller
         }
 
         if ( null !== $page ) {
-            if ( ! $page->get('title') ) {
-                $page->set('title', $page->get('name'));
-            }
-            $this->page     = $page->getAttributes();
+            // todo Если страница указана как объект, то в нее нельзя сохранять левые данные
             $this->request->setTemplate($page->get('template') );
             $this->request->setContent( $page->get('content') );
             $this->request->setTitle(   $page->get('title') );
+            $this->request->setDescription( $page->get('description') );
+            $this->request->setKeywords( $page->get('keywords') );
+            $this->tpl->getBreadcrumbs()->fromSerialize( $page->get('path') );
         }
+        $this->page     = $page;
 
-        $this->request->set( 'tpldata.page', $this->page );
+        if ( $this->app()->isDebug() ) {
+            $this->log( $this->request->debug(), 'Request' );
+            if ( $this->page ) {
+                $this->log( $this->page->getAttributes(), 'Page' );
+            }
+        }
 
         $this->tpl->assign(
             array(
@@ -114,6 +88,23 @@ abstract class Sfcms_Controller
         );
 
         $this->init();
+    }
+
+    /**
+     * @return TPL_Driver
+     */
+    public function getTpl()
+    {
+        if ( null === $this->_tpl ) {
+            $this->_tpl = $this->app()->getTpl();
+            $this->_tpl->assign('this', $this);
+        }
+        return $this->_tpl;
+    }
+
+    public function getBasket()
+    {
+        return $this->app()->getBasket();
     }
 
     /**
@@ -135,15 +126,6 @@ abstract class Sfcms_Controller
     public function __destruct()
     {
         $this->deInit();
-    }
-
-    /**
-     * Приложение
-     * @return Application_Abstract
-     */
-    public function app()
-    {
-        return $this->app;
     }
 
     /**
@@ -260,6 +242,14 @@ abstract class Sfcms_Controller
     }
 
     /**
+     * @return Sfcms_i18n
+     */
+    public function i18n()
+    {
+        return Sfcms_i18n::getInstance();
+    }
+
+    /**
      * Перенаправление на другой урл
      * @param string $url
      * @param array $params
@@ -267,7 +257,6 @@ abstract class Sfcms_Controller
      */
     protected function redirect( $url = '', $params = array() )
     {
-        Data_Watcher::instance()->performOperations();
         if( preg_match( '@^http@', $url ) ) {
             $this->request->set('redirect', $url);
         } else {
@@ -280,7 +269,8 @@ abstract class Sfcms_Controller
      * Перезагрузить страницу на нужную
      * @param string $url
      * @param array $params
-     * @return string
+     * @param $timeout
+     * @param $return
      */
     protected function reload( $url = '', $params = array(), $timeout = 0, $return = false )
     {

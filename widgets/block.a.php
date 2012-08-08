@@ -9,24 +9,26 @@ function smarty_block_a( $params, $content )
 {
     $a  = array();
     if ( isset($params['href']) ) {
-        $href    = $params['href'];
+        $href   = $params['href'];
         unset( $params['href'] );
+        unset( $params['url'] );
+    } elseif ( isset( $params['url'] ) ) {
+        $href   = $params['url'];
     } else {
         $href    = null;
     }
 
+    $class = '';
     if ( isset( $params['class'] ) ) {
         if ( is_string($params['class']) ) {
-            $a['class'] = "class=\"{$params['class']}\"";
+            $class = $params['class'];
         }
         if ( is_array($params['class']) ) {
-            $a['class'] = 'class="'.implode(' ', $params['class']).'"';
+            $class = implode(' ', $params['class']);
         }
         unset($params['class']);
     }
 
-    $a['href']  = Siteforever::html()->href( $href, $params );
-
-    $result = '<a '.implode(' ', $a).'>'.$content.'</a>';
+    $result = Siteforever::html()->link( $content, $href, $params, $class );
     return  $result;
 }

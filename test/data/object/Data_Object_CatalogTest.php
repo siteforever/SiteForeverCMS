@@ -42,6 +42,8 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
             )
         );
         $path = $obj10->path();
-        $this->assertEquals('a:3:{i:0;a:2:{s:2:"id";i:1;s:4:"name";s:4:"obj1";}i:1;a:2:{s:2:"id";i:5;s:4:"name";s:4:"obj5";}i:2;a:2:{s:2:"id";i:10;s:4:"name";s:5:"obj10";}}', $path);
+        $this->assertEquals('a:3:{i:0;a:2:{s:2:"id";i:1;s:4:"name";s:4:"obj1";}i:1;'
+            .'a:2:{s:2:"id";i:5;s:4:"name";s:4:"obj5";}i:2;'
+            .'a:2:{s:2:"id";i:10;s:4:"name";s:5:"obj10";}}', $path);
     }
 }

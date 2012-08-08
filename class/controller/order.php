@@ -6,65 +6,62 @@
  */
 class Controller_Order extends Sfcms_Controller
 {
-    function indexAction()
+    /**
+     * @return mixed
+     */
+    public function indexAction()
     {
         $this->request->set('template', 'inner');
         $this->request->setTitle('Мои заказы');
-        $this->request->setContent('');
 
         $user   = $this->app()->getAuth()->currentUser();
 
-
+        /** @var $order Model_Order */
         $order  = $this->getModel('Order');
 
         if ( ! $user->getId() || $user->perm == USER_GUEST ) {
             return $this->redirect("users/login");
         }
 
-        if ( $cancel = $this->request->get('cancel') )
-        {
-            //print "cancel:$cancel";
+        if ( $cancel = $this->request->get('cancel') ) {
             $can_order = $order->find( $cancel );
-            if( $can_order['user_id'] == $user->getId() )
-            {
+            if( $can_order['user_id'] == $user->getId() ) {
                 $can_order['status'] = '100';
-                $order->update( $can_order );
+//                $order->update( $can_order );
             }
         }
 
         // просмотр заказа
-        $item = $this->request->get('item', FILTER_SANITIZE_NUMBER_INT);
+        $item = $this->request->get('item', Request::INT);
 
-        if ( $item )
-        {
-            $order_data = $order->find( $item );
+        if ( $item ) {
+            /** @var $orderObj Data_Object_Order */
+            $orderObj = $order->find( $item );
             
-            if ( $order_data )
-            {
-                if ( $this->user->get('id') != $order_data['user_id'] ) {
-                    $this->request->addFeedback('Заказ вам не принадлежит');
-                    return;
+            if ( $orderObj ) {
+                if ( $this->user->get('id') != $orderObj['user_id'] ) {
+                    return t('order','Order is not yours');
                 }
 
-                $list_pos = $order->findPositionsByOrderId( $item );
+                /** @var $list_pos Data_Collection */
+                $list_pos = $orderObj->positions;
+                $this->log( $list_pos, 'positions' );
                 $all_count = 0;
                 $all_summa = 0;
-                
-                foreach( $list_pos as &$position )
-                {
-                    $position['summa'] = $position['count'] * $position['price'];
+
+                /** @var $position Data_Object_OrderPosition */
+                foreach( $list_pos as $position ) {
                     $all_count += $position['count'];
                     $all_summa += $position['summa'];
                 }
                 $this->tpl->assign(array(
-                    'order' => $order_data,
+                    'order' => $orderObj,
                     'list'  => $list_pos,
                     'all_count' => $all_count,
                     'all_summa' => $all_summa,
                 ));
 
-                $this->request->setContent( $this->tpl->fetch('system:order.order'));
-                return;
+                return $this->tpl->fetch('system:order.order');
             }
         }
 
@@ -74,37 +71,33 @@ class Controller_Order extends Sfcms_Controller
             'order'     => 'status, date DESC',
         ));
 
-        //$list = $order->findAllByUserId( $user->getId() );
         $this->tpl->assign('list', $list);
-        $this->request->setContent( $this->tpl->fetch('system:order.index') );
+        return $this->tpl->fetch('system:order.index');
     }
 
     /**
      * Создать заказ
-     * @return
+     * @return mixed
      */
-    function createAction()
+    public function createAction()
     {
         $this->request->set('template', 'inner');
-        $this->request->setTitle('Оформить заказ');
-        $this->request->setContent('Оформить заказ');
+        $this->request->setTitle(t('order','Checkout'));
 
+        // todo Сделать возможность заказа для гостей
         // проверить, зарегистрирован ли клиент
-        if ( $this->user->getPermission() == USER_GUEST )
-        {
-            $this->request->setContent( $this->tpl->fetch('system:order.need') );
-            return;
+        if ( ! $this->user->hasPermission( USER_USER ) ) {
+            return $this->tpl->fetch('system:order.need');
         }
 
-        if ( $this->basket->getCount() == 0 ) {
-            $this->request->setContent( 'Ваша <a '.href('basket').'>корзина</a> пуста' );
-            return;
+        if ( $this->getBasket()->getCount() == 0 ) {
+            return t('order', 'Your basket is empty');
         }
 
         //$cat = $this->getModel('Catalog');
 
         // готовим список к выводу
-        $all_product = $this->basket->getAll();
+        $all_product = $this->getBasket()->getAll();
 
         $all_keys = array();
         foreach( $all_product as $prod ) {
@@ -129,10 +122,10 @@ class Controller_Order extends Sfcms_Controller
         // Создание заказа
         $complete = $this->request->get('complete');
         if ( $complete && $all_product ) {
-            //$this->request->debug();
-            $order_model    = $this->getModel('Order');
-            $order_model->createOrder( $all_product );
-            $this->basket->clear();
+            /** @var $orderModel Model_Order */
+            $orderModel    = $this->getModel('Order');
+            $orderModel->createOrder( $all_product );
+            $this->getBasket()->clear();
             return $this->redirect('order');
         }
 
@@ -145,9 +138,9 @@ class Controller_Order extends Sfcms_Controller
 
     /**
      * Действия админки
-     * @return void
+     * @return mixed
      */
-    function adminAction()
+    public function adminAction()
     {
         if ( $num = $this->request->get('num', FILTER_VALIDATE_INT) ) {
             return $this->adminEdit( $num );
@@ -226,9 +219,9 @@ class Controller_Order extends Sfcms_Controller
     /**
      * Редактирование заказа
      * @param int $num
-     * @return void
+     * @return mixed
      */
-    function adminEdit( $num )
+    public function adminEdit( $num )
     {
         $this->request->setTitle('Править заказ');
 

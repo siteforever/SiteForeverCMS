@@ -11,23 +11,18 @@
     
         {include file="header.tpl"}
 
-
         <div class="b-left-panel">
+            <div>
+                {basket}
+            </div>
             <div class="b-left-menu">
                 <h3>Карта сайта</h3>
                 {menu parent=0 level=5}
             </div>
-
-            <div class="b-left-catmenu">
-                <h3>Каталог</h3>
-                {catmenu parent=0 level=2}
-            </div>
         </div>
 
         <div class="b-content">
-        
-            {breadcrumbs page=$page}
-
+            {breadcrumbs}
             <h1>{$request->getTitle()}</h1>
 
             {if $request->getFeedback()}

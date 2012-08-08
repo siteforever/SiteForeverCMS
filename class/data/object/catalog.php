@@ -9,11 +9,14 @@
  * @property int $parent
  * @property int $cat
  * @property int $pos
+ * @property string $alias
+ * @property string $url
  * @property string $name
+ * @property string $title
  * @property string $path
  * @property int deleted
  * @property Data_Object_Manufacturers Manufacturer
- * @property Data_Object_CatGallery Gallery
+ * @property Data_Object_CatalogGallery Gallery
  */
 class Data_Object_Catalog extends Data_Object
 {
@@ -32,46 +35,82 @@ class Data_Object_Catalog extends Data_Object
                 return $this->get('path');
             }
         }
+        $path = $this->getModel()->createSerializedPath( $this->getId() );
+        return $path;
+    }
 
-        $path = array();
+    /**
+     * Вернет цену продукта в зависимости от привелегий пользователя
+     * @return float
+     */
+    public function getPrice()
+    {
+        $user = App::getInstance()->getAuth()->currentUser();
+        if ( $user->getPermission() == USER_WHOLE && $this->get('price2') > 0 ) {
+            return $this->get('price2');
+        }
+        return $this->get('price1');
+    }
 
-        if( $this->getId() ) {
-            $item = $this;
-            while( $item ) {
-                $path[ ] = array(
-                    'id'  => $item->getId(),
-                    'name'=> $item->name
-                );
-                if( $item->parent ) {
-                    $item = $this->getModel( 'Catalog' )->find( $item->parent );
-                } else {
-                    $item = null;
-                }
-            }
+    /**
+     * @return string
+     */
+    public function getTitle()
+    {
+        return empty( $this->data['title'] ) ? $this->name : $this->data['title'];
+    }
+
+    /**
+     * Вернет алиас товара
+     * @return string
+     */
+    public function getAlias()
+    {
+        $alias = strtolower( Sfcms_i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
+        if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
+            $this->data['alias'] = $alias;
+            $this->markDirty();
+        }
+        return $alias;
+    }
+
+    /**
+     * @return string
+     * @throws RuntimeException
+     */
+    public function getUrl()
+    {
+        /** @var $modelPage Model_Page */
+        $modelPage = $this->getModel('Page');
+        /** @var $page Data_Object_Page */
+        if ( $this->cat ) {
+            $page = $modelPage->findByControllerLink('catalog', $this->id);
+        } else {
+            $page = $modelPage->findByControllerLink('catalog', $this->parent);
         }
 
-        $return = serialize( array_reverse( $path ) );
-        $this->set('path', $return);
-        $this->getModel()->save( $this );
+        if ( null === $page ) {
+            throw new RuntimeException(t('Page for catalog category not found').'; page.link='.$this->parent);
+        }
 
-        return $return;
+        return $page->alias . ( $this->cat ? '' : '/' .  $this->alias );
     }
 
     /**
      * Вернет список изображений для товара
      * @return Data_Collection
      */
-    public function getGallery()
+/*    public function getGallery()
     {
         if ( null === $this->_gallery && $this->getId() ) {
-            $gallery_model  = $this->getModel('CatGallery');
+            $gallery_model  = $this->getModel('CatalogGallery');
             $this->_gallery = $gallery_model->findAll(array(
                  'cond'      => ' cat_id = ? ',
                  'params'    => array( $this->getId() ),
             ));
         }
         return $this->_gallery;
-    }
+    }*/
 
 
     /**
@@ -84,12 +123,12 @@ class Data_Object_Catalog extends Data_Object
 
     /**
      * Вернет главную картинку для товара
-     * @return Data_Object_CatGallery
+     * @return Data_Object_CatalogGallery
      */
     public function getMainImage()
     {
         if ( null === $this->_image ) {
-            $gallery    = $this->getGallery();
+            $gallery    = $this->Gallery;
             if ( null === $gallery ) {
                 return null;
             }

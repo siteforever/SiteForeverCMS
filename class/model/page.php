@@ -13,9 +13,9 @@ class Model_Page extends Sfcms_Model
 
     /**
      * Списков разделов в кэше
-     * @var array
+     * @var Data_Collection
      */
-    public $all = array();
+    public $all = null;
 
     public $html = array();
 
@@ -28,17 +28,14 @@ class Model_Page extends Sfcms_Model
 
     protected $available_modules;
 
+    /** @var array ControllerLink Cache */
+    private $_controller_link = array();
+
     public function Init()
     {
         // Кэшируем структуру страниц
-        $this->all = $this->findAll(
-            array(
-                'cond'  => 'deleted = 0',
-                'order' => 'pos',
-            )
-        );
+        $this->all = $this->findAll('deleted = ?',array(0),'pos');
     }
-
 
     public function onCreateTable()
     {
@@ -56,23 +53,20 @@ class Model_Page extends Sfcms_Model
             'title'         => 'Главная',
             'content'       => '<p>Эта страница была создана в автоматическом режиме</p>' .
                 '<p>Чтобы перейти к управлению сайтом, зайдите в ' .
-                '<a ' . Siteforever::html()->href( 'admin' ) . '>панель управления</a></p>',
+                '<a ' . Siteforever::html()->href( 'page/admin' ) . '>панель управления</a></p>',
             'author'        => '1',
-        )
-        );
+        ));
     }
 
     /**
-     * @param  $sort
-     *
-     * @return int
+     * @param array $sort
+     * @return mixed
      */
-    public function resort( $sort )
+    public function resort( array $sort )
     {
-        $sort = array_flip( $sort );
         $upd  = array();
 
-        foreach ( $sort as $id => $pos ) {
+        foreach ( $sort as $pos => $id ) {
             $upd[ ] = array(
                 'id' => $id,
                 'pos'=> $pos
@@ -82,76 +76,111 @@ class Model_Page extends Sfcms_Model
         if ($this->db->insertUpdateMulti( $this->getTable(), $upd )) {
             $this->request->setResponse( 'errno', 0 );
             $this->request->setResponse( 'error', 'ok' );
-            return 1;
-        }
-        else {
+            return 'done';
+        } else {
             $this->request->setResponse( 'errno', 1 );
             $this->request->setResponse( 'error', t( 'Data not saved' ) );
         }
-        return 0;
+        return 'fail';
+    }
+
+
+    /**
+     * @param $controller
+     * @param $link
+     *
+     * @return Data_Object_Page
+     */
+    public function findByControllerLink( $controller, $link )
+    {
+        if ( isset( $this->_controller_link[$controller][$link] ) ) {
+            return $this->_controller_link[$controller][$link];
+        }
+        /** @var $page Data_Object_Page */
+        foreach ( $this->all as $page ) {
+            if ( $link == $page->link && $controller == $page->controller ) {
+                $this->_controller_link[$controller][$link] = $page;
+                return $page;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Проверить алиас страницы
+     * @param $alias
+     * @return bool|int
+     */
+    public function checkAlias( $alias )
+    {
+        $find = false;
+        $alias = null;
+        /** @var $page Data_Object_Page */
+        foreach( $this->all as $page ) {
+            if ( $page->alias == $alias ) {
+                $find = $page->id;
+                break;
+            }
+        }
+        return $find;
     }
 
     /**
      * @param Data_Object_Page $obj
-     *
      * @return bool
+     * @throws Sfcms_Model_Exception
      */
-    public function onSaveStart( $obj = null )
+    public function onSaveStart( Data_Object $obj = null )
     {
-        if (null === $obj) {
-            return false;
-        }
-
-        //        $attributes = $obj->getAttributes();
-
-        // Проверить алиас страницы
-        $page = $this->find(
-            array(
-                'condition'=> '`alias`=?',
-                'params'   => array( $obj->getAlias() )
-            )
-        );
-        if ($page && $page->getId() != $obj->getId()) {
+        $pageId = $this->checkAlias( $obj->alias );
+        if ( false !== $pageId && $obj->getId() != $pageId ) {
             throw new Sfcms_Model_Exception( t( 'The page with this address already exists' ) );
         }
 
-        //        $obj->setAttributes( $attributes ); // Т.к. поиск $page может переписать параметры
-        //        var_dump($obj->controller);
-
-        /**
-         * @var Model_Alias $alias_model
-         */
-        $alias_model = $this->getModel( 'Alias' );
-        if ($obj->alias_id) {
-            $alias = $alias_model->find( $obj->alias_id );
-        }
-        else {
-            $alias = $alias_model->findByAlias( $obj->getAlias() );
-        }
-        //        var_dump($alias->getAttributes());
-
-
-        if (null !== $alias) {
-            if (!$obj->getId()) {
-                // если наш объект еще не создан, значит у кого-то уже есть такой алиас
-                throw new Sfcms_Model_Exception( t( 'The alias with this address already exists' ), 1 );
-            }
-
-            if ($obj->alias_id && $obj->alias_id != $alias->getId()) {
-                throw new Sfcms_Model_Exception( t( 'The alias with this address already exists' ), 2 );
-            }
-            //            else {
-            //                $route  = $obj->createUrl();
-            //                var_dump($route);
-            //                var_dump($alias->url);
-            //                if ( $alias->url != $route ) {
-            //                    // если адреса не соответствуют
-            //                    throw new ModelException('Такой алиас уже существует');
-            //                }
-            //            }
-        }
-
         $obj->path = $obj->createPath();
+
+
+        // Настраиваем связь с модулями
+        if ( in_array( $obj->controller, array('news','gallery','catalog') ) ) {
+
+            switch ( $obj->controller ) {
+                case 'news': $model = $this->getModel('NewsCategory'); break;
+                case 'gallery': $model = $this->getModel('GalleryCategory'); break;
+                case 'catalog': $model = $this->getModel('Catalog'); break;
+                default: $model = $this;
+            }
+
+            /** @var $category Data_Object */
+            if ( $obj->link ) {
+                $category = $model->find( $obj->link );
+            } else {
+                $category = $model->createObject();
+            }
+            $category->name = $obj->name;
+            $category->hidden = $obj->hidden;
+            $category->protected = $obj->protected;
+            $category->deleted = $obj->deleted;
+
+            if ( 'catalog' == $obj->controller ) {
+                /** @var $category Data_Object_Catalog  */
+                $category->cat = 1;
+
+                if ( $obj->parent ) {
+                    /** @var $parentPage Data_Object_Page */
+                    $parentPage = $this->find( $obj->parent );
+                    if ( $parentPage->controller == $obj->controller && $parentPage->link ) {
+                        $category->parent = $parentPage->link;
+                    } else {
+                        $category->parent = 0;
+                    }
+                }
+            }
+            $category->save();
+            if ( ! $obj->link ) {
+                $obj->link = $category->getId();
+            }
+        }
+        $this->log( $obj->controller . '.' . $obj->link, __METHOD__.':'.__LINE__ );
         return true;
     }
 
@@ -160,31 +189,8 @@ class Model_Page extends Sfcms_Model
      *
      * @return bool
      */
-    public function onSaveSuccess( $obj = null )
+    public function onSaveSuccess( Data_Object $obj = null )
     {
-        /**
-         * @var Model_Alias $alias_model
-         */
-        $alias_model = $this->getModel( 'Alias' );
-
-        if ($obj->alias_id) {
-            $alias = $alias_model->find( $obj->alias_id );
-        }
-        else {
-            $alias = $alias_model->findByAlias( $obj->getAlias() );
-        }
-
-        if (null === $alias) {
-            $alias = $alias_model->createObject();
-        }
-
-        $alias->alias = $obj->getAlias();
-        $alias->url   = $obj->createUrl();
-
-        //        $alias->controller  = $obj->controller;
-        //        $alias->action      = $obj->action;
-        //        $alias->params      = serialize(array('id'=>$obj->getId()));
-        $alias->save();
         return true;
     }
 
@@ -248,7 +254,7 @@ class Model_Page extends Sfcms_Model
         );
 
         if ($obj) {
-            $this->all[ $obj->getId() ] = $obj;
+            $this->all->add( $obj );
             return $obj;
         }
         return false;
@@ -300,116 +306,11 @@ class Model_Page extends Sfcms_Model
         return ++$max;
     }
 
-    /**
-     * Переключение
-     * @param string $action       действие
-     * @param int    $id           идентификатор
-     *
-     * @return mixed
-     */
-    public function switching( $action, $id )
-    {
-        $current = $this->find( $id );
-        switch ( $action ) {
-            case 'on':
-                $current[ 'hidden' ] = '0';
-                break;
-            case 'off':
-                $current[ 'hidden' ] = '1';
-                break;
-            case 'delete':
-                $current[ 'deleted' ] = '1';
-                break;
-            case 'up':
-                return $this->moveUp( $id );
-                break;
-            case 'down':
-                return $this->moveDown( $id );
-                break;
-            case '':
-                break;
-        }
-        return $this->save( $current );
-    }
-
-    /**
-     * Переместить раздел вверх
-     * @param $id
-     *
-     * @return bool
-     */
-    public function moveUp( $id )
-    {
-        $current = $this->find( $id );
-
-        $some = $this->find(
-            array(
-                'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
-                'params'    => array(
-                    ':parent'=> $current[ 'parent' ],
-                    ':pos'   => $current[ 'pos' ]
-                ),
-                'order'     => 'pos DESC',
-            )
-        );
-
-        if (!$some) {
-            return true;
-        }
-        return $this->moveComplete( $current, $some );
-    }
-
-    /**
-     * Переместить раздел вниз
-     * @param $id
-     *
-     * @return bool
-     */
-    public function moveDown( $id )
-    {
-        $current = $this->find( $id );
-
-        $some = $this->find(
-            array(
-                'cond'      => 'deleted = 0 AND parent = :parent AND pos < :pos',
-                'params'    => array(
-                    ':parent'=> $current[ 'parent' ],
-                    ':pos'   => $current[ 'pos' ]
-                ),
-                'order'     => 'pos DESC',
-            )
-        );
-        if (!$some) {
-            return true;
-        }
-        return $this->moveComplete( $current, $some );
-    }
-
-    /**
-     * Осуществить перемещение в базе
-     * @param Data_Object_Page $page1
-     * @param Data_Object_Page $page2
-     *
-     * @return bool
-     */
-    private function moveComplete( Data_Object_Page $page1, Data_Object_Page $page2 )
-    {
-        $old_pos        = $page2[ 'pos' ];
-        $page2[ 'pos' ] = $page1[ 'pos' ];
-        $page1[ 'pos' ] = $old_pos;
-        if ($this->db->insertUpdateMulti( $this->table, array( $page2, $page1 ) )) {
-            return true;
-        }
-        $this->request->addFeedback( 'Раздел не был перемещен' );
-        return false;
-    }
 
     /**
      * Создает дерево $this->tree по данным из $this->all
-     *
-     * @param int $parent
      */
-    public function createTree( $parent = 0 )
+    public function createTree()
     {
         $this->parents = array();
         if ( count( $this->all ) == 0 ) {
@@ -421,9 +322,9 @@ class Model_Page extends Sfcms_Model
             );
         }
         // создаем массив, индексируемый по родителям
-        /** @var Data_Object_Page $data */
-        foreach ( $this->all as $data ) {
-            $this->parents[ $data[ 'parent' ] ][ $data[ 'id' ] ] = $data;
+        /** @var Data_Object_Page $obj */
+        foreach ( $this->all as $obj ) {
+            $this->parents[ $obj->parent ][ $obj->id ] = $obj;
         }
     }
 
@@ -572,10 +473,27 @@ class Model_Page extends Sfcms_Model
                 }
             }
 
+            $link = '';
+            if ( 'page' != $branch[ 'controller' ] ) {
+                $linkUrl = '#';
+                switch ( $branch[ 'controller' ] ) {
+                    case 'catalog':
+                        $linkUrl = "/catalog/category/edit/{$branch[ 'link' ]}";
+                        break;
+                    case 'gallery':
+                        $linkUrl = "/gallery/editcat/id/{$branch[ 'link' ]}";
+                        break;
+                    case 'news':
+                        $linkUrl = "/news/catedit/id/{$branch[ 'link' ]}";
+                        break;
+                }
+                $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
+            }
+
             $this->html[ ] =
                 $prefix . "<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>"
                     . "<span id='item{$branch['id']}' class='{$bicon}'>" . icon( $this->selectIcon( $branch ) )
-                    . " <a " . href(
+                    . " <a class='edit' title='".t('Edit page')."' " . href(
                     null, array(
                         'controller'=> 'page',
                         'action'    => 'edit',
@@ -583,36 +501,29 @@ class Model_Page extends Sfcms_Model
                     )
                 ) . ">{$branch['name']}</a>"
                     . "<span class='tools'>"
-                    . "<a " . href(
+                    . $link
+                    . "<a class='edit' title='".t('Edit page')."' " . href(
                     null, array(
                         'controller'=> 'page',
                         'action'    => 'edit',
                         'edit'      => $branch[ 'id' ]
                     )
                 ) . " title='Правка'>" . icon( 'pencil', 'Правка' ) . "</a>"
-                    . "<a " . href(
+                    . "<a class='add' rel='{$branch[ 'id' ]}' title='".t('Create page')."' " . href(
                     null, array(
                         'controller'=> 'page',
-                        'action'    => 'add',
-                        'add'       => $branch[ 'id' ]
+                        'action'    => 'create',
                     )
                 ) . "    title='Добавить'>" . icon( 'add', 'Добавить' ) . "</a>"
-                    . "<a " . href(
+                    . "<a class='do_delete' " . href(
                     null, array(
                         'controller'=> 'page',
-                        'action'    => 'admin',
-                        'do'        => 'delete',
-                        'part'      => $branch[ 'id' ]
+                        'action'    => 'delete',
+                        'id'        => $branch[ 'id' ]
                     )
-                ) . " title='Удалить' class='do_delete'>" . icon( 'delete', 'Удалить' ) . "</a>"
+                ) . " title='Удалить'>" . icon( 'delete', 'Удалить' ) . "</a>"
                     . "</span>"
                     . "<span class='order'>"
-                    . ( $branch[ 'controller' ] == 'page'
-                        ? ''
-                        : '<a class="link_del" page="' . $branch[ 'id' ] . '" ' . href( '' ) . '>' . icon(
-                            'link', 'Внешняя связь'
-                        ) . '</a>'
-                )
                     . $this->getOrderHidden( $branch[ 'id' ], $branch[ 'hidden' ] )
 
                     . "<span class='id_number'>#{$branch['id']}</span>"

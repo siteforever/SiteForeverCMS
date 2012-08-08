@@ -11,17 +11,17 @@ ini_set('display_errors', true);
 
 // путь к фреймворку
 // если не указан, то в текущей директории
-define('SF_PATH', dirname(__FILE__));
+define('SF_PATH', __DIR__);
 
 //корень сайта
-define('ROOT', dirname(__FILE__));
+define('ROOT', __DIR__);
 
 
 // директории для подключения
 $include_list   = array();
-if ( SF_PATH != dirname(__FILE__) ) {
-    $include_list[] = dirname(__FILE__).DIRECTORY_SEPARATOR.'class';
-    $include_list[] = dirname(__FILE__);
+if ( SF_PATH != __DIR__ ) {
+    $include_list[] = __DIR__.DIRECTORY_SEPARATOR.'class';
+    $include_list[] = __DIR__;
 }
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
@@ -33,6 +33,6 @@ set_include_path( join( PATH_SEPARATOR, $include_list ));
 require_once 'app.php';
 
 
-$app = new App( dirname(__FILE__).'/protected/config/main.php');
+$app = new App( __DIR__.'/protected/config/main.php');
 $app->run();
 

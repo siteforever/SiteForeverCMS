@@ -12,7 +12,7 @@
 function smarty_function_page( $params )
 {
     if ( ! isset( $params['id'] ) || ! is_int( $params['id'] ) ) {
-        return 'Using {page id="57"}';
+        return 'Using {page id=57}';
     }
     $model   = Sfcms_Model::getModel('Page');
     $page   = $model->find( $params['id'] );
@@ -22,7 +22,7 @@ function smarty_function_page( $params )
     }
 
     if ( ! App::getInstance()->getUser()->hasPermission( $page->protected )  ) {
-        return 'Page content protected';
+        return t('Page content protected');
     }
 
     return $page->content;    

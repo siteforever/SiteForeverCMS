@@ -103,6 +103,14 @@ abstract class Application_Abstract
      */
     protected $_cache = null;
 
+    /**
+     * Статические скрипты и стили
+     * @var Siteforever_Assets
+     */
+    protected  $_assets = null;
+
+
+
     abstract public function run();
 
     abstract protected function init();
@@ -120,14 +128,13 @@ abstract class Application_Abstract
         }
         // Конфигурация
         self::$config   = new Sfcms_Config( $cfg_file );
-
         // Загрузка параметров модулей
         $this->loadModules();
     }
     
     /**
      * @static
-     * @throws Exception
+     * @throws Application_Exception
      * @return Application_Abstract
      */
     static public function getInstance()
@@ -198,7 +205,6 @@ abstract class Application_Abstract
         return $this->auth;
     }
 
-
     /**
      * Вернет объект кэша
      * @return Sfcms_Cache
@@ -218,8 +224,7 @@ abstract class Application_Abstract
      */
     public function getBasket()
     {
-        if ( is_null( self::$basket ) )
-        {
+        if ( null === self::$basket ) {
             self::$basket   = Basket_Factory::createBasket( $this->getAuth()->currentUser() );
         }
         return self::$basket;
@@ -256,11 +261,15 @@ abstract class Application_Abstract
     }
 
     /**
+     * @param $param
      * @return Sfcms_Config
      */
-    public function getConfig()
+    public function getConfig( $param = null )
     {
-        return self::$config;
+        if ( null === $param ) {
+            return self::$config;
+        }
+        return self::$config->get( $param );
     }
 
     /**
@@ -282,12 +291,17 @@ abstract class Application_Abstract
         if ( null !== $this->_logger ) {
             return $this->_logger;
         }
-//        return $this->_logger = std_logger::getInstance( new std_logger_plain() );
+        if ( ! App::isDebug() ) {
+            $this->_logger = std_logger::getInstance( new std_logger_blank() );
+            return $this->_logger;
+        }
 
         if ( ! isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
             $this->_logger = std_logger::getInstance( new std_logger_plain() );
-//            return $this->_logger;
-        } else if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+            return $this->_logger;
+        }
+
+        if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
             if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
                 $this->_logger = std_logger::getInstance( new std_logger_chrome() );
             }
@@ -358,4 +372,102 @@ abstract class Application_Abstract
         return $this->_modules;
     }
 
+
+    public function getAssets()
+    {
+        if ( null === $this->_assets ) {
+            $this->_assets  = new Siteforever_Assets();
+            $misc = $this->getRequest()->get( 'path.misc' );
+            $this->_assets->addStyle( $misc . '/reset.css' );
+    //        $this->addStyle( $misc . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
+            $this->_assets->addStyle( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.css' );
+            $this->_assets->addStyle( $misc . '/siteforever.css' );
+
+            $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
+    //        $this->addScript( $misc . '/jquery/lightbox/jquery.lightbox-0.5.js' );
+            $this->_assets->addScript( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.js' );
+            $this->_assets->addScript( $misc . '/siteforever.js' );
+        }
+        return $this->_assets;
+    }
+
+
+
+    /**
+     * Получить список файлов стилей
+     * @return array
+     */
+    public function getStyle()
+    {
+        return $this->getAssets()->getStyle();
+    }
+
+
+    public function addStyle( $style )
+    {
+        $this->getAssets()->addStyle( $style );
+    }
+
+
+    public function cleanStyle()
+    {
+        $this->getAssets()->cleanStyle();
+    }
+
+
+    public function getScript()
+    {
+        return $this->getAssets()->getScript();
+    }
+
+
+    public function addScript( $script )
+    {
+        $this->getAssets()->addScript( $script );
+    }
+
+
+    public function cleanScript()
+    {
+        $this->getAssets()->cleanScript();
+    }
+
+
+
+
+    /**
+     * @static
+     * @throws Exception
+     *
+     * @param  $class_name
+     *
+     * @return boolean
+     */
+    static public function autoload( $class_name )
+    {
+        static $class_count = 0;
+
+        $class_name = strtolower( $class_name );
+
+        if( in_array( $class_name, array( 'finfo' ) ) ) {
+            return false;
+        }
+
+        if( $class_name == 'register' ) {
+            throw new Exception( 'Autoload Register class' );
+        }
+
+        // PEAR format autoload
+        $class_name = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $class_name );
+        $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
+        $file       = $class_name . '.php';
+
+        if( @include_once $file ) {
+            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
+                $class_count ++;
+            }
+            return true;
+        }
+        return false;
+    }
 }

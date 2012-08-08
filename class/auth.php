@@ -43,8 +43,10 @@ abstract class Auth
             $obj                = $this->model->find( (int) $this->getId() );
             if ( $obj ) {
                 $this->user         = $obj;
-                $this->user->last   = time();
-                $this->user->markDirty();
+                if ( ! $this->app()->getRequest()->isAjax() && $this->user->last + 600 < time() ) {
+                    $this->user->last   = time();
+                    $this->user->markDirty();
+                }
                 return;
             }
         }
@@ -290,9 +292,11 @@ abstract class Auth
 
     /**
      * Генерирует случайную строку
-     * @param $len
+     * @param string $len Length generated string
+     * @param string $pattern Regexp for matches with generated string
+     * @return string
      */
-    function generateString( $len, $pattern = '/[a-z0-9]/i' )
+    public function generateString( $len, $pattern = '/[a-z0-9]/i' )
     {
         $c      = $len;
         $str    = '';

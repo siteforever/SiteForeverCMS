@@ -7,6 +7,14 @@ class Model_Gallery extends Sfcms_Model
 {
     protected $form;
 
+    public function relation()
+    {
+        return array(
+            'Category' => array(self::BELONGS, 'GalleryCategory', 'category_id'),
+        );
+    }
+
+
     /**
      * Получает следующую позицию для сортировки
      * @param $category_id
@@ -21,72 +29,6 @@ class Model_Gallery extends Sfcms_Model
             ."LIMIT 1",
             array($category_id)
         );
-    }
-
-    /**
-     * @param Data_Object_Gallery $obj
-     * @return bool
-     */
-    public function onSaveStart($obj = null)
-    {
-        /** @var Model_Alias $alias_model */
-        $alias_model    = $this->getModel('Alias');
-        $alias          = $alias_model->findByAlias( $obj->getAlias() );
-        if ( null !== $alias ) {
-            if ( null === $obj ) {
-                // если наш объект еще не создан, значит у кого-то уже есть такой алиас
-                throw new Sfcms_Model_Exception('Такой алиас уже существует');
-            } else {
-                $route  = $obj->createUrl();
-                if ( $alias->url != $route ) {
-                    // если адреса не соответствуют
-                    throw new Sfcms_Model_Exception('Такой алиас уже существует');
-                }
-            }
-        }
-        debug::log(__METHOD__);
-        return true;
-    }
-
-    /**
-     * @param Data_Object_Page $obj
-     * @return bool
-     */
-    public function onSaveSuccess( $obj = null )
-    {
-        /** @var Model_Alias $alias_model */
-        $alias_model    = $this->getModel('Alias');
-        $alias  = $alias_model->findByUrl($obj->createUrl());
-
-        if ( null === $alias ) {
-            $alias  = $alias_model->createObject();
-        }
-
-        /** @var Data_Object_Alias $alias */
-        $data    = $obj->getAttributes();
-        if( isset( $data['alias'] ) && '' != $data['alias'] ){
-            $alias->alias   = $data['alias'];
-        } else {
-            $alias->alias   = $obj->getAlias();
-        }
-
-        $alias->url         = $obj->createUrl();
-        $alias->controller  = 'gallery';
-        $alias->action      = 'index';
-        $alias->params      = array('id'=>$obj->getId());
-        $alias->save();
-
-        try {
-            if ( $obj->alias_id != $alias->getId() ) {
-                $obj->alias_id  = $alias->getId();
-                $obj->save();
-            }
-        } catch ( Exception $e ) {
-            print $e->getMessage();
-        }
-
-        debug::log(__METHOD__);
-        return true;
     }
 
     /**
@@ -116,7 +58,7 @@ class Model_Gallery extends Sfcms_Model
      * Пересортировка изображений
      * @return int
      */
-    function reposition()
+    public function reposition()
     {
         $positions = $this->request->get('positions');
         $new_pos = array();
@@ -136,7 +78,7 @@ class Model_Gallery extends Sfcms_Model
      * @param int $id
      * @return bool|int
      */
-    function hideSwitch( $id )
+    public function hideSwitch( $id )
     {
         if( ! $obj = $this->find( $id ) ) {
             return false;
@@ -153,7 +95,7 @@ class Model_Gallery extends Sfcms_Model
     /**
      * @return form_Form
      */
-    function getForm()
+    public function getForm()
     {
         if ( is_null( $this->form ) ) {
             $this->form = new forms_gallery_image();

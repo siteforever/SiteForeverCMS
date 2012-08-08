@@ -12,7 +12,7 @@ require_once 'application/abstract.php';
 class App extends Application_Abstract
 {
 
-    static public $DEBUG;
+    static private $DEBUG;
 
     /**
      * Запуск приложения
@@ -28,6 +28,25 @@ class App extends Application_Abstract
         print $result;
     }
 
+    /**
+     * Run under test environment
+     * @static
+     * @return bool
+     */
+    static public function isTest()
+    {
+        return defined('TEST') && TEST;
+    }
+
+    /**
+     * Run under development environment
+     * @static
+     * @return bool
+     */
+    static public function isDebug()
+    {
+        return App::$DEBUG;
+    }
 
     /**
      * Инициализация
@@ -36,9 +55,9 @@ class App extends Application_Abstract
      */
     public function init()
     {
-        self::$DEBUG = $this->getConfig()->get( 'debug.profiler' );
+        App::$DEBUG = $this->getConfig()->get( 'debug.profiler' );
 
-        if( self::$DEBUG ) {
+        if( App::isDebug() ) {
             std_error::init( $this->getLogger() );
         }
 
@@ -92,22 +111,50 @@ class App extends Application_Abstract
 
         try {
             $result = $controller_resolver->dispatch();
+        } catch ( Sfcms_Http_Exception $e ) {
+            if ( ! App::isTest() ) {
+                switch ( $e->getCode() ) {
+                    case 301:
+                        header("{$_SERVER['SERVER_PROTOCOL']} 301 Moved Permanently");
+                        break;
+                    case 403:
+                        header ("{$_SERVER['SERVER_PROTOCOL']} 403 Forbidden");
+                        break;
+                    case 404:
+                        header("{$_SERVER['SERVER_PROTOCOL']} 404 Not Found");
+                        break;
+                }
+            }
+            $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
+            $result = $e->getMessage();
+
         } catch ( Exception $e ) {
-            if ( self::$DEBUG )
-                $result = '<pre>'. $e->getMessage() . "\n" . $e->getTraceAsString() . '</pre>';
-            else
-                $result = $e->getMessage();
+            if ( App::isDebug() ) {
+                $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
+            } else {
+                $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
+            }
+            $result = "<pre class='error'><b>".get_class( $e )."</b> : {$e->getMessage()}\n"
+                        .( App::isDebug()
+                            ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
+                            : '' )
+                    .'</pre>';
         }
 
         // Выполнение операций по обработке объектов
-        Data_Watcher::instance()->performOperations();
+        try {
+            Data_Watcher::instance()->performOperations();
+        } catch ( Sfcms_Model_Exception $e ) {
+            $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
+        }
 
         // Redirect
         if ( $this->getRequest()->get('redirect') ) {
-            if ( defined('TEST') && TEST ) {
-                return 'location: '.$this->getRequest()->get('redirect');
+            if ( App::isTest() ) {
+                print 'location: '.$this->getRequest()->get('redirect');
             } else {
-                header('location: '.$this->getRequest()->get('redirect'));
+                header('Status: 301 Moved Permanently');
+                header('Location: '.$this->getRequest()->get('redirect'));
             }
             return;
         }
@@ -126,14 +173,13 @@ class App extends Application_Abstract
             $this->getCacheManager()->save();
         }
 
-        // Заголовок по-умолчанию
-        if( '' == $this->getRequest()->getTitle() ) {
-            $this->getRequest()->setTitle( $this->getRequest()->get( 'tpldata.page.name' ) );
-        }
-
         self::$controller_time = microtime( 1 ) - self::$controller_time;
-        ob_end_clean();
-        return $this->invokeView( $result );
+
+        $result = $this->invokeLayout( $result );
+        if ( $reload = $this->getRequest()->get('reload') ) {
+            $result .= $reload;
+        }
+        return $result;
     }
 
     /**
@@ -143,23 +189,30 @@ class App extends Application_Abstract
      */
     protected function prepareResult( $result )
     {
-        if ( ! $result ) { // Сначала пытаемся достать из Response
+//        $this->getLogger()->log( $result, 'result' );
+//        $this->getLogger()->log( $this->getRequest()->getResponse(), 'response' );
+        if ( ! $result ) {
+            // Сначала пытаемся достать из Response
             $result = $this->getRequest()->getResponse();
         }
+
         if ( ! $result ) { // Потом достаем из основного потока вывода
             $result = ob_get_contents();
-            ob_clean();
         }
+        ob_end_clean();
+
         if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
             // Если надо вернуть JSON из массива
             $result = json_encode( $result );
         }
+//        $this->getLogger()->log( $result, 'result' );
         if ( is_array( $result ) && ! $this->getRequest()->getContent() ) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign( $result );
             $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
             $result = $this->getTpl()->fetch( $template );
         }
+
         if ( is_string( $result ) ) {
             // Просто установить итоговую строку как контент
             $this->getRequest()->setContent( $result );
@@ -173,7 +226,7 @@ class App extends Application_Abstract
      *
      * @return mixed
      */
-    protected function invokeView( $result )
+    protected function invokeLayout( $result )
     {
         if( ! $this->getRequest()->getAjax() ) {
             $Layout = new Sfcms_View_Layout( $this );
@@ -193,7 +246,7 @@ class App extends Application_Abstract
         // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
-        if ( self::$DEBUG ) {
+        if ( App::isDebug() ) {
             if ( $this->getConfig()->get( 'db.debug' ) ) {
                 Sfcms_Model::getDB()->saveLog();
             }
@@ -211,42 +264,4 @@ class App extends Application_Abstract
             $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage() / 1024, 3 ) . " kb.", 'app' );
         }
     }
-
-
-    /**
-     * @static
-     * @throws Exception
-     *
-     * @param  $class_name
-     *
-     * @return boolean
-     */
-    static function autoload( $class_name )
-    {
-        static $class_count = 0;
-
-        $class_name = strtolower( $class_name );
-
-        if( in_array( $class_name, array( 'finfo' ) ) ) {
-            return false;
-        }
-
-        if( $class_name == 'register' ) {
-            throw new Exception( 'Autoload Register class' );
-        }
-
-        // PEAR format autoload
-        $class_name = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $class_name );
-        $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
-        $file       = $class_name . '.php';
-
-        if( @include_once $file ) {
-            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
-                $class_count ++;
-            }
-            return true;
-        }
-        return false;
-    }
-
 }

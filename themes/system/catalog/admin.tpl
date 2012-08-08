@@ -61,8 +61,9 @@
 <button {href controller="catalog" action="move" part=$parent.id} id="catalog_move_to_category">Переместить</button>
 <button {href controller="catalog" action="saveorder" part=$parent.id} id="catalog_save_position">Сохранить порядок</button>
 </p>
-<p>{icon name="folder_add" title="Добавить раздел"} <a {href controller="catalog" action="category" add=$parent.id type="1"}>Добавить раздел</a> |
-{icon name="page_add" title="Добавить товар"} <a {href controller="catalog" action="trade" add=$parent.id type="0"}>Добавить товар</a> |
-{icon name="table" title="Прайслист"} <a {href controller="catalog" action="price"}>Загрузить прайслист</a></p>
+{*<p>{icon name="folder_add" title="Добавить раздел"} <a {href controller="catalog" action="category" add=$parent.id type="1"}>Добавить раздел</a> |*}
+<a {href controller="catalog" action="trade" add=$parent.id type="0"} class="button">
+    {icon name="page_add" title="Добавить товар"} Добавить товар</a>
+{*{icon name="table" title="Прайслист"} <a {href controller="catalog" action="price"}>Загрузить прайслист</a></p>*}
 <br />
 <p>{$paging.html}</p>

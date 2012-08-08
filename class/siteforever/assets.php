@@ -11,13 +11,11 @@ class Siteforever_Assets
 
     private $_styles = array();
 
-    private $_assets = array();
-
     /**
      * Получить список файлов стилей
      * @return array
      */
-    function getStyle()
+    public function getStyle()
     {
         return $this->_styles;
     }
@@ -27,39 +25,27 @@ class Siteforever_Assets
      * @param  $style
      * @return void
      */
-    function addStyle( $style )
+    public function addStyle( $style )
     {
         $this->_styles[ $style ] = $style;
     }
 
-    function cleanStyle()
+    public function cleanStyle()
     {
         $this->_styles = array();
     }
 
-    function getScript()
+    public function getScript()
     {
         return $this->_scripts;
     }
 
-    function addScript($script)
+    public function addScript($script)
     {
-//        if ( '/' == $script{0} ) {
-//            $script = SF_PATH . $script;
-//        }
-//
-//        $base_script    = dirname( $script );
-//
-//        if ( ! isset( $this->_assets[ $base_script ] ) ) {
-//            $this->_assets[ $base_script ] = md5( $base_script );
-//            App::getInstance()->getLogger()->log( $this->_assets[$base_script] . '/' . basename( $script ), 'script' );
-//        }
-
-        //$this->_scripts[ $script ] = $this->_assets[$base_script] . '/' . basename( $script );
         $this->_scripts[ $script ] = $script;
     }
 
-    function cleanScript()
+    public function cleanScript()
     {
         $this->_scripts = array();
     }

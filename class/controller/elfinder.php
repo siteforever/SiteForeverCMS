@@ -9,11 +9,11 @@ class Controller_Elfinder extends Sfcms_Controller
      */
     public function init()
     {
-        $this->request->setTitle('ElFinder');
+        $this->request->setTitle(t('ElFinder'));
 
-        $this->request->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
-        $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
-        $this->request->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
+        $this->app()->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
+        $this->app()->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
+        $this->app()->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
     }
 
 
@@ -37,13 +37,6 @@ class Controller_Elfinder extends Sfcms_Controller
     public function indexAction()
     {
         return 'Finder protected controller';
-//        if ( $this->request->get('connector') ) {
-//            return $this->getConnector();
-//        }
-//        if ( $this->request->get('finder') ) {
-//            return $this->getFinder();
-//        }
-//        return t('Finder not runned');
     }
 
 
@@ -53,11 +46,11 @@ class Controller_Elfinder extends Sfcms_Controller
      */
     public function connectorAction()
     {
-        $this->app()->getLogger()->log( $_REQUEST, 'Request' );
+        $this->log( $_REQUEST, 'Request' );
         $_POST  = $_POST + $_REQUEST;
         $_GET   = $_GET + $_REQUEST;
-        $this->app()->getLogger()->log( $_POST, 'Post' );
-        $this->app()->getLogger()->log( $_GET, 'Get' );
+        $this->log( $_POST, 'Post' );
+        $this->log( $_GET, 'Get' );
 
 //        $this->setAjax();
         $opts = array(

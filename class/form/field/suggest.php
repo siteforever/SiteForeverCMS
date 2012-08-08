@@ -8,7 +8,7 @@ class Form_Field_Suggest extends Form_Field
     protected $_type = 'text';
     protected $_class = 'xsuggest';
 
-    function __construct( $form, $name, $params )
+    public function __construct( $form, $name, $params )
     {
         parent::__construct( $form, $name, $params );
 
@@ -28,7 +28,7 @@ class Form_Field_Suggest extends Form_Field
      * @param $field
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         // выставляем статус OK
         if ( $this->_form->getField( $this->_params['field_value'] )->getValue() ) {
@@ -42,6 +42,6 @@ class Form_Field_Suggest extends Form_Field
                     '$("#'.$this->_id.'").xsuggest();'.
                     '</script>';
 
-        return parent::doInput( $field ).$script;
+        return parent::htmlInput( $field ).$script;
     }
 }

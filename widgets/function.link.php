@@ -19,6 +19,5 @@ function smarty_function_link( $params )
         $url = $params['url'];
         unset($params['url']);
     }
-    App::getInstance()->getLogger()->log('smarty_function_link', 'widget');
     return App::$router->createLink( $url, $params );
 }

@@ -25,11 +25,11 @@ class Model_Catalog extends Sfcms_Model
     protected $form = null;
 
     /**
-     * @return Model_CatGallery
+     * @return Model_CatalogGallery
      */
     public function gallery()
     {
-        return self::getModel( 'CatGallery' );
+        return self::getModel( 'CatalogGallery' );
     }
 
     /**
@@ -38,15 +38,15 @@ class Model_Catalog extends Sfcms_Model
      */
     protected function Init()
     {
-        $this->request->addScript( $this->request->get( 'path.misc' ) . '/etc/catalog.js' );
-        $this->request->addStyle( $this->request->get( 'path.misc' ) . '/etc/catalog.css' );
+        $this->app()->addScript( $this->request->get( 'path.misc' ) . '/etc/catalog.js' );
+        $this->app()->addStyle( $this->request->get( 'path.misc' ) . '/etc/catalog.css' );
     }
 
 
     public function relation()
     {
         return array(
-            'Gallery'       => array( self::HAS_MANY, 'CatGallery', 'cat_id' ),
+            'Gallery'       => array( self::HAS_MANY, 'CatalogGallery', 'cat_id' ),
             'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
             'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
@@ -76,14 +76,17 @@ class Model_Catalog extends Sfcms_Model
      * @param $parentId
      * @return array
      */
-    public function getAllChildrensIds( $parentId )
+    public function getAllChildrensIds( $parentId, $level = 0 )
     {
+        $level--;
         /** @var $child Data_Object_Catalog */
         $categoriesId = array();
         $children = $this->getChildrenFor( $parentId );
         foreach ( $children as $child ) {
             $categoriesId[] = $child->getId();
-            $categoriesId = array_merge( $categoriesId, $this->getAllChildrensIds( $child->getId() ) );
+            if ( $level ) {
+                $categoriesId = array_merge( $categoriesId, $this->getAllChildrensIds( $child->getId() ) );
+            }
         }
         return $categoriesId;
     }
@@ -250,33 +253,31 @@ class Model_Catalog extends Sfcms_Model
     }
 
     /**
-     * Обновить информацию
      * @param Data_Object_Catalog $obj
-     *
-     * @return int идентификатор записи
+     * @return bool
      */
-    public function update( Data_Object_Catalog $obj )
+    public function onSaveStart( Data_Object $obj = null )
     {
-        $obj_id = $obj->getId();
-
-        $path = null;
-        if( $obj_id ) {
-            if( $obj->get( 'path' ) ) {
-                $path = unserialize( $obj->get( 'path' ) );
-            }
-            if( !$obj->get( 'path' ) || ( $path && is_array( $path ) && $path[ 0 ][ 'name' ] != $obj->get( 'name' ) )){
-                $obj->set( 'path', $this->findPathSerialize( $obj->getId() ) );
-            }
+        // If object will update
+        if( $obj->getId() ) {
+            $obj->path = $this->createSerializedPath( $obj->getId() );
         }
-
-        $ret = $this->save( $obj );
-
-        // Если мы не знали своего ID (новый), то надо пересоздать путь и сохранить снова
-        if( ! $obj_id ) {
-            $this->update( $obj );
-        }
-        return $ret;
+        return true;
     }
+
+    /**
+     * @param Data_Object_Catalog $obj
+     * @return bool|void
+     */
+    public function onSaveSuccess( Data_Object $obj = null )
+    {
+        // If object was just created
+        if ( ! $obj->path ) {
+            $obj->path = $this->createSerializedPath( $obj->getId() );
+            $this->save( $obj );
+        }
+    }
+
 
     /**
      * Найдет путь для страницы
@@ -285,23 +286,20 @@ class Model_Catalog extends Sfcms_Model
      *
      * @return string
      */
-    public function findPathSerialize( $id )
+    public function createSerializedPath( $id )
     {
         $path = array();
         while( $id ) {
+            /** @var $obj Data_Object_Catalog */
             $obj = $this->find( $id );
             if( $obj ) {
-
                 $path[ ] = array(
-                    'id'  => $obj[ 'id' ],
-                    'name'=> $obj[ 'name' ],
-                    'url' => $obj[ 'url' ]
+                    'id'  => $obj->id,
+                    'name'=> $obj->name,
                 );
-
                 $id = $obj[ 'parent' ];
-            }
-            else {
-                $id = 0;
+            } else {
+                $id = false;
             }
         }
         $path = array_reverse( $path );
@@ -441,9 +439,9 @@ class Model_Catalog extends Sfcms_Model
      */
     public function getMenu( $url, $parent, $levelback = 0 )
     {
-        $cur_id = $this->getActiveCategory();
+        $curId = $this->getActiveCategory();
 
-        $path = $this->createActivePath( $cur_id );
+        $path = $this->createActivePath( $curId );
         //        printVar($path);
 
         if( count( $this->parents ) == 0 ) {
@@ -473,7 +471,7 @@ class Model_Catalog extends Sfcms_Model
         $counter = 1;
         foreach( $build_list as $branch )
         {
-            $active = in_array( $branch[ 'id' ], $path ) || $branch[ 'id' ] == $cur_id
+            $active = in_array( $branch[ 'id' ], $path ) || $branch[ 'id' ] == $curId
                 ? ' active'
                 : '';
 
@@ -499,7 +497,7 @@ class Model_Catalog extends Sfcms_Model
             $html[ ] = '</li>';
         }
         $html[ ] = '</ul>';
-        return implode( '', $html );
+        return implode( "\n", $html );
     }
 
     /**
@@ -554,7 +552,7 @@ class Model_Catalog extends Sfcms_Model
                 }
             }
         }
-//        $this->app()->getLogger()->log( $list );
+//        $this->log( $list );
         return $list;
     }
 
@@ -608,8 +606,8 @@ class Model_Catalog extends Sfcms_Model
     public function getCategoryList()
     {
         $parents     = array( 'Корневой раздел' );
-        $select_tree = $this->getSelectTree( 0, 3 );
-//        $this->app()->getLogger()->log( $select_tree, 'select tree' );
+        $select_tree = $this->getSelectTree( 0, 10 );
+//        $this->log( $select_tree, 'select tree' );
         if( $select_tree ) {
             foreach( $select_tree as $i => $item ) {
                 $parents[ $i ] = $item;

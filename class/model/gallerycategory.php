@@ -12,6 +12,13 @@ class Model_GalleryCategory extends Sfcms_Model
         return self::getModel('Gallery');
     }
 
+    public function relation()
+    {
+        return array(
+            'Images' => array( self::HAS_MANY, 'Gallery', 'category_id' ),
+        );
+    }
+
     /**
      * Удаление категории
      * @param  $id
@@ -37,7 +44,7 @@ class Model_GalleryCategory extends Sfcms_Model
             //print 'dir:'.ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$cat['id'], -4, 4 );
             $dir = ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$category['id'], -4, 4 );
 
-            $this->app()->getLogger()->log('del: '.$id.' dir: '.$dir);
+            $this->log('del: '.$id.' dir: '.$dir);
 
             //if ( file_exists( $dir ) ) {
             //}

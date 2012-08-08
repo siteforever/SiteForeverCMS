@@ -31,7 +31,7 @@ class Controller_Gallery extends Sfcms_Controller
     {
         return array(
             'system'    => array(
-                'admin', 'edit', 'delete', 'deleteImage', 'realias', 'viewcat', 'editimage', 'delcat', 'editcat',
+                'admin', 'edit', 'list', 'delete', 'realias', 'delcat', 'editcat',
             ),
         );
     }
@@ -47,15 +47,16 @@ class Controller_Gallery extends Sfcms_Controller
          * @var model_gallery $model
          * @var model_galleryCategory $catModel
          */
-        $this->request->setTemplate( 'inner' );
-        $model          = $this->getModel( 'Gallery' );
+//        $this->request->setTemplate( 'inner' );
+        $model    = $this->getModel( 'Gallery' );
         $catModel = $this->getModel( 'GalleryCategory' );
 
         /*
          * Вывести изображение
          */
-        if( $img = $this->request->get( 'img', Request::INT ) ) {
-            $image = $model->find( $img );
+        if( $alias = $this->request->get( 'alias' ) ) {
+
+            $image = $model->find( 'alias = ?', array( $alias ) );
 
             if( null === $image ) {
                 return t( 'Image not found' );
@@ -65,7 +66,6 @@ class Controller_Gallery extends Sfcms_Controller
                 'cond'  => 'category_id = ? AND pos > ?',
                 'params'=> array( $image->category_id, $image->pos ),
                 'order' => 'pos ASC',
-                'limit' => '1',
             );
 
             $next = $model->find( $crit );
@@ -84,50 +84,19 @@ class Controller_Gallery extends Sfcms_Controller
             $this->tpl->assign('category', $category);
 
             $bc = $this->tpl->getBreadcrumbs();
-            $bc->clearPieces();
-            $bc->addPiece( 'index', 'Главная' );
-            $bc->addPiece( $category->getAlias(), $category->name );
             $bc->addPiece( null, $image->name );
 
-            $title = $image->meta_title ? $image->meta_title : $category->name . ' - ' . $image->name;
-            //                $h1       = $image->meta_h1 ? $image->meta_h1 : $category->name . ' - ' . $image->name;
-            $h1                 = $image->meta_h1 ? $image->meta_h1 : $title;
-            $this->tpl->assign('meta_h1', $h1);
-
-            $description = $image->meta_description ? $image->meta_description : null;
-            $keywords    = $image->meta_keywords ? $image->meta_keywords : null;
-            if( $description ) {
-                $this->request->set( 'tpldata.page.description', str_random_replace( $h1, $description ) );
-            }
-            if( $keywords ) {
-                $this->request->set( 'tpldata.page.keywords', str_random_replace( $h1, $keywords ) );
-            }
-
-//                $this->request->setTitle( $category->name . ' &rarr; ' . $image->name );
-            $this->request->setTitle( $title );
-
+            $this->request->setTitle( $image->title );
             return $this->tpl->fetch( 'gallery.image' );
         }
 
-        /**
-         * Вывести категорию
-         */
-        $cat_id = $this->request->get( 'cat', FILTER_SANITIZE_NUMBER_INT, $this->page[ 'link' ] );
-        if( $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
-            $cat_id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT, $this->page[ 'link' ] );
-        }
-
-        if( null === $cat_id ) {
-            return 'Не указан идентификатор категории';
-        }
-
+        $catId = $this->page->link;
         $category = null;
-        if ( $cat_id ) {
-            $category = $catModel->find( $cat_id );
+        if ( $catId ) {
+            $category = $catModel->find( $catId );
         }
 
         if ( $category ) {
-
             $crit = array(
                 'cond'      => 'hidden = 0 AND category_id = ?',
                 'params'    => array( $category->getId() ),
@@ -135,13 +104,12 @@ class Controller_Gallery extends Sfcms_Controller
 
             $count = $model->count( $crit[ 'cond' ], $crit[ 'params' ] );
 
-            $paging = $this->paging( $count, $category->perpage, $this->page[ 'alias' ] . '/cat=' . $category[ 'id' ] );
+            $paging = $this->paging( $count, $category->perpage, $this->page->alias );
 
             $crit[ 'limit' ] = $paging[ 'limit' ];
             $crit[ 'order' ] = 'pos';
 
             $rows = $model->findAll( $crit );
-
 
             $this->tpl->assign( array(
                 'category' => $category,
@@ -150,56 +118,37 @@ class Controller_Gallery extends Sfcms_Controller
                 'paging' => $paging,
             ));
 
-            $title = $category->meta_title ? $category->meta_title : $category->name;
-            $h1 = $category->meta_h1 ? $category->meta_h1 : $title;
-
-            $description = $category->meta_description ? $category->meta_description : '';
-            $keywords    = $category->meta_keywords ? $category->meta_keywords : '';
-
-
-            $this->tpl->assign('meta_h1', $h1);
-
-            if( $description ) {
-                $this->request->set( 'tpldata.page.description', str_random_replace( $h1, $description ) );
-            }
-            if( $keywords ) {
-                $this->request->set( 'tpldata.page.keywords', str_random_replace( $h1, $keywords ) );
-            }
-
-            $bc = $this->tpl->getBreadcrumbs();
-            //            $bc->addPiece('index', 'Главная');
-            $bc->addPiece( $this->router->createServiceLink( 'gallery', 'index', array( 'id'=> $cat_id ) ), $category->name );
-
-            $this->request->setTitle( $title );
             return $this->tpl->fetch( 'gallery.category' );
         }
 
         /**
          * Список категорий
          */
-//        $page_model = $this->getModel( 'Page' );
-//        $sub_pages  = $page_model->findAll( array(
-//             'condition' => ' parent = ? AND deleted = 0 ',
-//             'params'    => array( $this->page[ 'id' ] ),
-//        ) );
+        $categories = null;
 
-        /** @var Data_Object_Page $obj */
-//        $list_page_id = array();
-//        foreach ( $sub_pages as $obj ) {
-//            if ( $obj->get( 'link' ) && $obj->get( 'controller' ) == 'gallery' ) {
-//                $list_page_id[ ] = $obj->get( 'link' );
-//            }
-//        }
+        $pageModel = $this->getModel( 'Page' );
+        if( $this->page ) {
+            $subPages  = $pageModel->findAll( array(
+                 'condition' => ' parent = ? AND deleted = 0 ',
+                 'params'    => array( $this->page->getId() ),
+            ) );
 
+            /** @var Data_Object_Page $obj */
+            $listSubpagesIds = array();
+            foreach ( $subPages as $obj ) {
+                if ( $obj->get( 'link' ) && $obj->get( 'controller' ) == 'gallery' ) {
+                    $listSubpagesIds[ ] = $obj->get( 'link' );
+                }
+            }
 
-//        if ( count( $list_page_id ) ) {
-//            $categories = $catModel->findAll( array(
-//                 'condition' => ' id IN ( ' . implode( ',', $list_page_id ) . ' ) ',
-//            ) );
-//            $this->tpl->assign( 'categories', $categories );
-//        }
+            if ( count( $listSubpagesIds ) ) {
+                $categories = $catModel->findAll( array(
+                     'condition' => ' id IN ( ' . implode( ',', $listSubpagesIds ) . ' ) ',
+                ) );
+            }
+        }
 
-        $categories = $catModel->findAll();
+//        $categories = $catModel->findAll();
 
         $this->tpl->assign( 'categories', $categories );
         return $this->tpl->fetch( 'gallery.categories' );
@@ -209,7 +158,7 @@ class Controller_Gallery extends Sfcms_Controller
      * Администрирование
      * @return mixed
      */
-    function adminAction()
+    public function adminAction()
     {
         /**
          * @var model_gallery $model
@@ -264,33 +213,35 @@ class Controller_Gallery extends Sfcms_Controller
         $cat_list = $category->findAll();
 
         $this->tpl->categories = $cat_list;
-        $this->request->setContent( $this->tpl->fetch( 'gallery.admin_category' ) );
-        return 1;
+//        $this->request->setContent( $this->tpl->fetch( 'gallery.admin_category' ) );
+//        return 1;
     }
 
     /**
      * Удаление картинки
-     * @return void
+     * @return mixed
      */
-    function deleteImageAction()
+    public function deleteAction()
     {
         $model = $this->getModel( 'Gallery' );
 
-        $img_id = $this->request->get( 'id', Request::INT );
+        $imgId = $this->request->get( 'id', Request::INT );
 
-        if( $img_id ) {
-            if( $model->delete( $img_id ) ) {
-                $this->request->setResponse( 'id', $img_id );
-                $this->request->setResponseError( 0 );
+        if( $imgId ) {
+            if( $model->delete( $imgId ) ) {
+                $this->request->setResponse( 'id', $imgId );
+                $this->request->setResponseError( 0, t('Image was deleted') );
             } else {
                 $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
+            return;
         }
+        return t('Image not was deleted');
     }
 
     /**
      * Редактирование категории
-     * @return
+     * @return mixed
      */
     public function editcatAction()
     {
@@ -307,20 +258,21 @@ class Controller_Gallery extends Sfcms_Controller
                 $obj_id = $obj->getId();
                 $model->save( $obj );
 
-                if( $obj && ! $obj_id ) {
-                    $this->reload( 'admin/gallery' );
-                }
+//                if( $obj && ! $obj_id ) {
+//                }
+                $this->reload( 'admin/gallery', array(), 1000 );
                 return t( 'Data save successfully' );
             } else {
                 return $form->getFeedbackString();
             }
         }
 
-        if( $edit = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
+        if( $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
             try {
-                $obj = $model->find( $edit );
+                $obj = $model->find( $id );
+                $this->request->setTitle( $obj->name );
             } catch( Exception $e ) {
-                print $e->getMessage();
+                return $e->getMessage();
             }
 
             $form->setData( $obj->getAttributes() );
@@ -329,7 +281,7 @@ class Controller_Gallery extends Sfcms_Controller
             }
         }
         $this->tpl->form = $form;
-        return $this->tpl->fetch( 'system:gallery.admin_category_edit' );
+//        return $this->tpl->fetch( 'system:gallery.admin_category_edit' );
     }
 
     /**
@@ -351,14 +303,15 @@ class Controller_Gallery extends Sfcms_Controller
      * Просмотр категории
      * @return mixed
      */
-    public function viewcatAction()
+    public function listAction()
     {
+        $this->app()->addScript( '/misc/admin/gallery.js' );
         /** @var model_galleryCategory $category */
         $category = $this->getModel( 'GalleryCategory' );
 
-        $cat_id = $this->request->get( 'id', Request::INT );
+        $catId = $this->request->get( 'id', Request::INT );
 
-        $cat = $category->find( $cat_id );
+        $cat = $category->find( $catId );
 
         /** @var model_Gallery $model */
         $model = $this->getModel( 'Gallery' );
@@ -370,16 +323,15 @@ class Controller_Gallery extends Sfcms_Controller
 
         $images = $model->findAll( array(
             'cond'  => 'category_id = :cat_id',
-            'params'=> array( ':cat_id'=> $cat_id ),
+            'params'=> array( ':cat_id'=> $catId ),
             'order' => 'pos',
         ) );
 
-        $this->tpl->assign(array(
+        $this->request->setTitle( $cat->name );
+        return array(
             'images'   => $images,
             'category' => $cat->getAttributes(),
-        ));
-
-        return $this->tpl->fetch( 'system:gallery.admin_images' );
+        );
     }
 
 
@@ -388,7 +340,7 @@ class Controller_Gallery extends Sfcms_Controller
      * @var model_gallery $model
      * @return mixed
      */
-    function editimgAction()
+    public function editAction()
     {
         $model = $this->getModel( 'Gallery' );
         $this->request->setAjax( 1, Request::TYPE_ANY );
@@ -405,17 +357,18 @@ class Controller_Gallery extends Sfcms_Controller
             } else {
                 return $form->getFeedbackString();
             }
-        } else {
-            $editimg = $this->request->get( 'id' );
-            if( ! isset( $obj ) ) {
-                $obj = $model->find( $editimg );
-            }
-            $atr            = $obj->getAttributes();
-            $atr[ 'alias' ] = $obj->getAlias();
-            $form->setData( $atr );
-            return $form->html( false );
         }
-    }
+        $editimg = $this->request->get( 'id' );
+        if( ! isset( $obj ) ) {
+            $obj = $model->find( $editimg );
+        }
+        $atr            = $obj->getAttributes();
+        $atr[ 'alias' ] = $obj->getAlias();
+        $form->setData( $atr );
+
+        return array('form'=>$form);
+//        return $form->html( false );
+}
 
     /**
      * @return mixed
@@ -424,24 +377,23 @@ class Controller_Gallery extends Sfcms_Controller
     {
         $model = $this->getModel( 'Gallery' );
         $start = microtime( 1 );
+        $result = array();
         try {
             $images = $model->findAll();
-            print '<ol>';
             /** @var Data_Object_GalleryCategory $cat */
             /** @var Data_Object_Gallery $img */
             foreach( $images as $img ) {
                 try {
                     $img->save();
                 } catch( Exception $e ) {
-                    print $e->getMessage();
+                    $result[] = $e->getMessage();
                 }
-                print "<li><b>{$img->name}</b> {$img->getAlias()}</li>";
+                $result[] = "<b>{$img->name}</b> {$img->getAlias()}";
             }
-            print '</ol>';
         } catch( Exception $e ) {
             return $e->getMessage();
         }
-        $this->request->setContent( round( microtime( 1 ) - $start, 3 ) . ' s.' );
+        return join('<br>', $result) . '<br>' . round( microtime( 1 ) - $start, 3 ) . ' s.';
     }
 
     /**
@@ -556,8 +508,7 @@ class Controller_Gallery extends Sfcms_Controller
         }
         if( $upload_ok ) {
             $this->request->addFeedback( t( 'Images are loaded' ) );
-        }
-        else {
+        } else {
             $this->request->addFeedback( t( 'Image not loaded' ) );
         }
         return;

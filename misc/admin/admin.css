@@ -37,6 +37,7 @@ small, span.small {
 }
 
 fieldset {
+    width: 600px;
     border: 1px #ddd solid;
     border-radius: 0.5em;
     padding: 1em;
@@ -44,18 +45,21 @@ fieldset {
 }
 
 
-div.ui-tabs ul {
-    display: inline-block;
-}
-
 input, select, textarea {
     padding: 0.2em 0.1em;
     width: 150px;
 }
 
-input.ui-button, .ui-button-text-only .ui-button-text {
-    /*padding: 0.2em 1em;*/
+.blockOverlay {
+    z-index: 9000 !important;
 }
+.blockMsg {
+    z-index: 10000 !important;
+}
+
+/*div.ui-widget-overlay {*/
+    /*height: 100% !important;*/
+/*}*/
 
 div.b-request-feedback {
     padding: 0;
@@ -88,27 +92,29 @@ div.l-footer {
         margin-left: 10px;
     }
 
-div.ui-dialog {
-    font-size: 12px;
-}
-    div.ui-dialog ul li {
-        margin-bottom: 0.5em;
-    }
+/*div.ui-dialog {*/
+    /*font-size: 12px;*/
+/*}*/
+    /*div.ui-dialog ul li {*/
+        /*margin-bottom: 0.5em;*/
+    /*}*/
 
 div.l-main-panel {
 }
     div.l-panel {
         float: left;
+        position: relative;
         width: 240px;
     }
     div.l-content {
-        margin-left: 250px;
-        margin-right: 20px;
-        min-width: 700px;
-        /*float: left;*/
+        margin-left: -250px;
+        min-width: 750px;
+        width: 100%;
+        float: right;
     }
         div.l-content-wrapper {
-            width: 700px;
+            margin-left: 250px;
+            margin-right: 20px;
         }
 
 div.paging {
@@ -239,21 +245,19 @@ form.standart {
     width: 100%;
     max-width:700px;
     font-size: 12px;
+}
+div.l-content form.standart {
     padding: 10px;
-    background: #eee;
+    /*background: #eee;*/
     border: 1px solid #666;
-
     border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+}
+div.l-content form.standart div.b-form-field-textarea {
+    margin-left: 75px;
 }
 
 form.standart label {
     cursor: pointer;
-}
-
-form.standart textarea.elcatalog-meta {
-    height: 200px;
 }
 
 form.standart input,
@@ -264,8 +268,10 @@ form.standart textarea {
     background: #fff;
 }
 form.standart textarea {
-    height: 300px;
+    width: 625px;
+    height: 200px;
 }
+
 form.standart input.submit {
     width: 100px;
 }

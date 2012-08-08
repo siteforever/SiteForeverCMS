@@ -13,7 +13,7 @@ class Form_Field_Submit extends Form_Field
      * @param array $field
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         return "<input {$field['id']} type='submit' class='submit' {$field['value']} />";
     }

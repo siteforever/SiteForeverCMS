@@ -20,6 +20,16 @@
     color: red;
 }
 
+pre.error, p.error {
+    padding: 10px;
+    border: 1px red solid;
+    border-radius: 10px;
+}
+
+.top { vertical-align: top; }
+.middle { vertical-align: middle; }
+.bottom { vertical-align: bottom; }
+
 .feedback {
     color: #999;
     margin-bottom: 1em;
@@ -40,11 +50,6 @@
         background: #fff;
         border: 1px solid #ddd;
     }
-        .basket-table td span {
-            color: #D11414;
-            font-weight: bold;
-            font-size: 11px;
-        }
     .basket-table th {
         background: #ddd;
         color: #333;

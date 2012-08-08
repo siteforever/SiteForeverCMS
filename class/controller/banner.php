@@ -50,7 +50,7 @@ class Controller_Banner extends Sfcms_Controller
      */
     public function adminAction()
     {
-        $this->request->addScript('/misc/admin/banner.js');
+        $this->app()->addScript('/misc/admin/banner.js');
         $this->request->setTitle( "Управление баннерами" );
         $category              = $this->getModel( 'CategoryBanner' );
         $cat_list              = $category->findAll();
@@ -206,7 +206,7 @@ class Controller_Banner extends Sfcms_Controller
             try {
                 $obj = $model->find( $id );
             }
-            catch ( ControllerException $e ) {
+            catch ( Sfcms_Model_Exception $e ) {
                 return $e->getMessage();
             }
             $categoryModel   = $this->getModel( 'CategoryBanner' );

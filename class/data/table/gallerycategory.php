@@ -26,10 +26,6 @@ class Data_Table_GalleryCategory extends Data_Table
             new Data_Field_Varchar('thumb', 250),
             new Data_Field_Int( 'perpage', 11, true, null, false ),
             new Data_Field_Varchar( 'color', 20, true, null, false ),
-            new Data_Field_Text( 'meta_description', 11, true, null, false ),
-            new Data_Field_Text( 'meta_keywords', 11, true, null, false ),
-            new Data_Field_Text( 'meta_h1', 11, true, null, false ),
-            new Data_Field_Text( 'meta_title', 11, true, null, false ),
         );
     }
 

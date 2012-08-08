@@ -26,7 +26,7 @@
         <li><a {href url="users/password"}>Изменить пароль</a></li>
         {/if}
         {if $user.perm == $smarty.const.USER_ADMIN}
-        <li><a {href url="admin"}>Управление сайтом</a></li>
+        <li><a {href url="page/admin"}>Управление сайтом</a></li>
         {/if}
         <li><a {href url="users/logout"}>Выйти из системы</a></li>
     

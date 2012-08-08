@@ -6,24 +6,14 @@
  * @link http://siteforever.ru
  */
 
-class ControllerResolver
+class ControllerResolver extends \Sfcms\Component
 {
-    /**
-     * @var Application_Abstract
-     */
-    private $app;
-
-    public function __construct(Application_Abstract $app)
-    {
-        $this->app = $app;
-    }
-
     /**
      * @return array
      */
     public function resolveController()
     {
-        $request = $this->app->getRequest();
+        $request = $this->app()->getRequest();
 
         $controller_class = 'Controller_' . ucfirst($request->get('controller'));
         $action = $request->get('action') . 'Action';
@@ -33,23 +23,31 @@ class ControllerResolver
 
     /**
      * Запуск контроллера
-     * @params array $command
-     * @throws ControllerException
-     * @return mixed
+     * @param array $command
+     * @return null|string
+     * @throws Sfcms_Http_Exception
      */
     public function dispatch(array $command = array())
     {
         $result = null;
 
+        $request = $this->app()->getRequest();
+        if ( 0 == count( $command ) ) {
+            $command = $this->resolveController();
+        }
+
         // возможность использовать кэш
-        if( $this->app->getConfig()->get('cache') && ! $this->app->getRequest()->getAjax() && ! $this->app->getRouter()->isSystem()) {
-            if( $this->app->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
-                if ( ! $this->app->getBasket()->count() ) {
+        if ( $this->app()->getConfig()->get('cache')
+            && ! $this->app()->getRequest()->getAjax()
+            && ! $this->app()->getRouter()->isSystem()
+        ) {
+            if( $this->app()->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
+                if ( ! $this->app()->getBasket()->count() ) {
                     define('CACHE', true);
-                    App::$DEBUG && $this->app->getLogger()->log('Cache true');
-                    $cache = $this->app->getCacheManager();
+                    $this->log('Cache true');
+                    $cache = $this->app()->getCacheManager();
                     if ( $cache->isCached() ) {
-                        App::$DEBUG && $this->app->getLogger()->log('Result from cache');
+                        $this->log('Result from cache');
                         return $cache->getCache();
                     }
                 }
@@ -59,63 +57,59 @@ class ControllerResolver
 
         if (!$command) {
             if (!$command = $this->resolveController()) {
-                throw new ControllerException('Controller not resolved');
+                throw new Sfcms_Http_Exception('Controller not resolved',404);
             }
         }
-        if ( $this->app->getConfig()->get('debug.profile') ) {
-            $this->app->getLogger()->log( $command, 'Command' );
-        }
+        $this->log( $command, 'Command' );
         // если запрос является системным
-        if ( $this->app->getRouter()->isSystem() ) {
-            if ( $this->app->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
+        if ( $this->app()->getRouter()->isSystem() ) {
+            if ( $this->app()->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
                 $this->setSystemPage();
             } else {
-                $this->setProtectedPage();
+                throw new Sfcms_Http_Exception( t('Access denied'), 403 );
             }
+        }
+
+        if ( ! class_exists( $command['controller'] ) ) {
+            header('Status: 404 Not Found');
+            $request->set('controller', 'page');
+            $request->set('action', 'error404');
+            $command = $this->resolveController();
         }
 
         $ref = new ReflectionClass($command['controller']);
 
         /** @var Sfcms_Controller $controller */
-        $controller = $ref->newInstance( $this->app );
+        $controller = $ref->newInstance();
         $controller->init();
         // Защита системных действий
         $rules = $controller->access();
 
+        if ( ! $ref->hasMethod($command['action'])) {
+            $command['action'] = 'indexAction';
+        }
+
         if ($rules && is_array($rules['system'])) {
             foreach ($rules['system'] as $rule) {
                 if (strtolower($rule . 'action') == strtolower($command['action'])) {
-                    if ($this->app->getUser()->hasPermission(USER_ADMIN)) {
+                    if ($this->app()->getUser()->hasPermission(USER_ADMIN)) {
                         $this->setSystemPage();
                     } else {
-                        $this->setProtectedPage();
+                        throw new Sfcms_Http_Exception( t('Access denied'), 403 );
                     }
                     break;
                 }
             }
         }
-        if ($ref->hasMethod($command['action'])) {
-            $result = $controller->{$command['action']}();
-        } else {
-            $result = $controller->indexAction();
-        }
+        $result = $controller->{$command['action']}();
         return $result;
     }
 
 
     private function setSystemPage()
     {
-        $this->app->getRequest()->set('template', 'index');
-        $this->app->getRequest()->set('resource', 'system:');
-        $this->app->getRequest()->set('modules', @include('modules.php'));
-    }
-
-    private function setProtectedPage()
-    {
-        $this->app->getRequest()->addFeedback(t('Protected page'));
-        $this->app->getRequest()->set('controller', 'users');
-        $this->app->getRequest()->set('action', 'login');
-        $this->app->getRequest()->setTitle(t('Access denied'));
-        throw new ControllerException(t('Access denied'));
+        $this->app()->getRequest()->set('template', 'index');
+        $this->app()->getRequest()->set('resource', 'system:');
+        $this->app()->getRequest()->set('modules', @include('modules.php'));
     }
 }

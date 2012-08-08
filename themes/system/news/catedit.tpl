@@ -1,7 +1,7 @@
 <p>
-    <a {href url="admin/news"}>Раздел новости</a>
+    <a {href url="news/admin"}>Раздел новости</a>
     &gt; Правка раздела
-    &gt; <a {href controller="news" action="newslist" catid=$form->id}>Перейти</a>
+    &gt; <a {href controller="news" action="list" id=$form->id}>Перейти</a>
 </p>
 
 {$form->html()}

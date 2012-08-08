@@ -1,9 +1,4 @@
 <?php
-// класс шаблонизатора
-App::autoloadUnRegister(array('App', 'autoload'));
-require_once 'Smarty-3.1.8'.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
-App::autoloadRegister(array('App','autoload'));
-
 /**
  * Драйвер для Smarty
  * @author KelTanas
@@ -14,7 +9,14 @@ class TPL_Smarty extends TPL_Driver
 
     public function __construct()
     {
-        $config    = App::getInstance()->getConfig();
+        $config    = $this->app()->getConfig();
+
+        // класс шаблонизатора
+        App::autoloadUnRegister(array('App', 'autoload'));
+        $ver = $config->get('template.version');
+        if( ! $ver ) throw new RuntimeException(t('Smarty version not defined'));
+        require_once 'Smarty-'.$ver.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
+        App::autoloadRegister(array('App','autoload'));
 
         $this->engine = new Smarty(); // link (used php5)
         $this->engine->caching = false;
@@ -72,8 +74,8 @@ class TPL_Smarty extends TPL_Driver
         $tpl = $this->convertTplName($tpl);
 
         $this->engine->display( $tpl, $cache_id );
-        App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Display tpl');
-        //        print "Genegated: ".round( microtime(1) - $start, 3 );
+        $this->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Display tpl');
+//        print "Genegated: ".round( microtime(1) - $start, 3 );
     }
 
     /**
@@ -90,7 +92,7 @@ class TPL_Smarty extends TPL_Driver
         $tpl    = $this->convertTplName($tpl);
 
         $result = $this->engine->fetch( $tpl, $cache_id );
-        App::$DEBUG && App::getInstance()->getLogger()->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
+        $this->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Fetch tpl');
         return $result;
     }
 
@@ -101,7 +103,7 @@ class TPL_Smarty extends TPL_Driver
      */
     public function theme_exists( $tpl_name )
     {
-        $theme = App::$config->get('template.theme');
+        $theme = $this->app()->getConfig()->get('template.theme');
         $path = 'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'templates';
 
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
@@ -117,7 +119,7 @@ class TPL_Smarty extends TPL_Driver
      */
     public function system_exists( $tpl_name )
     {
-        $path = App::$config->get('template.admin');
+        $path = $this->app()->getConfig()->get('template.admin');
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
             return true;
         }

@@ -62,13 +62,8 @@ class Data_Collection implements Iterator
         if ( in_array( $obj, $this->_objects, true ) ) {
             return $this;
         }
-//        $class  = $this->targetClass();
-//        if ( ! ( $obj instanceof $class ) ) {
-//            throw new Exception("Это коллеция {$class}");
-//        }
-
         $this->notifyAccess();
-        $this->_raw[$this->_total]    = $obj->getData();
+        $this->_raw[$this->_total]    = $obj->attributes;
         $this->_objects[$this->_total] = $obj;
         $this->_total ++;
         return $this;

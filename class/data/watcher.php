@@ -165,19 +165,19 @@ class Data_Watcher
         try {
             if ( is_array( $this->dirty ) ) {
                 foreach( $this->dirty as $key => $obj ) {
-                    App::$DEBUG && App::getInstance()->getLogger()->log( $obj->getAttributes(), 'Save '.$key);
+                    App::getInstance()->getLogger()->log( $obj->getAttributes(), 'Save '.$key);
                     $obj->getModel()->save( $obj );
                 }
             }
             if ( is_array( $this->new ) ) {
                 foreach( $this->new as $key => $obj ) {
-                    App::$DEBUG && App::getInstance()->getLogger()->log('New '.$key);
+                    App::getInstance()->getLogger()->log('New '.$key);
                     $obj->getModel()->save( $obj );
                 }
             }
             if ( is_array( $this->delete ) ) {
                 foreach( $this->delete as $key => $obj ) {
-                    App::$DEBUG && App::getInstance()->getLogger()->log('Delete '.$key);
+                    App::getInstance()->getLogger()->log('Delete '.$key);
                     $obj->getModel()->delete( $obj->getId() );
                 }
             }

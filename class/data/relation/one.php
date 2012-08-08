@@ -13,9 +13,11 @@ class Data_Relation_One extends Data_Relation
         foreach ( $collection as $obj ) {
             $keys[] = $obj->getId();
         }
-        $objects = $this->model->findAll( " $this->key IN ( ".implode( ",", $keys )." ) ");
-        /** @var $o Data_Object */
-        foreach ( $objects as $o );
+        if ( count( $keys ) ) {
+            $objects = $this->model->findAll( " $this->key IN ( " . implode( ",", $keys ) . " ) " );
+            /** @var $o Data_Object */
+            foreach ( $objects as $o );
+        }
     }
 
     public function find()

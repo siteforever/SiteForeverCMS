@@ -11,8 +11,8 @@
 </style>
 
 <div class="sf_gallery_panel">
-    <div class="sf_gallery_pred">{if $pred}<a href="/{$pred->getAddr()}">&laquo; Пред.</a>{else}&nbsp;{/if}</div>
-    <div class="sf_gallery_next">{if $next}<a href="/{$next->getAddr()}">След. &raquo;</a>{else}&nbsp;{/if}</div>
+    <div class="sf_gallery_pred">{if $pred}<a {href url=$pred->url}>&laquo; {$pred->name}</a>{else}&nbsp;{/if}</div>
+    <div class="sf_gallery_next">{if $next}<a {href url=$next->url}>{$next->name} &raquo;</a>{else}&nbsp;{/if}</div>
 </div>
 
 <table>
@@ -23,7 +23,7 @@
             </a>
         </td>
         <td style="vertical-align: top;">
-            {str_replace("><br />",">",$image->description|nl2br)}
+            {$image->description}
         </td>
     </tr>
 </table>

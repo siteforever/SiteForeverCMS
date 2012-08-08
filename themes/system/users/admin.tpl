@@ -1,12 +1,12 @@
-{form action="admin/users" method="get"}
+{form action="users/admin" method="get"}
 <p>Фильтр:
     <input type="text" name="search" value="{$request->get('search')}" />
     <input type="submit" value="Фильтровать" />
-    {if $request->get('search')}<a {href url="admin/users"} class="button">Сбросить фильтр</a>{/if}
+    {if $request->get('search')}<a {href url="users/admin"} class="button">Сбросить фильтр</a>{/if}
 </p>
 {/form}
 
-{form action="admin/users" method="post"}
+{form action="users/admin" method="post"}
     <table class="dataset fullWidth">
     <tr>
         <th>{icon name="user_delete" title="Удалить"}</th>

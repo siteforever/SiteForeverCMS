@@ -20,7 +20,8 @@ class Data_Criteria
 
     /**
      * @param string $table
-     * @param array $criteria
+     * @param array|Db_Criteria $criteria
+     * @throws Data_Exception
      */
     function __construct( $table, $criteria = null )
     {

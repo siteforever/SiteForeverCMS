@@ -6,10 +6,11 @@
  * @link http://siteforever.ru
  */
 
-abstract class Data_Object implements ArrayAccess//, Iterator
+/**
+ * @property $attributes
+ */
+abstract class Data_Object extends \Sfcms\Component
 {
-    protected $data   = array();
-
     /**
      * @var Sfcms_Model
      */
@@ -21,6 +22,11 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     protected $table  = null;
 
     /**
+     * @var array|null
+     */
+    protected $relation = null;
+
+    /**
      * @param Sfcms_Model $model
      * @param array $data
      */
@@ -28,6 +34,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
+        $this->relation = $this->model->relation();
 
         $this->setAttributes( $data );
 
@@ -38,67 +45,30 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     }
 
     /**
-     * @param $name
-     * @return array|Data_Object|mixed|null
-     */
-    public function __get($name)
-    {
-        return $this->get( $name );
-    }
-
-    /**
      * @param $key
      * @return array|Data_Object|mixed|null
      */
     public function get( $key )
     {
-        $relation = $this->model->relation();
-        if ( isset( $relation[ $key ] ) ) {
+        if ( isset( $this->relation[ $key ] ) ) {
             return $this->model->findByRelation( $key, $this );
-        } else if ( method_exists( $this, 'get'.$key ) && 'id' != $key ) {
-            return $this->{'get'.$key}();
-        } else if ( isset( $this->data[ $key ] ) ) {
-            return $this->data[ $key ];
         }
-        return null;
-    }
-
-    /**
-     * @param $name
-     * @param $value
-     * @return void
-     */
-    public function __set($name, $value)
-    {
-        $this->set( $name, $value );
+        return parent::get( $key );
     }
 
     /**
      * @param $key
      * @param $value
-     * @return Data_Object
+     * @return Data_Object|Sfcms\Component
      */
     public function set( $key, $value )
     {
-        if ( method_exists( $this, 'set'.$key ) && 'id' != $key ) {
-            $method = 'set'.$key;
-            $this->$method( $value );
-        } else {
-            if ( ! isset( $this->data[$key] ) || ( isset( $this->data[$key] ) && $this->data[$key] != $value ) ) {
-                $this->markDirty();
-            }
-            $this->data[$key] = $value;
+        $oldValue = isset( $this->data[$key] ) ? $this->data['key'] : null;
+        parent::set( $key, $value );
+        if ( null === $oldValue || $oldValue != $value ) {
+            $this->markDirty();
         }
         return $this;
-    }
-
-    /**
-     * @param $name
-     * @return bool
-     */
-    public function __isset($name)
-    {
-        return $this->offsetExists( $name );
     }
 
     /**
@@ -107,7 +77,7 @@ abstract class Data_Object implements ArrayAccess//, Iterator
      */
     public function __unset($name)
     {
-        $this->data[$name] = null;
+        parent::__unset( $name );
         $this->markDirty();
     }
 
@@ -118,14 +88,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     {
         $this->data['id'] = null;
         $this->markNew();
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return get_class( $this );
     }
 
     /**
@@ -154,27 +116,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
             return $this->data['id'];
         }
         return null;
-    }
-
-    /**
-     * Вернет список установленных атрибутов
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->data;
-    }
-
-    /**
-     * Установить список атрибутов
-     * @param array $data
-     * @return void
-     */
-    public function setAttributes( $data = array() )
-    {
-        foreach( $data as $k => $d ) {
-            $this->set( $k, $d );
-        }
     }
 
     /**
@@ -238,85 +179,6 @@ abstract class Data_Object implements ArrayAccess//, Iterator
     public function markClean()
     {
         Data_Watcher::addClean( $this );
-    }
-
-
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Whether a offset exists
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
-     * @return boolean Returns true on success or false on failure.
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * </p>
-     */
-    public function offsetExists($offset)
-    {
-        return (bool) null !== $this->get( $offset );
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Offset to retrieve
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
-     * @return mixed Can return all value types.
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get( $offset );
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Offset to set
-     * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param mixed $value <p>
-     * The value to set.
-     * </p>
-     * @return Data_Object
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->set( $offset, $value );
-        return $this;
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Offset to unset
-     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
-     * @return void
-     */
-    public function offsetUnset($offset)
-    {
-        if ( isset ( $this->data[ $offset ] ) ) {
-            $this->data[ $offset ] = null;
-            $this->markDirty();
-        }
-    }
-
-    /**
-     * (PHP 5 &gt;= 5.1.0)<br/>
-     * Return the current element
-     * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
-     */
-    public function current()
-    {
-        return current( $this->data );
     }
 
 }

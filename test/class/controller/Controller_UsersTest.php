@@ -63,10 +63,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->indexAction();
         $result = $this->app->getRequest()->getContent();
-//        var_dump( $return );
-//        var_dump( $this->app->getRequest()->getFeedback() );
-//        var_dump( $this->app->getRequest()->getContent() );
-        $this->assertStringStartsWith('<form name=\'form_login\' id=\'form_login\'', trim( $return ) );
+        $this->assertStringStartsWith('<form action="/?route=users/login" class="standart ajax"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -106,20 +103,13 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Выход
-     */
-//    public function testLogoutAction()
-//    {
-//    }
-
-    /**
      * Вход
      */
     public function testLoginAction()
     {
         $return = $this->controller->indexAction();
         $result = $this->app->getRequest()->getContent();
-        $this->assertStringStartsWith('<form name=\'form_login\' id=\'form_login\'', trim( $return ) );
+        $this->assertStringStartsWith('<form action="/?route=users/login" class="standart ajax"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -150,12 +140,10 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
      */
     public function testRegisterAction()
     {
-        $return = $this->controller->registerAction();
+        $return = trim( $this->controller->registerAction() );
         $result = $this->app->getRequest()->getContent();
-
         $this->assertEmpty($result);
-        $this->assertStringStartsWith("<form name='form_register' id='form_register'", $return);
-
+        $this->assertStringStartsWith('<form action="" class="standart" enctype="multipart/form-data" id="form_register"', $return);
     }
 
     /**
@@ -180,6 +168,9 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $result = $this->app->getRequest()->getContent();
 
         $this->assertEmpty($result);
-        $this->assertStringStartsWith("<form name='form_password' id='form_password'", $return);
+        $this->assertStringStartsWith(
+            '<form action="" class="standart ajax" enctype="multipart/form-data" id="form_password"',
+            $return
+        );
     }
 }

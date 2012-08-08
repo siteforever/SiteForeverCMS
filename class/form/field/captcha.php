@@ -10,19 +10,16 @@ class Form_Field_Captcha extends Form_Field
 {
     protected $_type =   'captcha';
 
-    function htmlTpl($html)
+    public function htmlInput( $field )
     {
-        $html   = preg_replace('/value=[\"\\\'].*?[\"\\\']/i', '', $html);
-        $html   = preg_replace('/class=[\"\\\'](.*?)[\"\\\']/i', 'class="$1 captcha"', $html);
-        $html   = preg_replace('/\s+/', ' ', $html);
-        //print htmlspecialchars( $html );
-        $html   .=  '<img src="/?controller=captcha" alt="captcha" />';
-        $html   .=  '<span class="siteforever_captcha_reload">Обновить</span>';
-
-        return parent::htmlTpl($html);
+        $field['value']    = 'value=""';
+        $field['class'][]  = 'captcha';
+        return parent::htmlInput( $field )
+            . '<img src="/?controller=captcha" alt="captcha" />'
+            . '<span class="siteforever_captcha_reload">Обновить</span>';
     }
 
-    function validate()
+    public function validate()
     {
         $classes    = explode( ' ', trim($this->_class) );
         foreach ( $classes as $i => $class ) {

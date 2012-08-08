@@ -34,7 +34,7 @@ class Controller_Manufacturers extends Sfcms_Controller
 
     public function adminAction()
     {
-        $this->request->addScript('/misc/admin/manufacturers.js');
+        $this->app()->addScript('/misc/admin/manufacturers.js');
         /** @var $model Model_Manufacturers */
         $model = $this->getModel();
         $count = $model->count();
@@ -75,7 +75,7 @@ class Controller_Manufacturers extends Sfcms_Controller
                     $obj->save();
                 }
                 $this->reload('manufacturers/admin', array(), 2000, true);
-                return t('Data save success');
+                return t('Data save successfully');
             } else {
                 return $form->getFeedbackString();
             }

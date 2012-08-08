@@ -24,6 +24,7 @@ class Sfcms_Installer
         }
 
         if( ! is_dir( ROOT . self::DS. '_runtime' . self::DS . 'sxd' ) ) {
+            $this->mkdir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd' );
             $this->copyDir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd',
                 ROOT . self::DS. '_runtime' . self::DS . 'sxd' );
         }

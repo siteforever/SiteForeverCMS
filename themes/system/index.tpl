@@ -7,7 +7,10 @@
 <body class="body">
 <div class="l-wrapper">
 
-    <h1>{t}Control panel{/t} :: {if $request->getTitle()}{$request->getTitle()}{else}untitled{/if}</h1>
+    <h1>
+        {t}Control panel{/t} / {if $request->getTitle()}{$request->getTitle()}{else}untitled{/if}
+        <span style="float: right;">{icon name="door_in" title=t('Exit')} <a {href url="users/logout"}>{t}Exit{/t}</a></span>
+    </h1>
 
     <div class="l-main-panel">
         <div class="l-panel">
@@ -34,11 +37,10 @@
         </div>
 
         <div class="l-content">
+            <div class="l-content-wrapper">
             {if $feedback}<p class="red">{$feedback}</p>{/if}
-
-            {$page.content}
-
-            <div class="l-content-wrapper"></div>
+            {$request->getContent()}
+            </div>
         </div>
 
         <div class="clear"></div>

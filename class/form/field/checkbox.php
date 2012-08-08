@@ -16,7 +16,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
      * @var array $filed
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         $html = array();
 
@@ -50,7 +50,7 @@ class Form_Field_Checkbox extends Form_Field_Radio
      * @param $value
      * @return boolean
      */
-    function checkValue( $value )
+    public function checkValue( $value )
     {
         if ( is_array( $value ) ) {
             $check = true;

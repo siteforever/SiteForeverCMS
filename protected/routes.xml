@@ -6,15 +6,16 @@
     </route>
 
     <!-- ADMIN -->
-    <route alias="admin/edit.*" system="1">
+    <route alias="admin/edit/*" system="1">
         <controller>page</controller>
         <action>edit</action>
     </route>
-    <route alias="admin/add.*" system="1">
+    <route alias="admin/add/*" system="1">
         <controller>page</controller>
         <action>add</action>
     </route>
-    <route alias="admin/users.*" system="1">
+
+    <route alias="admin/users" system="1">
         <controller>users</controller>
         <action>admin</action>
     </route>
@@ -34,10 +35,34 @@
         <controller>catgallery</controller>
         <action>admin</action>
     </route>
-    <route alias="admin/news" system="1">
+
+    <!-- NEWS -->
+    <route alias="news/admin" system="1">
         <controller>news</controller>
         <action>admin</action>
     </route>
+    <route alias="news/list/*" system="1">
+        <controller>news</controller>
+        <action>list</action>
+    </route>
+    <route alias="news/edit/*" system="1">
+        <controller>news</controller>
+        <action>edit</action>
+    </route>
+    <route alias="news/delete/*" system="1">
+        <controller>news</controller>
+        <action>delete</action>
+    </route>
+    <route alias="news/catedit/*" system="1">
+        <controller>news</controller>
+        <action>catedit</action>
+    </route>
+    <route alias="news/catdelete/*" system="1">
+        <controller>news</controller>
+        <action>catdelete</action>
+    </route>
+
+
     <route alias="admin/gallery" system="1">
         <controller>gallery</controller>
         <action>admin</action>
@@ -45,11 +70,15 @@
     <route alias="admin/settings" system="1">
         <controller>settings</controller>
     </route>
+    <route alias="settings/admin" system="1">
+        <controller>settings</controller>
+        <action>admin</action>
+    </route>
     <route alias="admin" system="1">
         <controller>page</controller>
         <action>admin</action>
     </route>
-    <route alias="admin[^/].*" system="1">
+    <route alias="admin/*" system="1">
         <controller>page</controller>
         <action>admin</action>
     </route>
@@ -58,12 +87,16 @@
     </route>
     
     <!-- ORDER -->
-    <route alias="order" protected="1">
-        <controller>order</controller>
-    </route>
     <route alias="order/create" protected="1">
         <controller>order</controller>
         <action>create</action>
+    </route>
+    <route alias="order/admin" system="1">
+        <controller>order</controller>
+        <action>admin</action>
+    </route>
+    <route alias="order" protected="1">
+        <controller>order</controller>
     </route>
 
     <!-- BASKET -->

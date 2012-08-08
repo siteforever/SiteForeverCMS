@@ -11,7 +11,7 @@ class Controller_Captcha extends Sfcms_Controller
     /**
      * Init default config
      */
-    function init()
+    public function init()
     {
         $this->config->setDefault('captcha', array(
             'width'     => 100,
@@ -28,7 +28,7 @@ class Controller_Captcha extends Sfcms_Controller
      * Index action
      * @return mixed
      */
-    function indexAction()
+    public function indexAction()
     {
         $h  = $this->config->get('captcha.height');
         $w  = $this->config->get('captcha.width');

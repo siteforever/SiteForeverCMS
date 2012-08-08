@@ -20,7 +20,7 @@ class Data_Table_Catalog extends Data_Table
             new Data_Field_Int('parent'),
             new Data_Field_Tinyint('cat'),
             new Data_Field_Varchar('name', 100),
-            new Data_Field_Varchar('url', 100),
+            new Data_Field_Varchar('alias', 100),
             new Data_Field_Text('path'),
             new Data_Field_Varchar('icon', 250),
             new Data_Field_Text('text'),

@@ -15,7 +15,7 @@ class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
         $this->gallery    = Sfcms_Model::getModel('Gallery')->createObject(
             array(
                 'id'            => 1,
-                'category_id'   => 1,
+                'category_id'   => 7,
                 'name'          => 'Панасоник',
                 'link'          => 'index',
                 'description'   => '',
@@ -31,14 +31,14 @@ class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
 
     public function testGetCategory()
     {
-        $this->assertInstanceOf('Data_Object_GalleryCategory', $this->gallery->getCategory());
+        $this->assertInstanceOf('Data_Object_GalleryCategory', $this->gallery->Category);
     }
 
-    public function testGetAlias()
-    {
+//    public function testGetAlias()
+//    {
 //        $this->assertEquals(
 //            'supplies/panasonik',
-//            $this->gallery->getAlias()
+//            $this->gallery->url
 //        );
-    }
+//    }
 }

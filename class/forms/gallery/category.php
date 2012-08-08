@@ -83,13 +83,6 @@ class Forms_Gallery_Category extends form_Form
                     ),
                 ),
 
-                '<hr/>',
-
-                'meta_description'  => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Description',),
-                'meta_keywords'     => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Keywords',),
-                'meta_h1'           => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'H1',),
-                'meta_title'        => array('type'=>'text',        'class'=>'elcatalog-meta',  'label'=>'Title',),
-
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),
         ));

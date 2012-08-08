@@ -108,7 +108,6 @@ class DB
     protected function log( $msg )
     {
         $this->log[] = $msg;
-//        App::getInstance()->getLogger()->log( $msg, 'sql' );
     }
 
     /**
@@ -510,7 +509,7 @@ class DB
         else {
             $keys = "(`" . join ( "`,`", array_keys( $data ) ) . "`)";
         }
-        $sql = "INSERT INTO {$table} {$keys} VALUES ($datas)";
+        $sql = "INSERT INTO `{$table}` {$keys} VALUES ($datas)";
         $this->query( $sql );
         if ( $this->result ) {
             return $this->return;

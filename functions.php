@@ -64,12 +64,14 @@ function sendmail( $from, $to, $subject, $message )
 
 /**
  * Напечатать переведенный текст
+ * @param string $cat
  * @param string $text
+ * @param array $params
  * @return mixed
  */
-function t( $text )
+function t( $cat, $text = '', $params = array() )
 {
-    return Sfcms_i18n::getInstance()->write( $text );
+    return call_user_func_array(array(Sfcms_i18n::getInstance(),'write'), func_get_args());
 }
 
 /**

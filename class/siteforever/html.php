@@ -28,9 +28,9 @@ class Siteforever_Html
      * @param array $params
      * @return string
      */
-    public function link( $text, $url, $params = array() )
+    public function link( $text, $url, $params = array(), $class = "" )
     {
-        return '<a '.$this->href( $url, $params ).'>'.$text.'</a>';
+        return '<a '.$this->href( $url, $params ).($class?" class=\"$class\"":'').'>'.$text.'</a>';
     }
 
     /**

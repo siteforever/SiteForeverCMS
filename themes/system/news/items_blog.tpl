@@ -6,9 +6,9 @@
     {foreach from=$list item="item"}
     <div>
         <div><strong>{$item.date|date_format:"%x"}</strong></div>
-        <p><a href="{$item->getAlias()}">{$item.title|default:$item.name}</a></p>
+        <p><a href="{$item->url}">{$item.title|default:$item.name}</a></p>
         <div>{$item.notice}</div>
-        <div class="right"><a href="{$item->getAlias()}">подробнее...</a></div>
+        <div class="right"><a href="{$item->url}">подробнее...</a></div>
     </div>
     {foreachelse}
     <div>

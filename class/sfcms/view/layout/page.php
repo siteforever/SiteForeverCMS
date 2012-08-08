@@ -12,13 +12,13 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
     public function view( $result )
     {
         if( file_exists( trim( $this->getCss(), '/' ) . '/style.css' ) ) {
-            $this->getRequest()->addStyle( $this->getCss() . '/style.css' );
+            $this->_app->addStyle( $this->getCss() . '/style.css' );
         }
         if( file_exists( trim( $this->getCss(), '/' ) . '/print.css' ) ) {
-            $this->getRequest()->addStyle( $this->getCss() . '/print.css' );
+            $this->_app->addStyle( $this->getCss() . '/print.css' );
         }
         if( file_exists( trim( $this->getJs() . '/script.js', '/' ) ) ) {
-            $this->getRequest()->addScript( $this->getJs() . '/script.js' );
+            $this->_app->addScript( $this->getJs() . '/script.js' );
         }
 
         $layout = $this->getTpl()->fetch(

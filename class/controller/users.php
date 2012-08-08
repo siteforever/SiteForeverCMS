@@ -167,18 +167,15 @@ class Controller_Users extends Sfcms_Controller
                 if ( ! $user_id ) {
                     // если создан новый пользователь
                     $ins = $User->save();
+                    $this->reload( '/users/admin/edit/'.$ins );
                     print "Пользователь добавлен";
-                    $this->reload( '/admin/users/edit/'.$ins );
                 }
                 $User->markDirty();
-                $this->request->addFeedback('Данные сохранены');
-            }
-            else {
-                $this->request->addFeedback('Форма заполнена не правильно');
+                return t('Data save successfully');
             }
             return $this->request->getFeedbackString();
         }
-        return 'Data not sent';
+        return t('Data not sent');
     }
 
     /**
@@ -204,7 +201,8 @@ class Controller_Users extends Sfcms_Controller
         $user   = $auth->currentUser();
 
         if ( $user->getId() ) {
-            return $this->cabinetAction();
+//            return $this->cabinetAction();
+            return $this->redirect('users/cabinet');
         }
 
         // вход в систему
@@ -215,7 +213,7 @@ class Controller_Users extends Sfcms_Controller
                 if ( $auth->login( $form->getField('login')->getValue(), $form->getField('password')->getValue() ) ) {
                     return $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
-                    $this->request->addFeedback( $auth->getMessage() );
+                    return $auth->getMessage();
                 }
             }
         }
@@ -226,7 +224,7 @@ class Controller_Users extends Sfcms_Controller
     }
 
     /**
-     * @return void
+     * @return mixed
      */
     public function cabinetAction()
     {
@@ -237,10 +235,7 @@ class Controller_Users extends Sfcms_Controller
             // отображаем кабинет
             $this->tpl->assign('user', $user->getAttributes());
             $this->request->setTitle('Кабинет пользователя');
-
-            $this->request->setContent($this->tpl->fetch('users.cabinet'));
-        }
-        else {
+        } else {
             $this->reload('users/login');
         }
     }

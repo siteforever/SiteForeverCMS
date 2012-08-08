@@ -61,13 +61,27 @@ class Sfcms_i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
-        $dict_file   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
+        $dictFile   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
                                 . DIRECTORY_SEPARATOR . 'lang'
                                 . DIRECTORY_SEPARATOR . $this->_lang . '.php';
-        if( ! file_exists( $dict_file ) ) {
-            throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dict_file );
+        if( ! file_exists( $dictFile ) ) {
+            throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile );
         }
-        $this->_dictionary = @include( $dict_file );
+        $this->_dictionary = @include( $dictFile );
+
+        // Prepare dictionary for JS
+        $jsDictFile = ROOT.DIRECTORY_SEPARATOR.'_runtime'.DIRECTORY_SEPARATOR.'i18n.'.$this->_lang.'.js';
+        $jsI18nFile = SF_PATH.DIRECTORY_SEPARATOR.'misc'.DIRECTORY_SEPARATOR.'siteforever'.DIRECTORY_SEPARATOR.'i18n.js';
+        if ( ! file_exists( $jsDictFile )
+            || filemtime( $dictFile ) < filemtime( $jsDictFile )
+            || filemtime( $jsI18nFile ) < filemtime( $jsDictFile ) )
+        {
+            $jsDict = array('// RUNTIME DICTIONARY FILE');
+            $jsDict[] = file_get_contents( $jsI18nFile );
+            $jsDict[] = "siteforever.i18n._dict = ".json_encode( $this->_dictionary ).';';
+            file_put_contents( $jsDictFile, join("\n\n", $jsDict) );
+        }
+        App::getInstance()->addScript( '/_runtime/i18n.'.$this->_lang.'.js' );
     }
 
     /**
@@ -86,15 +100,61 @@ class Sfcms_i18n
     }
 
     /**
-     * @param $text
+     * Return translated message
+     * @param string $message
      * @return string
      */
-    public function write( $text )
+    public function write( $message )
     {
-        if( isset( $this->_dictionary[ $text ] ) ) {
-            return $this->_dictionary[ $text ];
+        switch ( func_num_args() ) {
+            case 1:
+                if( isset( $this->_dictionary[ $message ] ) ) {
+                    return $this->_dictionary[ $message ];
+                }
+                break;
+            case 2:
+                if ( is_string( func_get_arg(1) ) ) {
+                    return $this->getCategoryTranslate( func_get_arg(0), func_get_arg(1) );
+                }
+                if ( is_array( func_get_arg(1) ) ) {
+                    return $this->getCategoryTranslate( null, func_get_arg(0), func_get_arg(1) );
+                }
+                break;
+            case 3:
+                return $this->getCategoryTranslate( func_get_arg(0), func_get_arg(1), func_get_arg(2) );
         }
-        return $text;
+
+        return $message;
+    }
+
+    /**
+     * @param $category
+     * @param $message
+     * @param array $params
+     * @return mixed
+     * @throws Exception
+     */
+    public function getCategoryTranslate( $category, $message, $params = array() )
+    {
+        $category = strtolower( $category );
+        if ( $category && ! isset( $this->_dictionary[ $category ] ) ) {
+            $dictFile   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
+                                    . DIRECTORY_SEPARATOR . 'lang'
+                                    . DIRECTORY_SEPARATOR . $this->_lang
+                                    . DIRECTORY_SEPARATOR . $category . '.php';
+            if( ! file_exists( $dictFile ) ) {
+                throw new Exception( 'Dictionary ' . $category . ' for language ' . $this->_lang
+                    . ' not found in file ' . $dictFile );
+            }
+            $this->_dictionary[ $category ] = @include( $dictFile );
+        }
+        if ( isset( $this->_dictionary[ $category ][ $message ] ) ) {
+            $message = $this->_dictionary[ $category ][ $message ];
+        }
+        foreach ( $params as $key => $val ) {
+            $message = str_replace( $key, $val, $message );
+        }
+        return $message;
     }
 
     /**

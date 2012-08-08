@@ -15,7 +15,7 @@ class Form_Field_Select extends Form_Field_Composite
      * @var array $filed
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         $html = array();
 
@@ -47,7 +47,7 @@ class Form_Field_Select extends Form_Field_Composite
      * @param $value
      * @return bool
      */
-    function checkValue( $value )
+    public function checkValue( $value )
     {
         //reg::getRequest()->addFeedback($this->name.' => '.$value);
         if ( is_array( $value ) ) {

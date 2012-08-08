@@ -1,6 +1,6 @@
 <?php
 /**
- * Rjynhjkkth обратной связи
+ * Controller обратной связи
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
  * @link http://siteforever.ru

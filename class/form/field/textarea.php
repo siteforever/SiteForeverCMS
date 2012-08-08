@@ -13,7 +13,7 @@ class Form_Field_Textarea extends Form_Field
      * @var array $field
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         $value = $field['value'];
         unset( $field['value'] );
@@ -27,7 +27,7 @@ class Form_Field_Textarea extends Form_Field
      * @param $value
      * @return boolean
      */
-    function checkValue( $value )
+    public function checkValue( $value )
     {
         return true;
         //return preg_match($this->filter, $value);

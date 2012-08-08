@@ -10,7 +10,7 @@ siteforever.gallery = {
      */
     nameEdit: function( event ){
 
-        console.log( 'click div | ', 'ev.target: ', event.target, ' this:', this );
+//        console.log( 'click div | ', 'ev.target: ', event.target, ' this:', this );
 
         event.stopPropagation();
 
@@ -24,11 +24,11 @@ siteforever.gallery = {
         $(this).find('input:text')
             .blur(function(event){
                 sf.gallery.nameApply.call( self );
-                console.log( 'blur:text | ', event.target, ' this:', this );
+//                console.log( 'blur:text | ', event.target, ' this:', this );
             })
             .click(function(event){
 //                event.stopPropagation();
-                console.log( 'click:text | ', event.target, ' this:', this );
+//                console.log( 'click:text | ', event.target, ' this:', this );
                 return false;
             })
             .keypress(function( event ){
@@ -52,7 +52,7 @@ siteforever.gallery = {
             id = $( this ).attr( 'rel' );
 
         if ( id && val != old ) {
-            $.post( '/?route=admin/gallery', { editimage: id, name: val } );
+            $.post( '/?route=gallery/admin', { editimage: id, name: val } );
         }
         $( this ).find( 'span' ).text( val ).show().next().show().next().val( val );
         $( text ).remove();
@@ -74,35 +74,40 @@ siteforever.gallery = {
     editDialog: {
         autoOpen        : false,
         modal           : true,
-        draggable       : false,
-        width           : 740,
+        width           : 700,
+        position        : 'center',
         title           : 'Правка информации',
         open            : function() {
             wysiwyg.init();
+            $( '#tabs' ).tabs();
         },
-        buttons         : {
-            'Закрыть'   : function() {
-                $(this).dialog('close');
+        buttons         : [
+            {
+                text: sf.i18n('Save'),
+                click : function() {
+                    $(this).find('form').ajaxSubmit({
+                        success : function(response) {
+                            sf.alert(response, 2000);
+                            return true;
+                        },
+                        error: function () {
+                            sf.alert('Данные не сохранены',2000);
+                            return true;
+                        }
+                        //target  : '#gallery_picture_edit'
+                    });
+                    $(this).dialog('close');
+                    sf.alert('Отправка...');
+                    return true;
+                }
             },
-            'Сохранить' : function() {
-                $(this).find('form').ajaxSubmit({
-                    success : function(response) {
-                        $.showBlock(response);
-                        $.hideBlock(2000);
-                        return true;
-                    },
-                    error: function () {
-                        $.showBlock('Данные не сохранены');
-                        $.hideBlock(2000);
-                        return true;
-                    }
-                    //target  : '#gallery_picture_edit'
-                });
-                $(this).dialog('close');
-                $.showBlock('Отправка...');
-                return true;
+            {
+                text: sf.i18n('Cancel'),
+                click : function() {
+                    $(this).dialog('close');
+                }
             }
-        }
+        ]
     }
 
 };
@@ -116,7 +121,7 @@ $(function() {
             $(this).find('li').each(function(){
                 positions.push($(this).attr('rel'));
             });
-            $.post('/?route=admin/gallery', { positions: positions });
+            $.post('/?route=gallery/admin', { positions: positions });
         }
     });
     $("#gallery").disableSelection();
@@ -130,17 +135,17 @@ $(function() {
         $(this).click(function(){
             action = $(this).attr('href');
             if ( 0 == $('#gallery_picture_edit').length ) {
-                $('<div id="gallery_picture_edit" />').appendTo('div.l-content').dialog( sf.gallery.editDialog ).hide();
+                $('<div id="gallery_picture_edit" />').appendTo('div.l-content-wrapper').dialog( sf.gallery.editDialog ).hide();
             }
 
             $(window).bind('close', function(){ return false; });
 
-            $.showBlock('Загрузка...');
             $.post($(this).attr('href'), $.proxy( function( action, response ){
-                console.log( arguments );
-                $('#gallery_picture_edit').html( response ).dialog('open')
+//                console.log( arguments );
+                $('#gallery_picture_edit')
+                    .html( response )
+                    .dialog('open')
                     .find('form').attr('action', action);
-                $.hideBlock();
                 return true;
             }, this, action ));
 

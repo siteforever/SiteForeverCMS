@@ -3,10 +3,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
-$(function(){
+$(document).ready(function(){
     $( 'a.delete' ).click(function(){
         if ( confirm( $(this ).attr('title') ) ) {
-            $.post( $( this ).attr('href'), $.proxy( function( response ){
+            $.post( $( this ).attr('href') ).then( $.proxy( function( response ){
                 sf.alert( response, 1000 ).done( $.proxy( function(){
                     $( this ).parent().parent().remove();
                 }, this) );

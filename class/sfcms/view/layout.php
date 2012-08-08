@@ -8,10 +8,8 @@ class Sfcms_View_Layout extends Sfcms_View_IView
     protected function init()
     {
         /** Данные шаблона */
-        $this->getTpl()->assign(
-            $this->getRequest()->get( 'tpldata' )
-        );
         $this->getTpl()->assign( array(
+            'path'     => $this->getRequest()->get('path'),
             'config'   => $this->_app->getConfig(),
             'feedback' => $this->getRequest()->getFeedbackString(),
             'host'     => isset( $_SERVER[ 'HTTP_HOST' ] ) ? $_SERVER[ 'HTTP_HOST' ] : '',

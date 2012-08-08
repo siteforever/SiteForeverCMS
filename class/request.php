@@ -19,10 +19,8 @@ class Request
 
     private $request = array();
 
-    private $_assets = null;
-
-    private $ajax = null;
-    private $ajax_type = self::TYPE_ANY;
+    private $ajax = false;
+    private $ajaxType = self::TYPE_ANY;
 
     private $error = 0;
 
@@ -30,6 +28,11 @@ class Request
         'error' => '',
         'errno' => 0,
     );
+
+    private $_content = '';
+    private $_title   = '';
+    private $_keywords   = '';
+    private $_description   = '';
 
     /**
      * Созание запроса
@@ -75,28 +78,32 @@ class Request
             }
         }
 
+        if ( isset( $_SERVER['HTTP_REMOTE_ADDR'] ) ) {
+            $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_REMOTE_ADDR'];
+        }
+
+        if ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ) {
+            $this->set('ip', $_SERVER['HTTP_X_REAL_IP']);
+        } elseif ( isset( $_SERVER['REMOTE_ADDR'] ) ) {
+            $this->set('ip', $_SERVER['REMOTE_ADDR']);
+        }
+
         if ( isset( $_SERVER[ 'HTTP_X_REQUESTED_WITH' ] ) ) {
-
             $this->ajax = true;
-
             if ( isset( $_SERVER[ 'HTTP_ACCEPT' ] ) ) {
-
                 if ( stripos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/json' ) !== false ) {
-                    $this->ajax_type = self::TYPE_JSON;
-                }
-                elseif ( stripos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/xml' ) !== false ) {
-                    $this->ajax_type = self::TYPE_XML;
-                }
-                else {
-                    $this->ajax_type = self::TYPE_ANY;
+                    $this->ajaxType = self::TYPE_JSON;
+                } elseif ( stripos( $_SERVER[ 'HTTP_ACCEPT' ], 'application/xml' ) !== false ) {
+                    $this->ajaxType = self::TYPE_XML;
+                } else {
+                    $this->ajaxType = self::TYPE_ANY;
                 }
             }
         }
 
-        $theme = App::getInstance()->getConfig()->get( 'template.theme' );
+        $theme = $this->app()->getConfig('template.theme');
 
-        $this->request[ 'path' ] = $this->request[ 'tpldata' ][ 'path' ] = array(
-            //'misc'      => '/misc',
+        $this->request[ 'path' ] = array(
             'css'       => '/themes/' . $theme . '/css',
             'js'        => '/themes/' . $theme . '/js',
             'images'    => '/themes/' . $theme . '/images',
@@ -105,18 +112,16 @@ class Request
 
         $this->request[ 'resource' ] = 'theme:';
         $this->request[ 'template' ] = 'index';
-
-        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/reset.css' );
-//        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
-        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/jquery/fancybox/jquery.fancybox-1.3.1.css' );
-        $this->addStyle( $this->request[ 'path' ][ 'misc' ] . '/siteforever.css' );
-
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery/jquery-1.7.2'.(App::$DEBUG?'':'.min').'.js' );
-//        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery/lightbox/jquery.lightbox-0.5.js' );
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/jquery/fancybox/jquery.fancybox-1.3.1.js' );
-        $this->addScript( $this->request[ 'path' ][ 'misc' ] . '/siteforever.js' );
     }
 
+
+    /**
+     * @return Application_Abstract
+     */
+    public function app()
+    {
+        return App::getInstance();
+    }
 
     /**
      * @return string
@@ -124,6 +129,14 @@ class Request
     public function getController()
     {
         return $this->get( 'controller' );
+    }
+
+    /**
+     * @param string $controller
+     */
+    public function setController( $controller )
+    {
+        $this->set( 'controller', $controller );
     }
 
 
@@ -135,6 +148,45 @@ class Request
         return $this->get( 'action' );
     }
 
+    /**
+     * @param string $action
+     */
+    public function setAction( $action )
+    {
+        $this->set( 'action', $action );
+    }
+
+    /**
+     * @param $description
+     */
+    public function setDescription($description)
+    {
+        $this->_description = $description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->_description;
+    }
+
+    /**
+     * @param $keywords
+     */
+    public function setKeywords($keywords)
+    {
+        $this->_keywords = $keywords;
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeywords()
+    {
+        return $this->_keywords;
+    }
 
     /**
      * Является ли запрос аяксовым
@@ -142,13 +194,6 @@ class Request
      */
     public function getAjax()
     {
-        if ( null === $this->ajax ) {
-            if ( isset( $_SERVER[ 'X-Requested-With' ] ) && 'XMLHttpRequest' !== $_SERVER[ 'X-Requested-With' ] ) {
-                $this->ajax = true;
-            } else {
-                $this->ajax = false;
-            }
-        }
         return $this->ajax;
     }
 
@@ -163,7 +208,7 @@ class Request
     {
         $this->ajax = $ajax;
         if ( $ajax ) {
-            $this->ajax_type = $type;
+            $this->ajaxType = $type;
         }
     }
 
@@ -182,7 +227,7 @@ class Request
      */
     public function getAjaxType()
     {
-        return $this->ajax_type;
+        return $this->ajaxType;
     }
 
     /**
@@ -203,46 +248,6 @@ class Request
     public function getError()
     {
         return $this->error;
-    }
-
-    /**
-     * Получить список файлов стилей
-     * @return array
-     */
-    public function getStyle()
-    {
-        return $this->_assets->getStyle();
-    }
-
-    /**
-     * Добавить файл стилей
-     * @param  $style
-     *
-     * @return void
-     */
-    public function addStyle( $style )
-    {
-        $this->_assets->addStyle( $style );
-    }
-
-    public function cleanStyle()
-    {
-        $this->_assets->cleanStyle();
-    }
-
-    public function getScript()
-    {
-        return $this->_assets->getScript();
-    }
-
-    public function addScript( $script )
-    {
-        $this->_assets->addScript( $script );
-    }
-
-    public function cleanScript()
-    {
-        $this->_assets->cleanScript();
     }
 
     /**
@@ -341,13 +346,11 @@ class Request
 
     /**
      * Установить заголовок страницы
-     * @param String $text
-     *
-     * @return void
+     * @param string $text
      */
     public function setContent( $text )
     {
-        $this->request[ 'tpldata' ][ 'page' ][ 'content' ] = $text;
+        $this->_content = $text;
     }
 
     /**
@@ -356,22 +359,17 @@ class Request
      */
     public function getContent()
     {
-        if ( isset( $this->request[ 'tpldata' ][ 'page' ][ 'content' ] ) ) {
-            return $this->request[ 'tpldata' ][ 'page' ][ 'content' ];
-        }
-        return '';
+        return $this->_content;
     }
 
 
     /**
      * Установить контент страницы
-     * @param String $text
-     *
-     * @return void
+     * @param string $title
      */
-    public function setTitle( $text )
+    public function setTitle( $title )
     {
-        $this->request[ 'tpldata' ][ 'page' ][ 'title' ] = $text;
+        $this->_title = $title;
     }
 
     /**
@@ -380,10 +378,7 @@ class Request
      */
     public function getTitle()
     {
-        if ( isset( $this->request[ 'tpldata' ][ 'page' ][ 'title' ] ) ) {
-            return $this->request[ 'tpldata' ][ 'page' ][ 'title' ];
-        }
-        return '';
+        return $this->_title;
     }
 
     /**
@@ -436,9 +431,6 @@ class Request
     {
         $ret = '';
         if ( count( $this->feedback ) ) {
-            /*$ret = '<div class="b-request-feedback">'.
-                    join( $sep, $this->feedback ).
-                    '</div>';*/
             $ret = join( $sep, $this->feedback );
         }
         return $ret;
@@ -497,9 +489,7 @@ class Request
     public function getResponseAsXML()
     {
         $xml = new SimpleXMLElement( '<response></response>' );
-
-        array_walk_recursive( $this->response, array( self, 'arrayWalkToXML' ), $xml );
-
+        array_walk_recursive( $this->response, array( $this, 'arrayWalkToXML' ), $xml );
         return $xml->asXML();
     }
 
@@ -518,7 +508,8 @@ class Request
 
     public function debug()
     {
-        printVar( $this->request );
+//        printVar( $this->request );
+        return $this->request;
     }
 
     /**
@@ -528,4 +519,5 @@ class Request
     {
         $this->request = array();
     }
+
 }

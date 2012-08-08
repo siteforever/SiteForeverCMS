@@ -11,14 +11,7 @@ class Model_Order extends Sfcms_Model
 
     protected $statuses;
 
-    /**
-     * @var Model_OrderStatus
-     */
-    public  $model_status;
-
-    /**
-     * @var Model_OrderPosition
-     */
+    /** @var Model_OrderPosition */
     public  $model_position;
 
     /**
@@ -28,14 +21,13 @@ class Model_Order extends Sfcms_Model
     protected function init()
     {
         $this->model_position   = $this->getModel('OrderPosition');
-        $this->model_status     = $this->getModel('OrderStatus');
     }
 
     /**
      * Отношения
      * @return array
      */
-    function relation()
+    public function relation()
     {
         return array(
             'positions'     => array( self::HAS_MANY, 'OrderPosition', 'ord_id' ),
@@ -45,91 +37,19 @@ class Model_Order extends Sfcms_Model
     }
 
     /**
-     * Вернет список статусов
-     * @return array
-     */
-    function getStatuses()
-    {
-        $order_status   = $this->getModel('OrderStatus');
-        
-        if ( is_null( $this->statuses ) ) {
-            $data   = $order_status->findAll(array(
-                'order' => 'status'
-            ));
-            $this->statuses = array();
-            foreach( $data as $d ) {
-                $this->statuses[$d['status']] = $d['name'];
-            }
-        }
-        return $this->statuses;
-    }
-
-    /**
-     * Вернет статус для значения или false
-     * @param int $status
-     * @return bool/string
-     */
-    function getStatus( $status )
-    {
-        $statuses = $this->getStatuses();
-        if ( isset($statuses[$status]) ) {
-            return $statuses[$status];
-        }
-        return false;
-    }
-
-    /**
-     * Поиск по Id пользователя
-     * @deprecated
-     * @param  $id
-     * @return array
-     */
-    function findAllByUserId( $id )
-    {
-        $list = $this->db->fetchAll(
-            "SELECT o.*, SUM( op.count ) count, SUM( op.price * op.count ) summa
-            FROM `".DBORDER."` o
-                LEFT JOIN ".DBORDERPOS." op ON o.id = op.ord_id
-            WHERE o.user_id = {$id} AND o.status < 100
-            GROUP BY o.id
-            ORDER BY o.status, o.date DESC"
-        );
-        if ( !$list ) {
-            $list = array();
-        }
-        foreach ( $list as &$l ) {
-            $l['status_value'] = $this->getStatus( $l['status'] );
-        }
-        return $list;
-    }
-
-
-    /**
-     * Список позиций к заказу
-     * @deprecated
-     * @param  $id
-     * @return void
-     */
-    function findPositionsByOrderId( $id )
-    {
-        $list = $this->db->fetchAll(
-            "SELECT * FROM ".DBORDERPOS." WHERE ord_id = {$id}"
-        );
-        return $list;
-    }
-
-    /**
      * Создать заказ
-     * @param array $basket_data
-     * @return void
+     * @param array $basketData
+     * @return bool
      */
-    function createOrder( $basket_data )
+    public function createOrder( $basketData )
     {
         $obj    = $this->createObject(array(
             'status'    => 0,
             'date'      => time(),
             'user_id'   => $this->app()->getAuth()->currentUser()->getId(),
         ));
+
+        $this->log( $basketData );
 
         $this->save( $obj );
 
@@ -138,7 +58,7 @@ class Model_Order extends Sfcms_Model
             $pos_list = array();
             $total_count = 0;
             $total_summa = 0;
-            foreach( $basket_data as $data ) {
+            foreach( $basketData as $data ) {
                 $position   = $this->model_position->createObject(array(
                     'ord_id'    => $obj->getId(),
                     'name'      => $data['name'],

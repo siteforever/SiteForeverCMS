@@ -28,4 +28,20 @@ abstract class Data_Relation
 
     public abstract function with( Data_Collection $collection );
 
+    /**
+     * @return string
+     */
+    public function getModelName()
+    {
+        return $this->relation[ 1 ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getKey()
+    {
+        return $this->relation[ 2 ];
+    }
+
 }

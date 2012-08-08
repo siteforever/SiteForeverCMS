@@ -19,6 +19,8 @@ class Data_Table_Manufacturers extends Data_Table
             new Data_Field_Varchar( 'phone', 250, true, null, false ),
             new Data_Field_Varchar( 'email', 250, true, null, false ),
             new Data_Field_Text( 'address', 11, true, null, false ),
+            new Data_Field_Varchar( 'image', 250, true, null, false ),
+            new Data_Field_Text( 'description', 11, true, null, false ),
         );
     }
 

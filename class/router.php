@@ -5,6 +5,8 @@
  * @link http://ermin.ru
  */
 
+use \Sfcms\Route as Route;
+
 class Router
 {
     private $route;
@@ -13,8 +15,9 @@ class Router
 
     private $controller = 'page';
     private $action = 'index';
-    private $id;
+    private $id = null;
 
+    /** @var \Request */
     private $request;
 
     private $system = 0;
@@ -25,7 +28,7 @@ class Router
 
     private $_params = array();
 
-    private $_db_aliases    = null;
+    private $_routes = array();
 
     /**
      * Создаем маршрутизатор
@@ -35,10 +38,21 @@ class Router
     {
         $this->request = $request;
         $route         = $this->request->get( 'route' );
-
         $this->setRoute( $route );
 
-        //        $this->request->set('route', $this->route);
+        $this->addRouteRegulation( new Route\Direct );
+        $this->addRouteRegulation( new Route\XML );
+        $this->addRouteRegulation( new Route\Structure );
+        $this->addRouteRegulation( new Route\Defaults );
+    }
+
+    /**
+     * Add route to table
+     * @param \Sfcms\Route $route
+     */
+    protected function addRouteRegulation( Route $route )
+    {
+        $this->_routes[] = $route;
     }
 
     /**
@@ -91,8 +105,7 @@ class Router
 
         if( App::getInstance()->getConfig()->get( 'url.rewrite' ) ) {
             $result = '/' . $result . ( count( $par ) ? '/' . join( '/', $par ) : '' );
-        }
-        else {
+        } else {
             $result = '/?route=' . $result . ( count( $par ) ? '&' . join( '&', $par ) : '' );
         }
 
@@ -129,6 +142,7 @@ class Router
         return strtolower( $result );
     }
 
+
     /**
      * @param array $params
      * @return string
@@ -162,7 +176,6 @@ class Router
                 $par    = trim( $par, '/' );
                 list( $key, $val ) = explode( '=', $par );
                 $this->_params[ $key ] = $val;
-//                $this->request->set($key, $val);
             }
         }
 
@@ -171,75 +184,53 @@ class Router
 
     /**
      * Маршрутизация
+     * @param bool $greedy Показывает, проводитьли "жадную" маршрутизацию?
      * @return bool
      */
-    public function routing()
+    public function routing( $greedy = false )
     {
+        $start = microtime(1);
         $this->_params = array();
 
-        // Если контроллер и действие указаны явно, то не производить маршрутизацию
-        if( $this->request->get( 'controller' ) ) {
-            if( ! $this->request->get( 'action' ) ) {
+        // Если контроллер указан явно, то не производить маршрутизацию
+        if( ! $greedy && $this->request->getController() ) {
+            if( ! $this->request->getAction() ) {
                 $this->request->set( 'action', 'index' );
             }
             return true;
         }
 
-        $this->route = trim( $this->route, '/' );
+        $this->route = trim( $this->route, '/ ' );
 
-        if( ! $this->route ) {
+        if( $this->route ) {
+            $this->route = $this->filterEqParams( $this->route );
+        } else {
             $this->route = 'index';
         }
 
-        if( preg_match( '/[\w\d\/_-]+/i', $this->route ) ) {
-            $this->route = trim( $this->route, ' /' );
-        }
+        $routed = false;
 
-        $this->route = $this->filterEqParams( $this->route );
+        /** @var \Sfcms\Route $route */
+        foreach ( $this->_routes as $route ) {
+            if ( $routed = $route->route( $this->route ) ) {
+                $this->request->setController( $routed['controller'] );
+                $this->request->setAction( $routed['action'] );
 
-        $this->findAlias();
-
-        if( ! $this->findRoute() ) {
-            if( ! $this->findStructure() ) {
-                $route_pieces = explode( '/', $this->route );
-                if ( count( $route_pieces ) == 1 ) {
-                    $this->controller = $route_pieces[ 0 ];
-                    $this->action     = 'index';
-                } elseif( count( $route_pieces ) > 1 ) {
-                    $this->controller = $route_pieces[ 0 ];
-                    $this->action     = $route_pieces[ 1 ];
-
-                    $route_pieces = array_slice( $route_pieces, 2 );
-
-                    if( 0 == count( $route_pieces ) % 2 ) {
-                        $key = '';
-                        foreach( $route_pieces as $i => $r ) {
-                            if( $i % 2 ) {
-                                if( ! $this->request->get( $key ) ) {
-                                    $this->request->set( $key, $r );
-                                }
-                            } else {
-                                $key = $r;
-                            }
-                        }
-                    }
-                } else {
-                    $this->activateError();
+                if ( isset( $routed['params'] ) && is_array( $routed['params'] ) ) {
+                    $this->_params = array_merge( $routed['params'], $this->_params );
                 }
+
+                foreach ( $this->_params as $key => $val ) {
+                    $this->request->set( $key, $val );
+                }
+                break;
             }
         }
 
-        $this->_params[ 'controller' ] = $this->controller;
-        $this->_params[ 'action' ]     = $this->action;
-
-        if( $this->template ) {
-            $this->request->set( 'template', $this->template );
+        App::getInstance()->getLogger()->log( round( microtime(1) - $start, 3 ).' sec', 'Routing' );
+        if ( ! $routed ) {
+            $this->activateError();
         }
-
-        foreach( $this->_params as $key => $val ) {
-            $this->request->set( $key, $val );
-        }
-
         return true;
     }
 
@@ -250,9 +241,7 @@ class Router
     public function activateError( $error = '404' )
     {
         $this->controller = 'page';
-        $this->action     = 'error';
-        $this->id         = $error;
-        $this->template   = App::getInstance()->getConfig()->get( 'template.404' );
+        $this->action     = 'error404';
         $this->system     = 0;
     }
 
@@ -263,58 +252,16 @@ class Router
     private function findAlias()
     {
         $model = Sfcms_Model::getModel( 'Alias' );
-
         $alias = $model->find(
             array(
                 'cond'  => 'alias = ?',
                 'params'=> array( $this->route ),
             )
         );
-
         if( $alias ) {
             $this->setRoute( $alias->url );
             $this->_isAlias = true;
             return true;
-        }
-        return false;
-    }
-
-    /**
-     * Поиск по маршрутам
-     * @return bool
-     */
-    private function findRoute()
-    {
-        if( $this->findXMLRoute() ) {
-            return true;
-        }
-//        elseif( $this->findTableRoute() ) {
-//            return true;
-//        }
-        return false;
-    }
-
-    /**
-     * Ищем маршрут в XML конфиге
-     * @return bool
-     */
-    private function findXMLRoute()
-    {
-        $xml_routes_file = SF_PATH . '/protected/routes.xml';
-        if( file_exists( $xml_routes_file ) ) {
-            $xml_routes = new SimpleXMLIterator( file_get_contents( $xml_routes_file ) );
-            if( $xml_routes ) {
-                foreach( $xml_routes as $route ) {
-                    if( $route[ 'active' ] !== "0" && preg_match( '@^' . $route[ 'alias' ] . '$@ui', $this->route ) ) {
-                        $this->controller = (string)$route->controller;
-                        $this->action     = isset( $route->action ) ? (string)$route->action : 'index';
-                        $this->id         = $route[ 'id' ];
-                        $this->protected  = $route[ 'protected' ];
-                        $this->system     = $route[ 'system' ];
-                        return true;
-                    }
-                }
-            }
         }
         return false;
     }
@@ -327,9 +274,7 @@ class Router
     {
         $routes = Sfcms_Model::getModel( 'Routes' );
 
-        $this->route_table = $routes->findAll( array(
-            'cond' => 'active = 1',
-        ) );
+        $this->route_table = $routes->findAll( 'active = 1' );
 
         // индексируем маршруты
         foreach( $this->route_table as $route )
@@ -343,30 +288,6 @@ class Router
 
                 return true;
             }
-        }
-        return false;
-    }
-
-    /**
-     * Поиск по структуре
-     * @return bool
-     */
-    private function findStructure()
-    {
-        $model = Sfcms_Model::getModel( 'Page' );
-
-        $data = $model->find( array(
-            'cond'  => 'alias = ? AND deleted = 0',
-            'params'=> array( $this->route ),
-        ) );
-
-        if( $data ) {
-            $this->controller = $data[ 'controller' ];
-            $this->action     = $data[ 'action' ];
-            $this->id         = $data[ 'id' ];
-            $this->template   = $data[ 'template' ];
-            $this->system     = $data[ 'system' ];
-            return true;
         }
         return false;
     }
@@ -387,6 +308,9 @@ class Router
     public function setRoute( $route, array $params = array() )
     {
         $this->route = trim( $route, '/' );
+        $this->controller = 'index';
+        $this->action = 'index';
+        $this->id = null;
         return $this;
     }
 

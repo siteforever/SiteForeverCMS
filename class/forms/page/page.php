@@ -59,13 +59,15 @@ class Forms_Page_Page extends Form_Form
 
                     'controller' => array(
                         'type'      => 'select',
-                        'label'     => 'Контроллер', 'required',
-                        'variants'  => array(),
+                        'label'     => 'Контроллер',
+                        'required',
+                        'hidden',
                     ),
                     'link'       => array(
                         'type' => 'int',
                         'label'=> 'Ссылка на раздел',
                         'value'=> '0',
+                        'hidden',
                     ),
                     'action'     => array(
                         'type' => 'text',

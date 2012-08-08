@@ -9,7 +9,7 @@ class Form_Field_Date extends Form_Field
 
     protected $_value   = 0;
 
-    function __construct( $form, $name, $params )
+    public function __construct( $form, $name, $params )
     {
         parent::__construct( $form, $name, $params );
         if ( ! $this->_value ) {
@@ -22,7 +22,7 @@ class Form_Field_Date extends Form_Field
      * @param $value
      * @return boolean
      */
-    function checkValue( $value )
+    public function checkValue( $value )
     {
         return preg_match( '/\d{2}\.\d{2}\.\d{4}/', $value ) || preg_match( '/\d+/', $value );
     }
@@ -31,7 +31,7 @@ class Form_Field_Date extends Form_Field
      * Вернет значение в виде строки
      * @return string
      */
-    function getStringValue()
+    public function getStringValue()
     {
         return strftime( '%x', $this->_value );
     }
@@ -41,18 +41,15 @@ class Form_Field_Date extends Form_Field
      * Установит значение поля, предварительно проверив его
      * Если значение не удовлетворяет типу поля, то оно не будет установлено,
      * а метод вернет false
-     *
      * @param $value
-     * @return boolean
+     * @return Form_Field|Form_Field_Date
      */
-    function setValue( $value )
+    public function setValue( $value )
     {
-        if ( $this->checkValue( $value ) )
-        {
+        if ( $this->checkValue( $value ) ) {
             if ( preg_match( '/\d{2}\.\d{2}\.\d{4}/', $value ) ) {
                 $this->_value    = strtotime( $value );
-            }
-            else {
+            } else {
                 $this->_value  = $value;
             }
         }
@@ -67,14 +64,12 @@ class Form_Field_Date extends Form_Field
      * @var array $filed
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         if ( $this->_readonly ) {
             $field['class']['class'] = 'date';
         }
-        //printVar($field);
-
-        return parent::doInput( $field );
+        return parent::htmlInput( $field );
     }
 
 }

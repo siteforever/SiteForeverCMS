@@ -7,7 +7,17 @@
 
 function smarty_block_t( $params, $content, $smarty )
 {
+    $cat = null;
+    if ( isset( $params['cat'] ) ) {
+        $cat = $params['cat'];
+        unset( $params['cat'] );
+    }
+    foreach ( $params as $key => $val ) {
+        unset( $params[$key] );
+        $params[ ':' . $key ] = $val;
+    }
+
     if( $content ) {
-        return Sfcms_i18n::getInstance()->write( $content );
+        return Sfcms_i18n::getInstance()->write( $cat, $content, $params );
     }
 }

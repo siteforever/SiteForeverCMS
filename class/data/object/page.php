@@ -16,22 +16,6 @@
 class Data_Object_Page extends Data_Base_Page
 {
     /**
-     * @return string
-     */
-    public function getAlias()
-    {
-        $result = '';
-        if ( $this->data['alias'] ) {
-            $result = $this->data['alias'];
-        } else {
-            $result = Sfcms_i18n::getInstance()->translit($this->data['name']);
-            $this->data['alias']    = $result;
-        }
-
-        return trim( $result, '/ ' );
-    }
-
-    /**
      * Вернет выделенный контент
      * @param array $words
      * @return array|Data_Object|mixed|null
@@ -47,23 +31,43 @@ class Data_Object_Page extends Data_Base_Page
         return $result;
     }
 
+
     /**
      * @return string
      */
-    public function createUrl()
+    public function getAlias()
     {
-        if ( 'page' == $this->get('controller') ) {
-            return App::getInstance()->getRouter()->createServiceLink('page','index',array('id'=>$this->getId()));
+        if ( ! $this->data['alias'] ) {
+            $this->data['alias'] = trim( Sfcms_i18n::getInstance()->translit(strtolower($this->data['name'])), '/ ' );
         }
-        return App::getInstance()->getRouter()->createServiceLink(
-            $this->get('controller'),
-            $this->get('action'),
-            array('id'=>$this->get('link'))
-        );
+        return $this->data['alias'];
     }
 
+
     /**
-     * Создаст json путь для конвертации в breadcrumbs
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->alias;
+    }
+
+
+    /**
+     * Вернет заголовок страницы
+     * @return string
+     */
+    public function getTitle()
+    {
+        if ( $this->data['title'] ) {
+            return $this->data['title'];
+        }
+        return $this->data['name'];
+    }
+
+
+    /**
+     * Создаст serialize путь для конвертации в breadcrumbs
      * @return string
      */
     public function createPath()
@@ -76,9 +80,9 @@ class Data_Object_Page extends Data_Base_Page
                 'name'  => $obj->get('name'),
                 'url'   => $obj->getAlias(),
             );
-            $obj    = $this->getModel()->find( $obj->get('parent') );
+            $obj = $this->getModel()->find( $obj->get( 'parent' ) );
         }
         $path   = array_reverse($path);
-        return json_encode($path);
+        return serialize($path);
     }
 }

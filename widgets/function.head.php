@@ -11,18 +11,18 @@
  */
 function smarty_function_head( $params )
 {
-    $request    = App::getInstance()->getRequest();
-    $config     = App::getInstance()->getConfig();
+    $app        = App::getInstance();
+    $request    = $app->getRequest();
+    $config     = $app->getConfig();
 
     $head = array();
-//    $head[] = "<title>".$config->get('sitename').': '.strip_tags( $request->getTitle() )."</title>";
-    $head[] = "<title>".strip_tags( $request->getTitle() ).': '.$config->get('sitename')."</title>";
+    $head[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
 
-    if ( $request->get('tpldata.page.keywords') ) {
-        $head[] = "<meta name=\"keywords\" content=\"".$request->get('tpldata.page.keywords')."\" />";
+    if ( $request->get('keywords') ) {
+        $head[] = "<meta name=\"keywords\" content=\"".$request->get('keywords')."\" />";
     }
-    if ( $request->get('tpldata.page.description') ) {
-        $head[] = "<meta name=\"description\" content=\"".$request->get('tpldata.page.description')."\" />";
+    if ( $request->get('description') ) {
+        $head[] = "<meta name=\"description\" content=\"".$request->get('description')."\" />";
     }
     
     $head[] = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />";
@@ -34,10 +34,10 @@ function smarty_function_head( $params )
         $head[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\" />";
     }
 
-    foreach( $request->getStyle() as $style ) {
+    foreach( $app->getStyle() as $style ) {
         $head[] = "<style type=\"text/css\">@import url(\"".$style."\");</style>";
     }
-    foreach( $request->getScript() as $script ) {
+    foreach( $app->getScript() as $script ) {
         $head[] = "<script type=\"text/javascript\" src=\"".$script."\"></script>";
     }
 

@@ -6,111 +6,84 @@
  */
 
 var siteforever = function(){},
-    sf = siteforever;
+    sf = siteforever,
+    sfcms = siteforever;
 
-/**
- * Логер
- * @param message
- */
-siteforever.log = function( message )
-{
-    var message = message || '';
-    if ( $('#siteforever_console').length ) {
-        $('#siteforever_console').append('<div>'+message+'</div>');
-    }
-}
-
-/**
- * Инициализация логгера
- */
-siteforever.log.init    = function()
-{
-    $('body').append('<div id="siteforever_console"></div>');
-    $('#siteforever_console').hide();
-}
-
-/**
- * Произведет запрос
- * @param options
- */
-siteforever.request = function( options )
-{
-    var url     = options['url']    || '/';
-    var params  = options['params'] || {};
-    var type    = options['type']   || 'json';
-
-    $.post( url, params, function( response ) {
-        if ( response.errno == 0 ) {
-            if ( typeof options.success == 'function' ) {
-                options.success( response );
-            }
-        }
-        else {
-            siteforever.log( response.error );
-        }
-    }, type);
-}
 
 siteforever.alert   = function( msg, timeout )
 {
+    timeout = timeout || 0;
     var deferred = $.Deferred();
-    if ( null !== timeout ) {
-        if ( ! timeout )
-            timeout = 2000;
-    }
 
-    if ( $('#siteforever_alert').length == 0 ) {
-        $('body').append('<div id="siteforever_alert" style="display:none;"/>');
-        $('#siteforever_alert').css({
-            background: '#666',
-            color:      'white',
-            padding:    '10px',
-            'border-radius': '10px',
-            '-moz-border-radius': '10px',
-            '-webkit-border-radius': '10px',
-            position:   'absolute'
-        });
-    }
+    var options = {
+        message: '<div>'+msg+'</div>'
+    };
 
-    if ( null !== timeout && siteforever.alert.timeout ) {
-        clearTimeout( siteforever.alert.timeout );
-        siteforever.alert.close();
-    }
-
-    //alert($(window).scrollTop());
-
-    $('#siteforever_alert').html( msg ).css({
-        top:    Math.round( $(window).height() / 2 - $('#siteforever_alert').height() / 2 + $(window).scrollTop() ),
-        left:   Math.round( $(window).width() / 2 - $('#siteforever_alert').width() / 2 )
-    }).fadeTo( 'slow', 0.8 );
-
-    if ( null !== timeout ) {
-        siteforever.alert.timeout = setTimeout(function(){
-            siteforever.alert.close();
+    if ( timeout ) {
+        options.timeout = timeout;
+        options.onUnblock = function() {
             deferred.resolve();
-        }, timeout);
+        }
     } else {
         deferred.resolve();
     }
+
+    $.blockUI( options );
+
     return deferred.promise();
 };
 
-siteforever.alert.close = function()
+siteforever.alert.close = function( timeout )
 {
-    $('#siteforever_alert').hide();
-}
+    timeout = timeout || 0;
+    if (timeout) {
+        setTimeout($.unblockUI, timeout);
+    } else {
+        $.unblockUI();
+    }
+};
 
-jQuery.fn.gallery = function() {
+$.fn.gallery = function() {
     $(this).each(function(){
         $(this).fancybox({titlePosition:'inside'});
     });
-}
+};
 
-$(function(){
-    if ( $('.siteforever_captcha_reload').length > 0 ) {
-        $('.siteforever_captcha_reload').click(function(){
+$.fn.captcha = function() {
+    $(this ).each(function(){
+        $(this).click(function(){
             var img = $(this).parent().find('img');
             $(img).attr('src', $(img).attr('src').replace(/\&hash=[^\&]+/, '')+'&hash='+Math.random());
         });
+    });
+};
+
+$(function(){
+    function initBlockUI() {
+        $.blockUI.defaults.css.border = 'none';
+        $.blockUI.defaults.css.padding = '15px';
+        $.blockUI.defaults.css['font-size'] = '16px';
+        $.blockUI.defaults.css['border-radius'] = '10px';
+        $.blockUI.defaults.css.color = '#fff';
+        $.blockUI.defaults.css.backgroundColor = '#000';
+        $.blockUI.defaults.css.cursor = 'default';
+        $.blockUI.defaults.overlayCSS.backgroundColor = '#000';
+        $.blockUI.defaults.overlayCSS.opacity = 0.4;
+        $.blockUI.defaults.overlayCSS.cursor = 'default';
     }
-})
+    if ( $.blockUI ) {
+        initBlockUI();
+    } else {
+        $.getScript('/misc/jquery/jquery.blockUI.js', initBlockUI);
+    }
+
+    $( '.siteforever_captcha_reload' ).captcha();
+
+    $(document).ajaxStart(function(){
+        $('<img src="/images/progress-bar.gif" alt="progress" id="progress">')
+            .appendTo('body')
+            .css({position:"absolute",right:20,top:50});
+    }).ajaxStop(function(){
+        $('#progress').remove();
+    });
+});

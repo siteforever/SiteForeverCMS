@@ -18,6 +18,8 @@ class Controller_Catalog extends Sfcms_Controller
                 'articul'    => 'По артикулу',
             ),
             'order_default' => 'name',
+            'onPage' => '5',
+            'level'  => 0, // < 1 output all products
         );
         $this->config->setDefault( 'catalog', $config );
     }
@@ -43,45 +45,38 @@ class Controller_Catalog extends Sfcms_Controller
     {
         /**
          * @var Data_Object_Catalog $item
+         * @var Model_Catalog $catalogModel
+         * @var Model_Page $pageModel
          */
-        $cat_id = $this->getCatId();
+        $catId = $this->getCatId();
+        $alias = $this->request->get('alias');
 
-        $catalog_model = $this->getModel( 'Catalog' );
-        $page_model    = $this->getModel( 'Page' );
+        $catalogModel = $this->getModel( 'Catalog' );
 
-        // без параметров
-        if( ! $cat_id ) {
-            $criteria            = new Db_Criteria();
-            $criteria->condition = 'parent = 0 AND cat = 1 AND deleted = 0 AND hidden = 0';
-            $criteria->order     = 'pos DESC';
-            $list                = $catalog_model->findAll( $criteria );
-            $this->tpl->assign('list', $list );
-
-            $this->request->setContent( $this->tpl->fetch( 'catalog.category_first' ) );
-            return;
+        /** @var $item Data_Object_Catalog */
+        $item = null;
+        if ( $alias ) {
+            $item = $catalogModel->find('alias = ?', array($alias));
+        }elseif ( $catId ) {
+            $item = $catalogModel->find( $catId );
         }
 
-        $item = $catalog_model->find( $cat_id );
         if( null === $item ) {
-            $this->request->addFeedback( t( 'Catalogue part not found with id ' ) . $cat_id );
-            return;
+            return t( 'Catalogue part not found with id ' ) . $catId;
         }
 
-        // хлебные крошки для каталога
-        $this->breadcrumbById( $cat_id );
-
-        $this->request->setTitle( $item->name );
-
-
-        //        $page_number    = $this->request->get('page', FILTER_SANITIZE_NUMBER_INT, 1);
+        if ( 0 == $item->cat ) {
+            $this->tpl->getBreadcrumbs()->addPiece( $item->url, $item->name );
+        }
+        $this->request->setTitle( $item->title );
         $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
 
         // Если открывается раздел каталога
         if( $item->cat ) {
-            return $this->indexCategories( $item );
+            return $this->viewCategory( $item );
         } else {
             // Открывается товар
-            return $this->indexTrade( $item );
+            return $this->viewProduct( $item );
         }
     }
 
@@ -102,17 +97,22 @@ class Controller_Catalog extends Sfcms_Controller
      * Открывается категория
      * @param Data_Object_Catalog $item
      */
-    protected function indexCategories( Data_Object_Catalog $item )
+    protected function viewCategory( Data_Object_Catalog $item )
     {
         // @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
-        //$level = 3;
+        $level = $this->config->get( 'catalog.level' );
 
         /** @var $catModel Model_Catalog */
         $catModel     = $this->getModel( 'Catalog' );
         $parent       = $catModel->find( $item->getId() );
 
         $categoriesId = array( $item->getId() );
-        $categoriesId = array_merge( $categoriesId, $catModel->getAllChildrensIds( $item->getId() ) );
+        if ( $level != 1 ) {
+            $categoriesId = array_merge(
+                $categoriesId,
+                $catModel->getAllChildrensIds( $item->getId(), $level-1 )
+            );
+        }
 
         // количество товаров
         $criteria = array(
@@ -121,7 +121,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         $count = $catModel->count( $criteria[ 'cond' ] );
 
-        $paging = $this->paging( $count, 10, $this->router->createLink( $this->page[ 'alias' ], array( 'id'=> $item->getId() ) ) );
+        $paging = $this->paging( $count, $this->config->get('catalog.onPage'), $this->router->createLink( $parent->url ) );
 
         $criteria[ 'limit' ] = $paging->limit;
 
@@ -142,7 +142,7 @@ class Controller_Catalog extends Sfcms_Controller
             $criteria[ 'order' ] = $order;
         }
 
-        $list = $catModel->with('Gallery')->findAll( $criteria );
+        $list = $catModel->with('Gallery','Manufacturer')->findAll( $criteria );
 
         $properties = array();
 
@@ -176,16 +176,15 @@ class Controller_Catalog extends Sfcms_Controller
             'order_val' => $this->request->get( 'order' ),
         ) );
 
-        $this->request->setContent( $this->tpl->fetch( 'catalog.goods' ) );
+        return $this->tpl->fetch( 'catalog.viewcategory' );
     }
 
     /**
      * Открывается товар
      * @param Data_Object_Catalog $item
      */
-    protected function indexTrade( Data_Object_Catalog $item )
+    protected function viewProduct( Data_Object_Catalog $item )
     {
-        $cat_id        = $this->getCatId();
         $catalog_model = $this->getModel( 'Catalog' );
 
         $properties = array();
@@ -195,23 +194,23 @@ class Controller_Catalog extends Sfcms_Controller
             $properties = $this->buildParamView( $category, $item );
         }
 
-        $gallery_model = $this->getModel( 'CatGallery' );
+        $gallery_model = $this->getModel( 'CatalogGallery' );
 
         $gallery = $gallery_model->findAll( array(
             'cond'      => ' cat_id = ? AND hidden = 0 ',
-            'params'    => array( $cat_id ),
+            'params'    => array( $item->id ),
         ) );
 
         $this->tpl->assign( array(
             'item'      => $item,
+            'parent'    => $item->parent ? $catalog_model->find( $item->parent ) : null,
             'properties'=> $properties,
             'gallery'   => $gallery,
             'user'      => $this->user,
         ) );
 
         $this->request->setTitle( $item[ 'name' ] );
-        $this->request->setContent( $this->tpl->fetch( 'catalog.product' ) );
-
+        return $this->tpl->fetch( 'catalog.viewproduct' );
     }
 
     /**
@@ -294,10 +293,8 @@ class Controller_Catalog extends Sfcms_Controller
          * @var Form_Form $form
          * @var Data_Object_Catalog $object
          */
-        $catalogFinder = $this->getModel( 'Catalog' );
-        $form    = $catalogFinder->getForm();
-
-        $this->setAjax();
+        $catalogFinder  = $this->getModel( 'Catalog' );
+        $form           = $catalogFinder->getForm();
 
         // Если форма отправлена
         if( $form->getPost() ) {
@@ -313,12 +310,7 @@ class Controller_Catalog extends Sfcms_Controller
                 } else {
                     $object->markDirty();
                 }
-                $this->reload( null, array(
-                        'controller'=> 'catalog',
-                        'action'    => 'admin',
-                        'part'      => $object->parent
-                    ), 1000
-                );
+                $this->reload( 'catalog/admin', array( 'part' => $object->parent ), 1000 );
                 return t( 'Data save successfully' );
             }
             else {
@@ -336,22 +328,23 @@ class Controller_Catalog extends Sfcms_Controller
     public function adminBreadcrumbs( $path )
     {
         $bc = array(
-            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">Каталог</a>'
+            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
         ); // breadcrumbs
 
-        if( $from_string = @unserialize( $path ) ) {
-            if( $from_string && is_array( $from_string ) ) {
-                foreach( $from_string as $val ) {
+        if( $arrPath = @unserialize( $path ) ) {
+            $this->log( $arrPath, 'Path' );
+            if( $arrPath && is_array( $arrPath ) ) {
+                foreach( $arrPath as $val ) {
                     $bc[ ] = '<a href="'
                              . $this->router->createServiceLink( 'catalog', 'admin', array( 'part'=> $val[ 'id' ] ) )
                              . '">' . $val[ 'name' ] . '</a>'
                              . '<a href="'
                              . $this->router->createServiceLink( 'catalog', 'category', array( 'edit'=> $val[ 'id' ] ) )
-                             . '">' . icon( 'pencil', 'Правка' ) . '</a>';
+                             . '">' . icon( 'pencil', t('Edit') ) . '</a>';
                 }
             }
         }
-        return '<div class="b-breadcrumbs">Путь: ' . join( ' &gt; ', $bc ) . '</div>';
+        return '<div class="b-breadcrumbs">'.t('Path').': ' . join( ' &gt; ', $bc ) . '</div>';
     }
 
     /**
@@ -368,31 +361,6 @@ class Controller_Catalog extends Sfcms_Controller
             return $this->adminBreadcrumbs( $item->path() );
         }
         return null;
-    }
-
-    /**
-     * Создание хлебных крошек для страницы каталога
-     * @param $id
-     */
-    public function breadcrumbById( $id )
-    {
-        /**
-         * @var Data_Object_Catalog $item
-         */
-        $bc   = $this->tpl->getBreadcrumbs();
-        $bc->addPiece('index', 'Главная');
-
-        $item   = $this->getModel( 'Catalog' )->find( $id );
-        $path   = @unserialize( $item->path() );
-
-        if ( is_array( $path ) ) {
-            foreach( $path as $p ) {
-                $bc->addPiece(
-                    trim( $this->router->createLink( 'catalog', array( 'id'=> $p['id'] ) ), '/' ),
-                    $p['name']
-                );
-            }
-        }
     }
 
 
@@ -479,15 +447,11 @@ class Controller_Catalog extends Sfcms_Controller
             'paging'         => $paging,
             'moving_list'    => $catalogFinder->getCategoryList(),
         );
-
-
-
-        //        $content = $this->tpl->fetch( 'system:catalog/admin' );
-//        $this->request->setContent( $content );
     }
 
     /**
      * Правка товара
+     * @return mixed
      */
     public function tradeAction()
     {
@@ -503,17 +467,17 @@ class Controller_Catalog extends Sfcms_Controller
         $catalogFinder = $this->getModel( 'Catalog' );
 
         $id        = $this->request->get( 'edit', Request::INT );
-        $parent_id = $this->request->get( 'add', Request::INT, 0 );
+        $parentId = $this->request->get( 'add', Request::INT, 0 );
 
         $form = $catalogFinder->getForm();
 
         if( $id ) { // если раздел существует
             $item      = $catalogFinder->find( $id );
-            $parent_id = $item[ 'parent' ];
+            $parentId = $item[ 'parent' ];
             $form->setData( $item->getAttributes() );
         } else {
             $item = $catalogFinder->createObject();
-            $form->getField( 'parent' )->setValue( $parent_id );
+            $form->getField( 'parent' )->setValue( $parentId );
             $form->getField( 'cat' )->setValue( 0 );
         }
 
@@ -530,19 +494,19 @@ class Controller_Catalog extends Sfcms_Controller
         $form->getField( 'byorder' )->show();
         $form->getField( 'absent' )->show();
 
+        $form->getField( 'cat' )->setValue( 0 );
+
         // показываем поля родителя
-        $parent = $catalogFinder->find( $parent_id );
+        $parent = $catalogFinder->find( $parentId );
 
         $filter = null;
         if( @file_exists( ROOT . '/protected/filters.php' ) ) {
             $filter = include( ROOT . '/protected/filters.php' );
         }
 
-        if( $parent ) {
-
-            $pitem   = $catalogFinder->find( $parent_id );
+        if ( $parent ) {
+            $pitem   = $catalogFinder->find( $parentId );
             $fvalues = null;
-
             if ( $filter ) {
                 while ( $pitem && !$filter->getFilter( $pitem->id ) ) {
                     if ( $pitem->parent ) {
@@ -580,17 +544,18 @@ class Controller_Catalog extends Sfcms_Controller
         }
 
         if( $id ) {
-            $catgallery    = new Controller_CatGallery( $this->app() );
-            $gallery_panel = $catgallery->getAdminPanel( $id );
+            $catgallery    = new Controller_CatalogGallery( $this->app() );
+            $gallery_panel = $catgallery->getPanel( $id );
             $this->tpl->assign( 'gallery_panel', $gallery_panel );
         }
 
-        $this->tpl->assign( 'breadcrumbs', $this->adminBreadcrumbsById( $parent_id ) );
-        $this->tpl->assign( 'form', $form );
-        $this->tpl->assign( 'cat', $form->getField( 'id' )->getValue() );
 
         $this->request->setTitle( 'Каталог' );
-        $this->request->setContent( $this->tpl->fetch( 'system:catalog.admin_edit' ) );
+        return array(
+            'breadcrumbs' => $this->adminBreadcrumbsById( $parentId ),
+            'form'        => $form,
+            'cat'         => $form->getField( 'id' )->getValue(),
+        );
     }
 
     /**
@@ -603,7 +568,6 @@ class Controller_Catalog extends Sfcms_Controller
          * @var Form_Field $field
          * @var Form_Form $form
          */
-
         $catalog = $this->getModel( 'Catalog' );
 
         $id        = $this->request->get( 'edit', Request::INT );
@@ -649,14 +613,12 @@ class Controller_Catalog extends Sfcms_Controller
             }
         }
 
-        $this->tpl->assign( array(
-            'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
-            'form' => $form,
-            'cat'  => $form->getField( 'id' )->getValue(),
-        ));
-
         $this->request->setTitle( 'Каталог' );
-        $this->request->setContent( $this->tpl->fetch( 'system:catalog.admin_edit' ) );
+        return array(
+            'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
+            'form'        => $form,
+            'cat'         => $form->getField( 'id' )->getValue(),
+        );
     }
 
     /**

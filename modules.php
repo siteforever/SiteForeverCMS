@@ -11,14 +11,7 @@ return array(
     ),
     array(
         'name'  => 'Структура',
-        'url'   => 'admin',
-        'sub'   => array(
-            array(
-                'name'  => 'Добавить страницу',
-                'url'   => 'page/add/add=0',
-                'icon'  => 'page_add',
-            ),
-        ),
+        'url'   => 'page/admin',
     ),
     array(
         'name'  => 'Новости/статьи',
@@ -31,13 +24,6 @@ return array(
     array(
         'name'  => 'Каталог',
         'url'   => 'catalog/admin',
-        'sub'   => array(
-            array(
-                'name'  => 'Добавить раздел',
-                'url'   => 'catalog/category/add=0',
-                'icon'  => 'folder_add',
-            ),
-        ),
     ),
     array(
         'name'  => t('Manufacturers'),
@@ -54,21 +40,14 @@ return array(
     array(
         'name'  => 'Пользователи',
         'url'   => 'users/admin',
-        'sub'   => array(
-            array(
-                'name'  => 'Добавить пользователя',
-                'url'   => 'users/admin/add/1',
-                'icon'  => 'user_add',
-            ),
-        ),
     ),
     array(
         'name'  => 'Заказы',
-        'url'   => 'admin/order',
+        'url'   => 'order/admin',
     ),
     array(
         'name'  => 'Менеджер файлов',
-        'url'   => 'admin/filemanager',
+        'url'   => 'filemanager/admin',
         'class' => 'filemanager',
     ),
     array(
@@ -78,7 +57,7 @@ return array(
     ),
     array(
         'name'  => 'Маршруты',
-        'url'   => 'admin/routes',
+        'url'   => 'routes/admin',
     ),
     array(
         'name'  => 'Конфигурация системы',
@@ -86,7 +65,7 @@ return array(
     ),
     array(
         'name'  => 'Настройка',
-        'url'   => 'admin/settings',
+        'url'   => 'settings/admin',
     ),
     array(
         'name'  => 'Генератор',

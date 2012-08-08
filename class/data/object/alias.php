@@ -3,6 +3,10 @@
  * Объект алиаса
  * @author keltanas <nikolay@gmail.com>
  * @link http://siteforever.ru
+ *
+ * @property $id
+ * @property $alias
+ * @property $url
  */
 
 class Data_Object_Alias extends Data_Object

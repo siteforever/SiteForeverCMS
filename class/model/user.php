@@ -81,7 +81,7 @@ class Model_User extends Sfcms_Model
 
     /**
      * @param Data_Object|null $obj
-     * @return void
+     * @return int
      */
     public function save( Data_Object $obj )
     {

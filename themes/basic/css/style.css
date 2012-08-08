@@ -187,3 +187,21 @@ ul.gallery_list {
         overflow: hidden;
         background: none;
     }
+
+.basket-table td span {
+    color: #247D06;
+    font-weight: bold;
+}
+.basket-table .b-catalog-buy-count {
+    width: 50px;
+}
+
+
+.b-product-image {
+    width: 200px;
+    height: 200px;
+}
+.b-catalog-product-thumb {
+    width: 150px;
+    height: 150px;
+}

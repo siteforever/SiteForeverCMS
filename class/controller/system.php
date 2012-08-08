@@ -5,14 +5,21 @@
  */
 class Controller_System extends Sfcms_Controller
 {
-    function indexAction()
+    public function access()
+    {
+        return array(
+            'system' => array('index'),
+        );
+    }
+
+    public function indexAction()
     {
         $this->request->setTitle('Конфигурация системы');
-        $this->request->set('tpldata.page.template', 'index');
+        $this->request->setTemplate('index');
 
         $modules = get_loaded_extensions();
 
-        $this->app()->getLogger()->log( $modules );
+        $this->log( $modules );
 
         $msys   = array();
 

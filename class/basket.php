@@ -19,9 +19,7 @@ abstract class Basket
 
     public function __construct( Data_Object $user )
     {
-        $request    = App::getInstance()->getRequest();
-        $request->addScript('/misc/etc/basket.js');
-        //$request->addScript('/misc/jquery/jquery.blockUI.js');
+        App::getInstance()->addScript('/misc/etc/basket.js');
 
         $this->user = $user;
         $this->data = array();

@@ -39,7 +39,7 @@ class Tpl_Factory
             } else {
                 throw new Exception( 'Theme "'.$theme.'" not found' );
             }
-            $runtime    = ROOT."/protected/_runtime";
+            $runtime    = ROOT."/_runtime";
             $tpl_c  = $runtime."/_templates_c";
             $cache  = $runtime."/_cache";
 

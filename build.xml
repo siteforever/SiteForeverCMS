@@ -6,8 +6,8 @@
     <property name="basedir" value="${project.basedir}"/>
     <property name="destdir" value="${user.home}/siteforever"/>
 
-    <property name="version" value="0.3"/>
-    <property name="svn" value="http://svn.stdel.ru/svn/siteforever/trunk"/>
+    <property name="version" value="0.4"/>
+    <property name="svn" value="https://github.com/keltanas/SiteForeverCMS.git"/>
     <!--<property name="git" value="git://github.com/keltanas/SiteForeverCMS.git"></property>-->
     <property name="git" value="${project.basedir}"/>
 
@@ -21,6 +21,7 @@
 
     <target name="main">
         <echo>To start setup use :$ phing setup</echo>
+        <echo>${user.home}</echo>
     </target>
 
     <target name="svn">
@@ -49,12 +50,29 @@
         <mkdir dir="${destdir}/files"/>
 
         <mkdir dir="${destdir}/protected"/>
-        <mkdir dir="${destdir}/protected/_runtime"/>
-        <mkdir dir="${destdir}/protected/_runtime/_templates_c"/>
+        <mkdir dir="${destdir}/_runtime"/>
+        <mkdir dir="${destdir}/_runtime/_templates_c"/>
         <mkdir dir="${destdir}/protected/config"/>
 
-        <symlink link="${destdir}/images" target="${basedir}/images"/>
-        <symlink link="${destdir}/misc" target="${basedir}/misc"/>
+        <!--<symlink link="${destdir}/images" target="${basedir}/images"/>-->
+        <!--<symlink link="${destdir}/misc" target="${basedir}/misc"/>-->
+        <copy todir="${destdir}/class" overwrite="true">
+            <fileset dir="${basedir}/class"/>
+        </copy>
+        <copy todir="${destdir}/vendors" overwrite="true">
+            <fileset dir="${basedir}/vendors"/>
+        </copy>
+        <copy todir="${destdir}/images" overwrite="true">
+            <fileset dir="${basedir}/images"/>
+        </copy>
+        <copy todir="${destdir}/misc" overwrite="true">
+            <fileset dir="${basedir}/misc"/>
+        </copy>
+
+        <mkdir dir="${destdir}/_runtime"/>
+        <copy todir="${destdir}/vendors/sxd" overwrite="true">
+            <fileset dir="${basedir}/_runtime/sxd"/>
+        </copy>
 
         <mkdir dir="${destdir}/themes"/>
         <mkdir dir="${destdir}/themes/${phing.project.name}"/>
@@ -63,12 +81,14 @@
         <mkdir dir="${destdir}/themes/${phing.project.name}/js"/>
         <mkdir dir="${destdir}/themes/${phing.project.name}/templates"/>
 
-        <symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"/>
+        <!--<symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"/>-->
+        <copy todir="${destdir}/themes/basic" overwrite="true">
+            <fileset dir="${basedir}/themes/basic"/>
+        </copy>
 
 
         <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"/>
         <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"/>
-        <copy file="${basedir}/bootstrap.php" tofile="${destdir}/bootstrap.php" overwrite="true"/>
 
         <!-- config -->
         <copy file="${basedir}/protected/config/sample.php"
@@ -87,7 +107,7 @@
     </target>
 
     <!-- Build an autonomous project  -->
-    <target name="build" depends="test">
+    <target name="build">
 
         <property name="distribname" value="siteforever_${version}.${revision}.tgz"/>
         <echo>Distribution file: ${distribname}</echo>
@@ -156,15 +176,15 @@
 
     </target>
 
-    <target name="test" depends="git">
-        <phpunit bootstrap="test/bootstrap.php">
-            <formatter type="plain" usefile="false"/>
-            <batchtest>
-                <fileset dir="test">
-                    <include name="**/*Test.php"/>
-                </fileset>
-            </batchtest>
-        </phpunit>
+    <target name="test">
+        <!--<phpunit bootstrap="test/bootstrap.php">-->
+            <!--<formatter type="plain" usefile="false"/>-->
+            <!--<batchtest>-->
+                <!--<fileset dir="test">-->
+                    <!--<include name="**/*Test.php"/>-->
+                <!--</fileset>-->
+            <!--</batchtest>-->
+        <!--</phpunit>-->
     </target>
 
 

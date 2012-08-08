@@ -24,11 +24,6 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
      */
     public function getAlias()
     {
-        /**
-         * @var Model_Alias $alias_model
-         */
-        $alias_model = $this->getModel( 'Alias' );
-
         try {
             $strpage = $this->getPage();
         }
@@ -38,12 +33,12 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
             );
         }
 
-        if ($strpage) {
+        if ( $strpage ) {
             return $strpage->get( 'alias' );
         }
-        else {
-            return $alias_model->generateAlias( $this->get( 'name' ) );
-        }
+//        else {
+//            return $alias_model->generateAlias( $this->get( 'name' ) );
+//        }
     }
 
     /**

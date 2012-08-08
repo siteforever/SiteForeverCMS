@@ -17,14 +17,14 @@ siteforever.basket.class_name    = '.basket-widget';
  */
 siteforever.basket.add  = function( id, product, count, price, details )
 {
-    $.post('/?controller=basket&action=add', {
+    return $.post('/?controller=basket&action=add', {
         basket_prod_id:     id,
         basket_prod_name:   product,
-        basket_prod_count:  parseInt( count ),
+        basket_prod_count:  parseInt( count, 10 ),
         basket_prod_price:  parseFloat( price ),
         basket_prod_details:details
-    }, function( data ){
-        //siteforever.alert('Товар добавлен в корзину');
+    }).then( $.proxy( function( data ){
+        sfcms.alert( product + ' добавлен в корзину', 2000 );
         $(siteforever.basket.class_name).replaceWith( data );
-    });
+    }, this ) );
 }

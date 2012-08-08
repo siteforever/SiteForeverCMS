@@ -27,7 +27,7 @@ class Controller_Search extends Sfcms_Controller
         $offset = ( $page-1 ) * $perpage;
 
         $protected  = $this->app()->getAuth()->currentUser()->perm;
-        $this->app()->getLogger()->log( $search );
+        $this->log( $search );
         $search_list    = Sfcms_Model::getModel('Page')->findAll(
             array(
                 'condition' => ' ( name LIKE :search OR title LIKE :search '
@@ -83,7 +83,7 @@ class Controller_Search extends Sfcms_Controller
         $this->_selected = explode( '|', preg_replace('/%+/u', '|', $search) );
         $oldsearch  = $search;
         $search = preg_replace('/[аийеёоуыъьэюя]+$/ui', '', $search);// все гласные
-        $this->app()->getLogger()->log( mb_strlen( $search ) );
+        $this->log( mb_strlen( $search ) );
         if ( mb_strlen( $search ) < 3 ) {
             $search = $oldsearch;
         }

@@ -16,7 +16,7 @@ class Data_Table_Gallery extends Data_Table
         return array(
             new Data_Field_Int( 'id', 11, false, null, true ),
             new Data_Field_Int( 'category_id', 11, true, null, false ),
-            new Data_Field_Int( 'alias_id', 11, true, null, false ),
+            new Data_Field_Varchar( 'alias', 250, true, null, false ),
             new Data_Field_Varchar( 'name', 250, true, null, false ),
             new Data_Field_Varchar( 'link', 250, true, null, false ),
             new Data_Field_Text( 'description', 11, true, null, false ),
@@ -26,10 +26,6 @@ class Data_Table_Gallery extends Data_Table
             new Data_Field_Int( 'pos', 11, true, null, false ),
             new Data_Field_Tinyint( 'main', 4, true, null, false ),
             new Data_Field_Tinyint( 'hidden', 4, true, null, false ),
-            new Data_Field_Text( 'meta_description', 11, true, null, false ),
-            new Data_Field_Text( 'meta_keywords', 11, true, null, false ),
-            new Data_Field_Text( 'meta_h1', 11, true, null, false ),
-            new Data_Field_Text( 'meta_title', 11, true, null, false ),
         );
     }
 

@@ -1,0 +1,1 @@
+{t}Page delete successfully{/t}

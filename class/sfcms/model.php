@@ -2,7 +2,7 @@
 /**
  * Интерфейс модели
  */
-abstract class Sfcms_Model
+abstract class Sfcms_Model extends \Sfcms\Component
 {
     const HAS_MANY = 'has_many'; // содержет много
     const HAS_ONE = 'has_one'; // содержет один
@@ -28,11 +28,6 @@ abstract class Sfcms_Model
      * @var Data_Table
      */
     protected $table = null;
-
-    /**
-     * @var Application_Abstract
-     */
-    protected $app;
 
     /**
      * @var Form_Form
@@ -101,17 +96,6 @@ abstract class Sfcms_Model
     static public function getDB()
     {
         return self::$dao;
-    }
-
-    /**
-     * @return Application_Abstract
-     */
-    final function app()
-    {
-        if( is_null( $this->app ) ) {
-            $this->app = App::getInstance();
-        }
-        return $this->app;
     }
 
     /**
@@ -341,12 +325,23 @@ abstract class Sfcms_Model
     }
 
     /**
+     * Create criteria
+     * @param array $params
+     * @return Db_Criteria
+     */
+    public function criteriaFactory( $params = array() )
+    {
+        return new Db_Criteria( $params );
+    }
+
+    /**
      * Finding data by primary key
      * @throws Sfcms_Model_Exception
-     * @param int|array|Data_Criteria $crit
+     * @param int|array|string|Db_Criteria $crit
+     * @param array $params
      * @return Data_Object
      */
-    final public function find( $crit )
+    final public function find( $crit, $params = array() )
     {
         $this->with = array();
         $criteria   = null;
@@ -369,22 +364,34 @@ abstract class Sfcms_Model
                 'params'=> array( ':id'=> $crit ),
                 'limit' => '1',
             );
-        } else if( is_array( $crit ) ) {
+        } elseif( is_array( $crit ) ) {
             $default = array(
                 'select'    => '*',
                 'cond'      => 'id = :id',
                 'params'    => array( ':id'=> 1 ),
                 'limit'     => '1',
             );
-            $crit    = array_merge( $default, $crit );
-        } else {
-            throw new Sfcms_Model_Exception( 'Not valid criteria "'.$crit.'" in '.__METHOD__.'():'.__LINE__ );
+            $crit   = array_merge( $default, $crit );
+        } elseif ( is_string( $crit ) ) {
+            $crit = array(
+                'cond' => $crit,
+                'params' => $params,
+            );
         }
-        if( ! isset( $criteria ) && isset( $crit ) && is_array( $crit ) ) {
+
+        if ( is_array( $crit ) )  {
+            $crit = $this->criteriaFactory( $crit );
+        }
+
+        if ( ! is_object( $crit ) && ! $crit instanceof Db_Criteria ) {
+            throw new Sfcms_Model_Exception( 'Not valid criteria' );
+        }
+
+        if( ! isset( $criteria ) && isset( $crit ) ) {
             $criteria = new Data_Criteria( $this->getTable(), $crit );
         }
 
-        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit[ 'params' ] );
+        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit->params );
 
         if( $data ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
@@ -493,13 +500,13 @@ abstract class Sfcms_Model
         if( ! $this->onSaveStart( $obj ) ) {
             return false;
         }
-        $data      = $obj->getAttributes();
+        $data      = $obj->attributes;
         $fields    = $this->table->getFields();
         $save_data = array();
 
         /** @var Data_Field $field */
         foreach( $fields as $field ) {
-            if( isset( $data[ $field->getName() ] ) ) {
+            if( 'id' != $field->getName() && isset( $data[ $field->getName() ] ) ) {
                 $save_data[ $field->getName() ] = $data[ $field->getName() ];
             }
         }
@@ -523,7 +530,7 @@ abstract class Sfcms_Model
      * @param Data_Object $obj
      * @return boolean
      */
-    public function onSaveStart( $obj = null )
+    public function onSaveStart( Data_Object $obj = null )
     {
         return true;
     }
@@ -532,7 +539,7 @@ abstract class Sfcms_Model
      * @param Data_Object $obj
      * @return boolean
      */
-    public function onSaveSuccess( $obj = null )
+    public function onSaveSuccess( Data_Object $obj = null )
     {
         return true;
     }

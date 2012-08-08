@@ -12,6 +12,12 @@ class Controller_Goods extends Sfcms_Controller
         $this->request->setTitle(t('Goods'));
     }
 
+    public function access()
+    {
+        return array(
+            'system' => array('admin'),
+        );
+    }
 
     /**
      * Index Action

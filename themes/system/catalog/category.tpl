@@ -1,0 +1,3 @@
+{$breadcrumbs}
+<br />
+{$form->html()}

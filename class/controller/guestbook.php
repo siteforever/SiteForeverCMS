@@ -8,7 +8,6 @@ class Controller_Guestbook extends Sfcms_Controller
     public function init()
     {
         parent::init();
-
         $this->request->setTitle( t('Guestbook module') );
     }
 
@@ -29,11 +28,9 @@ class Controller_Guestbook extends Sfcms_Controller
             $this->request->setContent( t('Can not be used without page') );
             return;
         }
-        $this->request->setTitle( $this->page['title'] ? $this->page['title'] : $this->page['name'] );
+        $this->request->setTitle( $this->page->title );
 
-        $this->app()->getLogger()->log( $this->page );
-
-        $link   = $this->page['id'];
+        $link   = $this->page->getId();
 
         $model  = $this->getModel('Guestbook');
 
@@ -41,7 +38,7 @@ class Controller_Guestbook extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $this->app()->getLogger()->log( $form->getData() );
+                $this->log( $form->getData() );
 
                 $obj = $model->createObject();
                 $obj->set( 'name', strip_tags( $form->getField( 'name' )->getValue() ) );
@@ -62,16 +59,16 @@ class Controller_Guestbook extends Sfcms_Controller
 
         $count  = $model->count( $crit['cond'], $crit['params'] );
 
-        $paging = $this->paging( $count, 10, $this->page['alias'] );
+        $paging = $this->paging( $count, 10, $this->page->alias );
 
         $crit['order'] = ' date DESC ';
         $crit['limit'] = $paging->limit;
 
-        $this->app()->getLogger()->log( $crit );
+        $this->log( $crit );
 
         $messages   = $model->findAll( $crit );
 
-//        $this->app()->getLogger()->log( $messages->current()->message );
+//        $this->log( $messages->current()->message );
 
         $this->tpl->assign(array(
             'messages'  => $messages,
@@ -79,7 +76,7 @@ class Controller_Guestbook extends Sfcms_Controller
             'form'      => $form,
         ));
 
-        $this->request->setContent( $this->tpl->fetch('guestbook.index') );
+        $this->tpl->fetch('guestbook.index');
     }
 
 
@@ -88,7 +85,7 @@ class Controller_Guestbook extends Sfcms_Controller
      */
     public function adminAction()
     {
-        $this->request->addScript('/misc/admin/guestbook.js');
+        $this->app()->addScript('/misc/admin/guestbook.js');
         $id   = $this->request->get('id');
 
         if ( ! $id ) {
@@ -110,16 +107,14 @@ class Controller_Guestbook extends Sfcms_Controller
         $crit['order'] = ' date DESC ';
         $crit['limit'] = $paging->limit;
 
-        $this->app()->getLogger()->log( $crit );
+        $this->log( $crit );
 
         $messages   = $model->findAll( $crit );
 
-        $this->tpl->assign(array(
+        return array(
             'messages'  => $messages,
             'paging'    => $paging,
-        ));
-
-        $this->request->setContent( $this->tpl->fetch('system:guestbook.admin') );
+        );
     }
 
 
@@ -145,11 +140,10 @@ class Controller_Guestbook extends Sfcms_Controller
             $form->setData( $msg );
         }
 
-        $this->tpl->assign( array(
+        return array(
             'msg'   => $msg,
             'form'  => $form,
-        ) );
-        $this->request->setContent( $this->tpl->fetch('guestbook.edit') );
+        );
     }
 
 }

@@ -15,7 +15,7 @@ class Form_Field_Radio extends Form_Field_Composite
      * @var array $filed
      * @return string
      */
-    function doInput( $field )
+    public function htmlInput( $field )
     {
         $html = array();
 

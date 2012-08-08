@@ -3,7 +3,7 @@
  * Абстрактный класс драйвера шаблона
  * @author KelTanas
  */
-abstract class TPL_Driver
+abstract class TPL_Driver extends \Sfcms\Component
 {
     // движок шаблонизатора
     protected $engine = null;
@@ -12,7 +12,7 @@ abstract class TPL_Driver
     
     public function __call( $fname, $args )
     {
-        throw new Exception("Интерфейс TPL_Driver пока не поддерживает метод {$fname}");
+        throw new Exception(t("Interface TPL_Driver does not support the method {$fname}"));
     }
     
     abstract function assign( $params, $value = null );
@@ -23,9 +23,15 @@ abstract class TPL_Driver
     abstract function setTplDir( $dir );
     abstract function setCplDir( $dir );
 
-    public function __set( $key, $value )
+
+    public function set( $key, $value )
     {
         $this->assign($key, $value);
+    }
+
+    public function get( $key )
+    {
+        throw new RuntimeException(t('Driver properties write only'));
     }
 
     /**

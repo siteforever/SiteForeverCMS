@@ -49,7 +49,7 @@ class std_error
     static function init( std_logger_logger $logger = null )
     {
         self::$logger   = $logger;
-        set_error_handler( array( self, 'handler' ) );
+        set_error_handler( array( 'std_error', 'handler' ) );
     }
 
     /**

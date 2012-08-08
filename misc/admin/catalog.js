@@ -123,13 +123,13 @@ $(function(){
                         }
                     },
                     close: function() {
-                        $.get('/catgallery/index/id/'+$('#catalog_id').val(), function(data) {
+                        $.get('/cataloggallery/index/id/'+$('#catalog_id').val(), function(data) {
                             $('div.a-gallery').replaceWith(data);
                         });
                     }
                 });
             };
-            $('#gallery_dialog').html('Загрузка...').dialog('open');
+            $('#gallery_dialog').html(sf.i18n('Loading...')).dialog('open');
             $.get( $(this).attr('href'), function( data ) {
                 $('#gallery_dialog').html(data);
             });
