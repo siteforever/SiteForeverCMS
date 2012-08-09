@@ -29,5 +29,7 @@ return array(
 
     'Conversion of aliases'                     => 'Пересчет алиасов',
 
+    'Parent' => 'Верхний раздел',
+
     'Page :name' => 'Страница :name',
 );

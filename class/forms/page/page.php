@@ -20,41 +20,48 @@ class Forms_Page_Page extends Form_Form
                         'label'=> 'ID',
                         'value'=> '0',
                     ),
-                    'parent'     => array(
-                        'type' => 'hidden',
-                        'label'=> 'Parent',
-                        'value'=> '0',
+                    'parent' => array(
+                        'type' => 'select',
+                        'label' => t('page', 'Parent'),
+                        'variants' => Sfcms_Model::getModel('Page')->getSelectOptions(),
+                        'value' => '0',
                     ),
                     'name'       => array(
                         'type' => 'text',
-                        'label'=> 'Наименование', 'required'
+                        'label'=> 'Наименование',
+                        'required'
                     ),
                     'template'   => array(
                         'type' => 'text',
-                        'label'=> 'Шаблон', 'required'
+                        'label'=> 'Шаблон',
+                        'required'
                     ),
                     //'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
                     'alias'      => array(
                         'type' => 'text',
-                        'label'=> 'Адрес', 'required'
+                        'label'=> 'Адрес',
+                        'required'
                     ),
 
                     'date'       => array(
                         'type' => 'date',
                         'label'=> 'Дата создания',
-                        'value'=> time(), 'hidden'
+                        'value'=> time(),
+                        'hidden'
                     ),
                     'update'     => array(
                         'type' => 'date',
                         'label'=> 'Дата обновления',
-                        'value'=> time(), 'hidden'
+                        'value'=> time(),
+                        'hidden'
                     ),
 
                     'pos'        => array(
                         'type' => 'int',
                         'label'=> 'Порядок сортировки',
                         'value'=> '0',
-                        'readonly', 'hidden',
+                        'readonly',
+                        'hidden',
                     ),
 
                     'controller' => array(

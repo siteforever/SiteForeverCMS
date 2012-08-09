@@ -12,6 +12,7 @@ return array_merge(
     array(
 
         'Home'                                      => 'Главная',
+        'Exit'                                      => 'Выход',
 
         'Routes'                                    => 'Маршруты',
         'Deleted route # '                          => 'Удален маршрут № ',
@@ -111,6 +112,11 @@ return array_merge(
         'Thumbnail'                                 => 'Миниатюра',
 
         'Nothing was found'                         => 'Ничего не найдено',
+
+        'The data will be lost. Do you really want to delete?'
+            => 'Данные будут потеряны. Действительно хотите удалить?',
+
+        'Go to the module' => 'Перейти к модулю',
 
         'On' => 'Вкл',
         'Off' => 'Выкл',

@@ -12,12 +12,12 @@
 {form form=$form}
 
     {$form->htmlFieldWrapped('id')}
-    {$form->htmlFieldWrapped('parent')}
 
     <div id="tabs-1">
         <fieldset>
             <legend>{t cat="page"}System{/t}</legend>
             {$form->htmlFieldWrapped('name')}
+            {$form->htmlFieldWrapped('parent')}
             {$form->htmlFieldWrapped('template')}
             {$form->htmlFieldWrapped('alias')}
             {$form->htmlFieldWrapped('date')}

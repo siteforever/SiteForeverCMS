@@ -22,6 +22,17 @@ class Siteforever_Html
     }
 
     /**
+     * Вернет строку URL для указанных параметров
+     * @param $url
+     * @param $params
+     * @return string
+     */
+    public function url( $url, $params )
+    {
+        return App::getInstance()->getRouter()->createLink( $url, $params );
+    }
+
+    /**
      * Содаст HTML ссылку
      * @param  $text
      * @param  $url
@@ -30,7 +41,26 @@ class Siteforever_Html
      */
     public function link( $text, $url, $params = array(), $class = "" )
     {
-        return '<a '.$this->href( $url, $params ).($class?" class=\"$class\"":'').'>'.$text.'</a>';
+        $attributes = array();
+        if ( $class ) {
+            $params['class'] = $class;
+        }
+        $passAttrs = array('class','title','rel');
+        foreach ( $passAttrs as $attr ) {
+            if ( isset( $params[$attr] ) ) {
+                $attributes[] = "{$attr}=\"{$params[$attr]}\"";
+                unset( $params[$attr] );
+            }
+        }
+        foreach ( $params as $key => $val ) {
+            if ( 'html' == substr( $key, 0, 4 ) ) {
+                unset( $params[$key] );
+                $key = strtolower( substr( $key, 4 ) );
+                $attributes[] = "{$key}=\"{$val}\"";
+            }
+        }
+        $attributes[] = $this->href( $url, $params );
+        return '<a '.implode(' ', $attributes).'>'.$text.'</a>';
     }
 
     /**
@@ -42,6 +72,6 @@ class Siteforever_Html
     public function href( $url = '', $params = array() )
     {
 //        var_dump( $url, $params );
-        return 'href="'.App::getInstance()->getRouter()->createLink( $url, $params ).'"';
+        return 'href="'.$this->url( $url, $params ).'"';
     }
 }

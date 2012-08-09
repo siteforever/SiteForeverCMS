@@ -92,9 +92,12 @@ class Controller_Page extends Sfcms_Controller
             return $this->tpl->fetch( 'system:get_link_add' );
         }
 
-        $model->createTree();
-        $model->createHtmlList();
-        $this->tpl->assign('html', join( "\n", $model->html ) );
+        $model->createParentsIndex();
+//        $model->createHtmlList();
+        return array(
+//            'html' => join( "\n", $model->html ),
+            'data' => $model->parents,
+        );
     }
 
 

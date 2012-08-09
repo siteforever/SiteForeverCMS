@@ -1,7 +1,8 @@
 /**
  * Basic file for administrative interface
  */
-$(function () {
+$(document).ready(function () {
+    $s = siteforever;
     $(':button, :submit, :reset, .button').button();
 
     // Подсветка разделов структуры
@@ -17,7 +18,7 @@ $(function () {
      * Warning before remove
      */
     $('a.do_delete').live('click',function () {
-        if( confirm('Данные будут потеряны. Действительно хотите удалить?') ) {
+        if( confirm($s.i18n('The data will be lost. Do you really want to delete?')) ) {
             $.post( $( this ).attr('href') ).then( $.proxy( function(){
                 $( this ).parent().parent().hide();
             }, this));
@@ -69,7 +70,7 @@ $(function () {
     $('div.b-main-structure a.edit' ).live('click',function(){
         sf.page.a = this;
         $.post( $(this).attr('href') ).then( $.proxy(function( response ){
-            $('#edit_page_dialog' ).html( response ).dialog('option','title',sf.i18n('page','Edit page')).dialog('open');          //
+            $('#edit_page_dialog' ).html( response ).dialog('option','title',$s.i18n('page','Edit page')).dialog('open');
         }, this));
         return false;
     });
@@ -104,7 +105,7 @@ sf.page.sortable = {
     stop : function (event, ui) {
         var positions = [];
         $('>li', this).each(function (i) {
-            positions.push($(this).attr('this'));
+            positions.push($(this).attr('data-id'));
         });
         $.post('/page/resort/', {'sort':positions} );
     }

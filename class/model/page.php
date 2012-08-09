@@ -310,7 +310,7 @@ class Model_Page extends Sfcms_Model
     /**
      * Создает дерево $this->tree по данным из $this->all
      */
-    public function createTree()
+    public function createParentsIndex()
     {
         $this->parents = array();
         if ( count( $this->all ) == 0 ) {
@@ -323,9 +323,33 @@ class Model_Page extends Sfcms_Model
         }
         // создаем массив, индексируемый по родителям
         /** @var Data_Object_Page $obj */
-        foreach ( $this->all as $obj ) {
-            $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+        if ( count($this->parents) == 0 ) {
+            foreach ( $this->all as $obj ) {
+                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+            }
         }
+    }
+
+    /**
+     * Вернет массив с списком разделов для указания в форме
+     * @param int $parent
+     * @param int $level
+     * @return array
+     */
+    public function getSelectOptions( $parent = 0, $level = 0 )
+    {
+        $return = array();
+        if ( ! $this->parents ) {
+            $this->createParentsIndex();
+        }
+        /** @var $obj Data_Object_Page */
+        foreach( $this->parents[ $parent ] as $obj ) {
+            $return[ $obj->id ] = str_repeat('&nbsp;', $level * 4) . $obj->name;
+            if ( isset( $this->parents[$obj->id] ) ) {
+                $return += $this->getSelectOptions( $obj->id, $level + 1 );
+            }
+        }
+        return $return;
     }
 
     /**
@@ -350,7 +374,7 @@ class Model_Page extends Sfcms_Model
         }
 
         if (count( $this->parents ) == 0) {
-            $this->createTree();
+            $this->createParentsIndex();
         }
 
         if ($levelback <= 0) {
@@ -415,158 +439,6 @@ class Model_Page extends Sfcms_Model
         }
         $dom->formatOutput = true;
         return $dom->saveHTML();
-    }
-
-    /**
-     * Венет HTML-структуру
-     * @return string
-     */
-    public function createHtmlList()
-    {
-        $this->html = array();
-        $this->returnListRecursive( 0 );
-    }
-
-    /**
-     * Обходит массив дерева структуры и возвращает
-     * на его основе HTML для админки
-     *
-     * @param int $parent
-     * @param int $level
-     *
-     * @return array
-     */
-    protected function returnListRecursive( $parent, $level = 1 )
-    {
-        if (isset( $this->parents[ $parent ] )) {
-            $branches = $this->parents[ $parent ];
-        } else {
-            $branches = array();
-        }
-
-        $prefix = str_repeat( "\t", $level );
-
-        $this->html[ ] = $prefix . "<ul parent='{$parent}'>";
-
-        $count = count( $branches );
-
-        foreach ( $branches as $i => $branch )
-        {
-            if ($branch[ 'action' ] == 'doc') {
-                continue;
-            }
-
-            $li_class = '';
-            if ($level == 1) {
-                $li_class = ' class="level_one"';
-            }
-
-            if ($i == 0 && $level == 1) {
-                $bicon = 'cross1';
-            }
-            else {
-                if ($i + 1 == $count) {
-                    $bicon = 'cross3';
-                }
-                else {
-                    $bicon = 'cross2';
-                }
-            }
-
-            $link = '';
-            if ( 'page' != $branch[ 'controller' ] ) {
-                $linkUrl = '#';
-                switch ( $branch[ 'controller' ] ) {
-                    case 'catalog':
-                        $linkUrl = "/catalog/category/edit/{$branch[ 'link' ]}";
-                        break;
-                    case 'gallery':
-                        $linkUrl = "/gallery/editcat/id/{$branch[ 'link' ]}";
-                        break;
-                    case 'news':
-                        $linkUrl = "/news/catedit/id/{$branch[ 'link' ]}";
-                        break;
-                }
-                $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
-            }
-
-            $this->html[ ] =
-                $prefix . "<li{$li_class} parent='{$branch['parent']}' this='{$branch['id']}' pos='{$branch['pos']}'>"
-                    . "<span id='item{$branch['id']}' class='{$bicon}'>" . icon( $this->selectIcon( $branch ) )
-                    . " <a class='edit' title='".t('Edit page')."' " . href(
-                    null, array(
-                        'controller'=> 'page',
-                        'action'    => 'edit',
-                        'edit'      => $branch[ 'id' ]
-                    )
-                ) . ">{$branch['name']}</a>"
-                    . "<span class='tools'>"
-                    . $link
-                    . "<a class='edit' title='".t('Edit page')."' " . href(
-                    null, array(
-                        'controller'=> 'page',
-                        'action'    => 'edit',
-                        'edit'      => $branch[ 'id' ]
-                    )
-                ) . " title='Правка'>" . icon( 'pencil', 'Правка' ) . "</a>"
-                    . "<a class='add' rel='{$branch[ 'id' ]}' title='".t('Create page')."' " . href(
-                    null, array(
-                        'controller'=> 'page',
-                        'action'    => 'create',
-                    )
-                ) . "    title='Добавить'>" . icon( 'add', 'Добавить' ) . "</a>"
-                    . "<a class='do_delete' " . href(
-                    null, array(
-                        'controller'=> 'page',
-                        'action'    => 'delete',
-                        'id'        => $branch[ 'id' ]
-                    )
-                ) . " title='Удалить'>" . icon( 'delete', 'Удалить' ) . "</a>"
-                    . "</span>"
-                    . "<span class='order'>"
-                    . $this->getOrderHidden( $branch[ 'id' ], $branch[ 'hidden' ] )
-
-                    . "<span class='id_number'>#{$branch['id']}</span>"
-                    . "</span>"
-                    . "</span>";
-
-            $this->returnListRecursive( $branch[ 'id' ], $level + 1 );
-            $this->html[ ] = $prefix . "</li>";
-        }
-        $this->html[ ] = $prefix . "</ul>";
-    }
-
-    /**
-     * Вернет HTML для лампочки в меню админки
-     *
-     * @param $id
-     * @param $hidden
-     *
-     * @return string
-     */
-    public function getOrderHidden( $id, $hidden )
-    {
-        $return = "<a href='" . $this->app()->getRouter()->createServiceLink(
-            'page', 'hidden', array( 'id'=> $id )
-        ) . "' class='order_hidden'>";
-        $return .= $hidden ? icon( 'lightbulb_off', 'Выключен' ) : icon( 'lightbulb', 'Включен' );
-        $return .= "</a>";
-        return $return;
-    }
-
-    /**
-     * @param $branch
-     *
-     * @return string
-     */
-    private function selectIcon( $branch )
-    {
-        $result = $branch[ 'controller' ] == 'page' ? 'page' : 'folder';
-        $result = $branch[ 'controller' ] == 'news' ? 'folder_feed' : $result;
-        $result = $branch[ 'controller' ] == 'gallery' ? 'folder_picture' : $result;
-        $result = $branch[ 'controller' ] == 'catalog' ? 'folder_table' : $result;
-        $result = isset( $this->parents[ $branch[ 'id' ] ] ) ? 'folder_explore' : $result;
-        return $result;
     }
 
     /**

@@ -52,6 +52,32 @@ class Data_Object_Page extends Data_Base_Page
         return $this->alias;
     }
 
+    /**
+     * Вернет ссылку на редактирования модуля в админке
+     * @return null|string
+     */
+    public function getLinkEdit()
+    {
+        $link = null;
+        $linkUrl = null;
+        switch ( $this->controller ) {
+            case 'catalog':
+                $linkUrl = Siteforever::html()->url('catalog/category', array('edit'=>$this->link));
+                break;
+            case 'gallery':
+                $linkUrl = Siteforever::html()->url('gallery/editcat', array('id'=>$this->link));
+                break;
+            case 'news':
+                $linkUrl = Siteforever::html()->url('news/catedit', array('id'=>$this->link));
+                break;
+        }
+        if ( $linkUrl ) {
+            $link = Siteforever::html()->link( icon( 'link', t('Go to the module') ), $linkUrl );
+        }
+//        $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
+        return $link;
+    }
+
 
     /**
      * Вернет заголовок страницы
