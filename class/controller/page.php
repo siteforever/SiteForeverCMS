@@ -283,14 +283,9 @@ class Controller_Page extends Sfcms_Controller
     {
         $id   = $this->request->get( 'id' );
         $page = $this->getModel( 'Page' )->find( $id );
-
         $page->set( 'hidden', 0 == $page->get( 'hidden' ) ? 1 : 0 );
-
         $page->save();
-
-        $this->request->setContent(
-            $this->getModel( 'Page' )->getOrderHidden( $id, $page->get( 'hidden' ) )
-        );
+        return array( 'page' => $page );
     }
 
 

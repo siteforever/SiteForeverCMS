@@ -442,6 +442,24 @@ class Model_Page extends Sfcms_Model
     }
 
     /**
+     * Вернет HTML для лампочки в меню админки
+     *
+     * @param $id
+     * @param $hidden
+     *
+     * @return string
+     */
+    public function getOrderHidden( $id, $hidden )
+    {
+        $return = "<a href='" . $this->app()->getRouter()->createServiceLink(
+            'page', 'hidden', array( 'id'=> $id )
+        ) . "' class='order_hidden'>";
+        $return .= $hidden ? icon( 'lightbulb_off', 'Выключен' ) : icon( 'lightbulb', 'Включен' );
+        $return .= "</a>";
+        return $return;
+    }
+
+    /**
      * Вернет объект формы
      * @return Forms_Page_Page
      */

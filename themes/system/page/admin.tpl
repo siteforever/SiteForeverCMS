@@ -1,3 +1,5 @@
+{include file="system:page/funcorderhidden.tpl"}
+
 {* Print icon *}
 {function selectIcon}
 {if $branch->controller == "catalog"}{$icon = "folder_table"}{else}
@@ -11,6 +13,7 @@
 {/if}
 {icon name=$icon}
 {/function}
+
 
 {* Print tree menu *}
 {function tree parent=0 level=0}
@@ -30,9 +33,7 @@
                     {icon name="delete" title=t('Delete')}{/a}
             </span>
             <span class="order">
-                {a controller="page" action="hidden" id=$branch->id class="order_hidden"}
-                    {if $branch->hidden}{icon name="lightbulb_off" title=t('Off')}
-                    {else}{icon name="lightbulb" title=t('On')}{/if}{/a}
+                {call orderHidden page=$branch}
                 <span class="id_number">#{$branch->id}</span>
             </span>
         </span>
