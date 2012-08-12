@@ -24,7 +24,7 @@
             {selectIcon branch=$branch}
             {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
             <span class="tools">
-                {$branch->linkEdit}
+                {*{$branch->linkEdit}*}
                 {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}
                     {icon name="pencil" title=t('page','Edit page')}{/a}
                 {a class="add" rel=$branch->id title=t('page','Create page') controller="page" action="create"}
