@@ -362,6 +362,15 @@ class Request
         return $this->_content;
     }
 
+    public function getEditContent()
+    {
+        if ( ! $this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
+            return $this->getContent();
+        }
+        $this->app()->getTpl()->assign('content', $this->getContent());
+        return $this->app()->getTpl()->fetch('system:admin.content');
+    }
+
 
     /**
      * Установить контент страницы
@@ -489,26 +498,14 @@ class Request
     public function getResponseAsXML()
     {
         $xml = new SimpleXMLElement( '<response></response>' );
-        array_walk_recursive( $this->response, array( $this, 'arrayWalkToXML' ), $xml );
+        array_walk_recursive( $this->response, function($item, $key, SimpleXMLElement $xml) {
+            $xml->addChild( $key, $item );
+        }, $xml );
         return $xml->asXML();
-    }
-
-    /**
-     * Функция коллбэк
-     * @param                  $item
-     * @param                  $key
-     * @param SimpleXMLElement $xml
-     *
-     * @return void
-     */
-    public function arrayWalkToXML( $item, $key, SimpleXMLElement $xml )
-    {
-        $xml->addChild( $key, $item );
     }
 
     public function debug()
     {
-//        printVar( $this->request );
         return $this->request;
     }
 

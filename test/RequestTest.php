@@ -33,7 +33,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetAjax().
      */
     public function testGetAjax()
     {
@@ -41,7 +40,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testIsAjax().
      */
     public function testIsAjax()
     {
@@ -49,7 +47,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetAjaxType().
      */
     public function testGetAjaxType()
     {
@@ -57,7 +54,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetError().
      */
     public function testGetError()
     {
@@ -65,7 +61,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetError().
      */
     public function testSetError()
     {
@@ -167,7 +162,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetContent().
      */
     public function testSetContent()
     {
@@ -176,7 +170,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetContent().
      */
     public function testGetContent()
     {
@@ -185,7 +178,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetTitle().
      */
     public function testSetTitle()
     {
@@ -194,7 +186,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetTitle().
      */
     public function testGetTitle()
     {
@@ -203,7 +194,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testAddFeedback().
      */
     public function testAddFeedback()
     {
@@ -213,7 +203,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetFeedback().
      */
     public function testGetFeedback()
     {
@@ -227,7 +216,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetFeedbackString().
      */
     public function testGetFeedbackString()
     {
@@ -236,11 +224,17 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $this->request->getFeedbackString("\n"), "Test1\nTest2", 'Feedback String fail' );
     }
 
-    /**
-     * @todo Implement testDebug().
-     */
-    public function testDebug()
+    public function testGetResponseAsXML()
     {
+        $this->request->setResponseError(10,'test error');
+        $this->assertEquals("<?xml version=\"1.0\"?>\n<response><error>test error</error><errno>10</errno></response>\n",
+            $this->request->getResponseAsXML());
     }
 
+    public function testGetResponseAsJson()
+    {
+        $this->request->setResponseError(10,'test error');
+        $this->assertEquals("{\"error\":\"test error\",\"errno\":10}",
+            $this->request->getResponseAsJson());
+    }
 }
