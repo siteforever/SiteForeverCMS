@@ -79,6 +79,25 @@ pre.error, p.error {
 }
 
 
+#adminPanel {
+    font-size: 18px;
+    /*color: #005b7f;*/
+    color: #fff;
+    margin: 0;
+    padding: 10px;
+    margin-bottom: 20px;
+    /*background: #c7e2fe;*/
+    background: #ddd url('/images/admin/h1.gif') repeat-x 0 0;
+}
+    #adminPanel a {
+        color: #fff;
+        text-decoration: none;
+    }
+#adminEditContent textarea {
+    width: 100%;
+    height: 500px;
+}
+
 input, select, textarea {
     width: 300px;
     padding: 1px;

@@ -5,9 +5,6 @@
  */
 class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
 {
-    const JQ_UI_THEME = 'redmond';
-    const JQ_UI_VERSION = '1.8.21';
-
     /**
      * @param $result
      * @return string
@@ -16,30 +13,13 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
     {
         $misc = $this->getMisc();
         // подключение админских стилей и скриптов
-        $this->_app->addStyle( $misc.'/jquery/'.self::JQ_UI_THEME.'/jquery-ui-'.self::JQ_UI_VERSION.'.custom.css' );
-        $this->_app->addScript( $misc.'/jquery/jquery-ui-'.self::JQ_UI_VERSION.'.custom.min.js' );
-
+        $this->attachJUI();
         $this->_app->addStyle( $misc . '/admin/admin.css' );
         // jQuery
         $this->_app->addScript( $misc . '/jquery/jquery.form.js' );
         $this->_app->addScript( $misc . '/jquery/jquery.blockUI.js' );
 
-        switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
-            case 'tinymce':
-                // TinyMCE
-                $this->_app->addScript( $misc . '/tiny_mce/jquery.tinymce.js' );
-                $this->_app->addScript( $misc . '/admin/editor/tinymce.js' );
-                break;
-
-            case 'ckeditor':
-                // CKEditor
-                $this->_app->addScript( $misc . '/ckeditor/ckeditor.js' );
-                $this->_app->addScript( $misc . '/ckeditor/adapters/jquery.js' );
-                $this->_app->addScript( $misc . '/admin/editor/ckeditor.js' );
-                break;
-
-            default: // plain
-        }
+        $this->attachWysiwyg();
 
         $this->_app->addStyle( $misc . '/elfinder/css/elfinder.css' );
         $this->_app->addScript( $misc . '/elfinder/js/elfinder.full.js' );

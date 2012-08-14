@@ -131,14 +131,14 @@ class App extends Application_Abstract
         } catch ( Exception $e ) {
             if ( App::isDebug() ) {
                 $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
+                $result = "<pre class='error'><b>".get_class( $e )."</b> : {$e->getMessage()}\n"
+                    .( App::isDebug()
+                        ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
+                        : '' )
+                    .'</pre>';
             } else {
                 $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
             }
-            $result = "<pre class='error'><b>".get_class( $e )."</b> : {$e->getMessage()}\n"
-                        .( App::isDebug()
-                            ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
-                            : '' )
-                    .'</pre>';
         }
 
         // Выполнение операций по обработке объектов

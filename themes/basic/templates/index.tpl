@@ -3,7 +3,7 @@
 <head>
 {head}
 </head>
-<body class="body">
+<body class="body">{admin}
 
 <div class="b-body">
 
@@ -29,7 +29,7 @@
                 <div class="feedback">{$request->getFeedbackString()}</div>
             {/if}
             
-            {$request->getContent()}
+            {$request->getEditContent()}
         
         </div>
 

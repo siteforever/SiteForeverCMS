@@ -20,6 +20,12 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
         if( file_exists( trim( $this->getJs() . '/script.js', '/' ) ) ) {
             $this->_app->addScript( $this->getJs() . '/script.js' );
         }
+        if ( $this->_app->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
+            $this->attachJUI();
+            $this->_app->addStyle( $this->getMisc() . '/admin/admin.css' );
+            $this->attachWysiwyg();
+            $this->_app->addScript( $this->getMisc() . '/admin/panel.js' );
+        }
 
         $layout = $this->getTpl()->fetch(
             $this->getRequest()->get( 'resource' )

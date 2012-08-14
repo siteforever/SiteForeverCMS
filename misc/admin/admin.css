@@ -6,19 +6,18 @@ html, body {
     height: 100%;
 }
 
-h1, h2, h3, h4, h5, h6, p {
+#admin h1, #admin h2, #admin h3, #admin h4, #admin h5, #admin h6, #admin p {
     margin-bottom: 0.5em;
 }
 
-a {
+#admin a {
     color: #0072bc;
 }
 
-h1 {
+#admin h1 {
     font-size: 18px;
-    /*color: #005b7f;*/
+    font-weight: normal;
     color: #fff;
-    text-shadow: black 0 0 5px;
     margin: 0;
     padding: 10px;
     border-bottom: 1px #005B7F solid;
@@ -26,17 +25,22 @@ h1 {
     /*background: #c7e2fe;*/
     background: #ddd url('/images/admin/h1.gif') repeat-x 0 0;
 }
-h2 {font-size: 16px;}
-h3 {font-size: 14px;}
-h4 {font-size: 12px;}
-h5 {font-size: 10px;}
-h6 {font-size: 8px;}
+    #admin h1 a {
+        text-decoration: none;
+    }
 
-small, span.small {
+
+#admin h2 {font-size: 16px;}
+#admin h3 {font-size: 14px;}
+#admin h4 {font-size: 12px;}
+#admin h5 {font-size: 10px;}
+#admin h6 {font-size: 8px;}
+
+#admin small, #admin span.small {
     font-size: 10px;
 }
 
-fieldset {
+#admin fieldset {
     width: 600px;
     border: 1px #ddd solid;
     border-radius: 0.5em;
@@ -45,18 +49,21 @@ fieldset {
 }
 
 
-input, select, textarea {
+#admin input, #admin select, #admin textarea {
     padding: 0.2em 0.1em;
     width: 150px;
 }
 
-.blockOverlay {
+#admin .blockOverlay {
     z-index: 9000 !important;
 }
-.blockMsg {
+#admin .blockMsg {
     z-index: 10000 !important;
 }
-
+#admin span.logout a {
+    color: #fff;
+    text-decoration: none;
+}
 /*div.ui-widget-overlay {*/
     /*height: 100% !important;*/
 /*}*/

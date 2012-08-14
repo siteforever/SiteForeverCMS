@@ -4,12 +4,14 @@
 {head}
 </head>
 
-<body class="body">
+<body class="body" id="admin">
 <div class="l-wrapper">
 
     <h1>
         {t}Control panel{/t} / {if $request->getTitle()}{$request->getTitle()}{else}untitled{/if}
-        <span style="float: right;">{icon name="door_in" title=t('Exit')} <a {href url="users/logout"}>{t}Exit{/t}</a></span>
+        <span class="float_right logout">{icon name="door_in" title=t('Exit')}
+            {a url="users/logout"}{t}Exit{/t}{/a}
+        </span>
     </h1>
 
     <div class="l-main-panel">

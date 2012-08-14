@@ -22,6 +22,7 @@ var wysiwyg = {
             "theme_advanced_buttons1_add" : "|,table,media",
             "theme_advanced_buttons2_add_before" : "pastetext,pasteword,|",
             "extended_valid_elements" : "div[*],p[*]",
+            "content_css" : "/themes/basic/css/style.css",
             // Theme options
             "theme_advanced_toolbar_location" : "top",
             "theme_advanced_toolbar_align" : "left",

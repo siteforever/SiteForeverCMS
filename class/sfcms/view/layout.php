@@ -5,6 +5,9 @@
  */
 class Sfcms_View_Layout extends Sfcms_View_IView
 {
+    const JQ_UI_THEME = 'redmond';
+    const JQ_UI_VERSION = '1.8.21';
+
     protected function init()
     {
         /** Данные шаблона */
@@ -67,4 +70,30 @@ class Sfcms_View_Layout extends Sfcms_View_IView
         return $this->getRequest()->get( 'path.misc' );
     }
 
+
+    protected function attachWysiwyg()
+    {
+        switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
+            case 'tinymce':
+                // TinyMCE
+                $this->_app->addScript( $this->getMisc() . '/tiny_mce/jquery.tinymce.js' );
+                $this->_app->addScript( $this->getMisc() . '/admin/editor/tinymce.js' );
+                break;
+
+            case 'ckeditor':
+                // CKEditor
+                $this->_app->addScript( $this->getMisc() . '/ckeditor/ckeditor.js' );
+                $this->_app->addScript( $this->getMisc() . '/ckeditor/adapters/jquery.js' );
+                $this->_app->addScript( $this->getMisc() . '/admin/editor/ckeditor.js' );
+                break;
+
+            default: // plain
+        }
+    }
+
+    protected function attachJUI()
+    {
+        $this->_app->addStyle( $this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui-'.self::JQ_UI_VERSION.'.custom.css' );
+        $this->_app->addScript( $this->getMisc().'/jquery/jquery-ui-'.self::JQ_UI_VERSION.'.custom.min.js' );
+    }
 }
