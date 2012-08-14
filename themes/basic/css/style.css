@@ -10,11 +10,15 @@ h1 { font: 150% Tahoma; }
 h2 { font: 130% Tahoma; }
 h3 { font: 110% Tahoma; }
 
-div.b-request-feedback {
+.b-request-feedback {
+    color: red;
+    background: #fff;
     padding: 5px;
     margin: 0 0 1em 0;
     border: 1px #999 solid;
 }
+
+
 
 a {
     color: #247d06;
@@ -204,4 +208,20 @@ ul.gallery_list {
 .b-catalog-product-thumb {
     width: 150px;
     height: 150px;
+}
+
+
+div.guestbook_message {
+    padding: 10px;
+    border: 1px green solid;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+div.guestbook_answer {
+    font-style: italic;
+    padding: 10px 10px 0 10px;
+}
+div.guestbook_title {
+    font-style: italic;
+    margin-bottom: 15px;
 }
