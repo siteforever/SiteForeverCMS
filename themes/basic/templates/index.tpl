@@ -29,7 +29,7 @@
                 <div class="feedback">{$request->getFeedbackString()}</div>
             {/if}
             
-            {$request->getEditContent()}
+            {$request->getContent()}
         
         </div>
 

@@ -108,6 +108,12 @@ abstract class Sfcms_Model extends \Sfcms\Component
 
     /**
      * Отношения модели с другими моделями
+     *
+     * <p>Пример:</p>
+     * <pre>array(
+     *     'Category' => array(self::BELONGS, 'GalleryCategory', 'category_id'),
+     * );</pre>
+     *
      * @return array
      */
     function relation()

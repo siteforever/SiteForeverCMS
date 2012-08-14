@@ -215,6 +215,7 @@ abstract class Form_Field
      */
     public function setValue( $value )
     {
+        $value = trim($value);
         if ( $this->checkValue( $value ) )
         {
             $this->_value  = $value;

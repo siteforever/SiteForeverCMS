@@ -47,7 +47,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
     /**
      * @param $key
      * @param $value
-     * @return Component
+     * @return self
      */
     public function set( $key, $value )
     {
@@ -73,13 +73,14 @@ abstract class Component implements \ArrayAccess//, Iterator;
     /**
      * Установить список атрибутов
      * @param array $data
-     * @return void
+     * @return self
      */
     public function setAttributes( $data = array() )
     {
         foreach( $data as $k => $d ) {
             $this->set( $k, $d );
         }
+        return $this;
     }
 
     /**

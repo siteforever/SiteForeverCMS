@@ -38,6 +38,10 @@ return array(
         'url'   => 'gallery/admin',
     ),
     array(
+        'name'  => 'Гостевая',
+        'url'   => 'guestbook/admin',
+    ),
+    array(
         'name'  => 'Пользователи',
         'url'   => 'users/admin',
     ),

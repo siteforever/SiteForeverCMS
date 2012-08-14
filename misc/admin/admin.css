@@ -49,7 +49,7 @@ html, body {
 }
 
 
-#admin input, #admin select, #admin textarea {
+input, select, textarea {
     padding: 0.2em 0.1em;
     width: 150px;
 }
@@ -390,6 +390,10 @@ div.b-main-structure {
             background-image: url(/images/admin/icons/page.png);
         }
 
+
+#form_guestbook_edit textarea {
+    height: 100px;
+}
 
 /* Галлерея каталога */
 .a-gallery {

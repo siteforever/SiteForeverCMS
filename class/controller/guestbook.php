@@ -8,7 +8,7 @@ class Controller_Guestbook extends Sfcms_Controller
     public function init()
     {
         parent::init();
-        $this->request->setTitle( t('Guestbook module') );
+        $this->request->setTitle( t('guestbook','Guestbook module') );
     }
 
     public function access()
@@ -86,33 +86,26 @@ class Controller_Guestbook extends Sfcms_Controller
     public function adminAction()
     {
         $this->app()->addScript('/misc/admin/guestbook.js');
-        $id   = $this->request->get('id');
-
-        if ( ! $id ) {
-            $this->request->setContent('Param Id not defined');
-            return;
-        }
-
-        $crit   = array(
-            'cond'  => ' link = ? ',
-            'params'=> array( $id ),
-        );
 
         $model  = $this->getModel('Guestbook');
+        $crit = $model->criteriaFactory();
 
-        $count  = $model->count( $crit['cond'], $crit['params'] );
+        if ( $link = $this->request->get('link') ) {
+            $crit->condition = ' `link` = ? ';
+            $crit->params = array( $link );
+        }
 
-        $paging = $this->paging( $count, 10, $this->page['alias'] );
+        $count  = $model->count( $crit->condition, $crit->params );
 
-        $crit['order'] = ' date DESC ';
-        $crit['limit'] = $paging->limit;
+        $paging = $this->paging( $count, 20, $this->page['alias'] );
 
-        $this->log( $crit );
+        $crit->order = ' `date` DESC ';
+        $crit->limit = $paging->limit;
 
-        $messages   = $model->findAll( $crit );
+        $list   = $model->findAll( $crit );
 
         return array(
-            'messages'  => $messages,
+            'list'      => $list,
             'paging'    => $paging,
         );
     }
@@ -129,21 +122,28 @@ class Controller_Guestbook extends Sfcms_Controller
 
         $model  = $this->getModel('Guestbook');
 
-        $msg    = $model->find( $id );
+        if ( $id ) {
+            $msg = $model->find( $id );
+        } else {
+            $msg = $model->createObject();
+        }
 
         $form   = new Forms_Guestbook_Edit();
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-
+                $msg->setAttributes( $form->getData() );
+                $msg->markDirty();
+                return array( 'error'=>0, 'msg'=>t('Save successfully'));
+            } else {
+                return array( 'error'=>1, 'msg'=>$form->getFeedbackString());
             }
-        } else {
-            $form->setData( $msg );
         }
+
+        $form->setData( $msg );
 
         return array(
             'msg'   => $msg,
             'form'  => $form,
         );
     }
-
 }

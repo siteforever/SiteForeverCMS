@@ -5,21 +5,23 @@
  */
 class Forms_Guestbook_Edit extends Form_Form
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct( array(
             'name'  => 'guestbook_edit',
+            'action' => App::getInstance()->getRouter()->createServiceLink('guestbook','edit'),
             'fields'=> array(
                 'id'    => array( 'type'=>'hidden' ),
-                'name'  => array( 'type'=>'text', 'label'=>t('Name'), ),
-                'email'  => array( 'type'=>'text', 'label'=>t('Email'), ),
-                'site'  => array( 'type'=>'text', 'label'=>t('Site'), ),
-                'city'  => array( 'type'=>'text', 'label'=>t('City'), ),
-                'date'  => array( 'type'=>'date', 'label'=>t('Date'), ),
-                'ip'  => array( 'type'=>'text', 'readonly', 'label'=>t('Ip'), ),
+//                'name'  => array( 'type'=>'text', 'label'=>t('guestbook','Name'), ),
+//                'email'  => array( 'type'=>'text', 'label'=>t('guestbook','Email'), ),
+//                'site'  => array( 'type'=>'text', 'label'=>t('guestbook','Site'), ),
+//                'city'  => array( 'type'=>'text', 'label'=>t('guestbook','City'), ),
+//                'date'  => array( 'type'=>'date', 'label'=>t('guestbook','Date'), ),
+//                'ip'  => array( 'type'=>'text', 'readonly', 'label'=>t('guestbook','Ip'), ),
 
-                'message'  => array( 'type'=>'textarea', 'label'=>t('Message'), ),
-                'submit'    => array( 'type'=>'submit', 'value'=>t('Save') ),
+                'message'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Message'), 'class'=>'plain', ),
+                'answer'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Answer'), 'class'=>'plain', ),
+                'submit'    => array( 'type'=>'submit', 'value'=>t('guestbook','Save') ),
             ),
         ) );
     }

@@ -198,7 +198,11 @@ div.sfcms_guestbook_message {
     border-radius: 10px;
     margin-bottom: 20px;
 }
-    div.sfcms_guestbook_title {
-        font-style: italic;
-        margin-bottom: 15px;
-    }
+div.sfcms_guestbook_answer {
+    font-style: italic;
+    padding: 10px 10px 0 10px;
+}
+div.sfcms_guestbook_title {
+    font-style: italic;
+    margin-bottom: 15px;
+}
