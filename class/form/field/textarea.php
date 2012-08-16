@@ -18,6 +18,7 @@ class Form_Field_Textarea extends Form_Field
         $value = $field['value'];
         unset( $field['value'] );
 
+        $field['class'][] = 'input-xlarge';
         $field['class'] = "class='".join(' ', $field['class'])."'";
         return "<textarea ".join(' ', $field).">{$this->_value}</textarea>\n";
     }

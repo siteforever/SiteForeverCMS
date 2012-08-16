@@ -23,7 +23,7 @@ siteforever.gallery = {
 
         $(this).find('input:text')
             .blur(function(event){
-                sf.gallery.nameApply.call( self );
+                $s.gallery.nameApply.call( self );
 //                console.log( 'blur:text | ', event.target, ' this:', this );
             })
             .click(function(event){
@@ -33,10 +33,10 @@ siteforever.gallery = {
             })
             .keypress(function( event ){
                 if (event.keyCode == '13') {
-                    sf.gallery.nameApply.call( self );
+                    $s.gallery.nameApply.call( self );
                 }
                 if (event.keyCode == '27') {
-                    sf.gallery.nameCancel.call( self );
+                    $s.gallery.nameCancel.call( self );
                 }
             });
         return false;
@@ -83,26 +83,26 @@ siteforever.gallery = {
         },
         buttons         : [
             {
-                text: sf.i18n('Save'),
+                text: $s.i18n('Save'),
                 click : function() {
                     $(this).find('form').ajaxSubmit({
                         success : function(response) {
-                            sf.alert(response, 2000);
+                            $s.alert(response, 2000);
                             return true;
                         },
                         error: function () {
-                            sf.alert('Данные не сохранены',2000);
+                            $s.alert('Данные не сохранены',2000);
                             return true;
                         }
                         //target  : '#gallery_picture_edit'
                     });
                     $(this).dialog('close');
-                    sf.alert('Отправка...');
+                    $s.alert('Отправка...');
                     return true;
                 }
             },
             {
-                text: sf.i18n('Cancel'),
+                text: $s.i18n('Cancel'),
                 click : function() {
                     $(this).dialog('close');
                 }
@@ -127,7 +127,7 @@ $(function() {
     $("#gallery").disableSelection();
 
     // Редактирование названия
-    $('#gallery').find('div.gallery_name').click(sf.gallery.nameEdit);
+    $('#gallery').find('div.gallery_name').click($s.gallery.nameEdit);
 
 
     // Правка данных об изображении
@@ -135,7 +135,7 @@ $(function() {
         $(this).click(function(){
             action = $(this).attr('href');
             if ( 0 == $('#gallery_picture_edit').length ) {
-                $('<div id="gallery_picture_edit" />').appendTo('div.l-content-wrapper').dialog( sf.gallery.editDialog ).hide();
+                $('<div id="gallery_picture_edit" />').appendTo('div.l-content-wrapper').dialog( $s.gallery.editDialog ).hide();
             }
 
             $(window).bind('close', function(){ return false; });

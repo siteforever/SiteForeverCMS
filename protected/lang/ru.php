@@ -13,6 +13,10 @@ return array_merge(
 
         'Home'                                      => 'Главная',
         'Exit'                                      => 'Выход',
+        'Close'                                     => 'Закрыть',
+        'Save changes'                              => 'Сохранить изменения',
+
+        'Goto site'                                 => 'Перейти на сайт',
 
         'Routes'                                    => 'Маршруты',
         'Deleted route # '                          => 'Удален маршрут № ',

@@ -13,7 +13,6 @@ class Forms_Page_Page extends Form_Form
             array(
                 'name'      => 'structure',
                 'action'    => App::getInstance()->getRouter()->createServiceLink( 'page', 'save' ),
-                'class'     => 'standart ajax',
                 'fields'    => array(
                     'id'         => array(
                         'type' => 'hidden',

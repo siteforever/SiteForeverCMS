@@ -64,7 +64,7 @@ abstract class Form_Abstract
         $this->_name   = $config[ 'name' ];
         $this->_method = isset( $config[ 'method' ] ) ? $config[ 'method' ] : 'post';
         $this->_action = isset( $config[ 'action' ] ) ? $config[ 'action' ] : '';
-        $this->_class  = isset( $config[ 'class' ] ) ? $config[ 'class' ] : 'standart ajax';
+        $this->_class  = isset( $config[ 'class' ] ) ? $config[ 'class' ] : 'form-horizontal';
 
         if ( isset( $config['fields'] ) ) {
             foreach ( $config[ 'fields' ] as $fname => $field )

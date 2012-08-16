@@ -27,7 +27,7 @@
                 {*{$branch->linkEdit}*}
                 {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}
                     {icon name="pencil" title=t('page','Edit page')}{/a}
-                {a class="add" rel=$branch->id title=t('page','Create page') controller="page" action="create"}
+                {a class="add" id=$branch->id title=t('page','Create page') controller="page" action="create"}
                     {icon name="add" title=t('page','Create page')}{/a}
                 {a class="do_delete" title=t('Delete') controller="page" action="delete" id=$branch->id}
                     {icon name="delete" title=t('Delete')}{/a}
@@ -45,11 +45,19 @@
 
 
 
-<div class="b-main-structure">{tree data=$data}</div>
+<div id="structureWrapper">
+    <div class="b-main-structure">{tree data=$data}</div>
 
-<hr />
-<ul>
-    <li>{icon name="arrow_refresh"} <a class="realias" {href controller="page" action="realias"}>
-    {t cat="page"}Conversion of aliases{/t}
-    </a></li>
-</ul>
+    <hr />
+
+    {a htmlClass="realias btn" controller="page" action="realias"}
+        {icon name="arrow_refresh"}
+        {t cat="page"}Conversion of aliases{/t}
+    {/a}
+
+
+    {modal id="pageEdit" title=t('Edit page')}
+    {modal id="pageCreate" title=t('Create page')}
+
+
+</div>

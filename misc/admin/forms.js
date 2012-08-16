@@ -39,11 +39,11 @@
         $('form.module_form, form.ajax').ajaxForm({
             beforeSubmit:function ( arr, $form, options ) {
                 options.url = $($form)[0].action;
-                sf.alert( 'Отправка данных...' );
+                $s.alert( 'Отправка данных...' );
             },
             success:function (data) {
                 $('div.blockMsg').html(data);
-                sf.alert.close( 2000 );
+                $s.alert.close( 2000 );
             },
             iframe:false
         }).find("input:text").live('keypress', function (e) {

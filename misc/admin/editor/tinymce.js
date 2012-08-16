@@ -11,8 +11,8 @@ var wysiwyg = {
             // Location of TinyMCE script
             "script_url" :    '/misc/tiny_mce/tiny_mce.js',
             // General options
-            "width" :           '625',
-            "height" :          '400',
+            "width" :           '650',
+            "height" :          '300',
             "theme" :           'advanced',
             "skin" :            'default',
             "language":         'ru',

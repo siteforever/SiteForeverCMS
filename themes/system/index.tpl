@@ -5,44 +5,61 @@
 </head>
 
 <body class="body" id="admin">
-<div class="l-wrapper">
-
-    <h1>
-        {t}Control panel{/t} / {if $request->getTitle()}{$request->getTitle()}{else}untitled{/if}
-        <span class="float_right logout">{icon name="door_in" title=t('Exit')}
-            {a url="users/logout"}{t}Exit{/t}{/a}
-        </span>
-    </h1>
-
-    <div class="l-main-panel">
-        <div class="l-panel">
-            <ul class="b-admin-menu">
-                {foreach from=$request->get('modules') item="item"}
-                <li>{if ! empty($item.icon)}{icon name=$item.icon}{/if}
-                    <a  {if ! empty($item.norefact)}href="{$item.url}"{else}{href url=$item.url}{/if}
-                        {if ! empty($item.class)}class="{$item.class}"{/if}
-                        {if ! empty($item.target)}target="{$item.target}"{/if} >{$item.name}</a>
-                    {if isset($item.sub)}
-                        <ul>
-                        {foreach from=$item.sub item="subitem"}
-                        <li>
-                            {if ! empty($subitem.icon)}{icon name=$subitem.icon}{/if}
-                            <a  {if ! empty($subitem.norefact)}href="{$subitem.url}"{else}{href url=$subitem.url}{/if}
-                                {if ! empty($item.class)}class="{$subitem.class}"{/if}
-                                {if ! empty($subitem.target)}target="{$subitem.target}"{/if} >{$subitem.name}</a>
-                        </li>
-                        {/foreach}
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="nav-collapse">
+                <span class="brand">SiteForeverCMS</span>
+                <ul class="nav">
+                    <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {t}Goto site{/t}</a></li>
+                </ul>
+                <ul class="nav pull-right">
+                    <li class="dropdown">
+                        {a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}
+                        <ul class="dropdown-menu">
+                            <li>{a href="users/logout"}{t}Exit{/t}{/a}</li>
                         </ul>
-                {/if}</li>
-                {/foreach}
-            </ul>
+                        {*<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>*}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+
+    <div class="row-fluid">
+        <div class="span3">
+            <div class="well">
+                <ul class="nav nav-list">
+                    {foreach from=$request->get('modules') item="item"}
+                    {if isset( $item.url )}
+                        {if ! isset( $item.class )}{$item.class = ""}{/if}
+                        <li>{a href=$item.url htmlClass=$item.class}{$item.name}{/a}</li>
+                    {else}
+                        <li class="nav-header">{$item.name}</li>
+                    {/if}
+                    {if isset($item.sub)}
+                        {foreach from=$item.sub item="sitem"}
+                            {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
+                            <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name}{/a}</li>
+                        {/foreach}
+                        <li class="divider"></li>
+                    {/if}
+                    {/foreach}
+                </ul>
+            </div>
         </div>
 
-        <div class="l-content">
-            <div class="l-content-wrapper">
-            {if $feedback}<p class="red">{$feedback}</p>{/if}
+        <div class="span9">
+            {if $request->getTitle()}<h2>{$request->getTitle()}</h2>{/if}
+
+            {if $feedback}<div class="alert alert-block">
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                {$feedback}
+            </div>{/if}
+
             {$request->getContent()}
-            </div>
         </div>
 
         <div class="clear"></div>
@@ -51,9 +68,9 @@
     <div class="l-footer-wrapper"></div>
 
 </div>
-<div class="l-footer">
-    <a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>
-</div>
+{*<footer>*}
+    {*<a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>*}
+{*</footer>*}
 
 </body>
 </html>

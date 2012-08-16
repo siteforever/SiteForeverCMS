@@ -1,9 +1,8 @@
-{form action="users/admin" method="get"}
-<p>Фильтр:
-    <input type="text" name="search" value="{$request->get('search')}" />
-    <input type="submit" value="Фильтровать" />
+{form class="well form-horizontal" action="users/admin" method="get"}
+    <label for="search">Фильтр:</label>
+    <input type="text" name="search" id="search" class="input-xlarge" value="{$request->get('search')}" />
+    <input type="submit" class="btn" value="Фильтровать" />
     {if $request->get('search')}<a {href url="users/admin"} class="button">Сбросить фильтр</a>{/if}
-</p>
 {/form}
 
 {form action="users/admin" method="post"}
@@ -26,7 +25,7 @@
             {if $user.perm == 1}{icon name="user_green" title="Пользователь"}{/if}
             {if $user.perm == 2}{icon name="user_orange" title="Опытный"}{/if}
             {if $user.perm == 10}{icon name="user_red" title="Админ"}{/if}
-            <a {href url="users/adminEdit" userid=$user.id}">{$user.login}</a>
+            <a {href url="users/adminEdit" userid=$user.id}>{$user.login}</a>
         </td>
         <td>{$user.email}</td>
         <td>{$user.lname}</td>

@@ -22,10 +22,7 @@ class Data_Relation_One extends Data_Relation
 
     public function find()
     {
-        $objRel = $this->model->find( array(
-            'crit' => " {$this->key} = ? ",
-            'params' => array( $this->obj->getId() ),
-        ) );
+        $objRel = $this->model->find(" {$this->key} = ? ", array( $this->obj->getId() ) );
         if ( $objRel ) {
             return $objRel;
         }

@@ -30,9 +30,10 @@ class Model_Order extends Sfcms_Model
     public function relation()
     {
         return array(
-            'positions'     => array( self::HAS_MANY, 'OrderPosition', 'ord_id' ),
-            'count'         => array( self::STAT,     'OrderPosition', 'ord_id' ),
-            'statusObj'     => array( self::HAS_ONE,  'OrderStatus', 'status' ),
+            'User'          => array( self::BELONGS, 'User', 'user_id' ),
+            'Count'         => array( self::STAT,     'OrderPosition', 'ord_id' ),
+            'Positions'     => array( self::HAS_MANY, 'OrderPosition', 'ord_id' ),
+            'Status'        => array( self::BELONGS,  'OrderStatus', 'status' ),
         );
     }
 
@@ -69,7 +70,7 @@ class Model_Order extends Sfcms_Model
                     'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
                     'price'     => $data['price'],
                     'count'     => $data['count'],
-                    'status'    => 0,
+                    'status'    => 1,
                 ));
 
                 $this->model_position->save( $position );
@@ -95,6 +96,13 @@ class Model_Order extends Sfcms_Model
             $msg = $this->app()->getTpl()->fetch('system:order.mail_create');
 
             //print $msg;
+
+            sendmail(
+                $this->app()->getAuth()->currentUser()->email,
+                $this->config->get('admin'),
+                'Новый заказ с сайта '.$this->config->get('sitename').' №'.$obj->getId(),
+                $msg
+            );
 
             sendmail(
                 $this->config->get('sitename').' <'.$this->config->get('admin').'>',

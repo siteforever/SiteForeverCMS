@@ -129,7 +129,7 @@ $(function(){
                     }
                 });
             };
-            $('#gallery_dialog').html(sf.i18n('Loading...')).dialog('open');
+            $('#gallery_dialog').html($s.i18n('Loading...')).dialog('open');
             $.get( $(this).attr('href'), function( data ) {
                 $('#gallery_dialog').html(data);
             });

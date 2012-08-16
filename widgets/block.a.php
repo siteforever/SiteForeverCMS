@@ -7,7 +7,6 @@
  
 function smarty_block_a( $params, $content )
 {
-    $a  = array();
     if ( isset($params['href']) ) {
         $href   = $params['href'];
         unset( $params['href'] );
@@ -15,7 +14,7 @@ function smarty_block_a( $params, $content )
     } elseif ( isset( $params['url'] ) ) {
         $href   = $params['url'];
     } else {
-        $href    = null;
+        $href    = '#';
     }
 
     $class = '';
@@ -29,6 +28,7 @@ function smarty_block_a( $params, $content )
         unset($params['class']);
     }
 
-    $result = Siteforever::html()->link( $content, $href, $params, $class );
-    return  $result;
+    if( null !== $content ) {
+        return Siteforever::html()->link( $content, $href, $params, $class );
+    }
 }

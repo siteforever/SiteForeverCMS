@@ -378,10 +378,8 @@ abstract class Application_Abstract
         if ( null === $this->_assets ) {
             $this->_assets  = new Siteforever_Assets();
             $misc = $this->getRequest()->get( 'path.misc' );
-            $this->_assets->addStyle( $misc . '/reset.css' );
     //        $this->addStyle( $misc . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
             $this->_assets->addStyle( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.css' );
-            $this->_assets->addStyle( $misc . '/siteforever.css' );
 
             $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
     //        $this->addScript( $misc . '/jquery/lightbox/jquery.lightbox-0.5.js' );

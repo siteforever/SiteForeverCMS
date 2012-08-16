@@ -26,9 +26,11 @@ class Form_Field_Radio extends Form_Field_Composite
                 $field['id']     = "id='{$this->getId()}_{$value}'";
                 $field['value']  = "value='{$value}'";
                 $field['checked']= ( $this->_value == $value ) ? " checked='checked' " : '';
-                $field['class']  = 'class="radio"';//.join(' ', $field['class']).'"';
+                $field['class']  = 'class="btn"';//.join(' ', $field['class']).'"';
 
-                $html[]  = "<input ".join(' ', $field)." /> <label for='{$this->getId()}_{$value}'>{$label}</label>";
+                $html[]  = "<label for='{$this->getId()}_{$value}' class='checkbox inline'>";
+                $html[]  = "<input ".join(' ', $field).">";
+                $html[]  = "{$label}</label>";
             }
         }
         $br = in_array('br', $this->_params) ? "<br />" : "";

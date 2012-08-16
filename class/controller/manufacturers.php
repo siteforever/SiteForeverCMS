@@ -35,6 +35,7 @@ class Controller_Manufacturers extends Sfcms_Controller
     public function adminAction()
     {
         $this->app()->addScript('/misc/admin/manufacturers.js');
+
         /** @var $model Model_Manufacturers */
         $model = $this->getModel();
         $count = $model->count();

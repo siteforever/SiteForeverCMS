@@ -16,7 +16,6 @@ class Data_Table_OrderStatus extends Data_Table
     {
         return array(
             $this->getInt('id', 11, true, null, true),
-            $this->getInt('status'),
             $this->getVarchar('name', 100),
         );
     }

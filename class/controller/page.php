@@ -84,6 +84,8 @@ class Controller_Page extends Sfcms_Controller
         $this->request->set( 'template', 'index' );
         $this->request->setTitle( t('Site structure') );
 
+        $this->app()->addScript('/misc/admin/page.js');
+
         /** @var Model_Page $model */
         $model = $this->getModel( 'Page' );
 
@@ -229,9 +231,9 @@ class Controller_Page extends Sfcms_Controller
                     $obj->update = time();
                     $obj->markNew();
                 }
-                $this->request->setResponseError( 0, t( 'Data save successfully' ) );
+                return array('error'=>0,'msg'=>t( 'Data save successfully' ));
             } else {
-                $this->request->setResponseError( 1, $form->getFeedbackString() );
+                return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
             return;
         }

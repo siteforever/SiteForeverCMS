@@ -11,6 +11,9 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
      */
     public function view( $result )
     {
+        $this->_app->addStyle( $this->getMisc() . '/reset.css' );
+        $this->_app->addStyle( $this->getMisc() . '/siteforever.css' );
+
         if( file_exists( trim( $this->getCss(), '/' ) . '/style.css' ) ) {
             $this->_app->addStyle( $this->getCss() . '/style.css' );
         }

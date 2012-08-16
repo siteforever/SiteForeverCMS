@@ -7,7 +7,7 @@ $(document).ready(function(){
     $( 'a.delete' ).click(function(){
         if ( confirm( $(this ).attr('title') ) ) {
             $.post( $( this ).attr('href') ).then( $.proxy( function( response ){
-                sf.alert( response, 1000 ).done( $.proxy( function(){
+                $s.alert( response, 1000 ).done( $.proxy( function(){
                     $( this ).parent().parent().remove();
                 }, this) );
             }, this ));

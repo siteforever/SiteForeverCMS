@@ -131,7 +131,7 @@ class App extends Application_Abstract
         } catch ( Exception $e ) {
             if ( App::isDebug() ) {
                 $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
-                $result = "<pre class='error'><b>".get_class( $e )."</b> : {$e->getMessage()}\n"
+                $result = "<pre class='alert alert-error'><strong>".get_class( $e )."</strong> {$e->getMessage()}\n"
                     .( App::isDebug()
                         ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
                         : '' )

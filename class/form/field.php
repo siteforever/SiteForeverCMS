@@ -393,19 +393,22 @@ abstract class Form_Field
      */
     protected function htmlWrapped()
     {
-        return "<div class='b-form-field'>"
+        return "<div class='control-group'>"
                    .$this->htmlLabel()
-                   ."<div class='b-form-field-{$this->getType()}'>"
+                   ."<div class='controls field-{$this->getType()}'>"
                        .$this->htmlField().($this->_error ? "<div>{$this->_error_string}</div>" : '')
-                   ."</div>"
-                   .$this->htmlNotice()
+                       .$this->htmlNotice()
+                    ."</div>"
                 ."</div>";
     }
 
-
     public function htmlLabel()
     {
-        return "<label for='{$this->getId()}'".($this->_error ? ' class="error"' : '').">"
+        $class = array('control-label');
+        if ( $this->_error ) {
+            $class[] = 'error';
+        }
+        return "<label for='{$this->getId()}' class='".implode(' ', $class)."'>"
             .$this->_label
             .( $this->isRequired() ? ' <b>*</b> ' : '' )
             ."</label>";
@@ -413,7 +416,7 @@ abstract class Form_Field
 
     public function htmlNotice()
     {
-        return $this->_notice ? "<div class=\"b-form-field-notice\"><small>{$this->_notice}</small></div>" : "";
+        return $this->_notice ? "<div class=\"help-block\"><small>{$this->_notice}</small></div>" : "";
     }
 
     public function htmlField()
@@ -463,6 +466,7 @@ abstract class Form_Field
      */
     public function htmlInput( $field )
     {
+        $field['class'][] = 'input-xlarge';
         $field['class']    = 'class="'.join(' ', $field['class']).'"';
         return "<input ".join(' ', $field)." />";
     }

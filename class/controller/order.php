@@ -142,7 +142,7 @@ class Controller_Order extends Sfcms_Controller
      */
     public function adminAction()
     {
-        if ( $num = $this->request->get('num', FILTER_VALIDATE_INT) ) {
+        if ( $num = $this->request->get('id', FILTER_VALIDATE_INT) ) {
             return $this->adminEdit( $num );
         }
 
@@ -230,8 +230,8 @@ class Controller_Order extends Sfcms_Controller
 
 
         $order      = $model->find( $num );
-        $positions  = $model->findPositionsByOrderId( $num );
-        $user       = $this->user->find( $order['user_id'] );
+        $positions  = $order->Positions;
+        $user       = $this->getModel('User')->find( $order['user_id'] );
 
         if ( $new_status = $this->request->get('new_status', FILTER_VALIDATE_INT) )
         {
@@ -243,9 +243,8 @@ class Controller_Order extends Sfcms_Controller
         $count = 0;
         foreach( $positions as $key => $pos )
         {
-            $positions[$key]['summa'] = $pos['price'] * $pos['count'];
-            $summa += $positions[$key]['summa'];
-            $count += $pos['count'];
+            $summa += $pos->sum;
+            $count += $pos->count;
         }
 
         $this->tpl->assign(array(
@@ -253,7 +252,7 @@ class Controller_Order extends Sfcms_Controller
             'positions' => $positions,
             'summa'     => $summa,
             'count'     => $count,
-            'statuses'  => $model->getStatuses(),
+            'statuses'  => $this->getModel('OrderStatus')->findAll(),
             'user'      => $user,
         ));
 

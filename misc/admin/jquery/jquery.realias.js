@@ -19,7 +19,7 @@ $.fn.realias = function () {
                     title:'Пересчет алиасов',
                     buttons: [
                         {
-                            text: sf.i18n('Close'),
+                            text: $s.i18n('Close'),
                             click: function() {
                                 $(this ).dialog('close');
                             }
@@ -27,9 +27,9 @@ $.fn.realias = function () {
                     ]
                 });
             }
-            sf.alert('<p>Ведется пересчет...<br />Не закрывайте окно.</p>');
+            $s.alert('<p>Ведется пересчет...<br />Не закрывайте окно.</p>');
             $.post($(this).attr('href'), function (request) {
-                sf.alert.close();
+                $s.alert.close();
                 $("#realias_dialog").html(request).dialog("open");
             });
             return false;

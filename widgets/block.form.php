@@ -17,8 +17,11 @@ function smarty_block_form( $params, $content, $smarty )
         }
 
         $method = isset( $params['method'] ) ? $params['method'] : 'GET';
+        $class  = isset( $params['class'] ) ? $params['class'] : '';
         $action = $app->getRouter()->createLink( isset( $params['action'] ) ? $params['action'] : null );
 
-        return "<form action='{$action}' method='{$method}'>{$content}</form>";
+        if ( null !== $content ) {
+            return "<form action='{$action}' method='{$method}' class='{$class}'>{$content}</form>";
+        }
     }
 }

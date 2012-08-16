@@ -25,6 +25,8 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
         $this->_app->addScript( $misc . '/elfinder/js/elfinder.full.js' );
         $this->_app->addScript( $misc . '/elfinder/js/i18n/elfinder.ru.js' );
 
+        $this->_app->addScript( $misc . '/etc/modal.js' );
+
         $this->_app->addScript( $misc . '/admin/catalog.js' );
 
         // Собираем админский скрипт из библиотек
@@ -37,6 +39,10 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
         file_put_contents( ROOT.DS.'_runtime'.DS.'admin.js', join("\n\n", $adminJs) );
 
         $this->_app->addScript( '/_runtime/admin.js' );
+
+        $this->_app->addStyle( $this->getMisc() . '/bootstrap/css/bootstrap.css' );
+        $this->_app->addScript( $this->getMisc() . '/bootstrap/js/bootstrap.js' );
+
 
         $layout = $this->getTpl()->fetch(
             $this->getRequest()->get( 'resource' )

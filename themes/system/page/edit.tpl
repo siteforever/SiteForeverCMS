@@ -1,71 +1,80 @@
 
-
-<div id="tabs" style="height: 100%">
-
-    <ul>
-        <li><a href="#tabs-1">{t cat="page"}Main settings{/t}</a></li>
-        <li><a href="#tabs-2">{t cat="page"}Notice{/t}</a></li>
-        <li><a href="#tabs-3">{t cat="page"}Content{/t}</a></li>
-        <li><a href="#tabs-4">{t cat="page"}Constraints{/t}</a></li>
-    </ul>
-
 {form form=$form}
 
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#tabs-1" data-toggle="tab">{t cat="page"}Main settings{/t}</a></li>
+        <li><a href="#tabs-2" data-toggle="tab">{t cat="page"}Notice{/t}</a></li>
+        <li><a href="#tabs-3" data-toggle="tab">{t cat="page"}Content{/t}</a></li>
+        <li><a href="#tabs-4" data-toggle="tab">{t cat="page"}Constraints{/t}</a></li>
+    </ul>
+
     {$form->htmlFieldWrapped('id')}
+    <div class="tab-content">
+        <div class="tab-pane active" id="tabs-1">
 
-    <div id="tabs-1">
-        <fieldset>
-            <legend>{t cat="page"}System{/t}</legend>
-            {$form->htmlFieldWrapped('name')}
-            {$form->htmlFieldWrapped('parent')}
-            {$form->htmlFieldWrapped('template')}
-            {$form->htmlFieldWrapped('alias')}
-            {$form->htmlFieldWrapped('date')}
-            {$form->htmlFieldWrapped('update')}
-            {$form->htmlFieldWrapped('pos')}
-            {$form->htmlFieldWrapped('controller')}
-            {$form->htmlFieldWrapped('link')}
-            {$form->htmlFieldWrapped('action')}
-            {$form->htmlFieldWrapped('sort')}
-        </fieldset>
-        <fieldset>
-            <legend>{t cat="page"}Seo{/t}</legend>
-            {$form->htmlFieldWrapped('title')}
-            {$form->htmlFieldWrapped('keywords')}
-            {$form->htmlFieldWrapped('description')}
-        </fieldset>
-        <fieldset>
-            <legend>{t cat="page"}Images{/t}</legend>
-            {$form->htmlFieldWrapped('thumb')}
-            {$form->htmlFieldWrapped('image')}
-        </fieldset>
-    </div>
+            <div class="tabbable tabs-right">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#system">{t cat="page"}System{/t}</a></li>
+                <li><a data-toggle="tab" href="#seo">{t cat="page"}Seo{/t}</a></li>
+                <li><a data-toggle="tab" href="#images">{t cat="page"}Images{/t}</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="system" class="tab-pane active">
+                    {$form->htmlFieldWrapped('name')}
+                    {$form->htmlFieldWrapped('parent')}
+                    {$form->htmlFieldWrapped('template')}
+                    {$form->htmlFieldWrapped('alias')}
+                    {$form->htmlFieldWrapped('date')}
+                    {$form->htmlFieldWrapped('update')}
+                    {$form->htmlFieldWrapped('pos')}
+                    {$form->htmlFieldWrapped('controller')}
+                    {$form->htmlFieldWrapped('link')}
+                    {$form->htmlFieldWrapped('action')}
+                    {$form->htmlFieldWrapped('sort')}
+                </div>
+                <div id="seo" class="tab-pane">
+                    {$form->htmlFieldWrapped('title')}
+                    {$form->htmlFieldWrapped('keywords')}
+                    {$form->htmlFieldWrapped('description')}
+                </div>
+                <div id="images" class="tab-pane">
+                    {$form->htmlFieldWrapped('thumb')}
+                    {$form->htmlFieldWrapped('image')}
+                </div>
+            </div>
+            </div>
+        </div>
 
-    <div id="tabs-2">
-        {$form->htmlField('notice')}
-    </div>
+        <div class="tab-pane" id="tabs-2">
+            {$form->htmlField('notice')}
+        </div>
 
-    <div id="tabs-3">
-        {$form->htmlField('content')}
-    </div>
+        <div class="tab-pane" id="tabs-3">
+            {$form->htmlField('content')}
+        </div>
 
-    <div id="tabs-4">
-        {$form->htmlFieldWrapped('author')}
-        <fieldset>
-            <legend>{$form->htmlFieldLabel('hidden')}</legend>
-            {$form->htmlField('hidden')}
-        </fieldset>
-        <fieldset>
-            <legend>{$form->htmlFieldLabel('protected')}</legend>
-            {$form->htmlField('protected')}
-        </fieldset>
-        <fieldset>
-            <legend>{$form->htmlFieldLabel('system')}</legend>
-            {$form->htmlField('system')}
-        </fieldset>
-    </div>
-
+        <div class="tab-pane" id="tabs-4">
+            {$form->htmlFieldWrapped('author')}
+            <div class="control-group">
+                <label class="control-label">{$form->htmlFieldLabel('hidden')}</label>
+                <div class="controls">
+                    {$form->htmlField('hidden')}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{$form->htmlFieldLabel('protected')}</label>
+                <div class="controls">
+                    {$form->htmlField('protected')}
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">{$form->htmlFieldLabel('system')}</label>
+                <div class="controls">
+                    {$form->htmlField('system')}
+                </div>
+            </div>
+        </div>
+</div>
 {/form}
 
-</div>
 

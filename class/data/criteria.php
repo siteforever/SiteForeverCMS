@@ -23,7 +23,7 @@ class Data_Criteria
      * @param array|Db_Criteria $criteria
      * @throws Data_Exception
      */
-    function __construct( $table, $criteria = null )
+    public function __construct( $table, $criteria = null )
     {
         if ( is_array( $criteria ) ) {
             $this->_criteria = new Db_Criteria( $criteria );
@@ -41,7 +41,7 @@ class Data_Criteria
      * Создает SQL строку по критерию
      * @return string
      */
-    function getSQL()
+    public function getSQL()
     {
         $sql    = array();
         $sql[]  = "SELECT {$this->_criteria->select}";
@@ -69,28 +69,30 @@ class Data_Criteria
         }
 
         $str_sql = join(' ', $sql);
+
         if ( count($this->_criteria->params ) ) {
             $q_start    = 0;
-            foreach ( $this->_criteria->params as $par => $val ) {
-
+            foreach ( $this->_criteria->params as $key => $val ) {
                 if ( is_array( $val ) ) {
                     $val    = implode("','",$val); // Внешние апострофы добавяться в след. условии
                 }
 
-                if ( ! is_numeric( $val ) )
+                if ( ! is_numeric( $val ) ) {
                     if ( is_string( $val ) ) {
-                        $val    = trim($val, "'");
-                        $val    = "'{$val}'";
-                    } else
+                        $val = trim( $val, "'" );
+                        $val = "'{$val}'";
+                    } else {
                         continue;
-                
-                if ( is_numeric( $par ) ) {
-                    $q_start    = strpos( $str_sql, '?', $q_start );
-                    $str_sql = substr_replace( $str_sql, $val, $q_start, 1 );
-                    $q_start++;
+                    }
                 }
-                else {
-                    $str_sql = str_replace($par, $val, $str_sql);
+
+                if ( is_numeric( $key ) ) {
+                    $q_start    = strpos( $str_sql, '?', $q_start );
+                    if ( false !== $q_start ) {
+                        $str_sql = substr_replace( $str_sql, $val, $q_start++, 1 );
+                    }
+                } else {
+                    $str_sql = str_replace($key, $val, $str_sql);
                 }
             }
         }
@@ -102,7 +104,7 @@ class Data_Criteria
      * Вернет параметры для запроса
      * @return array
      */
-    function getParams()
+    public function getParams()
     {
         return $this->_criteria->params;
     }

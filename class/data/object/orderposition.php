@@ -13,7 +13,7 @@
  */
 class Data_Object_OrderPosition extends Data_Object
 {
-    public function getSumma()
+    public function getSum()
     {
         return $this->count * $this->price;
     }

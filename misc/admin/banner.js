@@ -27,12 +27,12 @@ siteforever.banner.dialogSettings = {
                         console.error( e.message );
                         return false;
                     }
-                    sf.alert( response, 2000 );
+                    $s.alert( response, 2000 );
                     return true;
                 },
                 error:   function ( XMLHttpRequest, textStatus, errorThrown ) {
                     $( self ).dialog( "close" );
-                    sf.alert( 'Данные не сохранены', 2000 );
+                    $s.alert( 'Данные не сохранены', 2000 );
                     return true;
                 }
             } );
@@ -52,10 +52,10 @@ $(function(){
             event.stopPropagation();
             var href = $(this).attr('href');
             var title = $(this).attr('title');
-            sf.alert("Загрузка данных");
+            $s.alert("Загрузка данных");
             $.get( href, 'html' ).then(
                 $.proxy(function ( response ) {
-                    sf.alert.close();
+                    $s.alert.close();
                     dialogForm.html( response ).dialog( 'option', 'title', title );
                     dialogForm.dialog( 'open' );
                 }, this),

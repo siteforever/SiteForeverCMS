@@ -1,211 +1,48 @@
 @CHARSET "UTF-8";
 
 html, body {
-    font-family: Verdana !important;
-    font-size: 12px;
+    font: 12px Verdana;
     height: 100%;
 }
 
-#admin h1, #admin h2, #admin h3, #admin h4, #admin h5, #admin h6, #admin p {
-    margin-bottom: 0.5em;
+table.table td {
+    font-size: 12px;
 }
 
-#admin a {
-    color: #0072bc;
+input {
+    height: 28px !important;
 }
 
-#admin h1 {
-    font-size: 18px;
-    font-weight: normal;
-    color: #fff;
-    margin: 0;
-    padding: 10px;
-    border-bottom: 1px #005B7F solid;
-    margin-bottom: 20px;
-    /*background: #c7e2fe;*/
-    background: #ddd url('/images/admin/h1.gif') repeat-x 0 0;
-}
-    #admin h1 a {
-        text-decoration: none;
-    }
-
-
-#admin h2 {font-size: 16px;}
-#admin h3 {font-size: 14px;}
-#admin h4 {font-size: 12px;}
-#admin h5 {font-size: 10px;}
-#admin h6 {font-size: 8px;}
-
-#admin small, #admin span.small {
-    font-size: 10px;
+small {
+    font-size: 80% !important;
 }
 
-#admin fieldset {
-    width: 600px;
-    border: 1px #ddd solid;
-    border-radius: 0.5em;
-    padding: 1em;
-    margin-bottom: 1em;
-}
-
-
-input, select, textarea {
-    padding: 0.2em 0.1em;
-    width: 150px;
-}
-
-#admin .blockOverlay {
-    z-index: 9000 !important;
-}
-#admin .blockMsg {
-    z-index: 10000 !important;
-}
-#admin span.logout a {
-    color: #fff;
-    text-decoration: none;
-}
-/*div.ui-widget-overlay {*/
-    /*height: 100% !important;*/
-/*}*/
-
-div.b-request-feedback {
-    padding: 0;
-    border: none;
-    color: #333;
+div.ui-dialog {
+    z-index: 1500 !important;
 }
 
 .blockMsg div.feedback {
     margin: 0;
 }
 
-div.l-wrapper {
-    min-height: 100%;
-    min-width: 1000px;
-    height: auto !important;
-    height: 100%;
-    margin-bottom: -30px;
+div.l-footer-wrapper {
+    height: 50px;
 }
-    div.l-wrapper div.l-footer-wrapper {
-        height: 50px;
-    }
 
-div.l-footer {
+footer {
     height: 30px;
     min-width: 1000px;
     line-height: 30px;
     background: #ddd;
 }
-    div.l-footer a {
+    footer a {
         margin-left: 10px;
     }
-
-/*div.ui-dialog {*/
-    /*font-size: 12px;*/
-/*}*/
-    /*div.ui-dialog ul li {*/
-        /*margin-bottom: 0.5em;*/
-    /*}*/
-
-div.l-main-panel {
-}
-    div.l-panel {
-        float: left;
-        position: relative;
-        width: 240px;
-    }
-    div.l-content {
-        margin-left: -250px;
-        min-width: 750px;
-        width: 100%;
-        float: right;
-    }
-        div.l-content-wrapper {
-            margin-left: 250px;
-            margin-right: 20px;
-        }
 
 div.paging {
     font: 12px Arial, Helvetica, sans-serif;
     margin: 0 0 5px 0;
 }
-
-
-/* список модулей */
-div.b-module-menu {
-    clear: both;
-    background: #e6e6e7 url("/images/admin/tab_bg.gif") repeat-x bottom left;
-    border: 1px #999 solid;
-    padding: 5px;
-    font-size: 12px;
-    margin: 0 0 5px 0;
-}
-    div.b-module-menu ul {
-    }
-        div.b-module-menu li {
-            float: left;
-            padding: 2px 10px;
-        }
-            div.b-module-menu li a {
-                color: #000;
-                font-weight: bold;
-            }
-
-
-
-
-/* меню админки */
-.b-admin-menu {
-    margin-left: 10px;
-}
-    .b-admin-menu li {
-        padding: 0;
-        margin-bottom: 5px;
-    }
-    .b-admin-menu li.add {
-        background: url(/images/admin/icons/add.png) no-repeat 2px center;
-    }
-        .b-admin-menu li span, .b-admin-menu li a {
-            display: block;
-            padding: 5px 2px;
-            /*background: #eee;*/
-            color: #0076a3;
-            font-weight: bold;
-            /*border: 1px #666 solid;*/
-            text-decoration: none;
-
-            /*border-radius: 5px;
-            -webkit-border-radius: 5px;
-            -moz-border-radius: 5px;*/
-        }
-        .b-admin-menu li a.active {
-            color: green !important;
-            /*background: url(/images/admin/icons/bullet_go.png) no-repeat 2px center;*/
-            /*padding-left: 20px;*/
-        }
-
-        .b-admin-menu li a:hover {
-            color: #00bff3;
-        }
-
-        .b-admin-menu ul li {
-            padding: 5px 0 5px 20px;
-        }
-            .b-admin-menu ul li span, .b-admin-menu ul li a {
-                background: none;
-                border: none;
-                display: inline;
-                font-weight: normal;
-            }
-                .b-admin-menu ul li ul {
-
-                }
-
-                    .b-admin-menu ul li ul li {
-
-                    }
-
-
-
 
 
 /* наборы данных */
@@ -246,89 +83,18 @@ table.dataset {
 }
 
 
-/* формы */
-
-form.standart {
-    width: 100%;
-    max-width:700px;
-    font-size: 12px;
-}
-div.l-content form.standart {
-    padding: 10px;
-    /*background: #eee;*/
-    border: 1px solid #666;
-    border-radius: 5px;
-}
-div.l-content form.standart div.b-form-field-textarea {
-    margin-left: 75px;
-}
-
-form.standart label {
-    cursor: pointer;
-}
-
-form.standart input,
-form.standart select,
-form.standart textarea {
-    width:  100%;
-    border: 1px #999 solid;
-    background: #fff;
-}
-form.standart textarea {
-    width: 625px;
-    height: 200px;
-}
-
-form.standart input.submit {
-    width: 100px;
-}
-form.standart input.radio,
-form.standart input.checkbox {
-    width: 16px;
-    height: 16px;
-    border: none;
-    background: none;
-}
-form.standart input.datepicker {
-    width: 80px;
-}
-form.standart input.image {
+input.image {
     background-image: url("/images/admin/icons/picture.png");
     background-position: 99% 2px;
     background-repeat: no-repeat;
 }
 
 
-
-    div.b-form-field {
-        margin-bottom: 1em;
-    }
-        div.b-form-field label  {
-            width: 145px;
-            float: left;
-        }
-        div.b-form-field div  {
-            margin-left: 150px;
-        }
-        div.b-form-field div.b-form-field-textarea  {
-            margin-left: 0;
-            padding-top: 1.5em;
-        }
-            div.b-form-field div div  {
-                margin: 0;
-            }
-
-        div.b-form-field-radio label,
-        div.b-form-field-checkbox label {
-            float: none;
-        }
-
-
 /* Основная структура */
 
-div.b-main-structure {
-    width: 80%;
-}
+    div.b-main-structure ul.ui-sortable {
+        margin: 0 0 5px 0;
+    }
     /*div.b-main-structure li.level_one {
         padding: 0;
     }*/
@@ -336,6 +102,7 @@ div.b-main-structure {
         /*display: block;*/
         margin: 0;
         padding: 0 0 0 25px;
+        list-style: none;
         /*background:url(/images/admin/cross_li.gif) repeat-y 0 0;*/
     }
 
@@ -439,9 +206,4 @@ div.b-main-structure {
 
 .el-paddinginput input, .el-paddinginput select {
     width: auto;
-}
-
-
-.sfcms_generation_table {
-
 }

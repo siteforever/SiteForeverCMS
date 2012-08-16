@@ -39,7 +39,7 @@ class Siteforever_Html
      * @param array $params
      * @return string
      */
-    public function link( $text, $url, $params = array(), $class = "" )
+    public function link( $text, $url = "#", $params = array(), $class = "" )
     {
         $attributes = array();
         if ( $class ) {
@@ -57,7 +57,14 @@ class Siteforever_Html
                 unset( $params[$key] );
                 $key = strtolower( substr( $key, 4 ) );
                 $attributes[] = "{$key}=\"{$val}\"";
+                continue;
             }
+            if ( 'data' == substr( $key, 0, 4 ) ) {
+                $attributes[] = "{$key}=\"{$val}\"";
+            }
+        }
+        if ( isset( $params['controller'] ) && '#' == $url ) {
+            $url = null;
         }
         $attributes[] = $this->href( $url, $params );
         return '<a '.implode(' ', $attributes).'>'.$text.'</a>';
