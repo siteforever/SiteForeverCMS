@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<theme>
+    <templates>
+        <template value="index">Main</template>
+        <template value="inner">Inner</template>
+        <template value="innerleft">Inner with Left</template>
+    </templates>
+</theme>

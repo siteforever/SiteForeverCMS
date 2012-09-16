@@ -1,16 +1,22 @@
-<h3>
-    <a {href controller="banner" action="admin"}>Список категорий баннеров </a> &rarr; {$cat.name}
-</h3>
+{*<h3>*}
+    {*<a {href controller="banner" action="admin"}> </a> &rarr; {$cat.name}*}
+{*</h3>*}
+<ul class="breadcrumb">
+    <li>{a controller="banner" action="admin"}Категории{/a} > </li>
+    <li>{$cat->name}</li>
+</ul>
 
-<table class="catalog_data dataset fullWidth">
+<table class="table table-striped">
+    <thead>
     <tr>
         <th>ID</th>
         <th>Наименование</th>
-        <th width="120">Количество показов</th>
-        <th width="120">Количество переходов</th>
+        <th width="120">Показов</th>
+        <th width="120">Переходов</th>
         <th width="120">Править</th>
         <th width="120">Удалить</th>
     </tr>
+    </thead>
 {foreach from=$banners item="item"}
     <tr>
         <td width="20">{$item->id}</td>
@@ -18,7 +24,8 @@
         <td width="20">{if $item->count_show}{$item->count_show}{else}0{/if}</td>
         <td width="20">{if $item->count_click}{$item->count_click}{else}0{/if}</td>
         <td>
-            <a class="ban_add" {href controller="banner" action="edit" id=$item.id} title="Править баннер">{icon name="pencil" title="Править"}</a>
+            <a class="edit" {href controller="banner" action="edit" id=$item.id} title="Править баннер">
+                {icon name="pencil" title="Править"}</a>
         </td>
         <td>
             <a {href controller="banner" action="del" id=$item.id} class="do_delete">{icon name="delete" title="Удалить"}</a>

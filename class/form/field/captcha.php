@@ -8,15 +8,16 @@
  
 class Form_Field_Captcha extends Form_Field
 {
-    protected $_type =   'captcha';
+    protected $_type =   'text';
+    protected $_class =  'input-small';
 
     public function htmlInput( $field )
     {
         $field['value']    = 'value=""';
-        $field['class'][]  = 'captcha';
+        $field['class']    = array( 'captcha' );
         return parent::htmlInput( $field )
             . '<img src="/?controller=captcha" alt="captcha" />'
-            . '<span class="siteforever_captcha_reload">Обновить</span>';
+            . '<span class="captcha-reload">Обновить</span>';
     }
 
     public function validate()
@@ -33,11 +34,11 @@ class Form_Field_Captcha extends Form_Field
         }
         else {
             $this->_error   = 1;
-            $this->_error_string    = 'Код не верный';
+            $this->_msg    = 'Код не верный';
         }
 
         if ( $this->_error > 0 ) {
-            $this->_form->addFeedback( $this->_error_string );
+            $this->_form->addFeedback( $this->_msg );
             $classes[] = 'error';
             $this->_class    = join(' ', $classes);
         }

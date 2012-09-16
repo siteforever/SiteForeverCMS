@@ -10,11 +10,10 @@ class Controller_Feedback extends Sfcms_Controller
 {
     public function indexAction()
     {
-        $this->request->setTitle('Контакты');
+//        $this->request->setTitle('Контакты');
         $this->request->setTemplate('inner');
-        $bc = $this->tpl->getBreadcrumbs();
-        $bc->addPiece('index', 'Главная');
-        $bc->addPiece('feedback', $this->request->getTitle());
+//        $bc = $this->tpl->getBreadcrumbs();
+//        $bc->addPiece(null, $this->request->getTitle());
 
         /** @var $form Forms_Feedback_Default */
         $form = $this->getForm( 'feedback_default' );

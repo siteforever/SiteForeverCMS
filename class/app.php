@@ -1,4 +1,16 @@
 <?php
+// директории для подключения
+$include_list   = array();
+if ( SF_PATH != __DIR__ ) {
+    $include_list[] = __DIR__.DIRECTORY_SEPARATOR.'class';
+    $include_list[] = __DIR__;
+}
+$include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
+$include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
+$include_list[] = SF_PATH;
+$include_list[] = str_replace('.:', '', get_include_path());
+set_include_path( join( PATH_SEPARATOR, $include_list ));
+
 require_once 'functions.php';
 require_once 'application/abstract.php';
 
@@ -107,10 +119,11 @@ class App extends Application_Abstract
         self::$init_time = microtime( 1 ) - self::$start_time;
 
         self::$controller_time = microtime( 1 );
-        $controller_resolver   = new ControllerResolver( $this );
+        $resolver   = new \Sfcms\Controller\Resolver( $this );
 
         try {
-            $result = $controller_resolver->dispatch();
+            $result = $resolver->dispatch();
+            //$this->getLogger()->log( $result, 'result' );
         } catch ( Sfcms_Http_Exception $e ) {
             if ( ! App::isTest() ) {
                 switch ( $e->getCode() ) {
@@ -168,10 +181,10 @@ class App extends Application_Abstract
 
         $result = $this->prepareResult( $result );
 
-        if ( $this->getRequest()->getContent() && CACHE ) {
-            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
-            $this->getCacheManager()->save();
-        }
+//        if ( $this->getRequest()->getContent() && CACHE ) {
+//            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
+//            $this->getCacheManager()->save();
+//        }
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
@@ -201,12 +214,14 @@ class App extends Application_Abstract
         }
         ob_end_clean();
 
+//        $this->getLogger()->log($this->getRequest()->getAjaxType(),'ajax type');
         if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
             // Если надо вернуть JSON из массива
             $result = json_encode( $result );
         }
 //        $this->getLogger()->log( $result, 'result' );
-        if ( is_array( $result ) && ! $this->getRequest()->getContent() ) {
+        // Имеет больший приоритет, чем данные в Request->content
+        if ( is_array( $result ) ) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign( $result );
             $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();

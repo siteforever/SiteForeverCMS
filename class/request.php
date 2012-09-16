@@ -25,8 +25,8 @@ class Request
     private $error = 0;
 
     private $response = array(
-        'error' => '',
-        'errno' => 0,
+        'error' => 0,
+        'msg' => '',
     );
 
     private $_content = '';
@@ -251,6 +251,15 @@ class Request
     }
 
     /**
+     * Установить лэйаут
+     * @param $layout
+     */
+    public function setLayout( $layout )
+    {
+        $this->set('template', $layout);
+    }
+
+    /**
      * Установить значение
      * @param $key
      * @param $val
@@ -464,13 +473,14 @@ class Request
      *
      * @return void
      */
-    public function setResponseError( $errno, $error = '' )
+    public function setResponseError( $error, $msg = '' )
     {
-        if ( !$errno && !$error ) {
-            $error = t( 'No errors' );
+        if ( !$msg && !$error ) {
+            $msg = t( 'No errors' );
         }
-        $this->setResponse( 'errno', $errno );
         $this->setResponse( 'error', $error );
+        $this->setResponse( 'msg', $msg );
+        return $this->getResponse();
     }
 
     /**

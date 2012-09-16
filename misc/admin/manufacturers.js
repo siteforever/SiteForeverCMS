@@ -3,15 +3,29 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
-$(document).ready(function(){
-    $( 'a.delete' ).click(function(){
-        if ( confirm( $(this ).attr('title') ) ) {
-            $.post( $( this ).attr('href') ).then( $.proxy( function( response ){
-                $s.alert( response, 1000 ).done( $.proxy( function(){
-                    $( this ).parent().parent().remove();
-                }, this) );
-            }, this ));
+define([
+    "jquery",
+    "siteforever",
+    "module/modal",
+    "i18n"
+],function($, $s, Modal){
+    return {
+        "init" : function() {
+            $( 'a.do_delete').each(function(){
+                $(this).on('click', function(){
+                    return confirm( $( this ).attr('title') );
+                });
+            });
+
+            var ManufEdit = new Modal('ManufEdit');
+            $( 'a.edit' ).each(function(){
+                $(this).on('click', function(){
+                    $.get( $(this).attr('href') ).done($.proxy(function(response){
+                        ManufEdit.title( $(this).attr('title') ).body( response ).show();
+                    }, this));
+                    return false;
+                });
+            });
         }
-        return false;
-    });
+    };
 });

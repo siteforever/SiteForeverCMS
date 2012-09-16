@@ -15,7 +15,7 @@ class Sfcms_Image_Scale_Add extends Sfcms_Image_Scale_Abstr
      * @return \resource
      * @throws Exception
      */
-    function getScalingImage( $width, $height, $color )
+    public function getScalingImage( $width, $height, $color )
     {
         // 1. пропорции
         $kh = $this->height / $height;
@@ -42,12 +42,11 @@ class Sfcms_Image_Scale_Add extends Sfcms_Image_Scale_Abstr
             if( imagecopyresampled( $thumb, $this->image,
                 $from_x, $from_y, 0, 0,
                 $this->scalledWidth(), $this->scalledHeight(),
-                $this->width, $this->height
-            )
+                $this->width, $this->height )
             ) {
                 return $thumb;
             }
         }
-        throw new Exception( 'Image not scalled' );
+        throw new Sfcms_Image_Exception( 'Image not scalled' );
     }
 }

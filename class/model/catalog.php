@@ -25,14 +25,6 @@ class Model_Catalog extends Sfcms_Model
     protected $form = null;
 
     /**
-     * @return Model_CatalogGallery
-     */
-    public function gallery()
-    {
-        return self::getModel( 'CatalogGallery' );
-    }
-
-    /**
      * Инициализация
      * @return void
      */
@@ -50,6 +42,7 @@ class Model_Catalog extends Sfcms_Model
             'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
             'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
+            'Page'          => array( self::HAS_ONE, 'Page', 'link' ),
         );
     }
 
@@ -259,18 +252,30 @@ class Model_Catalog extends Sfcms_Model
     public function onSaveStart( Data_Object $obj = null )
     {
         // If object will update
+        /** @var $obj Data_Object_Catalog */
         if( $obj->getId() ) {
             $obj->path = $this->createSerializedPath( $obj->getId() );
         }
+
+        if ( $obj->cat ) {
+            // @todo Надо сделать слежение за изменением иерархии
+            $objPage = $obj->Page;
+            $objPage->name = $obj->name;
+            $objPage->hidden = $obj->hidden;
+            $objPage->protected = $obj->protected;
+            $objPage->markDirty();
+        }
+
         return true;
     }
 
     /**
-     * @param Data_Object_Catalog $obj
-     * @return bool|void
+     * @param Data_Object $obj
+     * @return boolean
      */
     public function onSaveSuccess( Data_Object $obj = null )
     {
+        /** @var $obj Data_Object_Catalog */
         // If object was just created
         if ( ! $obj->path ) {
             $obj->path = $this->createSerializedPath( $obj->getId() );

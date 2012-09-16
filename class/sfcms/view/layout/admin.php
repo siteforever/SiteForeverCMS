@@ -19,7 +19,7 @@ class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
         $this->_app->addScript( $misc . '/jquery/jquery.form.js' );
         $this->_app->addScript( $misc . '/jquery/jquery.blockUI.js' );
 
-        $this->attachWysiwyg();
+//        $this->attachWysiwyg();
 
         $this->_app->addStyle( $misc . '/elfinder/css/elfinder.css' );
         $this->_app->addScript( $misc . '/elfinder/js/elfinder.full.js' );

@@ -32,9 +32,12 @@ class Sfcms_View_Layout extends Sfcms_View_IView
 
         if( $this->getRequest()->get( 'resource' ) == 'system:' ) {
             $output = new Sfcms_View_Layout_Admin( $this->_app );
+            $this->getRequest()->set('admin', true);
         } else {
             $output = new Sfcms_View_Layout_Page( $this->_app );
+            $this->getRequest()->set('admin', false);
         }
+
         $return = $output->view( $result );
         $return = preg_replace( '/[ \t]+/', ' ', $return );
         $return = preg_replace( '/\n[ \t]+/', "\n", $return );
@@ -71,26 +74,9 @@ class Sfcms_View_Layout extends Sfcms_View_IView
     }
 
 
-    protected function attachWysiwyg()
-    {
-        switch ( strtolower( $this->getSettings()->get( 'editor', 'type' ) ) ) {
-            case 'tinymce':
-                // TinyMCE
-                $this->_app->addScript( $this->getMisc() . '/tiny_mce/jquery.tinymce.js' );
-                $this->_app->addScript( $this->getMisc() . '/admin/editor/tinymce.js' );
-                break;
-
-            case 'ckeditor':
-                // CKEditor
-                $this->_app->addScript( $this->getMisc() . '/ckeditor/ckeditor.js' );
-                $this->_app->addScript( $this->getMisc() . '/ckeditor/adapters/jquery.js' );
-                $this->_app->addScript( $this->getMisc() . '/admin/editor/ckeditor.js' );
-                break;
-
-            default: // plain
-        }
-    }
-
+    /**
+     * Attach jQueryUI plugin
+     */
     protected function attachJUI()
     {
         $this->_app->addStyle( $this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui-'.self::JQ_UI_VERSION.'.custom.css' );

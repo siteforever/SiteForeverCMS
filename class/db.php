@@ -152,9 +152,10 @@ class DB
     {
         $dsn    = "mysql:dbname={$dbc['database']};host={$dbc['host']}";
 
-        if ( ! $this->resource = new PDO($dsn, $dbc['login'], $dbc['password']) )
-        {
-            throw new dbException('Fail db server');
+        try {
+            $this->resource = new PDO( $dsn, $dbc[ 'login' ], $dbc[ 'password' ] );
+        } catch ( Exception $e ) {
+            die( $e->getMessage() );
         }
 
         $this->resource->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -217,7 +218,12 @@ class DB
 
         preg_match( '/^(\w+)/u', $sql, $m );
 
-        $this->return = $this->resource->exec($sql);
+//        try {
+            $this->return = $this->resource->exec( $sql );
+//        } catch ( Exception $e ) {
+//            print $e->getMessage();
+//            die($sql);
+//        }
 
 
         if ( $this->return === false ) {
@@ -660,6 +666,55 @@ class DB
 
     }
 
+    public function createMetaDataXML( $table )
+    {
+        $start = microtime(true);
+
+        $this->result   = $this->resource->prepare("SHOW COLUMNS FROM `$table`");
+
+        $xml = new DOMDocument('1.0','utf8');
+        $xml->appendChild( $xmlTable = $xml->createElement('table') );
+        $xmlTable->setAttribute('name', $table);
+        $xmlFields = $xmlTable->appendChild( $xml->createElement('fields') );
+        $xmlKeys = $xmlTable->appendChild( $xml->createElement('keys') );
+
+        if ( ! $this->result->execute() ) {
+            throw new ErrorException('Result Fields Query not valid');
+        }
+
+        foreach ( $this->result->fetchAll(PDO::FETCH_OBJ) as $field  ) {
+            $xmlFields->appendChild( $xmlField = $xml->createElement('field',$field->Default) );
+            $xmlField->setAttribute('name',$field->Field);
+            $xmlField->setAttribute('type',$field->Type);
+            $xmlField->setAttribute('null',$field->Null);
+        }
+
+        $this->result = $this->resource->prepare("SHOW KEYS FROM `$table`");
+
+        if ( ! $this->result->execute() ) {
+            throw new ErrorException('Result Keys Query not valid');
+        }
+
+        foreach ( $this->result->fetchAll( PDO::FETCH_OBJ ) as $key ) {
+            $xmlKeys->appendChild( $xmlKey = $xml->createElement('key') );
+            $xmlKey->setAttribute( 'column', $key->Column_name );
+            $xmlKey->setAttribute( 'key', $key->Key_name );
+            $xmlKey->setAttribute( 'type', $key->Index_type );
+        }
+
+        $exec = round(microtime(true)-$start, 4);
+        $this->time += $exec;
+        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec сек]" );
+        $xml->formatOutput = true;
+        $path = ROOT.'/_runtime/model';
+        if ( ! file_exists( $path ) ) {
+            mkdir( $path, 0775, true );
+        } elseif ( ! is_writable( $path ) ) {
+            throw new ErrorException("Path '$path' is not writable");
+        }
+        $xml->save( $path .'/'. $table.'.xml' );
+    }
+
     /**
      * Вернет список полей
      *
@@ -670,27 +725,24 @@ class DB
     {
         $start = microtime(true);
 
-        $sql = "SHOW COLUMNS FROM `$table`";
-
-        $this->result   = $this->resource->prepare($sql);
-
-        $this->result   = $this->resource->query( $sql );
+        $this->result   = $this->resource->prepare("SHOW COLUMNS FROM `$table`");
 
         $fields = array();
 
-        if ( $this->result->execute() ) {
-
-            while ( $ff = $this->result->fetch( PDO::FETCH_NUM ) ) {
-                $fields[] = $ff[0];
-            }
-
-            $exec = round(microtime(true)-$start, 4);
-            $this->time += $exec;
-            $this->log( $sql." [$exec сек]" );
-            return $fields;
-        } else {
-            return false;
+        if ( ! $this->result->execute() ) {
+            throw new ErrorException('Result Fields Query not valid');
         }
+
+        foreach ( $this->result->fetchAll(PDO::FETCH_OBJ) as $field  ) {
+            $fields[] = $field->Field;
+        }
+
+        $exec = round(microtime(true)-$start, 4);
+
+        $this->time += $exec;
+        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec сек]" );
+
+        return $fields;
     }
 
     /**

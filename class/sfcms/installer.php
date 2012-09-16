@@ -86,6 +86,25 @@ class Sfcms_Installer
         return false;
     }
 
+    /**
+     * Создает копию файла
+     * @param $src
+     * @param $dest
+     * @return bool
+     */
+    public function copyReplaced( $src, $dest, $replaced )
+    {
+        if ( file_exists( $src ) && ! file_exists( $dest ) ) {
+            $content = file_get_contents( $src );
+            foreach ( $replaced as $key => $val ) {
+                $content = str_replace( $key, $val, $content );
+            }
+            file_put_contents( $dest, $content );
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Создает символическую ссылку на каталог

@@ -6,24 +6,28 @@
  */
 class Controller_CatalogGallery extends Sfcms_Controller
 {
-    public function init()
+    public function access()
     {
-        $default = array(
-            'gallery_dir'            =>
-            DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'catalog' . DIRECTORY_SEPARATOR . 'gallery',
-            'gallery_max_file_size'  => 1000000,
-            'gallery_thumb_prefix'   => 'thumb_',
-            'gallery_thumb_h'        => 100,
-            'gallery_thumb_w'        => 100,
-            'gallery_thumb_method'   => 1,
-            'gallery_middle_prefix'  => 'middle_',
-            'gallery_middle_h'       => 200,
-            'gallery_middle_w'       => 200,
-            'gallery_middle_method'  => 1,
-            // 1 - добавление полей
-            // 2 - обрезание лишнего
+        return array(
+            'system'    => array(
+                'admin', 'delete', 'markdefault', 'upload', 'panel',
+            ),
         );
-        $this->config->setDefault( 'catalog', $default );
+    }
+
+    public function defaults()
+    {
+        $ds = DIRECTORY_SEPARATOR;
+        return array(
+            'catalog',
+            array(
+                'gallery_dir'            =>
+                $ds . 'files' . $ds . 'catalog' . $ds . 'gallery',
+                'gallery_max_file_size'  => 1000000,
+                // 1 - добавление полей
+                // 2 - обрезание лишнего
+            )
+        );
     }
 
     public function indexAction()
@@ -44,28 +48,25 @@ class Controller_CatalogGallery extends Sfcms_Controller
      */
     public function deleteAction()
     {
-        $this->setAjax();
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
-        $id              = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
+        $id              = $this->request->get( 'id', Request::INT );
 
         $image = $catalog_gallery->find( $id );
 
-        if ( null !== $image ) {
-            $catalog_gallery->remove( $id );
-            $cat_id = $image->cat_id;
-        } else {
-            $this->request->setContent( 'Image not found' );
-            return;
+        if ( null === $image ) {
+            return array('error'=>1,'msg'=>'Image not found');
         }
 
+        $catalog_gallery->remove( $id );
+        $cat_id = $image->cat_id;
 
         //$catalog_gallery->delete( $del );
         //$gallery = $catalog_gallery->findGalleryByProduct($cat);
         if ( $cat_id ) {
-            $this->request->setContent( $this->getPanel( $cat_id ) );
+            return array('error'=>0,'msg'=>$this->getPanel( $cat_id ) );
         }
+        return array('error'=>1,'msg'=>'Category not defined');
         //return $this->redirect('admin/catalog', array('edit'=>$cat));
-
     }
 
     /**
@@ -118,32 +119,36 @@ class Controller_CatalogGallery extends Sfcms_Controller
      */
     public function uploadAction()
     {
-        $this->setAjax();
-        $this->request->setAjax( true, Request::TYPE_ANY );
+//        $this->setAjax();
+//        $this->request->setAjax( true, Request::TYPE_ANY );
 
         $max_file_size = $this->config->get( 'catalog.gallery_max_file_size' );
 
-        $prod_id   = $this->request->get( 'prod_id' );
-        $form_sent = $this->request->get( 'sent' );
+        $prodId   = $this->request->get( 'prod_id' );
+        $formSent = $this->request->get( 'sent' );
 
-        if ( !$form_sent ) {
+        if ( ! $formSent ) {
             return array(
-                'prod_id' => $prod_id,
+                'prod_id' => $prodId,
                 'max_file_size' => $max_file_size,
             );
         }
 
-        $thumb_prefix  = $this->config->get( 'catalog.gallery_thumb_prefix' );
-        $middle_prefix = $this->config->get( 'catalog.gallery_middle_prefix' );
+        $trade = $this->getModel('Catalog')->find( $prodId );
+
+        $images = $trade->Gallery;
+
+        $createMain = true;  // Делать ли первую картинку главной
+        if ( $images && $images->count() ) {
+            $createMain = false;
+        }
 
         /**
-         * @var Model_CatalogGallery $catalog_gallery
+         * @var Model_CatalogGallery $catalogGallery
          */
-        $catalog_gallery = $this->getModel( 'CatalogGallery' );
+        $catalogGallery = $this->getModel( 'CatalogGallery' );
 
-        //        printVar($_FILES);
-
-        $upload_ok = 0;
+        $uploadOk = 0;
 
         if ( isset( $_FILES[ 'image' ] ) && is_array( $_FILES[ 'image' ] ) ) {
             $images = $_FILES[ 'image' ];
@@ -151,68 +156,40 @@ class Controller_CatalogGallery extends Sfcms_Controller
             foreach ( $images[ 'error' ] as $i => $err ) {
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
-
-                        $obj_image = $catalog_gallery->createObject();
+                        /** @var Data_Object_CatalogGallery */
+                        $objImage = $catalogGallery->createObject();
 
                         if ( $images[ 'size' ][ $i ] <= $max_file_size
                             && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
                         ) {
-                            $upload_ok = 1;
+                            $uploadOk = 1;
 
                             $dest = $this->config->get( 'catalog.gallery_dir' )
-                                . DIRECTORY_SEPARATOR . substr( '0000' . $prod_id, -4, 4 );
+                                . '/' . substr( '0000' . $prodId, -4, 4 );
 
                             if ( !is_dir( ROOT . $dest ) ) {
                                 if ( @mkdir( ROOT . $dest, 0777, true ) ) {
-                                    $this->request->addFeedback( "Создан каталог " . ROOT . $dest );
+                                    $this->request->addFeedback( t('catalog','Created directory ') . ROOT . $dest );
                                 }
                             }
 
                             $src = $images[ 'tmp_name' ][ $i ];
 
-                            $obj_image->cat_id = $prod_id;
-                            $catalog_gallery->save( $obj_image );
-                            $g_id = $obj_image->getId();
-                            //$catalog_gallery->set('cat_id', $upload);
-                            //$catalog_gallery->insert();
-                            //$g_id = $catalog_gallery->getId();
+                            $objImage->cat_id = $prodId;
+                            $catalogGallery->save( $objImage );
+                            $g_id = $objImage->getId();
 
-                            $img = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
-                            $tmb = $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $thumb_prefix
-                                . $images[ 'name' ][ $i ];
-                            $mdl = $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $middle_prefix
-                                . $images[ 'name' ][ $i ];
+                            $img = $dest . '/' . $g_id . '_' . $images[ 'name' ][ $i ];
 
                             if ( move_uploaded_file( $src, ROOT . $img ) ) {
-                                // обработка
-                                $obj_image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
-
-                                $thumb_h  = $this->config->get( 'catalog.gallery_thumb_h' );
-                                $thumb_w  = $this->config->get( 'catalog.gallery_thumb_w' );
-                                $middle_h = $this->config->get( 'catalog.gallery_middle_h' );
-                                $middle_w = $this->config->get( 'catalog.gallery_middle_w' );
-                                $t_method = $this->config->get( 'catalog.gallery_thumb_method' );
-                                $m_method = $this->config->get( 'catalog.gallery_middle_method' );
-
-                                try {
-                                    $img_full = new Sfcms_Image( ROOT . $img );
-                                    $img_mid  = $img_full->createThumb( $middle_w, $middle_h, $m_method );
-                                    if ( $img_mid ) {
-                                        $img_mid->saveToFile( ROOT . $mdl );
-                                        $obj_image->middle = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
-                                        unset( $img_mid );
-                                    }
-                                    $img_thmb = $img_full->createThumb( $thumb_w, $thumb_h, $t_method );
-                                    if ( $img_thmb ) {
-                                        $img_thmb->saveToFile( ROOT . $tmb );
-                                        $obj_image->thumb = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
-                                        unset( $img_thmb );
-                                    }
-                                } catch ( Exception $e ) {
-                                    $this->request->addFeedback( $e->getMessage() );
-                                }
+                                $objImage->image = str_replace( array('/','\\'), '/', $img );
                             }
-                            $obj_image->save();
+                            if ( $createMain ) {
+                                $objImage->main = 1;
+                                $createMain = false;
+                            }
+
+                            $objImage->save();
                         }
                         break;
                     case UPLOAD_ERR_NO_FILE:
@@ -224,60 +201,12 @@ class Controller_CatalogGallery extends Sfcms_Controller
             }
         }
 
-        if ( $form_sent ) {
-            if ( $upload_ok ) {
+        if ( $formSent ) {
+            if ( $uploadOk ) {
                 return t('Изображения загружены');
             }
             return t('Изображения не загружены');
         }
     }
 
-    /**
-     * Пересоздает миниатюрные изображения
-     */
-    public function regenerateAction()
-    {
-        $time = microtime( 1 );
-        set_time_limit( 0 );
-
-        $catalog_gallery = $this->getModel( 'CatalogGallery' );
-
-        $images = $catalog_gallery->findAll();
-
-        //printVar($images);
-
-        $thumb_h  = $this->config->get( 'catalog.gallery_thumb_h' );
-        $thumb_w  = $this->config->get( 'catalog.gallery_thumb_w' );
-        $middle_h = $this->config->get( 'catalog.gallery_middle_h' );
-        $middle_w = $this->config->get( 'catalog.gallery_middle_w' );
-        $t_method = $this->config->get( 'catalog.gallery_thumb_method' );
-        $m_method = $this->config->get( 'catalog.gallery_middle_method' );
-
-        foreach ( $images as $img ) {
-
-            $img_file = SF_PATH . $img[ 'image' ];
-            $mid_file = SF_PATH . $img[ 'middle' ];
-            $tmb_file = SF_PATH . $img[ 'thumb' ];
-
-            $image = new Sfcms_Image( $img_file );
-
-            $middle = $image->createThumb( $middle_w, $middle_h, $m_method );
-            $middle->saveToFile( $mid_file );
-
-            $thumb = $image->createThumb( $thumb_w, $thumb_h, $t_method );
-            $thumb->saveToFile( $tmb_file );
-        }
-
-        $this->request->addFeedback( 'Регенерация изображений закончена' );
-        $this->request->addFeedback( 'Затрачено: ' . round( microtime( 1 ) - $time, 4 ) . ' сек' );
-    }
-
-    public function access()
-    {
-        return array(
-            'system'    => array(
-                'admin', 'delete', 'markdefault', 'upload', 'panel',
-            ),
-        );
-    }
 }

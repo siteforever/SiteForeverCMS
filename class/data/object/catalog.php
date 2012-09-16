@@ -14,13 +14,16 @@
  * @property string $name
  * @property string $title
  * @property string $path
+ * @property int hidden
+ * @property int protected
  * @property int deleted
  * @property Data_Object_Manufacturers Manufacturer
  * @property Data_Object_CatalogGallery Gallery
+ * @property Data_Object_Page Page
  */
 class Data_Object_Catalog extends Data_Object
 {
-    protected $_gallery = null;
+//    protected $_gallery = null;
 
     protected $_image   = null;
 
@@ -100,26 +103,27 @@ class Data_Object_Catalog extends Data_Object
      * Вернет список изображений для товара
      * @return Data_Collection
      */
-/*    public function getGallery()
-    {
-        if ( null === $this->_gallery && $this->getId() ) {
-            $gallery_model  = $this->getModel('CatalogGallery');
-            $this->_gallery = $gallery_model->findAll(array(
-                 'cond'      => ' cat_id = ? ',
-                 'params'    => array( $this->getId() ),
-            ));
-        }
-        return $this->_gallery;
-    }*/
+//    public function getGallery()
+//    {
+//        if ( null === $this->_gallery && $this->getId() ) {
+//            $gallery_model  = $this->getModel('CatalogGallery');
+//            $this->_gallery = $gallery_model->findAll(array(
+//                 'cond'      => ' cat_id = ? ',
+//                 'params'    => array( $this->getId() ),
+//            ));
+//        }
+//        App::getInstance()->getLogger()->log( $this->_gallery, 'gallery' );
+//        return $this->_gallery;
+//    }
 
 
     /**
      * @param $gallery
      */
-    public function setGallery( $gallery )
-    {
-        $this->_gallery = $gallery;
-    }
+//    public function setGallery( $gallery )
+//    {
+//        $this->_gallery = $gallery;
+//    }
 
     /**
      * Вернет главную картинку для товара
@@ -140,30 +144,6 @@ class Data_Object_Catalog extends Data_Object
             }
         }
         return $this->_image;
-    }
-
-    /**
-     * Вернет строку для маленькой картинки
-     * @return string
-     */
-    public function getThumb()
-    {
-        $image  = $this->getMainImage();
-        if ( $image )
-            return $image->thumb;
-        return '';
-    }
-
-    /**
-     * Вернет строку для средней картинки
-     * @return string
-     */
-    public function getMiddle()
-    {
-        $image  = $this->getMainImage();
-        if ( $image )
-            return $image->middle;
-        return '';
     }
 
     /**

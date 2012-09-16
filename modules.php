@@ -35,12 +35,20 @@ return array(
                 'url'   => 'catalog/admin',
             ),
             array(
+                'name'  => t('Goods'),
+                'url'   => 'catalog/goods'
+            ),
+            array(
                 'name'  => t('Manufacturers'),
                 'url'   => 'manufacturers/admin'
             ),
             array(
-                'name'  => t('Goods'),
-                'url'   => 'goods/admin'
+                'name'  => t('Payment'),
+                'url'   => 'payment/admin'
+            ),
+            array(
+                'name'  => t('delivery','Delivery'),
+                'url'   => 'delivery/admin'
             ),
             array(
                 'name'  => 'Заказы',
@@ -53,13 +61,17 @@ return array(
         'sub' => array(
             array(
                 'name'  => 'Менеджер файлов',
-                'url'   => 'filemanager/admin',
+                'url'   => 'elfinder/finder',
                 'class' => 'filemanager',
             ),
             array(
                 'name'  => 'Архивация базы',
                 'url'   => '/_runtime/sxd',
                 'class' => 'dumper',
+            ),
+            array(
+                'name'  => 'Поиск',
+                'url'   => 'search/admin',
             ),
         )
     ),

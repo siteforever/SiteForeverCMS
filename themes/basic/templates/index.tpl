@@ -3,42 +3,40 @@
 <head>
 {head}
 </head>
-<body class="body">{admin}
+<body>
+{admin}
 
-<div class="b-body">
+<div class="contaiter">
 
-    <div class="b-body-wrapper">
+    {*<div class="b-body-wrapper">*}
     
         {include file="header.tpl"}
 
-        <div class="b-left-panel">
-            <div>
-                {basket}
+        <div class="row">
+            <div class="span2">
+                <div>
+                    {basket}
+                </div>
+                <div class="b-left-menu">
+                    <h3>Карта сайта</h3>
+                    {menu parent=1 level=3}
+                </div>
             </div>
-            <div class="b-left-menu">
-                <h3>Карта сайта</h3>
-                {menu parent=0 level=5}
+            <div class="span8 b-content">
+                {breadcrumbs}
+
+                <h1>{$request->getTitle()}</h1>
+
+                {if $request->getFeedback()}
+                    <div class="alert">{$request->getFeedbackString()}</div>
+                {/if}
+
+                {$request->getContent()}
             </div>
         </div>
-
-        <div class="b-content">
-            {breadcrumbs}
-            <h1>{$request->getTitle()}</h1>
-
-            {if $request->getFeedback()}
-                <div class="feedback">{$request->getFeedbackString()}</div>
-            {/if}
-            
-            {$request->getContent()}
-        
-        </div>
-
-        <div class="clear"></div>
-
-    </div>
+    {*</div>*}
     
-    <div class="b-body-footer"></div>
-
+    {*<div class="b-body-footer"></div>*}
 </div>
 
 {include file="footer.tpl"}

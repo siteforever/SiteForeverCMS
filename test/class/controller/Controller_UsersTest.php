@@ -63,7 +63,11 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->indexAction();
         $result = $this->app->getRequest()->getContent();
-        $this->assertStringStartsWith('<form action="/?route=users/login" class="standart ajax"', trim( $return ) );
+
+//        var_dump( $return );
+//        var_dump( $result );
+
+        $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -109,7 +113,8 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->indexAction();
         $result = $this->app->getRequest()->getContent();
-        $this->assertStringStartsWith('<form action="/?route=users/login" class="standart ajax"', trim( $return ) );
+        //var_dump( $return );
+        $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -129,10 +134,11 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->editAction();
         $result = $this->app->getRequest()->getContent();
-
+        //var_dump( $return );
         $this->assertEmpty($result);
-        $this->assertStringStartsWith('<h2>Изменить профиль</h2>', $return);
-
+        $this->assertInternalType('array', $return);
+        $this->arrayHasKey('form', $return);
+        $this->assertInstanceOf( 'Forms_User_Profile', $return['form']);
     }
 
     /**
@@ -154,9 +160,16 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $return = $this->controller->restoreAction();
         $result = $this->app->getRequest()->getContent();
 
+//        var_dump( $return );
         $this->assertEmpty($result);
-        $this->assertStringStartsWith('<p>Для восстановления пароля укажите ваш адрес Email</p>', $return);
 
+        $this->assertInternalType('array', $return);
+        $this->arrayHasKey('form', $return);
+        $this->assertInternalType('string', $return['form']->html());
+        $this->assertStringStartsWith(
+            '<form action="" class="form-horizontal" enctype="multipart/form-data" id="form_restore"',
+            $return['form']->html()
+        );
     }
 
     /**
@@ -169,7 +182,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
 
         $this->assertEmpty($result);
         $this->assertStringStartsWith(
-            '<form action="" class="standart ajax" enctype="multipart/form-data" id="form_password"',
+            '<form action="" class="form-horizontal" enctype="multipart/form-data" id="form_password"',
             $return
         );
     }

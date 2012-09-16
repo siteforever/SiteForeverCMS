@@ -94,11 +94,11 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
 
     public function testHtml()
     {
-        $this->assertEquals("<div class='b-form-field'>"
-                ."<label for='test_test'>test</label>"
-                ."<div class='b-form-field-text'>"
-                    ."<input id='test_test' type='text' class=\"text\" name='test[test]' value='hello' />"
-                ."</div></div>", $this->object->html());
+        $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
+            ."<label for='test_test' class='control-label'>test</label>"
+            ."<div class='controls field-text'>"
+                ."<input id='test_test' type='text' class=\"text input-xlarge\" name='test[test]' value='hello' />"
+            ."</div></div>", $this->object->html());
     }
 
     public function testHtmlCustom()
@@ -107,10 +107,10 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
         $this->object->setValue('Nikolay');
         $this->object->setRequired();
 
-        $this->assertEquals("<div class='b-form-field'>"
-                ."<label for='test_test'>Name <b>*</b> </label>"
-                ."<div class='b-form-field-text'>"
-                    ."<input id='test_test' type='text' class=\"text required\" name='test[test]' value='Nikolay' />"
+        $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
+                ."<label for='test_test' class='control-label'>Name <b>*</b> </label>"
+                ."<div class='controls field-text'>"
+                    ."<input id='test_test' type='text' class=\"text required input-xlarge\" name='test[test]' value='Nikolay' />"
                 ."</div></div>", $this->object->html());
     }
 

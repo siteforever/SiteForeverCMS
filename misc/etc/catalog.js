@@ -11,13 +11,11 @@ $(function(){
      */
     $('ul.b-product-gallery a:has(img)').gallery();
     $('div.b-product-image a').gallery();
-    $('a.gallery').gallery();
-
 
     // Управление сортировкой каталога
     $('select.catalog_select_order').bind('change', function() {
         var href = window.location.href;
-        href = href.replace(/\/$/, '').replace(/(\/order=[\w]+)*$/, '');
+        href = href.replace(/\/$/, '').replace(/(\/order=[\w-]+)*$/, '');
         if ( $(this).val() != '' ) {
             href += '/' + 'order=' + $(this).val();
         }

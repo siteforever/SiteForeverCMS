@@ -30,10 +30,13 @@ class Form_FormTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertEquals(null, $this->form->getField('id'));
-
-        $this->form->addField( $field );
-
-        $this->assertInstanceOf('Form_Field', $this->form->getField('id'));
+        try {
+            $this->assertEquals( null, $this->form->getField( 'id' ) );
+        } catch ( Form_Exception $e ) {
+            $this->form->addField( $field );
+            $this->assertInstanceOf('Form_Field', $this->form->getField('id'));
+            return;
+        }
+        $this->fail('Expected exception');
     }
 }

@@ -6,34 +6,42 @@
  */
 
 namespace Sfcms\Route;
+use Sfcms\Route as Route;
 
-class Structure extends \Sfcms\Route
+class Structure extends Route
 {
+    protected static $_aliases = array();
+
+    public function __construct()
+    {
+        /** @var $model \Model_Page */
+        $model = \Sfcms_Model::getModel( 'Page' );
+        $pages = $model->all;
+        foreach ( $pages as $page ) {
+            self::$_aliases[ $page->alias ] = $page;
+        }
+    }
+
+
     /**
      * @param $route
      * @return mixed
      */
     public function route( $route )
     {
-        /** @var $model \Model_Page */
-        $model = \Sfcms_Model::getModel( 'Page' );
-
-        $pages = $model->all;
         $alias = null;
-
         /** @var $page \Data_Object_Page */
         do {
-            foreach ( $pages as $page ) {
-                if ( 0 === strcasecmp( $page->alias, $route ) ) {
-                    if ( null !== $alias ) {
-                        \App::getInstance()->getRequest()->set('alias', $alias);
-                    }
-                    return $this->getPageState( $page );
+//            \App::getInstance()->getLogger()->log($alias, 'alias');
+            if ( isset( self::$_aliases[ $route ] ) ) {
+                if ( null !== $alias ) {
+                    \App::getInstance()->getRequest()->set('alias', $alias);
                 }
+                return $this->getPageState( self::$_aliases[ $route ] );
             }
-            $route = explode('/', $route);
-            $alias = array_pop( $route );
-            $route = implode('/',$route);
+            $arRoute = explode('/', $route);
+            $alias = array_pop( $arRoute );
+            $route = implode('/',$arRoute);
         } while( $route );
         return false;
     }
@@ -45,16 +53,14 @@ class Structure extends \Sfcms\Route
      */
     private function getPageState( \Data_Object_Page $page )
     {
-        if ( in_array( $page->controller, array('page','guestbook','gallery') ) ) {
-            $id = $page->id;
-        } else {
-            $id = $page->link;
-        }
+        $className = \Sfcms\Module::getModuleClass( $page->controller );
+        $field = $className::relatedField();
+        $id = $page->get( $field );
         return array(
             'controller' => $page->controller,
             'action'     => $page->action,
             'params'     => array(
-                'id'         => $id,
+                'pageid'     => $id,
                 'template'   => $page->template,
                 'system'     => $page->system,
             ),

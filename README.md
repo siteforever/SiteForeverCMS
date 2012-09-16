@@ -1,4 +1,4 @@
-Siteforever CMS - It is opensource CMS on PHP 5.2 and MySql 5.0. Required Smarty 3.1.8
+Siteforever CMS - It is opensource CMS on PHP 5.3 and MySql 5.0. Required Smarty 3.1.11
 
 Distributed under The MIT License
 

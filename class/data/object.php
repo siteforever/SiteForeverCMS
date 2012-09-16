@@ -6,9 +6,6 @@
  * @link http://siteforever.ru
  */
 
-/**
- * @property $attributes
- */
 abstract class Data_Object extends \Sfcms\Component
 {
     /**
@@ -27,6 +24,14 @@ abstract class Data_Object extends \Sfcms\Component
     protected $relation = null;
 
     /**
+     * Список полей, которые были изменены
+     * @var array
+     */
+    protected $changed = array();
+
+    private $new = true;
+
+    /**
      * @param Sfcms_Model $model
      * @param array $data
      */
@@ -37,11 +42,21 @@ abstract class Data_Object extends \Sfcms\Component
         $this->relation = $this->model->relation();
 
         $this->setAttributes( $data );
+        $this->new = false;
 
         // @TODO Пока не будем помечать новые объекты для добавления
         /*if ( is_null( $this->getId() ) ) {
             $this->markNew();
         }*/
+    }
+
+    /**
+     * Вернет список измененных полей
+     * @return array
+     */
+    public function changed()
+    {
+        return $this->changed;
     }
 
     /**
@@ -59,13 +74,16 @@ abstract class Data_Object extends \Sfcms\Component
     /**
      * @param $key
      * @param $value
-     * @return Data_Object|Sfcms\Component
+     * @return \Data_Object|\Sfcms\Component
      */
     public function set( $key, $value )
     {
         $oldValue = isset( $this->data[$key] ) ? $this->data[$key] : null;
         parent::set( $key, $value );
         if ( null === $oldValue || $oldValue != $value ) {
+            if ( ! $this->new ) {
+                $this->changed[ $key ] = $key;
+            }
             $this->markDirty();
         }
         return $this;

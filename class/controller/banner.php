@@ -38,20 +38,13 @@ class Controller_Banner extends Sfcms_Controller
     }
 
     /**
-     * Основное действие
-     */
-    public function indexAction()
-    {
-    }
-
-    /**
      * Список категорий баннеров в админке
      * @return mixed
      */
     public function adminAction()
     {
         $this->app()->addScript('/misc/admin/banner.js');
-        $this->request->setTitle( "Управление баннерами" );
+        $this->request->setTitle( t('Banners category list') );
         $category              = $this->getModel( 'CategoryBanner' );
         $cat_list              = $category->findAll();
         return array(
@@ -62,60 +55,50 @@ class Controller_Banner extends Sfcms_Controller
     /**
      * Перенаправляет клик по баннеру на нужный сайт / страницу
      * Подсчитывает статистику
+     * @param int $id
      * @return mixed
      */
-    public function redirectBannerAction()
+    public function redirectBannerAction( $id )
     {
         /** @var $model Model_Banner */
         $model = $this->getModel( 'Banner' );
-        $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT, null );
-        $id_nt = $this->request->get( 'id' );
-        if (( $id_nt !== null && $id === null ) || ( !is_numeric( $id_nt ) && $id_nt !== null )) {
-            return $this->redirect( '/error' );
+        if ( ! $id ) {
+            return $this->redirect( $this->router->createLink('error') );
         }
-        $obj                  = $model->find( $id );
-        $obj[ 'count_click' ] = $obj[ 'count_click' ] + 1;
-        $model->save( $obj );
-        if (substr( $obj[ 'url' ], 0, 4 ) == 'http') {
-            $url = $obj[ 'url' ];
-        } else {
-            $protocol = isset( $_SERVER[ 'SSL' ] ) ? "https://" : "http://";
-            $url = $protocol . $_SERVER[ "HTTP_HOST" ] . $obj[ 'url' ];
-        }
-        return $this->redirect( $url );
+        /** @var $obj Data_Object_Banner */
+        $obj = $model->find( $id );
+        $obj->count_click++;
+        return $this->redirect( $obj->url );
     }
 
     /**
      * Сохранение категории
+     * @param int $id
      * @return array|string
      */
-    public function saveCatAction()
+    public function saveCatAction( $id )
     {
         /** @var Model_CategoryBanner $model */
         $model = $this->getModel( 'CategoryBanner' );
         $form  = $model->getForm();
-        $this->request->setAjax( 1, Request::TYPE_ANY );
 
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $obj = $model->createObject( $form->getData() );
-                $model->save( $obj );
-                $this->reload('banner/admin', array(), 2000);
-                return t( 'Data save successfully' );
+                $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject();
+                $obj->attributes = $form->getData();
+                return array('error'=>0,'msg'=> t( 'Data save successfully' ));
             } else {
-                return $form->getFeedbackString();
+                return array('error'=>1,'msg'=> $form->getFeedbackString());
             }
-            return 'Unkown error';
         }
-        if ($edit = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT )) {
+        if ( $id ) {
             try {
                 /** @var $obj Data_Object_Banner */
-                $obj = $model->find( $edit );
-            }
-            catch ( Exception $e ) {
+                $obj = $model->find( $id );
+            } catch ( Exception $e ) {
                 return $e->getMessage();
             }
-            $form->setData( $obj->getAttributes() );
+            $form->setData( $obj->attributes );
         }
         return array(
             'form'  => $form,
@@ -133,34 +116,34 @@ class Controller_Banner extends Sfcms_Controller
         if ($id) {
             $model->remove( $id );
         }
-        return $this->redirect( 'banner/admin' );
+        return $this->redirect( $this->router->createServiceLink('banner','admin') );
     }
 
     /**
      * Удалить баннер
+     * @param int $id
      */
-    public function delAction()
+    public function delAction( $id )
     {
         /** @var $model Model_Banner */
         $model = $this->getModel( 'Banner' );
-        $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         $cat   = $model->find( $id );
-        if ( $id ) {
+        if ( $cat ) {
             if ( $model->delete( $id ) ) {
                 $this->request->setResponse( 'id', $id );
-                $this->request->setResponseError( 0 );
+                return $this->request->setResponseError( 0, t( 'Delete successfully' ) );
+            } else {
+                return $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
-            else {
-                $this->request->setResponseError( 1, t( 'Can not delete' ) );
-            }
-            return $this->redirect( $this->router->createServiceLink( 'banner', 'cat', array('id'=>$cat['cat_id']) ) );
+            return $this->redirect( $this->router->createServiceLink( 'banner', 'cat'), array('id'=>$cat['cat_id'] ) );
         }
     }
 
     /**
+     * @param int $id
      * @return bool|array
      */
-    public function catAction()
+    public function catAction( $id )
     {
         $this->app()->addScript('/misc/admin/banner.js');
         /** @var $model Model_Banner */
@@ -168,29 +151,31 @@ class Controller_Banner extends Sfcms_Controller
         /** @var $category Model_CategoryBanner */
         $category = $this->getModel( 'CategoryBanner' );
 
-        if ( $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
-            $this->request->setTitle( 'Управление баннерами' );
-            $count           = $model->count( '`cat_id`=' . $id );
-            $paging          = $this->paging(
-                $count, 20, $this->router->createServiceLink( 'banner', 'cat', array( 'id' => $id ) )
-            );
+        if ( $id ) {
             $crit = array(
                 'where' => '`cat_id` = ?',
                 'params'=> array( $id ),
-                'limit' => $paging->limit,
-                'order' => 'name',
             );
+            $count           = $model->count( $crit['where'], $crit['params'] );
+            $paging          = $this->paging(
+                $count, 20, $this->router->createServiceLink( 'banner', 'cat', array( 'id' => $id ) )
+            );
+
+            $crit['limit'] = $paging->limit;
+            $crit['order'] = 'name';
+
             $banners    = $model->findAll( $crit );
             $cat        = $category->find( $id );
+
+            $this->request->setTitle( 'Управление баннерами' );
+
             return array(
                 'cat'     => $cat,
                 'banners' => $banners,
                 'paging'  => $paging,
             );
         }
-        else {
-            return $this->redirect( 'banner/admin' );
-        }
+        return $this->redirect( 'banner/admin' );
     }
 
     /**
@@ -239,12 +224,11 @@ class Controller_Banner extends Sfcms_Controller
         $form  = $model->getForm();
         if ($form->getPost()) {
             if ($form->validate()) {
-                $obj = $model->createObject( $form->getData() );
-                $model->save( $obj );
-                $this->reload('banner/cat', array('id'=>$obj->get('cat_id')), 2000);
-                return t( 'Data save successfully' );
+                $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject();
+                $obj->attributes = $form->getData();
+                return array('error'=>0,'msg'=>t( 'Data save successfully' ) );
             } else {
-                return $form->getFeedbackString();
+                return array('error'=>1, 'msg'=> $form->getFeedbackString() );
             }
         }
         return 'error';

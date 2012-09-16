@@ -31,6 +31,8 @@ class Model_Order extends Sfcms_Model
     {
         return array(
             'User'          => array( self::BELONGS, 'User', 'user_id' ),
+            'Delivery'      => array( self::BELONGS, 'Delivery', 'delivery_id' ),
+            'Payment'       => array( self::BELONGS, 'Payment', 'payment_id' ),
             'Count'         => array( self::STAT,     'OrderPosition', 'ord_id' ),
             'Positions'     => array( self::HAS_MANY, 'OrderPosition', 'ord_id' ),
             'Status'        => array( self::BELONGS,  'OrderStatus', 'status' ),
@@ -40,30 +42,40 @@ class Model_Order extends Sfcms_Model
     /**
      * Создать заказ
      * @param array $basketData
-     * @return bool
+     * @param Data_Object_Delivery $delivery
+     * @return bool|Data_Object_Order
      */
-    public function createOrder( $basketData )
+    public function createOrder( $basketData, Forms_Basket_Address $form, Data_Object_Delivery $delivery )
     {
-        $obj    = $this->createObject(array(
-            'status'    => 0,
-            'date'      => time(),
-            'user_id'   => $this->app()->getAuth()->currentUser()->getId(),
-        ));
-
-        $this->log( $basketData );
+        /** @var $obj Data_Object_Order */
+        $obj    = $this->createObject();
+        $obj->attributes = $form->getData();
+        $obj->status    = 1;
+        $obj->paid      = 0;
+        $obj->date      = time();
+        $obj->user_id   = $this->app()->getAuth()->currentUser()->getId();
+        $obj->delivery  = 0;
+        if ( $delivery )
+            $obj->delivery = $delivery->id;
 
         $this->save( $obj );
 
+//        $this->log( $basketData, 'basketData' );
+
+        /** @var $opderPositionModel Model_OrderPosition */
+        $opderPositionModel = $this->getModel('OrderPosition');
+
         if ( $obj->getId() ) {
-            $ret = true;
-            $pos_list = array();
+            $pos_list    = array();
             $total_count = 0;
             $total_summa = 0;
             foreach( $basketData as $data ) {
-                $position   = $this->model_position->createObject(array(
+                /** @var $position Data_Object_OrderPosition */
+                $position   = $opderPositionModel->createObject();
+                $position->attributes = array(
                     'ord_id'    => $obj->getId(),
-                    'name'      => $data['name'],
-                    'articul'   => $data['articul'],
+//                    'name'      => $data['name'],
+                    'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
                     'details'   => $data['details'],
                     'currency'  => $data['currency'],
                     'item'      => $data['item'],
@@ -71,15 +83,16 @@ class Model_Order extends Sfcms_Model
                     'price'     => $data['price'],
                     'count'     => $data['count'],
                     'status'    => 1,
-                ));
-
-                $this->model_position->save( $position );
-
-                $ret = $position->getId() ? $ret : false;
+                );
+                $position->save();
 
                 $total_count += $position->count;
                 $total_summa += $position->count * $position->price;
-                $pos_list[] = $position->getAttributes();
+                $pos_list[] = $position->attributes;
+            }
+
+            if ( $delivery ) {
+                $total_summa += $delivery->cost;
             }
 
             $this->app()->getTpl()->assign(array(
@@ -91,6 +104,7 @@ class Model_Order extends Sfcms_Model
                 'positions' => $pos_list,
                 'total_summa'=> $total_summa,
                 'total_count'=> $total_count,
+                'delivery'  => $delivery,
             ));
 
             $msg = $this->app()->getTpl()->fetch('system:order.mail_create');
@@ -111,7 +125,7 @@ class Model_Order extends Sfcms_Model
                 $msg
             );
 
-            return $ret;
+            return $obj;
         }
         return false;
     }

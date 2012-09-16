@@ -14,11 +14,6 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
     private $_page = null;
 
     /**
-     * @var string
-     */
-    private $_image = null;
-
-    /**
      * Вернет псевдоним для категории
      * @return mixed|string
      */
@@ -36,6 +31,7 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
         if ( $strpage ) {
             return $strpage->get( 'alias' );
         }
+        return '';
 //        else {
 //            return $alias_model->generateAlias( $this->get( 'name' ) );
 //        }
@@ -64,30 +60,25 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
     }
 
     /**
-     * Вернет изображение категории
      * @return string
      */
     public function getImage()
     {
-        if ( isset( $this->data['thumb'] ) && $this->data['thumb'] ) {
-            return $this->data['thumb'];
-        }
-        if (null === $this->_image) {
-            $this->_image = '';
-            $model        = $this->getModel( 'Gallery' );
-            $crit         = array(
-                'cond'      => 'category_id = ?',
-                'params'    => array( $this->getId() ),
-                'order'     => 'pos',
-                'limit'     => 1,
-            );
-            $image        = $model->find( $crit );
-            if ($image) {
-                $this->_image = $image->get( 'thumb' );
-                $this->data['thumb'] = $this->_image;
-                $this->markDirty();
+        //if ( ! isset( $this->data['image'] ) || ! $this->data['image'] ) {
+            $imageModel = $this->getModel('Gallery');
+            $image = $imageModel->find(array(
+                'cond' => 'category_id = ? AND hidden != ?',
+                'params' => array($this->id, 1),
+                'order' => 'pos',
+            ));
+            if ( $image ) {
+                $this->data['image'] = $image->image;
+                $this->save();
+            } else {
+                $this->data['image'] = '';
             }
-        }
-        return $this->_image;
+        //}
+        return $this->data['image'];
     }
+
 }

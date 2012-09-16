@@ -25,5 +25,5 @@ function smarty_function_page( $params )
         return t('Page content protected');
     }
 
-    return $page->content;    
+    return $page->content;
 }

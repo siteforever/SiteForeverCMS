@@ -17,13 +17,16 @@ abstract class Sfcms_Image_Scale_Abstr
 
     /**
      * @param resource $image
-     * @param string   $method
      */
-    function __construct( $image )
+    public function __construct( $image )
     {
-        $this->image  = $image;
-        $this->width  = imagesx( $this->image );
-        $this->height = imagesy( $this->image );
+        if ( is_resource( $image ) ) {
+            $this->image  = $image;
+            $this->width  = imagesx( $this->image );
+            $this->height = imagesy( $this->image );
+        } else {
+            throw new Sfcms_Image_Exception('Image is not resource');
+        }
     }
 
 
@@ -61,7 +64,7 @@ abstract class Sfcms_Image_Scale_Abstr
     /**
      * @return float
      */
-    function scalledHeight()
+    public function scalledHeight()
     {
         return round( $this->height / $this->k );
     }
@@ -69,7 +72,7 @@ abstract class Sfcms_Image_Scale_Abstr
     /**
      * @return float
      */
-    function scalledWidth()
+    public function scalledWidth()
     {
         return round( $this->width / $this->k );
     }

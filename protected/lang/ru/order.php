@@ -5,6 +5,7 @@
  * @link   http://siteforever.ru
  */
 return array(
+    'My orders' => 'Мои заказы',
     'Checkout'=>'Оформить заказ',
     'Your basket is empty' => 'Ваша корзина пуста',
 

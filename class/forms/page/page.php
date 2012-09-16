@@ -7,7 +7,7 @@
  */
 class Forms_Page_Page extends Form_Form
 {
-    function __construct()
+    public function __construct()
     {
         parent::__construct(
             array(
@@ -31,8 +31,10 @@ class Forms_Page_Page extends Form_Form
                         'required'
                     ),
                     'template'   => array(
-                        'type' => 'text',
+                        'type' => 'select',
                         'label'=> 'Шаблон',
+                        'value'=> 'inner',
+                        'variants' => $this->getTemplatesList(),
                         'required'
                     ),
                     //'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
@@ -99,6 +101,12 @@ class Forms_Page_Page extends Form_Form
                         'type' => 'text',
                         'label'=> 'Описание'
                     ),
+                    'nofollow'     => array(
+                        'type'      => 'radio',
+                        'label'     => 'Параметр NoFollow',
+                        'value'     => '0',
+                        'variants'  => array( 'Нет', 'Да' ),
+                    ),
 
                     'notice'     => array(
                         'type' => 'textarea',
@@ -156,5 +164,34 @@ class Forms_Page_Page extends Form_Form
                 ),
             )
         );
+    }
+
+    /**
+     * Список шаблонов для нужной темы
+     * @return array
+     */
+    protected function getTemplatesList()
+    {
+        $templates = array('index'=>t('Main'), 'inner'=>t('Inner'));
+
+        $theme = App::getInstance()->getConfig('template.theme');
+
+        $themePath = ROOT . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $theme;
+        $themeXMLFile = $themePath . DIRECTORY_SEPARATOR . 'theme.xml';
+
+        $logger = App::getInstance()->getLogger();
+
+        if ( file_exists( $themeXMLFile ) ) {
+            $themeXML = new SimpleXMLElement( file_get_contents( $themeXMLFile ) );
+            if ( isset( $themeXML->templates ) ) {
+                $templates = array();
+                /** @var $tpl SimpleXMLElement */
+                foreach ( $themeXML->templates->template as $tpl ) {
+                    $templates[ (string) $tpl['value'] ] = t( (string) $tpl );
+                }
+            }
+        }
+
+        return $templates;
     }
 }

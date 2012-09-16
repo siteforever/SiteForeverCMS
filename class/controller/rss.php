@@ -6,7 +6,7 @@
 
 class Controller_Rss extends Sfcms_Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $this->request->setAjax(true, Request::TYPE_XML);
         $this->request->setTemplate('inner');
@@ -60,8 +60,8 @@ class Controller_Rss extends Sfcms_Controller
             $description = str_replace('&nbsp;', ' ', $description);
 
             $item = $channel->addChild('item');
-            $item->addChild('title', $n['title'] ? $n['title'] : $n['name']);
-            $item->addChild('link', $this->config->get('siteurl').$this->router->createLink($n['alias'], array('doc'=>$n['id'])));
+            $item->addChild('title', htmlentities( $n->title ) );
+            $item->addChild('link', $this->config->get('siteurl').$n->alias);
             $item->addChild('description', $description );
             $item->addChild('pubDate', date('r', $n['date']));
         }
@@ -71,7 +71,6 @@ class Controller_Rss extends Sfcms_Controller
         $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
         //$xml_string = htmlspecialchars_decode( $xml_string );
 
-        $this->request->setContent($xml_string);
-        return;
+        return $xml_string;
     }
 }

@@ -1,10 +1,3 @@
-<script>
-    $(function() {
-        $( "#tabs" ).tabs();
-    });
-</script>
-
-
 <form action="/?controller=settings&action=save" method="post" class="ajax">
     <div id="tabs">
         <ul>
@@ -14,11 +7,13 @@
         </ul>
         {foreach from=$settings key="mod" item="sets"}
         <div id="tabs-{$mod}">
-            <table class="dataset">
-            <tr>
-                <th width="150">Свойство</th>
-                <th>Значение</th>
-            </tr>
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th width="150">Свойство</th>
+                    <th>Значение</th>
+                </tr>
+            </thead>
             {foreach from=$sets key="key" item="val"}
             <tr>
                 <td>{$key}</td>
@@ -28,6 +23,7 @@
             </table>
         </div>
         {/foreach}
-        <input type="submit" name="save" value="Сохранить" />
+
+        <input type="submit" name="save" class="btn" value="Сохранить" />
     </div>
 </form>

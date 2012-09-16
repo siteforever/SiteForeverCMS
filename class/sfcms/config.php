@@ -10,7 +10,6 @@ class Sfcms_Config
     private $config;
 
     /**
-     * @throws Application_Exception
      * @param string|array $cfg_file
      */
     function __construct($cfg_file = null)
@@ -19,11 +18,15 @@ class Sfcms_Config
             if (defined('CONFIG')) {
                 $cfg_file = 'protected/config/' . CONFIG . '.php';
             }
-            throw new Application_Exception('Config not defined');
         }
 
         if (is_array($cfg_file)) {
-            $this->config = $cfg_file;
+            $result = array();
+            foreach ( $cfg_file as $cfg ) {
+                $config = require $cfg;
+                $result = array_merge( $result, $config );
+            }
+            $this->config = $result;
             return;
         }
 
@@ -31,7 +34,7 @@ class Sfcms_Config
             $this->config = require $cfg_file;
             return;
         }
-        throw new Application_Exception('Configuration file "'.$cfg_file.'" not found');
+//        throw new Application_Exception('Configuration file "'.$cfg_file.'" not found');
     }
 
     /**

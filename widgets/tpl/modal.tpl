@@ -1,4 +1,4 @@
-<div class="modal fade hide" id="{$id}" style="width: 700px;">
+<div class="modal fade hide" id="{$id}" style="width: 900px;">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">×</button>
         <h3>{$title}</h3>

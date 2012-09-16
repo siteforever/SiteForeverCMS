@@ -13,16 +13,12 @@ class SfcmsConfigTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        //$this->obj  = new SysConfig( SF_PATH.'/protected/config/test.php' );
-        $this->obj  = new Sfcms_Config( array(
-            'sitename'  => 'SiteForeverCMS',
-            'db'    => array(
-                'login' => 'siteforever',
-            ),
-            'test'  => array(
-                'foo1'  => 'foo1',
-                'foo2'  => 'foo2',
-            ),
+        $this->obj  = new Sfcms_Config();
+        $this->obj->set('sitename','SiteForeverCMS');
+        $this->obj->setDefault('db',array( 'login' => 'siteforever', ));
+        $this->obj->setDefault('test',array(
+            'foo1'  => 'foo1',
+            'foo2'  => 'foo2',
         ));
     }
 

@@ -21,8 +21,6 @@ class Data_Table_CatalogGallery extends Data_Table
             new Data_Field_Varchar('title', 250),
             new Data_Field_Varchar('descr', 250),
             new Data_Field_Varchar('image', 250),
-            new Data_Field_Varchar('middle', 250),
-            new Data_Field_Varchar('thumb', 250),
             new Data_Field_Tinyint('hidden'),
             new Data_Field_Tinyint('main'),
         );

@@ -5,7 +5,9 @@
  * @file   /misc/siteforever/i18n.js
  */
 
-(function($s){
+define([
+    "siteforever"
+],function($s){
     $s.i18n = function( cat, phrase ) {
         if ( cat && ! phrase ) {
             phrase = cat;
@@ -19,5 +21,9 @@
         }
         return phrase;
     };
-})(siteforever);
+
+    /*:dictionary:*/
+
+    return $s.i18n;
+});
 

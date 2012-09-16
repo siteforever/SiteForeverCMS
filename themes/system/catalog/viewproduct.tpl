@@ -1,34 +1,37 @@
-<div class="b-product">
 
-        <div class="b-product">
-
-            <div class="b-product-image">
-                {if $item.middle}
-                    <a title="{$item.title}" href="{$item.image}" rel="{$item.id}">
-                        <img src="{$item.middle}" alt="{$item.title}">
-                    </a>
+<div class="hproduct" itemscope itemtype="http://schema.org/Product">
+    <div class="row">
+        <div class="span2">
+            {a title=$item.title href=$item.image rel=$item.id class="photo gallery"}
+                {if $item.image}
+                    {thumb width=200 height=200 alt=$item.title src=$item.image class="img-rounded" color="ffffff"}
+                    {*<img class="img-rounded" src="{$item.middle}" alt="{$item.title}">*}
                 {else}
-                    <div class="b-catalog-product-nothumb">Нет изображения</div>
+                    <span>{t cat="No image"}{/t}</span>
                 {/if}
+            {/a}
 
-            {*{foreach from=$item.gallery item="img"}*}
-                {*<a title="{$img.title}" href="{$img.image}" rel="{$item.id}">*}
-                    {*<img src="{$img.thumb}" alt="{$img.title}">*}
-                {*</a>*}
-            {*{foreachelse}*}
-                {*<div class="b-product-noimage">{t}Image not found{/t}</div>*}
-            {*{/foreach}*}
+        {foreach $item->Gallery as $img}
+            {if not $img@first}
+            <a title="{$img.title}" href="{$img.image}" class="gallery" rel="{$item.id}">
+                <img src="{$img.image}" width="50" alt="{$img.title}">
+            </a>
+            {/if}
+        {/foreach}
+        </div>
+
+        <div class="span6">
+            {if $item.articul}<div>Артикул: <span>{$item.articul}</span></div>{/if}
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                Цена: <span class="b-product-price" itemprop="price">
+                    {$item.price|string_format:"%.2f"}</span>
+                {$item.currency}
             </div>
 
-            <div class="b-product-block">
-
-            {if $item.articul}<p>Артикул: <strong>{$item.articul}</strong></p>{/if}
-
-            <p>
-                Цена: <strong class="b-product-price">{$item.price|string_format:"%.2f"}</strong> {$item.currency}
-            </p>
-
-            {if $item->Manufacturer}<p>{t}Manufacturer{/t}: <strong>{$item->Manufacturer->name}</strong></p>{/if}
+            {if $item->Manufacturer}<div>
+                {t}Manufacturer{/t}:
+                <span class="brand">{$item->Manufacturer->name}</span>
+            </div>{/if}
 
             {if count($properties[$item->getId()]) > 0}
             <div class="b-product-properties">
@@ -43,23 +46,23 @@
             </div>
             {/if}
 
-            {if $item.text}<div class="b-product-desc">{$item.text}</div>{/if}
-
-            {if $parent}<p><a {href url=$parent->url}>&uarr; На уровень вверх</a></p>{/if}
-            </div>
-
-            <div class="b-product-basket">
-                    {$item.item}
-                    <input type="text" name="basket_prod_count" class="b-product-basket-count" value="1" />
-                    <input type="button"
-                           class="submit basket_add"
-                           data-product="{$item.name}"
-                           data-price="{$item.price}"
-                           data-id="{$item.id}"
-                           value="В корзину" />
-            </div>
-
+            {if $item.text}<div class="b-product-desc" itemprop="description">{$item.text}</div>{/if}
         </div>
+    </div>
 
+    <div class="b-product-basket">
+            {$item.item}
+        <div class="input-append">
+            <input type="text" name="basket_prod_count" class="b-product-basket-count" value="1" />
+            <input type="button"
+                   class="btn basket_add"
+                   data-product="{$item.name}"
+                   data-price="{$item.price}"
+                   data-id="{$item.id}"
+                   value="В корзину" />
+        </div>
+    </div>
 
 </div>
+
+

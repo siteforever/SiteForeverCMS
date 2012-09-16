@@ -32,6 +32,7 @@ return array(
         'database'  => 'siteforever',
         'debug'     => true,
         'migration' => true,
+        'autoGenerateMeta' => true,
     ),
 
     // тема
@@ -40,26 +41,5 @@ return array(
     // настройки пользователей
     'users' => array(
         'userdir' => DIRECTORY_SEPARATOR.'files',
-    ),
-
-    'catalog' => array(
-        'gallery_dir' => DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.'catalog'.DIRECTORY_SEPARATOR.'gallery',
-        'gallery_max_file_size' => 1000000,
-        'gallery_thumb_prefix'  => 'thumb_',
-        'gallery_thumb_h'   => 100,
-        'gallery_thumb_w'   => 100,
-        'gallery_thumb_prefix'  => 'middle_',
-        'gallery_thumb_h'   => 200,
-        'gallery_thumb_w'   => 200,
-        'gallery_thumb_method' => 1,
-            // 1 - добавление полей
-            // 2 - обрезание лишнего
-        // сортировка товаров
-        'order_list'    => array(
-            ''      => 'Без сортировки',
-            'name'  => 'По наименованию',
-            'price1'=> 'По цене',
-            'articul'=>'По артикулу',
-        ),
     ),
 );

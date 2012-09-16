@@ -13,7 +13,7 @@ return array(
     'Page delete successfully'                  => 'Страница удалена успешно',
     'Input Name'                                => 'Укажите Наименование',
 
-    'Main settings'                             => 'Основный настройки',
+    'Main settings'                             => 'Основные настройки',
     'Notice'                                    => 'Аннотация',
     'Content'                                   => 'Контент',
     'Constraints'                               => 'Ограничения',

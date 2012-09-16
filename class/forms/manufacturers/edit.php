@@ -16,8 +16,9 @@ class Forms_Manufacturers_Edit extends Form_Form
                  'fields' => array(
                      'id'   => array( 'type'=>'hidden', ),
                      'name' => array( 'type'=>'text', 'label' => t('Name'), 'required', ),
-                     'email' => array( 'type'=>'text', 'label' => t('Email') ),
-                     'phone' => array( 'type'=>'text', 'label' => t('Phone') ),
+                     'email' => array( 'type'=>'text', 'label' => t('Email'), 'filter' => 'email', ),
+                     'site'  => array( 'type'=>'text', 'label' => t('Site'), 'filter' => 'url', ),
+                     'phone' => array( 'type'=>'text', 'label' => t('Phone'), 'filter' => 'phone' ),
                      'address' => array( 'type'=>'textarea', 'label' => t('Address'), 'class' => 'plain' ),
                      'image' => array( 'type'=>'text', 'label' => t('Image'), 'class'=>'image',
                                        'notice'=>t('Double-click to select the image')

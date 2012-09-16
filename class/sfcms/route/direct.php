@@ -29,18 +29,21 @@ class Direct extends \Sfcms\Route
 
         // Проверяем путь в списке контроллеров
         if ( array_search( $routePieces[0], $this->controllers ) ) {
-            if ( isset( $routePieces[1] ) ) {
-                $relectionClass = new \ReflectionClass('Controller_'.ucfirst( strtolower( $routePieces[0] ) ) );
-                if ( $relectionClass->hasMethod( strtolower( $routePieces[1] ) . 'Action' ) ) {
-                    $controller = $routePieces[ 0 ];
-                    $action = $routePieces[1];
-                    $params = $this->extractAsParams( array_slice( $routePieces, 2 ) );
-                    return array(
-                        'controller' => $controller,
-                        'action' => $action,
-                        'params' => $params,
-                    );
-                }
+            if ( ! isset( $routePieces[1] ) ) {
+                return false;
+            }
+
+            $relectionClass = new \ReflectionClass('Controller_'.ucfirst( strtolower( $routePieces[0] ) ) );
+
+            if ( $relectionClass->hasMethod( strtolower( $routePieces[1] ) . 'Action' ) ) {
+                $controller = $routePieces[ 0 ];
+                $action = $routePieces[ 1 ];
+                $params = $this->extractAsParams( array_slice( $routePieces, 2 ) );
+                return array(
+                    'controller' => $controller,
+                    'action' => $action,
+                    'params' => $params,
+                );
             }
         }
         return false;

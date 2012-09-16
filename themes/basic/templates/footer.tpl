@@ -1,13 +1,18 @@
-    <div class="b-footer">
+<footer>
+    <div class="container">
         <hr />
-        <table><tr>
-            <td width="230">
+        <div class="row">
+            <div class="span4">
                 &copy; created by <a href="http://firetroop.ru" target="_blank">firetroop</a> 2010-{date('Y')}<br />
                 Работает на <a href="http://siteforever.ru" target="_blank">SiteForeverCMS</a>
-            </td>
-            <td>
+            </div>
+            <div class="span4">
+                &nbsp; {*menu parent=1*}
+            </div>
+            <div class="span4">
                 <a {href url="users/login"}>Кабинет</a>
-            </td>
-        </tr></table>
+            </div>
+        </div>
     </div>
+</footer>
 

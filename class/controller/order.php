@@ -7,27 +7,40 @@
 class Controller_Order extends Sfcms_Controller
 {
     /**
+     * Список заказов зарегистрированного пользователя
+     * @param int $cancel
+     * @param int $item
      * @return mixed
+     * @throws \Sfcms_Http_Exception
      */
-    public function indexAction()
+    public function indexAction( $cancel, $item )
     {
         $this->request->set('template', 'inner');
-        $this->request->setTitle('Мои заказы');
+        $this->request->setTitle(t('order','My orders'));
+
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece('users/cabinet',t('user','User cabiner'))
+            ->addPiece(null,$this->request->getTitle());
+
 
         $user   = $this->app()->getAuth()->currentUser();
+
+        if ( ! $user->hasPermission( USER_USER ) ) {
+            throw new \Sfcms_Http_Exception( t('Access denied'), 403 );
+        }
 
         /** @var $order Model_Order */
         $order  = $this->getModel('Order');
 
         if ( ! $user->getId() || $user->perm == USER_GUEST ) {
-            return $this->redirect("users/login");
+            return $this->redirect("index");
         }
 
-        if ( $cancel = $this->request->get('cancel') ) {
+        if ( $cancel ) {
             $can_order = $order->find( $cancel );
             if( $can_order['user_id'] == $user->getId() ) {
-                $can_order['status'] = '100';
-//                $order->update( $can_order );
+                $can_order['status'] = -1;
             }
         }
 
@@ -43,20 +56,19 @@ class Controller_Order extends Sfcms_Controller
                     return t('order','Order is not yours');
                 }
 
-                /** @var $list_pos Data_Collection */
-                $list_pos = $orderObj->positions;
-                $this->log( $list_pos, 'positions' );
+                $positions = $orderObj->Positions;
+                $this->log( $positions, 'positions' );
                 $all_count = 0;
                 $all_summa = 0;
 
                 /** @var $position Data_Object_OrderPosition */
-                foreach( $list_pos as $position ) {
+                foreach( $positions as $position ) {
                     $all_count += $position['count'];
                     $all_summa += $position['summa'];
                 }
                 $this->tpl->assign(array(
                     'order' => $orderObj,
-                    'list'  => $list_pos,
+                    'list'  => $positions,
                     'all_count' => $all_count,
                     'all_summa' => $all_summa,
                 ));
@@ -75,75 +87,68 @@ class Controller_Order extends Sfcms_Controller
         return $this->tpl->fetch('system:order.index');
     }
 
+
     /**
      * Создать заказ
      * @return mixed
      */
     public function createAction()
     {
+        $order_id = @$_SESSION['order_id'];
+        if ( ! $order_id ) {
+            return 'Order not defined';
+        }
         $this->request->set('template', 'inner');
         $this->request->setTitle(t('order','Checkout'));
 
-        // todo Сделать возможность заказа для гостей
-        // проверить, зарегистрирован ли клиент
-        if ( ! $this->user->hasPermission( USER_USER ) ) {
-            return $this->tpl->fetch('system:order.need');
-        }
+        $model = $this->getModel();
+        /** @var $order Data_Object_Order */
+        $order = $model->find( $order_id );
 
-        if ( $this->getBasket()->getCount() == 0 ) {
-            return t('order', 'Your basket is empty');
-        }
+        $this->getTpl()->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece('basket',t('basket','Basket'))
+            ->addPiece(null, t('order','Checkout'));
 
-        //$cat = $this->getModel('Catalog');
+        $positions = $order->Positions;
+        $delivery  = $order->Delivery;
+        $payment   = $order->Payment;
 
-        // готовим список к выводу
-        $all_product = $this->getBasket()->getAll();
+        $sum = $positions->sum('sum');
 
-        $all_keys = array();
-        foreach( $all_product as $prod ) {
-            $all_keys[] = $prod['id'];
-        }
-        /*$goods = $cat->findGoodsById( $all_keys );
-
-        foreach( $all_product as $key => &$product )
-        {
-            $product['cat_id']  = $product['id'];
-            $product['name']    = $goods[$product['id']]['name'];
-            $product['price']   =
-                    $this->user->getPermission() == USER_WHOLE ?
-                            $goods[$product['id']]['price2'] :
-                            $goods[$product['id']]['price1'];
-            $product['summa']   = $product['price'] * $product['count'];
-            $product['articul'] = $goods[$product['id']]['articul'];
-        }*/
-
-        //printVar( $all_product );
-
-        // Создание заказа
-        $complete = $this->request->get('complete');
-        if ( $complete && $all_product ) {
-            /** @var $orderModel Model_Order */
-            $orderModel    = $this->getModel('Order');
-            $orderModel->createOrder( $all_product );
-            $this->getBasket()->clear();
-            return $this->redirect('order');
+        $robokassa = null;
+        switch( $payment->module ) {
+            case 'robokassa' :
+                $robokassa = new \Sfcms\Robokassa( $this->config->get('service.robokassa') );
+                $robokassa->setInvId( $order->id );
+                $robokassa->setOutSum( $sum + ($delivery?$delivery->cost:0) );
+                break;
+            case 'basket':
+            default:
         }
 
 
-        $this->tpl->assign(array(
-            'products' => $all_product,
-        ));
-        $this->request->setContent($this->tpl->fetch('system:order.create'));
+        return array(
+            'order' => $order,
+            'products' => $positions,
+            'delivery' => $delivery,
+            'payment'   => $order->Payment,
+            'sum'   => $delivery->cost + $positions->sum('sum'),
+            'robokassa' => $robokassa,
+        );
     }
 
     /**
      * Действия админки
+     * @param int $id
+     * @param int $number
+     * @param string $user
      * @return mixed
      */
-    public function adminAction()
+    public function adminAction( $id, $number, $user )
     {
-        if ( $num = $this->request->get('id', FILTER_VALIDATE_INT) ) {
-            return $this->adminEdit( $num );
+        if ( $id ) {
+            return $this->adminEdit( $id );
         }
 
         $model = $this->getModel('Order');
@@ -151,9 +156,9 @@ class Controller_Order extends Sfcms_Controller
         $cond   = array();
         $params = array();
 
-        if ( $number = $this->request->get('number', FILTER_VALIDATE_INT) ) {
-            $cond[]             = " id = :number ";
-            $params[':number']  = $number;
+        if ( $number ) {
+            $cond[]   = " id = ? ";
+            $params[] = $number;
         }
 
         if ( $date = $this->request->get('date') ) {
@@ -164,30 +169,14 @@ class Controller_Order extends Sfcms_Controller
                 $from   = mktime(0,0,0,$mon,$day,$yer);
                 $to     = mktime(23,59,59,$mon,$day,$yer);
 
-                $cond[]     = ' `date` BETWEEN :from AND :to ';
-                $params[':from']    = $from;
-                $params[':to']      = $to;
+                $cond[]   = ' `date` BETWEEN ? AND ? ';
+                $params[] = $from;
+                $params[] = $to;
             }
         }
 
-        if ( $this->request->get('user') ) {
-            $user_model = $this->getModel('User');
-            $users  = $user_model->findAll(array(
-                'select'    => 'id',
-                'cond'      => ' ( login LIKE :user OR email LIKE :user '.
-                        ' OR lname LIKE :user OR name LIKE :user ) ',
-                'params'    => array(':user'=>$this->request->get('user')),
-            ));
-            $users_id    = array();
-            if ( $users ) {
-                foreach ( $users as $u ) {
-                    $users_id[] = $u->getId();
-                }
-            }
-            if ( $users_id && count( $users_id ) ) {
-                $cond[]     = ' user_id IN ( :users )';
-                $params[':users']   = $users_id;
-            }
+        if ( $user ) {
+            $cond[]     = " `email` LIKE '%{$user}%'";
         }
 
         $cond   = implode(' AND ', $cond);
@@ -196,9 +185,9 @@ class Controller_Order extends Sfcms_Controller
 
         //$count = $model->getCountForAdmin($cond);
 
-        $paging = $this->paging( $count, 20, 'admin/order' );
+        $paging = $this->paging( $count, 10, 'order/admin' );
 
-        $orders     = $model->findAll(array(
+        $orders     = $model->with(array('Positions','Status'))->findAll(array(
             'cond'      => $cond,
             'params'    => $params,
             'order'     => '`date` DESC',
@@ -218,34 +207,25 @@ class Controller_Order extends Sfcms_Controller
 
     /**
      * Редактирование заказа
-     * @param int $num
+     * @param int $id
      * @return mixed
      */
-    public function adminEdit( $num )
+    public function adminEdit( $id )
     {
-        $this->request->setTitle('Править заказ');
-
         $model = $this->getModel('Order');
-
-
-
-        $order      = $model->find( $num );
+        /** @var $order Data_Object_Order */
+        $order      = $model->find( $id );
         $positions  = $order->Positions;
-        $user       = $this->getModel('User')->find( $order['user_id'] );
+        $user       = $order->User;
 
-        if ( $new_status = $this->request->get('new_status', FILTER_VALIDATE_INT) )
-        {
-            $order['status'] = $new_status;
-            $model->update( $order );
+        if ( $new_status = $this->request->get('new_status', FILTER_VALIDATE_INT) ) {
+            $order->status = $new_status;
         }
 
-        $summa = 0;
-        $count = 0;
-        foreach( $positions as $key => $pos )
-        {
-            $summa += $pos->sum;
-            $count += $pos->count;
-        }
+        $this->request->setTitle("Заказ <b>№ {$order->id}</b> от ".strftime('%d.%m.%Y (%H:%M)'));
+
+        $summa = $positions->sum('sum');
+        $count = $positions->sum('count');
 
         $this->tpl->assign(array(
             'order'     => $order,
@@ -256,6 +236,6 @@ class Controller_Order extends Sfcms_Controller
             'user'      => $user,
         ));
 
-        $this->request->setContent($this->tpl->fetch('system:order.admin_edit'));
+        return $this->tpl->fetch('system:order.admin_edit');
     }
 }

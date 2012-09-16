@@ -106,7 +106,11 @@ class Data_Object_Page extends Data_Base_Page
                 'name'  => $obj->get('name'),
                 'url'   => $obj->getAlias(),
             );
-            $obj = $this->getModel()->find( $obj->get( 'parent' ) );
+            if ( $obj->parent ) {
+                $obj = $this->getModel()->find( $obj->parent );
+            } else {
+                $obj = null;
+            }
         }
         $path   = array_reverse($path);
         return serialize($path);

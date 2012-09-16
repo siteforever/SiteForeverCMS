@@ -139,7 +139,7 @@ class Model_User extends Sfcms_Model
     function getProfileForm()
     {
         if ( is_null( $this->profile_form ) ) {
-            $this->profile_form = new forms_user_profile();
+            $this->profile_form = new Forms_User_Profile();
         }
         return $this->profile_form;
     }

@@ -9,12 +9,34 @@ table.table td {
     font-size: 12px;
 }
 
+table td.middle {
+    vertical-align: middle;
+}
+
+table td.bottom {
+    vertical-align: bottom;
+}
+
 input {
     height: 28px !important;
 }
+input.cke_dialog_ui_input_text {
+    height: 14px !important;
+    margin: 0 !important;
+}
+a.btn {
+    line-height: 18px;
+}
+/*@-moz-document url-prefix() {*/
+  /*input.btn {padding:6px 14px 5px;}*/
+/*}*/
 
 small {
     font-size: 80% !important;
+}
+
+.form-horizontal .control-group {
+    margin-bottom: 10px;
 }
 
 div.ui-dialog {
@@ -160,6 +182,7 @@ input.image {
 
 #form_guestbook_edit textarea {
     height: 100px;
+    width: 600px;
 }
 
 /* Галлерея каталога */
@@ -207,3 +230,9 @@ input.image {
 .el-paddinginput input, .el-paddinginput select {
     width: auto;
 }
+
+div.siteforeverModal {
+    width: 950px;
+    margin-left: -475px;
+}
+

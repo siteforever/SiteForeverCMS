@@ -169,11 +169,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testFindRouteAdminUsers()
     {
-        $this->router->setRoute('admin/users')->routing(true);
-
-        $this->assertEquals('users', $this->request->get('controller'));
-        $this->assertEquals('admin', $this->request->get('action'));
-
         $this->router->setRoute('users/admin')->routing(true);
 
         $this->assertEquals('users', $this->request->get('controller'));
@@ -200,9 +195,9 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testFindRouteAdmin()
     {
         $this->router->setRoute( 'admin' );
-        $this->router->routing(true);
-        $this->assertEquals( $this->request->get( 'controller' ), 'page' );
-        $this->assertEquals( $this->request->get( 'action' ), 'admin' );
+        $this->router->routing( true );
+        $this->assertEquals( 'page', $this->request->getController() );
+        $this->assertEquals( 'admin', $this->request->getAction() );
     }
 
     public function testFindRouteUsersEdit()
@@ -259,6 +254,15 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( 'index', $this->router->getRoute() );
     }
 
+    public function testNewsOnly()
+    {
+        $this->router->setRoute('news');
+        $this->router->routing(true);
+        $this->assertEquals( 'news', $this->request->getController() );
+        $this->assertEquals( 'index', $this->request->getAction() );
+        $this->assertEquals( '1', $this->request->get('pageid') );
+    }
+
     public function testNewsRoute()
     {
         $this->router->setRoute('news/edit/id/10/page/5');
@@ -267,7 +271,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( 'edit', $this->request->get('action') );
         $this->assertEquals( '10', $this->request->get('id') );
         $this->assertEquals( '5', $this->request->get('page') );
+    }
 
+    public function testNewsRouteByAlias()
+    {
+        $this->router->setRoute('news/novostj-2');
+        $this->router->routing( true );
+        $this->assertEquals( 'news', $this->request->getController() );
+        $this->assertEquals( 'novostj-2', $this->request->get('alias') );
+    }
+
+    public function testNewsRouteByAlias2()
+    {
         $this->router->setRoute('blog/moya-pervaya-statjya');
         $this->router->routing( true );
         $this->assertEquals( 'news', $this->request->getController() );

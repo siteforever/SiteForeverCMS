@@ -14,13 +14,11 @@ define('ROOT', SF_PATH );
 // Запущены тесты
 define('TEST', true);
 
+$_SERVER['HTTP_HOST'] = 'test';
+
 
 // директории для подключения
 $include_list   = array();
-//if ( SF_PATH != dirname(__FILE__) ) {
-//    $include_list[] = dirname(__FILE__).DIRECTORY_SEPARATOR.'class';
-//    $include_list[] = dirname(__FILE__);
-//}
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
 $include_list[] = SF_PATH;
@@ -35,5 +33,5 @@ $_REQUEST['route']  = 'index';
 // автозагрузка классов
 require_once 'app.php';
 
-$app    = new App( SF_PATH.'/protected/config/test.php' );
+$app    = new App( array('protected/config/main.php','protected/config/test.php') );
 $app->init();

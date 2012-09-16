@@ -46,11 +46,11 @@ class Controller_Elfinder extends Sfcms_Controller
      */
     public function connectorAction()
     {
-        $this->log( $_REQUEST, 'Request' );
-        $_POST  = $_POST + $_REQUEST;
-        $_GET   = $_GET + $_REQUEST;
-        $this->log( $_POST, 'Post' );
-        $this->log( $_GET, 'Get' );
+//        $_POST = $_POST + $_REQUEST;
+//        $_GET  = $_GET + $_REQUEST;
+//        $this->log( $_REQUEST, 'Request' );
+//        $this->log( $_POST, 'Post' );
+//        $this->log( $_GET, 'Get' );
 
 //        $this->setAjax();
         $opts = array(
@@ -115,15 +115,13 @@ class Controller_Elfinder extends Sfcms_Controller
         return;
     }
 
-
     /**
      * Вернет страницу-контейнер
      */
     public function finderAction()
     {
         $this->request->set('resource', 'system:');
-        $this->request->set('template', 'elfinder');
+        $this->request->setLayout('elfinder');
         return;
     }
-
 }

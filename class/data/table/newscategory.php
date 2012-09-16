@@ -25,7 +25,7 @@ class Data_Table_NewsCategory extends Data_Table
             new Data_Field_Tinyint('per_page', 1),
             new Data_Field_Tinyint('hidden', 1),
             new Data_Field_Tinyint('protected', 1),
-            new Data_Field_Tinyint('deleted', 1),
+            new Data_Field_Tinyint('deleted', 1, true, 0),
         );
     }
 

@@ -3,12 +3,6 @@
  * Dictionary for russian language
  */
 return array_merge(
-//    include('protected/lang/ru/common.php'),
-//    include('protected/lang/ru/page.php'),
-//    include('protected/lang/ru/user.php'),
-//    include('protected/lang/ru/news.php'),
-//    include('protected/lang/ru/guestbook.php'),
-//    include('protected/lang/ru/catalog.php'),
     array(
 
         'Home'                                      => 'Главная',
@@ -16,13 +10,17 @@ return array_merge(
         'Close'                                     => 'Закрыть',
         'Save changes'                              => 'Сохранить изменения',
 
+        'Main'                                      => 'Главная',
+        'Inner'                                     => 'Внутренняя',
+        'Inner with Left'                           => 'Внутренняя с левым меню',
+
         'Goto site'                                 => 'Перейти на сайт',
 
         'Routes'                                    => 'Маршруты',
         'Deleted route # '                          => 'Удален маршрут № ',
 
         'Data save successfully'                    => 'Данные сохранены успешно',
-        'Data not saved'                            => 'Данные не изменились',
+        'Data not saved'                            => 'Данные не сохранены',
         'delete success'                            => 'удален успешно',
 
         'Dumper of database'                        => 'Дампер базы данных',
@@ -50,7 +48,7 @@ return array_merge(
         // Banner
         'Banners category list'                     => 'Список категорий баннеров',
         'Add category'                              => 'Добавить категорию',
-        'Edit category'                             => 'Править категорию',
+        'Edit category'                             => 'Изменить категорию',
         'There are no sections'                     => 'Пока нет разделов',
 
 
@@ -58,8 +56,9 @@ return array_merge(
         'Manufacturers'                             => 'Производители',
         'Manufacturer'                              => 'Производитель',
         'Create manufacturer'                       => 'Создать производителя',
-        'Edit manufacturer'                         => 'Править производителя',
+        'Edit manufacturer'                         => 'Изменить производителя',
 
+        'Payment'                                   => 'Оплата',
 
         // Goods
         'Goods'                                     => 'Товары',
@@ -78,6 +77,17 @@ return array_merge(
         'Saving'                                    => 'Сохранение',
         'Create'                                    => 'Создать',
         'Cancel'                                    => 'Отмена',
+        'Name'                                      => 'Наименование',
+        'Email'                                     => 'Эл. почта',
+        'Site'                                      => 'Сайт',
+        'Phone'                                     => 'Телефон',
+        'Desc'                                      => 'Описание',
+        'Module'                                    => 'Модуль',
+        'Active'                                    => 'Активный',
+        'Advanced'                                  => 'Расширенный',
+        'Company'                                   => 'Компания',
+
+        'Action'                                    => 'Действие',
 
         '#'                                         => '№',
         'Count'                                     => 'Кол-во',
@@ -109,6 +119,12 @@ return array_merge(
 
         'Double-click to select the image'          => 'Двойной клик для выбора изображения',
 
+        'Search' => 'Поиск',
+
+        'Restore' => 'Восстановить',
+        'Request' => 'Запрос',
+        'Send request' => 'Отправить запрос',
+
         'Image'                                     => 'Изображение',
         'Picture'                                   => 'Картинка',
         'Icon'                                      => 'Иконка',
@@ -124,6 +140,9 @@ return array_merge(
 
         'On' => 'Вкл',
         'Off' => 'Выкл',
+
+        'Yes' => 'Да',
+        'No'  => 'Нет',
 
         'Page :name' => 'Страница :name',
     ) );

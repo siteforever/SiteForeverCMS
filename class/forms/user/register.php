@@ -13,13 +13,15 @@ class Forms_User_Register extends Form_Form
             'name'      => 'register',
             'class'     => 'standart',
             'fields'    => array(
-                'email'     => array('type'=>'text',    'label'=>'Email', 'required', 'autocomplete'=>'off'),
-                'login'     => array('type'=>'text',    'label'=>'Логин', 'required', 'autocomplete'=>'off'),
+                'email'     => array('type'=>'text',    'label'=>'Email', 'required',
+                                     'filter' => 'email', 'autocomplete'=>'off'),
+                'login'     => array('type'=>'text',    'label'=>'Логин', 'required',
+                                     'notice'=>'Минимум 5 символов',  'autocomplete'=>'off'),
                 'password'  => array('type'=>'password', 'label'=>'Пароль', 'required', 'autocomplete'=>'off'),
 
                 'fname'     => array('label'=>'Имя'),
                 'lname'     => array('label'=>'Фамилия'),
-                'phone'     => array('label'=>'Телефон'),
+                'phone'     => array('label'=>'Телефон', 'filter' => 'phone', 'notice' => '+7 900 123 45 67',),
 
                 'captcha'   => array('type'=>'captcha', 'label'=>'Проверка'),
                 'submit'    => array('type'=>'submit', 'value'=>'Регистрация'),

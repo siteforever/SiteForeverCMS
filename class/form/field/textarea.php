@@ -5,7 +5,7 @@
  */
 class Form_Field_Textarea extends Form_Field
 {
-    protected $_class = 'textarea';
+    protected $_class = 'textarea input-xlarge';
     protected $_filter = '/.*/';
 
     /**

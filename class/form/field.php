@@ -17,7 +17,7 @@ abstract class Form_Field
     protected $_form     = null;
     protected $_name     = '';
     protected $_value    = '';
-    protected $_class    = 'text';
+    protected $_class    = 'input-xlarge';
     protected $_id       = '';
     protected $_label    = '';
     protected $_notice   = '';
@@ -40,7 +40,7 @@ abstract class Form_Field
      * Текст ошибки поля
      * @var string
      */
-    protected   $_error_string  = '';
+    protected   $_msg  = '';
     
     /**
      * Создаем поле формы
@@ -93,7 +93,21 @@ abstract class Form_Field
         }
 
         if ( isset( $params['filter'] ) ) {
-            $this->_filter = $params['filter'];
+            switch( $params['filter'] ) {
+                case 'email':
+                    $this->_filter = '/^[\.\-_A-Za-z0-9]{2,}?@[\.\-A-Za-z]{2,}?\.[A-Za-z0-9]{2,6}$/';
+                    break;
+                case 'url':
+                    $this->_filter = '/^http[s]?:\/\/[\.\-A-Za-z0-9]+?\.[A-Za-z0-9]{2,6}$/';
+                    break;
+                case 'phone':
+                    $this->_filter = '/(\+?\d?)[- ]?\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{2,4})[- ]?(\d{2,4})$/';
+                    break;
+                default:
+                    $this->_filter = $params['filter'];
+            }
+        } else {
+            $this->_filter = '/.*/';
         }
 
         $this->_params   = $params;
@@ -216,10 +230,9 @@ abstract class Form_Field
     public function setValue( $value )
     {
         $value = trim($value);
-        if ( $this->checkValue( $value ) )
-        {
-            $this->_value  = $value;
-        }
+//        if ( $this->checkValue( $value ) ) {
+        $this->_value  = $value;
+//        }
         return $this;
     }
 
@@ -251,9 +264,13 @@ abstract class Form_Field
      * @param $value
      * @return boolean
      */
-    public function checkValue( $value )
+    protected function checkValue( $value )
     {
-        return preg_match($this->_filter, $value);
+        if ( ! $this->isEmpty() && trim( $this->_filter ) ) {
+            $result = preg_match( $this->_filter, trim( $value ) );
+            return $result;
+        }
+        return true;
     }
 
     /**
@@ -284,24 +301,18 @@ abstract class Form_Field
      */
     public function isEmpty()
     {
-        if ( isset( $this->_params['empty'] ) )
-        {
-            if ( $this->_params['empty'] == $this->_value )
-            {
+        if ( isset( $this->_params['empty'] ) ) {
+            if ( $this->_params['empty'] == $this->_value ) {
                 return true;
             }
-        }
-        else {
-            if ( empty( $this->_value ) )
-            {
+        } else {
+            if ( empty( $this->_value ) ) {
                 return true;
             }
-            if ( in_array( $this->getType(), array('text', 'textarea') ) && trim($this->_value) == '' )
-            {
+            if ( in_array( $this->getType(), array('text', 'textarea') ) && trim($this->_value) == '' ) {
                 return true;
             }
-            if ( in_array( $this->getType(), array('int', 'float') ) && $this->_value == 0 )
-            {
+            if ( in_array( $this->getType(), array('int', 'float') ) && $this->_value == 0 ) {
                 return true;
             }
         }
@@ -325,13 +336,14 @@ abstract class Form_Field
         // по умолчанию валидно
         $this->_error   = 0;
 
-        if ( ! $this->checkValid() ) {
-            $this->checkType();
-        }
+        $this->checkValid();
+//        if ( ! $this->checkValid() ) {
+//            $this->checkType();
+//        }
 
         if ( $this->_error > 0 ) {
-            $this->_form->addFeedback( $this->_error_string );
-            
+            $this->_form->addFeedback( $this->_msg );
+            $this->_form->addError( $this->_name, $this->_msg );
             $classes[] = 'error';
             $this->_class    = join(' ', $classes);
         }
@@ -349,15 +361,21 @@ abstract class Form_Field
         {
             //    или если его значение пустое
             $this->_error   = 2;
-            $this->_error_string    = "&laquo;{$this->_label}&raquo; нужно заполнить";
+            $this->_msg    = "&laquo;{$this->_label}&raquo; нужно заполнить";
+            return false;
+        }
+
+        if ( ! $this->isRequired() && $this->isEmpty() ) {
+            return true;
         }
 
         if ( ! $this->checkValue( $this->getValue() ) ) {
             $this->_error   = 3;
-            $this->_error_string    = "&laquo;{$this->_label}&raquo; не соответсвует типу";
+            $this->_msg    = "&laquo;{$this->_label}&raquo; не соответсвует формату";
+            return false;
         }
 
-        return ! $this->_error;
+        return true;
     }
 
     /**
@@ -369,7 +387,7 @@ abstract class Form_Field
         if ( ! ( $this->checkValue( $this->_value ) || $this->isEmpty() ) )
         {
             $this->_error   = 1;
-            $this->_error_string    = "&laquo;{$this->_label}&raquo; не соответствует типу";
+            $this->_msg    = "&laquo;{$this->_label}&raquo; не соответствует типу";
         }
         return ! $this->_error;
     }
@@ -393,15 +411,22 @@ abstract class Form_Field
      */
     protected function htmlWrapped()
     {
-        return "<div class='control-group'>"
+        $class = array('control-group');
+        if ( $this->_error ) $class[] = 'error';
+
+        return '<div class="'.implode(' ', $class).'" data-field-name="'.$this->_name.'">'
                    .$this->htmlLabel()
                    ."<div class='controls field-{$this->getType()}'>"
-                       .$this->htmlField().($this->_error ? "<div>{$this->_error_string}</div>" : '')
+                       .$this->htmlField().($this->_error ? "<div>{$this->_msg}</div>" : '')
                        .$this->htmlNotice()
                     ."</div>"
                 ."</div>";
     }
 
+    /**
+     * Выводит метку для поля
+     * @return string
+     */
     public function htmlLabel()
     {
         $class = array('control-label');
@@ -414,9 +439,22 @@ abstract class Form_Field
             ."</label>";
     }
 
+    /**
+     * Выводит Подсказку для поля
+     * @return string
+     */
     public function htmlNotice()
     {
-        return $this->_notice ? "<div class=\"help-block\"><small>{$this->_notice}</small></div>" : "";
+        if ( $this->_notice )
+            $this->_params['help-block'] = $this->_notice;
+
+        if ( ! empty( $this->_params['help-block'] ) )
+            return "<div class=\"help-block\"><small>{$this->_params['help-block']}</small></div>";
+
+        if ( ! empty( $this->_params['help-inline'] ) )
+            return "<div class=\"help-inline\"><small>{$this->_params['help-inline']}</small></div>";
+
+        return "";
     }
 
     public function htmlField()
@@ -466,7 +504,7 @@ abstract class Form_Field
      */
     public function htmlInput( $field )
     {
-        $field['class'][] = 'input-xlarge';
+        $field['class'][] = $this->_class;
         $field['class']    = 'class="'.join(' ', $field['class']).'"';
         return "<input ".join(' ', $field)." />";
     }

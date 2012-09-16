@@ -7,20 +7,15 @@
  */
 class Controller_Gallery extends Sfcms_Controller
 {
-
-    public function init()
+    public function defaults()
     {
-        $default = array(
-            'dir'           => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'gallery',
-            'thumb_prefix'  => 'thumb_',
-            'middle_prefix' => 'middle_',
+        return array(
+            'gallery',
+            array(
+                'dir' => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'gallery',
+                'max_file_size' => defined('MAX_FILE_SIZE') ? MAX_FILE_SIZE : 2 * 1024 * 1024,
+            ),
         );
-        if( defined( 'MAX_FILE_SIZE' ) ) {
-            $default[ 'max_file_size' ] = MAX_FILE_SIZE;
-        } else {
-            $default[ 'max_file_size' ] = 2 * 1024 * 1024;
-        }
-        $this->config->setDefault( 'gallery', $default );
     }
 
     /**
@@ -31,7 +26,7 @@ class Controller_Gallery extends Sfcms_Controller
     {
         return array(
             'system'    => array(
-                'admin', 'edit', 'list', 'delete', 'realias', 'delcat', 'editcat',
+                'admin', 'edit', 'list', 'delete', 'realias', 'delcat', 'editcat', 'switchimg',
             ),
         );
     }
@@ -63,14 +58,14 @@ class Controller_Gallery extends Sfcms_Controller
             }
 
             $crit = array(
-                'cond'  => 'category_id = ? AND pos > ?',
+                'cond'  => 'category_id = ? AND pos > ? AND deleted != 1',
                 'params'=> array( $image->category_id, $image->pos ),
                 'order' => 'pos ASC',
             );
 
             $next = $model->find( $crit );
 
-            $crit[ 'cond' ]  = 'category_id = ? AND pos < ?';
+            $crit[ 'cond' ]  = 'category_id = ? AND pos < ? AND deleted != 1';
             $crit[ 'order' ] = 'pos DESC';
 
             $pred = $model->find( $crit );
@@ -98,7 +93,7 @@ class Controller_Gallery extends Sfcms_Controller
 
         if ( $category ) {
             $crit = array(
-                'cond'      => 'hidden = 0 AND category_id = ?',
+                'cond'      => 'category_id = ? AND deleted != 1 AND hidden != 1',
                 'params'    => array( $category->getId() ),
             );
 
@@ -129,7 +124,7 @@ class Controller_Gallery extends Sfcms_Controller
         $pageModel = $this->getModel( 'Page' );
         if( $this->page ) {
             $subPages  = $pageModel->findAll( array(
-                 'condition' => ' parent = ? AND deleted = 0 ',
+                 'condition' => ' parent = ? AND deleted != 1 ',
                  'params'    => array( $this->page->getId() ),
             ) );
 
@@ -171,9 +166,25 @@ class Controller_Gallery extends Sfcms_Controller
 
         $category = $this->getModel( 'GalleryCategory' );
 
-        if( $switchimg = $this->request->get( 'switchimg', Request::INT ) ) {
+        if( $this->request->get( 'positions' ) ) {
+            return $model->reposition();
+        }
 
-            $obj    = $model->find( $switchimg );
+        $cat_list = $category->findAll('deleted != 1');
+
+        $this->tpl->categories = $cat_list;
+//        $this->request->setContent( $this->tpl->fetch( 'gallery.admin_category' ) );
+//        return 1;
+    }
+
+    public function switchimgAction()
+    {
+        /** @var $model Model_Gallery */
+        $model = $this->getModel();
+
+        if( $id = $this->request->get( 'id', Request::INT ) ) {
+
+            $obj    = $model->find( $id );
             $switch_result = $model->hideSwitch( $obj->getId() );
             $obj->save();
 
@@ -185,36 +196,19 @@ class Controller_Gallery extends Sfcms_Controller
                     $switch_icon = icon( 'lightbulb', 'Выкл' );
                 }
                 return array(
-                    'id'    => $switchimg,
+                    'id'    => $id,
                     'img'   => $switch_icon,
-                    'errno' => 0,
+                    'error' => 0,
+                    'msg'   => '',
                 );
             } else {
                 return array(
-                    'errno' => 1,
-                    'error' =>  t( 'Switch error' ),
+                    'error' => 1,
+                    'msg' =>  t( 'Switch error' ),
                 );
             }
         }
 
-        if( $this->request->get( 'positions' ) ) {
-            return $model->reposition();
-        }
-
-        if( $editimage = $this->request->get( 'editimage', Request::INT ) ) {
-            $this->setAjax();
-            $editname    = $this->request->get( 'name' );
-            $image       = $model->find( $editimage );
-            $image->name = $editname;
-            $image->save();
-            return "$editimage => $editname";
-        }
-
-        $cat_list = $category->findAll();
-
-        $this->tpl->categories = $cat_list;
-//        $this->request->setContent( $this->tpl->fetch( 'gallery.admin_category' ) );
-//        return 1;
     }
 
     /**
@@ -228,13 +222,16 @@ class Controller_Gallery extends Sfcms_Controller
         $imgId = $this->request->get( 'id', Request::INT );
 
         if( $imgId ) {
-            if( $model->delete( $imgId ) ) {
-                $this->request->setResponse( 'id', $imgId );
-                $this->request->setResponseError( 0, t('Image was deleted') );
-            } else {
-                $this->request->setResponseError( 1, t( 'Can not delete' ) );
+            $image = $model->find( $imgId );
+            $image->deleted = 1;
+            if( $image->save() ) {
+                return array(
+                    'error' => 0,
+                    'msg' => t('Image was deleted'),
+                    'id' => $imgId,
+                );
             }
-            return;
+            return array('error' => 1, 'msg' => t( 'Can not delete' ));
         }
         return t('Image not was deleted');
     }
@@ -255,15 +252,11 @@ class Controller_Gallery extends Sfcms_Controller
         if( $form->getPost() ) {
             if( $form->validate() ) {
                 $obj    = $model->createObject( $form->getData() );
-                $obj_id = $obj->getId();
                 $model->save( $obj );
-
-//                if( $obj && ! $obj_id ) {
-//                }
-                $this->reload( 'admin/gallery', array(), 1000 );
-                return t( 'Data save successfully' );
+//                $this->reload( 'gallery/admin', array(), 1000 );
+                return array('error'=>0,'msg'=>t( 'Data save successfully' ),'name'=>$obj->name,'id'=>$obj->id);
             } else {
-                return $form->getFeedbackString();
+                return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
         }
 
@@ -290,13 +283,19 @@ class Controller_Gallery extends Sfcms_Controller
      */
     public function delcatAction()
     {
+        /** @var Model_GalleryCategory */
         $model = $this->getModel( 'GalleryCategory' );
         //        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
         $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
-        if( $id ) {
-            $model->remove( $id );
+        $cat = $model->find( $id );
+        if ( $cat ) {
+            $cat->deleted = 1;
+            $cat->save();
         }
-        return $this->redirect( 'admin/gallery' );
+//        if( $id ) {
+//            $model->delete( $id );
+//        }
+        return $this->redirect( 'gallery/admin' );
     }
 
     /**
@@ -322,7 +321,7 @@ class Controller_Gallery extends Sfcms_Controller
         }
 
         $images = $model->findAll( array(
-            'cond'  => 'category_id = :cat_id',
+            'cond'  => 'category_id = :cat_id AND deleted = 0',
             'params'=> array( ':cat_id'=> $catId ),
             'order' => 'pos',
         ) );
@@ -343,19 +342,23 @@ class Controller_Gallery extends Sfcms_Controller
     public function editAction()
     {
         $model = $this->getModel( 'Gallery' );
-        $this->request->setAjax( 1, Request::TYPE_ANY );
+        /** @var $form Form_Form */
         $form = $this->getForm( 'gallery_image' );
 
         /** @var Data_Object_Gallery $obj */
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $obj  = $model->find( $this->request->get( 'id' ) );
+                $obj  = $model->find( $form->getField('id')->getValue() );
                 $data = $form->getData();
                 $obj->setAttributes( $data );
                 $obj->save();
-                return t( 'Data save successfully' );
+                return array('error' => 0,
+                             'msg' => t( 'Data save successfully' ),
+                             'name'=>$obj->name,
+                             'id' => $obj->id,
+                );
             } else {
-                return $form->getFeedbackString();
+                return array('error' => 1, 'msg' => $form->getFeedbackString());
             }
         }
         $editimg = $this->request->get( 'id' );
@@ -367,7 +370,6 @@ class Controller_Gallery extends Sfcms_Controller
         $form->setData( $atr );
 
         return array('form'=>$form);
-//        return $form->html( false );
 }
 
     /**
@@ -407,8 +409,6 @@ class Controller_Gallery extends Sfcms_Controller
         $model         = $this->getModel();
         $max_file_size = $this->config->get( 'gallery.max_file_size' );
         $upload_ok     = 0;
-        $thumb_prefix  = $this->config->get( 'gallery.thumb_prefix' );
-        $middle_prefix = $this->config->get( 'gallery.middle_prefix' );
 
         if( isset( $_FILES[ 'image' ] ) && is_array( $_FILES[ 'image' ] ) ) {
             $images = $_FILES[ 'image' ];
@@ -449,44 +449,18 @@ class Controller_Gallery extends Sfcms_Controller
                             $model->save( $image );
                             $g_id         = $image->getId();
                             $img          = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
-                            $tmb          =
-                                $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $thumb_prefix . $images[ 'name' ][ $i ];
-                            $mdl          =
-                                $dest . DIRECTORY_SEPARATOR . '_' . $g_id . '_' . $middle_prefix . $images[ 'name' ][ $i ];
-                            $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
                             if( move_uploaded_file( $src, ROOT . $img ) ) {
-                                // обработка
-                                $thumb_h  = $cat->thumb_height;
-                                $thumb_w  = $cat->thumb_width;
-                                $middle_h = $cat->middle_height;
-                                $middle_w = $cat->middle_width;
-                                $t_method = $cat->thumb_method;
-                                $m_method = $cat->middle_method;
-                                try {
-                                    $img_full = new Sfcms_Image( ROOT . $img );
-                                    $img_mid  = $img_full->createThumb( $middle_w, $middle_h, $m_method, $cat->color );
-                                    if( $img_mid ) {
-                                        $img_mid->saveToFile( ROOT . $mdl );
-                                        $image->middle = str_replace( DIRECTORY_SEPARATOR, '/', $mdl );
-                                        unset( $img_mid );
-                                    }
-                                    $img_thmb = $img_full->createThumb( $thumb_w, $thumb_h, $t_method, $cat->color );
-                                    if( $img_thmb ) {
-                                        $img_thmb->saveToFile( ROOT . $tmb );
-                                        $image->thumb = str_replace( DIRECTORY_SEPARATOR, '/', $tmb );
-                                        unset( $img_thmb );
-                                    }
-                                } catch( Exception $e ) {
-                                    $this->request->addFeedback( $e->getMessage() );
-                                }
+                                $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
                             }
-                            $model->save( $image );
+                            $image->save();
                             if ( 0 == $image->pos ) {
-                                $cat->thumb = $image->thumb;
+                                $cat->image = $image->image;
                                 $cat->save();
                             }
                         } else {
-                            $this->request->addFeedback( "Превышен максимальный предел {$images['size'][$i]} из $max_file_size" );
+                            $this->request->addFeedback(
+                                "Exceeds the maximum size {$images['size'][$i]} from $max_file_size"
+                            );
                         }
                         break;
                     case UPLOAD_ERR_FORM_SIZE:

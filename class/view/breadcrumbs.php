@@ -13,7 +13,7 @@ class View_Breadcrumbs
     /**
      * @var string
      */
-    private $_separator = ' &gt; ';
+    private $_separator = '<span class="divider">&gt;</span>';
 
     public function __construct( array $pieces = array() )
     {
@@ -107,7 +107,7 @@ class View_Breadcrumbs
      */
     protected function createCrumb( $name, $url )
     {
-        return new View_Breadcrumbs_Crumb( $name, $url );
+        return new View_Breadcrumbs_Crumb( $name, $url, $this->_separator );
     }
 
     /**
@@ -123,7 +123,7 @@ class View_Breadcrumbs
             }
         }
 
-        $result = join( $this->_separator, $pieces );
+        $result = '<ul class="breadcrumb"><li>'.join( $this->getSeparator() . '</li><li>', $pieces ).'</li></ul>';
 
         return $result;
     }

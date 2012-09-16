@@ -106,8 +106,10 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testSave()
     {
-        $obj1   = $this->object->createObject(array('value'=>'val1'));
-        $obj2   = $this->object->createObject(array('value'=>'val2'));
+        $obj1   = $this->object->createObject();
+        $obj1->value = 'val1';
+        $obj2   = $this->object->createObject();
+        $obj2->value = 'val2';
         $this->assertNotNull( $this->object->save($obj1) );
         $this->assertNotNull( $this->object->save($obj2) );
     }

@@ -13,6 +13,7 @@ class Sfcms_Image_Scale
 
     const   METHOD_CROP = 'crop';
     const   METHOD_ADD  = 'add';
+    const   METHOD_PRIORITY = 'priority';
 
     /**
      * @throws Image_Scale_Exception
@@ -27,6 +28,9 @@ class Sfcms_Image_Scale
                 break;
             case self::METHOD_ADD:
                 $this->_scaller = new Sfcms_Image_Scale_Add( $image );
+                break;
+            case self::METHOD_PRIORITY:
+                $this->_scaller = new Sfcms_Image_Scale_Priority( $image );
                 break;
             default:
                 throw new Sfcms_Image_Scale_Exception( 'Undefined scalling method' );

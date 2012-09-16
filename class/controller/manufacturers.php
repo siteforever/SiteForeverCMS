@@ -7,11 +7,6 @@
 
 class Controller_Manufacturers extends Sfcms_Controller
 {
-    public function init()
-    {
-        $this->request->setTitle(t('Manufacturers'));
-    }
-
     /**
      * @return array
      */
@@ -22,18 +17,54 @@ class Controller_Manufacturers extends Sfcms_Controller
        );
    }
 
+   public function defaults()
+   {
+       return array(
+           'manufacturers',
+           array(
+               'onPage' => 10,
+           ),
+       );
+   }
+
 
     /**
      * Index Action
      */
     public function indexAction()
     {
-        // TODO: Implement indexAction() method.
+        $model  = $this->getModel();
+        $id     = $this->request->get('id');
+
+        if ( $id ) {
+            /** @var $item Data_Object_Manufacturers */
+            $item = $model->find( $id );
+            $this->request->setTitle( $item->name );
+            $this->tpl->getBreadcrumbs()
+                ->addPiece(null,$this->request->getTitle());
+            $this->tpl->assign('item', $item);
+            return $this->tpl->fetch('manufacturers/view');
+        }
+
+        $count = $model->count();
+        $paging = $this->paging(
+            $count,
+            $this->config->get('catalog.onPage'),
+            $this->getPage()->getUrl()
+        );
+
+
+        $items = $model->findAll(array('limit'=>$paging->limit));
+        return array(
+            'items' => $items,
+        );
     }
 
 
     public function adminAction()
     {
+        $this->request->setTitle(t('Manufacturers'));
+
         $this->app()->addScript('/misc/admin/manufacturers.js');
 
         /** @var $model Model_Manufacturers */
@@ -48,6 +79,8 @@ class Controller_Manufacturers extends Sfcms_Controller
 
     public function editAction()
     {
+        $this->request->setTitle(t('Manufacturers'));
+
         /** @var $model Model_Manufacturers */
         $model = $this->getModel();
         $form  = $model->getForm();
@@ -65,6 +98,8 @@ class Controller_Manufacturers extends Sfcms_Controller
 
     public function saveAction()
     {
+        $this->request->setTitle(t('Manufacturers'));
+
         /** @var $model Model_Manufacturers */
         $model = $this->getModel();
         $form  = $model->getForm();
@@ -72,13 +107,10 @@ class Controller_Manufacturers extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
-                if ( ! $obj->getId() ) {
-                    $obj->save();
-                }
-                $this->reload('manufacturers/admin', array(), 2000, true);
-                return t('Data save successfully');
+                $obj->save();
+                return array('error'=>0,'msg'=>t('Data save successfully'));
             } else {
-                return $form->getFeedbackString();
+                return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
         }
         return t('Form not posted');
@@ -87,6 +119,8 @@ class Controller_Manufacturers extends Sfcms_Controller
 
     public function deleteAction()
     {
+        $this->request->setTitle(t('Manufacturers'));
+
         $id = $this->request->get('id', Request::INT);
         /** @var $model Model_Manufacturers */
         $model = $this->getModel();

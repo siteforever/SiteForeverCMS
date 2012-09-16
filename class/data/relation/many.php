@@ -66,7 +66,7 @@ class Data_Relation_Many extends Data_Relation
      */
     protected function getCache( $id )
     {
-        if ( ! empty( self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] ) ) {
+        if ( isset( self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] ) ) {
             return self::$_cache[ $this->getModelName() ][ $this->key ][ $id ];
         }
         return null;

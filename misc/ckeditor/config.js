@@ -1,11 +1,10 @@
-/*
-Copyright (c) 2003-2010, CKSource - Frederico Knabben. All rights reserved.
+﻿/*
+Copyright (c) 2003-2012, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 CKEDITOR.editorConfig = function( config )
 {
-    config.skin = 'v2';
 	// Define changes to default configuration here. For example:
 	config.language = 'ru';
 	config.uiColor = '#EEEEEE';
@@ -15,7 +14,7 @@ CKEDITOR.editorConfig = function( config )
     config.resize_enabled = false; // отключаем ресайз редактора
     config.entities = false;    // отключаем преобразование символов
 
-    config.height   = '500';    // высота
+//    config.height   = '300';    // высота
 
     config.forcePasteAsPlainText = true;    // Всегда вставлять как текст
 
@@ -41,8 +40,8 @@ CKEDITOR.editorConfig = function( config )
                 ['Link','Unlink','Anchor'],
                 ['Image','Flash','Table','HorizontalRule','SpecialChar','PageBreak'],
                 ['Format'],
-                ['TextColor','BGColor'],
-                ['ShowBlocks','About']
+//                ['TextColor','BGColor'],
+                ['Maximize','ShowBlocks','-','About']
             ];
 
 };

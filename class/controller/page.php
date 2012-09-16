@@ -28,6 +28,7 @@ class Controller_Page extends Sfcms_Controller
 
     /**
      * @return mixed
+     * @throws Sfcms_Http_Exception
      */
     public function indexAction()
     {
@@ -185,20 +186,18 @@ class Controller_Page extends Sfcms_Controller
 
 
     /**
+     * @param int $edit идентификатор раздела, который надо редактировать
      * @return mixed
      */
-    public function editAction()
+    public function editAction( $edit )
     {
         /** @var Model_Page $model */
         $model = $this->getModel( 'Page' );
         $form  = $model->getForm();
 
-        // идентификатор раздела, который надо редактировать
-        $edit_id = $this->request->get( 'edit', Request::INT );
-
-        if ($edit_id) {
+        if ( $edit ) {
             // данные страницы
-            $page = $model->find( $edit_id );
+            $page = $model->find( $edit );
             if ($page) {
                 $form->setData( $page->getAttributes() );
                 return array( 'form' => $form );
@@ -224,10 +223,13 @@ class Controller_Page extends Sfcms_Controller
                 /** @var $obj Data_Object_Page */
                 if ( $id = $form->getField('id')->getValue() ) {
                     $obj = $model->find( $id );
-                    $obj->setAttributes( $form->getData() );
+                    $this->log($form->getData(),'page data');
+                    $obj->attributes = $form->getData();
                     $obj->update = time();
+                    $obj->save();
                 } else {
-                    $obj = $model->createObject( $form->getData() );
+                    $obj = $model->createObject();
+                    $obj->attributes = $form->getData();
                     $obj->update = time();
                     $obj->markNew();
                 }
@@ -235,9 +237,8 @@ class Controller_Page extends Sfcms_Controller
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
-            return;
         }
-        $this->request->setResponseError( 1, t('Unknown error') );
+        return array( 'error' => 1, 'msg' => t('Unknown error') );
     }
 
 

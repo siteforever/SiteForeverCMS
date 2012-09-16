@@ -36,7 +36,7 @@ class Pager implements ArrayAccess
         $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
-            $p[]    = Siteforever::html()->link('&lt; пред', $link, array('page'=>$page-1));
+            $p[]    = Siteforever::html()->link('&lt; пред', $link, $page > 2 ? array('page'=>$page-1) : array());
         }
 
         $radius = 2;
@@ -51,7 +51,7 @@ class Pager implements ArrayAccess
         }
 
         if ( $page - $radius > 1 ) {
-            $p[]    = Siteforever::html()->link('1', $link, array('page'=>1));
+            $p[]    = Siteforever::html()->link('1', $link);
             if ( $page - $radius - 1 > 1 ) {
                 $p[]    = '...';
             }
@@ -60,9 +60,8 @@ class Pager implements ArrayAccess
         for ( $i = $from; $i <= $to; $i++ ) {
             if ( $i == $page ) {
                 $p[]    = $page;
-            }
-            else {
-                $p[]    = Siteforever::html()->link($i, $link, array('page'=>$i));
+            } else {
+                $p[]    = Siteforever::html()->link($i, $link, $page > 2 ? array('page'=>$i) : array());
             }
         }
 

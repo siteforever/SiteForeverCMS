@@ -16,15 +16,14 @@ class Forms_Banners_Banner extends Form_Form
                 'id'                => array('type'=>'int', 'hidden'),
                 'cat_id'    => array(
                             'type'      => 'select',
-                            'label'     => 'Название категории баннера',
+                            'label'     => 'Категория',
                             'variants'  => $parents,
                         ),
-                'name'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Название баннера',),
-                'url'               => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Адрес перехода',),
-//                'path'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Путь к картинке баннера',),
+                'name'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>t('Name'),),
+                'url'               => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Url',),
                 'target'            => array(
                             'type'  => 'select',
-                            'label' => 'Куда загружать ссылки',
+                            'label' => 'Цель',
                             'variants'  => array(
 //                                '_parent'   =>'Открыть в фрейм родителя',
                                 '_blank'    =>'Открыть в новом окне',
@@ -32,7 +31,7 @@ class Forms_Banners_Banner extends Form_Form
 //                                '_top'      =>'Отменяет фреймы и загружает в текущее окно',
                             ),
                 ),
-                'content'           => array('type'=>'textarea', 'label'=>'Содержимое'),
+                'content'           => array('type'=>'textarea', 'label'=>t('page','Content')),
 
 //                'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),

@@ -5,8 +5,11 @@
 abstract class Sfcms_Model extends \Sfcms\Component
 {
     const HAS_MANY = 'has_many'; // содержет много
+    const ONE_TO_MANY = 'has_many'; // содержет много
     const HAS_ONE = 'has_one'; // содержет один
+    const ONE_TO_ONE = 'has_one'; // содержет один
     const BELONGS = 'belongs'; // принадлежит
+    const MANY_TO_ONE = 'belongs'; // принадлежит
 
     const STAT = 'stat'; // статистическая связь
 
@@ -58,6 +61,8 @@ abstract class Sfcms_Model extends \Sfcms\Component
      */
     protected $pdo = null;
 
+    private $_plugins = array();
+
     /**
      * Создание модели
      */
@@ -67,7 +72,6 @@ abstract class Sfcms_Model extends \Sfcms\Component
         $this->config  = $this->app()->getConfig();
         //$this->user     = $this->app()->getAuth()->currentUser();
 
-
         // база данных
         // определяется только в моделях
         if( is_null( self::$dao ) ) {
@@ -76,15 +80,6 @@ abstract class Sfcms_Model extends \Sfcms\Component
         }
         $this->db  = self::$dao;
         $this->pdo = $this->db->getResource();
-
-
-        if( ! isset( self::$exists_tables ) ) {
-            self::$exists_tables = array();
-            $tables              = $this->db->fetchAll( "SHOW TABLES", false, DB::F_ARRAY );
-            foreach( $tables as $t ) {
-                self::$exists_tables[ ] = $t[ 0 ];
-            }
-        }
 
         $this->init();
     }
@@ -105,6 +100,43 @@ abstract class Sfcms_Model extends \Sfcms\Component
     protected function init()
     {
     }
+
+
+    /**
+     * Вызывает нужные плугины
+     * @param string $name
+     * @param Data_Object $obj
+     */
+    protected function callPlugins( $name, Data_Object $obj )
+    {
+        if ( strpos( trim( $name, ':' ), ':' ) ) {
+            list( $namespace, $name ) = explode( ':', $name );
+        } else {
+            $namespace = 'default';
+        }
+//        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
+        // Если нет плагинов, ничего не делаем
+        if ( ! isset( $this->_plugins[ $namespace ] ) ) {
+            return;
+        }
+        foreach( $this->_plugins[$namespace] as $plugin ) {
+//            $this->log( get_class($plugin), 'modelPlugin' );
+            if ( method_exists( $plugin, $name ) ) {
+                $plugin->$name( $obj );
+            }
+        }
+    }
+
+    /**
+     * Добавляет плугин
+     * @param \Sfcms\Model\Plugin $plugin
+     * @param $namespace
+     */
+    protected function addPlugin( \Sfcms\Model\Plugin $plugin, $namespace = 'default' )
+    {
+        $this->_plugins[$namespace][] = $plugin;
+    }
+
 
     /**
      * Отношения модели с другими моделями
@@ -128,6 +160,13 @@ abstract class Sfcms_Model extends \Sfcms\Component
      */
     private function isExistTable( Data_Table $table )
     {
+        if( ! isset( self::$exists_tables ) ) {
+            self::$exists_tables = array();
+            $tables = $this->db->fetchAll( "SHOW TABLES", false, DB::F_ARRAY );
+            foreach( $tables as $t ) {
+                self::$exists_tables[ ] = $t[ 0 ];
+            }
+        }
         return in_array( (string)$table, self::$exists_tables );
     }
 
@@ -146,12 +185,13 @@ abstract class Sfcms_Model extends \Sfcms\Component
      * Вернет нужную модель
      * @static
      * @param  $class_name
-     * @return Sfcms_Model
+     * @return \Sfcms_Model
+     * @throws \RuntimeException
      */
     final static public function getModel( $class_name )
     {
         if ( ! $class_name ) {
-            throw new RuntimeException( 'Model is not defined' );
+            throw new \RuntimeException( 'Model is not defined' );
         }
         if ( ! preg_match('/^model_/i', $class_name) ) {
             $class_name = 'Model_' . $class_name;
@@ -160,7 +200,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
             if( class_exists( $class_name, true ) ) {
                 self::$all_class[ $class_name ] = new $class_name();
             } else {
-                throw new RuntimeException( 'Model "' . $class_name . '" not found' );
+                throw new \RuntimeException( 'Model "' . $class_name . '" not found' );
             }
         }
         return self::$all_class[ $class_name ];
@@ -173,7 +213,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
      */
     final public function createObject( $data = array() )
     {
-        $start = microtime( 1 );
+//        $start = microtime( 1 );
         // TODO Если создаем существующий объект, то св-ва не перезаписываем
         if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
@@ -182,7 +222,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
             }
         }
         $class_name = $this->objectClass();
-        $obj        = new $class_name( $this, $data );
+        $obj = new $class_name( $this, $data );
         if( ! is_null( $obj->getId() ) ) {
             $this->addToMap( $obj );
             $obj->markClean();
@@ -238,16 +278,22 @@ abstract class Sfcms_Model extends \Sfcms\Component
      */
     final public function getTable()
     {
-        if( is_null( $this->table ) ) {
+        if( null === $this->table ) {
             $class_name = $this->tableClass();
 
             $this->table = new $class_name();
 
-            if( ! $this->isExistTable( $this->table ) ) {
-                $this->addNewTable( $this->table );
-                $this->onCreateTable();
-            } elseif( $this->config->get( 'db.migration' ) ) {
-                $this->migration();
+            if( $this->config->get( 'db.migration' ) ) {
+                if( $this->isExistTable( $this->table ) ) {
+                    $this->migration();
+                } else {
+                    $this->addNewTable( $this->table );
+                    $this->onCreateTable();
+                }
+            }
+
+            if ( $this->config->get('db.autoGenerateMeta') ) {
+                $this->db->createMetaDataXML( (string) $this->table );
             }
         }
 
@@ -265,20 +311,16 @@ abstract class Sfcms_Model extends \Sfcms\Component
 
         $txtsys_fields = array();
         foreach( $sys_fields as $sfield ) {
-            /**
-             * @var Data_Field $sfield
-             */
+            /** @var Data_Field $sfield */
             $txtsys_fields[ ] = $sfield->getName();
         }
 
         $add_array = array_diff( $txtsys_fields, $have_fields );
         $del_array = array_diff( $have_fields, $txtsys_fields );
 
-
         $sql = array();
 
         if( count( $add_array ) || count( $del_array ) ) {
-
             foreach( $del_array as $col ) {
                 $sql[ ] = "ALTER TABLE `{$this->getTable()}` DROP COLUMN `$col`";
             }
@@ -320,7 +362,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
      * Установить связи для следующего запроса
      * @return Sfcms_Model
      */
-    function with()
+    public function with()
     {
         if ( func_get_arg(0) && is_array( func_get_arg(0) ) ) {
             $this->with = func_get_arg(0);
@@ -332,10 +374,22 @@ abstract class Sfcms_Model extends \Sfcms\Component
 
     /**
      * Create criteria
+     * @deprecated Need use createCriteria()
      * @param array $params
      * @return Db_Criteria
      */
     public function criteriaFactory( $params = array() )
+    {
+        trigger_error('Need use createCriteria()', E_DEPRECATED);
+        return new Db_Criteria( $params );
+    }
+
+    /**
+     * Create criteria
+     * @param array $params
+     * @return Db_Criteria
+     */
+    public function createCriteria( $params = array() )
     {
         return new Db_Criteria( $params );
     }
@@ -386,7 +440,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
         }
 
         if ( is_array( $crit ) )  {
-            $crit = $this->criteriaFactory( $crit );
+            $crit = $this->createCriteria( $crit );
         }
 
         if ( ! is_object( $crit ) && ! $crit instanceof Db_Criteria ) {
@@ -507,14 +561,19 @@ abstract class Sfcms_Model extends \Sfcms\Component
             return false;
         }
         $data      = $obj->attributes;
-        $fields    = $this->table->getFields();
+        $fields    = $this->getTable()->getFields();
+        $changed   = $obj->changed();
         $save_data = array();
 
         /** @var Data_Field $field */
         foreach( $fields as $field ) {
-            if( 'id' != $field->getName() && isset( $data[ $field->getName() ] ) ) {
+            if( 'id' != $field->getName() && isset( $data[ $field->getName() ] ) && isset( $changed[ $field->getName() ] ) ) {
                 $save_data[ $field->getName() ] = $data[ $field->getName() ];
             }
+        }
+
+        if ( ! count( $save_data ) ) {
+            return null;
         }
 
         $ret = null;
@@ -542,6 +601,8 @@ abstract class Sfcms_Model extends \Sfcms\Component
     }
 
     /**
+     * Тут нельзя вызывать сохраниение объекта, или вызывать очень осторожно.
+     * Иначе возникнет бесконечный цикл
      * @param Data_Object $obj
      * @return boolean
      */
@@ -595,12 +656,20 @@ abstract class Sfcms_Model extends \Sfcms\Component
 
     /**
      * Вернет количество записей по условию
-     * @param string $cond
+     * @param string|Db_Criteria $cond
      * @param array $params
      * @return int
      */
     final public function count( $cond = '', $params = array() )
     {
+        $this->log( $cond, 'count' );
+
+
+        if ( is_object( $cond ) && $cond instanceof Db_Criteria ) {
+            $params = $cond->params;
+            $cond   = $cond->condition;
+        }
+
         $criteria = new Data_Criteria( $this->getTable(), array(
             'select'    => 'COUNT(*)',
             'cond'      => $cond,

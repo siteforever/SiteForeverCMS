@@ -17,7 +17,7 @@ return array(
     'Name' => 'Наименование',
     'Description' => 'Описание',
     'Articles' => 'Статей',
-    'Parameters' => 'Параметры',
+    'Action' => 'Действия',
 
     'Date' => 'Дата',
     'Actions' => 'Действия',
@@ -25,4 +25,9 @@ return array(
     'Category list' => 'Список категорий',
 
     'News was delete' => 'Новость была удалена',
+    'News category edit' => 'Правка категории',
+
+    'Main settings' => 'Основные настройки',
+
+    'News category was deleted' => 'Категория новостей была удалена',
 );

@@ -227,14 +227,14 @@ class RequestTest extends PHPUnit_Framework_TestCase
     public function testGetResponseAsXML()
     {
         $this->request->setResponseError(10,'test error');
-        $this->assertEquals("<?xml version=\"1.0\"?>\n<response><error>test error</error><errno>10</errno></response>\n",
+        $this->assertEquals("<?xml version=\"1.0\"?>\n<response><error>10</error><msg>test error</msg></response>\n",
             $this->request->getResponseAsXML());
     }
 
     public function testGetResponseAsJson()
     {
         $this->request->setResponseError(10,'test error');
-        $this->assertEquals("{\"error\":\"test error\",\"errno\":10}",
+        $this->assertEquals("{\"error\":10,\"msg\":\"test error\"}",
             $this->request->getResponseAsJson());
     }
 }

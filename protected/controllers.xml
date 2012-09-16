@@ -12,6 +12,9 @@
     <controller name="catalog">
         <label>Каталог</label>
     </controller>
+    <controller name="manufacturers">
+        <label>Производители</label>
+    </controller>
     <controller name="gallery">
         <label>Галерея</label>
     </controller>

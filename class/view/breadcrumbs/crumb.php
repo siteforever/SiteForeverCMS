@@ -9,10 +9,12 @@ class View_Breadcrumbs_Crumb
 {
     private $_name  = '';
     private $_alias = '';
+    private $_sep   = '';
 
-    public function __construct( $name, $alias = null )
+    public function __construct( $name, $alias = null, $separator = '' )
     {
         $this->_name    = $name;
+        $this->_sep     = $separator;
         if ( null === $alias ) {
             $this->_alias   = null;
         } else {
@@ -25,6 +27,6 @@ class View_Breadcrumbs_Crumb
         if ( null === $this->_alias ) {
             return $this->_name;
         }
-        return  "<a href='/{$this->_alias}'>{$this->_name}</a>";
+        return  Siteforever::html()->link($this->_name, $this->_alias);
     }
 }

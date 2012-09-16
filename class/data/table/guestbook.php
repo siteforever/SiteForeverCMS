@@ -24,6 +24,7 @@ class Data_Table_Guestbook extends Data_Table
             new Data_Field_Varchar( 'ip', 15, true, null, false ),
             new Data_Field_Text( 'message', 11, true, null, false ),
             new Data_Field_Text( 'answer', 11, true, null, false ),
+            new Data_Field_Tinyint( 'hidden', 1, false, 0 ),
         );
     }
 

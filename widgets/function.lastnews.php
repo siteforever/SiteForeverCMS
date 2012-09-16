@@ -32,6 +32,7 @@ function smarty_function_lastnews( $params, $smarty )
     $where = array();
     $where[]    = "hidden = 0";
     $where[]    = "deleted = 0";
+//    $where[]    = "main = 0";
 
     $param      = array();
 
@@ -45,13 +46,7 @@ function smarty_function_lastnews( $params, $smarty )
      */
     $model = Sfcms_Model::getModel('News');
 
-    //$model->setCond( implode(' AND ', $where) );
-
     $list = $model->findAll( join( " AND ", $where ), $param, $sort, $params[ 'limit' ] );
-
-//    $list   = $model->findAll('');
-
-    //$list   = $model->findAllWithLinks($params['limit']);
 
     $tpl    = App::getInstance()->getTpl();
 
@@ -59,11 +54,10 @@ function smarty_function_lastnews( $params, $smarty )
         $tpl->assign('list', $list);
         //return $params['template'];
         $content    = $tpl->fetch( $params['template'] );
-    }
-    else {
+    } else {
         $content     = array('<ul>');
         foreach ( $list as $l ) {
-            $content[]  = "<li><a href='".$l->getAlias()."'>{$l['name']}</a></li>";
+            $content[]  = "<li><a href='".$l->getUrl()."'>{$l['name']}</a></li>";
         }
         $content[]  = '</ul>';
         $content    = join('', $content);

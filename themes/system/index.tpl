@@ -5,29 +5,30 @@
 </head>
 
 <body class="body" id="admin">
-<div class="navbar">
+<div class="navbar navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
             <div class="nav-collapse">
                 <span class="brand">SiteForeverCMS</span>
                 <ul class="nav">
                     <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {t}Goto site{/t}</a></li>
+                    <li>{a href="settings/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>
                 </ul>
                 <ul class="nav pull-right">
-                    <li class="dropdown">
-                        {a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}
-                        <ul class="dropdown-menu">
-                            <li>{a href="users/logout"}{t}Exit{/t}{/a}</li>
-                        </ul>
+                    <li>{a href="users/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>
+                    {*<li class="dropdown">*}
+                        {*{a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}*}
+                        {*<ul class="dropdown-menu">*}
+                            {*<li>{a href="users/logout"}{t}Exit{/t}{/a}</li>*}
+                        {*</ul>*}
                         {*<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>*}
-                    </li>
+                    {*</li>*}
                 </ul>
             </div>
         </div>
     </div>
 </div>
 <div class="container-fluid">
-
     <div class="row-fluid">
         <div class="span3">
             <div class="well">
@@ -69,7 +70,9 @@
 
 </div>
 {*<footer>*}
-    {*<a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>*}
+    {*<div class="contaiter">*}
+        {*<a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>*}
+    {*</div>*}
 {*</footer>*}
 
 </body>

@@ -3,63 +3,57 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-(function($, $s){
 
-    $s.news = {
-        dialogEditCat: {
-            'autoOpen': false,
-            'modal':    true,
-            'resizable': false,
-            'width':    700,
-            'open': function() {
-                $('.datepicker').datepicker($s.datepicker);
-                $( "#tabs" ).tabs();
-                wysiwyg.init();
-            },
-            'title':    $s.i18n('news','News category')
-        },
-        save: {
-            'text': $s.i18n('Save'),
-            'click': function() {
-                var self = this;
-                $('form',this).ajaxSubmit({
-                    'dataType': 'json',
-                    'success': function( response ) {
-                        $s.alert( response.msg, 2000).done(function(){
-                            if ( 0 == response.error ) {
-                                document.location.reload();
-                                //$(self).dialog('close');
-                            }
-                        });
+define([
+    "jquery",
+    "siteforever",
+    "module/modal",
+    "i18n",
+    "jquery/jquery.form"
+],function($, $s, Modal, i18n){
+    return {
+        "behavior" : {
+            'a.do_delete' : {
+                "click" : function( event, node ){
+                    if ( ! confirm(i18n('Want to delete?')) ) {
+                        return false;
                     }
-                });
+                    try {
+                        $.post( $(node).attr('href'), $.proxy(function(response){
+                            if (!response.error) {
+                                $(node).parents('tr').remove();
+                            }
+                            $s.alert(response.msg, 1500);
+                        },this), "json");
+                    } catch (e) {
+                        console.error(e.message );
+                    }
+                    return false;
+                }
+            },
+            'a.catEdit,a.newsEdit' : {
+                /**
+                 * Opening edit dialog with loaded content
+                 * @return {Boolean}
+                 */
+                "click" : function( event, node ) {
+                    try {
+                        $.get( $( node ).attr('href') ).then($.proxy(function( response ){
+                            if ( $(node).attr('title') ) {
+                                this.newsEdit.title( $(node).attr('title') );
+                            }
+                            this.newsEdit.body( response ).show();
+                        },this));
+                    } catch (e) {
+                        console.error(e);
+                    }
+                    return false;
+                }
             }
         },
-        cancel: {
-            'text': $s.i18n('Cancel'),
-            'click': function() {
-                $(this).dialog('close');
-            }
+
+        "init" : function() {
+            this.newsEdit = new Modal('newsEdit');
         }
     };
-    $s.news.dialogEditCat.buttons = [ $s.news.save, $s.news.cancel ];
-
-
-    /**
-     * Init
-     */
-    $(document).ready(function(){
-        if ( ! $('#newsEditDialod').length ) {
-            $('<div id="newsEditDialod"></div>').appendTo('body').hide().dialog( $s.news.dialogEditCat );
-        }
-
-        $('a.catEdit,a.newsEdit').on('click', function(){
-            $('#newsEditDialod').dialog('option', 'title', $(this).attr('title'));
-            $.get($(this).attr('href')).done( function (response) {
-                $('#newsEditDialod').html(response).dialog('open');
-            } );
-            return false;
-        });
-    });
-
-})(jQuery, siteforever);
+});

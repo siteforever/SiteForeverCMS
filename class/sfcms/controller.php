@@ -5,7 +5,9 @@
  *
  * @property \TPL_Driver $tpl
  */
-abstract class Sfcms_Controller extends \Sfcms\Component
+use \Sfcms\Component as Component;
+
+abstract class Sfcms_Controller extends Component
 {
     private static $forms = array();
 
@@ -39,25 +41,27 @@ abstract class Sfcms_Controller extends \Sfcms\Component
         $this->request  = $this->app()->getRequest();
         $this->router   = $this->app()->getRouter();
         $this->user     = $this->app()->getAuth()->currentUser();
-        $this->params = $this->request->get('params');
+        $this->params   = $this->request->get('params');
 
         // Basket should be initialized to connect the JavaScript module
         $this->getBasket();
 
-        $id         = $this->request->get( 'id', Request::INT );
+        $defaults = $this->defaults();
+        if ( $defaults ) {
+            $this->config->setDefault( $defaults[0], $defaults[1] );
+        }
+
+        $pageId     = $this->request->get( 'pageid', Request::INT );
         $controller = $this->request->getController();
         $action     = $this->request->getAction();
 
-        try {
-            if ( null !== $id && ! in_array($controller, array('page','guestbook','gallery')) && 'index' == $action ) {
-                $page   = $this->getModel('Page')->findByControllerLink($controller,$id);
-            } elseif ( in_array($controller, array('page','guestbook','gallery')) && 'index' == $action && $id ) {
-                $page   = $this->getModel('Page')->find( $id );
-            } else {
-                throw new Exception('Page not found');
-            }
-        } catch ( Exception $e ) {
-            $page   = null;
+        // Define page
+        $moduleClass = \Sfcms\Module::getModuleClass( $controller );
+        $page = null;
+        if ( $pageId && 'index' == $action ) {
+            $relField = $moduleClass::relatedField();
+            $model = $this->getModel('Page');
+            $page  = $model->find("`$relField` = ? AND `controller` = ?", array( $pageId, $controller ));
         }
 
         if ( null !== $page ) {
@@ -69,6 +73,7 @@ abstract class Sfcms_Controller extends \Sfcms\Component
             $this->request->setKeywords( $page->get('keywords') );
             $this->tpl->getBreadcrumbs()->fromSerialize( $page->get('path') );
         }
+
         $this->page     = $page;
 
         if ( $this->app()->isDebug() ) {
@@ -102,6 +107,9 @@ abstract class Sfcms_Controller extends \Sfcms\Component
         return $this->_tpl;
     }
 
+    /**
+     * @return Basket
+     */
     public function getBasket()
     {
         return $this->app()->getBasket();
@@ -118,6 +126,15 @@ abstract class Sfcms_Controller extends \Sfcms\Component
                 'admin',
             ),
         );
+    }
+
+    /**
+     * Возвращает настройки по умолчанию
+     * @return null|array
+     */
+    public function defaults()
+    {
+
     }
 
     /**
@@ -219,11 +236,6 @@ abstract class Sfcms_Controller extends \Sfcms\Component
     {
         return new Pager( $count, $perpage, $link );
     }
-
-    /**
-     * Index Action
-     */
-    abstract public function indexAction();
 
     /**
      * @param Data_Object_Page $page

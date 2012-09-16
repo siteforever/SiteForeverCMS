@@ -189,13 +189,25 @@ abstract class Basket
                 }
             }
         }
-        else {
-            $summa = 0;
-            foreach( $this->data as $prod ) {
-                $summa += $prod['count'] * $prod['price'];
-            }
-            return $summa;
+        $summa = 0.0;
+        foreach( $this->data as $prod ) {
+            $summa += $prod['count'] * $prod['price'];
         }
+        return $summa;
+    }
+
+    public function getKeys()
+    {
+        $result = array();
+        foreach( $this->data as $prod ) {
+            if ( isset( $prod['id'] ) && is_numeric( $prod['id'] ) ) {
+                $result[] = $prod['id'];
+            }
+        }
+        if ( count( $result ) ) {
+            return $result;
+        }
+        return null;
     }
 
     /**

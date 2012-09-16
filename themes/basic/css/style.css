@@ -1,24 +1,11 @@
 @CHARSET "UTF-8";
 
 html, body {
-    height: 100%;
+    /*height: 100%;*/
     font: 14px tahoma;
 }
 
-h1, h2, h3, p { margin-bottom: 0.5em; }
-h1 { font: 150% Tahoma; }
-h2 { font: 130% Tahoma; }
-h3 { font: 110% Tahoma; }
-
-.b-request-feedback {
-    color: red;
-    background: #fff;
-    padding: 5px;
-    margin: 0 0 1em 0;
-    border: 1px #999 solid;
-}
-
-
+h1, h2, h3, h4, h5, h6, p { margin-top: 0; }
 
 a {
     color: #247d06;
@@ -27,9 +14,6 @@ a:hover {
     color: #40df0b;
 }
 
-.b-header {
-    border-bottom: 1px solid #999;
-}
 
 ul {
     margin-bottom:1em;
@@ -42,16 +26,6 @@ abbr {
     cursor: pointer;
 }
 
-/*
- * FORMS
- */
-.b-form-field {
-    margin-bottom: 0.5em;
-}
-input.submit {
-    width: 100px;
-}
-
 .feedback {
     margin-bottom: 10px;
 }
@@ -59,7 +33,7 @@ input.submit {
 
 
 
-.b-body {
+body {
     text-align: center;
     min-height: 100%;
     height: auto !important;
@@ -67,36 +41,29 @@ input.submit {
     margin-bottom: -70px;
 }
 
-    .b-body-wrapper {
+    .contaiter {
         width: 1000px;
+        max-width: 1200px;
         text-align: left;
         margin: 0 auto;
     }
 
-    .b-body-footer {
-        height: 70px;
-    }
-
-    .b-footer {
+    footer {
         height: 70px;
         width: 1000px;
+        max-width: 1200px;
         text-align: left;
         margin: 0 auto;
     }
 
-    .b-left-panel {
-        float: left;
-        width: 230px;
-    }
+/*input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {*/
+    /*height: 17px;*/
+/*}*/
 
-    .b-content {
-        margin: 0 0 0 250px;
-    }
-
-    .b-breadcrumbs {
-        margin-bottom: 1em;
-    }
-
+.captcha-reload {
+    border-bottom: 1px #000 dashed;
+    cursor: pointer;
+}
 
 .b-logo {
     display: block;
@@ -136,13 +103,6 @@ input.submit {
                 text-decoration:none;
             }
 
-.b-content li {
-    padding-left: 20px;
-    margin: 0.5em;
-    background: url(../images/li.gif) no-repeat 5px 8px;
-}
-
-
     table.b-info-staff td {
         padding: 0 0.5em 0.5em 0;
     }
@@ -155,10 +115,16 @@ input.submit {
     }
 
 
-.b-left-menu {
+div.b-left-menu {
     margin-bottom: 15px;
 }
-    .b-left-menu li li {
+
+    div.b-left-menu ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    div.b-left-menu li li {
         padding-left: 20px;
     }
 

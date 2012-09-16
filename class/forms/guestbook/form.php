@@ -5,14 +5,15 @@
  */
 class Forms_Guestbook_Form extends Form_Form
 {
-    function __construct()
+    public function __construct()
     {
         return parent::__construct( array(
             'name'  => 'guestbook',
+            'method' => 'post',
             'fields'=> array(
                 'name'  => array('type'=>'text', 'label'=>t('guestbook','Name'), 'required'),
                 'email'  => array('type'=>'text', 'label'=>t('guestbook','Email'), 'required',
-                    'filter'    => '/^[\.\-_A-Za-z0-9]+?@[\.\-A-Za-z0-9]+?\.[A-Za-z0-9]{2,6}$/',
+                    'filter'    => 'email',
                 ),
                 'message'  => array('type'=>'textarea', 'label'=>t('guestbook','Message'), 'required'),
                 'captcha' => array('type'=>'captcha', 'label'=>t('guestbook','Captcha')),

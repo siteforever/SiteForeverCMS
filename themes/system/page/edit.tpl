@@ -36,6 +36,7 @@
                     {$form->htmlFieldWrapped('title')}
                     {$form->htmlFieldWrapped('keywords')}
                     {$form->htmlFieldWrapped('description')}
+                    {$form->htmlFieldWrapped('nofollow')}
                 </div>
                 <div id="images" class="tab-pane">
                     {$form->htmlFieldWrapped('thumb')}

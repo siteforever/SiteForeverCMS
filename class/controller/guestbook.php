@@ -18,7 +18,6 @@ class Controller_Guestbook extends Sfcms_Controller
         );
     }
 
-
     /**
      * Index Action
      */
@@ -38,9 +37,10 @@ class Controller_Guestbook extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $this->log( $form->getData() );
+                $this->log( $form->getData(), 'form' );
 
                 $obj = $model->createObject();
+
                 $obj->set( 'name', strip_tags( $form->getField( 'name' )->getValue() ) );
                 $obj->set( 'email', strip_tags( $form->getField( 'email' )->getValue() ) );
                 $obj->set( 'message', strip_tags( $form->getField( 'message' )->getValue() ) );
@@ -49,11 +49,26 @@ class Controller_Guestbook extends Sfcms_Controller
                 $obj->set( 'ip', $_SERVER['REMOTE_ADDR'] );
 
                 $model->save( $obj );
+
+                sendmail(
+                    $obj->email,
+                    $this->config->get('admin'),
+                    'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),
+                    $this->getTpl()->fetch('guestbook.letter')
+                );
+
+                sendmail(
+                    $obj->email,
+                    'keltanas@gmail.com',
+                    'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),
+                    $this->getTpl()->fetch('guestbook.letter')
+                );
+
             }
         }
 
         $crit   = array(
-            'cond'  => ' link = ? ',
+            'cond'  => ' link = ? AND hidden != 1 ',
             'params'=> array( $link ),
         );
 
@@ -88,7 +103,7 @@ class Controller_Guestbook extends Sfcms_Controller
         $this->app()->addScript('/misc/admin/guestbook.js');
 
         $model  = $this->getModel('Guestbook');
-        $crit = $model->criteriaFactory();
+        $crit = $model->createCriteria();
 
         if ( $link = $this->request->get('link') ) {
             $crit->condition = ' `link` = ? ';
@@ -133,7 +148,7 @@ class Controller_Guestbook extends Sfcms_Controller
             if ( $form->validate() ) {
                 $msg->setAttributes( $form->getData() );
                 $msg->markDirty();
-                return array( 'error'=>0, 'msg'=>t('Save successfully'));
+                return array( 'error'=>0, 'msg'=>t('Data save successfully'));
             } else {
                 return array( 'error'=>1, 'msg'=>$form->getFeedbackString());
             }

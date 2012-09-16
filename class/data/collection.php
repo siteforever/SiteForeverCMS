@@ -44,7 +44,7 @@ class Data_Collection implements Iterator
      * @param $raw
      * @param Sfcms_Model $mapper
      */
-    function __construct( $raw = null, Sfcms_Model $mapper = null )
+    public function __construct( $raw = null, Sfcms_Model $mapper = null )
     {
         if ( ! is_null( $raw ) && $raw && ! is_null( $mapper ) ) {
             $this->_raw      = array_values( $raw );
@@ -57,7 +57,7 @@ class Data_Collection implements Iterator
      * Добавить элемент в коллекцию
      * @param $obj
      */
-    function add( Data_Object $obj )
+    public function add( Data_Object $obj )
     {
         if ( in_array( $obj, $this->_objects, true ) ) {
             return $this;
@@ -73,7 +73,7 @@ class Data_Collection implements Iterator
      * Удалит элемент из коллекции
      * @param boolean|int|Data_Object $key
      */
-    function del( $key = false )
+    public function del( $key = false )
     {
         if ( $key === false ) {
             $key = $this->_pointer;
@@ -101,7 +101,7 @@ class Data_Collection implements Iterator
     /**
      * Вернет количество записей
      */
-    function count()
+    public function count()
     {
         return $this->_total;
     }
@@ -110,18 +110,44 @@ class Data_Collection implements Iterator
      * Расчитает сумму по нужной колонке
      * @param string $key
      * @return int
+     * @deprecated
      */
-    function summa($key)
+    public function summa($key)
     {
-        $summa = 0;
-        if ( isset( $this->_raw[0][$key] ) ) {
-            foreach ( $this->_raw as $raw ) {
-                $summa += $raw[$key];
-            }
-        }
-        return $summa;
+        return $this->sum($key);
     }
 
+    /**
+     * Расчитает сумму по нужной колонке
+     * @param string $key
+     * @return int
+     */
+    public function sum( $key ){
+        $result = 0;
+        foreach ( $this as $obj ) {
+            $result += $obj->$key;
+        }
+        return $result;
+    }
+
+    /**
+     * Вернет массив, в котором содержатся значение определенной колонки
+     * По возможности, индексирует по id
+     * @param string $name
+     * @return array
+     * @throws RuntimeException
+     */
+    public function getColumn( $name )
+    {
+        $result = array();
+        foreach ( $this as $obj ) {
+            if ( isset( $obj->id ) )
+                $result[ $obj->id ] = $obj->$name;
+            else
+                $result[] = $obj->$name;
+        }
+        return $result;
+    }
 
     /**
      * @return void
@@ -157,7 +183,7 @@ class Data_Collection implements Iterator
     /**
      * @return Data_Object
      */
-    function rewind()
+    public function rewind()
     {
         $this->_pointer = 0;
         return $this->current();
@@ -166,7 +192,7 @@ class Data_Collection implements Iterator
     /**
      * @return Data_Object
      */
-    function current()
+    public function current()
     {
         return $this->getRow( $this->_pointer );
     }
@@ -174,7 +200,7 @@ class Data_Collection implements Iterator
     /**
      * @return int
      */
-    function key()
+    public function key()
     {
         return $this->_pointer;
     }
@@ -182,7 +208,7 @@ class Data_Collection implements Iterator
     /**
      * @return Data_Object
      */
-    function next()
+    public function next()
     {
         $row = $this->getRow( $this->_pointer );
         if ( $row ) {
@@ -194,7 +220,7 @@ class Data_Collection implements Iterator
     /**
      * @return bool
      */
-    function valid()
+    public function valid()
     {
         return ( ! is_null( $this->current() ) );
     }
@@ -202,7 +228,7 @@ class Data_Collection implements Iterator
     /**
      * @return array|null
      */
-    function getData()
+    public function getData()
     {
         return $this->_raw;
     }
@@ -210,7 +236,7 @@ class Data_Collection implements Iterator
     /**
      * @return array
      */
-    function getObjects()
+    public function getObjects()
     {
         return $this->_objects;
     }

@@ -21,6 +21,14 @@ class Forms_Guestbook_Edit extends Form_Form
 
                 'message'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Message'), 'class'=>'plain', ),
                 'answer'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Answer'), 'class'=>'plain', ),
+
+                'hidden'     => array(
+                    'type'      => 'radio',
+                    'label'     => 'Скрывать',
+                    'value'     => '0',
+                    'variants'  => array( t('No'), t('Yes') ),
+                ),
+
                 'submit'    => array( 'type'=>'submit', 'value'=>t('guestbook','Save') ),
             ),
         ) );

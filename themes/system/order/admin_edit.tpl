@@ -1,43 +1,38 @@
 
-<h2>Заказ <b>№ {$order.id}</b> от {$order.date|date_format:"%x"}</h2>
+<p>{a controller="order" action="admin"}&laquo; Список заказов{/a}</p>
 
-<form action="{link url="admin/order" num=$order.id}" method="post" class="well form-inline">
-    <label for="new_status" class="control-label">Статус</label>
-    <select name="new_status" id="new_status">
-    {foreach from=$statuses item="item" key="key"}
-        <option value="{$item->id}"{if $item->id == $order.status} selected{/if}>{$item->name}</option>
-    {/foreach}
-    </select>
-    <input type="submit" class="btn" value={t}Save{/t}>
-</form>
+
+{form action="order/admin" method="post" class="well form-inline"}
+    <input type="hidden" name="id" value="{$order->id}">
+    <label for="new_status" class="control-label">Статус:&nbsp;</label>
+    <div class="input-append">
+        <select name="new_status" id="new_status">
+        {foreach from=$statuses item="item" key="key"}
+            <option value="{$item->id}"{if $item->id == $order.status} selected{/if}>{$item->name}</option>
+        {/foreach}
+        </select>
+        <input type="submit" class="btn" value={t}Save{/t}>
+    </div>
+{/form}
 
 <hr />
 
-<p>Фамилия: {$user.fname}</p>
-<p>Имя: {$user.lname}</p>
-<p>Email: <a href="mailto:{$user.email}">{$user.email}</a></p>
-<p>Наименование: {$user.name}</p>
-<p>Телефон: {$user.phone}</p>
-<p>Факс: {$user.fax}</p>
-<p>ИНН: {$user.inn}</p>
-<p>КПП: {$user.kpp}</p>
-<p>Адрес: {$user.address}</p>
-<p>Статус:
-    {if $user.status == $smarty.const.USER_USER}Покупатель{/if}
-    {if $user.status == $smarty.const.USER_WHOLE}Оптовый покупатель{/if}
-</p>
-
+<p>Имя: {$order.fname}</p>
+<p>Фамилия: {$order.lname}</p>
+<p>Email: <a href="mailto:{$order.email}">{$order.email}</a></p>
+<p>Телефон: {$order.phone}</p>
+<p>Адрес: {$order.address}</p>
+<p>Комментарий: {$order.comment}</p>
 
 <hr />
 
 <p><b>Позиции:</b></p>
 
-<table class="table table-striped table-bordered table-condensed">
+<table class="table table-striped">
 <thead>
     <tr>
         <th>№</th>
-        <th>Наименование</th>
-        <th>Артикул</th>
+        <th>Артикул/Наименование</th>
         <th>Цена</th>
         <th>Количество</th>
         <th>Сумма</th>
@@ -47,26 +42,20 @@
     {foreach from=$positions item="pos"}
     <tr>
         <td>{counter}</td>
-        <td>{$pos.name}</td>
-        <td>{$pos.articul}</td>
+        <td>{$pos.articul} {$pos.name}</td>
         <td>{$pos.price}</td>
         <td>{$pos.count}</td>
-        <td>{$pos.summa}</td>
+        <td>{$pos.sum}</td>
     </tr>
     {/foreach}
 </tbody>
 <tfoot>
     <tr>
-        <td></td>
-        <td><b>Итого:</b></td>
-        <td></td>
+        <td colspan="2"><b>Итого:</b></td>
         <td></td>
         <td><b>{$count}</b></td>
         <td><b>{$summa}</b></td>
     </tr>
 </tfoot>
 </table>
-
-
-<p><a {href url="admin/order"}>&lt; Список заказов</a></p>
 

@@ -11,6 +11,7 @@
  * @property $email
  * @property $phone
  * @property $basket
+ * @property $address
  */
 class Data_Object_User extends Data_Object
 {

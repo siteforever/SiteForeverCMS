@@ -23,11 +23,11 @@ class Siteforever_Html
 
     /**
      * Вернет строку URL для указанных параметров
-     * @param $url
-     * @param $params
+     * @param string|null $url
+     * @param array $params
      * @return string
      */
-    public function url( $url, $params )
+    public function url( $url, $params = array() )
     {
         return App::getInstance()->getRouter()->createLink( $url, $params );
     }
@@ -44,6 +44,13 @@ class Siteforever_Html
         $attributes = array();
         if ( $class ) {
             $params['class'] = $class;
+        }
+        if ( isset( $params['nofollow'] ) ) {
+            if ( $params['nofollow'] ) {
+                $attributes[] = "rel=\"nofollow\"";
+                unset( $params['rel'] );
+            }
+            unset( $params['nofollow'] );
         }
         $passAttrs = array('class','title','rel');
         foreach ( $passAttrs as $attr ) {

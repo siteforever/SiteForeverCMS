@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
  
-class forms_news_Edit extends form_Form
+class Forms_News_Edit extends Form_Form
 {
 
     function __construct()
@@ -36,9 +36,17 @@ class forms_news_Edit extends form_Form
                 ),
                 'author_id' => array('type'=>'text', 'value'=>$app->getAuth()->currentUser()->getId(), 'label'=>'','hidden',),
                 'name'      => array('type'=>'text', 'value'=>'', 'label'=>'Название',),
+                'main'      => array(
+                    'type'=>'radio',
+                    'label'=>'Показывать на главной',
+                    'value'=>'0',
+                    'variants' => array('0' => 'Нет', '1' => 'Да'),
+                ),
+
                 'notice'    => array('type'=>'textarea', 'value'=>'', 'label'=>'Вступление',),
                 'text'      => array('type'=>'textarea', 'value'=>'', 'label'=>'Текст',),
                 'date'      => array('type'=>'date', 'label'=>'Дата',),
+                'image'     => array('type'=>'text', 'class'=>'image', 'label' => 'Изображение'),
                 'title'     => array('type'=>'text', 'value'=>'', 'label'=>'Заголовок',),
                 'keywords'  => array('type'=>'text', 'value'=>'', 'label'=>'Ключевые слова',),
                 'description'=> array('type'=>'text', 'value'=>'','label'=>'Описание',),

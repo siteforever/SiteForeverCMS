@@ -191,7 +191,6 @@ class Router
     {
         $start = microtime(1);
         $this->_params = array();
-
         // Если контроллер указан явно, то не производить маршрутизацию
         if( ! $greedy && $this->request->getController() ) {
             if( ! $this->request->getAction() ) {
@@ -199,34 +198,27 @@ class Router
             }
             return true;
         }
-
         $this->route = trim( $this->route, '/ ' );
-
         if( $this->route ) {
             $this->route = $this->filterEqParams( $this->route );
         } else {
             $this->route = 'index';
         }
-
         $routed = false;
-
         /** @var \Sfcms\Route $route */
         foreach ( $this->_routes as $route ) {
             if ( $routed = $route->route( $this->route ) ) {
                 $this->request->setController( $routed['controller'] );
                 $this->request->setAction( $routed['action'] );
-
                 if ( isset( $routed['params'] ) && is_array( $routed['params'] ) ) {
                     $this->_params = array_merge( $routed['params'], $this->_params );
                 }
-
                 foreach ( $this->_params as $key => $val ) {
                     $this->request->set( $key, $val );
                 }
                 break;
             }
         }
-
         App::getInstance()->getLogger()->log( round( microtime(1) - $start, 3 ).' sec', 'Routing' );
         if ( ! $routed ) {
             $this->activateError();

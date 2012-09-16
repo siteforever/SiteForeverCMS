@@ -11,8 +11,8 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
      */
     public function view( $result )
     {
-        $this->_app->addStyle( $this->getMisc() . '/reset.css' );
-        $this->_app->addStyle( $this->getMisc() . '/siteforever.css' );
+//        $this->_app->addStyle( $this->getMisc() . '/reset.css' );
+//        $this->_app->addStyle( $this->getMisc() . '/siteforever.css' );
 
         if( file_exists( trim( $this->getCss(), '/' ) . '/style.css' ) ) {
             $this->_app->addStyle( $this->getCss() . '/style.css' );
@@ -23,12 +23,12 @@ class Sfcms_View_Layout_Page extends Sfcms_View_Layout
         if( file_exists( trim( $this->getJs() . '/script.js', '/' ) ) ) {
             $this->_app->addScript( $this->getJs() . '/script.js' );
         }
-        if ( $this->_app->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
+//        if ( $this->_app->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
 //            $this->attachJUI();
 //            $this->_app->addStyle( $this->getMisc() . '/admin/admin.css' );
 //            $this->attachWysiwyg();
 //            $this->_app->addScript( $this->getMisc() . '/admin/panel.js' );
-        }
+//        }
 
         $layout = $this->getTpl()->fetch(
             $this->getRequest()->get( 'resource' )

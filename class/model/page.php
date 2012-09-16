@@ -4,7 +4,6 @@
  */
 class Model_Page extends Sfcms_Model
 {
-
     /**
      * Массив, индексируемый по $parent
      * @var array
@@ -15,7 +14,7 @@ class Model_Page extends Sfcms_Model
      * Списков разделов в кэше
      * @var Data_Collection
      */
-    public $all = null;
+    protected $all = null;
 
     public $html = array();
 
@@ -25,7 +24,6 @@ class Model_Page extends Sfcms_Model
      */
     private $form = null;
 
-
     protected $available_modules;
 
     /** @var array ControllerLink Cache */
@@ -33,32 +31,44 @@ class Model_Page extends Sfcms_Model
 
     public function Init()
     {
-        // Кэшируем структуру страниц
-        $this->all = $this->findAll('deleted = ?',array(0),'pos');
+        $this->addPlugin( new \Modules\Catalog\Plugin\Page(), 'catalog' );
+        $this->addPlugin( new \Modules\News\Plugin\Page(), 'news' );
+        $this->addPlugin( new \Modules\Gallery\Plugin\Page(), 'gallery' );
     }
 
     public function onCreateTable()
     {
-        $this->db->insert(
-            $this->table, array(
-            'parent'        => '0',
-            'name'          => 'Главная',
-            'template'      => 'index',
-            'alias'         => 'index',
-            'date'          => time(),
-            'update'        => time(),
-            'pos'           => '0',
-            'controller'    => 'page',
-            'action'        => 'index',
-            'title'         => 'Главная',
-            'content'       => '<p>Эта страница была создана в автоматическом режиме</p>' .
-                '<p>Чтобы перейти к управлению сайтом, зайдите в ' .
-                '<a ' . Siteforever::html()->href( 'page/admin' ) . '>панель управления</a></p>',
-            'author'        => '1',
-        ));
+        /** @var $page Data_Object_Page */
+        $page = $this->createObject();
+        $page->parent   = 0;
+        $page->name     = t('Home');
+        $page->title    = t('Home');
+        $page->template = 'index';
+        $page->alias    = 'index';
+        $page->date     = time();
+        $page->update   = time();
+        $page->pos      = 0;
+        $page->controller = 'controller';
+        $page->action   = 'index';
+        $page->content  = $this->app()->getTpl()->fetch('system:page.model.default');
+        $page->author   = 1;
     }
 
     /**
+     * Выбирает из базы и кэширует структуру страниц
+     * @return array|Data_Collection|null
+     */
+    public function getAll()
+    {
+        if ( null === $this->all ) {
+            // Кэшируем структуру страниц
+            $this->all = $this->findAll('deleted = ?',array(0),'pos');
+        }
+        return $this->all;
+    }
+
+    /**
+     * Отвечает за пересортировку
      * @param array $sort
      * @return mixed
      */
@@ -67,21 +77,13 @@ class Model_Page extends Sfcms_Model
         $upd  = array();
 
         foreach ( $sort as $pos => $id ) {
-            $upd[ ] = array(
-                'id' => $id,
-                'pos'=> $pos
-            );
+            /** @var $pageObj Data_Object_Page */
+            $pageObj = $this->find( $id );
+            $pageObj->pos = $pos;
+            $pageObj->markDirty();
+            $this->callPlugins($pageObj->controller.':resort', $pageObj);
         }
-
-        if ($this->db->insertUpdateMulti( $this->getTable(), $upd )) {
-            $this->request->setResponse( 'errno', 0 );
-            $this->request->setResponse( 'error', 'ok' );
-            return 'done';
-        } else {
-            $this->request->setResponse( 'errno', 1 );
-            $this->request->setResponse( 'error', t( 'Data not saved' ) );
-        }
-        return 'fail';
+        return 'done';
     }
 
 
@@ -111,12 +113,11 @@ class Model_Page extends Sfcms_Model
      * @param $alias
      * @return bool|int
      */
-    public function checkAlias( $alias )
+    public function checkAlias( $alias = null )
     {
         $find = false;
-        $alias = null;
         /** @var $page Data_Object_Page */
-        foreach( $this->all as $page ) {
+        foreach( $this->getAll() as $page ) {
             if ( $page->alias == $alias ) {
                 $find = $page->id;
                 break;
@@ -126,12 +127,17 @@ class Model_Page extends Sfcms_Model
     }
 
     /**
-     * @param Data_Object_Page $obj
+     * @param Data_Object $obj
      * @return bool
      * @throws Sfcms_Model_Exception
      */
     public function onSaveStart( Data_Object $obj = null )
     {
+        /** @var $obj Data_Object_Page  */
+        if ( ! $obj instanceof Data_Object_Page ) {
+            throw new \Sfcms_Model_Exception('$obj must be "Data_Object_Page" class');
+        }
+
         $pageId = $this->checkAlias( $obj->alias );
         if ( false !== $pageId && $obj->getId() != $pageId ) {
             throw new Sfcms_Model_Exception( t( 'The page with this address already exists' ) );
@@ -139,58 +145,20 @@ class Model_Page extends Sfcms_Model
 
         $obj->path = $obj->createPath();
 
-
         // Настраиваем связь с модулями
-        if ( in_array( $obj->controller, array('news','gallery','catalog') ) ) {
+        $this->callPlugins( "{$obj->controller}:onSaveStart", $obj);
 
-            switch ( $obj->controller ) {
-                case 'news': $model = $this->getModel('NewsCategory'); break;
-                case 'gallery': $model = $this->getModel('GalleryCategory'); break;
-                case 'catalog': $model = $this->getModel('Catalog'); break;
-                default: $model = $this;
-            }
-
-            /** @var $category Data_Object */
-            if ( $obj->link ) {
-                $category = $model->find( $obj->link );
-            } else {
-                $category = $model->createObject();
-            }
-            $category->name = $obj->name;
-            $category->hidden = $obj->hidden;
-            $category->protected = $obj->protected;
-            $category->deleted = $obj->deleted;
-
-            if ( 'catalog' == $obj->controller ) {
-                /** @var $category Data_Object_Catalog  */
-                $category->cat = 1;
-
-                if ( $obj->parent ) {
-                    /** @var $parentPage Data_Object_Page */
-                    $parentPage = $this->find( $obj->parent );
-                    if ( $parentPage->controller == $obj->controller && $parentPage->link ) {
-                        $category->parent = $parentPage->link;
-                    } else {
-                        $category->parent = 0;
-                    }
-                }
-            }
-            $category->save();
-            if ( ! $obj->link ) {
-                $obj->link = $category->getId();
-            }
-        }
         $this->log( $obj->controller . '.' . $obj->link, __METHOD__.':'.__LINE__ );
         return true;
     }
 
     /**
-     * @param Data_Object_Page $obj
-     *
-     * @return bool
+     * @param Data_Object $obj
+     * @return boolean
      */
     public function onSaveSuccess( Data_Object $obj = null )
     {
+        /** @var $obj Data_Object_Page */
         return true;
     }
 
@@ -240,7 +208,7 @@ class Model_Page extends Sfcms_Model
      */
     public function findByRoute( $route )
     {
-        foreach ( $this->all as $data ) {
+        foreach ( $this->getAll() as $data ) {
             if ($data->alias == $route) {
                 return $data;
             }
@@ -254,7 +222,7 @@ class Model_Page extends Sfcms_Model
         );
 
         if ($obj) {
-            $this->all->add( $obj );
+            $this->getAll()->add( $obj );
             return $obj;
         }
         return false;
@@ -313,18 +281,10 @@ class Model_Page extends Sfcms_Model
     public function createParentsIndex()
     {
         $this->parents = array();
-        if ( count( $this->all ) == 0 ) {
-            $this->all = $this->findAll(
-                array(
-                    'cond'  => 'deleted = 0',
-                    'order' => 'pos',
-                )
-            );
-        }
         // создаем массив, индексируемый по родителям
         /** @var Data_Object_Page $obj */
         if ( count($this->parents) == 0 ) {
-            foreach ( $this->all as $obj ) {
+            foreach ( $this->getAll() as $obj ) {
                 $this->parents[ $obj->parent ][ $obj->id ] = $obj;
             }
         }
@@ -338,7 +298,7 @@ class Model_Page extends Sfcms_Model
      */
     public function getSelectOptions( $parent = 0, $level = 0 )
     {
-        $return = array();
+        $return = array('0' => t('No parent'));
         if ( ! $this->parents ) {
             $this->createParentsIndex();
         }

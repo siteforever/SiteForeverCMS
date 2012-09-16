@@ -12,6 +12,11 @@
 Количество:   {$pos.count}
 Сумма:        {$pos.summa}
 
+{if $delivery}
+Доставка {$delivery->name}
+Стоимость {$delivery->cost}
+{/if}
+
 {/foreach}
 Всего: {$total_count}
 Сумма: {$total_summa}

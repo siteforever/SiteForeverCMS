@@ -82,15 +82,14 @@ class Sfcms_i18n
             || filemtime( $dictFile ) < filemtime( $jsDictFile )
             || filemtime( $jsI18nFile ) < filemtime( $jsDictFile ) )
         {
-            $jsDict = array('// RUNTIME DICTIONARY FILE');
-            $jsDict[] = file_get_contents( $jsI18nFile );
+            $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents( $jsI18nFile );
 
             $dictList = glob( dirname( $dictFile ) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php' );
             foreach( $dictList as $file ) {
                 $this->_dictionary[ 'cat_' . basename( $file, '.php' )] = @include( $file );
             }
-            $jsDict[] = "siteforever.i18n._dict = ".json_encode( $this->_dictionary ).';';
-            file_put_contents( $jsDictFile, join("\n\n", $jsDict) );
+            $jsDict = str_replace('/*:dictionary:*/', '$s.i18n._dict = '.json_encode( $this->_dictionary ).';', $jsDict);
+            file_put_contents( $jsDictFile, $jsDict );
         }
         App::getInstance()->addScript( '/_runtime/i18n.'.$this->_lang.'.js' );
     }

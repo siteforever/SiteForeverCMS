@@ -4,17 +4,17 @@
  */
 class Controller_Sitemap extends Sfcms_Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $this->request->setTitle('Карта сайта');
         $this->request->setTemplate('inner');
+
         $bc = $this->tpl->getBreadcrumbs();
         $bc->addPiece('index', 'Главная');
-        $bc->addPiece('sitemap', $this->request->getTitle());
+        $bc->addPiece(null, $this->request->getTitle());
 
+        $tree   = $this->getModel('Page')->getMenu(1, 5);
 
-        $tree   = $this->getModel('Page')->getMenu(0, 3);
-
-        $this->request->setContent( '<div class="sitemap">' . $tree . '</div>' );
+        return '<div class="sitemap">' . $tree . '</div>';
     }
 }

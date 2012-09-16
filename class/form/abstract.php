@@ -42,6 +42,8 @@ abstract class Form_Abstract
 
     protected $_feedback      = array();
 
+    protected $_errors = array();
+
     /**
      * Создает форму согласно конфигу
      * @param $config
@@ -92,6 +94,15 @@ abstract class Form_Abstract
         }
     }
 
+    /**
+     * Зарегистрировать ошибку от поля
+     * @param $field
+     * @param $msg
+     */
+    public function addError( $field, $msg )
+    {
+        $this->_errors[ $field ] = $msg;
+    }
 
 
     /**
@@ -181,7 +192,7 @@ abstract class Form_Abstract
      */
     public function __get( $key )
     {
-        return $this->getField( $key );
+        return $this->getField( $key )->getValue();
     }
 
     /**
@@ -204,6 +215,7 @@ abstract class Form_Abstract
      * Вернет поле формы по имени
      * @param $key
      * @return Form_Field
+     * @throws Form_Exception
      */
     public function getField( $key )
     {
@@ -212,8 +224,7 @@ abstract class Form_Abstract
         {
             return $this->_fields[$id];
         }
-        return null;
-//        throw new Form_Exception("Field '{$key}' not found");
+        throw new Form_Exception("Field '{$key}' not found");
     }
 
     /**
@@ -353,6 +364,24 @@ abstract class Form_Abstract
         return $valid;
     }
 
+
+    /**
+     * Вернуть список ошибок в формате Json
+     * @return string
+     */
+    public function getJsonErrors()
+    {
+        return json_encode( $this->_errors );
+    }
+
+    /**
+     * Вернуть список ошибок
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->_errors;
+    }
 
 
     /**

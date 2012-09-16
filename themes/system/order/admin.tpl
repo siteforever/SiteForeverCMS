@@ -1,30 +1,30 @@
-{form action="admin/order" method="get"}
+{form action="order/admin" method="get" class="well"}
 <p><strong>Настройка фильтра</strong></p>
-
 <p>
-    Номер
-    <input name="number" value="{$request->get("number")}" />
-    Дата
-    <input name="date" value="{$request->get("date")}" class="datepicker" />
-    Аккаунт
-    <input name="user" value="{$request->get("user")}" />
-
-    <input type="submit" value="Фильтровать" />
-    <a class="button" {href url="admin/order"}>Сбросить фильтр</a>
+    <div class="input-append">
+        <input class="input-medium" type="text" name="number"
+               value="{$request->get("number")}" placeholder="Номер">
+        <input class="input-medium filterDate"  type="date" name="date"
+               value="{$request->get("date")}" class="datepicker" placeholder="Дата dd.mm.yyyy">
+        <input class="input-medium filterEmail" type="text" name="user"
+               value="{$request->get("user")}" placeholder="Аккаунт">
+        <input type="submit" class="btn" value="Фильтровать" />
+        {a class="btn" controller="order" action="admin"}Сбросить фильтр{/a}
+    </div>
 </p>
 
 {/form}
 
 <p></p>
 
-<table class="table table-striped table-bordered table-condensed">
+<table class="table table-striped">
 <thead>
     <tr>
         <th>№</th>
         <th>Дата</th>
         <th>Аккаунт</th>
         <th>Статус</th>
-        {*<th>Строк</th>*}
+        <th>Оплачен</th>
         <th>Позиций</th>
         <th>Сумма</th>
     </tr>
@@ -33,12 +33,13 @@
     {foreach from=$orders item="order"}
     <tr>
         <td>{a controller="order" action="admin" id=$order.id}Заказ №{$order.id}{/a}</td>
-        <td>{$order.date|date_format:"%x (%H:%M)"}</td>
-        <td>{$order->User->email}</td>
+        <td><a href="#" class="filterDate" title="Фильтровать" data-filter="{$order.date|date_format:"%d.%m.%Y"}">
+            {$order.date|date_format:"%x (%H:%M)"}</a></td>
+        <td><a href="mailto:{$order->email}" class="filterEmail" title="Фильтровать">{$order->email}</a></td>
         <td>{if $order->Status}{$order->Status->name}{/if}</td>
-        {*<td>{$order.pos_num}</td>*}
-        <td>{$order->Count}</td>
-        <td>{if $order->Positions}{$order->Count * $order->Positions->price}{/if}</td>
+        <td>{if $order.paid}{icon name="money" title=t('Yes')}{else}&mdash;{/if}</td>
+        <td>{$order->Positions->count()}</td>
+        <td>{if $order->Positions}{$order->Positions->sum('sum')}{/if}</td>
     </tr>
     {foreachelse}
     <tr>

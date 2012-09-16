@@ -29,7 +29,7 @@ class View_Breadcrumbs_CrumbTest extends PHPUnit_Framework_TestCase
 
     public function testToString()
     {
-        $this->assertEquals( "<a href='/path/to/page'>Заголовок</a>", (string)$this->object );
+        $this->assertEquals( "<a href=\"/path/to/page\">Заголовок</a>", (string)$this->object );
     }
 
 }

@@ -14,6 +14,7 @@ function smarty_function_head( $params )
     $app        = App::getInstance();
     $request    = $app->getRequest();
     $config     = $app->getConfig();
+    $settings   = $app->getSettings();
 
     $head = array();
     $head[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
@@ -43,8 +44,37 @@ function smarty_function_head( $params )
             $useLess = true;
         }
     }
-    foreach( $app->getScript() as $script ) {
-        $head[] = "<script type=\"text/javascript\" src=\"".$script."\"></script>";
+
+    $rjsConfig = array(
+        'baseUrl'=> '/misc',
+        'shim' => array(
+            'jui'   => array('jquery'),
+            'etc/catalog' => array('jquery','jquery/jquery.gallery'),
+            'jquery/jquery.gallery' => array('jquery','fancybox'),
+        ),
+        'paths'=> array(
+            'fancybox' => 'jquery/fancybox/jquery.fancybox-1.3.1' . (App::isDebug() ? '' : '.pack'),
+            'jui' => 'jquery/jquery-ui-'.Sfcms_View_Layout::JQ_UI_VERSION.'.custom.min',
+            'twitter' => 'bootstrap/js/bootstrap' . (App::isDebug() ? '' : '.min'),
+            'siteforever' => 'module/siteforever',
+            'runtime' => '../_runtime',
+            'i18n'  => '../_runtime/i18n.ru',
+            'theme' => '/themes/'.App::getInstance()->getConfig('template.theme'),
+        ),
+    );
+
+    if ( $request->get('admin') ) {
+        $rjsConfig['paths']['app'] = 'admin';
+        $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
+        $rjsConfig['paths']['wysiwyg'] = 'admin/editor/'.$settings->get('editor', 'type'); // tinymce, ckeditor, elrte
+        $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'));
+        $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
+
+        $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
+        $head[] = "<script type='text/javascript' src='/misc/require-jquery.js' data-main='admin/app'></script>";
+    } else {
+        $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
+        $head[] = "<script type='text/javascript' src='/misc/require-jquery.js' data-main='site'></script>";
     }
 
     if ( $useLess ) {
@@ -54,5 +84,4 @@ function smarty_function_head( $params )
     $head[] = "<meta name=\"generator\" content=\"SiteForever CMS\" />";
 
     return join("\n", $head);
-    //return App::$tpl->fetch('theme:head');
 }

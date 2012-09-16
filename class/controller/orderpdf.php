@@ -15,6 +15,7 @@ class Controller_OrderPdf extends Sfcms_Controller
         $order_id = $this->request->get('order_id', FILTER_VALIDATE_INT);
         $order_model = $this->getModel('Order');
 
+        /** @var $order Data_Object_Order */
         $order = $order_model->find( $order_id );
 
         if ( $this->user->id != $order->user_id ) {
@@ -24,7 +25,7 @@ class Controller_OrderPdf extends Sfcms_Controller
 
         $order['summa_nds'] = 0;
 
-        $rows = $order_model->findPositionsByOrderId( $order_id );
+        $rows = $order->Positions;
 
         foreach ( $rows as $row )
         {
@@ -55,7 +56,7 @@ class Controller_OrderPdf extends Sfcms_Controller
 
         $firm = App::$config->get('firm');
 
-        $user = App::$user->getData();
+        $user = App::$user->attributes;
 
         $account = array();
 
@@ -332,9 +333,9 @@ class Controller_OrderPdf extends Sfcms_Controller
         $x = $pdf->GetX();
         $y = $pdf->GetY();
 
-        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/stamp.png', $x, $y, 40, 40);
-        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 80, $y+8, 20, 20);
-        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 85, $y+17, 20, 20);
+//        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/stamp.png', $x, $y, 40, 40);
+//        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 80, $y+8, 20, 20);
+//        $pdf->Image($_SERVER['DOCUMENT_ROOT'].'/files/account/signature.png', $x + 85, $y+17, 20, 20);
 
         $pdf->SetFont('', '', 8);
         $pdf->SetXY( $x + 40, $y + 17 );

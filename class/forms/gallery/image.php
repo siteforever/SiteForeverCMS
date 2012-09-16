@@ -8,7 +8,7 @@ class forms_gallery_image extends form_Form
     {
         return parent::__construct(array(
             'name'      => 'gallery_picture',
-            'action'    => '/?route=admin/gallery',
+            'action'    => Siteforever::html()->url('gallery/edit'),
             'fields'    => array(
                 'id'            => array('type'=>'int', 'hidden'),
                 'name'          => array('label'=>'Наименование', 'type'=>'text'),

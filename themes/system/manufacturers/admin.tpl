@@ -1,21 +1,22 @@
 <table class="table table-striped table-bordered">
     <thead>
         <tr>
+            <th class="span1">&nbsp;</th>
             <th>{t}Name{/t}</th>
-            <th>{t}Email{/t}</th>
-            <th>{t}Phone{/t}</th>
-            <th>{t}Action{/t}</th>
         </tr>
     </thead>
     <tbody>
         {foreach from=$rows item="m"}
         <tr>
-            <td>{$m.name}</td>
-            <td>{$m.email|default:"&mdash;"}</td>
-            <td>{$m.phone|default:"&mdash;"}</td>
-            <td class="right">
-                <a {href url="manufacturers/edit" id=$m.id} title="{t}Edit manufacturer{/t}">{icon name="pencil" title=t("edit")}</a>
-                <a {href url="manufacturers/delete" id=$m.id} title="{t}Want to delete?{/t}" class="delete">{icon name="delete" title=t("delete")}</a>
+            <td>{if $m.image}{thumb src=$m.image width=57 height=57 alt=$m.name}{else}&mdash;{/if}</td>
+            <td>
+                <p><big>{$m.name}</big></p>
+                <small>
+                    {a url="manufacturers/edit" id=$m.id title=t('Edit manufacturer') class="edit"}
+                        {icon name="pencil" title=t("edit")} {t}Edit{/t}{/a}
+                    {a url="manufacturers/delete" id=$m.id title=t('Want to delete?') class="do_delete"}
+                        {icon name="delete" title=t("delete")} {t}Delete{/t}{/a}
+                </small>
             </td>
         </tr>
         {foreachelse}
@@ -28,4 +29,6 @@
 
 <p>{$paging->html}</p>
 
-<a {href url="manufacturers/edit"} class="button btn">{t}Create manufacturer{/t}</a>
+{a href="manufacturers/edit" class="btn edit" title=t('Create manufacturer')}{t}Create manufacturer{/t}{/a}
+
+{modal id="ManufEdit"}

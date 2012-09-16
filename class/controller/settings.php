@@ -10,7 +10,7 @@ class Controller_Settings extends Sfcms_Controller
      * Действие по умолчанию
      * @return void
      */
-    function indexAction()
+    public function indexAction()
     {
         $this->request->setTitle(t('Settings'));
 
@@ -22,9 +22,9 @@ class Controller_Settings extends Sfcms_Controller
 
     /**
      * Сохранение данных
-     * @return void
+     * @return mixed
      */
-    function saveAction()
+    public function saveAction()
     {
         $model      = $this->getModel('Settings');
 
@@ -45,14 +45,14 @@ class Controller_Settings extends Sfcms_Controller
             }
         }
 
-        print t('Settings saved');
+        return t('Settings saved');
     }
 
     /**
      * Уровень доступа
      * @return array
      */
-    function access()
+    public function access()
     {
         return array(
             'system'    => array('index', 'save'),

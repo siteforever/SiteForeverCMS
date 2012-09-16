@@ -2,201 +2,213 @@
  * Управление админкой галереи
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
- * @link   http://standart-electronics.ru
  */
-siteforever.gallery = {
-    /**
-     * Редактирование имени
-     */
-    nameEdit: function( event ){
+define([
+    "jquery",
+    "siteforever",
+    "wysiwyg",
+    "module/modal",
+    "i18n",
+    "jui"
+], function($, $s, wysiwyg, Modal){
+    return {
+        "init" : function() {
 
-//        console.log( 'click div | ', 'ev.target: ', event.target, ' this:', this );
+            var self = this;
 
-        event.stopPropagation();
-
-        var self = this,
-            val  = $(this).find('input').val(),
-            name = $(this).find('input').attr('name');
-        $(this).find('span').hide().next().hide();
-
-        $("<input type='text' name='"+name+"' value='"+val+"' data-old='"+val+"' />").prependTo(this).focus();
-
-        $(this).find('input:text')
-            .blur(function(event){
-                $s.gallery.nameApply.call( self );
-//                console.log( 'blur:text | ', event.target, ' this:', this );
-            })
-            .click(function(event){
-//                event.stopPropagation();
-//                console.log( 'click:text | ', event.target, ' this:', this );
-                return false;
-            })
-            .keypress(function( event ){
-                if (event.keyCode == '13') {
-                    $s.gallery.nameApply.call( self );
-                }
-                if (event.keyCode == '27') {
-                    $s.gallery.nameCancel.call( self );
-                }
-            });
-        return false;
-    },
-
-    /**
-     * Редактировать название и применить
-     */
-    nameApply: function () {
-        var text = $( this ).find( ':text' ),
-            val = $( text ).val(),
-            old = $( text ).attr( 'data-old' ),
-            id = $( this ).attr( 'rel' );
-
-        if ( id && val != old ) {
-            $.post( '/?route=gallery/admin', { editimage: id, name: val } );
-        }
-        $( this ).find( 'span' ).text( val ).show().next().show().next().val( val );
-        $( text ).remove();
-    },
-
-    /**
-     * Редактировать название и отменить
-     */
-    nameCancel: function () {
-        var text = $( this ).find( ':text' ),
-            val = $( text ).attr( 'data-old' );
-        $( this ).find( 'span' ).text( val ).show().next().show();
-        $( text ).remove();
-    },
-
-    /**
-     * Конфиг диалога редактирования
-     */
-    editDialog: {
-        autoOpen        : false,
-        modal           : true,
-        width           : 700,
-        position        : 'center',
-        title           : 'Правка информации',
-        open            : function() {
-            wysiwyg.init();
-            $( '#tabs' ).tabs();
-        },
-        buttons         : [
-            {
-                text: $s.i18n('Save'),
-                click : function() {
-                    $(this).find('form').ajaxSubmit({
-                        success : function(response) {
-                            $s.alert(response, 2000);
-                            return true;
-                        },
-                        error: function () {
-                            $s.alert('Данные не сохранены',2000);
-                            return true;
-                        }
-                        //target  : '#gallery_picture_edit'
+            // Сортировка
+            $("#gallery").sortable({
+                stop: function(event, ui) {
+                    var positions = [];
+                    $(this).find('li').each(function(){
+                        positions.push($(this).attr('rel'));
                     });
-                    $(this).dialog('close');
-                    $s.alert('Отправка...');
-                    return true;
+                    $.post('/?route=gallery/admin', { positions: positions });
                 }
-            },
-            {
-                text: $s.i18n('Cancel'),
-                click : function() {
-                    $(this).dialog('close');
-                }
-            }
-        ]
-    }
+            }).disableSelection();
 
-};
-
-
-$(function() {
-    // Сортировочность
-    $("#gallery").sortable({
-        stop: function(event, ui) {
-            var positions = [];
-            $(this).find('li').each(function(){
-                positions.push($(this).attr('rel'));
+            // Редактирование названия
+            $('#gallery').find('div.gallery_name').each( function(){
+                $(this).click($.proxy( self.nameEdit, self ) );
             });
-            $.post('/?route=gallery/admin', { positions: positions });
-        }
-    });
-    $("#gallery").disableSelection();
 
-    // Редактирование названия
-    $('#gallery').find('div.gallery_name').click($s.gallery.nameEdit);
+            $('a.do_delete').each(function(){
+                $(this).on('click', function(){return confirm($s.i18n('Want to delete?'));});
+            });
 
-
-    // Правка данных об изображении
-    $('a.gallery_picture_edit').each(function(){
-        $(this).click(function(){
-            action = $(this).attr('href');
-            if ( 0 == $('#gallery_picture_edit').length ) {
-                $('<div id="gallery_picture_edit" />').appendTo('div.l-content-wrapper').dialog( $s.gallery.editDialog ).hide();
+            if ( $('#editImage').length ) {
+                var editImage = new Modal('editImage');
+                editImage.onSave(this.onSave);
+                // Правка данных об изображении
+                $('a.gallery_picture_edit').each(function(){
+                    $(this).click(function(){
+                        action = $(this).attr('href');
+                        $.post($(this).attr('href'), $.proxy( function( action, response ){
+                            editImage.title('Правка информации').body( response).show();
+                            return true;
+                        }, this, action ));
+                        return false;
+                    });
+                });
             }
 
-            $(window).bind('close', function(){ return false; });
 
-            $.post($(this).attr('href'), $.proxy( function( action, response ){
-//                console.log( arguments );
-                $('#gallery_picture_edit')
-                    .html( response )
-                    .dialog('open')
-                    .find('form').attr('action', action);
-                return true;
-            }, this, action ));
-
-            return false;
-        });
-    });
-
-
-    // Удаление изображений
-    $('a.gallery_picture_delete').click(function(){
-        if ( confirm('Действительно хотите удалить?') ) {
-            var href = $(this).attr('href');
-            $.post( href, function(data) {
-                try {
-                    if ( data.errno == '0' ) {
-                        var elem = $('#gallery').find('li[rel='+data.id+']');
-                        $(elem).fadeOut(500);
-                        setTimeout(function(){
-                            $(elem).remove();
-                        }, 1000);
+            // Удаление изображений
+            $('a.gallery_picture_delete').each(function(){
+                $(this).click(function(){
+                    if ( confirm('Действительно хотите удалить?') ) {
+                        var href = $(this).attr('href');
+                        $.post( href, function(data) {
+                            try {
+                                if ( data.error == '0' ) {
+                                    var elem = $('#gallery').find('li[rel='+data.id+']');
+                                    $(elem).fadeOut(500);
+                                    setTimeout(function(){
+                                        $(elem).remove();
+                                    }, 1000);
+                                }
+                            } catch(e) { alert(e.message) };
+                        }, 'json');
                     }
-                } catch(e) { alert(e.message) };
-            }, 'json');
+                    return false;
+                });
+            });
+
+            // Переключение активности изображения
+            $('a.gallery_picture_switch').each(function(){
+                $(this).click(function(){
+                    $.post($(this).attr('href'), function(response){
+                        try {
+                            if ( response.error == '0' ) {
+                                $('#gallery li[rel='+response.id+'] a.gallery_picture_switch' ).html(response.img);
+                            } else {
+                                $s.alert( response.msg );
+                            }
+                        } catch(e) { $s.alert(e.message) }
+                    }, 'json');
+                    return false;
+                });
+            });
+
+            // Создание мультизагрузки
+            var reservImg = $("div.newimage:last").clone();
+            $("#add_image").click(function(){
+                $(reservImg).clone().appendTo("#load_images");
+                return false;
+            });
+            $("#send_images").click(function(){
+                $("#load_images").submit();
+                return false;
+            });
+
+
+            /**
+             * Управление списком галерей
+             */
+            if ( $('#editCat').length ) {
+                var editCat = new Modal('editCat');
+                editCat.onSave(this.onSaveCat);
+                $('a.editCat').each(function(){
+                    $(this).on('click', function(){
+                        $.get( $(this).attr('href'), $.proxy( function( editCat, response ) {
+                            console.log( this, editCat );
+                            editCat.title( $(this).attr('title') ).body( response ).show();
+                        }, this, editCat ));
+                        return false;
+                    });
+                });
+            }
+        },
+
+        /**
+         * Редактирование имени
+         */
+        nameEdit: function( event ){
+            event.stopPropagation();
+//            console.log( 'click div ', 'event: ', event, ' this:', this );
+            var domNode = event.currentTarget;
+            var val  = $(domNode).find('input').val(),
+                name = $(domNode).find('input').attr('name');
+
+            $(domNode).find('span').hide().next().hide();
+
+            $("<input type='text' name='"+name+"' value='"+val+"' data-old='"+val+"'>").prependTo(domNode).focus();
+
+            $('input:text', domNode)
+                .blur( this.nameApply )
+                .click(function(event){ return false; })
+                .keypress($.proxy( function( event ){
+                    if (event.keyCode == '13') {
+                        this.nameApply.call( $('input:text', domNode)[0] );
+                    }
+                    if (event.keyCode == '27') {
+                        this.nameCancel.call( $('input:text', domNode)[0] );
+                    }
+                }, this));
+            return false;
+        },
+
+        /**
+         * Редактировать название и применить
+         */
+        nameApply: function () {
+            var val = $( this ).val(),
+                old = $( this ).attr( 'data-old' ),
+                id = $( this).parent().attr( 'rel' );
+
+            console.log('nameApply', this, id, val, old);
+
+            if ( id && val != old ) {
+                $.post( '/?route=gallery/admin', { editimage: id, name: val } );
+            }
+            $( this ).parent().find( 'span' ).text( val ).show().next().show().next().val( val );
+            $( this ).remove();
+        },
+
+        /**
+         * Редактировать название и отменить
+         */
+        nameCancel: function () {
+            console.log('nameCancel', this);
+            var val = $( this ).attr( 'data-old' );
+            $( this ).parent().find( 'span' ).text( val ).show().next().show();
+            $( this ).remove();
+        },
+
+        /**
+         * Созранить данные об изображении
+         */
+        onSave: function() {
+            $('form', this.domnode).ajaxSubmit({
+                dataType:"json",
+                success: $.proxy(function( response ){
+                    if ( ! response.error ) {
+                        this.msgSuccess( response.msg, 1500);
+                        var domName = $('#gallery').find('li[rel='+response.id+']').find('div.gallery_name');
+                        $('span', domName).text(response.name);
+                        $('input.gallery_name_field', domName).val(response.name);
+                    } else {
+                        this.msgError( response.msg );
+                    }
+                },this)
+            });
+        },
+
+        /**
+         * Созранить данные об категории
+         */
+        onSaveCat: function() {
+            $('form', this.domnode).ajaxSubmit({
+                dataType:"json",
+                success: $.proxy(function( response ){
+                    if ( ! response.error ) {
+                        this.msgSuccess( response.msg, 1500);
+                        $('a[rel='+response.id+']').text( response.name );
+                    } else {
+                        this.msgError( response.msg );
+                    }
+                },this)
+            });
         }
-        return false;
-    });
-
-    // Переключение активности изображения
-    $('a.gallery_picture_switch').click(function(){
-        $.post($(this).attr('href'), function(data){
-            try {
-                if ( data.errno == '0' ) {
-                    var elem = $('#gallery li[rel='+data.id+'] a.gallery_picture_switch' );
-                    $(elem).html(data.img);
-                }
-                else {
-                    alert( data.error );
-                }
-            } catch(e) { alert(e.message) };
-        }, 'json');
-        return false;
-    });
-
-    // Создание мультизагрузки
-    var reserv_img = $("div.newimage:last").clone();
-    $("#add_image").click(function(){
-        $(reserv_img).clone().appendTo("#load_images");
-        return false;
-    });
-    $("#send_images").click(function(){
-        $("#load_images").submit();
-        return false;
-    });
+    }
 });

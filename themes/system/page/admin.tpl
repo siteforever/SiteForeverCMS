@@ -25,12 +25,14 @@
             {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
             <span class="tools">
                 {*{$branch->linkEdit}*}
-                {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}
-                    {icon name="pencil" title=t('page','Edit page')}{/a}
-                {a class="add" id=$branch->id title=t('page','Create page') controller="page" action="create"}
-                    {icon name="add" title=t('page','Create page')}{/a}
-                {a class="do_delete" title=t('Delete') controller="page" action="delete" id=$branch->id}
-                    {icon name="delete" title=t('Delete')}{/a}
+                <small>
+                    {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}
+                        {icon name="pencil" title=t('page','Edit page')} {t}Edit{/t}{/a}
+                    {a class="add" id=$branch->id title=t('page','Create page') controller="page" action="create"}
+                        {icon name="add" title=t('page','Create page')} {t}Create{/t}{/a}
+                    {a class="do_delete" title=t('Delete') controller="page" action="delete" id=$branch->id}
+                        {icon name="delete" title=t('Delete')} {t}Delete{/t}{/a}
+                </small>
             </span>
             <span class="order">
                 {call orderHidden page=$branch}
@@ -56,8 +58,8 @@
     {/a}
 
 
-    {modal id="pageEdit" title=t('Edit page')}
-    {modal id="pageCreate" title=t('Create page')}
+    {*{modal id="pageEdit" title=t('Edit page')}*}
+    {*{modal id="pageCreate" title=t('Create page')}*}
 
 
 </div>

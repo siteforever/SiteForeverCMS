@@ -38,8 +38,7 @@ class Sfcms_Image_Scale_Crop extends Sfcms_Image_Scale_Abstr
             if( imagecopyresampled( $thumb, $this->image,
                 $from_x, $from_y, 0, 0,
                 $this->scalledWidth(), $this->scalledHeight(),
-                $this->width, $this->height
-            )
+                $this->width, $this->height )
             ) {
                 return $thumb;
             }

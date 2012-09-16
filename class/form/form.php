@@ -40,7 +40,11 @@ class Form_Form extends Form_Render implements ArrayAccess
      */
     public function offsetGet($offset)
     {
-        return $this->getField( $offset )->getValue();
+        try {
+            return $this->getField( $offset )->getValue();
+        } catch ( Exception $e ) {
+            return null;
+        }
     }
 
     /**

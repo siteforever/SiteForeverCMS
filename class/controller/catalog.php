@@ -5,23 +5,24 @@
  */
 class Controller_Catalog extends Sfcms_Controller
 {
-
-    public function init()
+    public function defaults()
     {
-        $config = array(
-            // сортировка товаров
-            'order_list'    => array(
-                ''           => 'Без сортировки',
-                'name'       => 'По наименованию',
-                'price1'     => 'По цене (0->макс)',
-                'price1 DESC'=> 'По цене (макс->0)',
-                'articul'    => 'По артикулу',
-            ),
-            'order_default' => 'name',
-            'onPage' => '5',
-            'level'  => 0, // < 1 output all products
+        return array(
+            'catalog',
+            array(
+                // сортировка товаров
+                'order_list' => array(
+                    ''           => 'Без сортировки',
+                    'name'       => 'По наименованию',
+                    'price1'     => 'По цене (0->макс)',
+                    'price1-d'   => 'По цене (макс->0)',
+                    'articul'    => 'По артикулу',
+                ),
+                'order_default' => 'name',
+                'onPage' => '10',
+                'level'  => 0, // < 1 output all products
+            )
         );
-        $this->config->setDefault( 'catalog', $config );
     }
 
     /**
@@ -32,7 +33,7 @@ class Controller_Catalog extends Sfcms_Controller
     {
         return array(
             'system'    => array(
-                'admin', 'delete', 'save', 'hidden', 'price', 'move', 'saveorder', 'category', 'trade'
+                'admin', 'delete', 'save', 'hidden', 'price', 'move', 'saveorder', 'category', 'trade', 'goods'
             ),
         );
     }
@@ -48,7 +49,8 @@ class Controller_Catalog extends Sfcms_Controller
          * @var Model_Catalog $catalogModel
          * @var Model_Page $pageModel
          */
-        $catId = $this->getCatId();
+        $catId = $this->page->link;
+
         $alias = $this->request->get('alias');
 
         $catalogModel = $this->getModel( 'Catalog' );
@@ -66,7 +68,7 @@ class Controller_Catalog extends Sfcms_Controller
         }
 
         if ( 0 == $item->cat ) {
-            $this->tpl->getBreadcrumbs()->addPiece( $item->url, $item->name );
+            $this->tpl->getBreadcrumbs()->addPiece( null, $item->name );
         }
         $this->request->setTitle( $item->title );
         $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
@@ -115,32 +117,41 @@ class Controller_Catalog extends Sfcms_Controller
         }
 
         // количество товаров
-        $criteria = array(
-            'cond'      => ' deleted = 0 AND hidden = 0 AND cat = 0 AND parent IN ('.implode(',', $categoriesId).') ',
-        );
+        $criteria = $catModel->createCriteria();
+//        $criteria->condition = implode(' AND ', array('deleted' => 0,'hidden'=>0,'cat'=>0) )
+//            . count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '';
+        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 "
+            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' );
 
-        $count = $catModel->count( $criteria[ 'cond' ] );
-
-        $paging = $this->paging( $count, $this->config->get('catalog.onPage'), $this->router->createLink( $parent->url ) );
-
-        $criteria[ 'limit' ] = $paging->limit;
-
+        $count = $catModel->count( $criteria );
 
         $order = $this->config->get( 'catalog.order_default' );
 
         // Примеряем способ сортировки к списку из конфига
         $orderList = $this->config->get( 'catalog.order_list' );
         if( $orderList && is_array( $orderList ) ) {
-            $set = $this->request->get( 'order' );
+            if ( ! (  $set = $this->request->get( 'order' ) ) ) {
+                $set = @$_SESSION['Sort'] ?: false;
+            }
             if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
                 $this->request->set( 'order', $order );
+                $_SESSION['Sort'] = $order;
             }
         }
 
         if( $order ) {
-            $criteria[ 'order' ] = $order;
+            $criteria->order = str_replace('-d', ' DESC', $order);
         }
+
+        $paging = $this->paging(
+            $count,
+            $this->config->get('catalog.onPage'),
+            $this->router->createLink( $parent->url/*, array('order'=>$order)*/ )
+        );
+
+        $criteria->limit = $paging->limit;
+
 
         $list = $catModel->with('Gallery','Manufacturer')->findAll( $criteria );
 
@@ -218,23 +229,15 @@ class Controller_Catalog extends Sfcms_Controller
      */
     public function deleteAction()
     {
-        /**
-         * @var Data_Object_Catalog $item
-         */
-
+        /** @var Data_Object_Catalog $item */
         $id = $this->request->get( 'id' );
-        /**
-         * @var Model_Catalog $catalog
-         */
+        /** @var Model_Catalog $catalog */
         $catalog = $this->getModel( 'Catalog' );
-
         $item = $catalog->find( $id );
         if( $item ) {
             $catalog->remove( $id );
         }
-        //        var_dump($item->getAttributes());
-        //        $this->adminAction();
-        return $this->redirect( 'catalog/admin', array( 'part'=> $item->parent ) );
+        return array('error'=>0,'msg'=>'');
     }
 
 
@@ -299,22 +302,25 @@ class Controller_Catalog extends Sfcms_Controller
         // Если форма отправлена
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $object = $catalogFinder->createObject( $form->getData() );
+                $object = $catalogFinder->createObject();
+                $object->attributes =  $form->getData();
+
+                $this->log( $form->getData(), 'form' );
+                $this->log( $object->attributes, 'obj' );
 
                 if( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
-                    return t( 'The section can not be in myself' );
+                    return array('error'=>1, t( 'The section can not be in myself' ) );
                 }
                 if( ! $object->getId() ) {
                     $object->markNew();
                 } else {
                     $object->markDirty();
                 }
-                $this->reload( 'catalog/admin', array( 'part' => $object->parent ), 1000 );
-                return t( 'Data save successfully' );
-            }
-            else {
-                return $form->getFeedbackString();
+//                $this->reload( 'catalog/admin', array( 'part' => $object->parent ), 1000 );
+                return array('error'=>0,'msg'=>t( 'Data save successfully' ));
+            } else {
+                return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
         }
     }
@@ -328,23 +334,24 @@ class Controller_Catalog extends Sfcms_Controller
     public function adminBreadcrumbs( $path )
     {
         $bc = array(
-            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
+            Siteforever::html()->link(t('catalog','Catalog'),'catalog/admin')
+//            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
         ); // breadcrumbs
+
+        $this->log( $path );
 
         if( $arrPath = @unserialize( $path ) ) {
             $this->log( $arrPath, 'Path' );
             if( $arrPath && is_array( $arrPath ) ) {
                 foreach( $arrPath as $val ) {
-                    $bc[ ] = '<a href="'
-                             . $this->router->createServiceLink( 'catalog', 'admin', array( 'part'=> $val[ 'id' ] ) )
-                             . '">' . $val[ 'name' ] . '</a>'
-                             . '<a href="'
-                             . $this->router->createServiceLink( 'catalog', 'category', array( 'edit'=> $val[ 'id' ] ) )
-                             . '">' . icon( 'pencil', t('Edit') ) . '</a>';
+                    $bc[ ] = Siteforever::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))
+                            . Siteforever::html()->link( icon( 'pencil', t('Edit') ),
+                                'catalog/category', array('edit'=>$val['id']), 'edit' );
                 }
             }
         }
-        return '<div class="b-breadcrumbs">'.t('Path').': ' . join( ' &gt; ', $bc ) . '</div>';
+        return '<ul class="breadcrumb"><li>'.t('catalog','Path').': '
+                . join( '<span class="divider">&gt;</span></li><li>', $bc ) . '</li></ul>';
     }
 
     /**
@@ -386,7 +393,7 @@ class Controller_Catalog extends Sfcms_Controller
 
         if( $this->request->get( 'delete' ) == 'group' ) {
             $this->groupAjaxDelete();
-            return;
+            return '';
         }
 
         $part = $this->request->get( 'part' );
@@ -402,7 +409,7 @@ class Controller_Catalog extends Sfcms_Controller
                 array(
                     'id'    => 0,
                     'parent'=> 0,
-                    'path'  => '[]'
+                    'path'  => '',//serialize(array()),
                 )
             );
         }
@@ -423,17 +430,17 @@ class Controller_Catalog extends Sfcms_Controller
         }
 
         $count  = $catalogFinder->count( $crit[ 'cond' ], $crit[ 'params' ] );
-        $paging = $this->paging( $count, 25, 'admin/catalog/part=' . $part );
+        $paging = $this->paging( $count, 10, $this->router->createServiceLink('catalog','admin',array('part'=>$part)) );
 
         $crit[ 'limit' ] = $paging->limit;
-        $crit[ 'order' ] = 'cat DESC, pos DESC';
+        $crit[ 'order' ] = 'cat DESC, pos';
 
         $list = $catalogFinder->findAll( $crit );
 
-        if ( $parent->get('path') ) {
-            $breadcrumbs    = $this->adminBreadcrumbs( $parent[ 'path' ] );
+        if ( $parent->path ) {
+            $breadcrumbs    = $this->adminBreadcrumbs( $parent->path );
         } else {
-            $breadcrumbs    = $this->adminBreadcrumbsById( $parent->getId() );
+            $breadcrumbs    = $this->adminBreadcrumbsById( $parent->id );
         }
 
         $this->request->setTitle( 'Каталог' );
@@ -471,19 +478,28 @@ class Controller_Catalog extends Sfcms_Controller
 
         $form = $catalogFinder->getForm();
 
+        /** @var $item Data_Object_Catalog */
         if( $id ) { // если раздел существует
             $item      = $catalogFinder->find( $id );
             $parentId = $item[ 'parent' ];
             $form->setData( $item->getAttributes() );
         } else {
-            $item = $catalogFinder->createObject();
+            $item = $catalogFinder->find('`name` IS NULL AND `deleted` = 1');
+            if ( null === $item ) {
+                $item = $catalogFinder->createObject();
+                $item->deleted = 1;
+                $item->save();
+            }
+            $id = $item->id;
+            $form->getField( 'id' )->setValue( $item->id );
             $form->getField( 'parent' )->setValue( $parentId );
             $form->getField( 'cat' )->setValue( 0 );
+            $form->getField( 'deleted' )->setValue( 0 );
         }
 
         // ЕСЛИ ТОВАР
         //$form->image->show();
-        $form->getField( 'icon' )->hide();
+//        $form->getField( 'icon' )->hide();
         $form->getField( 'articul' )->show();
         $form->getField( 'manufacturer' )->show();
         $form->getField( 'price1' )->show();
@@ -493,8 +509,6 @@ class Controller_Catalog extends Sfcms_Controller
         //$form->top->show();
         $form->getField( 'byorder' )->show();
         $form->getField( 'absent' )->show();
-
-        $form->getField( 'cat' )->setValue( 0 );
 
         // показываем поля родителя
         $parent = $catalogFinder->find( $parentId );
@@ -585,21 +599,6 @@ class Controller_Catalog extends Sfcms_Controller
             $form->getField( 'cat' )->setValue( 1 );
         }
 
-        $icon_dir = 'files/catalog/icons';
-        if( ! is_dir( $icon_dir ) ) {
-            mkdir( $icon_dir, 0777, true );
-        }
-
-        $icon_list = scandir( $icon_dir );
-        foreach( $icon_list as $icon_key => $icon_item ) {
-            unset( $icon_list[ $icon_key ] );
-            if( preg_match( '/(\.gif|\.jpg|\.jpeg|\.png)/i', $icon_item ) ) {
-                $icon_list[ $icon_dir . '/' . $icon_item ] = $icon_item;
-            }
-        }
-
-        $form->getField( 'icon' )->setVariants( array_merge( array( ''=> 'нет иконки' ), $icon_list ) );
-
         // наследуем поля родителя
         $parent = $catalog->find( $parent_id );
         if( $parent ) {
@@ -613,7 +612,7 @@ class Controller_Catalog extends Sfcms_Controller
             }
         }
 
-        $this->request->setTitle( 'Каталог' );
+        $this->request->setTitle( t('catalog','Catalog') );
         return array(
             'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
             'form'        => $form,
@@ -650,11 +649,6 @@ class Controller_Catalog extends Sfcms_Controller
          * @var Data_Object_Catalog $item
          */
         $catalogFinder = $this->getModel( 'Catalog' );
-        // пересортировка
-        if( $this->request->get( 'sort' ) ) {
-            $this->request->setResponseError( 0, $catalogFinder->resort() );
-            return;
-        }
 
         // Сохранение позиций
         if( $save_pos = $this->request->get( 'save_pos' ) ) {
@@ -665,8 +659,8 @@ class Controller_Catalog extends Sfcms_Controller
                     $item->save();
                 }
             }
-            return;
         }
+        $this->redirect( $this->router->createServiceLink('catalog','admin',array('part'=>$this->request->get('part'))) );
     }
 
     /**
@@ -686,8 +680,30 @@ class Controller_Catalog extends Sfcms_Controller
 
         $obj->save();
 
-        $this->request->setContent(
-            $model->getOrderHidden( $id, $obj->get( 'hidden' ) )
+        return $model->getOrderHidden( $id, $obj->get( 'hidden' ) );
+    }
+
+    /**
+     * Плоский список товаров в админке
+     * @return array
+     */
+    public function goodsAction()
+    {
+        $this->request->setTitle(t('Goods'));
+
+        $model = $this->getModel('Catalog');
+        $crit = $model->createCriteria();
+        $crit->condition = 'cat = ? AND deleted = 0';
+        $crit->params    = array(0);
+        $crit->order     = 'name';
+        $count = $model->count($crit);
+        $pager = $this->paging( $count, 10, 'catalog/goods' );
+        $crit->limit = $pager->limit;
+        $goods = $model->with('Category','Manufacturer')->findAll($crit);
+
+        return array(
+            'list'=>$goods,
+            'pager'=>$pager,
         );
     }
 

@@ -21,15 +21,20 @@ class Data_Table_News extends Data_Table
             new Data_Field_Int('author_id'),
             new Data_Field_Varchar('alias', 250,true,''),
             new Data_Field_Varchar('name', 250),
+            new Data_Field_Varchar('image', 250, false, ''),
+            new Data_Field_Tinyint('main', 1, false, 0),
+            new Data_Field_Int('date'),
+
             new Data_Field_Text('notice'),
             new Data_Field_Text('text'),
-            new Data_Field_Int('date'),
+
             new Data_Field_Varchar('title', 250),
             new Data_Field_Varchar('keywords', 250),
             new Data_Field_Varchar('description', 250),
-            new Data_Field_Tinyint('hidden'),
-            new Data_Field_Tinyint('protected'),
-            new Data_Field_Tinyint('deleted'),
+
+            new Data_Field_Tinyint('hidden', 1, false, 0),
+            new Data_Field_Tinyint('protected', 1, false, 0),
+            new Data_Field_Tinyint('deleted', 1, false, 0),
         );
     }
 

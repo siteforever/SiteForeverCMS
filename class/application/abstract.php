@@ -380,11 +380,12 @@ abstract class Application_Abstract
             $misc = $this->getRequest()->get( 'path.misc' );
     //        $this->addStyle( $misc . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
             $this->_assets->addStyle( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.css' );
+            $this->_assets->addStyle( $misc . '/bootstrap/css/bootstrap.css' );
 
-            $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
+//            $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
     //        $this->addScript( $misc . '/jquery/lightbox/jquery.lightbox-0.5.js' );
-            $this->_assets->addScript( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.js' );
-            $this->_assets->addScript( $misc . '/siteforever.js' );
+//            $this->_assets->addScript( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.js' );
+//            $this->_assets->addScript( $misc . '/siteforever.js' );
         }
         return $this->_assets;
     }

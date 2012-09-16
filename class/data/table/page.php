@@ -46,9 +46,10 @@ class Data_Table_Page extends Data_Table
             new Data_Field_Varchar('keywords', 120, true, ''),
             new Data_Field_Varchar('description', 120, true, ''),
             new Data_Field_Int('author', 11, true, '0'),
-            new Data_Field_Tinyint('hidden', 4, true, '0'),
-            new Data_Field_Tinyint('protected', 4, true, '0'),
-            new Data_Field_Tinyint('system', 4, true, '0'),
+            new Data_Field_Tinyint('nofollow', 1, true, '0'),
+            new Data_Field_Tinyint('hidden', 1, true, '0'),
+            new Data_Field_Tinyint('protected', 1, true, '0'),
+            new Data_Field_Tinyint('system', 1, true, '0'),
             new Data_Field_Tinyint('deleted', 1, true, '0'),
         );
     }
@@ -57,7 +58,7 @@ class Data_Table_Page extends Data_Table
     {
         return array(
             'id_structure'  => 'parent',
-            //'url'           => 'uri',
+            'alias'         => 'alias',
             'date'          => 'date',
             'order'         => array('parent','pos'),
             'request'       => 'alias'

@@ -28,7 +28,7 @@ class Model_News extends Sfcms_Model
      */
     public function findByAlias( $alias )
     {
-        $criteria = $this->criteriaFactory();
+        $criteria = $this->createCriteria();
         $criteria->condition = 'alias = ? AND deleted = 0';
         $criteria->params    = array($alias);
         $obj = $this->find($criteria);

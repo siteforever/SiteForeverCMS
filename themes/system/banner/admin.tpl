@@ -1,12 +1,12 @@
-<h3>{t}Banners category list{/t}</h3>
-
-<table class="catalog_data dataset fullWidth">
+<table class="table table-striped">
+    <thead>
     <tr>
         <th>ID</th>
-        <th>Наименование</th>
-        <th width="120">Править</th>
-        <th width="120">Удалить</th>
+        <th>{t}Name{/t}</th>
+        <th width="120">{t}Edit{/t}</th>
+        <th width="120">{t}Delete{/t}</th>
     </tr>
+    </thead>
 {foreach from=$categories item="item"}
     <tr>
         <td width="20">{$item->id}</td>

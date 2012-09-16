@@ -3,17 +3,85 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-(function($,$s){
-    $(document).ready(function(){
-        // Подсветка разделов структуры
-        $('div.b-main-structure span')
-            .live('mouseover', function () {
-                $(this).addClass('active');
-            }).live('mouseout', function () {
-                $(this).removeClass('active');
-            });
 
-        var struntureSortSettings = {
+define([
+    "jquery",
+    "siteforever",
+    "module/modal",
+    "jui",
+//    "admin/jquery/jquery.realias",
+    "i18n",
+    "jquery/jquery.form",
+    "admin/admin"
+], function($, $s, Modal) {
+
+    return {
+        "behavior" : {
+            // Подсветка разделов структуры
+            'div.b-main-structure span' : {
+                "mouseover" : function ( event, node ) {
+                    $(node).addClass('active');
+                },
+                "mouseout" : function ( event, node ) {
+                    $(node).removeClass('active');
+                }
+            },
+
+            // Switch on/off page
+            'a.order_hidden' : {
+                "click" : function( event, node ) {
+                    $.get($( node ).attr('href'), function (data) {
+                        $( node ).replaceWith(data);
+                    });
+                    return false;
+                }
+            },
+
+            '#structureWrapper a.edit' : {
+                "click" : function( event, node ) {
+                    $.post( $(node).attr('href') ).then( $.proxy(function( response ){
+                        this.editModal.title($s.i18n('page','Edit page')).body(response).show();
+                    }, this ));
+                    return false;
+                }
+            },
+
+            '#structureWrapper a.add' : {
+                "click" : function( event, node ) {
+                    $.post( $(node).attr('href') ).then( $.proxy(function( response ){
+                        this.createModal.title( $(node).attr('title') ).body( response ).show();
+                    }, this));
+                    return false;
+                }
+            }
+        },
+
+
+        "init" : function() {
+            /**
+             * Сортировка для структуры сайта
+             */
+            $('div.b-main-structure ul').sortable(this.structureSortSettings).disableSelection();
+
+            /**
+             * Edit page dialog
+             * @type {$s.Modal}
+             */
+            this.editModal = new Modal( 'pageEdit' );
+            this.editModal.onSave( this.editSave );
+
+            /**
+             * Create page dialog
+             * @type {$s.Modal}
+             */
+            this.createModal = new Modal( 'pageCreate' );
+            this.createModal.onSave( this.createSave, [this.editModal]);
+        },
+
+        /**
+         * Sortable settings
+         */
+        "structureSortSettings" : {
             stop : function (event, ui) {
                 var positions = [];
                 $('>li', this).each(function (i) {
@@ -23,97 +91,47 @@
                     console.error( response );
                 });
             }
-        };
+        },
 
         /**
-         * Сортировка для структуры сайта
+         * OnSave handler for create dialog
          */
-        $('div.b-main-structure ul').sortable(struntureSortSettings).disableSelection();
-
-        /**
-         * Switch on/off page
-         */
-        $('a.order_hidden').live('click', function () {
-            var a = this;
-            $.get($(a).attr('href'), function (data) {
-                $(a).replaceWith(data);
-            });
-            return false;
-        });
-
-
-        /**
-         * Подсветка таблицы
-         */
-        $('table.dataset tr').hover(function () {
-            $(this).addClass('select');
-        }, function () {
-            $(this).removeClass('select');
-        });
-
-        /**
-         * Create page dialog
-         * @type {$s.Modal}
-         */
-        var createModal = new $s.Modal( 'pageCreate' );
-
-        createModal.onSave(function(){
+        "createSave" : function( editModal ){
             if ( ! $.trim( $( '#name' ).val() ) ) {
                 this.msgError( $s.i18n('page','Input Name') );
-                return false;
+                return;
             }
-
             // page/add
             $.post( $( '#url' ).val(), {
                 'module':   $( '#module' ).val(),
                 'name':     $( '#name' ).val(),
                 'parent':   $( '#id' ).val()
-            }).then( $.proxy( function( response ){
+            }).then( $.proxy( function( editModal, $s, response ){
                 this.hide();
-                editModal.title($s.i18n('Create page')).body( response ).show();
-            }, this));
-        });
-
-        $('#structureWrapper a.add').live('click', function(){
-            $.post( $(this).attr('href') ).then( $.proxy(function( createModal, response ){
-                createModal.title($(this).attr('title')).body( response ).show();
-            }, this, createModal));
-            return false;
-        });
-
+                editModal.title( $s.i18n('page','Create page') ).body( response ).show();
+            }, this, editModal, $s ) );
+        },
 
         /**
-         * Edit page dialog
-         * @type {$s.Modal}
+         * OnSave handler for edit dialog
          */
-        var editModal = new $s.Modal( 'pageEdit' );
-
-        editModal.onSave(function(){
+        "editSave" : function(){
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
-                success: $.proxy(function( response ){
+                success: $.proxy( function( response ){
                     if ( ! response.error ) {
                         this.msgSuccess( response.msg, 1500).done(function(){
                             $.get('/page/admin' ).then(function( response ){
                                 $('#structureWrapper').find('.b-main-structure').empty()
                                     .html( $( response ).find('.b-main-structure').html() );
-                                $('div.b-main-structure ul').sortable(struntureSortSettings).disableSelection();
+                                $('div.b-main-structure ul').sortable(this.struntureSortSettings).disableSelection();
                             });
                         });
                     } else {
                         this.msgError( response.msg );
                     }
-                },this)
+                },this )
             });
-        });
-
-        $('#structureWrapper a.edit').live('click', function(){
-            $.post( $(this).attr('href') ).then( $.proxy(function( editModal, response ){
-                editModal.title($s.i18n('page','Edit page')).body(response).show();
-            }, this, editModal ));
-            return false;
-        });
-
-        $('a.realias').realias();
-    })
-})(jQuery, siteforever);
+        }
+    };
+});

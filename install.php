@@ -63,7 +63,12 @@ $installer->symlink( $src.DS.'images', $location.DS.'images' );
 print "<br>\n";
 
 $installer->copy( $src.DS.'modules.php', $location.DS.'modules.php' );
-$installer->copy( $src.DS.'index.php', $location.DS.'index.php' );
+
+$installer->copyReplaced(
+    $src.DS.'index.php',
+    $location.DS.'index.php',
+    array('main.php',$name.'.php')
+);
 
 $installer->copy( $src.DS.'.htaccess', $location.DS.'.htaccess' );
 
@@ -84,7 +89,7 @@ $installer->copy( $src.DS.'themes'.DS.'basic'.DS.'templates'.DS.'inner.tpl', $lo
 //system("mkdir {$location}\\protected\\_runtime");
 
 //    mkdir("{$location}\\protected\\_runtime\\_cache", 0777, true);
-$installer->mkdir($location.DS."protected".DS."_runtime".DS."_templates_c", 0777, true);
+$installer->mkdir($location.DS."_runtime".DS."_templates_c", 0777, true);
 $installer->mkdir($location.DS."protected".DS."config", 0777, true);
 
 //    system("mkdir {$location}\\protected\\_runtime\\_cache");
@@ -92,4 +97,12 @@ $installer->mkdir($location.DS."protected".DS."config", 0777, true);
 //    system("mkdir {$location}\\protected\\config");
 //    system("mklink /D {$location}\\protected\\lang {$src}\\protected\\lang");
 
-$installer->copy( $src.DS.'protected'.DS.'config'.DS.'main.php', $location.DS.'protected'.DS.'config'.DS.$name.'.php' );
+$installer->copyReplaced(
+    $src.DS.'protected'.DS.'config'.DS.'template.php',
+    $location.DS.'protected'.DS.'config'.DS.'template.php',
+    array('basic'=>$name)
+);
+$installer->copy(
+    $src.DS.'protected'.DS.'config'.DS.'main.php',
+    $location.DS.'protected'.DS.'config'.DS.$name.'.php'
+);

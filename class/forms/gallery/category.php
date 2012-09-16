@@ -14,19 +14,18 @@ class Forms_Gallery_Category extends form_Form
 
         return parent::__construct(array(
             'name'      => 'gallery_category',
+            'action'    => Siteforever::html()->url('gallery/editcat'),
             'fields'    => array(
-                'id'        => array('type'=>'int', 'hidden', 'value'=>'0'),
-                'name'      => array('type'=>'text', 'label'=>'Наименование', 'required'),
-
-                '<hr/>',
+                'id'            => array( 'type'=> 'int', 'hidden', 'value'=> '0' ),
+                'name'          => array( 'type'=> 'text', 'label'=> 'Наименование', 'required' ),
 
                 'middle_method' => array(
-                    'type'  =>'select',
-                    'label' =>'Метод создания средней картинки',
-                    'value' =>'1',
-                    'variants'=>array('1'=>'Добавление полей','2'=>'Обрезание лишнего',),
+                    'type'    => 'select',
+                    'label'   => 'Метод создания средней картинки',
+                    'value'   => '1',
+                    'variants'=> array( '1'=> 'Добавление полей', '2'=> 'Обрезание лишнего', ),
                 ),
-                'middle_width' => array(
+                'middle_width'  => array(
                     'type'  => 'int',
                     'label' => 'Ширина средней картинки',
                     'value' => '200',
@@ -39,18 +38,18 @@ class Forms_Gallery_Category extends form_Form
 
                 '<hr/>',
 
-                'thumb_method' => array(
-                    'type'  =>'select',
-                    'label' =>'Метод создания миниатюры',
-                    'value' =>'1',
-                    'variants'=>array('1'=>'Добавление полей','2'=>'Обрезание лишнего',),
+                'thumb_method'  => array(
+                    'type'    => 'select',
+                    'label'   => 'Метод создания миниатюры',
+                    'value'   => '1',
+                    'variants'=> array( '1'=> 'Добавление полей', '2'=> 'Обрезание лишнего', ),
                 ),
-                'thumb_width' => array(
+                'thumb_width'   => array(
                     'type'  => 'int',
                     'label' => 'Ширина миниатюры',
                     'value' => '100',
                 ),
-                'thumb_height' => array(
+                'thumb_height'  => array(
                     'type'  => 'int',
                     'label' => 'Высота миниатюры',
                     'value' => '100',
@@ -59,19 +58,20 @@ class Forms_Gallery_Category extends form_Form
                 '<hr/>',
 
                 'target'        => array(
-                    'type'  => 'select',
-                    'label' => 'Цель ссылок',
+                    'type'      => 'select',
+                    'label'     => 'Цель ссылок',
                     'variants'  => array(
-                        '_gallery'  =>'Галерея',
-                        '_blank'    =>'Изображение в новом окне',
-                        '_self'     =>'Страница в текущем окне',
-                        '_none'     =>'Без ссылки',
+                        '_gallery'  => 'Галерея',
+                        '_blank'    => 'Изображение в новом окне',
+                        '_self'     => 'Страница в текущем окне',
+                        '_none'     => 'Без ссылки',
                     ),
                 ),
                 'perpage'       => array(
-                    'type'  => 'int',
-                    'label' => 'Изображений на страницу',
-                    'value' => '20',
+                    'type'     => 'select',
+                    'label'    => 'Изображений на страницу',
+                    'value'    => 20,
+                    'variants' => array( 5=> '5', 10=> '10', 15=> '15', 20=> '20', 50=> '50' ),
                 ),
                 'color'         => array(
                     'type'  => 'select',
@@ -83,7 +83,7 @@ class Forms_Gallery_Category extends form_Form
                     ),
                 ),
 
-                'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
+//                'submit'        => array( 'type'=> 'submit', 'value'=> 'Сохранить' ),
             ),
         ));
     }

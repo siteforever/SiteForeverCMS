@@ -265,23 +265,28 @@ class Controller_News extends Sfcms_Controller
         $category   = $this->getModel('NewsCategory');
         $catId     = $this->request->get('id', Request::INT);
 
-        /** @var $catObj Data_Object_NewsCategory */
-        $catObj    = $category->find($catId);
+        try {
+            /** @var $catObj Data_Object_NewsCategory */
+            $catObj = $category->find( $catId );
 
-        $news       = $model->findAll(array(
-            'cond'  => 'cat_id = :cat_id',
-            'params'=> array(':cat_id'=>$catId),
-        ));
+            $news = $model->findAll( array(
+                'cond'  => 'cat_id = :cat_id',
+                'params'=> array( ':cat_id'=> $catId ),
+            ) );
 
-        /** @var $obj Data_Object_News */
-        foreach ( $news as $obj ) {
-            $obj->deleted = 1;
+            /** @var $obj Data_Object_News */
+            foreach ( $news as $obj ) {
+                $obj->deleted = 1;
+            }
+
+            $catObj->deleted = 1;
+            $catObj->save();
+        } catch ( Exception $e ) {
+            return array('error'=>1,'msg'=>$e->getMessage());
         }
 
-        $catObj->deleted   = 1;
-
-        $this->reload('news/admin');
-        return t('news','News category was deleted');
+//        $this->reload('news/admin');
+        return array('error'=>0,'msg'=> t('news','News category was deleted') );
     }
 
     /**
@@ -294,16 +299,12 @@ class Controller_News extends Sfcms_Controller
         $model      = $this->getModel('News');
         /**/
         $newsId    = $this->request->get('id', Request::INT);
-
         /** @var $obj Data_Object_News */
         $obj    = $model->find( $newsId );
-
-        $catId = $obj->cat_id;
-
+//        $catId = $obj->cat_id;
         $obj->deleted = 1;
-
-        $this->reload('news/list', array('id'=>$catId));
-        return t('News was delete');
+//        $this->reload('news/list', array('id'=>$catId));
+        return array('error'=>0,'msg'=>t('news','News was delete'));
     }
 
     /**

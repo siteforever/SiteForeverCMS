@@ -3,28 +3,38 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-siteforever.basket  = {};
+define([
+    "jquery",
+    "siteforever",
+    "jquery/jquery.form"
+],function($, $s){
+    return {
+        "class_name" : '.basket-widget',
 
-siteforever.basket.class_name    = '.basket-widget';
+        /**
+         * Добавит товар в корзину
+         * @param id
+         * @param product
+         * @param count
+         * @param price
+         * @param details
+         */
+        "add" : function( id, product, count, price, details ) {
+            return $.post('/?route=basket/add',
+                            {   basket_prod_id:     id,
+                                basket_prod_name:   product,
+                                basket_prod_count:  parseInt( count, 10 ),
+                                basket_prod_price:  parseFloat( price ),
+                                basket_prod_details :details
+                            }, $.proxy( function( data ){
+                                $s.alert( data.msg, 2000 );
+                                $(this.class_name).replaceWith( data.widget );
+                            }, this ),
+                            "json"
+                        );
+        },
 
-/**
- * Добавит товар в корзину
- * @param id
- * @param product
- * @param count
- * @param price
- * @param details
- */
-siteforever.basket.add  = function( id, product, count, price, details )
-{
-    return $.post('/?controller=basket&action=add', {
-        basket_prod_id:     id,
-        basket_prod_name:   product,
-        basket_prod_count:  parseInt( count, 10 ),
-        basket_prod_price:  parseFloat( price ),
-        basket_prod_details:details
-    }).then( $.proxy( function( data ){
-        sfcms.alert( product + ' добавлен в корзину', 2000 );
-        $(siteforever.basket.class_name).replaceWith( data );
-    }, this ) );
-}
+        "init" : function() {
+        }
+    }
+});

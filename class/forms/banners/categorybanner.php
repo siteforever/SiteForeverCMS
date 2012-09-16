@@ -16,7 +16,7 @@ class Forms_Banners_CategoryBanner extends Form_Form
                 'name'              => array(
                     'type' => 'text',
                     'class'=> 'elcatalog-meta',
-                    'label'=> 'Название категории баннера',
+                    'label'=> t('Name'),
                     'required',
                 ),
 

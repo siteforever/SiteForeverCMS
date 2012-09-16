@@ -16,6 +16,5 @@ function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $templat
     if ( isset( $params['separator'] ) ) {
         $breadcrumbs->setSeparator($params['separator']);
     }
-    $result = '<div class="b-breadcrumbs">'.$breadcrumbs->render().'</div>';
-    return $result;
+    return $breadcrumbs->render();
 }

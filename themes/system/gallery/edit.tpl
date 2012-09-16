@@ -1,20 +1,18 @@
-<div id="tabs" style="height: 100%">
-
-    <ul>
-        <li><a href="#tabs-basic">{t}Basic{/t}</a></li>
-        <li><a href="#tabs-description">{t}Description{/t}</a></li>
-    </ul>
-
 {$form->htmlStart()}
 
-    <div id="tabs-basic">
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#tabs-basic"  data-toggle="tab">{t}Basic{/t}</a></li>
+    <li><a href="#tabs-description"  data-toggle="tab">{t}Description{/t}</a></li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane active" id="tabs-basic">
         {$form->htmlFieldWrapped('id')}
         {$form->htmlFieldWrapped('name')}
         {$form->htmlFieldWrapped('link')}
     </div>
-    <div id="tabs-description">
-        {$form->htmlFieldWrapped('description')}
+    <div class="tab-pane" id="tabs-description">
+        {$form->htmlField('description')}
     </div>
-
-{$form->htmlEnd()}
 </div>
+{$form->htmlEnd()}

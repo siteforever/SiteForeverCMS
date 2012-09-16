@@ -20,6 +20,7 @@ class Controller_Users extends Sfcms_Controller
     {
         return array(
             'system'    => array('admin','adminEdit','save'),
+            'protected' => array('edit'),
         );
     }
 
@@ -49,11 +50,7 @@ class Controller_Users extends Sfcms_Controller
         $this->request->set('template', 'index' );
 
         // используем шаблон админки
-        $this->request->setTitle('Пользователи');
-
-        if ( $this->request->get('userid') || $this->request->get('add') ) {
-            return $this->adminEditAction();
-        }
+        $this->request->setTitle(t('user','Users'));
 
         $model  = $this->getModel('user');
 
@@ -63,7 +60,7 @@ class Controller_Users extends Sfcms_Controller
             foreach( $users as $key => $user ) {
                 if ( isset( $user['delete'] ) ) {
                     $model->delete($key);
-                    $this->request->addFeedback("Удален пользователь № {$key}");
+                    $this->request->addFeedback(t('user','Deleted user #').$key);
                     continue;
                 }
             }
@@ -82,7 +79,7 @@ class Controller_Users extends Sfcms_Controller
                                         ' OR lname LIKE :search OR name LIKE :search ';
                 $criteria['params'][':search']  = '%'.$search.'%';
             } else {
-                $this->request->addFeedback('Слишком короткий запрос');
+                $this->request->addFeedback(t('user','Too short query'));
             }
         }
 
@@ -104,9 +101,10 @@ class Controller_Users extends Sfcms_Controller
 
     /**
      * Редактирование пользователя в админке
+     * @params int $id
      * @return mixed
      */
-    public function adminEditAction()
+    public function adminEditAction( $id )
     {
         /**
          * @var model_User $model
@@ -117,20 +115,18 @@ class Controller_Users extends Sfcms_Controller
 
         $userForm = $model->getEditForm();
 
-        $user_id = $this->request->get('userid');
-
-        if ( $user_id && $User = $model->find( $user_id ) )
+        if ( $id && $User = $model->find( $id ) )
         {
             $userForm->setData( $User->getAttributes() );
             $userForm->getField('password')->setValue('');
         }
 
         $this->request->set('template', 'index');
-        $this->request->setTitle((!$user_id ? 'Добавить пользователя' : 'Правка пользователя'));
+        $this->request->setTitle((!$id ? t('user','Add user') : t('user','Edit user') ));
 
-        $this->tpl->assign('form', $userForm);
-        $this->tpl->assign('title', $this->request->getTitle());
-        return $this->tpl->fetch('system:users.adminedit');
+        return array(
+            'form' => $userForm,
+        );
     }
 
 
@@ -151,29 +147,21 @@ class Controller_Users extends Sfcms_Controller
         if ( $userForm->getPost() ) {
 
             if ( $userForm->validate() ) {
-                if ( $user_id = $userForm['id'] ) {
-                    $User   = $model->find( $user_id );
-                    $User->setAttributes( $userForm->getData() );
-                } else {
-                    $User = $model->createObject( $userForm->getData() );
-                }
+                $User = ($user_id = $userForm['id']) ? $model->find( $user_id ) : $model->createObject();
+                $password = $User->password;
+                $solt     = $User->solt;
+                $User->attributes = $userForm->getData();
 
                 if ( $userForm['password'] ) {
                     $User->changePassword( $userForm['password'] );
                 } else {
-                    unset( $User['password'] );
+                    $User->password = $password;
+                    $User->solt     = $solt;
                 }
-
-                if ( ! $user_id ) {
-                    // если создан новый пользователь
-                    $ins = $User->save();
-                    $this->reload( '/users/admin/edit/'.$ins );
-                    print "Пользователь добавлен";
-                }
-                $User->markDirty();
-                return t('Data save successfully');
+                return array('error'=>0,'msg'=>t('Data save successfully'));
+            } else {
+                return array('error'=>1,'msg'=>$userForm->getFeedbackString());
             }
-            return $this->request->getFeedbackString();
         }
         return t('Data not sent');
     }
@@ -198,6 +186,10 @@ class Controller_Users extends Sfcms_Controller
         $model  = $this->getModel('User');
         $auth   = $this->app()->getAuth();
 
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece(null, t('user','Sign in site'));
+
         $user   = $auth->currentUser();
 
         if ( $user->getId() ) {
@@ -217,7 +209,7 @@ class Controller_Users extends Sfcms_Controller
                 }
             }
         }
-        $this->request->setTitle('Вход в систему');
+        $this->request->setTitle(t('user','Sign in site'));
         $this->tpl->assign('form', $form );
 
         return $this->tpl->fetch('users.cabinet');
@@ -231,10 +223,12 @@ class Controller_Users extends Sfcms_Controller
         $auth   = $this->app()->getAuth();
         $user   = $auth->currentUser();
 
+        $this->tpl->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null,t('user','User cabiner'));
+
         if ( $user->getId() ) {
             // отображаем кабинет
-            $this->tpl->assign('user', $user->getAttributes());
-            $this->request->setTitle('Кабинет пользователя');
+            $this->request->setTitle(t('user','User cabiner'));
+            return array( 'user' => $user->getAttributes() );
         } else {
             $this->reload('users/login');
         }
@@ -249,27 +243,40 @@ class Controller_Users extends Sfcms_Controller
         /** @var Model_User $model */
         $model  = $this->getModel('user');
 
-        $this->request->set('tpldata.page.name', 'Edit Profile');
-        $this->request->setTitle('Редактирование профиля');
+        //$this->request->set('tpldata.page.name', 'Edit Profile');
+        $this->request->setTitle(t('user','Edit profile'));
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece('users/cabinet',t('user','User cabiner'))
+            ->addPiece(null,t('user','Edit profile'));
 
         $form = $model->getProfileForm();
 
         $form->setData( $this->app()->getAuth()->currentUser()->getAttributes() );
 
         // сохранение профиля
-        if ( $form->getPost() && $form->validate() ) {
-            $user   = $model->createObject( $form->getData() );
-
-            if ( $model->save( $user ) ) {
-                return 'Профиль успешно сохранен';
+        if ( $form->getPost() ) {
+            if ( $form->validate() ) {
+                $user   = $model->find( $form->getField('id')->getValue() );
+                if ( $user ) {
+                    $user->attributes =  $form->getData();
+                    if ( $model->save( $user ) ) {
+                        return t('Data save successfully');
+                    } else {
+                        return t('Data not saved');
+                    }
+                }
             } else {
-                return 'Профиль не сохранен';
+                if ( $this->request->isAjax() ) {
+                    return array('error'=>1,'errors'=>$form->getErrors());
+                }
             }
-        }
+//            else {
+//                return $form->getFeedbackString();
+//            }
+        };
 
-        $this->tpl->assign('form', $form);
-
-        return $this->tpl->fetch('system:users.profile');
+        return array('form' => $form );
     }
 
     /**
@@ -278,9 +285,13 @@ class Controller_Users extends Sfcms_Controller
      */
     public function registerAction()
     {
-        $this->request->setTitle('Регистрация');
-        $this->request->set('tpldata.page.name', 'Register');
+        $this->request->setTitle(t('user','Join'));
         $this->request->setContent('');
+
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece('users/login',t('user','Sign in site'))
+            ->addPiece(null,$this->request->getTitle());
 
         /**
          * @var Model_User $model
@@ -300,7 +311,7 @@ class Controller_Users extends Sfcms_Controller
                     return $this->tpl->fetch('users.register_successfull');
                 }
             } else {
-                $this->request->addFeedback('Форма заполнена не верно');
+                $this->request->addFeedback($form->getFeedbackString());
             }
         }
         return $form->html();
@@ -317,11 +328,12 @@ class Controller_Users extends Sfcms_Controller
          * @var Model_User $model
          */
         // @TODO Перевести под новую модель
-        $this->request->set('tpldata.page.name', 'Restore');
         $this->request->setTemplate('inner');
-        $this->request->setTitle('Восстановление пароля');
-        $this->request->setContent('');
-
+        $this->request->setTitle(t('user','Password recovery'));
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Main'))
+            ->addPiece('users/login',t('user','Sign in site'))
+            ->addPiece(null,$this->request->getTitle());
 
         // 1. Если нет параметров, форма ввода email
         // 2. Если введен email, отправить письмо, где будет ссылка, с email и md5 соли
@@ -360,25 +372,22 @@ class Controller_Users extends Sfcms_Controller
                     sendmail(
                         $this->config->get('admin'),
                         $email,
-                        'Новый пароль', $this->tpl->fetch('users.password_new')
+                        t('user','New password'), $this->tpl->fetch('users.password_new')
                     );
-                    $this->request->addFeedback('Новый пароль отправлен на Вашу почту');
-                    return;
+                    $this->request->addFeedback(t('user','A new password has been sent to your e-mail'));
+                } else {
+                    $this->request->addFeedback(t('user','Incorrect recovery code'));
                 }
-                else {
-                    $this->request->addFeedback('Не верный код восстановления');
-                }
-            }
-            else {
-                $this->request->addFeedback('Ваш email не найден');
+            } else {
+                $this->request->addFeedback(t('user','Your email is not found'));
             }
         }
 
-        $form = new form_Form(array(
+        $form = new Form_Form(array(
             'name'  => 'restore',
             'fields'=> array(
-                'email' => array('type'=>'text', 'label'=>'Ваш Email адрес',),
-                'submit'=> array('type'=>'submit', 'value'=>'Запросить'),
+                'email' => array('type'=>'text', 'label'=>t('Email'),'require'),
+                'submit'=> array('type'=>'submit', 'value'=>t('Send request')),
             ),
         ));
 
@@ -402,18 +411,18 @@ class Controller_Users extends Sfcms_Controller
                     sendmail(
                         $this->config->get('admin'),
                         $form['email'],
-                        'Восстановление пароля',
+                        t('user','Password recovery'),
                         $this->tpl->fetch('users.password_restore')
                     );
-                    $this->request->addFeedback('Ссылка для восстановления отправлена на вашу почту');
-                    return;
+                    $this->request->addFeedback(t('user','Recovery link sent to your e-mail'));
                 } else {
-                    $this->request->addFeedback('Пользователь с этим почтовым ящиком не зарегистрирован');
+                    $this->request->addFeedback(t('user','The user with the mailbox is not registered'));
                 }
             }
+            $this->request->addFeedback( $form->getFeedbackString() );
         }
 
-        return '<p>Для восстановления пароля укажите ваш адрес Email</p>'.$form->html();
+        return array('form'=>$form);
     }
 
     /**
@@ -427,7 +436,13 @@ class Controller_Users extends Sfcms_Controller
          * @var Model_User $model
          */
         // @TODO Перевести под новую модель
-        $this->request->setTitle('Изменить пароль');
+        $this->request->setTitle(t('user','Change password'));
+
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Home'))
+            ->addPiece('users/cabinet',t('user','User cabiner'))
+            ->addPiece(null, $this->request->getTitle());
+
 
         $model  = $this->getModel('User');
         $auth   = $this->app()->getAuth();
@@ -452,15 +467,15 @@ class Controller_Users extends Sfcms_Controller
 
                     if ( strcmp( $form->getField('password1')->getValue(), $form->getField('password2')->getValue() ) === 0 ) {
                         $user->changePassword( $form->getField('password1')->getValue() );
-                        $this->request->addFeedback('Пароль успешно изменен');
+                        $this->request->addFeedback(t('user','Password successfully updated'));
                         return $this->tpl->fetch('system:users.password_success');
                     }
                     else {
-                        $this->request->addFeedback('Нужно ввести новый пароль 2 раза');
+                        $this->request->addFeedback(t('user','You must enter a new password 2 times'));
                     }
 
                 } else {
-                    $this->request->addFeedback('Пароль введен не верно');
+                    $this->request->addFeedback(t('user','Password is not correct'));
                 }
 
             } else {

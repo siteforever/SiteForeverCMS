@@ -28,7 +28,7 @@ return array(
         'host'      => 'localhost',
 //        'database'  => 'sftest',
         'database'  => 'siteforever',
-        'migration' => false,
+        'migration' => true,
     ),
 
     // тема

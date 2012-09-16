@@ -21,11 +21,10 @@ class Data_Table_Gallery extends Data_Table
             new Data_Field_Varchar( 'link', 250, true, null, false ),
             new Data_Field_Text( 'description', 11, true, null, false ),
             new Data_Field_Varchar( 'image', 250, true, null, false ),
-            new Data_Field_Varchar( 'middle', 250, true, null, false ),
-            new Data_Field_Varchar( 'thumb', 250, true, null, false ),
             new Data_Field_Int( 'pos', 11, true, null, false ),
-            new Data_Field_Tinyint( 'main', 4, true, null, false ),
-            new Data_Field_Tinyint( 'hidden', 4, true, null, false ),
+            new Data_Field_Tinyint( 'main', 1, true, 0 ),
+            new Data_Field_Tinyint( 'hidden', 1, true, 0 ),
+            new Data_Field_Tinyint( 'deleted', 1, true, 0 ),
         );
     }
 

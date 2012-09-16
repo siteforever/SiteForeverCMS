@@ -32,7 +32,7 @@ abstract class Data_Table
      * Построение запроса для создания таблицы
      * @return string
      */
-    function getCreateTable()
+    public function getCreateTable()
     {
         $ret = "CREATE TABLE `{$this->getTable()}` (\n\t";
 
@@ -48,8 +48,7 @@ abstract class Data_Table
         if ( $this->getPk() ) {
             if ( is_array($this->getPk()) ) {
                 $pk = '`'.join('`,`', $this->getPk()).'`';
-            }
-            else {
+            } else {
                 $pk = "`".str_replace(',', '`,`', $this->getPk())."`";
             }
             $params[] = "PRIMARY KEY ({$pk})";
@@ -103,7 +102,7 @@ abstract class Data_Table
      * Вернет имя таблицы
      * @return string
      */
-    function __toString()
+    public function __toString()
     {
         return DBPREFIX.$this->getTable();
     }
@@ -164,7 +163,7 @@ abstract class Data_Table
      * @param bool $autoincrement
      * @return Data_Field_Int
      */
-    function getInt( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    public function getInt( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Int( $name, $length, $notnull, $default, $autoincrement );
     }
@@ -178,7 +177,7 @@ abstract class Data_Table
      * @param bool $autoincrement
      * @return Data_Field_Tinyint
      */
-    function getTinyint( $name, $length = 4, $notnull = false, $default = null, $autoincrement = false )
+    public function getTinyint( $name, $length = 4, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Tinyint( $name, $length, $notnull, $default, $autoincrement );
     }
@@ -189,7 +188,7 @@ abstract class Data_Table
      * @param bool $notnull
      * @return Data_Field_Text
      */
-    function getText( $name, $notnull = false )
+    public function getText( $name, $notnull = false )
     {
         $length     = null;
         $default    = null;
@@ -206,7 +205,7 @@ abstract class Data_Table
      * @param bool $autoincrement
      * @return Data_Field_Varchar
      */
-    function getVarchar( $name, $length = 255, $notnull = false, $default = null, $autoincrement = false )
+    public function getVarchar( $name, $length = 255, $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Varchar( $name, $length, $notnull, $default, $autoincrement );
     }
@@ -220,7 +219,7 @@ abstract class Data_Table
      * @param bool $autoincrement
      * @return Data_Field_Decimal
      */
-    function getDecimal( $name, $length = '13,2', $notnull = false, $default = null, $autoincrement = false )
+    public function getDecimal( $name, $length = '13,2', $notnull = false, $default = null, $autoincrement = false )
     {
         return new Data_Field_Decimal( $name, $length, $notnull, $default, $autoincrement );
     }

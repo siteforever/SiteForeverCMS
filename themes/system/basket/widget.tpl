@@ -1,5 +1,6 @@
 <div class="b-basket basket-widget">
-    <img alt="Ваша корзина" src="{$path.images}/basket.png" />
+    {*<img alt="Ваша корзина" src="{$path.images}/basket.png" />*}
+    <h3>{t cat="Basket"}Basket{/t}</h3>
     <div class="b-basket-spacer"></div>
     <div class="b-basket-info">
         <table class="fullWidth">

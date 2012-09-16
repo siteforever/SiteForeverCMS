@@ -9,12 +9,11 @@ class Sfcms_Image
     protected $img = null;
 
 
-    function __construct( $img = null )
+    public function __construct( $img = null )
     {
         if( is_string( $img ) && file_exists( $img ) ) {
             $this->img = self::loadFromFile( $img );
-        }
-        else {
+        } else {
             $this->img = $img;
         }
     }
@@ -27,7 +26,7 @@ class Sfcms_Image
      * @param string $color
      * @return
      */
-    function createThumb( $width, $height, $method, $color = '-1' )
+    public function createThumb( $width, $height, $method, $color = '-1' )
     {
         $scale = $this->getScale( $method );
         $thumb = $scale->getScalingImage( $width, $height, $color );
@@ -36,13 +35,18 @@ class Sfcms_Image
         }
     }
 
-    function getScale( $method )
+    public function getScale( $method )
     {
         switch ( $method ) {
             case '1':
+            case Sfcms_Image_Scale::METHOD_ADD:
                 $scale = new Sfcms_Image_Scale( Sfcms_Image_Scale::METHOD_ADD, $this->img );
                 break;
+            case Sfcms_Image_Scale::METHOD_PRIORITY:
+                $scale = new Sfcms_Image_Scale( Sfcms_Image_Scale::METHOD_PRIORITY, $this->img );
+                break;
             case '2':
+            case Sfcms_Image_Scale::METHOD_CROP:
             default:
                 $scale = new Sfcms_Image_Scale( Sfcms_Image_Scale::METHOD_CROP, $this->img );
         }
@@ -65,8 +69,11 @@ class Sfcms_Image
      * @param  $filename
      * @return void
      */
-    function saveToFile( $filename )
+    public function saveToFile( $filename )
     {
+        if ( ! is_writable( dirname( $filename ) ) ) {
+            throw new Sfcms_Image_Exception( 'Directory "'.dirname( $filename ).'" is not writable' );
+        }
         Sfcms_Image_Loader::save( $this->img, $filename );
     }
 

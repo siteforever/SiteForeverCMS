@@ -3,67 +3,47 @@
  * @author keltanas@gmail.com
  */
 
-siteforever.banner = {};
-
-siteforever.banner.dialogSettings = {
-    autoOpen: false,
-    width:    700,
-    modal:    true,
-    open:     function () {
-        $( "#tabs" ).tabs();
-        wysiwyg.init();
-    },
-    buttons:  {
-        "Сохранить": function () {
-            var self = this,
-                url  = $('form', this )[0].getAttribute('action');
-            $( 'form', this ).ajaxSubmit( {
-                type:    'POST',
-                url:     url,
-                success: function ( response, textStatus, jqXHR ) {
-                    try {
-                        $( self ).dialog( "close" );
-                    } catch ( e ) {
-                        console.error( e.message );
+define([
+    "jquery",
+    "siteforever",
+    "module/modal",
+    "i18n"
+], function($, $s, Modal, i18n){
+    return {
+        "behavior" : {
+            'a.edit,a.cat_add,a.ban_add,#add_ban' : {
+                "click" : function( event, node ) {
+                    var href = $(node).attr('href');
+                    var title = $(node).attr('title');
+                    $.get( href, 'html' ).then(
+                        $.proxy(function ( response ) {
+                            this.ModalBannerEdit.title( title).body( response).show();
+                        }, this));
+                    return false;
+                }
+            },
+            'a.do_delete' : {
+                "click" : function( event, node ){
+                    if ( ! confirm(i18n('Want to delete?')) ) {
                         return false;
                     }
-                    $s.alert( response, 2000 );
-                    return true;
-                },
-                error:   function ( XMLHttpRequest, textStatus, errorThrown ) {
-                    $( self ).dialog( "close" );
-                    $s.alert( 'Данные не сохранены', 2000 );
-                    return true;
+                    try {
+                        $.post( $(node).attr('href'), $.proxy(function(response){
+                            if (!response.error) {
+                                $(node).parents('tr').remove();
+                            }
+                            $s.alert(response.msg, 1500);
+                        },this), "json");
+                    } catch (e) {
+                        console.error(e.message );
+                    }
+                    return false;
                 }
-            } );
+            }
         },
-        "Отмена":    function () {
-            $( this ).dialog( "close" );
+
+        "init" : function(){
+            this.ModalBannerEdit = new Modal('BannerEdit');
         }
     }
-};
-$(function(){
-
-    var dialogForm = $('<div id="dialog-form"></div>').appendTo('body');
-    dialogForm.dialog( siteforever.banner.dialogSettings );
-
-    $( 'a.cat_add,a.ban_add,#add_ban' ).each( function () {
-        $( this ).click( function ( event ) {
-            event.stopPropagation();
-            var href = $(this).attr('href');
-            var title = $(this).attr('title');
-            $s.alert("Загрузка данных");
-            $.get( href, 'html' ).then(
-                $.proxy(function ( response ) {
-                    $s.alert.close();
-                    dialogForm.html( response ).dialog( 'option', 'title', title );
-                    dialogForm.dialog( 'open' );
-                }, this),
-                $.proxy(function ( error ) {
-                }, this)
-            );
-            return false;
-        } );
-    } );
-
 });
