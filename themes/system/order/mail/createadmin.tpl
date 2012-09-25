@@ -1,23 +1,24 @@
-Здравствуйте, {$user.fname|default:$user.lname|default:$user.login}
+Здравствуйте!
 
-Вы оформили заказ на сайте {$sitename}
+На сайте {$sitename} был оформлен заказ.
 
 Номер заказа: {$order_n}
 Дата:         {$date}
-Ссылка:       {$ord_link}
+{*Ссылка:       {$ord_link}*}
 
 {foreach from=$positions item="pos"}
-Наименование: {$pos.name}
+Наименование: {$pos.articul}
 Цена:         {$pos.price}
 Количество:   {$pos.count}
-Сумма:        {$pos.summa}
+Сумма:        {$pos.price * $pos.count}
+
+{/foreach}
 
 {if $delivery}
 Доставка {$delivery->name}
 Стоимость {$delivery->cost}
 {/if}
 
-{/foreach}
 Всего: {$total_count}
 Сумма: {$total_summa}
 

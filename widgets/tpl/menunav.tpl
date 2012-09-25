@@ -6,7 +6,7 @@
                 {if !$item->hidden}
                     {if $level == 1 && isset( $data[ $item->id ] ) && count( $data[ $item->id ] )}
                         <li class="item{$item->id}{if $request->get('route')==$item->alias} active{/if}{if $first} first{/if} dropdown">
-                            {a class="dropdown-toggle" htmlData-toggle="dropdown"}
+                            {a href=$item->alias class="dropdown-toggle" htmlData-toggle="dropdown"}
                                 {$item->title} <b class="caret"></b>{/a}
                             {recursiveNavMenu data=$data parent=$item->id level=$level-1}
                         </li>

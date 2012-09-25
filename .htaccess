@@ -26,6 +26,7 @@ php_value register_globals          off
 
 RewriteEngine on
 
+RewriteCond %{REQUEST_FILENAME} !^favicon\.ico
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 

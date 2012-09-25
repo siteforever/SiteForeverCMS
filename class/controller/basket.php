@@ -195,7 +195,10 @@ class Controller_Basket extends Sfcms_Controller
     {
         $yaAddress = new \Sfcms\Yandex\Address();
         $yaAddress->setJsonData( $address );
+        $form->getField('country')->setValue( $yaAddress->country );
+        $form->getField('city')->setValue( $yaAddress->city );
         $form->getField('address')->setValue( $yaAddress->getAddress() );
+        $form->getField('zip')->setValue( $yaAddress->zip );
         if ( $yaAddress->firstname )
             $form->getField('fname')->setValue($yaAddress->firstname);
         if ( $yaAddress->lastname )

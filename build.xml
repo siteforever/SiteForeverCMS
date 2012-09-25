@@ -187,5 +187,23 @@
         <!--</phpunit>-->
     </target>
 
+    <target name="phar">
+        <pharpackage
+                destfile="./sfcms.phar"
+                basedir="./">
+            <fileset dir="./class">
+                <include name="**/**"/>
+            </fileset>
+            <metadata>
+                <element name="version" value="0.4"/>
+                <element name="authors">
+                    <element name="Nikolay Ermin">
+                        <element name="e-mail" value="keltanas@gmail.com"/>
+                    </element>
+                </element>
+            </metadata>
+        </pharpackage>
+    </target>
+
 
 </project>

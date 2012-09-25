@@ -1,9 +1,9 @@
 <?php
 // директории для подключения
 $include_list   = array();
-if ( SF_PATH != __DIR__ ) {
-    $include_list[] = __DIR__.DIRECTORY_SEPARATOR.'class';
-    $include_list[] = __DIR__;
+if ( SF_PATH != ROOT ) {
+    $include_list[] = ROOT.DIRECTORY_SEPARATOR.'class';
+    $include_list[] = ROOT;
 }
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
 $include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
@@ -117,8 +117,8 @@ class App extends Application_Abstract
         $this->getRouter()->routing();
 
         self::$init_time = microtime( 1 ) - self::$start_time;
-
         self::$controller_time = microtime( 1 );
+
         $resolver   = new \Sfcms\Controller\Resolver( $this );
 
         try {
@@ -140,15 +140,16 @@ class App extends Application_Abstract
             }
             $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
             $result = $e->getMessage();
-
         } catch ( Exception $e ) {
             if ( App::isDebug() ) {
-                $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
-                $result = "<pre class='alert alert-error'><strong>".get_class( $e )."</strong> {$e->getMessage()}\n"
-                    .( App::isDebug()
-                        ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
-                        : '' )
-                    .'</pre>';
+                $this->getRequest()
+                    ->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
+                $result = "<pre class='alert alert-error'><strong>"
+                        . get_class( $e )."</strong> {$e->getMessage()}\n"
+                        . ( App::isDebug()
+                            ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
+                            : '' )
+                        . '</pre>';
             } else {
                 $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
             }
@@ -220,6 +221,7 @@ class App extends Application_Abstract
             $result = json_encode( $result );
         }
 //        $this->getLogger()->log( $result, 'result' );
+
         // Имеет больший приоритет, чем данные в Request->content
         if ( is_array( $result ) ) {
             // Если надо отпарсить шаблон с данными из массива

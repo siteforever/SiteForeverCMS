@@ -41,9 +41,9 @@ class Address extends Component
     {
         $this->_fields = array(
 //            'title' => 'название адреса',
-            'zip' => '',//Индекс
-            'city' => '',// Город
-            'country' => '', // страна
+//            'zip' => '',//Индекс
+//            'city' => '',// Город
+//            'country' => '', // страна
             'street' => '', //ул.
             'building' => 'д.',
             'suite' => 'к.',

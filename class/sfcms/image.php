@@ -8,14 +8,21 @@ class Sfcms_Image
 {
     protected $img = null;
 
+    protected $width = 0;
+
+    protected $height = 0;
 
     public function __construct( $img = null )
     {
         if( is_string( $img ) && file_exists( $img ) ) {
             $this->img = self::loadFromFile( $img );
-        } else {
+        } elseif ( is_resource( $img ) ) {
             $this->img = $img;
+        } else {
+            throw new Sfcms_Image_Exception('Image '.$img.' not found');
         }
+        $this->width = imagesx( $this->img );
+        $this->height = imagesy( $this->img );
     }
 
     /**
@@ -37,6 +44,10 @@ class Sfcms_Image
 
     public function getScale( $method )
     {
+        if ( ! $this->img ) {
+            throw new Sfcms_Image_Exception('Image '.$this->img.' is not resource');
+        }
+
         switch ( $method ) {
             case '1':
             case Sfcms_Image_Scale::METHOD_ADD:
@@ -56,7 +67,7 @@ class Sfcms_Image
     /**
      * Загрузить из файла
      * @static
-     * @param  $filename
+     * @param string $filename
      * @return resource
      */
     static protected function loadFromFile( $filename )
@@ -76,5 +87,17 @@ class Sfcms_Image
         }
         Sfcms_Image_Loader::save( $this->img, $filename );
     }
+
+    public function getHeight()
+    {
+        return $this->height;
+    }
+
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+
 
 }

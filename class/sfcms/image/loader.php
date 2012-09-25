@@ -61,7 +61,7 @@ class Sfcms_Image_Loader
                     $ret = @imagegif( $img, $filename );
                     break;
                 default: // Jpeg by default
-                    $ret = @imagejpeg( $img, $filename, 80 );
+                    $ret = @imagejpeg( $img, $filename, 90 );
             }
         }
         return $ret;

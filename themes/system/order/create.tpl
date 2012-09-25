@@ -4,7 +4,7 @@
 
     <ul>
     {foreach from=$products item="prod"}
-        <li>{$prod.articul} ( {$prod.count} шт. по {$prod.price} Р. )</li>
+        <li><b>{$prod.articul}</b> <i>{$prod.details}</i> ( {$prod.count} шт. по {$prod.price} Р. )</li>
     {/foreach}
     </ul>
 
@@ -30,7 +30,7 @@
 
 
     {if ! $robokassa}
-        <p>В ближайшее время наш менеджерсвяжется с Вами.</p>
+        <p>В ближайшее время наш менеджер свяжется с Вами.</p>
     {/if}
 
     {*<p>*}

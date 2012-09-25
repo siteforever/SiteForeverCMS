@@ -6,8 +6,9 @@
  */
 
 namespace Sfcms\Route;
+use Sfcms\Route;
 
-class Direct extends \Sfcms\Route
+class Direct extends Route
 {
     private $controllers = array();
 

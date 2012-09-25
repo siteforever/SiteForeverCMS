@@ -11,10 +11,17 @@ class Model_NewsCategory extends Sfcms_Model
     /** @var Forms_News_Category */
     private $form = null;
 
+    public function relation()
+    {
+        return array(
+            'Page' => array( self::BELONGS, 'Page', 'link' ),
+        );
+    }
+
     /**
      * @return Forms_News_Category
      */
-    function getForm()
+    public function getForm()
     {
         if ( is_null( $this->form ) ) {
             $this->form = new Forms_News_Category();

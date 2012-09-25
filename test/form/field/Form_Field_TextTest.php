@@ -97,7 +97,7 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
             ."<label for='test_test' class='control-label'>test</label>"
             ."<div class='controls field-text'>"
-                ."<input id='test_test' type='text' class=\"text input-xlarge\" name='test[test]' value='hello' />"
+                ."<input id='test_test' type='text' class=\"input-xlarge\" name='test[test]' value='hello' />"
             ."</div></div>", $this->object->html());
     }
 
@@ -110,7 +110,7 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
                 ."<label for='test_test' class='control-label'>Name <b>*</b> </label>"
                 ."<div class='controls field-text'>"
-                    ."<input id='test_test' type='text' class=\"text required input-xlarge\" name='test[test]' value='Nikolay' />"
+                    ."<input id='test_test' type='text' class=\"input-xlarge required\" name='test[test]' value='Nikolay' />"
                 ."</div></div>", $this->object->html());
     }
 

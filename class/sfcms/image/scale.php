@@ -20,8 +20,12 @@ class Sfcms_Image_Scale
      * @param string $method
      * @param resource $image
      */
-    function __construct( $method, $image )
+    public function __construct( $method, $image )
     {
+        if ( ! $image ) {
+            throw new Sfcms_Image_Exception('Image '.$image.' is not resource');
+        }
+
         switch ( $method ) {
             case self::METHOD_CROP:
                 $this->_scaller = new Sfcms_Image_Scale_Crop( $image );

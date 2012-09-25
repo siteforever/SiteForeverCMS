@@ -5,8 +5,9 @@
  * @link   http://siteforever.ru
  */
 namespace Sfcms\Route;
+use Sfcms\Route;
 
-class XML extends \Sfcms\Route
+class XML extends Route
 {
     /**
      * @param $route

@@ -87,10 +87,9 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
      */
     public function testAdminEditAction()
     {
-        $return = $this->controller->adminEditAction();
+        $return = $this->controller->adminEditAction( null );
         $result = $this->app->getRequest()->getContent();
-        $this->assertStringStartsWith( '<h2><a href=', $return );
-        $this->assertStringEndsWith( '</form>', $return );
+        $this->assertArrayHasKey('form', $return );
         $this->assertEmpty( $result );
     }
 

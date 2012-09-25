@@ -148,7 +148,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
      *
      * @return array
      */
-    function relation()
+    public function relation()
     {
         return array();
     }

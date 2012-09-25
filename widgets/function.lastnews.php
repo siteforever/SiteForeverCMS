@@ -57,7 +57,7 @@ function smarty_function_lastnews( $params, $smarty )
     } else {
         $content     = array('<ul>');
         foreach ( $list as $l ) {
-            $content[]  = "<li><a href='".$l->getUrl()."'>{$l['name']}</a></li>";
+            $content[]  = "<li>".Siteforever::html()->link($l->name, $l->url)."</li>";
         }
         $content[]  = '</ul>';
         $content    = join('', $content);

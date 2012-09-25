@@ -262,7 +262,7 @@ abstract class Application_Abstract
 
     /**
      * @param $param
-     * @return Sfcms_Config
+     * @return Sfcms_Config|mixed
      */
     public function getConfig( $param = null )
     {

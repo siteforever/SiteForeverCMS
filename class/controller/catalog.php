@@ -116,12 +116,13 @@ class Controller_Catalog extends Sfcms_Controller
             );
         }
 
+        $manufId = $this->request->get('manufacturer', Request::INT);
+
         // количество товаров
         $criteria = $catModel->createCriteria();
-//        $criteria->condition = implode(' AND ', array('deleted' => 0,'hidden'=>0,'cat'=>0) )
-//            . count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '';
         $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 "
-            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' );
+            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
+            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
 
         $count = $catModel->count( $criteria );
 
@@ -131,7 +132,7 @@ class Controller_Catalog extends Sfcms_Controller
         $orderList = $this->config->get( 'catalog.order_list' );
         if( $orderList && is_array( $orderList ) ) {
             if ( ! (  $set = $this->request->get( 'order' ) ) ) {
-                $set = @$_SESSION['Sort'] ?: false;
+                $set = isset( $_SESSION['Sort'] ) ? $_SESSION['Sort'] : false;
             }
             if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
@@ -305,8 +306,8 @@ class Controller_Catalog extends Sfcms_Controller
                 $object = $catalogFinder->createObject();
                 $object->attributes =  $form->getData();
 
-                $this->log( $form->getData(), 'form' );
-                $this->log( $object->attributes, 'obj' );
+//                $this->log( $form->getData(), 'form' );
+//                $this->log( $object->attributes, 'obj' );
 
                 if( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
@@ -337,11 +338,9 @@ class Controller_Catalog extends Sfcms_Controller
             Siteforever::html()->link(t('catalog','Catalog'),'catalog/admin')
 //            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
         ); // breadcrumbs
-
-        $this->log( $path );
-
+//        $this->log( $path );
         if( $arrPath = @unserialize( $path ) ) {
-            $this->log( $arrPath, 'Path' );
+//            $this->log( $arrPath, 'Path' );
             if( $arrPath && is_array( $arrPath ) ) {
                 foreach( $arrPath as $val ) {
                     $bc[ ] = Siteforever::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))

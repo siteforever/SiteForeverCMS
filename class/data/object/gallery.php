@@ -53,4 +53,14 @@ class Data_Object_Gallery extends Data_Base_Gallery
         }
         return $title;
     }
+
+    public function getMiddle()
+    {
+        return $this->data['image'];
+    }
+
+    public function getThumb()
+    {
+        return $this->data['image'];
+    }
 }

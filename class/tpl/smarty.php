@@ -7,21 +7,33 @@ class TPL_Smarty extends TPL_Driver
 {
     private $ext = '';
 
+    private $config = array();
+
     public function __construct()
     {
-        $config    = $this->app()->getConfig();
+        $this->app()->getConfig()->setDefault('template', array(
+            'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system',
+            'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
+            'ext'       => 'tpl',
+            'compile_check' => true,
+            'caching'   => false,
+        ));
+        $this->config = $this->app()->getConfig('template');
 
         // класс шаблонизатора
-        App::autoloadUnRegister(array('App', 'autoload'));
-        $ver = $config->get('template.version');
+        $ver = $this->config['version'];
         if( ! $ver ) throw new RuntimeException(t('Smarty version not defined'));
+
+        App::autoloadUnRegister(array('App', 'autoload'));
         require_once 'Smarty-'.$ver.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
         App::autoloadRegister(array('App','autoload'));
 
         $this->engine = new Smarty(); // link (used php5)
-        $this->engine->caching = false;
-        $this->engine->cache_lifetime = $config->get('template.cache.livetime');
-        $this->ext    = $config->get('template.ext');
+        $this->engine->cache_lifetime = $this->config['cache']['livetime'];
+        $this->ext    = $this->config['ext'];
+
+        $this->engine->compile_check = $this->config['compile_check'];
+        $this->engine->caching = $this->config['caching'];
     }
     
     public function assign( $params, $value = null )

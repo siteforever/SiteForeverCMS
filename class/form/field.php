@@ -28,7 +28,7 @@ abstract class Form_Field
     protected $_required = false;
     protected $_disabled = false;
     protected $_hidden   = false;
-    protected $_type      = null;
+    protected $_type      = 'text';
     protected $_params;
 
     /**
@@ -445,14 +445,17 @@ abstract class Form_Field
      */
     public function htmlNotice()
     {
-        if ( $this->_notice )
-            $this->_params['help-block'] = $this->_notice;
+        if ( $this->_notice ) {
+            $this->_params[ 'help-block' ] = $this->_notice;
+        }
 
-        if ( ! empty( $this->_params['help-block'] ) )
+        if ( ! empty( $this->_params['help-block'] ) ) {
             return "<div class=\"help-block\"><small>{$this->_params['help-block']}</small></div>";
+        }
 
-        if ( ! empty( $this->_params['help-inline'] ) )
+        if ( ! empty( $this->_params['help-inline'] ) ) {
             return "<div class=\"help-inline\"><small>{$this->_params['help-inline']}</small></div>";
+        }
 
         return "";
     }
@@ -504,8 +507,10 @@ abstract class Form_Field
      */
     public function htmlInput( $field )
     {
-        $field['class'][] = $this->_class;
-        $field['class']    = 'class="'.join(' ', $field['class']).'"';
+        if( is_array( $field['class'] ) && ! in_array($this->_class, $field['class']) ) {
+            $field['class'][] = $this->_class;
+        }
+        $field['class'] = 'class="'.join(' ', $field['class']).'"';
         return "<input ".join(' ', $field)." />";
     }
 

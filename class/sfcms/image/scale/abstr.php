@@ -25,7 +25,7 @@ abstract class Sfcms_Image_Scale_Abstr
             $this->width  = imagesx( $this->image );
             $this->height = imagesy( $this->image );
         } else {
-            throw new Sfcms_Image_Exception('Image is not resource');
+            throw new Sfcms_Image_Exception('Image '.$image.' is not resource');
         }
     }
 

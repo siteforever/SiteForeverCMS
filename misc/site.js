@@ -33,12 +33,18 @@ require([
     // добавить в корзину
     $(document).on('click', 'input.basket-add', function(){
         var product = $(this).data('product');
+        var properties = [];
+        $( "input,select","#properties").each(function(){
+            properties.push( $(this).val() );
+        });
+//        console.log( properties );
+//        return;
         basket.add(
             $(this).data('id') || product,
             product,
             $(this).parent().find('input.b-product-basket-count').val(),
             $(this).data('price'),
-            ''
+            properties.join(", ")
         );
     });
 

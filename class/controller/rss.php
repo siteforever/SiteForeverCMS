@@ -27,7 +27,7 @@ class Controller_Rss extends Sfcms_Controller
         //$crit   = ;
 
 
-        $news   = $model->findAllWithLinks( $criteria );
+        $news   = $model->findAll( $criteria );
 
         $this->tpl->assign('data', $news);
         $this->tpl->assign('gmdate', gmdate('D, d M Y H:i:s', time()).' GTM');
@@ -36,41 +36,36 @@ class Controller_Rss extends Sfcms_Controller
 
         //header('Content-type: text/xml; charset=utf-8');
 
-        $rss    = new SimpleXMLElement('<rss />', null );
-        $rss->addAttribute('version', '2.0');
-        $channel= $rss->addChild('channel');
+        $dom = new DOMDocument('1.0', 'utf-8');
+        $rssDom = $dom->createElement('rss');
+        $dom->appendChild( $rssDom );
 
-        /**
-         * @var SimpleXMLElement $item
-         */
+        $rssDom->setAttribute('version', '2.0');
+        $rssDom->appendChild( $channelDom = $dom->createElement('channel') );
 
-        $channel->addChild('title', $this->config->get('sitename'));
-        $channel->addChild('link', $this->config->get('siteurl'));
-        $channel->addChild('description', $this->config->get('sitename'));
+        $channelDom->appendChild( $dom->createElement('title', $this->config->get('sitename')) );
+        $channelDom->appendChild( $dom->createElement('link', $this->config->get('siteurl')) );
+        $channelDom->appendChild( $dom->createElement('description', $this->config->get('sitename')) );
+        $channelDom->appendChild( $dom->createElement('generator', 'SiteForeverCMS') );
 
-//        $channel->addChild('pubDate', date('r'));
-//        $channel->addChild('lastBuildDate', date('r'));
-//        $channel->addChild('docs',$this->config->get('siteurl').'/rss');
-        $channel->addChild('generator','SiteForeverCMS');
-//        $channel->addChild('managingEditor',$this->config->get('admin'));
-//        $channel->addChild('webMaster', 'nikolay@ermin.ru');
-        
-        foreach( $news as $n ) {
-            $description = $n['notice'];
+        /** @var $article Data_Object_News */
+        foreach( $news as $article ) {
+            $description = $article['notice'];
             $description = str_replace('&nbsp;', ' ', $description);
 
-            $item = $channel->addChild('item');
-            $item->addChild('title', htmlentities( $n->title ) );
-            $item->addChild('link', $this->config->get('siteurl').$n->alias);
-            $item->addChild('description', $description );
-            $item->addChild('pubDate', date('r', $n['date']));
+            $channelDom->appendChild( $itemDom = $dom->createElement('item') );
+            $itemDom->appendChild( $dom->createElement('title', htmlentities( $article->title ) ) );
+            $itemDom->appendChild( $dom->createElement('link', $this->config->get('siteurl').'/'.$article->url) );
+            $itemDom->appendChild( $dom->createElement('description', $description ) );
+            $itemDom->appendChild( $dom->createElement('pubDate', date('r', $article['date']) ) );
         }
 
-        $xml_string = $rss->asXML();
-
-        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
+//        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
         //$xml_string = htmlspecialchars_decode( $xml_string );
 
-        return $xml_string;
+        if ( $this->config->get('debug.profiler') ) {
+            $dom->formatOutput = true;
+        }
+        return $dom->saveXML();
     }
 }

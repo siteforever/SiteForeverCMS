@@ -65,6 +65,10 @@ class Controller_Robokassa extends Sfcms_Controller
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
 
+        if ( ! $order ) {
+            return "bad sign\n";
+        }
+
         $positions = $order->Positions;
         $sum = $positions->sum('sum') + $order->Delivery->cost;
 

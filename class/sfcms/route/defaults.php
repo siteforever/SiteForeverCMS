@@ -5,10 +5,11 @@
  * @link   http://siteforever.ru
  */
 namespace Sfcms\Route;
+use Sfcms\Route;
 
-class Defaults extends \Sfcms\Route
+class Defaults extends Route
 {
-    /**
+    /**                             S
      * @param $route
      *
      * @return mixed

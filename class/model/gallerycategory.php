@@ -16,23 +16,20 @@ class Model_GalleryCategory extends Sfcms_Model
     {
         return array(
             'Images' => array( self::HAS_MANY, 'Gallery', 'category_id' ),
+            'Page'   => array( self::HAS_ONE, 'Page', 'link' ),
         );
     }
 
     /**
      * Удаление категории
-     * @param  $id
-     * @return
+     * @param int $id
+     * @return mixed
      */
-    function remove( $id )
+    public function remove( $id )
     {
-        /**
-         * @var model_gallery $gallery
-         */
+        /** @var model_gallery $gallery */
         $category   = $this->find( $id );
-
         if ( $category ) {
-
             $images = $this->gallery()->findAll(array(
                 'cond'      => 'category_id = :cat_id',
                 'params'    => array(':cat_id'=>$category->getId()),
@@ -40,16 +37,9 @@ class Model_GalleryCategory extends Sfcms_Model
             foreach ( $images as $img ) {
                 $this->gallery()->delete( $img['id'] );
             }
-
-            //print 'dir:'.ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$cat['id'], -4, 4 );
-            $dir = ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$category['id'], -4, 4 );
-
-            $this->log('del: '.$id.' dir: '.$dir);
-
-            //if ( file_exists( $dir ) ) {
-            //}
+            $dir = ROOT . $this->config->get('gallery.dir')
+                 . DIRECTORY_SEPARATOR.substr( '0000' . $category['id'], -4, 4 );
             @rmdir( $dir );
-            
             $category->markDeleted();
         }
 

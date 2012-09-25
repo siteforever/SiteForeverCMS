@@ -33,7 +33,11 @@ class Forms_Basket_Address extends Form_Form
                 'email'     => array('type'=>'text', 'label'=>'Email', 'filter'=>'email', 'required'),
                 'phone'     => array('type'=>'text', 'label'=>'Телефон',
                                      'filter'=>'phone', 'notice'=>'Формат: +7 812 123 45 67', 'required'),
+                'country'   => array('type'=>'text', 'label'=>'Страна', 'required'),
+                'city'      => array('type'=>'text', 'label'=>'Город', 'required'),
                 'address'   => array('type'=>'textarea', 'label'=>'Адрес', 'required'),
+                'zip'       => array('type'=>'text', 'label'=>'Индекс', 'required'),
+
                 'comment'   => array('type'=>'textarea', 'label'=>'Комментарий',),
 
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),

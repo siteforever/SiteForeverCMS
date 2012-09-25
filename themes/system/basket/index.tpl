@@ -80,7 +80,10 @@
                 {$form->htmlFieldWrapped('lname')}
                 {$form->htmlFieldWrapped('email')}
                 {$form->htmlFieldWrapped('phone')}
+                {$form->htmlFieldWrapped('country')}
+                {$form->htmlFieldWrapped('city')}
                 {$form->htmlFieldWrapped('address')}
+                {$form->htmlFieldWrapped('zip')}
                 {$form->htmlFieldWrapped('comment')}
             </div>
         </div>

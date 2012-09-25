@@ -151,9 +151,11 @@ class Controller_Gallery extends Sfcms_Controller
 
     /**
      * Администрирование
+     * @param int $editimage
+     * @param string $name
      * @return mixed
      */
-    public function adminAction()
+    public function adminAction( $editimage, $name )
     {
         /**
          * @var model_gallery $model
@@ -165,6 +167,12 @@ class Controller_Gallery extends Sfcms_Controller
         $model = $this->getModel( 'Gallery' );
 
         $category = $this->getModel( 'GalleryCategory' );
+
+        if ( $editimage ) {
+            $image = $model->find( $editimage );
+            $image->name = $name;
+            return 'ok';
+        }
 
         if( $this->request->get( 'positions' ) ) {
             return $model->reposition();

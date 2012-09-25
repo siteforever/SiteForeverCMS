@@ -49,12 +49,21 @@ function smarty_function_thumb( $params )
     }
 
     if ( ! file_exists( ROOT . $path[ 'thumb' ] ) ) {
-        $img             = new Sfcms_Image( ROOT . $src );
-        $thumb           = $img->createThumb( $width, $height, $method, $color );
+        try {
+            $img   = new Sfcms_Image( ROOT . $src );
+            $thumb = $img->createThumb( $width, $height, $method, $color );
+        } catch ( Sfcms_Image_Exception $e ) {
+            return $e->getMessage();
+        }
         $thumb->saveToFile( ROOT . $path[ 'thumb' ] );
     }
+    if ( ! empty( $thumb ) ) {
+        $sizes = "width=\"{$thumb->getWidth()}\" height=\"{$thumb->getHeight()}\"";
+    } else {
+        list( , , ,$sizes) = getimagesize( ROOT . $path['thumb'] );
+    }
 
-    return '<img width="'.$width.'" height="'.$height.'" alt="'.$alt.'" src="'
+    return '<img '.$sizes.' alt="'.$alt.'" src="'
         . str_replace( array('/','\\'), '/' ,$path['thumb'] ).'"'
         . ($class ? ' class="'.$class.'"' : '').'>';
 }

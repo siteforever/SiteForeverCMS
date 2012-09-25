@@ -51,10 +51,10 @@ abstract class Basket
         }
 
         foreach ( $this->data as &$prod ) {
-            if ( @$prod['name'] == $name || @$prod['id'] == $id ) {
+            if ( ( @$prod['name'] == $name || @$prod['id'] == $id ) && $prod['details'] == $details ) {
                 $prod['count'] += $count;
                 $prod['price']  = $price;
-                $prod['details']    = $details;
+//                $prod['details'] = $details;
                 return true;
             }
         }
@@ -99,21 +99,19 @@ abstract class Basket
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
         }
+        $result = 0;
         if ( $name ) {
             foreach ( $this->data as $prod ) {
                 if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
-                    return $prod['count'];
+                    $result += $prod['count'];
                 }
             }
-            return null;
+            return $result;
         }
-        else {
-            $count = 0;
-            foreach( $this->data as $prod ) {
-                $count += $prod['count'];
-            }
-            return $count;
+        foreach( $this->data as $prod ) {
+            $result += $prod['count'];
         }
+        return $result;
     }
 
 
@@ -134,20 +132,23 @@ abstract class Basket
 
     /**
      * Удалить из корзины указанное количество тавара
-     * @param $name
+     * @param int $key
      * @param int $count
      * @return int|null
      */
-    public function del( $name, $count = 0 )
+    public function del( $key, $count = 0 )
     {
-        $old_count  = $this->getCount( $name );
+        if ( ! is_numeric( $key ) && ! is_int( $key ) ) {
+            throw new Basket_Exception('For delete need usage integer handler into basket');
+        }
+        $old_count  = $this->data[$key]['count'];
         $new_count  = $old_count - $count;
 
         if ( $count <= 0 || $new_count <= 0 ) {
-            $this->setCount($name, 0);
+            $this->data[$key]['count'] = 0;
             return 0;
         }
-        $this->setCount($name, $new_count);
+        $this->data[$key]['count'] = $new_count;
         return $new_count;
     }
 
@@ -182,18 +183,19 @@ abstract class Basket
         if ( ! is_array( $this->data ) ) {
             throw new Basket_Exception('Basket data corrupted');
         }
+        $result = 0.0;
         if ( $name ) {
             foreach ( $this->data as $prod ) {
                 if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
-                    return $prod['count'] * $prod['price'];
+                    $result += $prod['count'] * $prod['price'];
                 }
             }
+            return $result;
         }
-        $summa = 0.0;
         foreach( $this->data as $prod ) {
-            $summa += $prod['count'] * $prod['price'];
+            $result += $prod['count'] * $prod['price'];
         }
-        return $summa;
+        return $result;
     }
 
     public function getKeys()

@@ -6,22 +6,27 @@
  */
 
 namespace Sfcms\Route;
-use Sfcms\Route as Route;
+use Sfcms\Route;
+use Sfcms\Module;
 
 class Structure extends Route
 {
-    protected static $_aliases = array();
+    protected static $_aliases = null;
 
-    public function __construct()
+    /**
+     * Заполняет таблицу алиасов, если она отсутствует
+     */
+    protected function callAliases()
     {
-        /** @var $model \Model_Page */
-        $model = \Sfcms_Model::getModel( 'Page' );
-        $pages = $model->all;
-        foreach ( $pages as $page ) {
-            self::$_aliases[ $page->alias ] = $page;
+        if ( null === self::$_aliases ) {
+            /** @var $model \Model_Page */
+            $model = \Sfcms_Model::getModel( 'Page' );
+            $pages = $model->getAll();
+            foreach ( $pages as $page ) {
+                self::$_aliases[ $page->alias ] = $page;
+            }
         }
     }
-
 
     /**
      * @param $route
@@ -30,9 +35,9 @@ class Structure extends Route
     public function route( $route )
     {
         $alias = null;
+        $this->callAliases();
         /** @var $page \Data_Object_Page */
         do {
-//            \App::getInstance()->getLogger()->log($alias, 'alias');
             if ( isset( self::$_aliases[ $route ] ) ) {
                 if ( null !== $alias ) {
                     \App::getInstance()->getRequest()->set('alias', $alias);
@@ -53,7 +58,7 @@ class Structure extends Route
      */
     private function getPageState( \Data_Object_Page $page )
     {
-        $className = \Sfcms\Module::getModuleClass( $page->controller );
+        $className = Module::getModuleClass( $page->controller );
         $field = $className::relatedField();
         $id = $page->get( $field );
         return array(

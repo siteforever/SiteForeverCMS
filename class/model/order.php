@@ -50,6 +50,7 @@ class Model_Order extends Sfcms_Model
         /** @var $obj Data_Object_Order */
         $obj    = $this->createObject();
         $obj->attributes = $form->getData();
+        $obj->address   = "{$form->zip}, {$form->country}, {$form->city}, {$form->address}";
         $obj->status    = 1;
         $obj->paid      = 0;
         $obj->date      = time();
@@ -107,22 +108,18 @@ class Model_Order extends Sfcms_Model
                 'delivery'  => $delivery,
             ));
 
-            $msg = $this->app()->getTpl()->fetch('system:order.mail_create');
-
-            //print $msg;
-
             sendmail(
                 $this->app()->getAuth()->currentUser()->email,
                 $this->config->get('admin'),
                 'Новый заказ с сайта '.$this->config->get('sitename').' №'.$obj->getId(),
-                $msg
+                $this->app()->getTpl()->fetch('system:order.mail.createadmin')
             );
 
             sendmail(
                 $this->config->get('sitename').' <'.$this->config->get('admin').'>',
                 $this->app()->getAuth()->currentUser()->email,
                 'Новый заказ №'.$obj->getId(),
-                $msg
+                $this->app()->getTpl()->fetch('system:order.mail.create')
             );
 
             return $obj;

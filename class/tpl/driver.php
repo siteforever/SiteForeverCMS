@@ -3,7 +3,9 @@
  * Абстрактный класс драйвера шаблона
  * @author KelTanas
  */
-abstract class TPL_Driver extends \Sfcms\Component
+use Sfcms\Component;
+
+abstract class TPL_Driver extends Component
 {
     // движок шаблонизатора
     protected $engine = null;
@@ -18,9 +20,11 @@ abstract class TPL_Driver extends \Sfcms\Component
     abstract function assign( $params, $value = null );
     
     abstract function display( $tpl, $cache_id = null );
+
     abstract function fetch( $tpl, $cache_id = null );
     
     abstract function setTplDir( $dir );
+
     abstract function setCplDir( $dir );
 
 

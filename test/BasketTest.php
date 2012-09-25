@@ -29,11 +29,10 @@ class BasketTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testAdd().
      */
     public function testAdd()
     {
-        $this->object->add( 0, 'product', 7, 5.55, 'some info' );
+        $this->object->add( null, 'product', 7, 5.55, 'some info' );
 
         $products   = $this->object->getAll();
 
@@ -52,7 +51,6 @@ class BasketTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetCount().
      */
     public function testSetCount()
     {
@@ -68,7 +66,6 @@ class BasketTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetCount().
      */
     public function testGetCount()
     {
@@ -80,54 +77,48 @@ class BasketTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetPrice().
      */
     public function testGetPrice()
     {
-        $this->assertEquals( $this->object->getPrice('product'), 5.65 );
+        $this->assertEquals( $this->object->getPrice('product'), 5.55 );
         $this->assertEquals( $this->object->getPrice('prod2'), 7.66 );
     }
 
     /**
-     * @todo Implement testCount().
      */
     public function testCount()
     {
-        $this->assertEquals( $this->object->count(), 2 );
+        $this->assertEquals( $this->object->count(), 3 );
     }
 
     /**
-     * @todo Implement testGetSum().
      */
     public function testGetSum()
     {
-        $this->assertEquals( $this->object->getSum('product'), 84.75 );
-        $this->assertEquals( $this->object->getSum('prod2'), 38.3 );
-        $this->assertEquals( $this->object->getSum(), 123.05 );
+        $this->assertEquals( 83.75, $this->object->getSum('product') );
+        $this->assertEquals( 38.3, $this->object->getSum('prod2') );
+        $this->assertEquals( 122.05, $this->object->getSum() );
     }
 
     /**
-     * @todo Implement testGetAll().
      */
     public function testGetAll()
     {
-        $this->assertEquals( count( $this->object->getAll() ), 2 );
+        $this->assertEquals( count( $this->object->getAll() ), 3 );
     }
 
     /**
-     * @todo Implement testDel().
      */
     public function testDel()
     {
-        $this->object->del('product', 7);
-        $this->assertEquals( $this->object->getCount('product'), 8 );
-
-        $this->object->del('product');
-        $this->assertNull( $this->object->getCount('product') );
+        // @TODO тут надо уточнять параметры, по которым удаляется продукт
+        $this->object->del(0, 7);
+        $this->assertEquals( 8, $this->object->getCount('product') );
+        $this->object->del(0);
+        $this->assertEquals( 5, $this->object->getCount('product') );
     }
 
     /**
-     * @todo Implement testClear().
      */
     public function testClear()
     {

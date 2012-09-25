@@ -21,6 +21,14 @@ class Model_News extends Sfcms_Model
         $this->category = self::getModel( 'NewsCategory' );
     }
 
+    public function relation()
+    {
+        return array(
+            'Category' => array( self::BELONGS, 'NewsCategory', 'cat_id' ),
+        );
+    }
+
+
     /**
      * Поиск объекта по алиасу
      * @param $alias
