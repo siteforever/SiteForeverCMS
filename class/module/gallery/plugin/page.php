@@ -5,9 +5,11 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Gallery\Plugin;
+namespace Module\Gallery\Plugin;
 
-class Page extends \Sfcms\Model\Plugin
+use Sfcms\Model\Plugin;
+
+class Page extends Plugin
 {
     /**
      * Вызывается перед сохранением страницы

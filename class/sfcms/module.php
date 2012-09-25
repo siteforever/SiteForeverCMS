@@ -27,7 +27,7 @@ abstract class Module
      */
     public static function getModuleClass( $controller )
     {
-        return '\\Modules\\'.ucfirst(strtolower($controller)).'\\Module';
+        return '\\Module\\'.ucfirst(strtolower($controller)).'\\Module';
     }
 
     /**

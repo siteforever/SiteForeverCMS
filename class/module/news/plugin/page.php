@@ -5,9 +5,10 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\News\Plugin;
+namespace Module\News\Plugin;
+use Sfcms\Model\Plugin;
 
-class Page extends \Sfcms\Model\Plugin
+class Page extends Plugin
 {
     /**
      * Вызывается перед сохранением страницы
@@ -37,9 +38,10 @@ class Page extends \Sfcms\Model\Plugin
 
         $category->hidden       = $obj->hidden;
         $category->protected    = $obj->protected;
-        $category->deleted      = $obj->deleted;
+        $category->deleted      = $obj->deleted ?: 0;
 
-        $category->markDirty();
+        $category->save();
+
         $obj->link = $category->id;
     }
 }

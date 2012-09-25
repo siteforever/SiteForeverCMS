@@ -5,9 +5,11 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Catalog\Plugin;
+namespace Module\Catalog\Plugin;
 
-class Page extends \Sfcms\Model\Plugin
+use Sfcms\Model\Plugin;
+
+class Page extends Plugin
 {
     /**
      * Пересортировка

@@ -242,16 +242,20 @@ class Controller_Page extends Sfcms_Controller
     }
 
 
-
-    public function deleteAction()
+    /**
+     * Удаление страницы
+     * @param int $id
+     * return array|mixed
+     */
+    public function deleteAction( $id )
     {
-        $id = $this->request->get('id');
         $page = $this->getModel()->find( $id );
         $page->set('deleted', 1);
 
         if ( ! $this->request->isAjax() ) {
             $this->reload('page/admin');
         }
+        return array('error'=>0,'msg'=>'ok','id'=>$id);
     }
 
     /**

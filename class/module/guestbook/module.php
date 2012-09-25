@@ -5,9 +5,11 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Guestbook;
+namespace Module\Guestbook;
 
-class Module extends \Sfcms\Module
+use Sfcms\Module as SfModule;
+
+class Module extends SfModule
 {
     public static function relatedField()
     {

@@ -2,6 +2,11 @@
 /**
  * Модель структуры
  */
+
+use \Module\Catalog\Plugin\Page as CatalogPlugin;
+use \Module\News\Plugin\Page as NewsPlugin;
+use \Module\Gallery\Plugin\Page as GalleryPlugin;
+
 class Model_Page extends Sfcms_Model
 {
     /**
@@ -31,9 +36,9 @@ class Model_Page extends Sfcms_Model
 
     public function Init()
     {
-        $this->addPlugin( new \Modules\Catalog\Plugin\Page(), 'catalog' );
-        $this->addPlugin( new \Modules\News\Plugin\Page(), 'news' );
-        $this->addPlugin( new \Modules\Gallery\Plugin\Page(), 'gallery' );
+        $this->addPlugin( new CatalogPlugin(), 'catalog' );
+        $this->addPlugin( new NewsPlugin(), 'news' );
+        $this->addPlugin( new GalleryPlugin(), 'gallery' );
     }
 
     public function onCreateTable()
@@ -74,8 +79,6 @@ class Model_Page extends Sfcms_Model
      */
     public function resort( array $sort )
     {
-        $upd  = array();
-
         foreach ( $sort as $pos => $id ) {
             /** @var $pageObj Data_Object_Page */
             $pageObj = $this->find( $id );
@@ -99,7 +102,7 @@ class Model_Page extends Sfcms_Model
             return $this->_controller_link[$controller][$link];
         }
         /** @var $page Data_Object_Page */
-        foreach ( $this->all as $page ) {
+        foreach ( $this->getAll() as $page ) {
             if ( $link == $page->link && $controller == $page->controller ) {
                 $this->_controller_link[$controller][$link] = $page;
                 return $page;

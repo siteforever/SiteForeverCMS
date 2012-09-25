@@ -5,9 +5,11 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Manufacturers;
+namespace Module\Manufacturers;
 
-class Module extends \Sfcms\Module
+use Sfcms\Module as SfModule;
+
+class Module extends SfModule
 {
     /**
      * Вернет поле, которое связывает страницу с ее модулем

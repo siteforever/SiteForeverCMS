@@ -8,12 +8,12 @@ define([
     "jquery",
     "siteforever",
     "module/modal",
+    "i18n",
     "jui",
 //    "admin/jquery/jquery.realias",
-    "i18n",
     "jquery/jquery.form",
     "admin/admin"
-], function($, $s, Modal) {
+], function($, $s, Modal, i18n) {
 
     return {
         "behavior" : {
@@ -40,7 +40,7 @@ define([
             '#structureWrapper a.edit' : {
                 "click" : function( event, node ) {
                     $.post( $(node).attr('href') ).then( $.proxy(function( response ){
-                        this.editModal.title($s.i18n('page','Edit page')).body(response).show();
+                        this.editModal.title(i18n('page','Edit page')).body(response).show();
                     }, this ));
                     return false;
                 }
@@ -51,6 +51,28 @@ define([
                     $.post( $(node).attr('href') ).then( $.proxy(function( response ){
                         this.createModal.title( $(node).attr('title') ).body( response ).show();
                     }, this));
+                    return false;
+                }
+            },
+
+            /**
+             * Remove page
+             * Warning before remove
+             */
+            'a.do_delete' : {
+                "click" : function ( event, node ) {
+                    try {
+                        if (confirm(i18n('The data will be lost. Do you really want to delete?'))) {
+                            $.post( $(node).attr('href'), function ( result ) {
+                                if ( ! result.error ) {
+                                    $('li[data-id="'+result.id+'"]').remove();
+                                    console.log( result );
+                                }
+                            },"json");
+                        }
+                    } catch (e) {
+                        console.error( e );
+                    }
                     return false;
                 }
             }
@@ -98,7 +120,7 @@ define([
          */
         "createSave" : function( editModal ){
             if ( ! $.trim( $( '#name' ).val() ) ) {
-                this.msgError( $s.i18n('page','Input Name') );
+                this.msgError( i18n('page','Input Name') );
                 return;
             }
             // page/add
@@ -108,7 +130,7 @@ define([
                 'parent':   $( '#id' ).val()
             }).then( $.proxy( function( editModal, $s, response ){
                 this.hide();
-                editModal.title( $s.i18n('page','Create page') ).body( response ).show();
+                editModal.title( i18n('page','Create page') ).body( response ).show();
             }, this, editModal, $s ) );
         },
 

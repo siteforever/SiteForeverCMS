@@ -5,8 +5,10 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Feedback;
+namespace Module\Feedback;
 
-class Module extends \Sfcms\Module
+use Sfcms\Module as SfModule;
+
+class Module extends SfModule
 {
 }

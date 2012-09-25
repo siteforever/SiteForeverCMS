@@ -5,7 +5,7 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\Index\Delivery;
+namespace Module\Index\Delivery;
 
 class Controller extends \Sfcms_Controller
 {
@@ -29,10 +29,10 @@ class Controller extends \Sfcms_Controller
 
     public function editAction()
     {
-        $form = new Forms_Delivery_Edit();
+        $form = new \Forms_Delivery_Edit();
         $model = $this->getModel();
 
-        $id = $this->request->get('id',Request::INT);
+        $id = $this->request->get('id',\Request::INT);
 
         if ( $id ) {
             $obj = $model->find( $id );
@@ -63,7 +63,7 @@ class Controller extends \Sfcms_Controller
      */
     public function selectAction()
     {
-        $type = $this->request->get('type', Request::INT);
+        $type = $this->request->get('type', \Request::INT);
         $model = $this->getModel();
         $delivery = $model->find( $type );
         if ( $delivery ){
