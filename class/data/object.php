@@ -6,7 +6,9 @@
  * @link http://siteforever.ru
  */
 
-abstract class Data_Object extends \Sfcms\Component
+use Sfcms\Component;
+
+abstract class Data_Object extends Component
 {
     /**
      * @var Sfcms_Model
@@ -84,7 +86,10 @@ abstract class Data_Object extends \Sfcms\Component
             if ( ! $this->new ) {
                 $this->changed[ $key ] = $key;
             }
-            $this->markDirty();
+            if ( empty( $this->data['id'] ) )
+                $this->markNew();
+            else
+                $this->markDirty();
         }
         return $this;
     }

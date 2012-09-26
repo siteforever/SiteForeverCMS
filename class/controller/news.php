@@ -168,14 +168,8 @@ class Controller_News extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $data   = $form->getData();
-                if ( $form->getField('id')->getValue() ) {
-                    $obj = $model->find( $form->getField('id')->getValue() );
-                    $obj->setAttributes( $data );
-                } else {
-                    $obj = $model->createObject( $data );
-                    $obj->markNew();
-                }
+                $obj    = $form->id ? $model->find($form->id) : $model->createObject();
+                $obj->attributes = $form->getData();
 //                $this->reload('news/list/', array('id'=>$data['cat_id'],));
                 return array('error'=>0, 'msg'=>t('Data save successfully'));
             }

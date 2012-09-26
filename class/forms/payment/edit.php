@@ -20,7 +20,7 @@ class Edit extends \Form_Form
                 'name' => array(
                     'type' => 'text',
                     'label' => t('Name'),
-                    'require',
+                    'required',
                 ),
                 'desc' => array(
                     'type' => 'textarea',

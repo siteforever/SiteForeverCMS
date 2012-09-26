@@ -5,12 +5,14 @@
  * @link   http://siteforever.ru
  */
 
+use Forms\Payment\Edit as FormEdit;
+
 class Controller_Payment extends \Sfcms_Controller
 {
     public function access()
     {
         return array(
-            'system' => array('admin','edit'),
+            'system' => array('admin','edit','delete'),
         );
     }
 
@@ -32,11 +34,11 @@ class Controller_Payment extends \Sfcms_Controller
     public function editAction( $id )
     {
         $model = $this->getModel();
-        $form = new \Forms\Payment\Edit();
+        $form = new FormEdit();
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $payObj = $form['id'] ? $model->find($form['id']) : $model->createObject();
+                $payObj = $form->id ? $model->find($form->id) : $model->createObject();
                 $payObj->attributes = $form->getData();
                 return array('error'=>0,'msg'=>t('Data save successfully'));
             } else {
@@ -44,12 +46,25 @@ class Controller_Payment extends \Sfcms_Controller
             }
         }
 
-        $payObj = $model->find( $id );
+        $payObj = $id ? $model->find( $id ) : $model->createObject();
         $form->setData( $payObj->attributes );
 
         return array(
             'form' => $form,
             'obj' => $payObj,
         );
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function deleteAction( $id )
+    {
+        if ( $id ) {
+            $this->getModel('Payment')->delete( $id );
+            return array('id' => $id);
+        }
+        return array('error'=>1);
     }
 }

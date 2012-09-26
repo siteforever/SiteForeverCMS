@@ -10,7 +10,7 @@ class Controller_Delivery extends \Sfcms_Controller
     public function access()
     {
         return array(
-            'system' => array('admin','edit'),
+            'system' => array('admin','edit','delete','sortable'),
         );
     }
 
@@ -55,6 +55,19 @@ class Controller_Delivery extends \Sfcms_Controller
         }
 
         return $form->html(false,false);
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function deleteAction( $id )
+    {
+        if ( $id ) {
+            $this->getModel('Delivery')->delete( $id );
+            return array('id' => $id);
+        }
+        return array('error'=>1);
     }
 
     /**

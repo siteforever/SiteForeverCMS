@@ -124,7 +124,15 @@ class Data_Watcher
         if ( isset( $inst->dirty[$inst->globalKey($obj)] ) ) {
             unset( $inst->dirty[$inst->globalKey($obj)] );
         }
-        $inst->new[] = $obj;
+        $have = false;
+        foreach( $inst->new as $newObj ) {
+            if ( $newObj === $obj ) {
+                $have = true;
+                break;
+            }
+        }
+        if ( ! $have )
+            $inst->new[] = $obj;
     }
 
     static function addClean( Data_Object $obj )

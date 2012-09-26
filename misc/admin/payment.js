@@ -17,6 +17,18 @@ define([
                     },this));
                     return false;
                 }
+            },
+            "a.do_delete" : {
+                "click" : function( event, node ) {
+                    if ( confirm(i18n('Want to delete?')) ) {
+                        $.get( $(node).attr('href'), $.proxy(function( response ){
+                            if ( response.id ) {
+                                $('tr.row-'+response.id).remove();
+                            }
+                        }, this), "json");
+                    }
+                    return false;
+                }
             }
         },
 

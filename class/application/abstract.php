@@ -299,8 +299,36 @@ abstract class Application_Abstract
         }
 
         if ( $typeLogger = $this->getConfig('logger') ) {
-            if ( 'file' === $typeLogger ) {
-                $this->_logger = std_logger::getInstance( new std_logger_file() );
+            switch ( $typeLogger ) {
+                case 'file':
+                    $this->_logger = std_logger::getInstance( new std_logger_file() );
+                    break;
+                case 'blank':
+                    $this->_logger = std_logger::getInstance( new std_logger_blank() );
+                    break;
+                case 'chrome':
+                    $this->_logger = std_logger::getInstance( new std_logger_chrome() );
+                    break;
+                case 'firephp':
+                    $this->_logger = std_logger::getInstance( new std_logger_firephp() );
+                    break;
+                case 'plain':
+                    $this->_logger = std_logger::getInstance( new std_logger_plain() );
+                    break;
+                case 'auto':
+                    if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+                        if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
+                            $this->_logger = std_logger::getInstance( new std_logger_chrome() );
+                        } elseif ( !(
+                                false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
+                             || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' )
+                        ) ) {
+                            $this->_logger = std_logger::getInstance( new std_logger_firephp() );
+                        }
+                    }
+                    break;
+                default:
+                    $this->_logger = std_logger::getInstance();
             }
         }
 
@@ -311,13 +339,10 @@ abstract class Application_Abstract
         if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
             if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
                 $this->_logger = std_logger::getInstance( new std_logger_chrome() );
-            }
-            elseif ( !( false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
-                || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' ) )
-            ) {
+            } elseif ( !( false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
+                || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' ) ) ) {
                 $this->_logger = std_logger::getInstance( new std_logger_firephp() );
-            }
-            else {
+            } else {
                 $this->_logger = std_logger::getInstance();
             }
         }
