@@ -4,14 +4,16 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
+
+namespace Forms\User;
  
-class forms_user_login extends form_Form
+class Login extends \Form_Form
 {
     public function __construct()
     {
         return parent::__construct(array(
             'name'      => 'login',
-            'action'    => App::$router->createLink('users/login'),
+            'action'    => \App::$router->createLink('users/login'),
             'fields'    => array(
                 'login'     => array('type'=>'text',    'label'=>'Логин',   'required'),
                 'password'  => array('type'=>'password','label'=>'Пароль',  'required'),

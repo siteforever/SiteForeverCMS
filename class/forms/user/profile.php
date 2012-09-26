@@ -4,8 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Forms_User_Profile extends Form_Form
+
+namespace Forms\User;
+
+class Profile extends \Form_Form
 {
     function __construct()
     {

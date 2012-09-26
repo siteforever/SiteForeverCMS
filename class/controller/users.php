@@ -30,15 +30,27 @@ class Controller_Users extends Sfcms_Controller
     /**
      * Основное действие
      * Выводит форму логина либо подтверждает регистрацию
+     * @params string $confirm
+     * @params int $userid
+     *
      * @return mixed
      */
-    public function indexAction()
+    public function indexAction( $confirm, $userid )
     {
         $auth   = $this->app()->getAuth();
         // подтверждение регистрации
-        if ( $this->request->get('confirm') && $this->request->get('userid', FILTER_VALIDATE_INT) ) {
+        if ( $confirm && $userid ) {
+            $this->request->setTitle('Подтверждение регистрации');
+            $this->getTpl()->getBreadcrumbs()
+                ->addPiece('index',t('Home'))
+                ->addPiece('users',t('user','Sign in site'))
+                ->addPiece(null,$this->request->getTitle());
             $auth->confirm();
-            $this->request->addFeedback($auth->getMessage());
+            if ( $auth->getError() ) {
+                return array('error' => 1, 'msg' => $auth->getMessage());
+            }
+            return array('success' => 1, 'msg' => $auth->getMessage());
+//            return;
         }
 
         return $this->loginAction();
@@ -189,7 +201,7 @@ class Controller_Users extends Sfcms_Controller
         $model  = $this->getModel('User');
         $auth   = $this->app()->getAuth();
 
-        $this->tpl->getBreadcrumbs()
+        $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',t('Home'))
             ->addPiece(null, t('user','Sign in site'));
 
@@ -205,17 +217,21 @@ class Controller_Users extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                if ( $auth->login( $form->getField('login')->getValue(), $form->getField('password')->getValue() ) ) {
+                if ( $auth->login( $form->login, $form->password ) ) {
                     return $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
-                    return $auth->getMessage();
+                    $this->getTpl()->assign('error',1);
+                    $this->getTpl()->assign('msg',$auth->getMessage());
                 }
             }
+//            else {
+//                $this->request->setResponseError( 1, $form->getFeedbackString() );
+//            }
         }
         $this->request->setTitle(t('user','Sign in site'));
         $this->tpl->assign('form', $form );
 
-        return $this->tpl->fetch('users.cabinet');
+        return $this->tpl->fetch('users.login');
     }
 
     /**
@@ -274,9 +290,6 @@ class Controller_Users extends Sfcms_Controller
                     return array('error'=>1,'errors'=>$form->getErrors());
                 }
             }
-//            else {
-//                return $form->getFeedbackString();
-//            }
         };
 
         return array('form' => $form );
@@ -289,7 +302,6 @@ class Controller_Users extends Sfcms_Controller
     public function registerAction()
     {
         $this->request->setTitle(t('user','Join'));
-        $this->request->setContent('');
 
         $this->tpl->getBreadcrumbs()
             ->addPiece('index',t('Home'))
@@ -305,7 +317,8 @@ class Controller_Users extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $user   = $model->createObject( $form->getData() );
+                $user   = $model->createObject();
+                $user->attributes = $form->getData();
                 $auth   = $this->app()->getAuth();
                 $auth->register( $user );
                 if ( $auth->getError() ) {

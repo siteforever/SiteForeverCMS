@@ -1,31 +1,41 @@
 <?php
+use Forms\User\Login as FormLogin;
+use Forms\User\Profile as FormProfile;
+use Forms\User\Restore as FormRestore;
+use Forms\User\Password as FormPassword;
+
 class Model_User extends Sfcms_Model
 {
     /**
      * Форма входа в систему
-     * @var form_Form
+     * @var Form_Form
      */
     protected $login_form;
     /**
+     * Форма восстановления пароля
+     * @var Form_Form
+     */
+    protected $restore_form;
+    /**
      * форма регистрации
-     * @var form_Form
+     * @var Form_Form
      */
     protected $register_form;
     /**
      * форма редактирования
-     * @var form_Form
+     * @var Form_Form
      */
     protected $edit_form;
 
     /**
      * Форма изменения профиля
-     * @var form_Form
+     * @var Form_Form
      */
     protected $profile_form;
 
     /**
      * Форма редактирования пароля
-     * @var form_Form
+     * @var Form_Form
      */
     protected $password_form;
 
@@ -107,9 +117,10 @@ class Model_User extends Sfcms_Model
 
     /**
      * Установить новые значения для корзины
-     * @deprecated
      * @param array $array
+     * @param Data_Object_User $obj
      * @return void
+     * @deprecated
      */
     function setBasketFromArray( $array, Data_Object_User $obj )
     {
@@ -127,7 +138,7 @@ class Model_User extends Sfcms_Model
     function getLoginForm()
     {
         if ( is_null( $this->login_form ) ) {
-            $this->login_form = new forms_user_login();
+            $this->login_form = new FormLogin();
         }
         return $this->login_form;
     }
@@ -139,7 +150,7 @@ class Model_User extends Sfcms_Model
     function getProfileForm()
     {
         if ( is_null( $this->profile_form ) ) {
-            $this->profile_form = new Forms_User_Profile();
+            $this->profile_form = new FormProfile();
         }
         return $this->profile_form;
     }
@@ -147,9 +158,17 @@ class Model_User extends Sfcms_Model
     function getPasswordForm()
     {
         if ( is_null( $this->password_form ) ) {
-            $this->password_form = new forms_user_password();
+            $this->password_form = new FormPassword();
         }
         return $this->password_form;
+    }
+
+    function getRestoreForm()
+    {
+        if ( is_null( $this->restore_form ) ) {
+            $this->restore_form = new FormRestore();
+        }
+        return $this->restore_form;
     }
 
     function getRegisterForm()

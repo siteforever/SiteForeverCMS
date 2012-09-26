@@ -4,8 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class forms_user_password extends form_Form
+
+namespace Forms\User;
+
+class Password extends \Form_Form
 {
     function __construct()
     {

@@ -97,7 +97,7 @@ abstract class Auth
     public function login( $login, $password )
     {
         if ( $password == '' ) {
-            $this->message  = t('Empty password');
+            $this->message  = t('user','Empty password');
             return false;
         }
 
@@ -110,13 +110,13 @@ abstract class Auth
             //print_r( $user->getAttributes() );
             if ( $user->perm < USER_USER ) {
                 $this->error    = true;
-                $this->message  = t('Not enough permissions');
+                $this->message  = t('user','Not enough permissions');
                 return false;
             }
 
             if ( $user->status == 0 ) {
                 $this->error    = true;
-                $this->message  = t('Your account has been disabled');
+                $this->message  = t('user','Your account has been disabled');
                 return false;
             }
 
@@ -126,7 +126,7 @@ abstract class Auth
 
             if ( $password != $user->password ) {
                 $this->error    = true;
-                $this->message  = t('Your password is not suitable');
+                $this->message  = t('user','Your password is not suitable');
                 return false;
             }
 
@@ -141,13 +141,13 @@ abstract class Auth
             }
 
             $this->error    = false;
-            $this->message  = t('Authorization was successful');
+            $this->message  = t('user','Authorization was successful');
 
             return true;
         }
 
         $this->error    = true;
-        $this->message  = t('Your login is not registered');
+        $this->message  = t('user','Your login is not registered');
     }
 
 
