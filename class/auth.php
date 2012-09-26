@@ -35,7 +35,7 @@ abstract class Auth
      */
     protected $model = null;
 
-    function __construct()
+    public function __construct()
     {
         $this->model    = $this->app()->getModel('User');
 
@@ -60,7 +60,7 @@ abstract class Auth
     /**
      * @return Application_Abstract
      */
-    function app()
+    public function app()
     {
         return App::getInstance();
     }
@@ -69,7 +69,7 @@ abstract class Auth
      * Текущий пользователь
      * @return Data_Object_User
      */
-    function currentUser()
+    public function currentUser()
     {
         return $this->user;
     }
@@ -79,7 +79,7 @@ abstract class Auth
      * @abstract
      * @return int
      */
-    abstract function getId();
+    abstract public function getId();
 
     /**
      * Установит id авторизованного пользователя
@@ -87,14 +87,14 @@ abstract class Auth
      * @param  $id
      * @return void
      */
-    abstract function setId( $id );
+    abstract public function setId( $id );
 
     /**
      * Логин
      * @param string $login
      * @param string $password
      */
-    function login( $login, $password )
+    public function login( $login, $password )
     {
         if ( $password == '' ) {
             $this->message  = t('Empty password');
@@ -156,7 +156,7 @@ abstract class Auth
      * Выход из системы
      * @return void
      */
-    function logout()
+    public function logout()
     {
         $this->setId(0);
         $_SESSION['sxd_auth']   = 0; // Авторизация Sypex Dumper
@@ -173,7 +173,7 @@ abstract class Auth
      * Регистрация
      * @param Data_Object_User $obj
      */
-    function register( Data_Object_User $obj )
+    public function register( Data_Object_User $obj )
     {
         if ( strlen( $obj['login'] ) < 5 ) {
             $this->setError('Логин должен быть не короче 5 символов');
@@ -253,7 +253,7 @@ abstract class Auth
      * Подтвердить регистрацию
      * @return void
      */
-    function confirm()
+    public function confirm()
     {
         $request    = $this->app()->getRequest();
 
@@ -315,8 +315,9 @@ abstract class Auth
      * Генерирует хэш пароля
      * @param $password
      * @param $solt
+     * @return string
      */
-    function generatePasswordHash( $password, $solt )
+    public function generatePasswordHash( $password, $solt )
     {
         return md5( md5($solt) . md5($password) );
     }
@@ -325,7 +326,7 @@ abstract class Auth
      * Вернет сообщение системы
      * @return string
      */
-    function getMessage()
+    public function getMessage()
     {
         return $this->message;
     }
@@ -334,7 +335,7 @@ abstract class Auth
      * Вернет состояние ошибки
      * @return bool
      */
-    function getError()
+    public function getError()
     {
         return $this->error;
     }
@@ -344,7 +345,7 @@ abstract class Auth
      * @param string $message
      * @return void
      */
-    function setError( $message )
+    public function setError( $message )
     {
         $this->message  = $message;
         $this->error    = true;

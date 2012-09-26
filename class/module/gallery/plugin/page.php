@@ -33,7 +33,7 @@ class Page extends Plugin
         $category->protected    = $obj->protected;
         $category->deleted      = $obj->deleted;
 
-        $category->markDirty();
+        $category->save();
         $obj->link = $category->id;
     }
 }

@@ -5,7 +5,7 @@
  * @link   http://siteforever.ru
  */
 
-namespace Modules\News;
+namespace Module\News;
 
 use Sfcms\Module as SfModule;
 

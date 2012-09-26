@@ -5,8 +5,10 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+
+use Sfcms\Html;
  
-class Siteforever
+class Sfcms
 {
     static $instance;
 
@@ -16,24 +18,24 @@ class Siteforever
 
     /**
      * @static
-     * @return Siteforever
+     * @return Sfcms
      */
     static function getInstance()
     {
         if ( is_null( self::$instance ) ) {
-            self::$instance = new Siteforever();
+            self::$instance = new Sfcms();
         }
     }
 
     /**
      * HTML Helper
      * @static
-     * @return Siteforever_Html
+     * @return Html
      */
     static function html()
     {
         if ( is_null( self::$html ) ) {
-            self::$html = new Siteforever_Html();
+            self::$html = new Html();
         }
         return self::$html;
     }

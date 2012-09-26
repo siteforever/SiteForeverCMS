@@ -335,7 +335,7 @@ class Controller_Catalog extends Sfcms_Controller
     public function adminBreadcrumbs( $path )
     {
         $bc = array(
-            Siteforever::html()->link(t('catalog','Catalog'),'catalog/admin')
+            Sfcms::html()->link(t('catalog','Catalog'),'catalog/admin')
 //            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
         ); // breadcrumbs
 //        $this->log( $path );
@@ -343,8 +343,8 @@ class Controller_Catalog extends Sfcms_Controller
 //            $this->log( $arrPath, 'Path' );
             if( $arrPath && is_array( $arrPath ) ) {
                 foreach( $arrPath as $val ) {
-                    $bc[ ] = Siteforever::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))
-                            . Siteforever::html()->link( icon( 'pencil', t('Edit') ),
+                    $bc[ ] = Sfcms::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))
+                            . Sfcms::html()->link( icon( 'pencil', t('Edit') ),
                                 'catalog/category', array('edit'=>$val['id']), 'edit' );
                 }
             }

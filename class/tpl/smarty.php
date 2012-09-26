@@ -17,6 +17,9 @@ class TPL_Smarty extends TPL_Driver
             'ext'       => 'tpl',
             'compile_check' => true,
             'caching'   => false,
+            'cache'     => array(
+                'livetime' => 84600,
+            ),
         ));
         $this->config = $this->app()->getConfig('template');
 

@@ -21,9 +21,11 @@ class Page extends Plugin
     {
         $categoryModel = $obj->getModel('NewsCategory');
 
+        $category = null;
         if ( $obj->link ) {
             $category = $categoryModel->find( $obj->link );
-        } else {
+        }
+        if ( ! $category ) {
             $category = $categoryModel->createObject();
         }
 
@@ -39,6 +41,8 @@ class Page extends Plugin
         $category->hidden       = $obj->hidden;
         $category->protected    = $obj->protected;
         $category->deleted      = $obj->deleted ?: 0;
+
+//        \App::getInstance()->getLogger()->log($category->changed(),'newsPlugin');
 
         $category->save();
 

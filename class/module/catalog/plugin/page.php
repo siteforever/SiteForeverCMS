@@ -39,13 +39,17 @@ class Page extends Plugin
         $catalogModel = $obj->getModel('Catalog');
         $pageModel    = $obj->getModel('Page');
 
+        $category = null;
         if ( $obj->link ) {
             $category = $catalogModel->find( $obj->link );
-        } else {
+        }
+        if ( ! $category ) {
             $category = $catalogModel->createObject();
         }
+
         /** @var $category \Data_Object_Catalog */
         $category->name         = $obj->name;
+        $category->pos          = $obj->pos;
         $category->hidden       = $obj->hidden;
         $category->protected    = $obj->protected;
         $category->deleted      = $obj->deleted;
@@ -61,8 +65,7 @@ class Page extends Plugin
                 $category->parent = 0;
             }
         }
-
-        $category->markDirty();
+        $category->save();
         $obj->link = $category->id;
     }
 }

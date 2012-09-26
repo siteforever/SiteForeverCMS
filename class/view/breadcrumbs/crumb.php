@@ -27,6 +27,6 @@ class View_Breadcrumbs_Crumb
         if ( null === $this->_alias ) {
             return $this->_name;
         }
-        return  Siteforever::html()->link($this->_name, $this->_alias);
+        return  Sfcms::html()->link($this->_name, $this->_alias);
     }
 }

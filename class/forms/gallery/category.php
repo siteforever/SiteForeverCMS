@@ -14,7 +14,7 @@ class Forms_Gallery_Category extends form_Form
 
         return parent::__construct(array(
             'name'      => 'gallery_category',
-            'action'    => Siteforever::html()->url('gallery/editcat'),
+            'action'    => Sfcms::html()->url('gallery/editcat'),
             'fields'    => array(
                 'id'            => array( 'type'=> 'int', 'hidden', 'value'=> '0' ),
                 'name'          => array( 'type'=> 'text', 'label'=> 'Наименование', 'required' ),

@@ -29,6 +29,6 @@ function smarty_block_a( $params, $content )
     }
 
     if( null !== $content ) {
-        return Siteforever::html()->link( $content, $href, $params, $class );
+        return Sfcms::html()->link( $content, $href, $params, $class );
     }
 }

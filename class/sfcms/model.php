@@ -4,14 +4,14 @@
  */
 abstract class Sfcms_Model extends \Sfcms\Component
 {
-    const HAS_MANY = 'has_many'; // содержет много
-    const ONE_TO_MANY = 'has_many'; // содержет много
-    const HAS_ONE = 'has_one'; // содержет один
-    const ONE_TO_ONE = 'has_one'; // содержет один
-    const BELONGS = 'belongs'; // принадлежит
-    const MANY_TO_ONE = 'belongs'; // принадлежит
+    const HAS_MANY      = 'has_many'; // содержет много
+    const ONE_TO_MANY   = 'has_many'; // содержет много
+    const HAS_ONE       = 'has_one'; // содержет один
+    const ONE_TO_ONE    = 'has_one'; // содержет один
+    const BELONGS       = 'belongs'; // принадлежит
+    const MANY_TO_ONE   = 'belongs'; // принадлежит
 
-    const STAT = 'stat'; // статистическая связь
+    const STAT          = 'stat'; // статистическая связь
 
     /**
      * @var db
@@ -114,7 +114,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
         } else {
             $namespace = 'default';
         }
-//        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
+        //$this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
         // Если нет плагинов, ничего не делаем
         if ( ! isset( $this->_plugins[ $namespace ] ) ) {
             return;
@@ -662,9 +662,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
      */
     final public function count( $cond = '', $params = array() )
     {
-        $this->log( $cond, 'count' );
-
-
+        //$this->log( $cond, 'count' );
         if ( is_object( $cond ) && $cond instanceof Db_Criteria ) {
             $params = $cond->params;
             $cond   = $cond->condition;

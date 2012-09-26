@@ -20,16 +20,12 @@ class Data_Object_User extends Data_Object
      * @param string $password
      * @return Data_Object_User
      */
-    function changePassword( $password )
+    public function changePassword( $password )
     {
         $solt = App::getInstance()->getAuth()->generateString( 8 );
         $hash = App::getInstance()->getAuth()->generatePasswordHash( $password, $solt );
-
-        $this->data['solt']     = $solt;
-        $this->data['password'] = $hash;
-
-        $this->markDirty();
-
+        $this->set('solt', $solt);
+        $this->set('password', $hash);
         return $this;
     }
 
@@ -37,18 +33,18 @@ class Data_Object_User extends Data_Object
      * Активировать пользователя
      * @return void
      */
-    function active()
+    public function active()
     {
-        $this->data['status']   = 1;
+        $this->set('status', 1);
     }
 
     /**
      * Деактивировать пользователя
      * @return void
      */
-    function deactive()
+    public function deactive()
     {
-        $this->data['status']   = 0;
+        $this->set('status', 0);
     }
 
 
@@ -56,7 +52,7 @@ class Data_Object_User extends Data_Object
      * Возвращает права пользователя
      * @return int
      */
-    function getPermission()
+    public function getPermission()
     {
         return $this->data['perm'];
     }
@@ -66,7 +62,7 @@ class Data_Object_User extends Data_Object
      * @param int $perm
      * @return bool
      */
-    function hasPermission( $perm )
+    public function hasPermission( $perm )
     {
         if ( $this->data['perm'] >= $perm ) {
             return 1;
@@ -79,7 +75,7 @@ class Data_Object_User extends Data_Object
      * @param int $perm
      * @return bool
      */
-    function isPermission( $perm )
+    public function eqPermission( $perm )
     {
         return $this->data['perm'] == $perm ? true : false;
     }

@@ -5,19 +5,21 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Siteforever_Html
+
+namespace Sfcms;
+
+class Html
 {
     static private $counter = 0;
 
     /**
      * Позволяет создать только 1 экземпляр
-     * @throws Siteforever_Exception
+     * @throws Exception
      */
     public function __construct() {
         self::$counter ++;
         if ( self::$counter > 1 ) {
-            throw new Siteforever_Exception('HTML class singleton');
+            throw new Exception('HTML class singleton');
         }
     }
 
@@ -29,7 +31,7 @@ class Siteforever_Html
      */
     public function url( $url, $params = array() )
     {
-        return App::getInstance()->getRouter()->createLink( $url, $params );
+        return \App::getInstance()->getRouter()->createLink( $url, $params );
     }
 
     /**

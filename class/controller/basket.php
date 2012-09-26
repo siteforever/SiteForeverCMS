@@ -106,7 +106,7 @@ class Controller_Basket extends Sfcms_Controller
         return array(
             'widget' => $this->getTpl()->fetch('basket.widget'),
             'msg'    => $basket_prod_name . ' '
-                      . Siteforever::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
+                      . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
         );
 
     }

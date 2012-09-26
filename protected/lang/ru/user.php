@@ -17,6 +17,7 @@ return array(
     'A new password has been sent to your e-mail' => 'Новый пароль отправлен на Вашу почту',
     'Incorrect recovery code' => 'Неверный код восстановления',
     'Your email is not found' => 'Ваш email не найден',
+    'Not specified recovery options' => 'Не указаны параметры восстановления',
     'Recovery link sent to your e-mail' => 'Ссылка для восстановления отправлена на вашу почту',
     'The user with the mailbox is not registered' => 'Пользователь с этим почтовым ящиком не зарегистрирован',
     'To recover your password enter your Email address'=>'Для восстановления пароля укажите ваш адрес эл. почты',

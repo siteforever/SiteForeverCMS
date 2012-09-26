@@ -260,10 +260,12 @@ class Model_Catalog extends Sfcms_Model
         if ( $obj->cat ) {
             // @todo Надо сделать слежение за изменением иерархии
             $objPage = $obj->Page;
-            $objPage->name = $obj->name;
-            $objPage->hidden = $obj->hidden;
-            $objPage->protected = $obj->protected;
-            $objPage->markDirty();
+            if ( $objPage ) {
+                $objPage->name = $obj->name;
+                $objPage->hidden = $obj->hidden;
+                $objPage->protected = $obj->protected;
+                $objPage->markDirty();
+            }
         }
 
         return true;

@@ -13,6 +13,7 @@ return array(
 
 //    'logger'    => 'firephp',
 //    'logger'    => 'html',
+    'logger'    => 'file',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],

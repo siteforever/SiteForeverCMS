@@ -7,7 +7,7 @@
  
 class forms_user_login extends form_Form
 {
-    function __construct()
+    public function __construct()
     {
         return parent::__construct(array(
             'name'      => 'login',

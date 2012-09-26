@@ -1,6 +1,6 @@
 <?php
 
-require_once 'class/controller/users.php';
+require_once 'controller/users.php';
 
 /**
  * Test class for Controller_Users.
@@ -159,16 +159,45 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $return = $this->controller->restoreAction();
         $result = $this->app->getRequest()->getContent();
 
-//        var_dump( $return );
+//        var_dump( $return['form']->html() );
         $this->assertEmpty($result);
 
         $this->assertInternalType('array', $return);
         $this->arrayHasKey('form', $return);
         $this->assertInternalType('string', $return['form']->html());
         $this->assertStringStartsWith(
-            '<form action="" class="form-horizontal" enctype="multipart/form-data" id="form_restore"',
+            '<form action="/users/restore" class="form-horizontal" '
+                . 'enctype="multipart/form-data" id="form_restore" method="post" name="form_restore"',
             $return['form']->html()
         );
+    }
+
+    public function testRecoveryAction()
+    {
+        $return = $this->controller->recoveryAction(null,null);
+        $result = $this->app->getRequest()->getContent();
+
+        $this->assertEmpty( $result );
+
+        $this->assertInternalType('array',$return);
+        $this->assertArrayHasKey('error', $return);
+        $this->assertEquals(1, $return['error']);
+        $this->assertArrayHasKey('msg', $return);
+        $this->assertEquals("Не указаны параметры восстановления",$return['msg']);
+
+        $return = $this->controller->recoveryAction('sdsadsd@ermin.ru','123232afsdfsdfs');
+        $this->assertInternalType('array',$return);
+        $this->assertArrayHasKey('error', $return);
+        $this->assertEquals(1, $return['error']);
+        $this->assertArrayHasKey('msg', $return);
+        $this->assertEquals("Ваш email не найден",$return['msg']);
+
+        $return = $this->controller->recoveryAction('admin@ermin.ru','123232afsdfsdfs');
+        $this->assertInternalType('array',$return);
+        $this->assertArrayHasKey('error', $return);
+        $this->assertEquals(1, $return['error']);
+        $this->assertArrayHasKey('msg', $return);
+        $this->assertEquals("Неверный код восстановления",$return['msg']);
     }
 
     /**

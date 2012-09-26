@@ -123,7 +123,6 @@ class App extends Application_Abstract
 
         try {
             $result = $resolver->dispatch();
-            //$this->getLogger()->log( $result, 'result' );
         } catch ( Sfcms_Http_Exception $e ) {
             if ( ! App::isTest() ) {
                 switch ( $e->getCode() ) {

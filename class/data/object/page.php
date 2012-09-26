@@ -62,17 +62,17 @@ class Data_Object_Page extends Data_Base_Page
         $linkUrl = null;
         switch ( $this->controller ) {
             case 'catalog':
-                $linkUrl = Siteforever::html()->url('catalog/category', array('edit'=>$this->link));
+                $linkUrl = Sfcms::html()->url('catalog/category', array('edit'=>$this->link));
                 break;
             case 'gallery':
-                $linkUrl = Siteforever::html()->url('gallery/editcat', array('id'=>$this->link));
+                $linkUrl = Sfcms::html()->url('gallery/editcat', array('id'=>$this->link));
                 break;
             case 'news':
-                $linkUrl = Siteforever::html()->url('news/catedit', array('id'=>$this->link));
+                $linkUrl = Sfcms::html()->url('news/catedit', array('id'=>$this->link));
                 break;
         }
         if ( $linkUrl ) {
-            $link = Siteforever::html()->link( icon( 'link', t('Go to the module') ), $linkUrl );
+            $link = Sfcms::html()->link( icon( 'link', t('Go to the module') ), $linkUrl );
         }
 //        $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
         return $link;

@@ -4,6 +4,8 @@
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
+use Sfcms\Assets;
+
 abstract class Application_Abstract
 {
     static protected $instance = null;
@@ -296,9 +298,14 @@ abstract class Application_Abstract
             return $this->_logger;
         }
 
+        if ( $typeLogger = $this->getConfig('logger') ) {
+            if ( 'file' === $typeLogger ) {
+                $this->_logger = std_logger::getInstance( new std_logger_file() );
+            }
+        }
+
         if ( ! isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
             $this->_logger = std_logger::getInstance( new std_logger_plain() );
-            return $this->_logger;
         }
 
         if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
@@ -376,7 +383,7 @@ abstract class Application_Abstract
     public function getAssets()
     {
         if ( null === $this->_assets ) {
-            $this->_assets  = new Siteforever_Assets();
+            $this->_assets  = new Assets();
             $misc = $this->getRequest()->get( 'path.misc' );
     //        $this->addStyle( $misc . '/jquery/lightbox/css/jquery.lightbox-0.5.css' );
             $this->_assets->addStyle( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.css' );

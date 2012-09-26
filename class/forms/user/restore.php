@@ -1,0 +1,37 @@
+<?php
+/**
+ *
+ * @author Nikolay Ermin <nikolay@ermin.ru>
+ * @link   http://siteforever.ru
+ */
+
+namespace Forms\User;
+
+class Restore extends \Form_Form
+{
+    public function __construct( $config = array(), \Request $request = null )
+    {
+        parent::__construct( array(
+            'name' => 'restore',
+            'action' => \Sfcms::html()->url('users/restore'),
+            'fields' => array(
+                'email' => array(
+                    'type' => 'text',
+                    'label' => t('Email'),
+                    'filter' => 'email',
+                    'required',
+                ),
+                'captcha' => array(
+                    'type' => 'captcha',
+                    'label' => 'Код с картинки'
+                ),
+                'submit' => array(
+                    'type' => 'submit',
+                    'value' => 'Отправить',
+                ),
+            ),
+
+        ), $request );
+    }
+
+}

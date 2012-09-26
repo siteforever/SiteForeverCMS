@@ -16,5 +16,5 @@ function smarty_function_href( $params )
     $url    = isset( $params['url'] ) ? $params['url'] : null;
     unset($params['url']);
 
-    return Siteforever::html()->href( $url, $params );
+    return Sfcms::html()->href( $url, $params );
 }

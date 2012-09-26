@@ -2,6 +2,9 @@
 /**
  * Контроллер управления пользователями
  */
+
+use Forms\User\Restore as FormRestore;
+
 class Controller_Users extends Sfcms_Controller
 {
     /**
@@ -318,48 +321,34 @@ class Controller_Users extends Sfcms_Controller
     }
 
     /**
-     * Восстановление пароля
-     * @return mixed
+     * Сюда приходит пользователь по ссылке восстановления пароля
+     * @param string $email
+     * @param string $code
      */
-    public function restoreAction()
+    public function recoveryAction( $email, $code )
     {
-        /**
-         * @var Data_Object_User $user
-         * @var Model_User $model
-         */
-        // @TODO Перевести под новую модель
         $this->request->setTemplate('inner');
         $this->request->setTitle(t('user','Password recovery'));
+
         $this->tpl->getBreadcrumbs()
             ->addPiece('index',t('Main'))
             ->addPiece('users/login',t('user','Sign in site'))
             ->addPiece(null,$this->request->getTitle());
 
-        // 1. Если нет параметров, форма ввода email
-        // 2. Если введен email, отправить письмо, где будет ссылка, с email и md5 соли
-        // 3. Если email и md5 соли подходят, то выслать новый пароль
-
-        $email = $this->request->get('email');
-        $code  = $this->request->get('code');
-
-        $model  = $this->getModel('User');
-
-
         if ( $email && $code ) {
+
+            $model = $this->getModel('User');
             // проверка, подходят ли email и code
+            /** @var $user Data_Object_User */
             $user  = $model->find(array(
                 'cond'  => 'email = :email',
                 'params'=> array(':email'=>$email),
             ));
 
-            if ( $user )
-            {
-                if ( $code == md5( $user['solt'] ) )
-                {
+            if ( $user ) {
+                if ( $code == md5( $user->solt ) ) {
                     $pass = $this->app()->getAuth()->generateString( 8 );
                     $user->changePassword( $pass );
-
-                    //$model->save( $user );
 
                     $this->tpl->assign(array(
                         'pass'      => $pass,
@@ -372,30 +361,52 @@ class Controller_Users extends Sfcms_Controller
                     sendmail(
                         $this->config->get('admin'),
                         $email,
-                        t('user','New password'), $this->tpl->fetch('users.password_new')
+                        t('user','New password'), $this->tpl->fetch('users.mail.recovery')
                     );
-                    $this->request->addFeedback(t('user','A new password has been sent to your e-mail'));
+                    return array('error' => 0, 'msg' => t('user','A new password has been sent to your e-mail'));
                 } else {
-                    $this->request->addFeedback(t('user','Incorrect recovery code'));
+                    return array('error' => 1, 'msg' => t('user','Incorrect recovery code'));
                 }
             } else {
-                $this->request->addFeedback(t('user','Your email is not found'));
+                return array('error' => 1, 'msg' => t('user','Your email is not found'));
             }
         }
+        return array('error'=>1,'msg' => t('user','Not specified recovery options'));
+    }
 
-        $form = new Form_Form(array(
-            'name'  => 'restore',
-            'fields'=> array(
-                'email' => array('type'=>'text', 'label'=>t('Email'),'require'),
-                'submit'=> array('type'=>'submit', 'value'=>t('Send request')),
-            ),
-        ));
+    /**
+     * Восстановление пароля
+     * @return array
+     */
+    public function restoreAction()
+    {
+        /**
+         * @var Data_Object_User $user
+         * @var Model_User $model
+         */
+        // @TODO Перевести под новую модель
+
+        $this->request->setTemplate('inner');
+        $this->request->setTitle(t('user','Password recovery'));
+
+        $this->tpl->getBreadcrumbs()
+            ->addPiece('index',t('Main'))
+            ->addPiece('users/login',t('user','Sign in site'))
+            ->addPiece(null,$this->request->getTitle());
+
+        // 1. Если нет параметров, форма ввода email
+        // 2. Если введен email, отправить письмо, где будет ссылка, с email и md5 соли
+        // 3. Если email и md5 соли подходят, то выслать новый пароль
+        // $model  = $this->getModel('User');
+
+        $form = new FormRestore();
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
+                $model = $this->getModel('User');
                 $user  = $model->find(array(
                     'cond'  => 'email = :email',
-                    'params'=> array(':email'=>$form['email']),
+                    'params'=> array(':email'=>$form->email),
                 ));
 
                 if ( $user ) {
@@ -403,25 +414,25 @@ class Controller_Users extends Sfcms_Controller
                         'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
                         'siteurl'   => $this->config->get('siteurl'),
-                        'link'      => $this->config->get('siteurl').$this->router->createLink(
-                            "users/restore",
-                            array('email'=>$user['email'], 'code'=>md5($user['solt']),  )
-                        )
+                        'link'      => $this->config->get('siteurl')
+                                      . $this->router->createServiceLink(
+                                            "users", "recovery",
+                                            array('email'=>$user['email'], 'code'=>md5($user['solt']),  )
+                                        )
                     ));
                     sendmail(
                         $this->config->get('admin'),
-                        $form['email'],
+                        $form->email,
                         t('user','Password recovery'),
-                        $this->tpl->fetch('users.password_restore')
+                        $this->tpl->fetch('users.mail.restore')
                     );
-                    $this->request->addFeedback(t('user','Recovery link sent to your e-mail'));
+                    return array('success'=>1,'msg'=>t('user','Recovery link sent to your e-mail'));
                 } else {
                     $this->request->addFeedback(t('user','The user with the mailbox is not registered'));
                 }
             }
             $this->request->addFeedback( $form->getFeedbackString() );
         }
-
         return array('form'=>$form);
     }
 

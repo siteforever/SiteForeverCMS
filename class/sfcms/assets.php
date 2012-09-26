@@ -5,7 +5,9 @@
  * @link http://siteforever.ru
  */
 
-class Siteforever_Assets
+namespace Sfcms;
+
+class Assets
 {
     private $_scripts = array();
 

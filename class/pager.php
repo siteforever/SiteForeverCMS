@@ -36,7 +36,7 @@ class Pager implements ArrayAccess
         $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
-            $p[]    = Siteforever::html()->link('&lt; пред', $link, $page > 2 ? array('page'=>$page-1) : array());
+            $p[]    = Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page'=>$page-1) : array());
         }
 
         $radius = 2;
@@ -51,7 +51,7 @@ class Pager implements ArrayAccess
         }
 
         if ( $page - $radius > 1 ) {
-            $p[]    = Siteforever::html()->link('1', $link);
+            $p[]    = Sfcms::html()->link('1', $link);
             if ( $page - $radius - 1 > 1 ) {
                 $p[]    = '...';
             }
@@ -61,7 +61,7 @@ class Pager implements ArrayAccess
             if ( $i == $page ) {
                 $p[]    = $page;
             } else {
-                $p[]    = Siteforever::html()->link($i, $link, $page > 2 ? array('page'=>$i) : array());
+                $p[]    = Sfcms::html()->link($i, $link, $page > 2 ? array('page'=>$i) : array());
             }
         }
 
@@ -69,11 +69,11 @@ class Pager implements ArrayAccess
             if ( $page + $radius + 1 < $pages ) {
                 $p[]    = '...';
             }
-            $p[]    = Siteforever::html()->link($pages, $link, array('page'=>$pages));
+            $p[]    = Sfcms::html()->link($pages, $link, array('page'=>$pages));
         }
 
         if ( $page < $pages ) {
-            $p[]    = Siteforever::html()->link('след &gt;', $link, array('page'=>$page+1));
+            $p[]    = Sfcms::html()->link('след &gt;', $link, array('page'=>$page+1));
         }
 
         $this->html     = count($p) > 1 ? 'Страницы: '.join(' - ',$p) : '';

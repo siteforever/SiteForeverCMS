@@ -2,6 +2,8 @@
 /**
  * Объект запроса
  */
+use Sfcms\Assets;
+
 class Request
 {
     const TEXT  = FILTER_SANITIZE_STRING;
@@ -39,7 +41,7 @@ class Request
      */
     public function __construct()
     {
-        $this->_assets = new Siteforever_Assets();
+        $this->_assets = new Assets();
 
         if ( isset( $_REQUEST[ 'route' ] ) ) {
             $_REQUEST[ 'route' ] = preg_replace( '/\?.*/', '', $_REQUEST[ 'route' ] );
