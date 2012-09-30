@@ -73,12 +73,12 @@ class Controller_Gallery extends Sfcms_Controller
             /** @var $category Data_Object_GalleryCategory */
             $category = $catModel->find( $image->category_id );
 
-            $this->tpl->assign('image', $image);
-            $this->tpl->assign('next', $next);
-            $this->tpl->assign('pred', $pred);
-            $this->tpl->assign('category', $category);
+            $this->getTpl()->assign('image', $image);
+            $this->getTpl()->assign('next', $next);
+            $this->getTpl()->assign('pred', $pred);
+            $this->getTpl()->assign('category', $category);
 
-            $bc = $this->tpl->getBreadcrumbs();
+            $bc = $this->getTpl()->getBreadcrumbs();
             $bc->addPiece( null, $image->name );
 
             $this->request->setTitle( $image->title );
@@ -259,7 +259,8 @@ class Controller_Gallery extends Sfcms_Controller
 
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $obj    = $model->createObject( $form->getData() );
+                $obj    = $form->id ? $model->find($form->id) : $model->createObject();
+                $obj->attributes = $form->getData();
                 $model->save( $obj );
 //                $this->reload( 'gallery/admin', array(), 1000 );
                 return array('error'=>0,'msg'=>t( 'Data save successfully' ),'name'=>$obj->name,'id'=>$obj->id);
@@ -356,9 +357,8 @@ class Controller_Gallery extends Sfcms_Controller
         /** @var Data_Object_Gallery $obj */
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $obj  = $model->find( $form->getField('id')->getValue() );
-                $data = $form->getData();
-                $obj->setAttributes( $data );
+                $obj = $form->id ? $model->find( $form->id ) : $model->createObject();
+                $obj->attributes = $form->getData();
                 $obj->save();
                 return array('error' => 0,
                              'msg' => t( 'Data save successfully' ),

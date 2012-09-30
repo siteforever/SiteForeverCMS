@@ -61,7 +61,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
      */
     public function testIndexAction()
     {
-        $return = $this->controller->indexAction();
+        $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
 
 //        var_dump( $return );
@@ -110,7 +110,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
      */
     public function testLoginAction()
     {
-        $return = $this->controller->indexAction();
+        $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
         //var_dump( $return );
         $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
@@ -131,13 +131,13 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
      */
     public function testEditAction()
     {
-        $return = $this->controller->editAction();
+        $return = $this->controller->editAction( null );
         $result = $this->app->getRequest()->getContent();
         //var_dump( $return );
         $this->assertEmpty($result);
         $this->assertInternalType('array', $return);
         $this->arrayHasKey('form', $return);
-        $this->assertInstanceOf( 'Forms_User_Profile', $return['form']);
+        $this->assertInstanceOf( '\Forms\User\Profile', $return['form']);
     }
 
     /**

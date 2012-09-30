@@ -63,6 +63,7 @@ function smarty_function_head( $params )
         ),
     );
 
+
     if ( $request->get('admin') ) {
         $rjsConfig['paths']['app'] = 'admin';
         $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
@@ -71,11 +72,25 @@ function smarty_function_head( $params )
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
-        $head[] = "<script type='text/javascript' src='/misc/require-jquery.js' data-main='admin/app'></script>";
+
+
+        if ( file_exists(SF_PATH.'/_runtime/asset/require-jquery-min.js') ) {
+            $head[] = "<script type='text/javascript' "
+                    . "src='/_runtime/asset/require-jquery-min.js' data-main='../_runtime/asset/admin-min'>"
+                    . "</script>";
+        } else {
+            $head[] = "<script type='text/javascript' "
+                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
+                    . "</script>";
+        }
+
+
     } else {
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
         $head[] = "<script type='text/javascript' src='/misc/require-jquery.js' data-main='site'></script>";
     }
+
+
 
     if ( $useLess ) {
         $head[] = '<script type="text/javascript" src="/misc/less-1.3.0.min.js"></script>';

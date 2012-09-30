@@ -4,8 +4,7 @@
  * @link   http://siteforever.ru
  * @file   admin/jquery/jquery.filemanager.js
  */
-
-define([
+define("admin/jquery/jquery.filemanager",[
     "jquery",
     "require",
     "jui",

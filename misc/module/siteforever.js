@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  */
 
-define([
+define("siteforever",[
     "jquery",
     "jui",
     "jquery/jquery.blockUI",

@@ -1,13 +1,15 @@
 /**
  * Basic file for administrative interface
  */
-define([
+define("admin/admin",[
     "jquery",
     "siteforever",
     "i18n",
     "admin/jquery/jquery.dumper",
     "admin/jquery/jquery.filemanager"
 ],function($,$s){
+
+    console.log("Admin:", arguments);
 
     $('a.filemanager').filemanager();
     $('a.dumper').dumper();

@@ -53,7 +53,7 @@ class Model_Page extends Sfcms_Model
         $page->date     = time();
         $page->update   = time();
         $page->pos      = 0;
-        $page->controller = 'controller';
+        $page->controller = 'page';
         $page->action   = 'index';
         $page->content  = $this->app()->getTpl()->fetch('system:page.model.default');
         $page->author   = 1;

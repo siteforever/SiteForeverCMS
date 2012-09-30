@@ -4,7 +4,7 @@
 {if $rows}
     <ul class="gallery_list">
     {foreach from=$rows item="img"}
-        <li style="width: 200px; height: 230px;">
+        <li>
         {if $category.target != '_none'}
             {if $category.target == '_gallery' && $img.link == ''}
                 <a href="{$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
