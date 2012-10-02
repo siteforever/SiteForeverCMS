@@ -20,7 +20,7 @@
         {$form->htmlFieldWrapped('image')}
     </div>
 
-    <div class="tab-pane active" id="tabs-seo">
+    <div class="tab-pane" id="tabs-seo">
         {$form->htmlFieldWrapped('title')}
         {$form->htmlFieldWrapped('keywords')}
         {$form->htmlFieldWrapped('description')}

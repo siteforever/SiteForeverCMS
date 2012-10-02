@@ -11,9 +11,9 @@ return array(
 
     'cache' => false,
 
-//    'logger'    => 'firephp',
+    'logger'    => 'auto',
 //    'logger'    => 'html',
-    'logger'    => 'file',
+//    'logger'    => 'file',
 
     'sitename'  => 'SiteForeverCMS',
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
@@ -33,7 +33,7 @@ return array(
         'database'  => 'siteforever',
         'debug'     => true,
         'migration' => true,
-        'autoGenerateMeta' => true,
+        //'autoGenerateMeta' => true,
     ),
 
     // тема

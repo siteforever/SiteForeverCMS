@@ -109,7 +109,11 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function getAttributes()
     {
-        return $this->data;
+        $result = array();
+        foreach ( $this->data as $key => $val ) {
+            $result[ $key ] = $this->get( $key );
+        }
+        return $result;
     }
 
     /**

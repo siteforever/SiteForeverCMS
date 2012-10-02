@@ -85,6 +85,10 @@ abstract class Data_Object extends Component
         if ( null === $oldValue || $oldValue != $value ) {
             if ( ! $this->new ) {
                 $this->changed[ $key ] = $key;
+                $event = 'onSet'.ucfirst( strtolower( $key ) );
+                if ( method_exists( $this, $event ) ) {
+                    $this->$event();
+                }
             }
             if ( empty( $this->data['id'] ) )
                 $this->markNew();

@@ -43,7 +43,7 @@ class Controller_News extends Sfcms_Controller
         }
 
         // работаем над хлебными крошками
-        $bc = $this->tpl->getBreadcrumbs();
+        $bc = $this->getTpl()->getBreadcrumbs();
         $bc->addPiece( null, $news->title );
 
         $this->tpl->assign('news', $news);

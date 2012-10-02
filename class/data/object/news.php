@@ -36,6 +36,11 @@ class Data_Object_News extends Data_Object
         return $this->data['alias'];
     }
 
+    public function onSetName()
+    {
+        $this->changed['alias'] = 'alias';
+    }
+
     public function getTitle()
     {
         if ( $this->data['title'] ) {

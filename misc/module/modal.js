@@ -40,9 +40,9 @@ define([
         template : '<div class="siteforeverModal modal fade hide" id="{$id}">'
                     + '<div class="modal-header">'
                         + '<button type="button" class="close" data-dismiss="modal">×</button>'
-                        + '<h3></h3>'
+                        + '<h3>{{title}}</h3>'
                     + '</div>'
-                    + '<div class="modal-body"></div>'
+                    + '<div class="modal-body">{{body}}</div>'
                     + '<div class="modal-footer">'
                         + '<a href="#" class="btn btn-primary save">' + $s.i18n('Save changes') + '</a>'
                         + '<a href="#" class="btn" data-dismiss="modal">' + $s.i18n('Close') + '</a>'
@@ -69,7 +69,7 @@ define([
         }
 
        /**
-        * Обработчик кнопкисохранения по умолчанию
+        * Обработчик кнопки сохранения по умолчанию
         */
         , onSaveHandler : function(){
             $('form', this.domnode).ajaxSubmit({
