@@ -19,7 +19,7 @@ define([
     var SfModal = function( id ) {
         this._id = id;
         if ( ! $('#'+id).length ) {
-            $('body').append(this.template.replace(/\{\$id\}/,this._id));
+            $('body').append(this.template.replace(/\{\{id\}\}/,this._id));
         }
         this.domnode = $('#'+id);
         this.domnode.on('shown', function(){
@@ -37,17 +37,17 @@ define([
 
     SfModal.prototype = {
 
-        template : '<div class="siteforeverModal modal fade hide" id="{$id}">'
-                    + '<div class="modal-header">'
-                        + '<button type="button" class="close" data-dismiss="modal">×</button>'
-                        + '<h3>{{title}}</h3>'
-                    + '</div>'
-                    + '<div class="modal-body">{{body}}</div>'
-                    + '<div class="modal-footer">'
-                        + '<a href="#" class="btn btn-primary save">' + $s.i18n('Save changes') + '</a>'
-                        + '<a href="#" class="btn" data-dismiss="modal">' + $s.i18n('Close') + '</a>'
-                    + '</div>'
-                + '</div>'
+        template : '<div class="siteforeverModal modal fade hide" id="{{id}}">'
+            + '<div class="modal-header">'
+                + '<button type="button" class="close" data-dismiss="modal">×</button>'
+                + '<h3>{{title}}</h3>'
+            + '</div>'
+            + '<div class="modal-body">{{body}}</div>'
+            + '<div class="modal-footer">'
+                + '<a href="#" class="btn btn-primary save">' + $s.i18n('Save changes') + '</a>'
+                + '<a href="#" class="btn" data-dismiss="modal">' + $s.i18n('Close') + '</a>'
+            + '</div>'
+        + '</div>'
 
         /**
          * Сохраняет обработчик сохранения

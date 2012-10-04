@@ -12,30 +12,25 @@
 <tr>
     <td>{$item.id}</td>
     <td>
-        <div class="row-fluid">
-            <div class="span6"><big><a {href controller="news" action="list" id=$item.id}>{$item.name}</a></big></div>
-            <div class="span6">
-                <small>
-                    {if $item.hidden}
-                        {icon name="lightbulb_off" title=t('Off')} {t}Off{/t}
-                    {else}
-                        {icon name="lightbulb" title=t('On')} {t}On{/t}
-                    {/if}
-                    {if $item.protected}
-                        {icon name="lock" title=t('Closed')} {t}Closed{/t}
-                    {/if}
-                    {a controller="news" action="catedit" id=$item.id class="catEdit"}
-                        {icon name="pencil" title=t("Edit")} {t}Edit{/t}{/a}
-                    {a controller="news" action="catdelete" id=$item.id class="do_delete"}
-                        {icon name="delete" title=t("Delete")} {t}Delete{/t}{/a}
-                </small>
-            </div>
-        </div>
-
+        <big><a {href controller="news" action="list" id=$item.id}>{$item.name}</a></big>
     </td>
     <td>{$item.description}</td>
     <td>{$item.news_count}</td>
     <td>
+        <small>
+            {if $item.hidden}
+                {icon name="lightbulb_off" title=t('Off')} {t}Off{/t}
+            {else}
+                {icon name="lightbulb" title=t('On')} {t}On{/t}
+            {/if}
+            {if $item.protected}
+                {icon name="lock" title=t('Closed')} {t}Closed{/t}
+            {/if}
+            {a controller="news" action="catedit" id=$item.id class="catEdit"}
+                {icon name="pencil" title=t("Edit")} {t}Edit{/t}{/a}
+            {a controller="news" action="catdelete" id=$item.id class="do_delete"}
+                {icon name="delete" title=t("Delete")} {t}Delete{/t}{/a}
+        </small>
     </td>
 </tr>
 {foreachelse}
