@@ -4,10 +4,13 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
+namespace Module\Market\Controller;
+
+use Sfcms_Controller;
 
 use Forms\Payment\Edit as FormEdit;
 
-class Controller_Payment extends \Sfcms_Controller
+class PaymentController extends Sfcms_Controller
 {
     public function access()
     {
@@ -29,7 +32,6 @@ class Controller_Payment extends \Sfcms_Controller
     /**
      * @param int $id
      * @return array
-     * @throws RuntimeException
      */
     public function editAction( $id )
     {

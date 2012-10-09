@@ -5,7 +5,19 @@
  * @link    http://siteforever.ru
  * @link    http://ermin.ru
  */
-class Controller_Gallery extends Sfcms_Controller
+namespace Module\Gallery\Controller;
+
+use Sfcms_Controller;
+use Request;
+use Exception;
+use Form_Form;
+use Data_Object_Gallery;
+use Data_Object_GalleryCategory;
+use Data_Object_Page;
+use Model_Gallery;
+use Model_GalleryCategory;
+
+class GalleryController extends Sfcms_Controller
 {
     public function defaults()
     {
@@ -39,8 +51,8 @@ class Controller_Gallery extends Sfcms_Controller
     {
         /**
          * @var Data_Object_Gallery $image
-         * @var model_gallery $model
-         * @var model_galleryCategory $catModel
+         * @var Model_Gallery $model
+         * @var Model_GalleryCategory $catModel
          */
 //        $this->request->setTemplate( 'inner' );
         $model    = $this->getModel( 'Gallery' );

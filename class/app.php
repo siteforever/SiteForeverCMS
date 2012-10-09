@@ -121,10 +121,8 @@ class App extends Application_Abstract
         self::$init_time = microtime( 1 ) - self::$start_time;
         self::$controller_time = microtime( 1 );
 
-        $resolver   = new Resolver( $this );
-
         try {
-            $result = $resolver->dispatch();
+            $result = $this->getResolver()->dispatch();
         } catch ( Sfcms_Http_Exception $e ) {
             if ( ! App::isTest() ) {
                 switch ( $e->getCode() ) {

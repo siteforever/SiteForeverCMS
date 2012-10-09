@@ -4,8 +4,14 @@
  * @author Ermin Nikolay <keltanas@gmail.com>
  * @link http://siteforever.ru
  */
+namespace Module\Market\Controller;
 
-class Controller_OrderPdf extends Sfcms_Controller
+use Sfcms_Controller;
+use Data_Object_Order;
+use TCPDF;
+use numeric;
+
+class OrderPdfController extends Sfcms_Controller
 {
     function indexAction()
     {
@@ -54,9 +60,9 @@ class Controller_OrderPdf extends Sfcms_Controller
         // верстка
         $fontPDF = 10;
 
-        $firm = App::$config->get('firm');
+        $firm = $this->app()->getConfig('firm');
 
-        $user = App::$user->attributes;
+        $user = $this->app()->getAuth()->currentUser()->attributes;
 
         $account = array();
 
@@ -319,7 +325,7 @@ class Controller_OrderPdf extends Sfcms_Controller
         //$pdf->Cell( 170, 4, "Срок поставки ориентировочно 2 - 3 недели.", 0, 1, 'L' );
 
         //$this->write(8, cp2utf("Итого к оплате: Шесть тысяч пять рублей 33 копейки\n"));
-        if ( !App::$request->get( 'contract', FILTER_VALIDATE_INT ) )
+        if ( !$this->request->get( 'contract', FILTER_VALIDATE_INT ) )
         {
             $pdf->SetFont('', '', 7);
             $pdf->write(4, "Счет действителен в течении 5 банковских дней. Датой платежа считается дата поступления денежных средств на расчетный счет Продавца.\n");

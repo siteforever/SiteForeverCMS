@@ -4,10 +4,13 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
+namespace Module\Market\Controller;
 
+use Sfcms_Controller;
 use Sfcms\Robokassa;
+use Data_Object_Order;
 
-class Controller_Robokassa extends Sfcms_Controller
+class RobokassaController extends Sfcms_Controller
 {
     public function init()
     {

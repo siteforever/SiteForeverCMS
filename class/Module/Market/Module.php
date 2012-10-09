@@ -5,7 +5,7 @@
  * @link   http://siteforever.ru
  */
 
-namespace Module\Manufacturers;
+namespace Module\Market;
 
 use Sfcms\Module as SfModule;
 

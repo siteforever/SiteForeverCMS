@@ -3,8 +3,16 @@
  * Контроллер RSS лент
  * @author keltanas aka Nikolay Ermin
  */
+namespace Module\News\Controller;
 
-class Controller_Rss extends Sfcms_Controller
+use Sfcms_Controller;
+use Request;
+use Model_News;
+use Data_Object_News;
+use Db_Criteria;
+use DOMDocument;
+
+class RssController extends Sfcms_Controller
 {
     public function indexAction()
     {

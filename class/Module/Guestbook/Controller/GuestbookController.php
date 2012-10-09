@@ -3,7 +3,13 @@
  * Сообщения гостевой книги
  * @author: keltanas <keltanas@gmail.com>
  */
-class Controller_Guestbook extends Sfcms_Controller
+namespace Module\Guestbook\Controller;
+
+use Sfcms_Controller;
+use Forms_Guestbook_Form;
+use Forms_Guestbook_Edit;
+
+class GuestbookController extends Sfcms_Controller
 {
     public function init()
     {

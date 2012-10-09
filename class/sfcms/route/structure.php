@@ -6,8 +6,10 @@
  */
 
 namespace Sfcms\Route;
+use App;
 use Sfcms\Route;
 use Sfcms\Module;
+use Data_Object_Page;
 
 class Structure extends Route
 {
@@ -36,11 +38,11 @@ class Structure extends Route
     {
         $alias = null;
         $this->callAliases();
-        /** @var $page \Data_Object_Page */
+        /** @var $page Data_Object_Page */
         do {
             if ( isset( self::$_aliases[ $route ] ) ) {
                 if ( null !== $alias ) {
-                    \App::getInstance()->getRequest()->set('alias', $alias);
+                    App::getInstance()->getRequest()->set('alias', $alias);
                 }
                 return $this->getPageState( self::$_aliases[ $route ] );
             }

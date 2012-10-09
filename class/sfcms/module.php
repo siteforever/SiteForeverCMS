@@ -7,8 +7,21 @@
 
 namespace Sfcms;
 
+use App;
+
 abstract class Module
 {
+    protected $app;
+
+    /** @param array */
+    protected static $controllers = null;
+
+
+    public function __construct()
+    {
+        $this->app = App::getInstance();
+    }
+
     /**
      * Вернет поле, которое связывает страницу с ее модулем
      * @static
@@ -27,7 +40,18 @@ abstract class Module
      */
     public static function getModuleClass( $controller )
     {
-        return '\\Module\\'.ucfirst(strtolower($controller)).'\\Module';
+        if ( null === self::$controllers ) {
+            self::$controllers = App::getInstance()->getControllers();
+        }
+        if ( isset( self::$controllers[ $controller ] ) ) {
+            $config = self::$controllers[ $controller ];
+            if ( isset( $config['module'] ) ) {
+                return '\\Module\\'.$config['module'].'\\Module';
+            } else {
+                return '\\Module\\'.ucfirst(strtolower($controller)).'\\Module';
+            }
+        }
+        throw new Exception(sprintf('Contoroller %s not defined', $controller));
     }
 
     /**

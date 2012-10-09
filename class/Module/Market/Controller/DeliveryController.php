@@ -5,9 +5,13 @@
  * @link   http://siteforever.ru
  */
 
-namespace Module\Index\Delivery;
+namespace Module\Market\Controller;
 
-class Controller extends \Sfcms_Controller
+use Sfcms_Controller;
+use Request;
+use Forms_Delivery_Edit;
+
+class DeliveryController extends Sfcms_Controller
 {
     public function access()
     {
@@ -20,7 +24,7 @@ class Controller extends \Sfcms_Controller
     public function adminAction()
     {
         $this->request->setTitle(t('delivery','Delivery'));
-        $model = $this->getModel();
+        $model = $this->getModel('Delivery');
         $items = $model->findAll();
         return array(
             'items' => $items,
@@ -29,10 +33,10 @@ class Controller extends \Sfcms_Controller
 
     public function editAction()
     {
-        $form = new \Forms_Delivery_Edit();
-        $model = $this->getModel();
+        $form = new Forms_Delivery_Edit();
+        $model = $this->getModel('Delivery');
 
-        $id = $this->request->get('id',\Request::INT);
+        $id = $this->request->get('id',Request::INT);
 
         if ( $id ) {
             $obj = $model->find( $id );
@@ -63,8 +67,8 @@ class Controller extends \Sfcms_Controller
      */
     public function selectAction()
     {
-        $type = $this->request->get('type', \Request::INT);
-        $model = $this->getModel();
+        $type = $this->request->get('type', Request::INT);
+        $model = $this->getModel('Delivery');
         $delivery = $model->find( $type );
         if ( $delivery ){
             $_SESSION['delivery']['type'] = $type;

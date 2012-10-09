@@ -5,7 +5,16 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class Controller_Basket extends Sfcms_Controller
+namespace Module\Market\Controller;
+
+use Sfcms;
+use Sfcms_Controller;
+use Form_Form;
+use Forms_Basket_Address;
+use Data_Object_Delivery;
+use Model_Order;
+
+class BasketController extends Sfcms_Controller
 {
 
     public function indexAction( $address )

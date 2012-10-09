@@ -75,7 +75,7 @@ class CatalogController extends Sfcms_Controller
         $item = null;
         if ( $alias ) {
             $item = $catalogModel->find('alias = ?', array($alias));
-        }elseif ( $catId ) {
+        } elseif ( $catId ) {
             $item = $catalogModel->find( $catId );
         }
 

@@ -43,12 +43,12 @@ return array(
     'error'     => array(),
     'feedback'  => array(),
     'generator' => array(),
+    'routes'    => array(),
     'search'    => array(),
     'settings'  => array(),
     'sitemap'   => array(),
     'system'    => array(),
     'users'     => array(),
-    'routes'    => array(),
 
     'banner' => array(
         'module' => 'Banner',
@@ -57,7 +57,11 @@ return array(
     'basket' => array(
         'module' => 'Market',
     ),
+    'delivery' => array(
+        'module' => 'Market',
+    ),
     'manufacturers' => array(
+        'class'  => 'Controller\Manufacturer',
         'module' => 'Market',
     ),
     'order' => array(
@@ -70,11 +74,21 @@ return array(
         'module' => 'Market',
     ),
 
+    'payment' => array(
+        'module' => 'Market',
+    ),
+    'producttype' => array(
+        'module' => 'Market',
+    ),
+    'robokassa' => array(
+        'module' => 'Market',
+    ),
+
     'catalog' => array(
         'module' => 'Catalog',
     ),
     'cataloggallery' => array(
-        'class'  => 'Gallery',
+        'class'  => 'Controller\Gallery',
         'module' => 'Catalog',
     ),
     'goods' => array(

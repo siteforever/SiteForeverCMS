@@ -2,7 +2,12 @@
 /**
  * Контроллер импорта прайса в виде XML
  */
-class Controller_XMLPrice extends Sfcms_Controller
+namespace Module\Market\Controller;
+
+use Sfcms_Controller;
+use SimpleXMLIterator;
+
+class XMLPriceController extends Sfcms_Controller
 {
     function indexAction()
     {

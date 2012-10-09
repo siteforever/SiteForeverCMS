@@ -11,11 +11,14 @@ use App;
 
 class Direct extends Route
 {
-    private $controllers = array();
+    /** @param array */
+    private static $controllers = null;
 
     public function __construct()
     {
-        $this->controllers = App::getInstance()->getControllers();
+        if ( null === self::$controllers ) {
+            self::$controllers = App::getInstance()->getControllers();
+        }
     }
 
     /**
@@ -27,20 +30,22 @@ class Direct extends Route
         $routePieces = explode( '/', $route );
 
         // Проверяем путь в списке контроллеров
-        if ( isset( $this->controllers[ $routePieces[0] ] ) ) {
+        if ( isset( self::$controllers[ $routePieces[0] ] ) ) {
             if ( ! isset( $routePieces[1] ) ) {
                 return false;
             }
 
-            $relectionClass = new \ReflectionClass('Controller_'.ucfirst( strtolower( $routePieces[0] ) ) );
+            $resolver = App::getInstance()->getResolver();
+            $command = $resolver->resolveController( $routePieces[0], $routePieces[1] );
 
-            if ( $relectionClass->hasMethod( strtolower( $routePieces[1] ) . 'Action' ) ) {
+            $relectionClass = new \ReflectionClass( $command['controller'] );
+
+            if ( $relectionClass->hasMethod( $command['action'] ) ) {
                 $controller = $routePieces[ 0 ];
-                $action = $routePieces[ 1 ];
                 $params = $this->extractAsParams( array_slice( $routePieces, 2 ) );
                 return array(
                     'controller' => $controller,
-                    'action' => $action,
+                    'action' => $routePieces[1],
                     'params' => $params,
                 );
             }

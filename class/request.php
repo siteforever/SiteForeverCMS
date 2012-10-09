@@ -473,7 +473,7 @@ class Request
      * @param int    $errno
      * @param string $error
      *
-     * @return void
+     * @return array
      */
     public function setResponseError( $error, $msg = '' )
     {

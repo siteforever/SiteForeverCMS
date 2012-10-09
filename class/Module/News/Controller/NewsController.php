@@ -5,8 +5,19 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+namespace Module\News\Controller;
 
-class Controller_News extends Sfcms_Controller
+use Sfcms_Controller;
+use Request;
+use Form_Form;
+use Model_News;
+use Model_NewsCategory;
+use Data_Object_News;
+use Data_Object_NewsCategory;
+use Sfcms_Http_Exception;
+use Exception;
+
+class NewsController extends Sfcms_Controller
 {
 
     /**
@@ -75,7 +86,7 @@ class Controller_News extends Sfcms_Controller
 
         $count  = $model->count($cond, $params);
 
-        $paging     = new Pager( $count, $category->per_page, $this->page->alias );
+        $paging     = $this->paging( $count, $category->per_page, $this->page->alias );
 
 //        $list   = $model->findAllWithLinks(array(
         $list   = $model->findAll(array(
@@ -136,7 +147,7 @@ class Controller_News extends Sfcms_Controller
         $catId =  $this->request->get('id', Request::INT);
 
         $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$catId));
-        $paging = new Pager( $count, 20, $this->router->createServiceLink('news','list',array('id'=>$catId)));
+        $paging = $this->paging( $count, 20, $this->router->createServiceLink('news','list',array('id'=>$catId)));
 
         $list = $model->findAll(array(
             'cond'      => 'cat_id = :cat_id AND deleted = 0',

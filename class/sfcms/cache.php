@@ -6,14 +6,32 @@
  * @link   http://standart-electronics.ru
  */
 
-class Sfcms_Cache
-{
+use Sfcms\Component;
 
+class Sfcms_Cache extends Component
+{
     const LIFETIME = 5; // seconds
 
     /** @var string */
     protected $_cache = '';
 
+    /**
+     * @return bool
+     */
+    public function isAvaible()
+    {
+        if ( $this->app()->getConfig()->get('cache')
+            && ! $this->app()->getRequest()->getAjax()
+            && ! $this->app()->getRouter()->isSystem() ) {
+            if ( $this->app()->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
+                if ( ! $this->app()->getBasket()->count() ) {
+                    $this->log('Cache true');
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * @return string

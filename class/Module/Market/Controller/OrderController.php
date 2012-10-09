@@ -4,7 +4,15 @@
  * @author keltanas
  * @link http://ermin.ru
  */
-class Controller_Order extends Sfcms_Controller
+namespace Module\Market\Controller;
+
+use Sfcms_Controller;
+use Model_Order;
+use Data_Object_Order;
+use Data_Object_OrderPosition;
+use Request;
+
+class OrderController extends Sfcms_Controller
 {
     /**
      * Список заказов зарегистрированного пользователя
@@ -18,7 +26,7 @@ class Controller_Order extends Sfcms_Controller
         $this->request->set('template', 'inner');
         $this->request->setTitle(t('order','My orders'));
 
-        $this->tpl->getBreadcrumbs()
+        $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',t('Home'))
             ->addPiece('users/cabinet',t('user','User cabiner'))
             ->addPiece(null,$this->request->getTitle());
@@ -202,7 +210,7 @@ class Controller_Order extends Sfcms_Controller
         ));
 
         $this->request->setTitle('Заказы');
-        $this->request->setContent($this->tpl->fetch('system:order.admin'));
+        return $this->tpl->fetch('system:order.admin');
     }
 
     /**

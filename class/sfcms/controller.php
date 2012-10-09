@@ -169,7 +169,13 @@ abstract class Sfcms_Controller extends Component
     public function getModel($model=null)
     {
         if ( null === $model  ) {
-            $model = str_replace('Controller_', '', get_class( $this ) );
+            if ( preg_match('@^Controller_(\w+)@',get_class( $this ), $m ) ) {
+                $model = $m[1];
+            } elseif ( preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class( $this ), $m) ) {
+                $model = '\\Module\\'.$m[1].'\\Model\\'.$m[2];
+            } else {
+                throw new \Sfcms\Exception(sprintf('Model not defined in class %s',get_class($this)));
+            }
         }
         return Sfcms_Model::getModel($model);
     }

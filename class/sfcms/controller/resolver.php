@@ -9,7 +9,9 @@
 namespace Sfcms\Controller;
 
 use Sfcms\Component;
+use ReflectionClass;
 use RuntimeException;
+use Sfcms_Http_Exception;
 
 class Resolver extends Component
 {
@@ -29,31 +31,39 @@ class Resolver extends Component
      * @return array
      * @throws RuntimeException
      */
-    public function resolveController()
+    public function resolveController( $controller = null, $action = null, $module = 'default' )
     {
         $request = $this->app()->getRequest();
 
-        $controller = strtolower( $request->getController() );
+        if ( null === $controller ) {
+            $controller = strtolower( $request->getController() );
+        }
+        if ( null === $action ) {
+            $action = $request->getAction();
+        }
+        $action = strtolower( $action ) . 'Action';
+
         if ( ! isset( $this->_controllers[ $controller ] ) ) {
             throw new RuntimeException(sprintf('Controller %s not found in controllers config.', $controller));
         }
+
+
         $config = $this->_controllers[ $controller ];
         if ( isset( $config['class'] ) ) {
             $controllerClass = $config['class'];
         } else {
-            $controllerClass = 'Controller_' . ucfirst($request->get('controller'));
+            $controllerClass = 'Controller_' . ucfirst($controller);
         }
 
         if ( isset( $config['module'] ) ) {
-            $controllerClass = "\\Module\\".ucfirst(strtolower($config['module']))."\\"
+            $controllerClass = "Module\\".ucfirst(strtolower($config['module']))."\\"
                              . str_replace( '_', '\\', $controllerClass ).'Controller';
-            require_once str_replace( '\\', DIRECTORY_SEPARATOR, $controllerClass ).'.php';
+            require_once str_replace( '\\', DIRECTORY_SEPARATOR, trim( $controllerClass, '\\' ) ).'.php';
         } elseif ( isset( $config['file'] ) ) {
             require_once $config['file'];
         } else {
             require_once strtolower( str_replace(array('_','\\'), DIRECTORY_SEPARATOR, $controllerClass) ).'.php';
         }
-        $action = strtolower( $request->getAction() ) . 'Action';
 
         return array('controller' => $controllerClass, 'action' => $action);
     }
@@ -71,39 +81,26 @@ class Resolver extends Component
         $request = $this->app()->getRequest();
         if ( 0 == count( $command ) ) {
             $command = $this->resolveController();
+            if ( ! $command ) {
+                throw new Sfcms_Http_Exception('Controller not resolved',404);
+            }
         }
 
         // возможность использовать кэш
-        if ( $this->app()->getConfig()->get('cache')
-            && ! $this->app()->getRequest()->getAjax()
-            && ! $this->app()->getRouter()->isSystem()
-        ) {
-            if( $this->app()->getAuth()->currentUser()->get('perm') == USER_GUEST ) {
-                if ( ! $this->app()->getBasket()->count() ) {
-                    define('CACHE', true);
-                    $this->log('Cache true');
-                    $cache = $this->app()->getCacheManager();
-                    if ( $cache->isCached() ) {
-                        $this->log('Result from cache');
-                        return $cache->getCache();
-                    }
-                }
-            }
+        $cache = $this->app()->getCacheManager();
+        if ( $cache->isAvaible() && $cache->isCached() ) {
+            $this->log('Result from cache');
+            return $cache->getCache();
         }
-        if ( ! defined('CACHE') ) define('CACHE', false);
 
-        if (!$command) {
-            if (!$command = $this->resolveController()) {
-                throw new \Sfcms_Http_Exception('Controller not resolved',404);
-            }
-        }
         $this->log( $command, 'Command' );
+
         // если запрос является системным
         if ( $this->app()->getRouter()->isSystem() ) {
             if ( $this->app()->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
                 $this->setSystemPage();
             } else {
-                throw new \Sfcms_Http_Exception( t('Access denied'), 403 );
+                throw new Sfcms_Http_Exception( t('Access denied'), 403 );
             }
         }
 
@@ -114,7 +111,7 @@ class Resolver extends Component
             $command = $this->resolveController();
         }
 
-        $ref = new \ReflectionClass($command['controller']);
+        $ref = new ReflectionClass($command['controller']);
 
         /** @var \Sfcms_Controller $controller */
         $controller = $ref->newInstance();
@@ -127,12 +124,12 @@ class Resolver extends Component
         }
 
         if ($rules && is_array($rules['system'])) {
-            foreach ($rules['system'] as $rule) {
+            foreach ( $rules['system'] as $rule ) {
                 if (strtolower($rule . 'action') == strtolower($command['action'])) {
                     if ($this->app()->getUser()->hasPermission(USER_ADMIN)) {
                         $this->setSystemPage();
                     } else {
-                        throw new \Sfcms_Http_Exception( t('Access denied'), 403 );
+                        throw new Sfcms_Http_Exception( t('Access denied'), 403 );
                     }
                     break;
                 }
@@ -141,6 +138,7 @@ class Resolver extends Component
 
         $method = $ref->getMethod( $command['action'] );
         $methodParams = $method->getParameters();
+
 
         $docComment = $method->getDocComment();
         preg_match_all( '/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match );
@@ -170,6 +168,7 @@ class Resolver extends Component
             }
         }
 
+
         $result = $method->invokeArgs( $controller, $arguments );
         return $result;
     }
@@ -177,8 +176,12 @@ class Resolver extends Component
 
     private function setSystemPage()
     {
-        $this->app()->getRequest()->set('template', 'index');
+        $this->app()->getRequest()->setTemplate('index');
         $this->app()->getRequest()->set('resource', 'system:');
-        $this->app()->getRequest()->set('modules', @include_once('modules.php'));
+        if ( file_exists(ROOT.'/modules.php') ) {
+            $this->app()->getRequest()->set('modules', require_once(ROOT.'/modules.php'));
+        } elseif ( ROOT != SF_PATH && file_exists(SF_PATH.'/modules.php') ) {
+            $this->app()->getRequest()->set('modules', require_once(SF_PATH.'/modules.php'));
+        }
     }
 }

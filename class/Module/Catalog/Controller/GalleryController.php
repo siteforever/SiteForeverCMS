@@ -110,7 +110,7 @@ class GalleryController extends Sfcms_Controller
     public function getPanel( $id )
     {
         /** @var Model_CatalogGallery $catalogGallery */
-        $catalogGallery = $this->getModel();
+        $catalogGallery = $this->getModel('CatalogGallery');
         $images = $catalogGallery->findAll(
             array(
                  'cond'      => ' cat_id = ? ',

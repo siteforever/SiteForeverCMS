@@ -5,6 +5,7 @@
  */
 
 use Sfcms\Assets;
+use Sfcms\Controller\Resolver;
 
 abstract class Application_Abstract
 {
@@ -117,6 +118,9 @@ abstract class Application_Abstract
      */
     protected  $_assets = null;
 
+    /** @param Resolver */
+    protected $_resolver;
+
 
 
     abstract public function run();
@@ -220,7 +224,7 @@ abstract class Application_Abstract
     public function getCacheManager()
     {
         if ( null === $this->_cache ) {
-            $this->_cache = new Sfcms_Cache();
+            $this->_cache = new Sfcms_Cache( $this );
         }
         return $this->_cache;
     }
@@ -411,6 +415,19 @@ abstract class Application_Abstract
     }
 
 
+    /**
+     * @return Sfcms\Controller\Resolver
+     */
+    public function getResolver()
+    {
+        if( null === $this->_resolver ) {
+            $this->_resolver = new Resolver();
+        }
+        return $this->_resolver;
+    }
+
+
+
     public function getAssets()
     {
         if ( null === $this->_assets ) {
@@ -500,15 +517,11 @@ abstract class Application_Abstract
     }
 
 
-
-
     /**
      * @static
-     * @throws Exception
-     *
-     * @param  $class_name
-     *
+     * @param string $className
      * @return boolean
+     * @throws Exception
      */
     static public function autoload( $className )
     {

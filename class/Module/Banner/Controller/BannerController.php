@@ -2,6 +2,13 @@
 /**
  * Контроллер баннеров
  */
+namespace Module\Banner\Contoller;
+
+use Sfcms_Controller;
+use Model_Banner;
+use Data_Object_Banner;
+use Model_CategoryBanner;
+use Sfcms\Exception;
 
 class Controller_Banner extends Sfcms_Controller
 {
@@ -122,6 +129,7 @@ class Controller_Banner extends Sfcms_Controller
     /**
      * Удалить баннер
      * @param int $id
+     * @return array
      */
     public function delAction( $id )
     {
@@ -135,8 +143,9 @@ class Controller_Banner extends Sfcms_Controller
             } else {
                 return $this->request->setResponseError( 1, t( 'Can not delete' ) );
             }
-            return $this->redirect( $this->router->createServiceLink( 'banner', 'cat'), array('id'=>$cat['cat_id'] ) );
+            //return $this->redirect( $this->router->createServiceLink( 'banner', 'cat'), array('id'=>$cat['cat_id'] ) );
         }
+        throw new Exception('Category not found');
     }
 
     /**

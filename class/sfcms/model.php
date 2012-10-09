@@ -191,7 +191,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
     final static public function getModel( $class_name )
     {
         if ( ! $class_name ) {
-            throw new \RuntimeException( 'Model is not defined' );
+            throw new \RuntimeException( sprintf('Model "%s" is not defined', $class_name) );
         }
         if ( ! preg_match('/^model_/i', $class_name) ) {
             $class_name = 'Model_' . $class_name;
