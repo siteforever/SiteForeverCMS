@@ -7,21 +7,55 @@
  */
 
 namespace Sfcms\Controller;
-use \Sfcms\Component;
+
+use Sfcms\Component;
+use RuntimeException;
 
 class Resolver extends Component
 {
+    /** @var array */
+    protected $_controllers;
+
+    public function __construct()
+    {
+        $this->_controllers = $this->app()->getControllers();
+    }
+
     /**
+     * Берет данные из файла protected/controllers.php через метод $this->app()->getControllers() и на основе этого
+     * конфига принимает решение о том, какой класс должен выполнять функции контроллера,
+     * в каком файле и пространстве имен он находится.
+     *
      * @return array
+     * @throws RuntimeException
      */
     public function resolveController()
     {
         $request = $this->app()->getRequest();
 
-        $controller_class = 'Controller_' . ucfirst($request->get('controller'));
-        $action = $request->get('action') . 'Action';
+        $controller = strtolower( $request->getController() );
+        if ( ! isset( $this->_controllers[ $controller ] ) ) {
+            throw new RuntimeException(sprintf('Controller %s not found in controllers config.', $controller));
+        }
+        $config = $this->_controllers[ $controller ];
+        if ( isset( $config['class'] ) ) {
+            $controllerClass = $config['class'];
+        } else {
+            $controllerClass = 'Controller_' . ucfirst($request->get('controller'));
+        }
 
-        return array('controller' => $controller_class, 'action' => $action);
+        if ( isset( $config['module'] ) ) {
+            $controllerClass = "\\Module\\".ucfirst(strtolower($config['module']))."\\"
+                             . str_replace( '_', '\\', $controllerClass ).'Controller';
+            require_once str_replace( '\\', DIRECTORY_SEPARATOR, $controllerClass ).'.php';
+        } elseif ( isset( $config['file'] ) ) {
+            require_once $config['file'];
+        } else {
+            require_once strtolower( str_replace(array('_','\\'), DIRECTORY_SEPARATOR, $controllerClass) ).'.php';
+        }
+        $action = strtolower( $request->getAction() ) . 'Action';
+
+        return array('controller' => $controllerClass, 'action' => $action);
     }
 
     /**

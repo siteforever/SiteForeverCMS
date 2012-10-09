@@ -3,8 +3,18 @@
  * Контроллер страниц
  * @author keltanas <nikolay@ermin.ru>
  */
+namespace Module\Page\Controller;
 
-class Controller_Page extends Sfcms_Controller
+use Sfcms_Controller;
+use Model_Page;
+use Data_Object_Page;
+use Form_Form;
+use Sfcms_Http_Exception;
+use Request;
+
+use Exception;
+
+class PageController extends Sfcms_Controller
 {
     public function access()
     {
@@ -298,7 +308,7 @@ class Controller_Page extends Sfcms_Controller
 
     /**
      * Пересчитает все алиасы структуры
-     * @return void
+     * @return string
      */
     public function realiasAction()
     {

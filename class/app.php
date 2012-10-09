@@ -14,6 +14,8 @@ set_include_path( join( PATH_SEPARATOR, $include_list ));
 require_once 'functions.php';
 require_once 'application/abstract.php';
 
+use Sfcms\Controller\Resolver;
+
 /**
  * Класс приложение
  * FronController
@@ -119,7 +121,7 @@ class App extends Application_Abstract
         self::$init_time = microtime( 1 ) - self::$start_time;
         self::$controller_time = microtime( 1 );
 
-        $resolver   = new \Sfcms\Controller\Resolver( $this );
+        $resolver   = new Resolver( $this );
 
         try {
             $result = $resolver->dispatch();

@@ -71,6 +71,12 @@ abstract class Application_Abstract
     protected $_settings;
 
     /**
+     * Список контроллеров и их конфиги
+     * @var array
+     */
+    protected $_controllers = null;
+
+    /**
      * Время запуска
      * @var int
      */
@@ -464,6 +470,36 @@ abstract class Application_Abstract
     }
 
 
+    /**
+     * Загружает список известных системе контроллеров
+     * <p>По умолчаню загружается файл protected/controllers.php, содержащийся в директории с CMS.
+     * Но, если CMS находится отдельно от сайта, то загружается и специфический для сайта, аналогичный файл.</p>
+     * <p>В этом конфиге определяется как список известных системе контроллеров, так и некоторые их свойства.
+     * Такими свойствами могут быть Модуль, в котором находится контроллер, его класс, его местоположение,
+     * если они не совпадают с принятыми в системе по умолчанию.</p>
+     * @return array
+     */
+    public function getControllers()
+    {
+        if ( null === $this->_controllers ) {
+            $this->_controllers = require SF_PATH . '/protected/controllers.php';
+            if ( ROOT != SF_PATH && file_exists( ROOT . '/protected/controllers.php' ) ) {
+                $this->_controllers = array_merge( $this->_controllers, require ROOT . '/protected/controllers.php' );
+            }
+        }
+        return $this->_controllers;
+    }
+
+
+    public function hasController( $name )
+    {
+        if ( null === $this->_controllers ) {
+            throw new Application_Exception('Controllers list not loaded');
+        }
+        return isset( $this->_controllers[$name] );
+    }
+
+
 
 
     /**
@@ -474,24 +510,24 @@ abstract class Application_Abstract
      *
      * @return boolean
      */
-    static public function autoload( $class_name )
+    static public function autoload( $className )
     {
         static $class_count = 0;
 
-        $class_name = strtolower( $class_name );
+        $className = strtolower( $className );
 
-        if( in_array( $class_name, array( 'finfo' ) ) ) {
+        if( in_array( $className, array( 'finfo' ) ) ) {
             return false;
         }
 
-        if( $class_name == 'register' ) {
+        if( $className == 'register' ) {
             throw new Exception( 'Autoload Register class' );
         }
 
         // PEAR format autoload
-        $class_name = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $class_name );
-        $class_name = str_replace( '_', DIRECTORY_SEPARATOR, $class_name );
-        $file       = $class_name . '.php';
+        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
+        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
+        $file       = $className . '.php';
 
         if( @include_once $file ) {
             if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {

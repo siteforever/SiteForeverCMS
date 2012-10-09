@@ -7,6 +7,7 @@
 
 namespace Sfcms\Route;
 use Sfcms\Route;
+use App;
 
 class Direct extends Route
 {
@@ -14,10 +15,7 @@ class Direct extends Route
 
     public function __construct()
     {
-        $this->controllers = require SF_PATH . '/protected/controllers.php';
-        if ( ROOT != SF_PATH && file_exists( ROOT . '/protected/controllers.php' ) ) {
-            $this->controllers = array_merge( $this->controllers, require ROOT . '/protected/controllers.php' );
-        }
+        $this->controllers = App::getInstance()->getControllers();
     }
 
     /**
@@ -29,7 +27,7 @@ class Direct extends Route
         $routePieces = explode( '/', $route );
 
         // Проверяем путь в списке контроллеров
-        if ( array_search( $routePieces[0], $this->controllers ) ) {
+        if ( isset( $this->controllers[ $routePieces[0] ] ) ) {
             if ( ! isset( $routePieces[1] ) ) {
                 return false;
             }
