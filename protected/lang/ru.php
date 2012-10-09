@@ -38,6 +38,7 @@ return array_merge(
         'Images are loaded'                         => 'Изображения загружены',
         'Image not loaded'                          => 'Изображения не загружены',
 
+        'Home page for the filling'                 => 'Информационная страница для наполнения',
 
         // Settings
         'Settings'                                  => 'Настройки',

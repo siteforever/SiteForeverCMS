@@ -11,9 +11,6 @@ define("siteforever",[
     "jquery/jquery.gallery",
     "jquery/jquery.captcha"
 ], function( $ ){
-
-    console.log( 'SITEFOREVER:', arguments );
-
     var alert = function( msg, timeout ) {
         timeout = timeout || 0;
         var deferred = $.Deferred();

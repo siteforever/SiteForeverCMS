@@ -10,10 +10,10 @@ class Controller_Feedback extends Sfcms_Controller
 {
     public function indexAction()
     {
-//        $this->request->setTitle('Контакты');
+        $this->request->setTitle('Обратная связь');
         $this->request->setTemplate('inner');
-//        $bc = $this->tpl->getBreadcrumbs();
-//        $bc->addPiece(null, $this->request->getTitle());
+        $bc = $this->getTpl()->getBreadcrumbs()
+            ->addPiece('index',t('Home'))->addPiece(null,$this->request->getTitle());
 
         /** @var $form Forms_Feedback_Default */
         $form = $this->getForm( 'feedback_default' );
@@ -35,7 +35,7 @@ class Controller_Feedback extends Sfcms_Controller
         }
 
         $this->tpl->assign('form', $form);
-        $this->request->setContent($this->tpl->fetch('feedback.form'));
+        return $this->tpl->fetch('feedback.form');
     }
 
     public function adminAction()

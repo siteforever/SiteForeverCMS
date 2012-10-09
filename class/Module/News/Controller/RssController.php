@@ -1,7 +1,9 @@
 <?php
 /**
  * Контроллер RSS лент
- * @author keltanas aka Nikolay Ermin
+ * @author Nikolay Ermin (nikolay@ermin.ru)
+ * @link http://ermin.ru
+ * @link http://siteforever.ru
  */
 namespace Module\News\Controller;
 

@@ -22,7 +22,7 @@ class PaymentController extends Sfcms_Controller
     public function adminAction()
     {
         $this->request->setTitle(t('Payment'));
-        $model = $this->getModel();
+        $model = $this->getModel('Payment');
         $list = $model->findAll();
         return array(
             'list' => $list,
@@ -35,7 +35,7 @@ class PaymentController extends Sfcms_Controller
      */
     public function editAction( $id )
     {
-        $model = $this->getModel();
+        $model = $this->getModel('Payment');
         $form = new FormEdit();
 
         if ( $form->getPost() ) {

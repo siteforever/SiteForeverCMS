@@ -168,7 +168,7 @@ class PageController extends Sfcms_Controller
                 'parent'    => $parent_id,
                 'template'  => 'inner',
                 'author'    => $this->app()->getAuth()->getId(),
-                'content'   => t( 'Home page for the filling' ),
+                'content'   => '<p>'.t( 'Home page for the filling' ).'</p>',
                 'date'      => time(),
                 'update'    => time(),
                 'pos'       => $model->getNextPos( $parent_id ),

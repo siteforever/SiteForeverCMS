@@ -7,6 +7,7 @@
 
 namespace Sfcms\Route;
 use Sfcms\Route;
+use ReflectionClass;
 use App;
 
 class Direct extends Route
@@ -38,7 +39,9 @@ class Direct extends Route
             $resolver = App::getInstance()->getResolver();
             $command = $resolver->resolveController( $routePieces[0], $routePieces[1] );
 
-            $relectionClass = new \ReflectionClass( $command['controller'] );
+            var_dump($command,get_declared_classes());
+
+            $relectionClass = new ReflectionClass( $command['controller'] );
 
             if ( $relectionClass->hasMethod( $command['action'] ) ) {
                 $controller = $routePieces[ 0 ];

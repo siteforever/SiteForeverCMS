@@ -12,7 +12,6 @@ require([
     "admin/jquery/jquery.filemanager",
     "admin/jquery/jquery.dumper"
 ],function($, $s, controller){
-    console.log('App start', arguments);
     if ( controller ) {
         /**
          * Run init

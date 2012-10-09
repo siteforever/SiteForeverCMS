@@ -2,17 +2,17 @@
 /**
  * Контроллер баннеров
  */
-namespace Module\Banner\Contoller;
+namespace Module\Banner\Controller;
 
 use Sfcms_Controller;
+use Request;
 use Model_Banner;
 use Data_Object_Banner;
 use Model_CategoryBanner;
 use Sfcms\Exception;
 
-class Controller_Banner extends Sfcms_Controller
+class BannerController extends Sfcms_Controller
 {
-
     /**
      * Уровень доступа к действиям
      * @return array
@@ -200,7 +200,7 @@ class Controller_Banner extends Sfcms_Controller
             try {
                 $obj = $model->find( $id );
             }
-            catch ( Sfcms_Model_Exception $e ) {
+            catch ( Exception $e ) {
                 return $e->getMessage();
             }
             $categoryModel   = $this->getModel( 'CategoryBanner' );

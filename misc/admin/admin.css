@@ -113,17 +113,10 @@ input.image {
 
 
 /* Основная структура */
-
-    div.b-main-structure ul.ui-sortable {
-        margin: 0 0 5px 0;
-    }
-    /*div.b-main-structure li.level_one {
-        padding: 0;
-    }*/
     div.b-main-structure li {
         /*display: block;*/
         margin: 0;
-        padding: 0 0 0 25px;
+        padding: 0;
         list-style: none;
         /*background:url(/images/admin/cross_li.gif) repeat-y 0 0;*/
     }
