@@ -2,10 +2,12 @@
 /**
  * @author keltanas <keltanas@gmail.com>
  */
+use Module\Gallery\Controller\GalleryController;
+
 class GalleryControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Controller_Gallery
+     * @var GalleryController
      */
     protected $object;
 
@@ -21,7 +23,7 @@ class GalleryControllerTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->app  = App::getInstance();
-        $this->object = new Controller_Gallery( $this->app );
+        $this->object = new GalleryController( $this->app );
     }
 
     /**

@@ -19,6 +19,15 @@ use Exception;
 
 class NewsController extends Sfcms_Controller
 {
+    /**
+     * @return array
+     */
+    public function access()
+    {
+        return array(
+            'system'    => array('admin','list','edit','catedit','catdelete','delete'),
+        );
+    }
 
     /**
      * @return mixed
@@ -181,7 +190,6 @@ class NewsController extends Sfcms_Controller
             if ( $form->validate() ) {
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
-//                $this->reload('news/list/', array('id'=>$data['cat_id'],));
                 return array('error'=>0, 'msg'=>t('Data save successfully'));
             }
             return array('error'=>1, 'msg'=>$this->request->getFeedbackString());
@@ -227,9 +235,9 @@ class NewsController extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $data   = $form->getData();
-                if ( $form->getField('id')->getValue() ) {
-                    $obj = $categoryModel->find( $form->getField('id')->getValue() );
-                    $obj->setAttributes( $form->getData() );
+                if ( $form->id ) {
+                    $obj = $categoryModel->find( $form->id );
+                    $obj->attributes = $data;
                 } else {
                     $obj = $categoryModel->createObject( $data );
                     $obj->markNew();
@@ -311,15 +319,4 @@ class NewsController extends Sfcms_Controller
 //        $this->reload('news/list', array('id'=>$catId));
         return array('error'=>0,'msg'=>t('news','News was delete'));
     }
-
-    /**
-     * @return array
-     */
-    public function access()
-    {
-        return array(
-            'system'    => array('admin','list','edit','catedit','catdelete','delete'),
-        );
-    }
-
 }

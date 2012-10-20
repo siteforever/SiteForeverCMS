@@ -78,10 +78,15 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function get( $key )
     {
-        if ( method_exists( $this, 'get'.$key ) && 'id' != $key ) {
-            return $this->{'get'.$key}();
+        $method = 'get'.$key;
+        if ( method_exists( $this, $method ) && 'id' != $key ) {
+            return $this->$method();
         } else if ( isset( $this->data[ $key ] ) ) {
             return $this->data[ $key ];
+        }
+        $method = 'onGet'.$key;
+        if ( method_exists( $this, $method ) ) {
+            $this->$method();
         }
         return null;
     }
@@ -93,12 +98,18 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function set( $key, $value )
     {
-        if ( method_exists( $this, 'set'.$key ) && 'id' != $key ) {
-            $method = 'set'.$key;
+        $method = 'set'.$key;
+        if ( method_exists( $this, $method ) && 'id' != $key ) {
             $this->$method( $value );
         } else {
             $this->data[$key] = $value;
         }
+
+        $method = 'onSet'.ucfirst($key);
+        if ( method_exists( $this, $method ) ) {
+            $this->$method();
+        }
+
         return $this;
     }
 

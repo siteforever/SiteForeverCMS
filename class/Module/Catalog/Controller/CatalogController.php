@@ -84,7 +84,7 @@ class CatalogController extends Sfcms_Controller
         }
 
         if ( 0 == $item->cat ) {
-            $this->tpl->getBreadcrumbs()->addPiece( null, $item->name );
+            $this->getTpl()->getBreadcrumbs()->addPiece( null, $item->name );
         }
         $this->request->setTitle( $item->title );
         $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
@@ -427,6 +427,7 @@ class CatalogController extends Sfcms_Controller
                     'path'  => '',//serialize(array()),
                 )
             );
+            $parent->markClean();
         }
 
         // Если смотрим список в товаре, то переместить на редактирование

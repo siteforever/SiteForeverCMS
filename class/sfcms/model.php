@@ -2,7 +2,9 @@
 /**
  * Интерфейс модели
  */
-abstract class Sfcms_Model extends \Sfcms\Component
+use Sfcms\Component;
+
+abstract class Sfcms_Model extends Component
 {
     const HAS_MANY      = 'has_many'; // содержет много
     const ONE_TO_MANY   = 'has_many'; // содержет много
@@ -114,7 +116,7 @@ abstract class Sfcms_Model extends \Sfcms\Component
         } else {
             $namespace = 'default';
         }
-        //$this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
+        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
         // Если нет плагинов, ничего не делаем
         if ( ! isset( $this->_plugins[ $namespace ] ) ) {
             return;
@@ -217,7 +219,8 @@ abstract class Sfcms_Model extends \Sfcms\Component
         // TODO Если создаем существующий объект, то св-ва не перезаписываем
         if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
-            if( $obj ) {
+            if ( $obj ) {
+                $obj->attributes = $data;
                 return $obj;
             }
         }
@@ -567,7 +570,10 @@ abstract class Sfcms_Model extends \Sfcms\Component
 
         /** @var Data_Field $field */
         foreach( $fields as $field ) {
-            if( 'id' != $field->getName() && isset( $data[ $field->getName() ] ) && isset( $changed[ $field->getName() ] ) ) {
+            if( 'id' != $field->getName()
+                && isset( $data[ $field->getName() ] )
+                //&& isset( $changed[ $field->getName() ] )
+            ) {
                 $save_data[ $field->getName() ] = $data[ $field->getName() ];
             }
         }

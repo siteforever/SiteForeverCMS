@@ -4,6 +4,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
+use Module\News\Controller\RssController;
 
 class ControllerRssTest extends PHPUnit_Framework_TestCase
 {
@@ -16,7 +17,7 @@ class ControllerRssTest extends PHPUnit_Framework_TestCase
 
     public function testIndexAction()
     {
-        $controller = new Controller_Rss();
+        $controller = new RssController();
         $result = $controller->indexAction();
         $this->assertInternalType('string', $result);
         $this->assertStringStartsWith(

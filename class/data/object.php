@@ -43,6 +43,7 @@ abstract class Data_Object extends Component
         $this->table    = $model->getTable();
         $this->relation = $this->model->relation();
 
+        $this->new = empty( $data['id'] );
         $this->setAttributes( $data );
         $this->new = false;
 
@@ -82,18 +83,20 @@ abstract class Data_Object extends Component
     {
         $oldValue = isset( $this->data[$key] ) ? $this->data[$key] : null;
         parent::set( $key, $value );
+
         if ( null === $oldValue || $oldValue != $value ) {
-            if ( ! $this->new ) {
-                $this->changed[ $key ] = $key;
+            //if ( ! $this->new ) {
+                //$this->changed[ $key ] = $key;
                 $event = 'onSet'.ucfirst( strtolower( $key ) );
                 if ( method_exists( $this, $event ) ) {
                     $this->$event();
                 }
-            }
-            if ( empty( $this->data['id'] ) )
+            //}
+            if ( empty( $this->data['id'] ) ) {
                 $this->markNew();
-            else
+            } else {
                 $this->markDirty();
+            }
         }
         return $this;
     }

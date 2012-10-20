@@ -26,9 +26,9 @@
             {if $item.protected}
                 {icon name="lock" title=t('Closed')} {t}Closed{/t}
             {/if}
-            {a controller="news" action="catedit" id=$item.id class="catEdit"}
+            {a controller="news" action="catedit" id=$item.id class="catEdit" title=t("news","Cat edit")}
                 {icon name="pencil" title=t("Edit")} {t}Edit{/t}{/a}
-            {a controller="news" action="catdelete" id=$item.id class="do_delete"}
+            {a controller="news" action="catdelete" id=$item.id class="do_delete" title=t("Delete")}
                 {icon name="delete" title=t("Delete")} {t}Delete{/t}{/a}
         </small>
     </td>

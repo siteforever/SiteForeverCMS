@@ -1,6 +1,7 @@
 <?php
 
-require_once 'class/controller/banner.php';
+//require_once 'class/controller/banner.php';
+use Module\Banner\Controller\BannerController;
 
 /**
  * Test class for Controller_Banner.
@@ -9,7 +10,7 @@ require_once 'class/controller/banner.php';
 class Controller_BannerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Controller_Banner
+     * @var BannerController
      */
     protected $banner;
 
@@ -19,7 +20,7 @@ class Controller_BannerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->banner = new Controller_Banner( App::getInstance() );
+        $this->banner = new BannerController( App::getInstance() );
     }
 
     /**

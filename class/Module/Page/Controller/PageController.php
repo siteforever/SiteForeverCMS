@@ -121,7 +121,7 @@ class PageController extends Sfcms_Controller
     public function createAction()
     {
         /** @var $model Model_Page */
-        $model = $this->getModel();
+        $model = $this->getModel( 'Page' );
         $modules = $model->getAvaibleModules();
 
         $id     = $this->request->get('id', Request::INT);
@@ -168,7 +168,7 @@ class PageController extends Sfcms_Controller
                 'parent'    => $parent_id,
                 'template'  => 'inner',
                 'author'    => $this->app()->getAuth()->getId(),
-                'content'   => '<p>'.t( 'Home page for the filling' ).'</p>',
+                'content'   => '<p>'.t( 'Home page for the filling' ).'',
                 'date'      => time(),
                 'update'    => time(),
                 'pos'       => $model->getNextPos( $parent_id ),
@@ -259,7 +259,7 @@ class PageController extends Sfcms_Controller
      */
     public function deleteAction( $id )
     {
-        $page = $this->getModel()->find( $id );
+        $page = $this->getModel( 'Page' )->find( $id );
         $page->set('deleted', 1);
 
         if ( ! $this->request->isAjax() ) {
@@ -276,7 +276,7 @@ class PageController extends Sfcms_Controller
     {
         $sort = $this->request->get( 'sort' );
         if ($sort) {
-            return $this->getModel()->resort( $sort );
+            return $this->getModel( 'Page' )->resort( $sort );
         }
         return t('Unknown error');
     }

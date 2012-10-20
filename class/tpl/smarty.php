@@ -17,6 +17,7 @@ class TPL_Smarty extends TPL_Driver
             'ext'       => 'tpl',
             'compile_check' => true,
             'caching'   => false,
+            'version'   => '3.1.11',
             'cache'     => array(
                 'livetime' => 84600,
             ),

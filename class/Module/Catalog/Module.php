@@ -1,11 +1,11 @@
 <?php
 /**
- * Модуль производителей
+ * Модуль каталога
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
 
-namespace Module\Manufacturers;
+namespace Module\Catalog;
 
 use Sfcms\Module as SfModule;
 
@@ -20,4 +20,10 @@ class Module extends SfModule
     {
         return 'id';
     }
+
+    public static function relatedModel()
+    {
+        return 'Catalog';
+    }
+
 }
