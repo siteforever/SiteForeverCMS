@@ -33,5 +33,5 @@ $_REQUEST['route']  = 'index';
 // автозагрузка классов
 require_once 'app.php';
 
-$app    = new App( array('protected/config/main.php','protected/config/test.php') );
+$app    = new App( array('protected/config/development.php','protected/config/test.php') );
 $app->init();

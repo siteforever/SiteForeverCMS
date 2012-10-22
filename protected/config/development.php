@@ -37,7 +37,17 @@ return array(
     ),
 
     // тема
-    'template' => require 'template.php',
+    'template' => array(
+        'theme'     => 'basic',
+        // драйвер шаблонизатора
+        // это класс, поддерживающий интерфейс TPL_Driver
+        'driver'    => 'TPL_Smarty',
+        'version'   => '3.1.11',
+        'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
+        'ext'       => 'tpl', // расширение шаблонов
+        'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system', // каталог шаблонов админки
+        '404'       => 'error404', // шаблон страницы 404
+    ),
 
     // настройки пользователей
     'users' => array(

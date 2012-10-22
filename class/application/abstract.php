@@ -527,7 +527,9 @@ abstract class Application_Abstract
     {
         static $class_count = 0;
 
-        $className = strtolower( $className );
+        if ( ! preg_match('/^(Module|Archive)/', $className) ) {
+            $className = strtolower( $className );
+        }
 
         if( in_array( $className, array( 'finfo' ) ) ) {
             return false;

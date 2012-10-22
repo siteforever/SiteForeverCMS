@@ -19,6 +19,6 @@ define('ROOT', __DIR__);
 // автозагрузка классов
 require_once SF_PATH . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'app.php';
 
-$app = new App( array('protected/config/main.php'));
+$app = new App( array('protected/config/development.php'));
 $app->run();
 
