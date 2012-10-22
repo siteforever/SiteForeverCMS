@@ -52,11 +52,11 @@ class BasketController extends Sfcms_Controller
 
         $deliveryModel = $this->getModel('Delivery');
         $deliveries = $deliveryModel->findAll('active = ?',array(1),'pos');
-        $form->getField('delivery_id')->setVariants( $deliveries->getColumn('name') );
+        $form->getField('delivery_id')->setVariants( $deliveries->column('name') );
 
         $paymentModel = $this->getModel('Payment');
         $payments = $paymentModel->findAll('active = ?', array(1));
-        $form->getField('payment_id')->setVariants( $payments->getColumn('name') );
+        $form->getField('payment_id')->setVariants( $payments->column('name') );
 
         $delivery = null;
         if ( $delivId = filter_var( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ) {

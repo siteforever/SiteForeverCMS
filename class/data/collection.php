@@ -137,7 +137,7 @@ class Data_Collection implements Iterator
      * @return array
      * @throws RuntimeException
      */
-    public function getColumn( $name )
+    public function column( $name )
     {
         $result = array();
         foreach ( $this as $obj ) {

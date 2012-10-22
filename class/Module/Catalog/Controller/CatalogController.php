@@ -18,6 +18,7 @@ use Sfcms;
 use Sfcms_Filter;
 use Sfcms_Filter_Group;
 use Sfcms_Filter_Collection;
+use Forms_Catalog_Edit;
 
 class CatalogController extends Sfcms_Controller
 {
@@ -482,7 +483,7 @@ class CatalogController extends Sfcms_Controller
          * @var Model_Catalog $catalogFinder
          * @var Data_Object_Catalog $pitem
          * @var Form_Field $field
-         * @var Form_Form $form
+         * @var Forms_Catalog_Edit $form
          * @var Sfcms_Filter_Collection $filter
          * @var Sfcms_Filter $fvalues
          */
@@ -529,44 +530,9 @@ class CatalogController extends Sfcms_Controller
         // показываем поля родителя
         $parent = $catalogFinder->find( $parentId );
 
-        $filter = null;
-        if( @file_exists( ROOT . '/protected/filters.php' ) ) {
-            $filter = include( ROOT . '/protected/filters.php' );
-        }
-
         if ( $parent ) {
-            $pitem   = $catalogFinder->find( $parentId );
-            $fvalues = null;
-            if ( $filter ) {
-                while ( $pitem && !$filter->getFilter( $pitem->id ) ) {
-                    if ( $pitem->parent ) {
-                        $pitem = $catalogFinder->find( $pitem->parent );
-                    } else {
-                        $pitem = false;
-                    }
-                }
-                $pitem && $fvalues = $filter->getFilter( $pitem->id );
-            }
-
-
-            foreach( $parent->getAttributes() as $k => $p ) {
-                if( preg_match( '/p(\d+)/', $k, $m ) ) {
-                    $field = $form->getField( $k );
-                    trim( $p ) ? $field->setLabel( $p ) : $field->hide();
-
-                    /** @var Sfcms_Filter_Group $fGroup */
-                    if ( $fvalues && $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
-                        if (  is_array( $fGroup->getData() ) && ! $field->getValue() ) {
-                            $form->getField( $k )->setValue(
-                                str_ireplace(
-                                    'Все|', '',
-                                    implode( '|', $fGroup->getData() )
-                                )
-                            );
-                        }
-                    }
-                }
-            }
+            $form->applyFilter( $parentId );
+            $form->applyProperties( $parent->attributes, $fvalues );
         } else {
             for( $i = 0; $i < 10; $i ++ ) {
                 $form->getField( 'p' . $i )->hide();
@@ -584,7 +550,7 @@ class CatalogController extends Sfcms_Controller
         return array(
             'breadcrumbs' => $this->adminBreadcrumbsById( $parentId ),
             'form'        => $form,
-            'cat'         => $form->getField( 'id' )->getValue(),
+            'cat'         => $form->id,
         );
     }
 
