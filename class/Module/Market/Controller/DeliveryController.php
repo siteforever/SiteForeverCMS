@@ -8,6 +8,7 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
+use Data_Object_Delivery;
 use Request;
 use Forms_Delivery_Edit;
 
@@ -16,7 +17,7 @@ class DeliveryController extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system' => array('admin','edit'),
+            'system' => array('admin','edit','sortable'),
         );
     }
 
@@ -25,11 +26,12 @@ class DeliveryController extends Sfcms_Controller
     {
         $this->request->setTitle(t('delivery','Delivery'));
         $model = $this->getModel('Delivery');
-        $items = $model->findAll();
+        $items = $model->findAll(array('order'=>'pos'));
         return array(
             'items' => $items,
         );
     }
+
 
     public function editAction()
     {
@@ -60,6 +62,24 @@ class DeliveryController extends Sfcms_Controller
 
         return $form->html(false,false);
     }
+
+
+    /**
+     * Пересортировака порядка доставки
+     * @param array $sort
+     */
+    public function sortableAction( $sort )
+    {
+        $model  = $this->getModel('Delivery');
+        $items  = $model->findAll( sprintf('id IN (%s)', join(',', $sort)) );
+        $sort   = array_flip( $sort );
+        $this->log( $sort, 'sort' );
+        /** @param $item Data_Object_Delivery */
+        foreach( $items as $item ) {
+            $item->pos = $sort[ $item->id ];
+        }
+    }
+
 
     /**
      * Выбор способа доставки

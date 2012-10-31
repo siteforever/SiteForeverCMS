@@ -78,6 +78,12 @@ abstract class Application_Abstract
     protected $_controllers = null;
 
     /**
+     * Список модулей и контроллеры в них
+     * @var array
+     */
+    protected $_modules_config = array();
+
+    /**
      * Время запуска
      * @var int
      */
@@ -141,7 +147,7 @@ abstract class Application_Abstract
         // Конфигурация
         self::$config   = new Sfcms_Config( $cfg_file );
         // Загрузка параметров модулей
-        $this->loadModules();
+        $this->getControllers();
     }
     
     /**
@@ -391,29 +397,6 @@ abstract class Application_Abstract
         return $this->_settings;
     }
 
-    /**
-     * Загрузка конфигураций модулей
-     * @return void
-     */
-    public function loadModules()
-    {
-        $files  = glob( SF_PATH.DIRECTORY_SEPARATOR.'protected'.DIRECTORY_SEPARATOR.'modules'.DIRECTORY_SEPARATOR.'*.xml');
-
-        foreach ( $files as $file ) {
-            $module = new Application_Module( $file );
-            $this->_modules[ $module->name ]   = $module;
-        }
-    }
-
-    /**
-     * Вернет список зарегистрированных модулей
-     * @return array of Application_Module
-     */
-    public function getModules()
-    {
-        return $this->_modules;
-    }
-
 
     /**
      * @return Sfcms\Controller\Resolver
@@ -425,7 +408,6 @@ abstract class Application_Abstract
         }
         return $this->_resolver;
     }
-
 
 
     public function getAssets()
@@ -486,9 +468,18 @@ abstract class Application_Abstract
         $this->getAssets()->cleanScript();
     }
 
+    /**
+     * Вернет список зарегистрированных модулей
+     * @return array of Application_Module
+     */
+    public function getModules()
+    {
+        return $this->_modules;
+    }
+
 
     /**
-     * Загружает список известных системе контроллеров
+     * Загружает список известных системе модулей
      * <p>По умолчаню загружается файл protected/controllers.php, содержащийся в директории с CMS.
      * Но, если CMS находится отдельно от сайта, то загружается и специфический для сайта, аналогичный файл.</p>
      * <p>В этом конфиге определяется как список известных системе контроллеров, так и некоторые их свойства.
@@ -499,9 +490,26 @@ abstract class Application_Abstract
     public function getControllers()
     {
         if ( null === $this->_controllers ) {
-            $this->_controllers = require SF_PATH . '/protected/controllers.php';
+
+            $this->_modules_config = require SF_PATH . '/protected/modules.php';
             if ( ROOT != SF_PATH && file_exists( ROOT . '/protected/controllers.php' ) ) {
-                $this->_controllers = array_merge( $this->_controllers, require ROOT . '/protected/controllers.php' );
+                $this->_modules_config = array_merge( $this->_modules_config, require ROOT . '/protected/modules.php' );
+            }
+
+            $this->_controllers = array();
+            foreach ( $this->_modules_config as $module => $controllers ) {
+                foreach ( $controllers as $controller => $params ) {
+                    if ( 'settings' == $controller ) {
+                        $this->_modules[ $module ]   = new Application_Module( array( 'name'=>$module,'params'=>$params ) );
+                        continue;
+                    }
+                    if ( 'System' == $module ) {
+                        $params['module'] = null;
+                    } else {
+                        $params['module'] = $module;
+                    }
+                    $this->_controllers[strtolower($controller)] = $params;
+                }
             }
         }
         return $this->_controllers;
@@ -552,4 +560,55 @@ abstract class Application_Abstract
         }
         return false;
     }
+}
+
+
+/**
+ * Печать дампа переменной
+ * @param $var
+ */
+function printVar( $var )
+{
+    print '<pre>'.print_r( $var, 1 ).'</pre>';
+}
+
+/**
+ * Отправить сообщение
+ * @param string $from
+ * @param string $to
+ * @param string $subject
+ * @param string $message
+ */
+function sendmail( $from, $to, $subject, $message )
+{
+    $header = "Content-type: text/plain; charset=\"UTF-8\"\n";
+    $header .= "From: {$from}\n";
+    $header .= "Subject: $subject\n";
+    $header .= "X-Mailer: SiteForeverCMS\n";
+    $header .= "Content-type: text/plain; charset=\"UTF-8\"\n";
+
+    return mail( $to, $subject, $message, $header );
+}
+
+/**
+ * Напечатать переведенный текст
+ * @param string $cat
+ * @param string $text
+ * @param array $params
+ * @return mixed
+ */
+function t( $cat, $text = '', $params = array() )
+{
+    return call_user_func_array(array(Sfcms_i18n::getInstance(),'write'), func_get_args());
+}
+
+/**
+ * Заменяет в строке $replace подстроки $search на строку $subject
+ * @param $string
+ * @param $h1
+ * @return mixed
+ */
+function str_random_replace( $subject, $replace, $search = '%h1%' )
+{
+    return str_replace( $search, $subject, trim( array_rand( array_flip( explode( "\n", $replace ) ) ) ) );
 }

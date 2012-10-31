@@ -39,8 +39,6 @@ class Direct extends Route
             $resolver = App::getInstance()->getResolver();
             $command = $resolver->resolveController( $routePieces[0], $routePieces[1] );
 
-            var_dump($command,get_declared_classes());
-
             $relectionClass = new ReflectionClass( $command['controller'] );
 
             if ( $relectionClass->hasMethod( $command['action'] ) ) {

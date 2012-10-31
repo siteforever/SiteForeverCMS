@@ -11,7 +11,6 @@ $include_list[] = SF_PATH;
 $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));
 
-require_once 'functions.php';
 require_once 'application/abstract.php';
 
 use Sfcms\Controller\Resolver;
@@ -123,42 +122,17 @@ class App extends Application_Abstract
 
         try {
             $result = $this->getResolver()->dispatch();
-        } catch ( Sfcms_Http_Exception $e ) {
-            if ( ! App::isTest() ) {
-                switch ( $e->getCode() ) {
-                    case 301:
-                        header("{$_SERVER['SERVER_PROTOCOL']} 301 Moved Permanently");
-                        break;
-                    case 403:
-                        header ("{$_SERVER['SERVER_PROTOCOL']} 403 Forbidden");
-                        break;
-                    case 404:
-                        header("{$_SERVER['SERVER_PROTOCOL']} 404 Not Found");
-                        break;
-                }
-            }
-            $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
-            $result = $e->getMessage();
         } catch ( Exception $e ) {
-            if ( App::isDebug() ) {
-                $this->getRequest()
-                    ->setResponseError( $e->getCode(), $e->getMessage() . "\n" . $e->getTraceAsString() );
-                $result = "<pre class='alert alert-error'><strong>"
-                        . get_class( $e )."</strong> {$e->getMessage()}\n"
-                        . ( App::isDebug()
-                            ? "{$e->getFile()} line {$e->getLine()}\n{$e->getTraceAsString()}"
-                            : '' )
-                        . '</pre>';
-            } else {
-                $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
-            }
+            $response = $this->getRequest()->setResponseError( $e );
+            $result .= $response['msg'];
         }
 
         // Выполнение операций по обработке объектов
         try {
             Data_Watcher::instance()->performOperations();
         } catch ( Sfcms_Model_Exception $e ) {
-            $this->getRequest()->setResponseError( $e->getCode(), $e->getMessage() );
+            $response = $this->getRequest()->setResponseError( $e );
+            $result .= $response['msg'];
         }
 
         // Redirect
@@ -169,14 +143,14 @@ class App extends Application_Abstract
                 header('Status: 301 Moved Permanently');
                 header('Location: '.$this->getRequest()->get('redirect'));
             }
-            return;
+            return null;
         }
 
         // If result is image. Need for captcha
         if ( is_resource( $result ) && imageistruecolor( $result ) ) {
             header('Content-type: image/png');
             imagepng( $result );
-            return;
+            return null;
         }
 
         $result = $this->prepareResult( $result );
@@ -244,10 +218,10 @@ class App extends Application_Abstract
      */
     protected function invokeLayout( $result )
     {
-        if( ! $this->getRequest()->getAjax() ) {
-            $Layout = new Sfcms_View_Layout( $this );
-        } else {
+        if( $this->getRequest()->getAjax() ) {
             $Layout = new Sfcms_View_Xhr( $this );
+        } else {
+            $Layout = new Sfcms_View_Layout( $this );
         }
         return $Layout->view( $result );
     }

@@ -9,5 +9,7 @@ return array(
     'Checkout'=>'Оформить заказ',
     'Your basket is empty' => 'Ваша корзина пуста',
 
+    'Order not defined' => 'Заказ не определен',
+
     'Order is not yours'=>'Заказ вам не принадлежит',
 );

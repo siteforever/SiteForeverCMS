@@ -95,7 +95,6 @@ class Router
         if( count( $params ) ) {
             foreach( $params as $key => $val ) {
                 $par[ $key ] = $key . '=' . $val;
-//                $result = preg_replace("@/{$k}=\d+@", '', $result);
             }
         }
 
@@ -103,10 +102,16 @@ class Router
             $result = '';
         }
 
+        $prefix = '/';
+        if ( preg_match('@^(http:\/\/|#)@i', $result) ) {
+            $prefix = '';
+            $par = array();
+        }
+
         if( App::getInstance()->getConfig()->get( 'url.rewrite' ) ) {
-            $result = '/' . $result . ( count( $par ) ? '/' . join( '/', $par ) : '' );
+            $result = $prefix . $result . ( count( $par ) ? '/' . join( '/', $par ) : '' );
         } else {
-            $result = '/?route=' . $result . ( count( $par ) ? '&' . join( '&', $par ) : '' );
+            $result = $prefix . '?route=' . $result . ( count( $par ) ? '&' . join( '&', $par ) : '' );
         }
 
         return strtolower( $result );

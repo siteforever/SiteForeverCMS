@@ -31,4 +31,5 @@ function smarty_block_a( $params, $content )
     if( null !== $content ) {
         return Sfcms::html()->link( $content, $href, $params, $class );
     }
+    return '';
 }

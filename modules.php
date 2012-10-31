@@ -88,7 +88,7 @@ return array(
             ),
             array(
                 'name'  => 'Настройка',
-                'url'   => 'settings/admin',
+                'url'   => 'setting/admin',
             ),
             array(
                 'name'  => 'Генератор',

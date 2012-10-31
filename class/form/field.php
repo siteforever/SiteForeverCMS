@@ -95,7 +95,7 @@ abstract class Form_Field
         if ( isset( $params['filter'] ) ) {
             switch( $params['filter'] ) {
                 case 'email':
-                    $this->_filter = '/^[\.\-_A-Za-z0-9]{2,}?@[\.\-A-Za-z]{2,}?\.[A-Za-z0-9]{2,6}$/';
+                    $this->_filter = '/^[\.\-_A-Za-z0-9]{2,}?@[\.\-A-Za-z0-9]{2,}?\.[A-Za-z0-9]{2,6}$/';
                     break;
                 case 'url':
                     $this->_filter = '/^http[s]?:\/\/[\.\-A-Za-z0-9]+?\.[A-Za-z0-9]{2,6}$/';

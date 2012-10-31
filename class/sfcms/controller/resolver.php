@@ -44,7 +44,9 @@ class Resolver extends Component
         $action = strtolower( $action ) . 'Action';
 
         if ( ! isset( $this->_controllers[ $controller ] ) ) {
-            throw new RuntimeException(sprintf('Controller %s not found in controllers config.', $controller));
+//            throw new RuntimeException(sprintf('Controller %s not found in controllers config.', $controller), 404);
+//            throw new Sfcms_Http_Exception(sprintf('Controller %s not found in controllers config.', $controller), 404);
+            $controller = 'error';
         }
 
 
@@ -116,33 +118,37 @@ class Resolver extends Component
         /** @var \Sfcms_Controller $controller */
         $controller = $ref->newInstance();
         $controller->init();
+
         // Защита системных действий
-        $rules = $controller->access();
+        $access = $controller->access();
 
         if ( ! $ref->hasMethod($command['action'])) {
             $command['action'] = 'indexAction';
         }
 
-        if ($rules && is_array($rules['system'])) {
-            foreach ( $rules['system'] as $rule ) {
-                if (strtolower($rule . 'action') == strtolower($command['action'])) {
-                    if ($this->app()->getUser()->hasPermission(USER_ADMIN)) {
-                        $this->setSystemPage();
-                    } else {
-                        throw new Sfcms_Http_Exception( t('Access denied'), 403 );
-                    }
-                    break;
-                }
-            }
-        }
+        $this->acl( $access, $command );
 
-        $method = $ref->getMethod( $command['action'] );
+        $method     = $ref->getMethod( $command[ 'action' ] );
+        $arguments  = $this->prepareArguments( $method );
+
+        $result     = $method->invokeArgs( $controller, $arguments );
+
+        return $result;
+    }
+
+
+    /**
+     * Подотавливает список аргументов для передачи в Action, на основе указанных параметров и проверяет типы
+     * на основе правил, указанных в DocBlock
+     * @param \ReflectionMethod $method
+     * @return array
+     */
+    protected function prepareArguments( \ReflectionMethod $method )
+    {
+        $arguments    = array();
         $methodParams = $method->getParameters();
-
-
-        $docComment = $method->getDocComment();
+        $docComment   = $method->getDocComment();
         preg_match_all( '/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match );
-        $arguments = array();
         foreach( $methodParams as $param ) {
             if ( $val = $this->app()->getRequest()->get($param->name) ) {
                 // Фильтруем входные параметры
@@ -167,13 +173,50 @@ class Resolver extends Component
                 $arguments[ $param->name ] = $param->isOptional() ? $param->getDefaultValue() : null;
             }
         }
-
-
-        $result = $method->invokeArgs( $controller, $arguments );
-        return $result;
+        return $arguments;
     }
 
+    /**
+     * Acl
+     *
+     * Проходит по массиву, предоставленному методом Access() контроллера
+     *
+     * Массив содержит в качестве ключей - группы пользователей, а в качестве значений - список методов
+     * которые разрешены для этой группы
+     */
+    protected function acl( array $access = null, array $command = array() )
+    {
+        if ( $access && is_array($access) ) {
+            foreach( $access as $perm => $ruleMethods ) {
+                if ( 'system' == $perm ) {
+                    $perm = USER_ADMIN;
+                }
+                $ruleMethods = is_string($ruleMethods) ? array_map( 'trim', explode(',',$ruleMethods) ) : $ruleMethods;
+                if( ! is_array($ruleMethods) ) {
+                    throw new RuntimeException( 'Expected string or array' );
+                }
+                $ruleMethods = array_map( function($method){
+                    if ( false === stripos( $method, 'action' ) ) {
+                        $method = strtolower( $method ) . 'Action';
+                    }
+                    return $method;
+                }, $ruleMethods );
+                if ( in_array( $command['action'], $ruleMethods ) ) {
+                    if ( $this->app()->getUser()->hasPermission( $perm ) ) {
+                        if ( $perm == USER_ADMIN ) {
+                            $this->setSystemPage();
+                        }
+                    } else {
+                        throw new Sfcms_Http_Exception( t('Access denied'), 403 );
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * Переводит систему на работу с админкой
+     */
     private function setSystemPage()
     {
         $this->app()->getRequest()->setTemplate('index');

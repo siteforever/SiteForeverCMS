@@ -477,6 +477,32 @@ class Request
      */
     public function setResponseError( $error, $msg = '' )
     {
+        if ( $error instanceof Sfcms_Http_Exception && ! App::isTest() ) {
+            switch ( $error->getCode() ) {
+                case 301:
+                    header("{$_SERVER['SERVER_PROTOCOL']} 301 Moved Permanently");
+                    break;
+                case 403:
+                    header ("{$_SERVER['SERVER_PROTOCOL']} 403 Forbidden");
+                    header ("Location: ".$this->app()->getRouter()->createServiceLink('users','login'));
+                    break;
+                case 404:
+                    header("{$_SERVER['SERVER_PROTOCOL']} 404 Not Found");
+                    break;
+            }
+            $msg = $error->getMessage();
+            $error = $error->getCode();
+        } else if ( $error instanceof \Exception ) {
+            if ( App::isDebug() ) {
+                $msg = "<pre class='alert alert-error'><strong>" . get_class( $error )."</strong>"
+                    . "{$error->getMessage()}\n"
+                    . ( App::isDebug()
+                        ? "{$error->getFile()} line {$error->getLine()}\n{$error->getTraceAsString()}"
+                        : '' )
+                    . '</pre>';
+            }
+        }
+
         if ( !$msg && !$error ) {
             $msg = t( 'No errors' );
         }

@@ -21,19 +21,29 @@ class Application_Module
 
     /**
      * Создает модуль
-     * @param string $file
+     * @param string|array $module
      */
-    function __construct( $file )
+    public function __construct( $module )
     {
-        $xml    = new SimpleXMLElement( file_get_contents( $file ) );
+        if ( is_string( $module ) ) {
+            $xml    = new SimpleXMLElement( file_get_contents( $module ) );
+            $this->name     = (string) $xml['name'];
+            $this->title    = (string) $xml->title;
+            $this->url      = (string) $xml->url;
+            $this->class    = (string) $xml->class;
 
-        $this->name     = (string) $xml['name'];
-        $this->title    = (string) $xml->title;
-        $this->url      = (string) $xml->url;
-        $this->class    = (string) $xml->class;
+            foreach ( $xml->settings->param as $param ) {
+                $this->_settings[ (string) $param['name'] ] = (string) $param['value'];
+            }
+        }
 
-        foreach ( $xml->settings->param as $param ) {
-            $this->_settings[ (string) $param['name'] ] = (string) $param['value'];
+        if ( is_array( $module )) {
+            $this->name = $module['name'];
+            if ( isset( $module['params'] ) ) {
+                foreach( $module['params'] as $key => $value ) {
+                    $this->_settings[ $key ] = $value;
+                }
+            }
         }
     }
 
@@ -41,7 +51,7 @@ class Application_Module
      * Вернет настройки
      * @return array
      */
-    function getSettings()
+    public function getSettings()
     {
         return $this->_settings;
     }

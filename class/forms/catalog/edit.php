@@ -137,7 +137,7 @@ class Forms_Catalog_Edit extends Form_Form
      * @param array $properties
      * @param Sfcms_Filter $fvalues
      */
-    public function applyProperties( array $properties, Sfcms_Filter $fvalues )
+    public function applyProperties( array $properties, $fvalues = null )
     {
         foreach( $properties as $k => $p ) {
             if ( preg_match( '/p(\d+)/', $k, $m ) ) {

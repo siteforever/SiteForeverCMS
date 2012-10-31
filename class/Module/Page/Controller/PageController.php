@@ -19,7 +19,7 @@ class PageController extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system'    => array(
+            USER_ADMIN    => array(
                 'admin',
                 'create',
                 'delete',

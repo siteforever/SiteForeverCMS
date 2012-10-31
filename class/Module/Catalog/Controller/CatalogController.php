@@ -353,16 +353,17 @@ class CatalogController extends Sfcms_Controller
     {
         $bc = array(
             Sfcms::html()->link(t('catalog','Catalog'),'catalog/admin')
-//            '<a href="' . $this->router->createServiceLink( 'catalog', 'admin' ) . '">'.t('Catalog').'</a>'
         ); // breadcrumbs
-//        $this->log( $path );
         if( $arrPath = @unserialize( $path ) ) {
-//            $this->log( $arrPath, 'Path' );
             if( $arrPath && is_array( $arrPath ) ) {
                 foreach( $arrPath as $val ) {
                     $bc[ ] = Sfcms::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))
-                            . Sfcms::html()->link( icon( 'pencil', t('Edit') ),
-                                'catalog/category', array('edit'=>$val['id']), 'edit' );
+                           . Sfcms::html()->link(
+                                Sfcms::html()->icon('pencil', t('Edit')),
+                                'catalog/category',
+                                array('edit'=>$val['id']),
+                                'edit'
+                            );
                 }
             }
         }

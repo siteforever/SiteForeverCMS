@@ -25,9 +25,10 @@ class Settings
     public function __construct()
     {
         $this->_model   = App::getInstance()->getModel('Settings');
-        
+
         $modules    = App::getInstance()->getModules();
 
+        /** @param $module Application_Module */
         foreach ( $modules as $module ) {
             foreach ( $module->getSettings() as $key => $val ) {
                 $this->set( $module->name, $key, $val );
@@ -88,6 +89,6 @@ class Settings
      */
     public function set( $module, $key, $value )
     {
-        $this->_data[ (string) $module ][ (string) $key ] = (string) $value;
+        $this->_data[ (string) $module ][ (string) $key ] = $value;
     }
 }

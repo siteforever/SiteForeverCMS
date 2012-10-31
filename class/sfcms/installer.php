@@ -15,16 +15,10 @@ class Sfcms_Installer
      */
     public function installationStatic()
     {
-        if( ! is_dir( ROOT . self::DS . 'images' ) ) {
-            $this->symlink( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' );
-        }
-
-        if( ! is_dir( ROOT . self::DS . 'misc' ) ) {
-            $this->symlink( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' );
-        }
+        $this->symlink( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' );
+        $this->symlink( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' );
 
         if( ! is_dir( ROOT . self::DS. '_runtime' . self::DS . 'sxd' ) ) {
-            $this->mkdir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd' );
             $this->copyDir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd',
                 ROOT . self::DS. '_runtime' . self::DS . 'sxd' );
         }
@@ -114,7 +108,7 @@ class Sfcms_Installer
      */
     public function symlink( $src, $dest )
     {
-        if ( file_exists( $src ) && is_dir( $src ) && ! file_exists( $dest ) ) {
+        if ( ! is_dir( $dest ) && is_dir( $src ) ) {
             symlink( $src, $dest );
             return true;
         }

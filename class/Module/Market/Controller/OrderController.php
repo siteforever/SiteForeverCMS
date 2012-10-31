@@ -14,6 +14,14 @@ use Request;
 
 class OrderController extends Sfcms_Controller
 {
+    public function access()
+    {
+        return array(
+            USER_USER => array('index'),
+            USER_ADMIN => array('admin'),
+        );
+    }
+
     /**
      * Список заказов зарегистрированного пользователя
      * @param int $cancel
@@ -33,10 +41,6 @@ class OrderController extends Sfcms_Controller
 
 
         $user   = $this->app()->getAuth()->currentUser();
-
-        if ( ! $user->hasPermission( USER_USER ) ) {
-            throw new \Sfcms_Http_Exception( t('Access denied'), 403 );
-        }
 
         /** @var $order Model_Order */
         $order  = $this->getModel('Order');
@@ -65,34 +69,27 @@ class OrderController extends Sfcms_Controller
                 }
 
                 $positions = $orderObj->Positions;
-                $this->log( $positions, 'positions' );
-                $all_count = 0;
-                $all_summa = 0;
 
-                /** @var $position Data_Object_OrderPosition */
-                foreach( $positions as $position ) {
-                    $all_count += $position['count'];
-                    $all_summa += $position['summa'];
-                }
                 $this->tpl->assign(array(
                     'order' => $orderObj,
                     'list'  => $positions,
-                    'all_count' => $all_count,
-                    'all_summa' => $all_summa,
+                    'all_count' => $positions->sum('count'),
+                    'all_summa' => $positions->sum('summa'),
                 ));
 
-                return $this->tpl->fetch('system:order.order');
+                return $this->tpl->fetch('order.order');
             }
         }
 
         $list   = $order->findAll(array(
-            'cond'      => 'user_id = ? AND status < 100',
-            'params'    => array( $user->getId() ),
+            'cond'      => sprintf('user_id = ? AND status < ?'),
+            'params'    => array( $user->getId(), 100 ),
             'order'     => 'status, date DESC',
         ));
 
-        $this->tpl->assign('list', $list);
-        return $this->tpl->fetch('system:order.index');
+        return array(
+            'list' => $list,
+        );
     }
 
 
@@ -102,14 +99,16 @@ class OrderController extends Sfcms_Controller
      */
     public function createAction()
     {
-        $order_id = @$_SESSION['order_id'];
-        if ( ! $order_id ) {
-            return 'Order not defined';
-        }
         $this->request->set('template', 'inner');
         $this->request->setTitle(t('order','Checkout'));
 
-        $model = $this->getModel();
+        if ( isset( $_SESSION['order_id'] ) ) {
+            $order_id = $_SESSION['order_id'];
+        } else {
+            return t('order','Order not defined');
+        }
+
+        $model = $this->getModel('Order');
         /** @var $order Data_Object_Order */
         $order = $model->find( $order_id );
 

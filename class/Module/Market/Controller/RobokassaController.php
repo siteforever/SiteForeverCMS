@@ -28,9 +28,16 @@ class RobokassaController extends Sfcms_Controller
      */
     public function successAction( $InvId, $OutSum, $SignatureValue )
     {
+        if ( ! $InvId || ! $OutSum || ! $SignatureValue ) {
+            return 'Params not defined';
+        }
         /** @var $order Data_Object_Order  */
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
+
+        if ( ! $order ) {
+            throw new \Sfcms_Http_Exception('Order not found', 404);
+        }
 
         $positions = $order->Positions;
         $sum = $positions->sum('sum') + $order->Delivery->cost;
@@ -62,6 +69,9 @@ class RobokassaController extends Sfcms_Controller
      */
     public function resultAction( $OutSum, $InvId, $SignatureValue )
     {
+        if ( ! $InvId || ! $OutSum || ! $SignatureValue ) {
+            return 'Params not defined';
+        }
         $this->request->setAjax(true);
 
         /** @var $order Data_Object_Order  */
@@ -69,7 +79,7 @@ class RobokassaController extends Sfcms_Controller
         $order = $orderModel->find( $InvId );
 
         if ( ! $order ) {
-            return "bad sign\n";
+            throw new \Sfcms_Http_Exception('Order not found', 404);
         }
 
         $positions = $order->Positions;
@@ -105,11 +115,17 @@ class RobokassaController extends Sfcms_Controller
      */
     public function failAction( $InvId, $OutSum )
     {
+        if ( ! $InvId || ! $OutSum ) {
+            return 'Params not defined';
+        }
         $roboConfig = $this->config->get('service.robokassa');
         /** @var $order Data_Object_Order  */
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
 
+        if ( ! $order ) {
+            throw new \Sfcms_Http_Exception('Order not found', 404);
+        }
 
         $positions = $order->Positions;
         $sum = $positions->sum('sum') + $order->Delivery->cost;

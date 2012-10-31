@@ -5,7 +5,7 @@
  */
 define([
     "jquery",
-    "module/Modal",
+    "module/modal",
     "i18n"
 ],function($,Modal,i18n){
     return {

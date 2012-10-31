@@ -3,21 +3,21 @@
  * Контроллер управления настройками
  * @author keltanas
  */
-class Controller_Settings extends Sfcms_Controller
+class Controller_Setting extends Sfcms_Controller
 {
 
     /**
      * Действие по умолчанию
-     * @return void
+     * @return array
      */
-    public function indexAction()
+    public function adminAction()
     {
         $this->request->setTitle(t('Settings'));
 
-        $this->tpl->modules = $this->app()->getModules();
-        $this->tpl->settings= $this->app()->getSettings()->getAll();
-
-        $this->request->setContent( $this->tpl->fetch('system:settings.admin') );
+        return array(
+            'modules'   => $this->app()->getModules(),
+            'settings'  => $this->app()->getSettings()->getAll(),
+        );
     }
 
     /**
@@ -55,7 +55,7 @@ class Controller_Settings extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system'    => array('index', 'save'),
+            'system'    => array('admin', 'save'),
         );
     }
 }

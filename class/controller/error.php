@@ -7,7 +7,7 @@
 
 class Controller_Error extends Sfcms_Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         $this->request->setTemplate('inner');
         $this->request->setTitle( t('Page not found') );

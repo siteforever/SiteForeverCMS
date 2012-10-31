@@ -45,11 +45,9 @@ abstract class Module
         }
         if ( isset( self::$controllers[ $controller ] ) ) {
             $config = self::$controllers[ $controller ];
-            if ( isset( $config['module'] ) ) {
-                return '\\Module\\'.$config['module'].'\\Module';
-            } else {
-                return '\\Module\\'.ucfirst(strtolower($controller)).'\\Module';
-            }
+            return    '\\Module\\'
+                    . ( isset( $config['module'] ) ? $config['module'] : ucfirst(strtolower($controller)) )
+                    . '\\Module';
         }
         throw new Exception(sprintf('Contoroller %s not defined', $controller));
     }

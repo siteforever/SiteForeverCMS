@@ -35,6 +35,17 @@ class Html
     }
 
     /**
+     * Вернет HTML код для иконки
+     * @param $name
+     * @param string $title
+     * @return string
+     */
+    public function icon( $name, $title = '' )
+    {
+        return sprintf('<img title="%1$s" alt="%1$s" src="/images/admin/icons/%2$s.png">', $title?$title:$name, $name);
+    }
+
+    /**
      * Содаст HTML ссылку
      * @param  $text
      * @param  $url
@@ -47,36 +58,49 @@ class Html
         if ( $class ) {
             $params['class'] = $class;
         }
-        if ( isset( $params['nofollow'] ) ) {
+        if ( isset( $params['nofollow'] )) {
             if ( $params['nofollow'] ) {
-                $attributes[] = "rel=\"nofollow\"";
-                unset( $params['rel'] );
+                $attributes[ ] = 'rel="nofollow"';
             }
-            unset( $params['nofollow'] );
+            unset( $params['rel'], $params['nofollow']);
         }
-        $passAttrs = array('class','title','rel');
-        foreach ( $passAttrs as $attr ) {
-            if ( isset( $params[$attr] ) ) {
-                $attributes[] = "{$attr}=\"{$params[$attr]}\"";
-                unset( $params[$attr] );
-            }
-        }
-        foreach ( $params as $key => $val ) {
-            if ( 'html' == substr( $key, 0, 4 ) ) {
-                unset( $params[$key] );
-                $key = strtolower( substr( $key, 4 ) );
-                $attributes[] = "{$key}=\"{$val}\"";
-                continue;
-            }
-            if ( 'data' == substr( $key, 0, 4 ) ) {
-                $attributes[] = "{$key}=\"{$val}\"";
-            }
-        }
+        $attributes = array_merge(
+            $attributes,
+            $this->makeAttributes( $params, array('class','title','rel') )
+        );
+
         if ( isset( $params['controller'] ) && '#' == $url ) {
             $url = null;
         }
         $attributes[] = $this->href( $url, $params );
-        return '<a '.implode(' ', $attributes).'>'.$text.'</a>';
+        return sprintf('<a %s>%s</a>', trim(implode(' ', $attributes)), $text);
+    }
+
+    /**
+     * Make attributes list by params list and pass attributes list
+     * @param array $params
+     * @param array $passKeys
+     * @return array
+     */
+    protected function makeAttributes( &$params, $passKeys = array() )
+    {
+        $attributes = array_filter( array_map(function($key) use (&$params) {
+            return isset( $params[$key] ) ? sprintf('%s="%s"', $key, $params[$key]) : false;
+        },$passKeys) );
+
+        $params = array_diff_key( $params, array_flip($passKeys) );
+
+        foreach ( $params as $key => $val ) {
+            switch ( substr( $key, 0, 4 ) ) {
+                case 'html':
+                    unset( $params[$key] ); // чистит регистрозависимые ключи вида htmlTarget
+                    $key = strtolower( substr( $key, 4 ) );
+                case 'data':
+                    unset( $params[$key] ); // чистит ключи, относящиеся только к data: data-id
+                    $attributes[] = sprintf('%s="%s"', $key ,$val);
+            }
+        }
+        return $attributes;
     }
 
     /**
@@ -87,7 +111,6 @@ class Html
      */
     public function href( $url = '', $params = array() )
     {
-//        var_dump( $url, $params );
-        return 'href="'.$this->url( $url, $params ).'"';
+        return sprintf('href="%s"', $this->url( $url, $params ));
     }
 }

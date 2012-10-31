@@ -1,12 +1,19 @@
-<?
-header('content-type: text/plain');
+<?php
+/**
+ * Unpack archive
+ * @author Nikolay Ermin <nikolay@ermin.ru>
+ * @link   http://siteforever.ru
+ */
+//header('content-type: text/plain');
 
-if ( preg_match( '/[^\.]+/', $_SERVER['HTTP_HOST'], $m ) )
+
+
+if ( isset($_SERVER['HTTP_HOST']) && preg_match( '/[^\.]+/', $_SERVER['HTTP_HOST'], $m ) )
 {
-
-	$name = $m[0].date('Ymd_Hi').'.tgz';
-
-	print "creating archive $name\n";
-	print system("tar -czf {$name} .htaccess *");
+    $name = $m[0];
+} else {
+    $name = 'backup';
 }
-?>
+
+$file = $name.date('Ymd_Hi').'.tgz';
+print system("tar -czf ../{$file} .htaccess *");
