@@ -306,6 +306,7 @@ abstract class Application_Abstract
      */
     public function getLogger()
     {
+
         if ( null !== $this->_logger ) {
             return $this->_logger;
         }
@@ -340,26 +341,13 @@ abstract class Application_Abstract
                              || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' )
                         ) ) {
                             $this->_logger = std_logger::getInstance( new std_logger_firephp() );
+                        } else {
+                            $this->_logger = std_logger::getInstance( new std_logger_blank() );
                         }
                     }
                     break;
                 default:
                     $this->_logger = std_logger::getInstance();
-            }
-        }
-
-        if ( ! isset( $_SERVER[ 'HTTP_HOST' ] ) ) {
-            $this->_logger = std_logger::getInstance( new std_logger_plain() );
-        }
-
-        if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-            if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
-                $this->_logger = std_logger::getInstance( new std_logger_chrome() );
-            } elseif ( !( false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
-                || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' ) ) ) {
-                $this->_logger = std_logger::getInstance( new std_logger_firephp() );
-            } else {
-                $this->_logger = std_logger::getInstance();
             }
         }
 

@@ -137,7 +137,6 @@ class Controller_Search extends Sfcms_Controller
         $this->_selected = explode( '|', preg_replace('/%+/u', '|', $search) );
         $oldsearch  = $search;
         $search = preg_replace('/[аийеёоуыъьэюя]+$/ui', '', $search);// все гласные
-        $this->log( mb_strlen( $search ) );
         if ( mb_strlen( $search ) < 3 ) {
             $search = $oldsearch;
         }

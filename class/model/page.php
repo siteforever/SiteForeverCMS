@@ -92,19 +92,34 @@ class Model_Page extends Sfcms_Model
     }
 
     /**
+     * Добавить в общую коллекцию страниц
+     * @param Data_Object_Page $obj
+     */
+    public function addToAll( Data_Object_Page $obj )
+    {
+        $this->all->add( $obj );
+        $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+    }
+
+    /**
      * Отвечает за пересортировку
      * @param array $sort
      * @return mixed
      */
     public function resort( array $sort )
     {
-        foreach ( $sort as $pos => $id ) {
+        if ( 0 == count($sort) ) {
+            return 'fail';
+        }
+        $pages  = $this->findAll('id IN ('.join(',',$sort).')');
+        $sort   = array_flip($sort);
+
+        foreach ( $pages as $pageObj ) {
             /** @var $pageObj Data_Object_Page */
-            $pageObj = $this->find( $id );
-            $pageObj->pos = $pos;
-            $pageObj->markDirty();
+            $pageObj->pos = $sort[$pageObj->id];
             $this->callPlugins($pageObj->controller.':resort', $pageObj);
         }
+
         return 'done';
     }
 
@@ -157,7 +172,7 @@ class Model_Page extends Sfcms_Model
     {
         /** @var $obj Data_Object_Page  */
         if ( ! $obj instanceof Data_Object_Page ) {
-            throw new \Sfcms_Model_Exception('$obj must be "Data_Object_Page" class');
+            throw new Sfcms_Model_Exception('$obj must be "Data_Object_Page" class');
         }
 
         $pageId = $this->checkAlias( $obj->alias );
@@ -169,8 +184,6 @@ class Model_Page extends Sfcms_Model
 
         // Настраиваем связь с модулями
         $this->callPlugins( "{$obj->controller}:onSaveStart", $obj);
-
-        $this->log( $obj->controller . '.' . $obj->link, __METHOD__.':'.__LINE__ );
         return true;
     }
 

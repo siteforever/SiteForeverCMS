@@ -44,12 +44,12 @@ class Data_Object_Catalog extends Data_Object
 
     /**
      * Вернет цену продукта в зависимости от привелегий пользователя
+     * @param bool $wholesale Вернуть розничную цену
      * @return float
      */
-    public function getPrice()
+    public function getPrice( $wholesale = false )
     {
-        $user = App::getInstance()->getAuth()->currentUser();
-        if ( $user->getPermission() == USER_WHOLE && $this->get('price2') > 0 ) {
+        if ( $wholesale && $this->get('price2') > 0 ) {
             return $this->get('price2');
         }
         return $this->get('price1');
@@ -69,7 +69,7 @@ class Data_Object_Catalog extends Data_Object
      */
     public function getAlias()
     {
-        $alias = strtolower( Sfcms_i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
+        $alias = strtolower( $this->id . '-' . Sfcms_i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
         if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
             $this->data['alias'] = $alias;
             $this->markDirty();
@@ -86,11 +86,7 @@ class Data_Object_Catalog extends Data_Object
         /** @var $modelPage Model_Page */
         $modelPage = $this->getModel('Page');
         /** @var $page Data_Object_Page */
-        if ( $this->cat ) {
-            $page = $modelPage->findByControllerLink('catalog', $this->id);
-        } else {
-            $page = $modelPage->findByControllerLink('catalog', $this->parent);
-        }
+        $page = $modelPage->findByControllerLink('catalog', $this->cat ? $this->id : $this->parent);
 
         if ( null === $page ) {
             throw new RuntimeException(t('Page for catalog category not found').'; page.link='.$this->parent);

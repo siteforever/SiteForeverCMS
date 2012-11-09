@@ -69,7 +69,6 @@ class App extends Application_Abstract
     public function init()
     {
         App::$DEBUG = $this->getConfig()->get( 'debug.profiler' );
-
         if( App::isDebug() ) {
             std_error::init( $this->getLogger() );
         }

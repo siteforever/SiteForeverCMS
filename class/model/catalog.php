@@ -221,6 +221,30 @@ class Model_Catalog extends Sfcms_Model
         return $list;
     }
 
+
+    /**
+     * Поиск товаров по ключевой фразе
+     * @param $query
+     * @return Data_Collection
+     */
+    public function findGoodsByQuery( $query )
+    {
+        $list = $this->getDB()->fetchAll(
+            "SELECT * FROM {$this->getTable()} "
+            . "WHERE `cat` = 0 AND `hidden` = 0 AND `protected` <= ? AND `deleted` = 0 "
+                . "AND ( `name` LIKE ? OR `text` LIKE ? ) "
+            . "LIMIT 10",
+            false,
+            PDO::FETCH_ASSOC,
+            array(
+                $this->app()->getAuth()->currentUser()->getPermission(),
+                '%'.$query.'%',
+                '%'.$query.'%'
+            )
+        );
+        return new Data_Collection( $list, $this );
+    }
+
     /**
      * Количество подразделов/товаров по родителю
      * Если type = 1 - то категории

@@ -7,6 +7,9 @@
 
 namespace Sfcms;
 
+use App;
+use Data_Object;
+
 /**
  * @property $attributes
  */
@@ -54,11 +57,11 @@ abstract class Component implements \ArrayAccess//, Iterator;
     }
 
     /**
-     * @return \App
+     * @return App
      */
     public function app()
     {
-        return \App::getInstance();
+        return App::getInstance();
     }
 
     /**

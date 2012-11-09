@@ -12,7 +12,7 @@ class Sfcms_Config
     /**
      * @param string|array $cfg_file
      */
-    function __construct($cfg_file = null)
+    public function __construct($cfg_file = null)
     {
         if (is_null($cfg_file)) {
             if (defined('CONFIG')) {
@@ -43,7 +43,7 @@ class Sfcms_Config
      * @param $val
      * @return void
      */
-    function set($key, $val)
+    public function set($key, $val)
     {
         $path = explode('.', $key);
         if (count($path) == 1) {
@@ -62,7 +62,7 @@ class Sfcms_Config
      * @param array $default
      * @return void
      */
-    function setDefault($key, $default)
+    public function setDefault($key, $default)
     {
         $config = $this->get($key);
         if ($config && is_array($config) && is_array($default)) {
@@ -79,7 +79,7 @@ class Sfcms_Config
      * @param $key
      * @return mixed
      */
-    function get($key)
+    public function get($key)
     {
         $path = explode('.', $key);
         if (count($path) == 1) {

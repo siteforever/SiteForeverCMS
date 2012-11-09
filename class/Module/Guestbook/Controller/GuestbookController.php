@@ -43,8 +43,6 @@ class GuestbookController extends Sfcms_Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $this->log( $form->getData(), 'form' );
-
                 $obj = $model->createObject();
 
                 $obj->set( 'name', strip_tags( $form->getField( 'name' )->getValue() ) );
@@ -84,8 +82,6 @@ class GuestbookController extends Sfcms_Controller
 
         $crit['order'] = ' date DESC ';
         $crit['limit'] = $paging->limit;
-
-        $this->log( $crit );
 
         $messages   = $model->findAll( $crit );
 

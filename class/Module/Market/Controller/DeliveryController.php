@@ -73,7 +73,6 @@ class DeliveryController extends Sfcms_Controller
         $model  = $this->getModel('Delivery');
         $items  = $model->findAll( sprintf('id IN (%s)', join(',', $sort)) );
         $sort   = array_flip( $sort );
-        $this->log( $sort, 'sort' );
         /** @param $item Data_Object_Delivery */
         foreach( $items as $item ) {
             $item->pos = $sort[ $item->id ];

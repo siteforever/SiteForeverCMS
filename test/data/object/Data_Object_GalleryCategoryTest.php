@@ -11,12 +11,12 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
     /**
      * @var Data_Object_GalleryCategory
      */
-    protected $gallery_cat;
+    protected $galleryCategory;
 
     /**
      * @var Model_GalleryCategory
      */
-    protected $model_cat;
+    protected $modelCategory;
 
     /**
      * @var Model_Gallery
@@ -28,28 +28,29 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->model_cat    = Sfcms_Model::getModel('GalleryCategory');
-        $this->model        = Sfcms_Model::getModel('Gallery');
+        Data_Watcher::instance()->clear();
+        $this->modelCategory  = Sfcms_Model::getModel('GalleryCategory');
+        $this->model          = Sfcms_Model::getModel('Gallery');
 
-        $this->gallery_cat = $this->model_cat->createObject(
-                    array(
-                        'id'                => 1,
-                        'name'              => 'System',
-                        'middle_method'     => '1',
-                        'middle_width'      => '110',
-                        'middle_height'     => '110',
-                        'thumb_method'      => '1',
-                        'thumb_width'       => '110',
-                        'thumb_height'      => '110',
-                        '_target'           => '_self',
-                        'perpage'           => '100',
-                        'color'             => 'ffffff',
-                        'meta_description'  => '',
-                        'meta_keywords'     => '',
-                        'meta_h1'           => '',
-                        'meta_title'        => '',
-                    )
-                );
+        $this->galleryCategory = $this->modelCategory->createObject(
+            array(
+                'id'                => 1,
+                'name'              => 'System',
+                'middle_method'     => '1',
+                'middle_width'      => '110',
+                'middle_height'     => '110',
+                'thumb_method'      => '1',
+                'thumb_width'       => '110',
+                'thumb_height'      => '110',
+                '_target'           => '_self',
+                'perpage'           => '100',
+                'color'             => 'ffffff',
+                'meta_description'  => '',
+                'meta_keywords'     => '',
+                'meta_h1'           => '',
+                'meta_title'        => '',
+            )
+        );
         $gallery    = $this->model->createObject(
             array(
                 'id'            => 1,
@@ -71,7 +72,15 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '',
-            $this->gallery_cat->getImage()
+            $this->galleryCategory->getImage()
         );
+    }
+
+    public function testGetAttributes()
+    {
+        $data = $this->galleryCategory->getAttributes();
+        $this->assertInternalType('array', $data);
+        $this->assertArrayHasKey('name', $data);
+        $this->assertEquals('System', $data['name']);
     }
 }

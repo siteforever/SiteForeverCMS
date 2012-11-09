@@ -110,7 +110,7 @@ class Data_Collection implements Iterator
      * Расчитает сумму по нужной колонке
      * @param string $key
      * @return int
-     * @deprecated
+     * @deprecated need using sum()
      */
     public function summa($key)
     {

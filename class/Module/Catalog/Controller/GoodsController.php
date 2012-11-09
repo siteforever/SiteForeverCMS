@@ -8,6 +8,7 @@ namespace Module\Catalog\Controller;
 
 use App;
 use Sfcms_Controller;
+use Model_Catalog;
 
 class GoodsController extends Sfcms_Controller
 {
@@ -29,6 +30,26 @@ class GoodsController extends Sfcms_Controller
     public function indexAction()
     {
         // TODO: Implement indexAction() method.
+    }
+
+
+    public function searchAction()
+    {
+        $query = filter_var($this->request->get('q'));
+        $query = urldecode( $query );
+
+        $this->request->setTitle(t('goods','Goods search'));
+        $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());
+
+        /** @var Model_Catalog */
+        $modelCatalog  = $this->getModel('Catalog');
+
+        $goods  = $modelCatalog->findGoodsByQuery( $query );
+
+        return array(
+            'query' => $query,
+            'goods' => $goods,
+        );
     }
 
 

@@ -7,12 +7,12 @@ return array(
 
     // отладка
     'debug' => array(
-        'profile'   => false,
+        'profiler'   => true,
     ),
 
     'cache' => false,
 
-    'logger'    => 'plain',
+    'logger'    => 'file',
 
     'language'  => 'ru',
 

@@ -116,7 +116,7 @@ abstract class Sfcms_Model extends Component
         } else {
             $namespace = 'default';
         }
-        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
+//        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
         // Если нет плагинов, ничего не делаем
         if ( ! isset( $this->_plugins[ $namespace ] ) ) {
             return;
@@ -210,17 +210,18 @@ abstract class Sfcms_Model extends Component
 
     /**
      * Создать объект
-     * @param array $data
+     * @param array $data Массив инициализации объекта
+     * @param bool $reFill Принудительно записать поля, если создается объект из массива, име.щего id
      * @return Data_Object
      */
-    final public function createObject( $data = array() )
+    final public function createObject( $data = array(), $reFill = false )
     {
 //        $start = microtime( 1 );
         // TODO Если создаем существующий объект, то св-ва не перезаписываем
         if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
             if ( $obj ) {
-                $obj->attributes = $data;
+                if ( $reFill ) $obj->attributes = $data;
                 return $obj;
             }
         }
@@ -563,18 +564,18 @@ abstract class Sfcms_Model extends Component
         if( ! $this->onSaveStart( $obj ) ) {
             return false;
         }
-        $data      = $obj->attributes;
+//        $data      = $obj->attributes;
         $fields    = $this->getTable()->getFields();
-        $changed   = $obj->changed();
+//        $changed   = $obj->changed();
         $save_data = array();
+
+//        $this->log( $obj->attributes, get_class($obj).'.'.$obj->getId() );
 
         /** @var Data_Field $field */
         foreach( $fields as $field ) {
-            if( 'id' != $field->getName()
-                && isset( $data[ $field->getName() ] )
-                //&& isset( $changed[ $field->getName() ] )
-            ) {
-                $save_data[ $field->getName() ] = $data[ $field->getName() ];
+            $val = $obj->get( $field->getName() );
+            if( 'id' != $field->getName() && null !== $val ) {
+                $save_data[ $field->getName() ] = $val;
             }
         }
 
@@ -585,7 +586,6 @@ abstract class Sfcms_Model extends Component
         $ret = null;
         if( null !== $obj->getId() ) {
             $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = ' . $obj->getId() );
-            $obj->markClean();
         } else {
             $ret     = $this->db->insert( $this->getTableName(), $save_data );
             $obj->set('id', $ret);

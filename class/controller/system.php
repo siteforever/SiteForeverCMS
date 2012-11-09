@@ -19,8 +19,6 @@ class Controller_System extends Sfcms_Controller
 
         $modules = get_loaded_extensions();
 
-        $this->log( $modules );
-
         $msys   = array();
 
         foreach( $modules as $i => $module ) {

@@ -31,11 +31,22 @@ class Data_Watcher
     }
 
     /**
+     * Очистить хранилище
+     */
+    public function clear()
+    {
+        $this->all    = array();
+        $this->dirty  = array();
+        $this->new    = array();
+        $this->delete = array();
+    }
+
+    /**
      * Определить ключ для объекта
      * @param Data_Object $obj
      * @return string
      */
-    function globalKey( Data_Object $obj )
+    public function globalKey( Data_Object $obj )
     {
         if ( $obj->id ) {
             return $this->createGlobalKey( get_class( $obj ), $obj->id );
@@ -43,16 +54,16 @@ class Data_Watcher
         return null;
     }
 
-    function dumpAll()
+    public function dumpAll()
     {
         $ret    = array();
         foreach ( $this->all as $key => $obj ) {
-            $ret[ $key ]    = (string) $obj;
+            $ret[ $key ] = (string) $obj . ' ' . print_r($obj->attributes,1);
         }
         return $ret;
     }
 
-    function dumpDirty()
+    public function dumpDirty()
     {
         $ret    = array();
         foreach ( $this->dirty as $key => $obj ) {
@@ -61,7 +72,7 @@ class Data_Watcher
         return $ret;
     }
 
-    function dumpNew()
+    public function dumpNew()
     {
         $ret    = array();
         foreach ( $this->new as $key => $obj ) {
@@ -87,7 +98,7 @@ class Data_Watcher
      * @param Data_Object $obj
      * @return void
      */
-    static function add( Data_Object $obj )
+    static public function add( Data_Object $obj )
     {
         $inst = self::instance();
         $inst->all[ $inst->globalKey($obj) ] = $obj;
@@ -99,7 +110,7 @@ class Data_Watcher
      * @param Data_Object $obj
      * @return void
      */
-    static function del( Data_Object $obj )
+    static public function del( Data_Object $obj )
     {
         self::addClean( $obj );
 
@@ -110,7 +121,7 @@ class Data_Watcher
         }
     }
 
-    static function addDirty( Data_Object $obj )
+    static public function addDirty( Data_Object $obj )
     {
         $inst = self::instance();
         if ( $obj->getId() && ! in_array( $obj, $inst->new, true ) ) {
@@ -118,7 +129,7 @@ class Data_Watcher
         }
     }
 
-    static function addNew( Data_Object $obj )
+    static public function addNew( Data_Object $obj )
     {
         $inst = self::instance();
         if ( isset( $inst->dirty[$inst->globalKey($obj)] ) ) {
@@ -135,12 +146,15 @@ class Data_Watcher
             $inst->new[] = $obj;
     }
 
-    static function addClean( Data_Object $obj )
+    static public function addClean( Data_Object $obj )
     {
         $inst = self::instance();
         unset( $inst->dirty[$inst->globalKey($obj)] );
         if ( in_array( $obj, $inst->new, true ) )
         {
+//            $inst->new = array_filter($inst->new, function( $o )use( $obj ){
+//                return $o !== $obj;
+//            });
             $pruned = array();
             foreach( $inst->new as $newobj ) {
                 if ( ! ( $newobj === $obj ) ) {
@@ -151,7 +165,7 @@ class Data_Watcher
         }
     }
 
-    static function addDelete( Data_Object $obj )
+    static public function addDelete( Data_Object $obj )
     {
         $inst = self::instance();
         $key    = $inst->globalKey($obj);
@@ -164,7 +178,7 @@ class Data_Watcher
      * Выполнение операций
      * @return bool
      */
-    function performOperations()
+    public function performOperations()
     {
         /** @var Data_Object $obj */
         $pdo    = Sfcms_Model::getDB()->getResource();
@@ -172,22 +186,19 @@ class Data_Watcher
 
         try {
             if ( is_array( $this->dirty ) ) {
-                foreach( $this->dirty as $key => $obj ) {
-//                    App::getInstance()->getLogger()->log( $obj->getAttributes(), 'Save '.$key);
-                    $obj->getModel()->save( $obj );
-                }
+                array_walk($this->dirty, function($obj){
+                    $obj->save();
+                });
             }
             if ( is_array( $this->new ) ) {
-                foreach( $this->new as $key => $obj ) {
-//                    App::getInstance()->getLogger()->log('New '.$key);
-                    $obj->getModel()->save( $obj );
-                }
+                array_walk($this->new, function($obj){
+                    $obj->save();
+                });
             }
             if ( is_array( $this->delete ) ) {
-                foreach( $this->delete as $key => $obj ) {
-//                    App::getInstance()->getLogger()->log('Delete '.$key);
-                    $obj->getModel()->delete( $obj->getId() );
-                }
+                array_walk($this->delete, function($obj){
+                    $obj->delete();
+                });
             }
             $this->dirty = array();
             $this->new   = array();
@@ -207,7 +218,7 @@ class Data_Watcher
      * @param  $id
      * @return Data_Object
      */
-    static function exists( $classname, $id )
+    static public function exists( $classname, $id )
     {
         $inst   = self::instance();
         $key    = $inst->createGlobalKey( $classname, $id );

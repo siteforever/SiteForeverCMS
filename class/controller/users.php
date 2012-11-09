@@ -212,6 +212,10 @@ class Controller_Users extends Sfcms_Controller
             return $this->redirect('users/cabinet');
         }
 
+//        if ( $this->request->isAjax() ) {
+//            return Request::TYPE_JSON == $this->request->getAjaxType() ? array('msg'=>'login failed') : 'login failed';
+//        }
+
         // вход в систему
         $form = $model->getLoginForm();
 

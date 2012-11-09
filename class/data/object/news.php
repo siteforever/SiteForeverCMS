@@ -28,7 +28,9 @@ class Data_Object_News extends Data_Object
 {
     public function getAlias()
     {
-        $alias = $this->name ? Sfcms_i18n::getInstance()->translit( $this->get('name') ) : $this->id;
+        $alias = $this->name
+            ? strtolower( $this->id . '-' . Sfcms_i18n::getInstance()->translit( $this->name ) )
+            : $this->id;
         if ( ! $this->data['alias'] || $this->data['alias'] != $alias ) {
             $this->data['alias'] = $alias;
             $this->markDirty();

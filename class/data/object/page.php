@@ -72,7 +72,7 @@ class Data_Object_Page extends Data_Base_Page
                 break;
         }
         if ( $linkUrl ) {
-            $link = Sfcms::html()->link( icon( 'link', t('Go to the module') ), $linkUrl );
+            $link = Sfcms::html()->link( Sfcms::html()->icon( 'link', t('Go to the module') ), $linkUrl );
         }
 //        $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
         return $link;
@@ -106,11 +106,7 @@ class Data_Object_Page extends Data_Base_Page
                 'name'  => $obj->get('name'),
                 'url'   => $obj->getAlias(),
             );
-            if ( $obj->parent ) {
-                $obj = $this->getModel()->find( $obj->parent );
-            } else {
-                $obj = null;
-            }
+            $obj = $obj->parent ? $this->getModel()->find( $obj->parent ) : null;
         }
         $path   = array_reverse($path);
         return serialize($path);

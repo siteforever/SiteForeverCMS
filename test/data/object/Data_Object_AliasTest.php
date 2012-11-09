@@ -11,6 +11,7 @@ class Data_Object_AliasTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        Data_Watcher::instance()->clear();
         $this->alias    = Sfcms_Model::getModel('Alias')->createObject(
             array(
                 'id'        => 1,

@@ -6,7 +6,25 @@
  * @link   http://siteforever.ru
  */
 
-class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
+/**
+ * @property int id
+ * @property string name
+ * @property int middle_method
+ * @property int middle_width
+ * @property int middle_height
+ * @property int thumb_method
+ * @property int thumb_width
+ * @property int thumb_height
+ * @property string target
+ * @property string thumb
+ * @property int perpage
+ * @property string color
+ * @property string meta_description
+ * @property string meta_keywords
+ * @property string meta_h1
+ * @property string meta_title
+ */
+class Data_Object_GalleryCategory extends Data_Object
 {
     /**
      * @var Data_Object_Page
@@ -64,21 +82,22 @@ class Data_Object_GalleryCategory extends Data_Base_GalleryCategory
      */
     public function getImage()
     {
-        //if ( ! isset( $this->data['image'] ) || ! $this->data['image'] ) {
-            $imageModel = $this->getModel('Gallery');
-            $image = $imageModel->find(array(
-                'cond' => 'category_id = ? AND hidden != ?',
-                'params' => array($this->id, 1),
-                'order' => 'pos',
-            ));
-            if ( $image ) {
+//        if ( ! isset( $this->data['image'] ) || ! $this->data['image'] ) {
+        $imageModel = $this->getModel('Gallery');
+        $image = $imageModel->find(array(
+            'cond' => 'category_id = ? AND hidden != ?',
+            'params' => array($this->id, 1),
+            'order' => 'pos',
+        ));
+        if ( $image ) {
+            if ( empty($this->data['image']) || $image->image != $this->data['image'] ) {
                 $this->data['image'] = $image->image;
-                $this->save();
-            } else {
-                $this->data['image'] = '';
+                $this->markDirty();
             }
-        //}
+        } else {
+            $this->data['image'] = '';
+        }
+//        }
         return $this->data['image'];
     }
-
 }

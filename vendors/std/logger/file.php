@@ -12,19 +12,27 @@ class std_logger_file implements std_logger_logger
 
     private $_log   = array();
 
+    public function __construct()
+    {
+        file_put_contents(
+            ROOT . $this->_file,
+            "\n\n\n\n\n==============".strftime("%d-%m-%Y %H:%M")."=============\n\n\n\n\n",
+            FILE_APPEND
+        );
+    }
+
     public function log( $message, $label = '' )
     {
         $this->_log[ $label ]   = $message;
+        file_put_contents(
+            ROOT . $this->_file,
+            sprintf('%s: %s', $label, var_export($message, 1))."\n",
+            FILE_APPEND
+        );
     }
 
     public function __destruct()
     {
-        $output = array();
-        foreach( $this->_log as $label => $msg ) {
-            $output[] = "{$label}: ".var_export($msg, 1);
-        }
-        $output[] = "==============".strftime("%d-%m-%Y %H:%M")."=============\n\n\n";
-        file_put_contents( ROOT . $this->_file, iconv('utf-8', 'cp866', join("\n", $output ) ), FILE_APPEND );
     }
 
     public function dump()

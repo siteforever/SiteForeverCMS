@@ -233,7 +233,6 @@ class PageController extends Sfcms_Controller
                 /** @var $obj Data_Object_Page */
                 if ( $id = $form->getField('id')->getValue() ) {
                     $obj = $model->find( $id );
-                    $this->log($form->getData(),'page data');
                     $obj->attributes = $form->getData();
                     $obj->update = time();
                     $obj->save();

@@ -84,6 +84,10 @@ abstract class Data_Object extends Component
         $oldValue = isset( $this->data[$key] ) ? $this->data[$key] : null;
         parent::set( $key, $value );
 
+        if ( 'id' == $key && $oldValue && $value && $oldValue != $value ) {
+            throw new UnexpectedValueException('Changing id is not allowed');
+        }
+
         if ( null === $oldValue || $oldValue != $value ) {
             //if ( ! $this->new ) {
                 //$this->changed[ $key ] = $key;
@@ -173,6 +177,14 @@ abstract class Data_Object extends Component
     public function save()
     {
         return $this->model->save( $this );
+    }
+
+    /**
+     * Удалить запись об объекте из базы
+     */
+    public function delete()
+    {
+        $this->model->delete( $this->getId() );
     }
 
     /**

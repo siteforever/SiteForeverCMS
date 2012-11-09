@@ -73,7 +73,7 @@ class RssController extends Sfcms_Controller
 //        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
         //$xml_string = htmlspecialchars_decode( $xml_string );
 
-        if ( $this->config->get('debug.profiler') ) {
+        if ( ! defined('TEST') && $this->config->get('debug.profiler') ) {
             $dom->formatOutput = true;
         }
         return $dom->saveXML();
