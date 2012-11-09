@@ -28,6 +28,12 @@ class Data_Collection implements Iterator
     protected $_mapper;
 
     /**
+     * Индекс для поиска по id
+     * @var array
+     */
+    protected $_index = null;
+
+    /**
      * Указатель на тек. позицию.
      * @var int
      */
@@ -67,6 +73,24 @@ class Data_Collection implements Iterator
         $this->_objects[$this->_total] = $obj;
         $this->_total ++;
         return $this;
+    }
+
+    /**
+     * Вернет объект из коллекции по его id
+     * @param $id
+     * @return Data_Object|null
+     */
+    public function getById( $id )
+    {
+        if ( null == $this->_index ) {
+            $this->_index = array();
+            foreach( $this->_raw as $key => $val ) {
+                if ( isset( $val['id'] ) ) {
+                    $this->_index[ $val['id'] ] = $key;
+                }
+            }
+        }
+        return isset($this->_index[$id]) ? $this->getRow( $this->_index[$id] ) : null;
     }
 
     /**

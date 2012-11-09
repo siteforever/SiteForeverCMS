@@ -13,6 +13,7 @@ use Form_Form;
 use Forms_Basket_Address;
 use Data_Object_Delivery;
 use Model_Order;
+use Model_Catalog;
 
 class BasketController extends Sfcms_Controller
 {
@@ -37,7 +38,7 @@ class BasketController extends Sfcms_Controller
 
         // Fill Address from Yandex
         if ( $address ) {
-            $this->fillFromYandexAddress( $form, $address );
+            $form->setData( $this->fromYandexAddress( $address ) );
         }
 
 //        $catalogModel    = $this->getModel('Catalog');
@@ -63,7 +64,20 @@ class BasketController extends Sfcms_Controller
             $delivery = $deliveryModel->find( $delivId );
         }
 
+        $productIds = array_map(function($b){
+            return $b['id'];
+        },$this->getBasket()->getAll());
+
+        /** @var $catalogModel Model_Catalog */
+        $catalogModel   = $this->getModel('Catalog');
+        $products       = count($productIds)
+            ? $catalogModel->findAll('id IN (?)', array($productIds))
+            : $catalogModel->createCollection();
+
+        $this->log( $productIds, 'basket' );
+
         return array(
+            'products'      => $products,
             'all_product'   => $this->getBasket()->getAll(),
             'all_count'     => $this->getBasket()->getCount(),
             'all_summa'     => $this->getBasket()->getSum(),
@@ -139,6 +153,7 @@ class BasketController extends Sfcms_Controller
                     $this->getBasket()->setCount( $key, $prod_count );
                 }
             }
+
             // Удалить запись
             $basket_del = $this->request->get('basket_del');
             if ( $basket_del && is_array( $basket_del ) ) {
@@ -147,6 +162,7 @@ class BasketController extends Sfcms_Controller
                     $result['delete'][] = $key;
                 }
             }
+
             $delivery = null;
             if ( $deliveryId = filter_var( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ) {
                 /** @var $delivery Data_Object_Delivery */
@@ -197,27 +213,34 @@ class BasketController extends Sfcms_Controller
 
     /**
      * Fill Address from Yandex
-     * @param Form_Form $form
      * @param string $address
+     * @return array
      */
-    private function fillFromYandexAddress( Form_Form $form, $address )
+    private function fromYandexAddress( $address )
     {
-        $yaAddress = new \Sfcms\Yandex\Address();
+        $yaAddress = new Sfcms\Yandex\Address();
         $yaAddress->setJsonData( $address );
-        $form->getField('country')->setValue( $yaAddress->country );
-        $form->getField('city')->setValue( $yaAddress->city );
-        $form->getField('address')->setValue( $yaAddress->getAddress() );
-        $form->getField('zip')->setValue( $yaAddress->zip );
+
+        $return = array(
+            'country'   => $yaAddress->country,
+            'city'      => $yaAddress->city,
+            'address'   => $yaAddress->getAddress(),
+            'zip'       => $yaAddress->zip,
+        );
+
         if ( $yaAddress->firstname )
-            $form->getField('fname')->setValue($yaAddress->firstname);
+            $return['fname'] = $yaAddress->firstname;
         if ( $yaAddress->lastname )
-            $form->getField('lname')->setValue($yaAddress->lastname);
+            $return['lname'] = $yaAddress->lastname;
         if ( $yaAddress->email )
-            $form->getField('email')->setValue($yaAddress->email);
+            $return['email'] = $yaAddress->email;
         if ( $yaAddress->phone )
-            $form->getField('phone')->setValue($yaAddress->phone);
+            $return['phone'] = $yaAddress->phone;
         if ( $yaAddress->comment )
-            $form->getField('comment')->setValue( $yaAddress->comment );
+            $return['comment'] = $yaAddress->comment;
+
+        return $return;
+
     }
 
 }

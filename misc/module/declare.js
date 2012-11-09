@@ -7,10 +7,10 @@ define([
 ],function(){
 
     //var declare =
-    return function( name, parents, object ) {
-        if ( ! name ) {
+    return function( parents, object ) {
+        if ( ! parents ) {
             object = parents;
-            parents = name;
+            parents = null;
         }
 
         var base, i, j;

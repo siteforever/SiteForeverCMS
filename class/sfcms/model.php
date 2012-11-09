@@ -399,6 +399,15 @@ abstract class Sfcms_Model extends Component
     }
 
     /**
+     * @param array $data
+     * @return Data_Collection
+     */
+    public function createCollection( array $data = null )
+    {
+        return new Data_Collection( $data );
+    }
+
+    /**
      * Finding data by primary key
      * @throws Sfcms_Model_Exception
      * @param int|array|string|Db_Criteria $crit

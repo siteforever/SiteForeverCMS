@@ -74,7 +74,11 @@ class Data_Criteria
             $q_start    = 0;
             foreach ( $this->_criteria->params as $key => $val ) {
                 if ( is_array( $val ) ) {
-                    $val    = implode("','",$val); // Внешние апострофы добавяться в след. условии
+                    if ( count( $val ) ) {
+                        $val    = implode("','",$val); // Внешние апострофы добавяться в след. условии
+                    } else {
+                        throw new InvalidArgumentException('Empty array');
+                    }
                 }
 
                 if ( ! is_numeric( $val ) ) {

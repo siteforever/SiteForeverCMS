@@ -318,10 +318,10 @@ abstract class Form_Abstract
     /**
      * Установит массив значений
      * Как правило, нужно для использования с базой данных
-     * @param $data
+     * @param array $data
      * @return array
      */
-    public function setData( $data )
+    public function setData( array $data )
     {
         if ( count($this->_fields) == 0 ) {
             throw new Exception( 'Форма не содержит полей' );

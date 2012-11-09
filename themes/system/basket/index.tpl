@@ -24,7 +24,7 @@
         {foreach from=$all_product key="key" item="item"}
         <tr data-id="{$item.id}">
             <td>{counter}.</td>
-            <td><span>{$item.name}</span></td>
+            <td>{a href=$products->getById($item.id)->url}{$item.name}{/a}</td>
             <td>{$item.details|nl2br}</td>
             <td class="right basket-price">{$item.price|number_format}</td>
             <td class="right span2 basket-count">

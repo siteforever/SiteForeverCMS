@@ -18,7 +18,7 @@ class Forms_Basket_Address extends Form_Form
                     'type'      =>'radio',
                     'required',
                     'label'     =>'Доставка',
-                    'value'     => filter_var( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ?: '0',
+                    'value'     => filter_input( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ?: '0',
                     'variants'  => array(),
                 ),
                 'payment_id' => array(
