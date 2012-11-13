@@ -94,23 +94,36 @@ class OrderController extends Sfcms_Controller
 
 
     /**
-     * Создать заказ
+     * Просмотр заказа по ссылке
+     * @param int $id
+     * @param $code
      * @return mixed
      */
-    public function createAction()
+    public function viewAction( $id, $code )
     {
+        if ( ! ( $id && $code ) ) {
+            throw new \Sfcms_Http_Exception('Order not defined',404);
+        }
+
         $this->request->set('template', 'inner');
         $this->request->setTitle(t('order','Checkout'));
 
-        if ( isset( $_SESSION['order_id'] ) ) {
-            $order_id = $_SESSION['order_id'];
-        } else {
-            return t('order','Order not defined');
-        }
+//        if ( ! $order_id = $this->app()->getSession()->get('order_id') ) {
+//            return t('order','Order not defined');
+//        }
+
 
         $model = $this->getModel('Order');
         /** @var $order Data_Object_Order */
-        $order = $model->find( $order_id );
+        $order = $model->find( $id );
+
+        if ( ! $order ) {
+            throw new \Sfcms_Http_Exception(sprintf('Order #%d not found', $id), 404);
+        }
+
+        if ( ! $order->validateHash( $code ) ) {
+            throw new \Sfcms_Http_Exception('Not have permission for viewing this order', 404);
+        }
 
         $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',t('Home'))
@@ -137,7 +150,7 @@ class OrderController extends Sfcms_Controller
 
         return array(
             'order' => $order,
-            'products' => $positions,
+            'positions' => $positions,
             'delivery' => $delivery,
             'payment'   => $order->Payment,
             'sum'   => $delivery->cost + $positions->sum('sum'),

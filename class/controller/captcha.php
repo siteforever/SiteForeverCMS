@@ -42,7 +42,7 @@ class Controller_Captcha extends Sfcms_Controller
 
         $text   = $this->app()->getAuth()->generateString( $l, '/[ABCEFGHIKMNOP]/' );
 
-        $_SESSION['captcha_code']   = $text;
+        $this->app()->getSession()->set('captcha_code', $text);
 
         $step   = round( ( $w * 0.8 ) / $l );
         $halfstep   = round( $step / 2 );

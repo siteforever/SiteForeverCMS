@@ -9,6 +9,8 @@ namespace Sfcms\Route;
 use App;
 use Sfcms\Route;
 use Sfcms\Module;
+use Sfcms_Model;
+use Model_Page;
 use Data_Object_Page;
 
 class Structure extends Route
@@ -21,10 +23,9 @@ class Structure extends Route
     protected function callAliases()
     {
         if ( null === self::$_aliases ) {
-            /** @var $model \Model_Page */
-            $model = \Sfcms_Model::getModel( 'Page' );
-            $pages = $model->getAll();
-            foreach ( $pages as $page ) {
+            /** @var $model Model_Page */
+            $model = Sfcms_Model::getModel( 'Page' );
+            foreach ( $model->getAll() as $page ) {
                 self::$_aliases[ $page->alias ] = $page;
             }
         }
@@ -54,11 +55,11 @@ class Structure extends Route
     }
 
     /**
-     * @param \Data_Object_Page $page
+     * @param Data_Object_Page $page
      *
      * @return array
      */
-    private function getPageState( \Data_Object_Page $page )
+    private function getPageState( Data_Object_Page $page )
     {
         $className = Module::getModuleClass( $page->controller );
         $field = $className::relatedField();

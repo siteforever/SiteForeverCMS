@@ -39,10 +39,8 @@ require([
             $( "input,select","#properties").each(function(){
                 properties.push( $(this).val() );
             });
-    //        console.log( properties );
-    //        return;
             basket.add(
-                $(this).data('id') || product,
+                $(this).data('id'),
                 product,
                 $(this).parent().find('input.b-product-basket-count').val(),
                 $(this).data('price'),
@@ -62,7 +60,9 @@ require([
         });
 
         $('input.basket-count').on('change', function(){
+            if ( $(this).val() <= 0 ) $(this).val(1);
             $('#recalculate').trigger('click');
+
         });
 
         /**
@@ -87,7 +87,7 @@ require([
                                 var divControls = $('div.controls', this),
                                     divMsg = '<div class="error">' + errorMsg + '</div>';
                                 divControls.length
-                                    ? $(divControls).append(divMsg)
+                                    ? $(divMsg).insertAfter($(divControls).find(':input'))
                                     : $(this).append(divMsg);
                             }
                         } else {
@@ -102,22 +102,26 @@ require([
 
                 if ( response.basket ) {
                     for ( i in response.basket ) {
-                        if ( parseInt( i ) > 0 ) {
+                        if ( /^\d+$/.test(i) ) {
                             item = response.basket[i];
-                            $('tr[data-id='+item.id+']').find('.basket-sum')
+                            $('tr[data-key='+i+']').find('.basket-sum')
                                 .html( ( parseFloat(item.count) * parseFloat(item.price) ).toFixed(2).replace('.',',') );
                         }
                     }
                     if ( response.basket.delitems ) {
                         for( i in response.basket.delitems ) {
-                            $('tr[data-id='+response.basket.delitems[i]+']').remove();
+                            $('tr[data-key='+response.basket.delitems[i]+']').remove();
                         }
                     }
-                    $('#totalRow').find('.basket-count').find('b').html( response.basket.count );
-                    $('#totalRow').find('.basket-sum').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
+                    $('.basket-count','#totalRow').find('b').html( response.basket.count );
+                    $('.basket-sum','#totalRow').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
                 }
 
-                if ( script.formResponse && typeof script.formResponse == 'function' ) {
+                if ( response.delivery && response.delivery.cost ) {
+                    $('.basket-sum','#deliveryRow').html( response.delivery.cost );
+                }
+
+                if ( script && script.formResponse && typeof script.formResponse == 'function' ) {
                     script.formResponse( response );
                 }
             }

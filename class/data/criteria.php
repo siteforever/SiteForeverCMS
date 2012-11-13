@@ -73,21 +73,23 @@ class Data_Criteria
         if ( count($this->_criteria->params ) ) {
             $q_start    = 0;
             foreach ( $this->_criteria->params as $key => $val ) {
+
                 if ( is_array( $val ) ) {
-                    if ( count( $val ) ) {
-                        $val    = implode("','",$val); // Внешние апострофы добавяться в след. условии
-                    } else {
+                    $values = array_filter( array_map(function($v){
+                        return is_numeric($v) ? $v : ( $v ? "'{$v}'" : false);
+                    },$val), function($v) { return false !== $v; } );
+
+                    if ( 0 == count($values) ) {
                         throw new InvalidArgumentException('Empty array');
                     }
-                }
 
-                if ( ! is_numeric( $val ) ) {
-                    if ( is_string( $val ) ) {
-                        $val = trim( $val, "'" );
-                        $val = "'{$val}'";
-                    } else {
-                        continue;
-                    }
+                    $val    = implode(',',$values); // Внешние апострофы добавяться в след. условии
+                } else if ( is_string( $val ) ) {
+                    $val = filter_var( trim( $val, "'" ), FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_FLAG_NO_ENCODE_QUOTES);
+                    $val = "'{$val}'";
+                } else if ( is_numeric( $val ) ) {
+                } else {
+                    continue;
                 }
 
                 if ( is_numeric( $key ) ) {

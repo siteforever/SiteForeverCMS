@@ -46,10 +46,6 @@ abstract class Basket
         if ( ! $id )
             $id = $name;
 
-        if ( $id && ! $name ) {
-            $name   = $id;
-        }
-
         foreach ( $this->data as &$prod ) {
             if ( ( @$prod['name'] == $name || @$prod['id'] == $id ) && $prod['details'] == $details ) {
                 $prod['count'] += $count;
@@ -66,7 +62,7 @@ abstract class Basket
             'price' => $price,
             'details'=>$details,
         );
-        return true;
+        return count($this->data)-1;
     }
 
     /**
@@ -145,7 +141,8 @@ abstract class Basket
         $new_count  = $old_count - $count;
 
         if ( $count <= 0 || $new_count <= 0 ) {
-            $this->data[$key]['count'] = 0;
+//            $this->data[$key]['count'] = 0;
+            unset( $this->data[$key] );
             return 0;
         }
         $this->data[$key]['count'] = $new_count;
@@ -187,13 +184,13 @@ abstract class Basket
         if ( $name ) {
             foreach ( $this->data as $prod ) {
                 if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
-                    $result += $prod['count'] * $prod['price'];
+                    $result += $prod['count'] * @$prod['price'];
                 }
             }
             return $result;
         }
         foreach( $this->data as $prod ) {
-            $result += $prod['count'] * $prod['price'];
+            $result += $prod['count'] * @$prod['price'];
         }
         return $result;
     }

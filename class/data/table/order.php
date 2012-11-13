@@ -17,7 +17,7 @@ class Data_Table_Order extends Data_Table
             // field, size, nonull, default, autoincrement
             new Data_Field_Int('id', 11, true, null, true),
             new Data_Field_Tinyint('status', 4, true, 0),
-            new Data_Field_Tinyint('paid', 1, true, 0),
+            new Data_Field_Int('paid', 11, true, 0),
             new Data_Field_Int('delivery_id', 11, true, 0),
             new Data_Field_Int('payment_id', 11, true, 0),
             new Data_Field_Int('date', 11, true, 0),

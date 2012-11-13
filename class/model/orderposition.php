@@ -7,10 +7,11 @@
  
 class Model_OrderPosition extends Sfcms_Model
 {
-    function relation()
+    public function relation()
     {
         return array(
             'order' => array( self::BELONGS, 'Order', 'ord_id' ),
+            'Product' => array( self::BELONGS, 'Catalog', 'product_id' ),
         );
     }
 }

@@ -51,37 +51,47 @@ class BasketController extends Sfcms_Controller
             ->addPiece('index',t('Home'))
             ->addPiece(null,$this->request->getTitle());
 
+        // Заполним методы доставки
         $deliveryModel = $this->getModel('Delivery');
         $deliveries = $deliveryModel->findAll('active = ?',array(1),'pos');
         $form->getField('delivery_id')->setVariants( $deliveries->column('name') );
 
+        $delivery = $this->app()->getDelivery();
+        $form->getField('delivery_id')->setValue( $delivery->getType() );
+
+        // Заполним методы оплаты
         $paymentModel = $this->getModel('Payment');
         $payments = $paymentModel->findAll('active = ?', array(1));
         $form->getField('payment_id')->setVariants( $payments->column('name') );
+        $form->getField('payment_id')->setValue( $payments->rewind() ? $payments->rewind()->getId() : 0 );
 
-        $delivery = null;
-        if ( $delivId = filter_var( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ) {
-            $delivery = $deliveryModel->find( $delivId );
-        }
+        $metroModel = $this->getModel('Metro');
+        $metro      = $metroModel->findAll('city_id = ?',array(2),'name');
+        $form->getField('metro')->setVariants( $metro->column('name') );
 
-        $productIds = array_map(function($b){
-            return $b['id'];
-        },$this->getBasket()->getAll());
+        // Список ID продуктов
+        $productIds = array_filter( array_map(function($b){
+            return isset( $b['id'] ) ? $b['id'] : false;
+        },$this->getBasket()->getAll()) );
 
+        // Получаем товары из каталога
         /** @var $catalogModel Model_Catalog */
         $catalogModel   = $this->getModel('Catalog');
         $products       = count($productIds)
             ? $catalogModel->findAll('id IN (?)', array($productIds))
             : $catalogModel->createCollection();
 
-        $this->log( $productIds, 'basket' );
+//        $this->log( $productIds, 'basket' );
+//        $this->log( $this->getBasket()->getAll(), 'basket' );
 
         return array(
             'products'      => $products,
-            'all_product'   => $this->getBasket()->getAll(),
+            'all_product'   => array_map(function( $prod ) use ($products) {
+                                    return array_merge( $prod, array('obj'=>$products->getById($prod['id'])) );
+                                }, $this->getBasket()->getAll()),
             'all_count'     => $this->getBasket()->getCount(),
             'all_summa'     => $this->getBasket()->getSum(),
-            'delivery'      => $delivery,
+            'delivery'      => $this->app()->getDelivery(),
             'form'          => $form,
             'host'          => urlencode($this->config->get('siteurl').$this->router->createLink('basket') ),
         );
@@ -128,7 +138,7 @@ class BasketController extends Sfcms_Controller
 
         return array(
             'widget' => $this->getTpl()->fetch('basket.widget'),
-            'msg'    => $basket_prod_name . ' '
+            'msg'    => $basket_prod_name . '<br>'
                       . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
         );
 
@@ -147,11 +157,12 @@ class BasketController extends Sfcms_Controller
         if ( $this->request->get('recalculate') ) {
             // обновляем количества
             $basket_counts = $this->request->get('basket_counts');
+
             if ( $basket_counts && is_array( $basket_counts ) ) {
-                foreach( $basket_counts as $key => $prod_count ) {
-                    //print "$key : $prod_count<br>";
-                    $this->getBasket()->setCount( $key, $prod_count );
-                }
+                /** @var $basket \Basket */
+                array_walk($basket_counts, function($prod_count, $key, $basket){
+                    $basket->setCount( $key, $prod_count > 0 ? $prod_count : 1 );
+                }, $this->getBasket());
             }
 
             // Удалить запись
@@ -163,15 +174,12 @@ class BasketController extends Sfcms_Controller
                 }
             }
 
-            $delivery = null;
-            if ( $deliveryId = filter_var( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ) {
-                /** @var $delivery Data_Object_Delivery */
-                $delivery = $this->getModel('Delivery')->find($deliveryId);
-            }
+            $delivery = $this->app()->getDelivery();
+            $result['delivery']['cost'] = number_format( $delivery->cost(), 2, ',', '' );
             $result['basket'] = $this->getBasket()->getAll();
-            $result['basket']['sum'] = $this->getBasket()->getSum() + ($delivery ? $delivery->cost : 0);
+            $result['basket']['sum'] = $this->getBasket()->getSum() + $delivery->cost();
             $result['basket']['count'] = $this->getBasket()->getCount();
-            $result['basket']['delitems'] = $result['delete'];
+            $result['basket']['delitems'] = isset($result['delete']) ? $result['delete'] : array();
             unset( $result['delete'] );
             $this->getBasket()->save();
         }
@@ -182,24 +190,24 @@ class BasketController extends Sfcms_Controller
                 if ( $this->getBasket()->getAll() ) {
                     // создать заказ
 
-                    $delivery = $this->getModel('Delivery')->find( $form['delivery_id'] );
-                    $_SESSION['delivery'] = $delivery->id;
+                    $delivery = $this->app()->getDelivery();
+                    $this->app()->getSession()->set('delivery',$delivery->getType());
 
                     /** @var $orderModel Model_Order */
                     $orderModel    = $this->getModel('Order');
-                    $order = $orderModel->createOrder( $this->getBasket()->getAll(), $form, $delivery );
+                    $order = $orderModel->createOrder( $this->getBasket(), $form, $delivery );
 
                     if ( $order ) {
                         $this->getBasket()->clear();
                         $this->getBasket()->save();
 
-                        $_SESSION['order_id'] = $order->id;
+                        $this->app()->getSession()->set('order_id',$order->id);
 
                         $paymentModel = $this->getModel('Payment');
                         $payment = $paymentModel->find( $form['payment_id'] );
                         $order->payment_id = $payment->getId();
 
-                        $result['redirect'] = $this->router->createServiceLink( 'order', 'create' );
+                        $result['redirect'] = $order->getUrl();
                     }
                 }
             } else {

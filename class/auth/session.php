@@ -12,12 +12,9 @@ class Auth_Session extends Auth
      * Id текущего пользователя
      * @return int
      */
-    function getId()
+    public function getId()
     {
-        if ( empty( $_SESSION['user_id'] ) ) {
-            $_SESSION['user_id']    = 0;
-        }
-        return $_SESSION['user_id'];
+        return $this->app()->getSession()->get('user_id');
     }
 
     /**
@@ -25,8 +22,8 @@ class Auth_Session extends Auth
      * @param  $id
      * @return void
      */
-    function setId($id)
+    public function setId($id)
     {
-        $_SESSION['user_id']    = $id;
+        $this->app()->getSession()->set('user_id', $id);
     }
 }

@@ -23,6 +23,7 @@ class Model_Order extends Sfcms_Model
         $this->model_position   = $this->getModel('OrderPosition');
     }
 
+
     /**
      * Отношения
      * @return array
@@ -39,29 +40,43 @@ class Model_Order extends Sfcms_Model
         );
     }
 
+
     /**
      * Создать заказ
-     * @param array $basketData
+     * @param Basket $basket
      * @param Data_Object_Delivery $delivery
      * @return bool|Data_Object_Order
      */
-    public function createOrder( $basketData, Forms_Basket_Address $form, Data_Object_Delivery $delivery )
+    public function createOrder( Basket $basket, Forms_Basket_Address $form, Sfcms\Delivery $delivery )
     {
+        $basketData = $basket->getAll();
+
         /** @var $obj Data_Object_Order */
         $obj    = $this->createObject();
         $obj->attributes = $form->getData();
-        $obj->address   = "{$form->zip}, {$form->country}, {$form->city}, {$form->address}";
+
+        $metro = ! $form->metro ? null : $this->getModel('Metro')->find($form->metro);
+        $obj->address   = join(', ', array_filter(array(
+            $form->zip,
+            $form->country,
+            $form->city,
+            null === $metro ? false : t('subwey') . $metro->name,
+            $form->address,
+        )));
         $obj->status    = 1;
         $obj->paid      = 0;
         $obj->date      = time();
         $obj->user_id   = $this->app()->getAuth()->currentUser()->getId();
         $obj->delivery  = 0;
-        if ( $delivery )
-            $obj->delivery = $delivery->id;
+        if ( $delivery->getType() )
+            $obj->delivery = $delivery->getType();
 
         $this->save( $obj );
 
 //        $this->log( $basketData, 'basketData' );
+
+
+        // Заполняем заказ товарами
 
         /** @var $opderPositionModel Model_OrderPosition */
         $opderPositionModel = $this->getModel('OrderPosition');
@@ -76,10 +91,11 @@ class Model_Order extends Sfcms_Model
                 $position->attributes = array(
                     'ord_id'    => $obj->getId(),
 //                    'name'      => $data['name'],
+                    'product_id'=> (int) $data['id'],
                     'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
                     'details'   => $data['details'],
-                    'currency'  => $data['currency'],
-                    'item'      => $data['item'],
+                    'currency'  => isset( $data['currency'] ) ? $data['currency'] : t('catalog','RUR'),
+                    'item'      => isset( $data['item'] ) ? $data['item'] : t('catalog', 'item'),
                     'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
                     'price'     => $data['price'],
                     'count'     => $data['count'],
@@ -92,20 +108,20 @@ class Model_Order extends Sfcms_Model
                 $pos_list[] = $position->attributes;
             }
 
-            if ( $delivery ) {
-                $total_summa += $delivery->cost;
+            if ( $delivery->getType() ) {
+                $total_summa += $delivery->cost();
             }
 
             $this->app()->getTpl()->assign(array(
                 'sitename'  => $this->config->get('sitename'),
-                'ord_link'  => $this->config->get('siteurl').$this->app()->getRouter()->createLink('order',array('item'=>$obj->getId())),
+                'ord_link'  => $obj->getUrl(),
                 'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
                 'date'      => date('H:i d.m.Y'),
                 'order_n'   => $obj->getId(),
                 'positions' => $pos_list,
                 'total_summa'=> $total_summa,
                 'total_count'=> $total_count,
-                'delivery'  => $delivery,
+                'delivery'  => $delivery->getObject(),
             ));
 
             sendmail(

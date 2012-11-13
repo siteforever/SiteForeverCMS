@@ -1,0 +1,3 @@
+[submodule "misc/jqGrid"]
+	path = misc/jqGrid
+	url = git://github.com/tonytomov/jqGrid.git

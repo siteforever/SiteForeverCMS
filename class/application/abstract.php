@@ -120,12 +120,22 @@ abstract class Application_Abstract
 
     /**
      * Статические скрипты и стили
-     * @var Siteforever_Assets
+     * @var \Sfcms\Assets
      */
     protected  $_assets = null;
 
     /** @param Resolver */
     protected $_resolver;
+
+    /**
+     * @var Sfcms\Session
+     */
+    protected $_session = null;
+
+    /**
+     * @var Sfcms\Delivery;
+     */
+    protected $_devivery = null;
 
 
 
@@ -246,6 +256,18 @@ abstract class Application_Abstract
             self::$basket   = Basket_Factory::createBasket( $this->getAuth()->currentUser() );
         }
         return self::$basket;
+    }
+
+    /**
+     * Вернет доставку
+     * @return Sfcms\Delivery
+     */
+    public function getDelivery()
+    {
+        if ( null === $this->_devivery ) {
+            $this->_devivery = new Sfcms\Delivery($this->getSession(), $this->getBasket());
+        }
+        return $this->_devivery;
     }
 
     /**
@@ -415,6 +437,16 @@ abstract class Application_Abstract
         return $this->_assets;
     }
 
+    /**
+     * @return Sfcms\Session
+     */
+    public function getSession()
+    {
+        if ( null === $this->_session ) {
+            $this->_session = new Sfcms\Session();
+        }
+        return $this->_session;
+    }
 
 
     /**

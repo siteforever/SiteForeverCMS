@@ -275,18 +275,18 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testNewsRouteByAlias()
     {
-        $this->router->setRoute('news/novostj-2');
+        $this->router->setRoute('news/2-novostj-2');
         $this->router->routing( true );
         $this->assertEquals( 'news', $this->request->getController() );
-        $this->assertEquals( 'novostj-2', $this->request->get('alias') );
+        $this->assertEquals( '2-novostj-2', $this->request->get('alias') );
     }
 
     public function testNewsRouteByAlias2()
     {
-        $this->router->setRoute('blog/moya-pervaya-statjya');
+        $this->router->setRoute('blog/4-moya-pervaya-statjya');
         $this->router->routing( true );
         $this->assertEquals( 'news', $this->request->getController() );
-        $this->assertEquals( 'moya-pervaya-statjya', $this->request->get('alias') );
+        $this->assertEquals( '4-moya-pervaya-statjya', $this->request->get('alias') );
     }
 
     public function testCatalogRoute()

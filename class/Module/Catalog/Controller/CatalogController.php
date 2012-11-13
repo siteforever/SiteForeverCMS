@@ -149,12 +149,12 @@ class CatalogController extends Sfcms_Controller
         $orderList = $this->config->get( 'catalog.order_list' );
         if( $orderList && is_array( $orderList ) ) {
             if ( ! (  $set = $this->request->get( 'order' ) ) ) {
-                $set = isset( $_SESSION['Sort'] ) ? $_SESSION['Sort'] : false;
+                $set = $this->app()->getSession()->get('Sort') ?: false;
             }
             if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
                 $order = $set;
                 $this->request->set( 'order', $order );
-                $_SESSION['Sort'] = $order;
+                $this->app()->getSession()->set('Sort', $order);
             }
         }
 

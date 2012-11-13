@@ -14,6 +14,7 @@
  * @property string $name
  * @property string $title
  * @property string $path
+ * @property int gender
  * @property int hidden
  * @property int protected
  * @property int deleted

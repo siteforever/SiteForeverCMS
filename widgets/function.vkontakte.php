@@ -11,7 +11,7 @@ function smarty_function_vkontakte( $params )
 {
     /**
      * type: { full, button, mini, vertical }
-     * varb: { 0: 'Нравится', 1: 'Интересно' }
+     * verb: { 0: 'Нравится', 1: 'Интересно' }
      * height: { 18, 20, 22, 24 }
      */
 
@@ -20,11 +20,16 @@ function smarty_function_vkontakte( $params )
     $height = isset( $params['height'] ) ? ', height:' . $params['height'] : '';
     $api_id = App::getInstance()->getConfig()->get('social.vk.id');
 
-    App::getInstance()->getRequest()->addScript('http://userapi.com/js/api/openapi.js?47');
+//    App::getInstance()->getRequest()->addScript('http://userapi.com/js/api/openapi.js?47');
+    $return = array(
+        '',
+    );
 
 //    "<script type=\"text/javascript\" src=\"\"></script>"
 
-    return "<script type=\"text/javascript\">"
+    return
+    "<script type=\"text/javascript\" src=\"//vk.com/js/api/openapi.js?63\"></script>"
+    ."<script type=\"text/javascript\">"
     ."VK.init({apiId: {$api_id}, onlyWidgets: true});"
     ."</script>"
     ."<div id=\"vk_like\"></div>"

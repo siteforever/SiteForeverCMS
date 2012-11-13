@@ -87,19 +87,18 @@ class DeliveryController extends Sfcms_Controller
     public function selectAction()
     {
         $type = $this->request->get('type', Request::INT);
-        $model = $this->getModel('Delivery');
-        $delivery = $model->find( $type );
-        if ( $delivery ){
-            $_SESSION['delivery']['type'] = $type;
-            $_SESSION['delivery']['cost'] = $delivery->cost;
+        try {
+            $delivery = $this->app()->getDelivery();
+            $delivery->setType( $type );
             $basketSum = $this->getBasket()->getSum();
             return array(
-                'error'=>0,
-                'msg'=>'ok',
-                'cost'=>number_format($delivery->cost,2,',',' '),
-                'sum'=>number_format( $delivery->cost + $basketSum, 2, ',', ' ' )
+                'error' => 0,
+                'msg'   => 'ok',
+                'cost'  => number_format($delivery->cost(),2,',',' '),
+                'sum'   => number_format( $delivery->cost() + $basketSum, 2, ',', ' ' )
             );
+        } catch ( \Sfcms\Exception $e ) {
+            return array('error'=>$e->getCode(),'msg'=>$e->getMessage());
         }
-        return array('error'=>1,'msg'=>'Delivery not found');
     }
 }

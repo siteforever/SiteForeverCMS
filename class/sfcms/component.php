@@ -157,7 +157,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __unset($name)
     {
-        $this->data[$name] = null;
+        unset( $this->data[$name] );
     }
 
     /**

@@ -136,8 +136,8 @@ abstract class Auth
 
             if ( $user->perm == USER_ADMIN ) {
                 // Авторизация Sypex Dumper
-                $_SESSION['sxd_auth']   = 1;
-                $_SESSION['sxd_conf']   = $this->app()->getConfig()->get('db');
+                $this->app()->getSession()->sxd_auth    = 1;
+                $this->app()->getSession()->sxd_conf    = $this->app()->getConfig()->get('db');
             }
 
             $this->error    = false;
@@ -159,8 +159,8 @@ abstract class Auth
     public function logout()
     {
         $this->setId(0);
-        $_SESSION['sxd_auth']   = 0; // Авторизация Sypex Dumper
-        $_SESSION['sxd_conf']   = null;
+        $this->app()->getSession()->sxd_auth = 0; // Авторизация Sypex Dumper
+        $this->app()->getSession()->sxd_conf = null;
         setcookie('sxd', null, null, '/_runtime/sxd/');
         $this->user =$this->model->createObject(array(
             'login'  => 'guest',

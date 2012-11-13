@@ -50,6 +50,11 @@ class Forms_Catalog_Edit extends Form_Form
                     'type'=>'select', 'label'=>'Производитель', 'value'=>'0', 'hidden',
                     'variants' => $manufArray,
                 ),
+                'gender'    => array(
+                    'type'=>'radio', 'label'=>'Пол',
+                    'variants'=>array('0'=>'Ж','1'=>'М','2'=>'Уни'),
+                    'require',
+                ),
                 'p0'        => array('type'=>'text', 'label'=>'Параметр 0'),
                 'p1'        => array('type'=>'text', 'label'=>'Параметр 1'),
                 'p2'        => array('type'=>'text', 'label'=>'Параметр 2'),
@@ -68,7 +73,7 @@ class Forms_Catalog_Edit extends Form_Form
                     'variants'=>array('1'=>'Выводить','0'=>'Не выводить',),
                 ),
 
-                'top'       => array('type'=>'radio', 'label'=>'Всегда в начале', 'value'=>'0', 'hidden',
+                'top'       => array('type'=>'radio', 'label'=>'Вывод в топе', 'value'=>'0',
                                      'variants' => array('1'=>'Да','0'=>'Нет',),
                 ),
                 'byorder'   => array('type'=>'radio', 'label'=>'Под заказ', 'value'=>'0', 'hidden',

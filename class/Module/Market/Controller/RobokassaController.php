@@ -20,7 +20,7 @@ class RobokassaController extends Sfcms_Controller
     }
 
     /**
-     * используется в случае успешного проведения платежа
+     * Используется для перехода в случае успешного проведения платежа
      * @param int $InvId
      * @param float $OutSum
      * @param string $SignatureValue
@@ -61,7 +61,7 @@ class RobokassaController extends Sfcms_Controller
     }
 
     /**
-     * используется для оповещения о платеже, если метод отсылки - email, то email-адрес
+     * Используется для оповещения сайта о платеже, если метод отсылки - email, то email-адрес
      * @param float $OutSum
      * @param int $InvId
      * @param string $SignatureValue
@@ -94,7 +94,7 @@ class RobokassaController extends Sfcms_Controller
         $robokassa->setOutSum( $OutSum );
 
         if ( $robokassa->isValidResult( $SignatureValue ) ) {
-            $order->paid = 1;
+            $order->paid = time();
             $this->getTpl()->assign('order',$order);
             sendmail(
                 "{$order->fname} {$order->lname} <{$order->email}>",
@@ -108,7 +108,7 @@ class RobokassaController extends Sfcms_Controller
     }
 
     /**
-     * используется в случае отказа проведения платежа
+     * Используется для перехода в случае отказа проведения платежа
      * @param int $InvId
      * @param float $OutSum
      * @return array|string

@@ -22,7 +22,7 @@
     </thead>
     <tbody>
         {foreach from=$all_product key="key" item="item"}
-        <tr data-id="{$item.id}">
+        <tr data-key="{$key}">
             <td>{counter}.</td>
             <td>{a href=$products->getById($item.id)->url}{$item.name}{/a}</td>
             <td>{$item.details|nl2br}</td>
@@ -35,7 +35,7 @@
             </td>{$sum = $item.count*$item.price}
             <td class="right basket-sum">{$sum|default:"0"|number_format}</td>
             <td class="center">
-                <input type="checkbox" class="checkbox" name="basket_del[{$item.id}]" value="{$key}" />
+                <input type="checkbox" class="checkbox" name="basket_del[{$key}]" value="1" />
             </td>
         </tr>
         {foreachelse}
@@ -82,6 +82,7 @@
                 {$form->htmlFieldWrapped('phone')}
                 {$form->htmlFieldWrapped('country')}
                 {$form->htmlFieldWrapped('city')}
+                {$form->htmlFieldWrapped('metro')}
                 {$form->htmlFieldWrapped('address')}
                 {$form->htmlFieldWrapped('zip')}
                 {$form->htmlFieldWrapped('comment')}

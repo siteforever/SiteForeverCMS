@@ -18,14 +18,15 @@ class Forms_Basket_Address extends Form_Form
                     'type'      =>'radio',
                     'required',
                     'label'     =>'Доставка',
-                    'value'     => filter_input( $_SESSION['delivery'], FILTER_SANITIZE_NUMBER_INT ) ?: '0',
+                    'value'     => filter_input( App::getInstance()->getSession()->get('delivery'),
+                                                 FILTER_SANITIZE_NUMBER_INT ) ?: '0',
                     'variants'  => array(),
                 ),
                 'payment_id' => array(
                     'type'      => 'radio',
                     'required',
                     'label'     => t('Payment'),
-                    'value'     => '0',
+                    'value'     => 1,
                     'variants'  => array(),
                 ),
                 'fname'     => array('type'=>'text', 'label'=>'Имя', 'required'),
@@ -33,10 +34,33 @@ class Forms_Basket_Address extends Form_Form
                 'email'     => array('type'=>'text', 'label'=>'Email', 'filter'=>'email', 'required'),
                 'phone'     => array('type'=>'text', 'label'=>'Телефон',
                                      'filter'=>'phone', 'notice'=>'Формат: +7 812 123 45 67', 'required'),
-                'country'   => array('type'=>'text', 'label'=>'Страна', 'required'),
-                'city'      => array('type'=>'text', 'label'=>'Город', 'required'),
-                'address'   => array('type'=>'textarea', 'label'=>'Адрес', 'required'),
-                'zip'       => array('type'=>'text', 'label'=>'Индекс', 'required'),
+                'country'   => array(
+                    'type'=>'select',
+                    'label'=>'Страна',
+                    'variants' => array(
+                        'Россия' => 'Россия',
+                    ),
+                ),
+                'city'      => array(
+                    'type'=>'select',
+                    'label'=>'Город',
+                    'variants'  => array(
+                        'Санкт-Петербург' => 'Санкт-Петербург',
+                    ),
+                ),
+                'metro'     => array(
+                    'type'  => 'select',
+                    'label' => 'Метро',
+                    'variants'  => array(),
+                    'notice'    => 'Укажите ближайшую к вам станцию',
+                ),
+                'address'   => array(
+                    'type'  => 'textarea',
+                    'label' => 'Адрес',
+                    'required',
+                    'notice' => 'ул. Кораблестроителей, д.59, к.2, кв.103, домофон: 1568, и т.д.',
+                ),
+                'zip'       => array('type'=>'text', 'label'=>'Индекс',),
 
                 'comment'   => array('type'=>'textarea', 'label'=>'Комментарий',),
 

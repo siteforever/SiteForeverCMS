@@ -29,4 +29,51 @@
  */
 class Data_Object_Order extends Data_Object
 {
+
+    /**
+     * Вернет хэш для заказа
+     * @param null $id
+     * @param null $date
+     * @param null $email
+     * @return string
+     */
+    private function getHash( $id = null, $date = null, $email = null )
+    {
+        if ( null === $id ) {
+            if ( null === $this->id ) throw new InvalidArgumentException('Order not defined');
+            $id     = $this->id;
+            $date   = $this->date;
+            $email  = $this->email;
+        }
+        return md5( $id.':'.$date.':'.$email );
+    }
+
+    /**
+     * Проверит хэш на соответствие объекту
+     * @param $hash
+     * @return bool
+     */
+    public function validateHash( $hash )
+    {
+        return $this->getHash() == $hash;
+    }
+
+    /**
+     * Вернет адрес открытия заказа
+     * @return string
+     */
+    public function getUrl()
+    {
+        return /*'http://'.$this->app()->getConfig('siteurl')*/
+            Sfcms::html()->url('order/view',array('id'=>$this->getId(),'code'=>$this->getHash()));
+    }
+
+    /**
+     * Имя покупателя
+     * @return string
+     */
+    public function getEmptorName()
+    {
+        return trim( $this->fname . ' ' . $this->lname );
+    }
 }

@@ -23,12 +23,13 @@ class Basket_User extends Basket
         }
 
         // Если были данные в сессии, то сохранить их пользователю
-        if ( isset($_SESSION['basket']) && is_array($_SESSION['basket']) )
+        $basket = App::getInstance()->getSession()->get('basket');
+        if ( $basket && is_array($basket) )
         {
-            foreach ( $_SESSION['basket'] as $basket ) {
-                $this->add( $basket['id'], $basket['name'], $basket['count'], $basket['price'], $basket['details'] );
-            }
-            unset( $_SESSION['basket'] );
+            array_walk($basket, function($b,$i,$self) {
+                $self->add($b['id'], $b['name'], $b['count'], $b['price'], $b['details']  );
+            }, $this);
+            App::getInstance()->getSession()->set('basket',null);
         }
         $this->save();
     }

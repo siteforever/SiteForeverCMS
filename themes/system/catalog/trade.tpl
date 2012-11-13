@@ -19,6 +19,7 @@
         {$form->htmlFieldWrapped('articul')}
         {$form->htmlFieldWrapped('price1')}
         {$form->htmlFieldWrapped('price2')}
+        {$form->htmlFieldWrapped('gender')}
         {$form->htmlFieldWrapped('manufacturer')}
         {$form->htmlFieldWrapped('novelty')}
         {$form->htmlFieldWrapped('sort_view')}

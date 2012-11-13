@@ -8,8 +8,8 @@ class Basket_Session extends Basket
 {
     public function load()
     {
-        if ( isset($_SESSION['basket']) ) {
-            $this->data = $_SESSION['basket'];
+        if ( App::getInstance()->getSession()->get('basket') ) {
+            $this->data = App::getInstance()->getSession()->get('basket');
         }
         else {
             $this->data = array();
@@ -19,6 +19,6 @@ class Basket_Session extends Basket
     
     public function save()
     {
-        $_SESSION['basket'] = $this->data;
+        App::getInstance()->getSession()->set('basket', $this->data);
     }
 }

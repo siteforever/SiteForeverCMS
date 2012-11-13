@@ -17,6 +17,7 @@ class Data_Table_OrderPosition extends Data_Table
         return array(
             $this->getInt('id', 11, true, null, true),
             $this->getInt('ord_id'),
+            $this->getInt('product_id'),
             $this->getVarchar('articul', 250),
             $this->getText('details'),
             $this->getVarchar('currency', 10),

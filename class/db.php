@@ -299,10 +299,14 @@ class DB
      * @param array $params
      * @return PDOStatement
      */
-    function prepare( $sql, array $params )
+    public function prepare( $sql, array $params )
     {
-        $this->result   = $this->resource->prepare( $sql );
-        $this->result->execute( $params );
+//        try {
+            $this->result   = $this->resource->prepare( $sql );
+            $this->result->execute( $params );
+//        } catch ( PDOException $e ) {
+//            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
+//        }
 
         /*if ( count($params) ) {
             foreach( $params as $key => $val ) {

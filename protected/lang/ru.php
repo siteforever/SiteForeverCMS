@@ -146,4 +146,6 @@ return array_merge(
         'No'  => 'Нет',
 
         'Page :name' => 'Страница :name',
+
+        'subway'    => 'метро',
     ) );

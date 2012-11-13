@@ -29,7 +29,8 @@ class Form_Field_Captcha extends Form_Field
             }
         }
 
-        if ( strtolower( $_SESSION['captcha_code'] ) == strtolower( $this->getValue() ) ) {
+        $captcha_code = App::getInstance()->getSession()->get('captcha_code');
+        if ( strtolower( $captcha_code ) == strtolower( $this->getValue() ) ) {
             $this->_error   = 0;
         }
         else {
