@@ -123,9 +123,9 @@ class Resolver extends Component
         // Защита системных действий
         $access = $controller->access();
 
-        if ( ! $ref->hasMethod($command['action'])) {
-            $command['action'] = 'indexAction';
-        }
+//        if ( ! $ref->hasMethod($command['action'])) {
+//            $command['action'] = 'indexAction';
+//        }
 
         $this->acl( $access, $command );
 

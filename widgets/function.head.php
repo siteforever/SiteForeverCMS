@@ -74,24 +74,6 @@ function smarty_function_head( $params )
         $rjsConfig['paths']['wysiwyg'] = 'admin/editor/'.$settings->get('editor', 'type'); // tinymce, ckeditor, elrte
         $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'));
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
-        $rjsConfig['shim']['jquery/jquery.jqGrid'] = array(
-            'jqGrid/js/i18n/grid.locale-ru',
-            'jqGrid/js/grid.base',
-            'jqGrid/js/grid.common',
-//            'jqGrid/js/grid.formedit',
-//            'jqGrid/js/grid.inlinedit',// => array('deps'=> array('jqGrid/js/grid.base')),
-//            'jqGrid/js/grid.celledit',
-//            'jqGrid/js/grid.subgrid',
-            'jqGrid/js/grid.treegrid',
-            'jqGrid/js/grid.grouping',
-            'jqGrid/js/grid.custom',
-            'jqGrid/js/grid.tbltogrid',
-            'jqGrid/js/grid.import',
-            'jqGrid/js/jquery.fmatter',
-            'jqGrid/js/JsonXml',
-            'jqGrid/js/grid.jqueryui',
-            'jqGrid/js/grid.filter',
-        );
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
 

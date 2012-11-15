@@ -12,6 +12,8 @@ use Data_Collection;
 use Pager;
 use InvalidArgumentException;
 
+use Sfcms\JqGrid\Format;
+
 class Provider
 {
     /** @var App */
@@ -166,7 +168,10 @@ class Provider
                 if (is_array($v) && isset($v['title'])) {
                     return $v['title'];
                 }
-                return $v;
+                if ( is_string( $v )) {
+                    return $v;
+                }
+                return '';
             }, array_values($this->getFields())),
             'colModel'   => array_map(function ($k,$v) {
                 $return = array(
@@ -179,6 +184,9 @@ class Provider
                     }
                     if( isset($v['width']) ) {
                         $return['width'] = $v['width'];
+                    }
+                    if( isset($v['sortable']) ) {
+                        $return['sortable'] = $v['sortable'];
                     }
                 }
                 return $return;
@@ -230,7 +238,7 @@ class Provider
         $result['rows'] = array_map(function( $obj ) use ( $_ ) {
             return array(
                 'id' => $obj->getId(),
-                'cell' => array_map(function($key,$val) use ( $obj ) {
+                'cell' => array_map(function($key,$val) use ( $obj, $_ ) {
                     if ( is_array( $val ) ) {
                         if ( isset($val['value']) ) {
                             $key = $val['value'];
@@ -239,14 +247,32 @@ class Provider
                     if ( strpos($key,'.') ) {
                         $p = explode('.', $key);
                         $subObj = $obj->get($p[0]);
-                        return $subObj ? $subObj->get($p[1]) : 'fail';
+                        $value = $subObj ? $subObj->get($p[1]) : 'fail';
                     } else {
-                        return $obj->get( $key );
+                        $value = $obj->get( $key );
                     }
+                    if ( isset( $val['format'] ) && is_array( $val['format'] ) ) {
+                        array_walk( $val['format'], function( $val, $key ) use ( $obj, $_, &$value ) {
+                            /** @var $format Format */
+                            $format = $_->getFormat( $key, $val );
+                            $value = $format->apply( $value, $obj );
+                        });
+                    }
+                    return $value;
                 },array_keys( $_->getFields() ), array_values($_->getFields()) ),
             );
         }, iterator_to_array( $collection ) );
 
         return json_encode($result);
+    }
+
+    /**
+     * @param $name
+     * @param $params
+     * @return Format
+     */
+    public function getFormat( $name, $params ) {
+        $className = 'Sfcms\\JqGrid\\Format\\'.ucfirst( strtolower($name) );
+        return new $className( $params );
     }
 }

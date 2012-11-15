@@ -16,54 +16,5 @@
  */
 function smarty_function_thumb( $params )
 {
-    $src    = isset( $params[ 'src' ] ) ?  $params[ 'src' ] : null;
-    $class  = isset( $params[ 'class' ] ) ? $params[ 'class' ] : '';
-    $width  = isset( $params[ 'width' ] ) ? $params[ 'width' ] : 'auto';
-    $height = isset( $params[ 'height' ] ) ? $params[ 'height' ] : 'auto';
-    $method = isset( $params[ 'method' ] ) ? $params[ 'method' ] : 1;
-    $color  = isset( $params[ 'color' ] ) ? $params[ 'color' ] : 'FFFFFF';
-
-    if ( 'auto' == $width && 'auto' == $height ) {
-        return 'You need to specify the width or height';
-    }
-    if ( 'auto' == $width || 'auto' == $height ) {
-        $method = Sfcms_Image_Scale::METHOD_PRIORITY;
-    }
-
-    if( ! $src ) {
-        $src = '/images/no-image.png';
-    }
-
-    $src = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$src) );
-
-    $alt    = isset( $params['alt'] ) ? $params['alt'] : $src;
-    $path   = pathinfo( $src );
-    $path[ 'thumb' ] = '/thumbs' . $path[ 'dirname' ] . '/' . '.thumb.' .$path[ 'filename' ]
-                     . '-' . $width . 'x' . $height . '-'. $color . '-' . $method . '.' . $path[ 'extension' ];
-
-    // @todo Может негативно сказаться на производительности. Подумать, как сделать иначе
-    if ( ! is_dir( dirname( ROOT . $path['thumb'] ) ) ) {
-        @mkdir( dirname( ROOT . $path['thumb'] ), 0775, true );
-    } elseif ( ! is_writable( dirname( ROOT . $path['thumb'] ) ) ) {
-        @chmod( dirname( ROOT . $path['thumb'] ), 775 );
-    }
-
-    if ( ! file_exists( ROOT . $path[ 'thumb' ] ) ) {
-        try {
-            $img   = new Sfcms_Image( ROOT . $src );
-            $thumb = $img->createThumb( $width, $height, $method, $color );
-        } catch ( Sfcms_Image_Exception $e ) {
-            return $e->getMessage();
-        }
-        $thumb->saveToFile( ROOT . $path[ 'thumb' ] );
-    }
-    if ( ! empty( $thumb ) ) {
-        $sizes = "width=\"{$thumb->getWidth()}\" height=\"{$thumb->getHeight()}\"";
-    } else {
-        list( , , ,$sizes) = getimagesize( ROOT . $path['thumb'] );
-    }
-
-    return '<img '.$sizes.' alt="'.$alt.'" src="'
-        . str_replace( array('/','\\'), '/' ,$path['thumb'] ).'"'
-        . ($class ? ' class="'.$class.'"' : '').'>';
+    return Sfcms::html()->thumb( $params );
 }

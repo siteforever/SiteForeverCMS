@@ -697,17 +697,33 @@ class Model_Catalog extends Sfcms_Model
                 'title' => 'Id',
                 'width' => 50,
             ),
+            'image' => array(
+                'width' => 80,
+                'sortable' => false,
+                'format' => array(
+                    'image' => array('width'=>50,'height'=>50),
+                ),
+            ),
             'name'  => array(
                 'title' => t('catalog','Name'),
                 'width' => 200,
+                'format' => array(
+                    'link' => array('controller'=>'goods', 'action'=>'edit','id'=>':id'),
+                ),
             ),
             'parent'  => array(
                 'title' => t('catalog','Category'),
                 'value' => 'Category.title',
             ),
-            'manufacturer' => array('value'=>'Manufacturer.name','title' => t('catalog','Manufacturer')),
+            'manufacturer' => array(
+                'value'=>'Manufacturer.name',
+                'title' => t('catalog','Manufacturer')
+            ),
             'articul'   => t('catalog','Articul'),
-            'price1' => array('value'=>'price','title'=> t('catalog','Price')),
+            'price1' => array(
+                'value'=>'price',
+                'title'=> t('catalog','Price')
+            ),
             'novelty' => array(
                 'title' => t('catalog','Novelty'),
                 'width' => 50,
