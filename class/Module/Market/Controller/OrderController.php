@@ -11,6 +11,7 @@ use Model_Order;
 use Data_Object_Order;
 use Data_Object_OrderPosition;
 use Request;
+use Sfcms\Robokassa;
 
 class OrderController extends Sfcms_Controller
 {
@@ -139,14 +140,13 @@ class OrderController extends Sfcms_Controller
         $robokassa = null;
         switch( $payment->module ) {
             case 'robokassa' :
-                $robokassa = new \Sfcms\Robokassa( $this->config->get('service.robokassa') );
+                $robokassa = new Robokassa( $this->config->get('service.robokassa') );
                 $robokassa->setInvId( $order->id );
                 $robokassa->setOutSum( $sum + ($delivery?$delivery->cost:0) );
                 break;
             case 'basket':
             default:
         }
-
 
         return array(
             'order' => $order,

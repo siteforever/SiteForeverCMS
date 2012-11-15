@@ -36,7 +36,7 @@ return array(
             ),
             array(
                 'name'  => t('Goods'),
-                'url'   => 'catalog/goods'
+                'url'   => 'goods/admin'
             ),
             array(
                 'name'  => t('Manufacturers'),

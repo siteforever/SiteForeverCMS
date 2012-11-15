@@ -3,6 +3,8 @@
  * Модель каталога
  * @author KelTanas
  */
+use Sfcms\JqGrid\Provider;
+
 class Model_Catalog extends Sfcms_Model
 {
     /**
@@ -674,5 +676,48 @@ class Model_Catalog extends Sfcms_Model
         $return .= $hidden ? icon( 'lightbulb_off', 'Выключен' ) : icon( 'lightbulb', 'Включен' );
         $return .= "</a>";
         return $return;
+    }
+
+
+    /**
+     * @return Sfcms\JqGrid\Provider
+     */
+    public function getProvider()
+    {
+        $provider = new Provider( $this->app() );
+        $provider->setModel( $this );
+
+        $criteria = $this->createCriteria();
+        $criteria->condition = 'cat = 0 AND deleted = 0 AND hidden = 0 AND protected <= 0';
+
+        $provider->setCriteria( $criteria );
+
+        $provider->setFields(array(
+            'id'    => array(
+                'title' => 'Id',
+                'width' => 50,
+            ),
+            'name'  => array(
+                'title' => t('catalog','Name'),
+                'width' => 200,
+            ),
+            'parent'  => array(
+                'title' => t('catalog','Category'),
+                'value' => 'Category.title',
+            ),
+            'manufacturer' => array('value'=>'Manufacturer.name','title' => t('catalog','Manufacturer')),
+            'articul'   => t('catalog','Articul'),
+            'price1' => array('value'=>'price','title'=> t('catalog','Price')),
+            'novelty' => array(
+                'title' => t('catalog','Novelty'),
+                'width' => 50,
+            ),
+            'top' => array(
+                'title' => t('catalog','To main'),
+                'width' => 50,
+            ),
+        ));
+
+        return $provider;
     }
 }

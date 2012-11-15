@@ -10,6 +10,7 @@ class Pager implements ArrayAccess
 {
 
     public  $page   = 1;
+    public  $pages  = 1;
     public  $from   = 0;
     public  $to     = 0;
     public  $offset = 0;
@@ -84,6 +85,7 @@ class Pager implements ArrayAccess
         $this->limit    = ($pages > 1) ? $this->from.','.$this->perpage : '';
 
         $this->page     = $page;
+        $this->pages    = $pages;
         $this->count    = $count;
     }
 

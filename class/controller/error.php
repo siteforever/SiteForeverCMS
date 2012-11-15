@@ -7,11 +7,14 @@
 
 class Controller_Error extends Sfcms_Controller
 {
-    public function indexAction()
+    /**
+     * Обработка ошибки 404
+     * @throws Sfcms_Http_Exception
+     */
+    public function error404Action()
     {
         $this->request->setTemplate('inner');
         $this->request->setTitle( t('Page not found') );
-        $this->request->setContent( $this->tpl->fetch('error/404.tpl') );
-//        return true;
+        throw new Sfcms_Http_Exception($this->tpl->fetch('error/404.tpl'), 404);
     }
 }

@@ -8,11 +8,12 @@ class Session extends Component
 {
     public function __construct()
     {
-        $this->data = $_SESSION;
+        session_start();
+        $this->data = &$_SESSION;
     }
 
     public function __destruct()
     {
-        $_SESSION = $this->data;
+//        $_SESSION = $this->data;
     }
 }

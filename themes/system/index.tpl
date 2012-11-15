@@ -52,7 +52,7 @@
             </div>
         </div>
 
-        <div class="span9">
+        <div class="span9" id="workspace">
             {if $request->getTitle()}<h2>{$request->getTitle()}</h2>{/if}
 
             {if $feedback}<div class="alert alert-block">

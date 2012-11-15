@@ -8,6 +8,7 @@
 namespace Sfcms;
 
 use App;
+use Sfcms_Http_Exception;
 
 abstract class Module
 {
@@ -49,7 +50,8 @@ abstract class Module
                     . ( isset( $config['module'] ) ? $config['module'] : ucfirst(strtolower($controller)) )
                     . '\\Module';
         }
-        throw new Exception(sprintf('Contoroller %s not defined', $controller));
+//        throw new Sfcms_Http_Exception(sprintf('Contoroller %s not defined', $controller),404);
+        throw new \RuntimeException(sprintf('Contoroller %s not defined', $controller),404);
     }
 
     /**

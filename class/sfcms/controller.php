@@ -5,7 +5,8 @@
  *
  * @property \TPL_Driver $tpl
  */
-use \Sfcms\Component as Component;
+use Sfcms\Component as Component;
+use Sfcms\Module as Module;
 
 abstract class Sfcms_Controller extends Component
 {
@@ -58,7 +59,7 @@ abstract class Sfcms_Controller extends Component
         // Define page
         $page = null;
         if ( $controller ) {
-            $moduleClass = \Sfcms\Module::getModuleClass( $controller );
+            $moduleClass = Module::getModuleClass( $controller );
             if ( $pageId && 'index' == $action ) {
                 $relField = $moduleClass::relatedField();
                 $model = $this->getModel('Page');

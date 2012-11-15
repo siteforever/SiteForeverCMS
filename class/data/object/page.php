@@ -91,6 +91,17 @@ class Data_Object_Page extends Data_Base_Page
         return $this->data['name'];
     }
 
+    /**
+     * Делаем активной страницу и всех ее родителей
+     * @param int $active
+     */
+    public function setActive( $active = 1 )
+    {
+        $this->data['active'] = $active;
+        if ( $parent = $this->getModel()->find( $this->parent ) ) {
+            $parent->setActive($active);
+        }
+    }
 
     /**
      * Создаст serialize путь для конвертации в breadcrumbs

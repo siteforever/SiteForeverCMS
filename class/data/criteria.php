@@ -44,7 +44,13 @@ class Data_Criteria
     public function getSQL()
     {
         $sql    = array();
-        $sql[]  = "SELECT {$this->_criteria->select}";
+        $select = '*';
+        if ( is_string( $this->_criteria->select ) ) {
+            $select = $this->_criteria->select;
+        } elseif ( is_array( $this->_criteria->select ) ) {
+            $select = '`'.join('`,`', $this->_criteria->select).'`';
+        }
+        $sql[]  = "SELECT {$select}";
         $sql[]  = "FROM `{$this->_table}`";
         if ( $this->_criteria->condition ) {
             $sql[]  = "WHERE {$this->_criteria->condition}";

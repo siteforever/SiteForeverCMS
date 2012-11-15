@@ -108,7 +108,7 @@ class App extends Application_Abstract
     protected function handleRequest()
     {
         // запуск сессии
-        session_start();
+        $this->getSession();
         ob_start();
 
         $result = '';

@@ -60,7 +60,7 @@ class Model_Order extends Sfcms_Model
             $form->zip,
             $form->country,
             $form->city,
-            null === $metro ? false : t('subwey') . $metro->name,
+            null === $metro ? false : t('subway') . ' ' . $metro->name,
             $form->address,
         )));
         $obj->status    = 1;
@@ -78,8 +78,8 @@ class Model_Order extends Sfcms_Model
 
         // Заполняем заказ товарами
 
-        /** @var $opderPositionModel Model_OrderPosition */
-        $opderPositionModel = $this->getModel('OrderPosition');
+        /** @var $orderPositionModel Model_OrderPosition */
+        $orderPositionModel = $this->getModel('OrderPosition');
 
         if ( $obj->getId() ) {
             $pos_list    = array();
@@ -87,7 +87,7 @@ class Model_Order extends Sfcms_Model
             $total_summa = 0;
             foreach( $basketData as $data ) {
                 /** @var $position Data_Object_OrderPosition */
-                $position   = $opderPositionModel->createObject();
+                $position   = $orderPositionModel->createObject();
                 $position->attributes = array(
                     'ord_id'    => $obj->getId(),
 //                    'name'      => $data['name'],

@@ -9,6 +9,7 @@ namespace Module\Catalog\Controller;
 use App;
 use Sfcms_Controller;
 use Model_Catalog;
+use Sfcms\JqGrid\Provider;
 
 class GoodsController extends Sfcms_Controller
 {
@@ -20,19 +21,15 @@ class GoodsController extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system' => array('admin'),
+            USER_ADMIN => array('admin','jqgrid'),
         );
     }
 
+
     /**
-     * Index Action
+     * Поиск товаров
+     * @return array
      */
-    public function indexAction()
-    {
-        // TODO: Implement indexAction() method.
-    }
-
-
     public function searchAction()
     {
         $query = filter_var($this->request->get('q'));
@@ -53,16 +50,28 @@ class GoodsController extends Sfcms_Controller
     }
 
 
+    /**
+     * Админка с использованием jqGrid
+     */
     public function adminAction()
     {
+        /** @var $model Model_Catalog */
         $model = $this->getModel('Catalog');
-        $count = $model->count('cat=?', array(0));
-        $pager = $this->paging( $count, 25, 'goods/admin' );
-        $goods = $model->with('Category','Manufacturer')->findAll('cat=?', array(0), 'name', $pager->limit);
-
+        $provider = $model->getProvider();
         return array(
-            'list'=>$goods,
-            'pager'=>$pager,
+            'provider' => $provider,
         );
+    }
+
+    /**
+     * Реакция на аяксовый запрос от jqGrid
+     * @return string
+     */
+    public function jqgridAction()
+    {
+        /** @var $model Model_Catalog */
+        $model = $this->getModel('Catalog');
+        $provider = $model->getProvider();
+        return $provider->getJsonData();
     }
 }

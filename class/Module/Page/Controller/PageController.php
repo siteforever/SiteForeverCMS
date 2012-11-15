@@ -21,6 +21,7 @@ class PageController extends Sfcms_Controller
         return array(
             USER_ADMIN    => array(
                 'admin',
+                'admin2',
                 'create',
                 'delete',
                 'edit',
@@ -68,21 +69,9 @@ class PageController extends Sfcms_Controller
         }
     }
 
-
     public function protectedAction()
     {
         $this->request->setTitle(t('Access denied'));
-    }
-
-    /**
-     * Ошибка 404
-     * @return void
-     */
-    public function error404Action()
-    {
-        $this->request->set( 'template', 'inner' );
-        $this->request->setTitle( t('Error 404') );
-        throw new Sfcms_Http_Exception(t('Page not found'), 404);
     }
 
     /**
@@ -111,6 +100,14 @@ class PageController extends Sfcms_Controller
 //            'html' => join( "\n", $model->html ),
             'data' => $model->parents,
         );
+    }
+
+    /**
+     * Тестовый вид админки
+     */
+    public function admin2Action()
+    {
+
     }
 
 

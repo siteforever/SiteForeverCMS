@@ -229,3 +229,20 @@ div.siteforeverModal {
     margin-left: -475px;
 }
 
+.ui-jqgrid .ui-jqgrid-btable th,
+.ui-jqgrid .ui-jqgrid-btable td,
+.ui-jqgrid .ui-jqgrid-sortable,
+.ui-jqgrid .ui-pg-table td {
+    font: 12px Verdana;
+}
+.ui-jqgrid tr.jqgrow td {
+    padding: 5px 10px !important;
+}
+.ui-jqgrid .ui-pg-table input,
+.ui-jqgrid .ui-pg-table select {
+    width: auto;
+    height: 16px !important;
+    line-height: 16px;
+    padding: 0;
+}
+.ui-jqgrid .ui-pg-button:hover { padding: 1px 0 0 1px !important; }

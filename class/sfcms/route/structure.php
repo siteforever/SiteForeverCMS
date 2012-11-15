@@ -45,6 +45,8 @@ class Structure extends Route
                 if ( null !== $alias ) {
                     App::getInstance()->getRequest()->set('alias', $alias);
                 }
+                self::$_aliases[ $route ]->setActive(1);
+                App::getInstance()->getRequest()->set('route', $route);
                 return $this->getPageState( self::$_aliases[ $route ] );
             }
             $arRoute = explode('/', $route);

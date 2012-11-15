@@ -43,12 +43,14 @@ class Resolver extends Component
         }
         $action = strtolower( $action ) . 'Action';
 
+        // Если не удалось определить контроллер, как известный, то инициировать ош. 404
         if ( ! isset( $this->_controllers[ $controller ] ) ) {
-//            throw new RuntimeException(sprintf('Controller %s not found in controllers config.', $controller), 404);
-//            throw new Sfcms_Http_Exception(sprintf('Controller %s not found in controllers config.', $controller), 404);
+            $this->log(sprintf('Controller `%s` not found', $controller),__FUNCTION__);
             $controller = 'error';
+            $action = 'error404Action';
+            $request->setController($controller);
+            $request->setAction($action);
         }
-
 
         $config = $this->_controllers[ $controller ];
         if ( isset( $config['class'] ) ) {
@@ -117,7 +119,6 @@ class Resolver extends Component
 
         /** @var \Sfcms_Controller $controller */
         $controller = $ref->newInstance();
-        $controller->init();
 
         // Защита системных действий
         $access = $controller->access();
@@ -128,7 +129,11 @@ class Resolver extends Component
 
         $this->acl( $access, $command );
 
-        $method     = $ref->getMethod( $command[ 'action' ] );
+        try {
+            $method     = $ref->getMethod( $command[ 'action' ] );
+        } catch( \ReflectionException $e ) {
+            throw new Sfcms_Http_Exception($e->getMessage(),404);
+        }
         $arguments  = $this->prepareArguments( $method );
 
         $result     = $method->invokeArgs( $controller, $arguments );

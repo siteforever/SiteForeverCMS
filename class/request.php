@@ -482,6 +482,9 @@ class Request
                 case 301:
                     header("{$_SERVER['SERVER_PROTOCOL']} 301 Moved Permanently");
                     break;
+                case 302:
+                    header("{$_SERVER['SERVER_PROTOCOL']} 302 Moved Temporarily");
+                    break;
                 case 403:
                     header ("{$_SERVER['SERVER_PROTOCOL']} 403 Forbidden");
                     header ("Location: ".$this->app()->getRouter()->createServiceLink('users','login'));

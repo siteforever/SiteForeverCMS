@@ -68,25 +68,6 @@ class Model_Page extends Sfcms_Model
         if ( null === $this->all ) {
             // Кэшируем структуру страниц
             $this->all = $this->findAll('deleted = ?',array(0),'pos');
-
-            $route = $this->app()->getRequest()->get('route', FILTER_DEFAULT, 'index');
-            /** @var $objPage Data_Object_Page */
-            foreach( $this->all as $objPage ) {
-                /*
-                 * Проверяем, если alias страницы совпадает с маршрутом,
-                 * то отмечаем ее и все родительские, как активные
-                 */
-                if ( $route == $objPage->alias ) {
-                    $parent = $objPage->id;
-                    while ( $parent ) {
-                        $objPage = $this->find( $parent );
-                        $objPage->active = 1;
-                        $objPage->markClean();
-                        $parent = $objPage->parent;
-                    }
-                    break;
-                }
-            }
         }
         return $this->all;
     }
