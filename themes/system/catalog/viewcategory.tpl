@@ -26,7 +26,7 @@
         <div class="row">
             <div class="span2">
                 {a href=$item->url class="thumbnail"}
-                    {thumb width=150 height=150 alt=$item.title src=$item.image class="img-rounded" color="f6f6f6"}
+                    {thumb width=150 height=150 alt=$item.title src=$item.thumb name=$item.image class="img-rounded" color="f6f6f6"}
                 {/a}
             </div>
             <div class="span5">

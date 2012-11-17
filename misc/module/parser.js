@@ -3,10 +3,10 @@
  */
 define('module/parser',function(require){
     return function() {
-        require('jquery/jquery.jqGrid');
         $('[data-sfcms-module]').each($.proxy(function(_,domNode){
-            var moduleName   = $(domNode).data('sfcms-module');
-            require( moduleName );
+            if ( 'jquery/jquery.jqGrid' == $(domNode).data('sfcms-module') ) {
+                require( 'jquery/jquery.jqGrid' );
+            }
         },this));
     }
 });

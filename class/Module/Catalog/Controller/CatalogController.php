@@ -133,13 +133,33 @@ class CatalogController extends Sfcms_Controller
             );
         }
 
-        $manufId = $this->request->get('manufacturer', Request::INT);
+        $manufId = $this->request->get('manufacturer', Request::INT, null);
+        $materialId = $this->request->get('material', Request::INT, null);
+//        if ( null === $manufId ) {
+//            $manufId = $this->app()->getSession()->get('manufacturer') ?: false;
+//        }
+//        if ( null !== $manufId ) {
+//            $this->request->set('manufacturer', $manufId);
+//            $this->app()->getSession()->set('manufacturer', $manufId);
+//        }
 
         // количество товаров
         $criteria = $catModel->createCriteria();
-        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 "
-            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
-            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
+        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 ";
+        if ( count($categoriesId) ) {
+            $criteria->condition .= ' AND `parent` IN (?) ';
+            $criteria->params[] = $categoriesId;
+        }
+        if ( $manufId ) {
+            $criteria->condition .= ' AND `manufacturer` = ? ';
+            $criteria->params[] = $manufId;
+        }
+        if ( $materialId ) {
+            $criteria->condition .= ' AND `material` = ? ';
+            $criteria->params[] = $materialId;
+        }
+//            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
+//            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
 
         $count = $catModel->count( $criteria );
 
@@ -196,6 +216,8 @@ class CatalogController extends Sfcms_Controller
         $this->tpl->assign( array(
             'parent'    => $parent,
             'properties'=> $properties,
+            'manufacturers' => $this->getModel('Manufacturers')->findAllByCatalogCategories( $categoriesId ),
+            'materials' => $this->getModel('Material')->findAllByCatalogCategories( $categoriesId ),
             'category'  => $item,
             'list'      => $list,
             'cats'      => $cats,
@@ -519,6 +541,7 @@ class CatalogController extends Sfcms_Controller
         //$form->image->show();
 //        $form->getField( 'icon' )->hide();
         $form->getField( 'articul' )->show();
+        $form->getField( 'material' )->show();
         $form->getField( 'manufacturer' )->show();
         $form->getField( 'price1' )->show();
         $form->getField( 'price2' )->show();
@@ -666,29 +689,6 @@ class CatalogController extends Sfcms_Controller
         return $model->getOrderHidden( $id, $obj->get( 'hidden' ) );
     }
 
-    /**
-     * Плоский список товаров в админке
-     * @return array
-     */
-    public function goodsAction()
-    {
-        $this->request->setTitle(t('Goods'));
-
-        $model = $this->getModel('Catalog');
-        $crit = $model->createCriteria();
-        $crit->condition = 'cat = ? AND deleted = 0';
-        $crit->params    = array(0);
-        $crit->order     = 'name';
-        $count = $model->count($crit);
-        $pager = $this->paging( $count, 10, 'catalog/goods' );
-        $crit->limit = $pager->limit;
-        $goods = $model->with('Category','Manufacturer')->findAll($crit);
-
-        return array(
-            'list'=>$goods,
-            'pager'=>$pager,
-        );
-    }
 
 
     /**

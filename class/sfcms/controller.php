@@ -59,7 +59,7 @@ abstract class Sfcms_Controller extends Component
         // Define page
         $page = null;
         if ( $controller ) {
-            $moduleClass = Module::getModuleClass( $controller );
+            $moduleClass = Module::getModuleClass( strtolower( $controller ) );
             if ( $pageId && 'index' == $action ) {
                 $relField = $moduleClass::relatedField();
                 $model = $this->getModel('Page');

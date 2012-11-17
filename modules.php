@@ -39,6 +39,10 @@ return array(
                 'url'   => 'goods/admin'
             ),
             array(
+                'name'  => t('material','Materials'),
+                'url'   => 'material/admin'
+            ),
+            array(
                 'name'  => t('Manufacturers'),
                 'url'   => 'manufacturers/admin'
             ),

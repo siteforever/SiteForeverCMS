@@ -6,7 +6,7 @@
         {foreach from=$gallery item="item"}
         <div class="a-gallery-item" {if $item.main == 1}style="border-color: red;"{/if}>
             <div>
-                {thumb width=100 height=100 src=$item.image alt=$item.id}
+                {thumb width=100 height=100 src=$item.thumb alt=$item.id}
                 <div>
                     {a controller="cataloggallery" action="markdefault" id=$item.id class="main_gallery_image"}
                         {if $item.main}{icon name="star" title=t('catalog','Default')}

@@ -37,7 +37,7 @@ define([
 
     SfModal.prototype = {
 
-        template : '<div class="siteforeverModal modal fade hide" id="{{id}}">'
+        template : '<div class="siteforeverModal modal hide" id="{{id}}">'
             + '<div class="modal-header">'
                 + '<button type="button" class="close" data-dismiss="modal">×</button>'
                 + '<h3>{{title}}</h3>'

@@ -26,6 +26,7 @@ class Data_Table_Catalog extends Data_Table
             new Data_Field_Varchar('articul', 250),
             new Data_Field_Decimal('price1'),
             new Data_Field_Decimal('price2'),
+            new Data_Field_Int('material'),
             new Data_Field_Int('manufacturer'),
             new Data_Field_Int('pos'),
             new Data_Field_Int('gender'),

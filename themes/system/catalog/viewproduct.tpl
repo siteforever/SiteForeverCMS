@@ -4,7 +4,7 @@
         <div class="span2">
             {a title=$item.title href=$item.image rel=$item.id class="photo gallery"}
                 {if $item.image}
-                    {thumb width=200 height=200 alt=$item.title src=$item.image class="img-rounded" color="ffffff"}
+                    {thumb width=200 height=200 alt=$item.title src=$item.thumb name=$item.image class="img-rounded" color="ffffff"}
                     {*<img class="img-rounded" src="{$item.middle}" alt="{$item.title}">*}
                 {else}
                     <span>{t cat="No image"}{/t}</span>
@@ -12,10 +12,10 @@
             {/a}
 
         {foreach $item->Gallery as $img}
-            {if not $img@first}
-            <a title="{$img.title}" href="{$img.image}" class="gallery" rel="{$item.id}">
-                <img src="{$img.image}" width="50" alt="{$img.title}">
-            </a>
+            {if not $img.main}
+                <a title="{$item.title}" href="{$img.image}" class="gallery" rel="{$item.id}">
+                    {thumb src=$img.thumb name=$img.image width=50 height=50 alt=$item.title}
+                </a>
             {/if}
         {/foreach}
         </div>

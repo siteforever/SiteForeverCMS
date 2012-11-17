@@ -365,7 +365,7 @@ class DB
      * Возвращает все строки результата запроса
      *
      * @param string $sql
-     * @param bool $index_id
+     * @param bool $index_id|array $params
      * @param int $extract
      * @param array $params
      * @return array in array
@@ -375,6 +375,12 @@ class DB
         $start  = microtime(1);
         $sql    = trim( $sql );
         $command    = substr($sql, 0, strpos($sql, ' '));
+
+        if ( is_array( $index_id ) ) {
+            $params = $index_id;
+            $index_id = false;
+            $extract = self::F_ASSOC;
+        }
 
         if ( ! in_array( $command, array('SELECT','SHOW') )) {
             throw new dbException('Использование fetchAll не для SELECT или SHOW');

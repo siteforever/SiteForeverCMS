@@ -7,9 +7,11 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Sfcms;
 use Sfcms_Controller;
 use Request;
 use Model_CatalogGallery;
+use Data_Object_Catalog;
 use Data_Object_CatalogGallery;
 
 class GalleryController extends Sfcms_Controller
@@ -18,7 +20,7 @@ class GalleryController extends Sfcms_Controller
     {
         return array(
             'system'    => array(
-                'admin', 'delete', 'markdefault', 'upload', 'panel',
+                'admin', 'delete', 'markdefault', 'upload', 'panel','watermark',
             ),
         );
     }
@@ -56,6 +58,7 @@ class GalleryController extends Sfcms_Controller
      */
     public function deleteAction()
     {
+        /** @var $catalog_gallery Model_CatalogGallery */
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', Request::INT );
 
@@ -142,6 +145,7 @@ class GalleryController extends Sfcms_Controller
             );
         }
 
+        /** @var $trade Data_Object_Catalog */
         $trade = $this->getModel('Catalog')->find( $prodId );
 
         $images = $trade->Gallery;
@@ -152,9 +156,9 @@ class GalleryController extends Sfcms_Controller
         }
 
         /**
-         * @var Model_CatalogGallery $catalogGallery
+         * @var Model_CatalogGallery $galleryModel
          */
-        $catalogGallery = $this->getModel( 'CatalogGallery' );
+        $galleryModel = $this->getModel( 'CatalogGallery' );
 
         $uploadOk = 0;
 
@@ -165,7 +169,7 @@ class GalleryController extends Sfcms_Controller
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
                         /** @var $objImage Data_Object_CatalogGallery */
-                        $objImage = $catalogGallery->createObject();
+                        $objImage = $galleryModel->createObject();
 
                         if ( $images[ 'size' ][ $i ] <= $max_file_size
                             && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
@@ -173,7 +177,7 @@ class GalleryController extends Sfcms_Controller
                             $uploadOk = 1;
 
                             $dest = $this->config->get( 'catalog.gallery_dir' )
-                                . '/' . substr( '0000' . $prodId, -4, 4 );
+                                . '/' . substr( '000000' . $prodId, -6, 6 );
 
                             if ( !is_dir( ROOT . $dest ) ) {
                                 if ( @mkdir( ROOT . $dest, 0777, true ) ) {
@@ -184,13 +188,20 @@ class GalleryController extends Sfcms_Controller
                             $src = $images[ 'tmp_name' ][ $i ];
 
                             $objImage->cat_id = $prodId;
-                            $catalogGallery->save( $objImage );
+                            $objImage->save();
                             $g_id = $objImage->getId();
 
-                            $img = $dest . '/' . $g_id . '_' . $images[ 'name' ][ $i ];
+                            // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
+                            $pathParts = pathinfo( $images[ 'name' ][ $i ] );
+                            // Это чистое изображение, но имя зашифровано
+                            $tmb = $dest . '/' . $g_id . '-' . substr( md5( mktime(1) . $trade->alias ), 0, 6 ) . '.' . $pathParts['extension'];
+                            // Имя не зашифровано, но с водяным знаком
+                            $img = $dest . '/' . $g_id . '-' . $trade->alias . '.' . $pathParts['extension'];
 
-                            if ( move_uploaded_file( $src, ROOT . $img ) ) {
+                            if ( move_uploaded_file( $src, ROOT . $tmb ) ) {
+                                Sfcms::watermark( ROOT . $tmb, ROOT . $img );
                                 $objImage->image = str_replace( array('/','\\'), '/', $img );
+                                $objImage->thumb = str_replace( array('/','\\'), '/', $tmb );
                             }
                             if ( $createMain ) {
                                 $objImage->main = 1;
@@ -215,6 +226,19 @@ class GalleryController extends Sfcms_Controller
             }
             return t('Изображения не загружены');
         }
+
+        return 'Undefined Error';
+    }
+
+    /**
+     * Testing watermark overlay
+     * @return bool|resource
+     */
+    public function watermarkAction()
+    {
+//        return Sfcms::watermark( ROOT . '/files/catalog/gallery/000030/59-30-chemodan-edmins-g-30.jpg' );
+        return Sfcms::watermark( ROOT . '/files/catalog/gallery/0007/15_129м-01\'.jpg' );
+//        return Sfcms::watermark( ROOT . '/files/catalog/gallery/0007/14_129м-01.jpg' );
     }
 
 }

@@ -97,32 +97,6 @@ class Data_Object_Catalog extends Data_Object
     }
 
     /**
-     * Вернет список изображений для товара
-     * @return Data_Collection
-     */
-//    public function getGallery()
-//    {
-//        if ( null === $this->_gallery && $this->getId() ) {
-//            $gallery_model  = $this->getModel('CatalogGallery');
-//            $this->_gallery = $gallery_model->findAll(array(
-//                 'cond'      => ' cat_id = ? ',
-//                 'params'    => array( $this->getId() ),
-//            ));
-//        }
-//        App::getInstance()->getLogger()->log( $this->_gallery, 'gallery' );
-//        return $this->_gallery;
-//    }
-
-
-    /**
-     * @param $gallery
-     */
-//    public function setGallery( $gallery )
-//    {
-//        $this->_gallery = $gallery;
-//    }
-
-    /**
      * Вернет главную картинку для товара
      * @return Data_Object_CatalogGallery
      */
@@ -144,7 +118,7 @@ class Data_Object_Catalog extends Data_Object
     }
 
     /**
-     * Вернет строку для полной картинки
+     * Вернет строку для полной картинки с водяным знаком
      * @return string
      */
     public function getImage()
@@ -152,6 +126,18 @@ class Data_Object_Catalog extends Data_Object
         $image  = $this->getMainImage();
         if ( $image )
             return $image->image;
+        return '';
+    }
+
+    /**
+     * Вернет строку для полной картинки без водяного знака
+     * @return string
+     */
+    public function getThumb()
+    {
+        $image  = $this->getMainImage();
+        if ( $image )
+            return $image->thumb;
         return '';
     }
 }

@@ -75,6 +75,11 @@ class App extends Application_Abstract
 
         // Language
         $this->getConfig()->setDefault( 'language', 'en' );
+        if ( ! $this->getRequest()->get('lang') ) {
+            $this->getRequest()->set('lang', $this->getConfig('language'));
+        } else {
+            $this->getConfig()->set('language',$this->getRequest()->get('lang'));
+        }
         Sfcms_i18n::getInstance()->setLanguage(
             $this->getConfig()->get( 'language' )
         );

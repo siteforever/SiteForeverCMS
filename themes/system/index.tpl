@@ -1,5 +1,5 @@
-<!DOCTYPE html public>
-<html>
+<!DOCTYPE html>
+<html lang="{$request->get('lang')}">
 <head>
 {head}
 </head>

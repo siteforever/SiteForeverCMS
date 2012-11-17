@@ -4,7 +4,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-define([
+define('admin/editor/tinymce',[
     "jquery",
     "tiny_mce/jquery.tinymce"
 ], function($){

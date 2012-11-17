@@ -146,19 +146,22 @@ class Html
         if( ! $src ) {
             $src = '/images/no-image.png';
         }
+        $src = $name = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$src) );
+        // Подменное имя для изображения
+        if ( isset( $params['name'] ) ) {
+            $name = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$params['name']) );
+        }
 
-        $src = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$src) );
-
-        $alt    = isset( $params['alt'] ) ? $params['alt'] : $src;
-        $path   = pathinfo( $src );
-        $path[ 'thumb' ] = '/thumbs' . $path[ 'dirname' ] . '/' . '.thumb.' .$path[ 'filename' ]
+        $alt    = isset( $params['alt'] ) ? $params['alt'] : basename( $name );
+        $path   = pathinfo( $name );
+        $path[ 'thumb' ] = '/thumbs' . $path[ 'dirname' ] . '/' . $path[ 'filename' ]
             . '-' . $width . 'x' . $height . '-'. $color . '-' . $method . '.' . $path[ 'extension' ];
 
         // @todo Может негативно сказаться на производительности. Подумать, как сделать иначе
         if ( ! is_dir( dirname( ROOT . $path['thumb'] ) ) ) {
             @mkdir( dirname( ROOT . $path['thumb'] ), 0775, true );
         } elseif ( ! is_writable( dirname( ROOT . $path['thumb'] ) ) ) {
-            @chmod( dirname( ROOT . $path['thumb'] ), 775 );
+            throw new \RuntimeException(sprintf( 'Directory `%s` is not writable', dirname( ROOT . $path['thumb'] ) ) );
         }
 
         if ( ! file_exists( ROOT . $path[ 'thumb' ] ) ) {

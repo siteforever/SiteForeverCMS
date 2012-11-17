@@ -5,13 +5,23 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  *
- * @property $image
+ * @property $id
  * @property $cat_id
- * @property $middle
+ * @property $image
  * @property $thumb
+ * @property $hidden
  * @property $main
  */
 class Data_Object_CatalogGallery extends Data_Object
 {
-
+    /**
+     * @return mixed
+     */
+    public function getThumb()
+    {
+        if ( $this->data['thumb'] ) {
+            return $this->data['thumb'];
+        }
+        return $this->image;
+}
 }

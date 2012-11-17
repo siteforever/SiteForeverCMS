@@ -17,8 +17,8 @@ table td.bottom {
     vertical-align: bottom;
 }
 
-input {
-    height: 28px !important;
+input[type=text] {
+    height: 20px !important;
 }
 input.cke_dialog_ui_input_text {
     height: 14px !important;
@@ -107,7 +107,7 @@ table.dataset {
 
 input.image {
     background-image: url("/images/admin/icons/picture.png");
-    background-position: 99% 2px;
+    background-position: 99% 50%;
     background-repeat: no-repeat;
 }
 

@@ -21,7 +21,11 @@ class Forms_Catalog_Edit extends Form_Form
 
         $manufModel    = Sfcms_Model::getModel( 'Manufacturers' );
         $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
-        $manufArray    = $manufacturers->column( 'name' );
+        $manufArray    = array('Не выбрано') + $manufacturers->column( 'name' );
+
+        $materialModel = Sfcms_Model::getModel( 'Material' );
+        $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
+        $materialArray = array('Не выбрано') + $materials->column( 'name' );
 
         parent::__construct(array(
             'name'  => 'catalog',
@@ -50,8 +54,13 @@ class Forms_Catalog_Edit extends Form_Form
                     'type'=>'select', 'label'=>'Производитель', 'value'=>'0', 'hidden',
                     'variants' => $manufArray,
                 ),
+                'material' => array(
+                    'type'=>'select', 'label'=>'Материал', 'value'=>'0', 'hidden',
+                    'variants' => $materialArray,
+                ),
                 'gender'    => array(
-                    'type'=>'radio', 'label'=>'Пол',
+                    'type'=>'select', 'label'=>'Пол',
+                    'value' => '2',
                     'variants'=>array('0'=>'Ж','1'=>'М','2'=>'Уни'),
                     'require',
                 ),

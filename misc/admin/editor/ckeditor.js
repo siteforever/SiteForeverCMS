@@ -6,7 +6,7 @@
  */
 CKEDITOR_BASEPATH = '/misc/ckeditor/';
 
-define([
+define('admin/editor/ckeditor',[
     "jquery",
     "ckeditor/ckeditor",
     "ckeditor/adapters/jquery"

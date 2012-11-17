@@ -38,9 +38,9 @@ class Model_CatalogGallery extends Sfcms_Model
             if ( $data['thumb'] && file_exists(ROOT.$data['thumb']) ) {
                 @unlink ( ROOT.$data['thumb'] );
             }
-            if ( $data['middle'] && file_exists(ROOT.$data['middle']) ) {
-                @unlink ( ROOT.$data['middle'] );
-            }
+//            if ( $data['middle'] && file_exists(ROOT.$data['middle']) ) {
+//                @unlink ( ROOT.$data['middle'] );
+//            }
             if ( $data['image'] && file_exists(ROOT.$data['image']) ) {
                 @unlink ( ROOT.$data['image'] );
             }

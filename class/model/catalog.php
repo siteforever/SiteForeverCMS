@@ -43,6 +43,7 @@ class Model_Catalog extends Sfcms_Model
             'Gallery'       => array( self::HAS_MANY, 'CatalogGallery', 'cat_id' ),
             'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
+            'Material'      => array( self::BELONGS, 'Material', 'material' ),
             'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
             'Page'          => array( self::HAS_ONE, 'Page', 'link' ),
         );
@@ -688,7 +689,7 @@ class Model_Catalog extends Sfcms_Model
         $provider->setModel( $this );
 
         $criteria = $this->createCriteria();
-        $criteria->condition = 'cat = 0 AND deleted = 0 AND hidden = 0 AND protected <= 0';
+        $criteria->condition = 'cat = 0 AND deleted = 0';
 
         $provider->setCriteria( $criteria );
 
@@ -724,13 +725,33 @@ class Model_Catalog extends Sfcms_Model
                 'value'=>'price',
                 'title'=> t('catalog','Price')
             ),
+            'hidden' => array(
+                'title' => t('catalog','Hidden'),
+                'width' => 50,
+                'format' => array(
+                    'bool' => array('yes'=>Sfcms::html()->icon('lightbulb_off'),'no'=>Sfcms::html()->icon('lightbulb')),
+                ),
+            ),
+            'protected' => array(
+                'title' => t('catalog','Protected'),
+                'width' => 50,
+                'format' => array(
+                    'bool' => array('yes'=>Sfcms::html()->icon('lock'),'no'=>Sfcms::html()->icon('lock_break')),
+                ),
+            ),
             'novelty' => array(
                 'title' => t('catalog','Novelty'),
                 'width' => 50,
+                'format' => array(
+                    'bool' => array('yes'=>Sfcms::html()->icon('new')),
+                ),
             ),
             'top' => array(
                 'title' => t('catalog','To main'),
                 'width' => 50,
+                'format' => array(
+                    'bool' => array(),
+                ),
             ),
         ));
 

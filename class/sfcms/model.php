@@ -370,7 +370,7 @@ abstract class Sfcms_Model extends Component
     {
         if ( func_get_arg(0) && is_array( func_get_arg(0) ) ) {
             $this->with = func_get_arg(0);
-        } else {
+        } elseif ( is_string( func_get_arg(0) ) ) {
             $this->with = func_get_args();
         }
         return $this;
@@ -404,7 +404,7 @@ abstract class Sfcms_Model extends Component
      */
     public function createCollection( array $data = null )
     {
-        return new Data_Collection( $data );
+        return new Data_Collection( $data, $this );
     }
 
     /**
@@ -550,6 +550,12 @@ abstract class Sfcms_Model extends Component
     private function getRelation( $rel, Data_Object $obj )
     {
         $relation = $obj->getModel()->relation();
+
+        if ( ! is_string( $rel ) ) {
+            $this->log($rel,'rel');
+            throw new InvalidArgumentException('Argument `rel` is not a string');
+        }
+
         switch ( $relation[ $rel ][ 0 ] ) {
             case self::BELONGS:
                 return new Data_Relation_Belongs( $rel, $obj );

@@ -161,8 +161,11 @@ class Provider
         $rowNum = isset( $params['rowNum'] ) ? $params['rowNum'] : 20;
         $cellHeight = 28; // todo костыль, определяющий высоту таблицы, исходя из высоты ячейки
 
+        $controller = isset( $params['controller'] ) ? $params['controller'] : $this->app->getRequest()->get('controller');
+        $action     = isset( $params['action'] ) ? $params['action'] : 'jqgrid';
+
         $config = array(
-            'url'=>'/goods/jqgrid',
+            'url'=>$this->app->getRouter()->createServiceLink($controller,$action),
             'datatype'   => "json",
             'colNames'   => array_map(function ($v) {
                 if (is_array($v) && isset($v['title'])) {
@@ -198,6 +201,7 @@ class Provider
             'sortname'  => isset( $params['sortname'] ) ? $params['sortname'] : 'id',
             'viewrecords' => true,
             'sortorder' => "desc",
+            'multiselect' => isset( $params['multiselect'] ) ? $params['multiselect'] : false,
         );
         return $config;
     }
@@ -223,7 +227,7 @@ class Provider
             return false;
         },$this->getFields()));
 
-        $this->app->getLogger()->log( $with,'$with' );
+//        $this->app->getLogger()->log( $with ? '1' : '0','$with' );
 
         /** @var $collection Data_Collection */
         $collection = $this->getModel()->with($with)->findAll( $criteria );

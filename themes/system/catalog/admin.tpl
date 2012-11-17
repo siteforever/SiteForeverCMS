@@ -27,7 +27,7 @@
             {a controller="catalog" action="admin" part=$item.id}{$item.name}{/a}
         {else}
             {*icon name="page" title="Товар"*}
-            {thumb src=$item.image width="50" height="50"}
+            {thumb src=$item.thumb width="50" height="50"}
             {a controller="catalog" action="trade" edit=$item.id class="edit"}{$item.name}{/a}
         {/if}
     </td>

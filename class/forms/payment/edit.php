@@ -6,7 +6,9 @@
  */
 namespace Forms\Payment;
 
-class Edit extends \Form_Form
+use Form_Form;
+
+class Edit extends Form_Form
 {
     public function __construct()
     {

@@ -18,9 +18,8 @@ class Data_Table_CatalogGallery extends Data_Table
         return array(
             new Data_Field_Int('id', 11, true, null, true),
             new Data_Field_Int('cat_id'),
-            new Data_Field_Varchar('title', 250),
-            new Data_Field_Varchar('descr', 250),
             new Data_Field_Varchar('image', 250),
+            new Data_Field_Varchar('thumb', 250),
             new Data_Field_Tinyint('hidden'),
             new Data_Field_Tinyint('main'),
         );

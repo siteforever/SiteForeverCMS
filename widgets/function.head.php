@@ -71,9 +71,14 @@ function smarty_function_head( $params )
     if ( $request->get('admin') ) {
         $rjsConfig['paths']['app'] = 'admin';
         $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
-        $rjsConfig['paths']['wysiwyg'] = 'admin/editor/'.$settings->get('editor', 'type'); // tinymce, ckeditor, elrte
         $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'));
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
+
+        $rjsConfig['map'] = array(
+            '*' => array(
+                'wysiwyg' => 'admin/editor/'.$settings->get('editor', 'type'), // tinymce, ckeditor, elrte
+            ),
+        );
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
 
