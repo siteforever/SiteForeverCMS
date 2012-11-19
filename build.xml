@@ -19,10 +19,16 @@
     <property name="db_name" value="siteforever"/>
 
 
+
+
     <target name="main">
         <echo>To start setup use :$ phing setup</echo>
         <echo>${user.home}</echo>
     </target>
+
+
+
+
 
     <target name="svn">
         <svnupdate todir="${basedir}"/>
@@ -30,9 +36,18 @@
         <echo>Revision: ${revision}</echo>
     </target>
 
+
+
+
+
     <target name="git">
         <gitpull repository="${git}" all="true" />
     </target>
+
+
+
+
+
 
     <!-- Setup on this server -->
     <target name="setup">
@@ -106,6 +121,10 @@
         </copy>
     </target>
 
+
+
+
+
     <!-- Build an autonomous project  -->
     <target name="build">
 
@@ -176,6 +195,10 @@
 
     </target>
 
+
+
+
+
     <target name="test">
         <!--<phpunit bootstrap="test/bootstrap.php">-->
             <!--<formatter type="plain" usefile="false"/>-->
@@ -186,6 +209,11 @@
             <!--</batchtest>-->
         <!--</phpunit>-->
     </target>
+
+
+
+
+
 
     <target name="phar">
         <pharpackage
@@ -204,6 +232,34 @@
             </metadata>
         </pharpackage>
     </target>
+
+
+
+
+
+    <target name="sflite">
+        <delete file="class/sflite.php"/>
+        <append destFile="class/sflite.php">
+            <fileset dir="class">
+                <include name="app.php"/>
+                <include name="application/*.php"/>
+                <include name="auth.php"/>
+                <include name="auth/*.php"/>
+                <include name="basket.php"/>
+                <include name="basket/*.php"/>
+                <include name="db.php"/>
+                <include name="db/*.php"/>
+                <include name="form/*.php"/>
+                <include name="sfcms/*.php"/>
+                <include name="tpl/*.php"/>
+                <include name="view/*.php"/>
+                <include name="pager.php"/>
+            </fileset>
+        </append>
+    </target>
+
+
+
 
 
     <target name="minimify">

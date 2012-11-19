@@ -62,7 +62,7 @@ class Pager implements ArrayAccess
             if ( $i == $page ) {
                 $p[]    = $page;
             } else {
-                $p[]    = Sfcms::html()->link($i, $link, $page > 2 ? array('page'=>$i) : array());
+                $p[]    = Sfcms::html()->link($i, $link, array('page'=>$i));
             }
         }
 

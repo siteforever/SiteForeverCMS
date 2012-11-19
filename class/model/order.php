@@ -68,8 +68,9 @@ class Model_Order extends Sfcms_Model
         $obj->date      = time();
         $obj->user_id   = $this->app()->getAuth()->currentUser()->getId();
         $obj->delivery  = 0;
-        if ( $delivery->getType() )
+        if ( $delivery->getType() ){
             $obj->delivery = $delivery->getType();
+        }
 
         $this->save( $obj );
 
@@ -103,39 +104,37 @@ class Model_Order extends Sfcms_Model
                 );
                 $position->save();
 
-                $total_count += $position->count;
-                $total_summa += $position->count * $position->price;
                 $pos_list[] = $position->attributes;
             }
-
-            if ( $delivery->getType() ) {
-                $total_summa += $delivery->cost();
-            }
+            $total_count = $basket->getCount();
+            $total_summa = $basket->getSum() + $delivery->cost();
 
             $this->app()->getTpl()->assign(array(
+                'order'     => $obj,
                 'sitename'  => $this->config->get('sitename'),
-                'ord_link'  => $obj->getUrl(),
+                'ord_link'  => $this->app()->getConfig('siteurl').$obj->getUrl(),
                 'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
                 'date'      => date('H:i d.m.Y'),
                 'order_n'   => $obj->getId(),
                 'positions' => $pos_list,
                 'total_summa'=> $total_summa,
                 'total_count'=> $total_count,
-                'delivery'  => $delivery->getObject(),
+                'delivery'  => $delivery,
+                'sum'       => $basket->getSum(),
             ));
 
             sendmail(
-                $this->app()->getAuth()->currentUser()->email,
+                $obj->email,
                 $this->config->get('admin'),
-                'Новый заказ с сайта '.$this->config->get('sitename').' №'.$obj->getId(),
-                $this->app()->getTpl()->fetch('system:order.mail.createadmin')
+                sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$obj->getId()),
+                $this->app()->getTpl()->fetch('order.mail.createadmin')
             );
 
             sendmail(
                 $this->config->get('sitename').' <'.$this->config->get('admin').'>',
-                $this->app()->getAuth()->currentUser()->email,
-                'Новый заказ №'.$obj->getId(),
-                $this->app()->getTpl()->fetch('system:order.mail.create')
+                $obj->email,
+                sprintf('Заказ №%s на сайте %s',$obj->getId(),$this->config->get('sitename')),
+                $this->app()->getTpl()->fetch('order.mail.create')
             );
 
             return $obj;

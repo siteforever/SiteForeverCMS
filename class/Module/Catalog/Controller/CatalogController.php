@@ -133,7 +133,7 @@ class CatalogController extends Sfcms_Controller
             );
         }
 
-        $manufId = $this->request->get('manufacturer', Request::INT, null);
+        $manufId    = $this->request->get('manufacturer', Request::INT, null);
         $materialId = $this->request->get('material', Request::INT, null);
 //        if ( null === $manufId ) {
 //            $manufId = $this->app()->getSession()->get('manufacturer') ?: false;
@@ -191,7 +191,7 @@ class CatalogController extends Sfcms_Controller
         $criteria->limit = $paging->limit;
 
 
-        $list = $catModel->with('Gallery','Manufacturer')->findAll( $criteria );
+        $list = $catModel->with('Gallery','Manufacturer','Material')->findAll( $criteria );
 
         $properties = array();
 
@@ -254,13 +254,14 @@ class CatalogController extends Sfcms_Controller
 
         $this->tpl->assign( array(
             'item'      => $item,
+            'inBasket'  => $this->getBasket()->getCount( $item->id ),
             'parent'    => $item->parent ? $catalog_model->find( $item->parent ) : null,
             'properties'=> $properties,
             'gallery'   => $gallery,
             'user'      => $this->user,
         ) );
 
-        $this->request->setTitle( $item[ 'name' ] );
+        $this->request->setTitle( sprintf('%s (модель №%s)',$item->name,$item->id) );
         return $this->tpl->fetch( 'catalog.viewproduct' );
     }
 
@@ -342,22 +343,12 @@ class CatalogController extends Sfcms_Controller
         // Если форма отправлена
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $object = $catalogFinder->createObject();
+                $object = $form->id ? $catalogFinder->find($form->id) : $catalogFinder->createObject();
                 $object->attributes =  $form->getData();
-
-//                $this->log( $form->getData(), 'form' );
-//                $this->log( $object->attributes, 'obj' );
-
                 if( $object->getId() && $object->getId() == $object->parent ) {
                     // раздел не может быть замкнут на себя
                     return array('error'=>1, t( 'The section can not be in myself' ) );
                 }
-                if( ! $object->getId() ) {
-                    $object->markNew();
-                } else {
-                    $object->markDirty();
-                }
-//                $this->reload( 'catalog/admin', array( 'part' => $object->parent ), 1000 );
                 return array('error'=>0,'msg'=>t( 'Data save successfully' ));
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
@@ -463,8 +454,7 @@ class CatalogController extends Sfcms_Controller
         if( ! $filter ) {
             $crit[ 'cond' ]   = 'deleted = 0 AND parent = :parent';
             $crit[ 'params' ] = array( ':parent'=> $part );
-        }
-        else {
+        } else {
             $crit[ 'cond' ]   = 'deleted = 0 AND ( articul LIKE :filter OR name LIKE :filter )';
             $crit[ 'params' ] = array( ':filter'=> '%' . $filter . '%' );
         }
@@ -473,7 +463,7 @@ class CatalogController extends Sfcms_Controller
         $paging = $this->paging( $count, 10, $this->router->createServiceLink('catalog','admin',array('part'=>$part)) );
 
         $crit[ 'limit' ] = $paging->limit;
-        $crit[ 'order' ] = 'cat DESC, pos';
+        $crit[ 'order' ] = 'cat DESC, pos DESC';
 
         $list = $catalogFinder->findAll( $crit );
 
@@ -556,7 +546,7 @@ class CatalogController extends Sfcms_Controller
 
         if ( $parent ) {
             $form->applyFilter( $parentId );
-            $form->applyProperties( $parent->attributes, $fvalues );
+            $form->applyProperties( $parent->attributes, isset($fvalues)?$fvalues:null );
         } else {
             for( $i = 0; $i < 10; $i ++ ) {
                 $form->getField( 'p' . $i )->hide();

@@ -33,7 +33,11 @@ class GoodsController extends Sfcms_Controller
     public function searchAction()
     {
         $query = filter_var($this->request->get('q'));
-        $query = urldecode( $query );
+        $query = trim( urldecode( $query ) );
+
+        if ( strlen( $query ) < 2 ) {
+            return 'Запрос слишком короткий';
+        }
 
         $this->request->setTitle(t('goods','Goods search'));
         $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());

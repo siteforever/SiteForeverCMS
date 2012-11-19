@@ -137,6 +137,8 @@ class BasketController extends Sfcms_Controller
         ));
 
         return array(
+            'id'     => $basket_prod_id,
+            'count'  => $this->getBasket()->getCount( $basket_prod_id ),
             'widget' => $this->getTpl()->fetch('basket.widget'),
             'msg'    => $basket_prod_name . '<br>'
                       . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),

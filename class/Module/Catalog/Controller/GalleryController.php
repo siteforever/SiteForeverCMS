@@ -192,7 +192,7 @@ class GalleryController extends Sfcms_Controller
                             $g_id = $objImage->getId();
 
                             // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
-                            $pathParts = pathinfo( $images[ 'name' ][ $i ] );
+                            $pathParts = pathinfo( strtolower( $images[ 'name' ][ $i ] ) );
                             // Это чистое изображение, но имя зашифровано
                             $tmb = $dest . '/' . $g_id . '-' . substr( md5( mktime(1) . $trade->alias ), 0, 6 ) . '.' . $pathParts['extension'];
                             // Имя не зашифровано, но с водяным знаком

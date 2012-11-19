@@ -132,7 +132,9 @@ class OrderController extends Sfcms_Controller
             ->addPiece(null, t('order','Checkout'));
 
         $positions = $order->Positions;
-        $delivery  = $order->Delivery;
+//        $delivery  = $order->Delivery;
+        $delivery  = $this->app()->getDelivery();
+        $delivery->setType( $order->delivery_id );
         $payment   = $order->Payment;
 
         $sum = $positions->sum('sum');
@@ -142,18 +144,21 @@ class OrderController extends Sfcms_Controller
             case 'robokassa' :
                 $robokassa = new Robokassa( $this->config->get('service.robokassa') );
                 $robokassa->setInvId( $order->id );
-                $robokassa->setOutSum( $sum + ($delivery?$delivery->cost:0) );
+                $robokassa->setOutSum( $sum + ($delivery?$delivery->cost():0) );
+                $robokassa->setDesc(sprintf('Оплата заказа №%s в интернет-магазине %s',
+                                    $order->id, $this->app()->getConfig('sitename')));
                 break;
             case 'basket':
             default:
         }
 
         return array(
-            'order' => $order,
+            'order'     => $order,
             'positions' => $positions,
-            'delivery' => $delivery,
+            'delivery'  => $delivery,
             'payment'   => $order->Payment,
-            'sum'   => $delivery->cost + $positions->sum('sum'),
+            'sum'       => $sum,
+            'total'     => $delivery->cost($sum) + $sum,
             'robokassa' => $robokassa,
         );
     }

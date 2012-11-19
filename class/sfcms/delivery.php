@@ -22,6 +22,7 @@ class Delivery
     /** @var Data_Object_Delivery */
     protected $delivery = null;
 
+
     /**
      * @param Session $session
      */
@@ -31,6 +32,7 @@ class Delivery
         $this->session = $session;
         $this->id = $this->session->get('delivery');
     }
+
 
     /**
      * @return \Data_Object_Delivery|null
@@ -51,18 +53,23 @@ class Delivery
         return $this->delivery;
     }
 
+
     /**
      * Стоимость доставки
+     * @param float $sum
      * @return float
      */
-    public function cost()
+    public function cost( $sum = null )
     {
         try {
             $obj = $this->getObject();
         } catch ( Exception $e ) {
             return null;
         }
-        if ( $this->basket->getSum() >= 4000 ) {
+        if ( null === $sum && $this->basket->getSum() ) {
+            $sum = $this->basket->getSum();
+        }
+        if ( $sum >= 4000 ) {
             return $obj->cost <= 400 ? 0 : $obj->cost - 400;
         }
         return $obj->cost;

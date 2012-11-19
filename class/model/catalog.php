@@ -226,6 +226,19 @@ class Model_Catalog extends Sfcms_Model
 
 
     /**
+     * Товары, отсортированные по top
+     * @param int $limit
+     * @return array|Data_Collection
+     */
+    public function findProductsSortTop( $limit = 4 )
+    {
+        return $this->with('Gallery')
+            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0',array(),'top DESC', $limit);
+    }
+
+
+
+    /**
      * Поиск товаров по ключевой фразе
      * @param $query
      * @return Data_Collection

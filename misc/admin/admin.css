@@ -227,6 +227,8 @@ input.image {
 div.siteforeverModal {
     width: 950px;
     margin-left: -475px;
+    /*height: 80%;*/
+    /*margin-top: -20%;*/
 }
 
 .ui-jqgrid .ui-jqgrid-btable th,

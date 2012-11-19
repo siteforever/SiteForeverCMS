@@ -4,7 +4,8 @@
 
 Номер заказа: {$order_n}
 Дата:         {$date}
-{*Ссылка:       {$ord_link}*}
+Ссылка для просмотра заказа:
+{$ord_link}
 
 {foreach from=$positions item="pos"}
 Наименование: {$pos.articul}
@@ -15,10 +16,10 @@
 {/foreach}
 
 {if $delivery}
-Доставка {$delivery->name}
-Стоимость {$delivery->cost}
+Доставка:  {$delivery->getObject()->name}
+Стоимость: {$delivery->cost($sum)}
+Адрес:     {$order->address}
 {/if}
 
 Всего: {$total_count}
 Сумма: {$total_summa}
-

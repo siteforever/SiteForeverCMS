@@ -21,22 +21,21 @@ require([
 ){
     $(document).ready($.proxy(function($){
 
-        if ( script && script.init && "function" == typeof script.init) {
-            script.init();
-        }
-
         if ( basket && basket.init && "function" == typeof basket.init) {
             basket.init();
         }
 
+        if ( script && script.init && "function" == typeof script.init) {
+            script.init();
+        }
 
         $('a.gallery').gallery();
         $('span.captcha-reload').captcha();
 
         // добавить в корзину
         $(document).on('click', 'input.basket-add', function(){
-            var product = $(this).data('product');
-            var properties = [];
+            var product = $(this).data('product'),
+                properties = [];
             $( "input,select","#properties").each(function(){
                 properties.push( $(this).val() );
             });
@@ -45,7 +44,8 @@ require([
                 product,
                 $(this).parent().find('input.b-product-basket-count').val(),
                 $(this).data('price'),
-                properties.join(", ")
+                properties.join(", "),
+                script.basket &&  typeof script.basket == 'function' ? script.basket : false
             );
         });
 

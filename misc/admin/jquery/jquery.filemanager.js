@@ -10,6 +10,8 @@ define("admin/jquery/jquery.filemanager",[
     "jui",
     "elfinder/js/elfinder.min",
     "elfinder/js/i18n/elfinder.ru"
+//    "elfinder-2.0-rc1/js/elfinder.min",
+//    "elfinder-2.0-rc1/js/i18n/elfinder.ru"
 ], function($, require){
 
     $.fn.filemanager = function () {

@@ -25,9 +25,16 @@ php_value register_globals          off
 </Files>
 
 RewriteEngine on
+RewriteBase /
 
-RewriteCond %{REQUEST_FILENAME} !^favicon\.ico
+# На запросы к php файлам кроме программы sxd выводить 404 Not found
+RewriteCond %{THE_REQUEST} !(sxd)
+RewriteRule ^(.*)\.php$ / [L,R=404]
+
+# Переписываем пути, если есть подозрение, что идет обращение к странице сайта
+RewriteCond %{REQUEST_FILENAME} !(php|ico|jpg|jpeg|png|gif|css|js)$
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 
-RewriteRule ([^\?]*) index.php?route=$1 [L]
+RewriteRule ([^\?]*)$ ?route=$1 [L]
+
