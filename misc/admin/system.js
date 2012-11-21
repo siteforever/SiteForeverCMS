@@ -5,11 +5,13 @@
  */
 
 define([
-    "jquery"
+    "jquery",
+    "jquery/jquery.gallery"
 ], function($){
     return {
         "init" : function() {
             $('#tabs').tabs();
+            $('a.assembly').gallery();
         }
     }
 });

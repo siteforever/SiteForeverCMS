@@ -18,6 +18,7 @@
  * @property int hidden
  * @property int protected
  * @property int deleted
+ * @property Data_Collection Goods
  * @property Data_Object_Manufacturers Manufacturer
  * @property Data_Object_CatalogGallery Gallery
  * @property Data_Object_Page Page

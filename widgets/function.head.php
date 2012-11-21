@@ -71,12 +71,15 @@ function smarty_function_head( $params )
     if ( $request->get('admin') ) {
         $rjsConfig['paths']['app'] = 'admin';
         $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
-        $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'));
+        $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
 
         $rjsConfig['map'] = array(
             '*' => array(
                 'wysiwyg' => 'admin/editor/'.$settings->get('editor', 'type'), // tinymce, ckeditor, elrte
+                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
+//                'jqgrid'  => 'admin/jquery/jqgrid',
+                'jqgrid'  => 'admin/jquery/jqgrid-min',
             ),
         );
 
@@ -96,7 +99,7 @@ function smarty_function_head( $params )
 
     } else {
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
-        $head[] = "<script type='text/javascript' src='/misc/require-jquery.js' data-main='site'></script>";
+        $head[] = "<script type='text/javascript' src='/misc/require-jquery-min.js' data-main='site'></script>";
     }
 
 

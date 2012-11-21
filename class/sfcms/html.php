@@ -183,4 +183,22 @@ class Html
             . str_replace( array('/','\\'), '/' ,$path['thumb'] ).'"'
             . ($class ? ' class="'.$class.'"' : '').'>';
     }
+
+
+    /**
+     * Минифицирует JavaScript текст
+     * @param $content
+     * @return mixed
+     */
+    public function jsMin( $content )
+    {
+        $content = preg_replace('@[;\n\t ]//[^\n]*?$@ims',"\n",$content);
+        $content = preg_replace('@\/\*[\s\*].*?\*\/@ims','',$content);
+        $content = preg_replace('@\n\/\*.*?\*\/@ims','',$content);
+        $content = preg_replace('@\n[\t ]+@ims',"\n",$content);
+        $content = preg_replace('@;\n;+@ims',';',$content);
+//        $content = preg_replace('@\)(\s+?if)@ims',");$1",$content);
+//        $content = preg_replace('@\n+@ims','',$content);
+        return $content;
+    }
 }

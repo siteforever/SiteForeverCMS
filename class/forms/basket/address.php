@@ -64,7 +64,7 @@ class Forms_Basket_Address extends Form_Form
                 'address'   => array(
                     'type'  => 'textarea',
                     'label' => 'Адрес',
-                    'required',
+//                    'required',
                     'notice' => 'ул. Кораблестроителей, д.59, к.2, кв.103, домофон: 1568, и т.д.',
                 ),
                 'zip'       => array('type'=>'text', 'label'=>'Индекс',),

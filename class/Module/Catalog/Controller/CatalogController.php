@@ -90,13 +90,7 @@ class CatalogController extends Sfcms_Controller
         $this->request->setTitle( $item->title );
         $this->tpl->assign( 'page_number', $this->request->get( 'page', FILTER_SANITIZE_NUMBER_INT, 1 ) );
 
-        // Если открывается раздел каталога
-        if( $item->cat ) {
-            return $this->viewCategory( $item );
-        } else {
-            // Открывается товар
-            return $this->viewProduct( $item );
-        }
+        return $item->cat ? $this->viewCategory( $item ) : $this->viewProduct( $item );
     }
 
     /**
@@ -133,8 +127,8 @@ class CatalogController extends Sfcms_Controller
             );
         }
 
-        $manufId    = $this->request->get('manufacturer', Request::INT, null);
-        $materialId = $this->request->get('material', Request::INT, null);
+        $manufId    = $this->request->get('manufacturer', Request::INT, -1);
+        $materialId = $this->request->get('material', Request::INT, -1);
 //        if ( null === $manufId ) {
 //            $manufId = $this->app()->getSession()->get('manufacturer') ?: false;
 //        }
@@ -143,24 +137,24 @@ class CatalogController extends Sfcms_Controller
 //            $this->app()->getSession()->set('manufacturer', $manufId);
 //        }
 
-        // количество товаров
         $criteria = $catModel->createCriteria();
         $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 ";
         if ( count($categoriesId) ) {
             $criteria->condition .= ' AND `parent` IN (?) ';
             $criteria->params[] = $categoriesId;
         }
-        if ( $manufId ) {
+        if ( $manufId > 0 ) {
             $criteria->condition .= ' AND `manufacturer` = ? ';
             $criteria->params[] = $manufId;
         }
-        if ( $materialId ) {
+        if ( $materialId > 0 ) {
             $criteria->condition .= ' AND `material` = ? ';
             $criteria->params[] = $materialId;
         }
 //            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
 //            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
 
+        // количество товаров
         $count = $catModel->count( $criteria );
 
         $order = $this->config->get( 'catalog.order_default' );
