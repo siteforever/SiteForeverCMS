@@ -8,11 +8,26 @@
 require_once 'class/data/object.php';
 
 /**
+ * @property int id
+ * @property int category_id
+ * @property string alias
+ * @property string name
+ * @property string link
+ * @property string description
+ * @property string image
+ * @property string middle
+ * @property string thumb
+ * @property int pos
+ * @property int main
+ * @property int hidden
+ * @property string desc
+ * @property float cost
+ * @property int active
  * @property string title
  * @property string h1
  * @property \Data_Object_GalleryCategory Category
  */
-class Data_Object_Gallery extends Data_Base_Gallery
+class Data_Object_Gallery extends Data_Object
 {
     /**
      * @return string

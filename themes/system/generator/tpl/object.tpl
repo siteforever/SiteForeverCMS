@@ -5,7 +5,12 @@
  * @link http://siteforever.ru
  */
 
-class Data_Object_{$name} extends Data_Base_{$name}
+/**
+{foreach from=$fields item="f"}
+ * @property {$f.vartype} {$f.name}
+{/foreach}
+ */
+class Data_Object_{$name} extends Data_Object
 {
 
 }

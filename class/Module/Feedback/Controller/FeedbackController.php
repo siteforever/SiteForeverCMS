@@ -5,6 +5,11 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+namespace Module\Feedback\Controller;
+
+use Sfcms;
+use Sfcms_Controller;
+use Forms_Feedback_Default;
 
 class Controller_Feedback extends Sfcms_Controller
 {

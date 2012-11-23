@@ -5,7 +5,14 @@
  * @link http://siteforever.ru
  */
 
-class Data_Object_Payment extends Data_Base_Payment
+/**
+ * @property int id
+ * @property string name
+ * @property string desc
+ * @property string module
+ * @property int active
+ */
+class Data_Object_Payment extends Data_Object
 {
 
 }

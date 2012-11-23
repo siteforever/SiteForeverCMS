@@ -50,6 +50,8 @@ abstract class Module
                     . ( isset( $config['module'] ) ? $config['module'] : ucfirst(strtolower($controller)) )
                     . '\\Module';
         }
+        print_r( self::$controllers );
+//        die(sprintf('Contoroller %s not defined', $controller));
 //        throw new Sfcms_Http_Exception(sprintf('Contoroller %s not defined', $controller),404);
         throw new \RuntimeException(sprintf('Contoroller %s not defined', $controller),404);
     }

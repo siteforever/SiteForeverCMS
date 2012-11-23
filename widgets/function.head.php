@@ -14,7 +14,6 @@ function smarty_function_head( $params )
     $app        = App::getInstance();
     $request    = $app->getRequest();
     $config     = $app->getConfig();
-    $settings   = $app->getSettings();
 
     $head = array();
     $head[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
@@ -76,7 +75,7 @@ function smarty_function_head( $params )
 
         $rjsConfig['map'] = array(
             '*' => array(
-                'wysiwyg' => 'admin/editor/'.$settings->get('editor', 'type'), // tinymce, ckeditor, elrte
+                'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
                 'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
 //                'jqgrid'  => 'admin/jquery/jqgrid',
                 'jqgrid'  => 'admin/jquery/jqgrid-min',

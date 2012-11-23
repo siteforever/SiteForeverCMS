@@ -16,7 +16,7 @@
 abstract class Data_Table
 {
     /**
-     * Тип базы
+     * Тип таблицы
      * @var string
      */
     //protected $engine   = 'MyISAM';
@@ -104,7 +104,7 @@ abstract class Data_Table
      */
     public function __toString()
     {
-        return DBPREFIX.$this->getTable();
+        return ( defined('DBPREFIX') ? DBPREFIX : '' ) . $this->getTable();
     }
 
     /**

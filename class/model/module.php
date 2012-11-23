@@ -1,11 +1,11 @@
 <?php
 /**
- * Модель Modules
+ * Модель Module
  * @author SiteForeverCMS Generator
  * @link http://siteforever.ru
  */
 
-class Model_Modules extends Sfcms_Model
+class Model_Module extends Sfcms_Model
 {
 
 }

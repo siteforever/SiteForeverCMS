@@ -14,16 +14,16 @@ class Data_Criteria
     private $_criteria;
     
     /**
-     * @var string
+     * @var Data_Table
      */
     private $_table;
 
     /**
-     * @param string $table
+     * @param Data_Table $table
      * @param array|Db_Criteria $criteria
      * @throws Data_Exception
      */
-    public function __construct( $table, $criteria = null )
+    public function __construct( Data_Table $table, $criteria = null )
     {
         if ( is_array( $criteria ) ) {
             $this->_criteria = new Db_Criteria( $criteria );
@@ -45,6 +45,15 @@ class Data_Criteria
     {
         $sql    = array();
         $select = '*';
+
+        // Заменяем * на список полей
+        if ( $this->_table instanceof Data_Table && '*' == $this->_criteria->select ) {
+            /** @var $field Data_Field */
+            $this->_criteria->select = array_map(function($field){
+                return $field->getName();
+            },$this->_table->getFields());
+        }
+
         if ( is_string( $this->_criteria->select ) ) {
             $select = $this->_criteria->select;
         } elseif ( is_array( $this->_criteria->select ) ) {
@@ -54,8 +63,7 @@ class Data_Criteria
         $sql[]  = "FROM `{$this->_table}`";
         if ( $this->_criteria->condition ) {
             $sql[]  = "WHERE {$this->_criteria->condition}";
-        }
-        else {
+        } else {
             $this->_criteria->params = array();
         }
         if ( $this->_criteria->order ) {

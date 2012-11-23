@@ -5,8 +5,9 @@
  */
 class Sfcms_View_Layout extends Sfcms_View_IView
 {
-    const JQ_UI_THEME = 'redmond';
-    const JQ_UI_VERSION = '1.8.21';
+//    const JQ_UI_THEME = 'redmond';
+    const JQ_UI_THEME = 'flick';
+    const JQ_UI_VERSION = '1.9.1';
 
     protected function init()
     {

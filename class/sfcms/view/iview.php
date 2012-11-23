@@ -22,14 +22,6 @@ abstract class Sfcms_View_IView
     }
 
     /**
-     * @return Settings
-     */
-    protected function getSettings()
-    {
-        return $this->_app->getSettings();
-    }
-
-    /**
      * @return TPL_Driver
      */
     protected function getTpl()

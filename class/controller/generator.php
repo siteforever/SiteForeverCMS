@@ -77,13 +77,11 @@ class Controller_Generator extends Sfcms_Controller
         $omodel  = $this->tpl->fetch('system:generator.tpl.model');
         $oobject = $this->tpl->fetch('system:generator.tpl.object');
         $otable  = $this->tpl->fetch('system:generator.tpl.table');
-        $obase   = $this->tpl->fetch('system:generator.tpl.base');
 
         $path   = ROOT.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR;
         $fmodel  = $path.'model'.DIRECTORY_SEPARATOR.$filename;
         $fobject  = $path."data".DIRECTORY_SEPARATOR."object".DIRECTORY_SEPARATOR.$filename;
         $ftable  = $path."data".DIRECTORY_SEPARATOR."table".DIRECTORY_SEPARATOR.$filename;
-        $fbase  = $path."data".DIRECTORY_SEPARATOR."base".DIRECTORY_SEPARATOR.$filename;
 
         if ( ! file_exists( $fmodel ) ) {
             file_put_contents( $fmodel, $omodel );
@@ -93,15 +91,8 @@ class Controller_Generator extends Sfcms_Controller
         }
         file_put_contents( $ftable, $otable );
 
-        if ( ! file_exists( dirname( $fbase ) ) ) {
-            @mkdir( dirname( $fbase ), 0755, true );
-        }
-
-        file_put_contents( $fbase, $obase );
-
         return "Model: {$fmodel}\n"
             . "Object: {$fobject}\n"
-            . "Table: {$ftable}\n"
-            . "Base: {$fbase}\n";
+            . "Table: {$ftable}\n";
     }
 }

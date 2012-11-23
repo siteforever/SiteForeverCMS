@@ -63,6 +63,7 @@ class Structure extends Route
      */
     private function getPageState( Data_Object_Page $page )
     {
+//        $className = Module::getModuleClass( ucfirst( strtolower( $page->controller ) ) );
         $className = Module::getModuleClass( $page->controller );
         $field = $className::relatedField();
         $id = $page->get( $field );

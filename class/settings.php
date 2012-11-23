@@ -24,9 +24,8 @@ class Settings
      */
     public function __construct()
     {
-        $this->_model   = App::getInstance()->getModel('Settings');
-
         $modules    = App::getInstance()->getModules();
+        $this->_model   = App::getInstance()->getModel('Settings');
 
         /** @param $module Application_Module */
         foreach ( $modules as $module ) {

@@ -129,16 +129,19 @@ class CatalogController extends Sfcms_Controller
 
         $manufId    = $this->request->get('manufacturer', Request::INT, -1);
         $materialId = $this->request->get('material', Request::INT, -1);
-//        if ( null === $manufId ) {
-//            $manufId = $this->app()->getSession()->get('manufacturer') ?: false;
-//        }
-//        if ( null !== $manufId ) {
-//            $this->request->set('manufacturer', $manufId);
-//            $this->app()->getSession()->set('manufacturer', $manufId);
-//        }
+        if ( -1 == $manufId ) {
+            $manufId = $this->app()->getSession()->get('manufacturer') ?: -1;
+        }
+        if ( 0 < $manufId ) {
+            $this->request->set('manufacturer', $manufId);
+            $this->app()->getSession()->set('manufacturer', $manufId);
+        }
 
         $criteria = $catModel->createCriteria();
-        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND cat = 0 ";
+
+//        $criteria->condition->condAnd( array( 'deleted' => 0, 'hidden' => 0, 'cat' => 0 ) );
+
+        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 ";
         if ( count($categoriesId) ) {
             $criteria->condition .= ' AND `parent` IN (?) ';
             $criteria->params[] = $categoriesId;
@@ -187,14 +190,12 @@ class CatalogController extends Sfcms_Controller
 
         $list = $catModel->with('Gallery','Manufacturer','Material')->findAll( $criteria );
 
+        // Оптимизированный список свойств
         $properties = array();
-
-        /**
-         * @var Data_Object_Catalog $l
-         */
-        foreach( $list as $l ) {
+        /** @var Data_Object_Catalog $catItem */
+        foreach( $list as $catItem ) {
             for( $i = 0; $i <= 9; $i ++ ) {
-                $properties[ $l->getId() ][ $parent[ 'p' . $i ] ] = $l[ 'p' . $i ];
+                $properties[ $catItem->getId() ][ $parent[ 'p' . $i ] ] = $catItem[ 'p' . $i ];
             }
         }
 

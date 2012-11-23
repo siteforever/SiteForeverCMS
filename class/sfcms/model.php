@@ -3,6 +3,7 @@
  * Интерфейс модели
  */
 use Sfcms\Component;
+use RuntimeException;
 
 abstract class Sfcms_Model extends Component
 {
@@ -14,6 +15,13 @@ abstract class Sfcms_Model extends Component
     const MANY_TO_ONE   = 'belongs'; // принадлежит
 
     const STAT          = 'stat'; // статистическая связь
+
+    /**
+     * Тип таблицы
+     * @var string
+     */
+    //protected $engine   = 'MyISAM';
+    protected $engine   = 'InnoDB';
 
     /**
      * @var db
@@ -44,13 +52,24 @@ abstract class Sfcms_Model extends Component
      */
     protected $data;
 
-    protected static $fields = array();
+    /**
+     * Список полей
+     * @var array
+     */
+    protected $fields = array();
 
+    /**
+     * Список инстанцированных классов модели
+     * @var array
+     */
     protected static $all_class = array();
 
     protected static $exists_tables;
 
     protected static $dao;
+
+    /** @var array Список моделей, доступных в системе */
+    protected static $models = null;
 
     /**
      * Количество relation полей, которые должны быть загружены группой
@@ -187,22 +206,28 @@ abstract class Sfcms_Model extends Component
      * Вернет нужную модель
      * @static
      * @param  $class_name
-     * @return \Sfcms_Model
-     * @throws \RuntimeException
+     * @return Sfcms_Model
+     * @throws RuntimeException
      */
     final static public function getModel( $class_name )
     {
-        if ( ! $class_name ) {
-            throw new \RuntimeException( sprintf('Model "%s" is not defined', $class_name) );
+        if ( ! preg_match('/[\\_]/i', $class_name) ) {
+            // Если указан псевдоним
+            // Псевдонимом считается класс, не имеющий символов \ и _
+            if ( null === self::$models ) {
+                self::$models = self::app()->getModels();
+            }
+            $modelKey = strtolower( $class_name );
+            if ( isset( self::$models[ $modelKey ] ) ) {
+                $class_name = self::$models[ $modelKey ];
+            }
         }
-        if ( ! preg_match('/^model_/i', $class_name) ) {
-            $class_name = 'Model_' . $class_name;
-        }
+
         if( ! isset( self::$all_class[ $class_name ] ) ) {
             if( class_exists( $class_name, true ) ) {
                 self::$all_class[ $class_name ] = new $class_name();
             } else {
-                throw new \RuntimeException( 'Model "' . $class_name . '" not found' );
+                throw new RuntimeException( sprintf('Model "%s" not found',$class_name) );
             }
         }
         return self::$all_class[ $class_name ];
@@ -221,13 +246,15 @@ abstract class Sfcms_Model extends Component
         if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
             if ( $obj ) {
-                if ( $reFill ) $obj->attributes = $data;
+                if ( $reFill ) {
+                    $obj->attributes = $data;
+                }
                 return $obj;
             }
         }
         $class_name = $this->objectClass();
         $obj = new $class_name( $this, $data );
-        if( ! is_null( $obj->getId() ) ) {
+        if( null !== $obj->id ) {
             $this->addToMap( $obj );
             $obj->markClean();
         }
@@ -508,6 +535,8 @@ abstract class Sfcms_Model extends Component
             throw new Sfcms_Model_Exception( 'Not valid criteria' );
         }
 
+//        if ( $criteria-> )
+
         $raw = $this->db->fetchAll( $criteria->getSQL() );
 
         if( count( $raw ) ) {
@@ -646,7 +675,7 @@ abstract class Sfcms_Model extends Component
         $obj = $this->find( $id );
         if( $obj ) {
             Data_Watcher::del( $obj );
-            if( $this->getDB()->delete( $this->getTableName(), 'id = :id', array( ':id'=> $obj->getId() ) ) ) {
+            if( $this->getDB()->delete( $this->getTableName(), '`id` = :id', array( ':id'=> $obj->getId() ) ) ) {
                 $this->onDeleteSuccess( $id );
                 return true;
             }
@@ -690,7 +719,7 @@ abstract class Sfcms_Model extends Component
         }
 
         $criteria = new Data_Criteria( $this->getTable(), array(
-            'select'    => 'COUNT(*)',
+            'select'    => 'COUNT(`id`)',
             'cond'      => $cond,
             'params'    => $params,
         ) );

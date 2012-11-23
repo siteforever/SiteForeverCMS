@@ -11,6 +11,10 @@ $include_list[] = SF_PATH;
 $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));
 
+set_error_handler( function ( $errno, $errstr) {
+    throw new Exception( $errstr, $errno );
+}, E_WARNING & E_NOTICE & E_DEPRECATED & E_USER_WARNING & E_USER_NOTICE & E_ERROR );
+
 require_once 'application/abstract.php';
 
 use Sfcms\Controller\Resolver;
@@ -24,9 +28,6 @@ use Sfcms\Controller\Resolver;
  */
 class App extends Application_Abstract
 {
-
-    static private $DEBUG;
-
     /**
      * Запуск приложения
      * @static
@@ -58,7 +59,7 @@ class App extends Application_Abstract
      */
     static public function isDebug()
     {
-        return App::$DEBUG;
+        return self::getInstance()->getConfig('debug.profiler');
     }
 
     /**
@@ -68,11 +69,6 @@ class App extends Application_Abstract
      */
     public function init()
     {
-        App::$DEBUG = $this->getConfig()->get( 'debug.profiler' );
-        if( App::isDebug() ) {
-            std_error::init( $this->getLogger() );
-        }
-
         // Language
         $this->getConfig()->setDefault( 'language', 'en' );
         if ( ! $this->getRequest()->get('lang') ) {
@@ -89,10 +85,9 @@ class App extends Application_Abstract
 
         // DB prefix
         if( ! defined( 'DBPREFIX' ) ) {
-            if( $this->getConfig()->get( 'db.prefix' ) ) {
+            if ( $this->getConfig()->get( 'db.prefix' ) ) {
                 define( 'DBPREFIX', $this->getConfig()->get( 'db.prefix' ) );
-            }
-            else {
+            } else {
                 define( 'DBPREFIX', '' );
             }
         }
@@ -114,7 +109,7 @@ class App extends Application_Abstract
     {
         // запуск сессии
         $this->getSession();
-        ob_start();
+//        ob_start();
 
         $result = '';
 
@@ -187,10 +182,10 @@ class App extends Application_Abstract
             $result = $this->getRequest()->getResponse();
         }
 
-        if ( ! $result ) { // Потом достаем из основного потока вывода
-            $result = ob_get_contents();
-        }
-        ob_end_clean();
+//        if ( ! $result ) { // Потом достаем из основного потока вывода
+//            $result = ob_get_contents();
+//        }
+//        ob_end_clean();
 
 //        $this->getLogger()->log($this->getRequest()->getAjaxType(),'ajax type');
         if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
@@ -255,7 +250,7 @@ class App extends Application_Abstract
                 "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
             );
             $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage() / 1024, 3 ) . " kb.", 'app' );
+            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage(true) / 1024, 3 ) . " kb.", 'app' );
         }
     }
 }

@@ -5,7 +5,13 @@
  * @link http://siteforever.ru
  */
 
-class Data_Object_Material extends Data_Base_Material
+/**
+ * @property int id
+ * @property string name
+ * @property string image
+ * @property int active
+ */
+class Data_Object_Material extends Data_Object
 {
 
 }

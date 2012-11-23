@@ -78,10 +78,16 @@ abstract class Application_Abstract
     protected $_controllers = null;
 
     /**
+     * Список моделей
+     * @var array
+     */
+    protected $_models = null;
+
+    /**
      * Список модулей и контроллеры в них
      * @var array
      */
-    protected $_modules_config = array();
+    public $_modules_config = array();
 
     /**
      * Время запуска
@@ -104,7 +110,7 @@ abstract class Application_Abstract
     /**
      * @var std_logger
      */
-    protected $_logger = null;
+    private $_logger = null;
 
     /**
      * Список установленных в систему модулей
@@ -182,7 +188,9 @@ abstract class Application_Abstract
 
     public function __set($name, $value)
     {
-        $this->_logger->log( "$name = $value", 'app_set' );
+        $this
+            ->getLogger()
+            ->log( sprintf('%s = %s',$name,$value), 'app_set' );
     }
 
     /**
@@ -328,10 +336,10 @@ abstract class Application_Abstract
      */
     public function getLogger()
     {
-
         if ( null !== $this->_logger ) {
             return $this->_logger;
         }
+
         if ( ! App::isDebug() ) {
             $this->_logger = std_logger::getInstance( new std_logger_blank() );
             return $this->_logger;
@@ -499,30 +507,70 @@ abstract class Application_Abstract
 
 
     /**
-     * Загружает список известных системе модулей
-     * <p>По умолчаню загружается файл protected/controllers.php, содержащийся в директории с CMS.
-     * Но, если CMS находится отдельно от сайта, то загружается и специфический для сайта, аналогичный файл.</p>
-     * <p>В этом конфиге определяется как список известных системе контроллеров, так и некоторые их свойства.
-     * Такими свойствами могут быть Модуль, в котором находится контроллер, его класс, его местоположение,
-     * если они не совпадают с принятыми в системе по умолчанию.</p>
+     * Загружает конфиги модулей
+     * @return bool
+     */
+    protected function loadModulesConfigs()
+    {
+        if ( ! $this->_modules_config ) {
+            $_ = $this;
+            $module_model = $this->getModel('Model_Module');
+            $modules = $module_model->findAll(array('order'=>'pos'));
+
+            /** @var $module Data_Object_Module */
+            array_map(function( $module ) use ( $_ ) {
+                if ( $module->active ) {
+                    $mod_config = require_once $module->path.'/config.php';
+                    $_->_modules_config[ $module->name ] = $mod_config;//['controllers'];
+                }
+            },iterator_to_array($modules));
+        }
+        return true;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getModels()
+    {
+        if ( null === $this->_models ) {
+
+            $this->loadModulesConfigs();
+
+            $this->_models = array();
+            foreach ( $this->_modules_config as $module => $config ) {
+                foreach ( $config['models'] as $model => $params ) {
+                    $class = '';
+                    if ( is_string( $params ) ) {
+                        $class = $params;
+                    } else if ( is_array( $params ) && isset( $params['class'] ) ) {
+                        $class = $params['class'];
+                    }
+                    $this->_models[strtolower($model)] = $class;
+                }
+            }
+        }
+        return array_filter($this->_models);
+    }
+
+
+    /**
+     * Загружает список известных системе контроллеров
+     * <p>Загружется список установленных модулей.</p>
+     * <p>Из них формируется список контроллеров, которые имеются в системе</p>
+
      * @return array
      */
     public function getControllers()
     {
         if ( null === $this->_controllers ) {
 
-            $this->_modules_config = require SF_PATH . '/protected/modules.php';
-            if ( ROOT != SF_PATH && file_exists( ROOT . '/protected/controllers.php' ) ) {
-                $this->_modules_config = array_merge( $this->_modules_config, require ROOT . '/protected/modules.php' );
-            }
+            $this->loadModulesConfigs();
 
             $this->_controllers = array();
-            foreach ( $this->_modules_config as $module => $controllers ) {
-                foreach ( $controllers as $controller => $params ) {
-                    if ( 'settings' == $controller ) {
-                        $this->_modules[ $module ]   = new Application_Module( array( 'name'=>$module,'params'=>$params ) );
-                        continue;
-                    }
+            foreach ( $this->_modules_config as $module => $config ) {
+                foreach ( $config['controllers'] as $controller => $params ) {
                     if ( 'System' == $module ) {
                         $params['module'] = null;
                     } else {

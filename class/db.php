@@ -306,6 +306,7 @@ class DB
             $this->result->execute( $params );
 //        } catch ( PDOException $e ) {
 //            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
+//            die( 'ERROR: '.$sql.' : '.print_r($params,1) );
 //        }
 
         /*if ( count($params) ) {

@@ -4,8 +4,11 @@
  * @author SiteForeverCMS Generator
  * @link http://siteforever.ru
  */
-
-class Data_Object_Product_Type extends Data_Base_Product_Type
+/**
+ * @property int id
+ * @property string name
+ */
+class Data_Object_Product_Type extends Data_Object
 {
 
 }
