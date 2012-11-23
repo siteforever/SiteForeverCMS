@@ -20,7 +20,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( is_null( $this->object ) ) {
-            $this->object = Sfcms_Model::getModel('Test');
+            $this->object = Sfcms_Model::getModel('Model_Test');
         }
     }
 
@@ -53,7 +53,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testGetModel()
     {
-        $this->assertTrue( $this->object->getModel('Test') instanceof Model_Test );
+        $this->assertTrue( $this->object->getModel('Model_Test') instanceof Model_Test );
     }
 
     /**

@@ -12,5 +12,6 @@ return array(
     ),
     'models' => array(
         'News' => 'Model_News',
+        'NewsCategory' => 'Model_NewsCategory',
     ),
 );
