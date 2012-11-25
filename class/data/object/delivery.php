@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Data_Object_Delivery extends Data_Base_Delivery
+class Data_Object_Delivery extends Data_Object
 {
 
 }

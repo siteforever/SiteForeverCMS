@@ -65,7 +65,7 @@ class Data_Object_Page extends Data_Object
      */
     public function getAlias()
     {
-        if ( ! $this->data['alias'] ) {
+        if ( empty( $this->data['alias'] ) ) {
             $this->data['alias'] = trim( Sfcms_i18n::getInstance()->translit(strtolower($this->data['name'])), '/ ' );
         }
         return $this->data['alias'];

@@ -23,6 +23,7 @@ return array(
         'Delivery'         => 'Model_Delivery',
         'Manufacturers'    => 'Model_Manufacturers',
         'Material'         => 'Model_Material',
+        'Metro'            => 'Model_Metro',
         'Order'            => 'Model_Order',
         'OrderPosition'    => 'Model_OrderPosition',
         'OrderStatus'      => 'Model_OrderStatus',
