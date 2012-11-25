@@ -45,7 +45,7 @@ class Data_Object_News extends Data_Object
 
     public function getTitle()
     {
-        if ( $this->data['title'] ) {
+        if ( isset( $this->data['title'] ) ) {
             return $this->data['title'];
         }
         return $this->data['name'];
