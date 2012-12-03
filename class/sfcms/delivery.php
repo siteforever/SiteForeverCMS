@@ -69,8 +69,8 @@ class Delivery
         if ( null === $sum && $this->basket->getSum() ) {
             $sum = $this->basket->getSum();
         }
-        if ( $sum >= 4000 ) {
-            return $obj->cost <= 400 ? 0 : $obj->cost - 400;
+        if ( $sum >= 5000 ) {
+            return $obj->cost <= 500 ? 0 : $obj->cost - 500;
         }
         return $obj->cost;
     }

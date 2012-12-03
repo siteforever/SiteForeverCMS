@@ -26,6 +26,7 @@ class Controller_Setting extends Sfcms_Controller
      */
     public function saveAction()
     {
+        // todo Переписать работу с настройками системы из базы
         $model      = $this->getModel('Settings');
 
         $settings   = $this->app()->getSettings();

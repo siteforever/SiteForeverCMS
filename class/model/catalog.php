@@ -26,16 +26,6 @@ class Model_Catalog extends Sfcms_Model
      */
     protected $form = null;
 
-    /**
-     * Инициализация
-     * @return void
-     */
-    protected function Init()
-    {
-        $this->app()->addScript( $this->request->get( 'path.misc' ) . '/etc/catalog.js' );
-        $this->app()->addStyle( $this->request->get( 'path.misc' ) . '/etc/catalog.css' );
-    }
-
 
     public function relation()
     {
@@ -722,7 +712,7 @@ class Model_Catalog extends Sfcms_Model
                 'title' => t('catalog','Name'),
                 'width' => 200,
                 'format' => array(
-                    'link' => array('controller'=>'goods', 'action'=>'edit','id'=>':id'),
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'trade','edit'=>':id'),
                 ),
             ),
             'parent'  => array(

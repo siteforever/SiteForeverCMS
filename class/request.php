@@ -125,6 +125,7 @@ class Request
         return App::getInstance();
     }
 
+
     /**
      * @return string
      */
@@ -145,6 +146,23 @@ class Request
     /**
      * @return string
      */
+    public function getModule()
+    {
+        return $this->get( 'module' );
+    }
+
+    /**
+     * @param string $module
+     */
+    public function setModule( $module )
+    {
+        $this->set( 'module', $module );
+    }
+
+
+    /**
+     * @return string
+     */
     public function getAction()
     {
         return $this->get( 'action' );
@@ -157,6 +175,7 @@ class Request
     {
         $this->set( 'action', $action );
     }
+
 
     /**
      * @param $description

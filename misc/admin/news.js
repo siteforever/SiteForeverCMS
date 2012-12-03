@@ -6,11 +6,12 @@
 
 define([
     "jquery",
-    "siteforever",
     "module/modal",
     "i18n",
+    "module/alert",
+    "siteforever",
     "jquery/jquery.form"
-],function($, $s, Modal, i18n){
+],function($, Modal, i18n){
     return {
         "behavior" : {
             'a.do_delete' : {
@@ -23,7 +24,7 @@ define([
                             if (!response.error) {
                                 $(node).parents('tr').remove();
                             }
-                            $s.alert(response.msg, 1500);
+                            $alert(response.msg, 1500);
                         },this), "json");
                     } catch (e) {
                         console.error(e.message );

@@ -6,11 +6,12 @@
  */
 define([
     "jquery",
-    "siteforever",
     "module/modal",
     "i18n",
+    "module/alert",
+    "siteforever",
     "jui"
-],function($, $s, Modal, i18n){
+],function($, Modal, i18n, $alert){
 
     return {
         "behavior" : {
@@ -53,7 +54,7 @@ define([
 
             '#catalog_save_position' : {
                 "click" : function( event, node ){
-                    $s.alert('Сохранение...');
+                    $alert('Сохранение...');
                     var pos = [];
                     $('input.trade_pos').each( function(){
                         pos.push( { key: $(this).attr('rel'), val: $(this).val() } );
@@ -110,7 +111,7 @@ define([
                                 });
                             }, this ));
                     }
-                    $('#gallery_dialog').html($s.i18n('Loading...')).dialog('open');
+                    $('#gallery_dialog').html(i18n('Loading...')).dialog('open');
                     $.get( $( node ).attr('href'), $.proxy( function ( response ) {
                         $('#gallery_dialog').html( response );
                     }, this) );
@@ -125,14 +126,14 @@ define([
                         return false;
                     }
                     try {
-                        $s.alert('Удаление');
+                        $alert('Удаление');
                         $.get( $(node).attr('href'), function ( response ) {
                             if ( response.error ) {
-                                $s.alert(response.msg);
+                                $alert(response.msg);
                                 return;
                             }
                             $('div.a-gallery').replaceWith(response.msg);
-                            $s.alert.close();
+                            $alert.close();
                         },'json');
                     } catch (e) {
                         console.error(e.message );

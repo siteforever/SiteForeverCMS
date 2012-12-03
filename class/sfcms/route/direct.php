@@ -15,10 +15,13 @@ class Direct extends Route
     /** @param array */
     private static $controllers = null;
 
+    private $app;
+
     public function __construct()
     {
+        $this->app = App::getInstance();
         if ( null === self::$controllers ) {
-            self::$controllers = App::getInstance()->getControllers();
+            self::$controllers = $this->app->getControllers();
         }
     }
 
@@ -36,7 +39,7 @@ class Direct extends Route
                 return false;
             }
 
-            $resolver = App::getInstance()->getResolver();
+            $resolver = $this->app->getResolver();
             $command = $resolver->resolveController( $routePieces[0], $routePieces[1] );
 
             $relectionClass = new ReflectionClass( $command['controller'] );

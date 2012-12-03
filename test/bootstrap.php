@@ -15,6 +15,7 @@ define('ROOT', SF_PATH );
 define('TEST', true);
 
 $_SERVER['HTTP_HOST'] = 'test';
+$_SERVER['REQUEST_METHOD'] = 'TEST';
 
 require_once 'PHPUnit/Autoload.php';
 

@@ -6,11 +6,11 @@
 define([
     "jquery",
     "module/parser",
-    "siteforever",
     "module/modal",
     "i18n",
+    "siteforever",
     "jquery/jquery.form"
-],function ($, parser, $s, Modal, i18n) {
+],function ($, parser, Modal) {
     return {
         "init" : function(){
             parser();

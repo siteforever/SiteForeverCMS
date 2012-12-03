@@ -10,6 +10,7 @@ use App;
 use Sfcms_Controller;
 use Model_Catalog;
 use Sfcms\JqGrid\Provider;
+use Sfcms\Yandex\Yml;
 
 class GoodsController extends Sfcms_Controller
 {
@@ -21,7 +22,7 @@ class GoodsController extends Sfcms_Controller
     public function access()
     {
         return array(
-            USER_ADMIN => array('admin','jqgrid'),
+            USER_ADMIN => array('admin','grid','edit'),
         );
     }
 
@@ -71,11 +72,41 @@ class GoodsController extends Sfcms_Controller
      * Реакция на аяксовый запрос от jqGrid
      * @return string
      */
-    public function jqgridAction()
+    public function gridAction()
     {
         /** @var $model Model_Catalog */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
         return $provider->getJsonData();
+    }
+
+    /**
+     * @param int $id
+     */
+    public function editAction( $id )
+    {
+        if ( ! $id ) {
+            return 'id not defined';
+        }
+        /** @var $model Model_Catalog */
+        $model = $this->getModel('Catalog');
+        $product = $model->find( $id );
+        $form = $model->getForm();
+        $form->setData( $product->attributes );
+        return $form->html(false,false);
+    }
+
+    public function ymlAction()
+    {
+        $model = $this->getModel('Catalog');
+        $products = $model->findAll('cat = 0 AND hidden = 0 AND deleted = 0 AND protected = 0');
+        $categories = $model->findAll('cat = 1 AND hidden = 0 AND deleted = 0 AND protected = 0');
+
+        $yml = new Yml( $this->app() );
+        $yml->setCollection( $products );
+        $yml->setCategories( $categories );
+
+        $this->request->setAjax(true, \Request::TYPE_XML);
+        return $yml->output();
     }
 }

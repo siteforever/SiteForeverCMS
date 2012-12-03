@@ -34,7 +34,7 @@ class Model_Page extends Sfcms_Model
     /** @var array ControllerLink Cache */
     private $_controller_link = array();
 
-    public function Init()
+    public function init()
     {
         $this->addPlugin( new CatalogPlugin(), 'catalog' );
         $this->addPlugin( new NewsPlugin(), 'news' );

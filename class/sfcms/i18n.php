@@ -61,23 +61,21 @@ class Sfcms_i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
-        $dictFile   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
-                                . DIRECTORY_SEPARATOR . 'lang'
-                                . DIRECTORY_SEPARATOR . $this->_lang . '.php';
+        $dictFile   = SF_PATH  . '/protected/lang/' . $this->_lang . '.php';
         if( ! file_exists( $dictFile ) ) {
             throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile );
         }
         $this->_dictionary = @include( $dictFile );
 
         // Prepare dictionary for JS
-        $jsDictFile = ROOT.DIRECTORY_SEPARATOR.'_runtime'.DIRECTORY_SEPARATOR.'i18n.'.$this->_lang.'.js';
-        $jsI18nFile = SF_PATH.DIRECTORY_SEPARATOR.'misc'.DIRECTORY_SEPARATOR.'siteforever'.DIRECTORY_SEPARATOR.'i18n.js';
+        $jsDictFile = ROOT.'/_runtime/i18n.'.$this->_lang.'.js';
+        $jsI18nFile = SF_PATH.'/misc/module/i18n.js';
 
-        if ( App::isDebug() ) {
+        if ( App::isDebug() && file_exists( $jsDictFile ) ) {
             unlink( $jsDictFile );
         }
 
-        clearstatcache();
+//        clearstatcache();
         if ( ! file_exists( $jsDictFile )
             || filemtime( $dictFile ) < filemtime( $jsDictFile )
             || filemtime( $jsI18nFile ) < filemtime( $jsDictFile ) )
@@ -88,10 +86,10 @@ class Sfcms_i18n
             foreach( $dictList as $file ) {
                 $this->_dictionary[ 'cat_' . basename( $file, '.php' )] = @include( $file );
             }
-            $jsDict = str_replace('/*:dictionary:*/', '$s.i18n._dict = '.json_encode( $this->_dictionary ).';', $jsDict);
+            $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = '.json_encode( $this->_dictionary ).';', $jsDict);
             file_put_contents( $jsDictFile, $jsDict );
         }
-        App::getInstance()->addScript( '/_runtime/i18n.'.$this->_lang.'.js' );
+//        App::getInstance()->addScript( '/_runtime/i18n.'.$this->_lang.'.js' );
     }
 
     /**

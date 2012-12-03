@@ -9,6 +9,8 @@
  * @property int $parent
  * @property int $cat
  * @property int $pos
+ * @property int $manufacturer
+ * @property int $material
  * @property string $alias
  * @property string $url
  * @property string $name
@@ -18,6 +20,7 @@
  * @property int hidden
  * @property int protected
  * @property int deleted
+ * @property Data_Object_Catalog Category
  * @property Data_Collection Goods
  * @property Data_Object_Manufacturers Manufacturer
  * @property Data_Object_CatalogGallery Gallery
@@ -140,5 +143,38 @@ class Data_Object_Catalog extends Data_Object
         if ( $image )
             return $image->thumb;
         return '';
+    }
+
+    /**
+     * Наименование дополнительного св-ва
+     * @param $i
+     *
+     * @return string
+     */
+    public function getPropertyName( $i )
+    {
+        return $this->get('Category')->get('p'.$i);
+    }
+
+    /**
+     * Значение дополнительного св-ва
+     * @param $i
+     *
+     * @return array|Data_Object|mixed|null
+     */
+    public function getPropertyValue( $i )
+    {
+        return $this->get('p'.$i);
+    }
+
+    /**
+     * Вернет массив, описывающий св-во
+     * @param $i
+     *
+     * @return array
+     */
+    public function getProperty( $i )
+    {
+        return array( 'name' => $this->getPropertyName($i), 'value' => $this->getPropertyValue($i) );
     }
 }

@@ -8,12 +8,10 @@ class Session extends Component
 {
     public function __construct()
     {
-        session_start();
+        // Проверка, что запуск произошел через HTTP
+        if ( isset( $_SERVER['REQUEST_METHOD'] ) && in_array($_SERVER['REQUEST_METHOD'],array('GET','POST','HEAD','PUT')) ) {
+            session_start();
+        }
         $this->data = &$_SESSION;
-    }
-
-    public function __destruct()
-    {
-//        $_SESSION = $this->data;
     }
 }

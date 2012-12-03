@@ -5,9 +5,9 @@
  */
 define([
     "jquery",
-    "siteforever",
+    "module/alert",
     "jquery/jquery.form"
-],function($, $s){
+],function($, alert){
     return {
         "class_name" : '.basket-widget',
 
@@ -22,7 +22,7 @@ define([
         "add" : function( id, product, count, price, details, callback ) {
 
             callback = callback && typeof callback == 'function' ? callback : function( response ){
-                $s.alert( response.msg, 2000 );
+                alert( response.msg, 2000 );
                 $(this.class_name).replaceWith( response.widget );
             };
 

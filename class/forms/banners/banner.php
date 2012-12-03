@@ -10,7 +10,7 @@ class Forms_Banners_Banner extends Form_Form
         $parents    = Sfcms_Model::getModel('CategoryBanner')->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('banner', 'save'),
+            'action'    => Sfcms::html()->url('banner/save'),
             'title'     => 'Настройка баннеров',
             'fields'    => array(
                 'id'                => array('type'=>'int', 'hidden'),

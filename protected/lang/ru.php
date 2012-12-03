@@ -10,6 +10,8 @@ return array_merge(
         'Close'                                     => 'Закрыть',
         'Save changes'                              => 'Сохранить изменения',
 
+        'Initialisation'                            => 'Инициализация',
+
         'Main'                                      => 'Главная',
         'Inner'                                     => 'Внутренняя',
         'Inner with Left'                           => 'Внутренняя с левым меню',

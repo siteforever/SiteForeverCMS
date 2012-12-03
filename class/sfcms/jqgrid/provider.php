@@ -162,7 +162,7 @@ class Provider
         $cellHeight = 28; // todo костыль, определяющий высоту таблицы, исходя из высоты ячейки
 
         $controller = isset( $params['controller'] ) ? $params['controller'] : $this->app->getRequest()->get('controller');
-        $action     = isset( $params['action'] ) ? $params['action'] : 'jqgrid';
+        $action     = isset( $params['action'] ) ? $params['action'] : 'grid';
 
         $config = array(
             'url'=>$this->app->getRouter()->createServiceLink($controller,$action),

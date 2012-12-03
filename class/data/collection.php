@@ -262,7 +262,7 @@ class Data_Collection implements Iterator
      */
     public function getObjects()
     {
-        return $this->_objects;
+        return iterator_to_array($this);
     }
 
 }

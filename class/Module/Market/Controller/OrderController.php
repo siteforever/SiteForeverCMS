@@ -144,7 +144,7 @@ class OrderController extends Sfcms_Controller
             case 'robokassa' :
                 $robokassa = new Robokassa( $this->config->get('service.robokassa') );
                 $robokassa->setInvId( $order->id );
-                $robokassa->setOutSum( $sum + ($delivery?$delivery->cost():0) );
+                $robokassa->setOutSum( $sum + $delivery->cost($sum) );
                 $robokassa->setDesc(sprintf('Оплата заказа №%s в интернет-магазине %s',
                                     $order->id, $this->app()->getConfig('sitename')));
                 break;

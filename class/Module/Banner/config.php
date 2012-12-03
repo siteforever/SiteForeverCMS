@@ -10,5 +10,6 @@ return array(
     ),
     'models' => array(
         'Banner' => 'Model_Banner',
+        'CategoryBanner' => 'Model_CategoryBanner',
     ),
 );

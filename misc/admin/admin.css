@@ -35,6 +35,19 @@ small {
     font-size: 80% !important;
 }
 
+
+#loading-application {
+    position: absolute;
+}
+    #loading-application div {
+        position: relative;
+        top: 50%;
+        margin-top: -0.5em;
+        text-align: center;
+        font-size: 30px;
+        color: #fff;
+    }
+
 .form-horizontal .control-group {
     margin-bottom: 10px;
 }

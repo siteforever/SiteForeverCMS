@@ -15,7 +15,7 @@
  * basket.sum - сумма товаров в корзине
  */
 
-define([
+define("module/form",[
     "jquery",
     "jquery/jquery.form"
 ],function($){

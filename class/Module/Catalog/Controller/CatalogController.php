@@ -115,6 +115,8 @@ class CatalogController extends Sfcms_Controller
         // @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
         $level = $this->config->get( 'catalog.level' );
 
+        $pageParams = array();
+
         /** @var $catModel Model_Catalog */
         $catModel     = $this->getModel( 'Catalog' );
         $parent       = $catModel->find( $item->getId() );
@@ -129,12 +131,12 @@ class CatalogController extends Sfcms_Controller
 
         $manufId    = $this->request->get('manufacturer', Request::INT, -1);
         $materialId = $this->request->get('material', Request::INT, -1);
-        if ( -1 == $manufId ) {
-            $manufId = $this->app()->getSession()->get('manufacturer') ?: -1;
-        }
+//        if ( -1 == $manufId ) {
+//            $manufId = $this->app()->getSession()->get('manufacturer') ?: -1;
+//        }
         if ( 0 < $manufId ) {
             $this->request->set('manufacturer', $manufId);
-            $this->app()->getSession()->set('manufacturer', $manufId);
+//            $this->app()->getSession()->set('manufacturer', $manufId);
         }
 
         $criteria = $catModel->createCriteria();
@@ -149,10 +151,12 @@ class CatalogController extends Sfcms_Controller
         if ( $manufId > 0 ) {
             $criteria->condition .= ' AND `manufacturer` = ? ';
             $criteria->params[] = $manufId;
+            $pageParams['manufacturer'] = $manufId;
         }
         if ( $materialId > 0 ) {
             $criteria->condition .= ' AND `material` = ? ';
             $criteria->params[] = $materialId;
+            $pageParams['material'] = $materialId;
         }
 //            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
 //            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
@@ -182,7 +186,7 @@ class CatalogController extends Sfcms_Controller
         $paging = $this->paging(
             $count,
             $this->config->get('catalog.onPage'),
-            $this->router->createLink( $parent->url/*, array('order'=>$order)*/ )
+            $this->router->createLink( $parent->url, $pageParams )
         );
 
         $criteria->limit = $paging->limit;

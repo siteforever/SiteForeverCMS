@@ -18,11 +18,11 @@ function smarty_function_head( $params )
     $head = array();
     $head[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
 
-    if ( $request->get('keywords') ) {
-        $head[] = "<meta name=\"keywords\" content=\"".$request->get('keywords')."\" />";
+    if ( $request->getKeywords() ) {
+        $head[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\" />";
     }
-    if ( $request->get('description') ) {
-        $head[] = "<meta name=\"description\" content=\"".$request->get('description')."\" />";
+    if ( $request->getDescription() ) {
+        $head[] = "<meta name=\"description\" content=\"".$request->getDescription()."\" />";
     }
     
     $head[] = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />";
@@ -30,23 +30,26 @@ function smarty_function_head( $params )
 
     if ( file_exists( ROOT.DS.'favicon.png' ) ) {
         $head[] = "<link rel=\"icon\" type=\"image/png\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.png\" />";
-    } elseif ( file_exists( ROOT.DS.'favicon.ico' ) ) {
+    }
+    if ( file_exists( ROOT.DS.'favicon.ico' ) ) {
         $head[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\" />";
     }
 
-    $useLess = false;
     if ( $request->get('admin') ) {
         $app->addStyle('/misc/jqGrid/css/ui.jqgrid.css');
     }
 
-    foreach( $app->getStyle() as $style ) {
+    $useLess = false;
+    $head = array_merge( $head, array_map(function($style) use ( &$useLess ) {
         if ( preg_match('/.*\.css$/', $style) ) {
-            $head[ ] = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$style\">";
-        } elseif ( preg_match('/.*\.less$/', $style) ) {
-            $head[ ] = "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"$style\">";
-            $useLess = true;
+            return "<link type=\"text/css\" rel=\"stylesheet\" href=\"$style\">";
         }
-    }
+        if ( preg_match('/.*\.less$/', $style) ) {
+            $useLess = true;
+            return "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"$style\">";
+        }
+        return '';
+    }, $app->getStyle()) );
 
     $rjsConfig = array(
         'baseUrl'=> '/misc',
@@ -61,25 +64,28 @@ function smarty_function_head( $params )
             'twitter' => 'bootstrap/js/bootstrap' . (App::isDebug() ? '' : '.min'),
             'siteforever' => 'module/siteforever',
             'runtime' => '../_runtime',
-            'i18n'  => '../_runtime/i18n.ru',
             'theme' => '/themes/'.App::getInstance()->getConfig('template.theme'),
+            'i18n'  => '../_runtime/i18n.'.$app->getConfig('language'),
+        ),
+        'map' => array(
+            '*' => array(
+            ),
         ),
     );
 
 
     if ( $request->get('admin') ) {
         $rjsConfig['paths']['app'] = 'admin';
-        $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
+//        $rjsConfig['paths']['controller'] = ;
         $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
 
-        $rjsConfig['map'] = array(
-            '*' => array(
-                'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
-                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
-//                'jqgrid'  => 'admin/jquery/jqgrid',
-                'jqgrid'  => 'admin/jquery/jqgrid-min',
-            ),
+        $rjsConfig['map']['*'] += array(
+            'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
+            'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
+//            'jqgrid'  => 'admin/jquery/jqgrid',
+            'jqgrid'  => 'admin/jquery/jqgrid-min',
+            'controller' => 'admin/'.$request->getController(),
         );
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';

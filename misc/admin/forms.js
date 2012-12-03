@@ -5,22 +5,7 @@
  * @file   /misc/admin/forms.js
  */
 
-(function($, $s){
-
-    $s.datepicker = {
-        dateFormat:'dd.mm.yy',
-        firstDay:1,
-        changeMonth:true,
-        changeYear:true,
-        buttonImage:'/images/admin/icons/calendar.png',
-        buttonImageOnly:true,
-        showOn:'button',
-        dayNamesMin:['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
-        monthNames:['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-        monthNamesShort:['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-    };
+(function($){
 
     $(document).ready(function () {
         // output uri
@@ -39,11 +24,13 @@
         $('form.module_form, form.ajax').ajaxForm({
             beforeSubmit:function ( arr, $form, options ) {
                 options.url = $($form)[0].action;
-                $s.alert( 'Отправка данных...' );
+                $.blockUI( 'Отправка данных...' );
             },
             success:function (data) {
                 $('div.blockMsg').html(data);
-                $s.alert.close( 2000 );
+                setTimeout(function(){
+                    $.unblockUI();
+                },1000);
             },
             iframe:false
         }).find("input:text").live('keypress', function (e) {
@@ -52,7 +39,7 @@
             }
         });
 
-        $('.datepicker').datepicker($s.datepicker);
+        $('.datepicker').datepicker(window.datepicker);
 
 
         $(':reset').click(function () {
@@ -61,5 +48,5 @@
         });
 
     });
-})(jQuery, siteforever);
+})(jQuery);
 

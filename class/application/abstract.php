@@ -153,6 +153,7 @@ abstract class Application_Abstract
 
     public function __construct( $cfg_file = null )
     {
+        header('X-Powered-By: SiteForeverCMS');
         App::autoloadRegister(array('App','autoload'));
 
         if ( is_null( self::$instance ) ) {
@@ -502,13 +503,28 @@ abstract class Application_Abstract
      */
     public function getModules()
     {
+        // todo от этого метода зависят классы Settings и Controller_Settings, поэтому пока вернем пустой массив
+//        if ( null === $this->_modules ) $this->loadModulesConfigs();
         return $this->_modules;
+    }
+
+    /**
+     * Проверит существование модуля
+     */
+    public function hasModule( $name )
+    {
+        // todo Реализодвать нормально, пока не используется
+        return false;
+        if ( null === $this->_modules ) $this->loadModulesConfigs();
+        return array_reduce($this->_modules,function( $result, $item ) use ( $name ) {
+            return $result || ( $item == $name );
+        }, false);
     }
 
 
     /**
      * Загружает конфиги модулей
-     * @return bool
+     * @return array
      */
     protected function loadModulesConfigs()
     {
@@ -523,10 +539,11 @@ abstract class Application_Abstract
                     $mod_config = require_once $module->path.'/config.php';
                     $_->_modules_config[ $module->name ] = $mod_config;//['controllers'];
                 }
-            },iterator_to_array($modules));
+            },$modules->getObjects());
         }
-        return true;
+        return $this->_modules_config;
     }
+
 
 
     /**
@@ -535,23 +552,17 @@ abstract class Application_Abstract
     public function getModels()
     {
         if ( null === $this->_models ) {
-
             $this->loadModulesConfigs();
-
-            $this->_models = array();
-            foreach ( $this->_modules_config as $module => $config ) {
-                foreach ( $config['models'] as $model => $params ) {
-                    $class = '';
-                    if ( is_string( $params ) ) {
-                        $class = $params;
-                    } else if ( is_array( $params ) && isset( $params['class'] ) ) {
-                        $class = $params['class'];
-                    }
-                    $this->_models[strtolower($model)] = $class;
-                }
-            }
+            $this->_models = array_change_key_case( array_filter( array_reduce( $this->_modules_config, function($total, $current){
+                return $total + array_map(function($model){
+                    return is_string( $model )
+                        ? $model
+                        : ( is_array( $model ) && isset( $model['class'] )
+                            ? $model['class'] : '' );
+                },$current['models']);
+            }, array() ) ) );
         }
-        return array_filter($this->_models);
+        return $this->_models;
     }
 
 
@@ -565,7 +576,6 @@ abstract class Application_Abstract
     public function getControllers()
     {
         if ( null === $this->_controllers ) {
-
             $this->loadModulesConfigs();
 
             $this->_controllers = array();

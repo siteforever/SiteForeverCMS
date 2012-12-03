@@ -5,10 +5,10 @@
 
 define([
     "jquery",
-    "siteforever",
     "module/modal",
-    "i18n"
-], function($, $s, Modal, i18n){
+    "i18n",
+    "module/alert"
+], function($, Modal, i18n, $alert){
     return {
         "behavior" : {
             'a.edit,a.cat_add,a.ban_add,#add_ban' : {
@@ -32,7 +32,7 @@ define([
                             if (!response.error) {
                                 $(node).parents('tr').remove();
                             }
-                            $s.alert(response.msg, 1500);
+                            $alert(response.msg, 1500);
                         },this), "json");
                     } catch (e) {
                         console.error(e.message );

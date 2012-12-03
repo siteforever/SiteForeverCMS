@@ -3,13 +3,11 @@
  */
 define("admin/admin",[
     "jquery",
-    "siteforever",
     "i18n",
+    "siteforever",
     "admin/jquery/jquery.dumper",
     "admin/jquery/jquery.filemanager"
-],function($,$s){
-
-    console.log("Admin:", arguments);
+],function($,i18n){
 
     $('a.filemanager').filemanager();
     $('a.dumper').dumper();
