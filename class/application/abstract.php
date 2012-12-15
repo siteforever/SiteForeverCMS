@@ -174,7 +174,7 @@ abstract class Application_Abstract
      */
     static public function getInstance()
     {
-        if ( is_null( self::$instance ) ) {
+        if ( null === self::$instance ) {
             throw new Application_Exception('Application NOT instanced');
         }
         return self::$instance;
@@ -530,7 +530,7 @@ abstract class Application_Abstract
     {
         if ( ! $this->_modules_config ) {
             $_ = $this;
-            $module_model = $this->getModel('Model_Module');
+            $module_model = $this->getModel('Module\\System\\Model\\ModuleModel');
             $modules = $module_model->findAll(array('order'=>'pos'));
 
             /** @var $module Data_Object_Module */

@@ -1,10 +1,19 @@
 <?php
+namespace Module\System\Model;
+
+use Sfcms_Model;
+
+use Form_Form;
+use Data_Object;
+use Data_Object_User;
+use Forms_User_Edit;
+use Forms_User_Register;
 use Forms\User\Login as FormLogin;
 use Forms\User\Profile as FormProfile;
 use Forms\User\Restore as FormRestore;
 use Forms\User\Password as FormPassword;
 
-class Model_User extends Sfcms_Model
+class UserModel extends Sfcms_Model
 {
     /**
      * Форма входа в систему
@@ -38,6 +47,16 @@ class Model_User extends Sfcms_Model
      * @var Form_Form
      */
     protected $password_form;
+
+    public function tableClass()
+    {
+        return 'Data_Table_User';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_User';
+    }
 
     /**
      * Группы пользователей
@@ -174,7 +193,7 @@ class Model_User extends Sfcms_Model
     function getRegisterForm()
     {
         if ( is_null( $this->register_form ) ) {
-            $this->register_form = new forms_user_register();
+            $this->register_form = new Forms_User_Register();
         }
         return $this->register_form;
     }

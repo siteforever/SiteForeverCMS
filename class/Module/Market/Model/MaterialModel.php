@@ -5,12 +5,25 @@
  * @link http://siteforever.ru
  */
 
-use Sfcms\JqGrid\Provider;
+namespace Module\Market\Model;
 
+use Sfcms_Model;
+use Data_Collection;
+use Sfcms\JqGrid\Provider;
 use Forms\Material\Edit as FormEdit;
 
-class Model_Material extends Sfcms_Model
+class MaterialModel extends Sfcms_Model
 {
+
+    public function tableClass()
+    {
+        return 'Data_Table_Material';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Material';
+    }
 
     /**
      * Вернет коллекцию материалов, подходящую под список id категорий
@@ -41,7 +54,7 @@ class Model_Material extends Sfcms_Model
     }
 
     /**
-     * @return Sfcms\JqGrid\Provider
+     * @return Provider
      */
     public function getProvider()
     {

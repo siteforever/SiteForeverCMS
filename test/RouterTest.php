@@ -302,6 +302,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testHaveModule()
     {
+        $this->markTestSkipped();
         $this->router->setRoute('system/module/save');
         $this->router->routing(true);
         $this->assertEquals('system',$this->request->getModule());

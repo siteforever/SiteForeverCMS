@@ -3,9 +3,18 @@
  * Модель каталога
  * @author KelTanas
  */
-use Sfcms\JqGrid\Provider;
+namespace Module\Catalog\Model;
 
-class Model_Catalog extends Sfcms_Model
+use Sfcms;
+use Sfcms\JqGrid\Provider;
+use Sfcms_Model;
+use Data_Object;
+use Data_Object_Catalog;
+use Data_Collection;
+use Forms_Catalog_Edit;
+use db;
+
+class CatalogModel extends Sfcms_Model
 {
     /**
      * Массив, индексируемый по $parent
@@ -39,6 +48,16 @@ class Model_Catalog extends Sfcms_Model
             'Properties'    => array( self::HAS_MANY, 'ProductProperty', 'product_id', 'with'=>array('Field')),
             'Type'          => array( self::BELONGS, 'ProductType', 'type_id' ),
         );
+    }
+
+    public function tableClass()
+    {
+        return 'Data_Table_Catalog';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Catalog';
     }
 
 
@@ -687,7 +706,7 @@ class Model_Catalog extends Sfcms_Model
 
 
     /**
-     * @return Sfcms\JqGrid\Provider
+     * @return Provider
      */
     public function getProvider()
     {
@@ -733,7 +752,7 @@ class Model_Catalog extends Sfcms_Model
                 'title' => t('catalog','Category'),
                 'value' => 'Category.title',
                 'format' => array(
-                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'category','edit'=>':id','title'=>t('Edit').' :name'),
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'category','edit'=>':parent','title'=>t('Edit').' :name'),
                 ),
                 'search' => array(
                     'value' => array_map(function($name,$id){

@@ -9,6 +9,6 @@ return array(
         'Guestbook' => array(),
     ),
     'models' => array(
-        'Guestbook' => 'Model_Guestbook',
+        'Guestbook' => 'Module\\Guestbook\\Model\\GuestbookModel',
     ),
 );

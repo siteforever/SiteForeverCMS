@@ -5,21 +5,32 @@
  * @link http://siteforever.ru
  */
 
+namespace Module\Catalog\Model;
+
 use Sfcms\JqGrid\Provider;
+use Sfcms_Model;
 
-class Model_ProductType extends Sfcms_Model
+class TypeModel extends Sfcms_Model
 {
-
     public function relation()
     {
         return array(
-            'Fields' => array(self::HAS_MANY,'Productfield','product_type_id'),
+            'Fields' => array(self::HAS_MANY,'ProductField','product_type_id'),
         );
     }
 
+    public function tableClass()
+    {
+        return 'Data_Table_ProductType';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_ProductType';
+    }
 
     /**
-     * @return Sfcms\JqGrid\Provider
+     * @return Provider
      */
     public function getProvider()
     {

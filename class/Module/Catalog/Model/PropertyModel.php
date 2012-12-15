@@ -5,6 +5,10 @@
  * @link http://siteforever.ru
  */
 
+namespace Module\Catalog\Model;
+
+use Sfcms_Model;
+
 /**
  * @property $product_id int
  * @property $product_field_id int
@@ -13,7 +17,7 @@
  * @property $value_int int
  * @property $value_datetime datetime
  */
-class Model_ProductProperty extends Sfcms_Model
+class PropertyModel extends Sfcms_Model
 {
     public function relation()
     {
@@ -21,4 +25,15 @@ class Model_ProductProperty extends Sfcms_Model
             'Field' => array(self::BELONGS, 'ProductField', 'product_field_id', 'order' => 'pos'),
         );
     }
+
+    public function tableClass()
+    {
+        return 'Data_Table_ProductProperty';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_ProductProperty';
+    }
+
 }

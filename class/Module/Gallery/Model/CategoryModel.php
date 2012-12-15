@@ -1,11 +1,26 @@
 <?php
+namespace Module\Gallery\Model;
 
-class Model_GalleryCategory extends Sfcms_Model
+use Sfcms_Model;
+use Forms_Gallery_Category;
+
+class CategoryModel extends Sfcms_Model
 {
     protected $form;
 
+
+    public function tableClass()
+    {
+        return 'Data_Table_GalleryCategory';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_GalleryCategory';
+    }
+
     /**
-     * @return Model_Gallery
+     * @return Gallery
      */
     function gallery()
     {
@@ -27,7 +42,7 @@ class Model_GalleryCategory extends Sfcms_Model
      */
     public function remove( $id )
     {
-        /** @var model_gallery $gallery */
+        /** @var Gallery $gallery */
         $category   = $this->find( $id );
         if ( $category ) {
             $images = $this->gallery()->findAll(array(
@@ -47,12 +62,12 @@ class Model_GalleryCategory extends Sfcms_Model
     }
 
     /**
-     * @return form_Form
+     * @return Forms_Gallery_Category
      */
     function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new forms_gallery_category();
+            $this->form = new Forms_Gallery_Category();
         }
         return $this->form;
     }

@@ -13,11 +13,11 @@ return array(
         'Prodtype'       => array(),
     ),
     'models' => array(
-        'Catalog'         => 'Model_Catalog',
-        'CatalogGallery'  => 'Model_CatalogGallery',
+        'Catalog'         => 'Module\Catalog\Model\CatalogModel',
+        'CatalogGallery'  => 'Module\Catalog\Model\GalleryModel',
 
-        'ProductType'     => 'Model_ProductType',
-        'ProductProperty' => 'Model_ProductProperty',
-        'ProductField'    => 'Model_ProductField',
+        'ProductField'    => 'Module\Catalog\Model\FieldModel',
+        'ProductProperty' => 'Module\Catalog\Model\PropertyModel',
+        'ProductType'     => 'Module\Catalog\Model\TypeModel',
     ),
 );

@@ -11,7 +11,7 @@ return array(
         'Rss'   => array(),
     ),
     'models' => array(
-        'News' => 'Model_News',
-        'NewsCategory' => 'Model_NewsCategory',
+        'News'         => 'Module\\News\\Model\\NewsModel',
+        'NewsCategory' => 'Module\\News\\Model\\CategoryModel',
     ),
 );

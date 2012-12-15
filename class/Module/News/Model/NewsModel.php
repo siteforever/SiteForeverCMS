@@ -5,16 +5,34 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+namespace Module\News\Model;
 
+use Db_Criteria;
+use Sfcms_Model;
+use Form_Form;
+use Forms_News_Edit;
+use Data_Collection;
+use Data_Object_Page;
+use Data_Object_News;
 
-class Model_News extends Sfcms_Model
+class NewsModel extends Sfcms_Model
 {
     private $form = null;
 
     /**
-     * @var Model_NewsCategory
+     * @var CategoryModel
      */
     public $category;
+
+    public function tableClass()
+    {
+        return 'Data_Table_News';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_News';
+    }
 
     public function Init()
     {
@@ -27,7 +45,6 @@ class Model_News extends Sfcms_Model
             'Category' => array( self::BELONGS, 'NewsCategory', 'cat_id' ),
         );
     }
-
 
     /**
      * Поиск объекта по алиасу
@@ -85,12 +102,12 @@ class Model_News extends Sfcms_Model
     }
 
     /**
-     * @return form_Form
+     * @return Form_Form
      */
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new forms_news_Edit();
+            $this->form = new Forms_News_Edit();
         }
         return $this->form;
     }

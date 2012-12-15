@@ -5,8 +5,12 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Model_NewsCategory extends Sfcms_Model
+namespace Module\News\Model;
+
+use Sfcms_Model;
+use Forms_News_Category;
+
+class CategoryModel extends Sfcms_Model
 {
     /** @var Forms_News_Category */
     private $form = null;

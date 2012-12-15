@@ -3,11 +3,25 @@
  * Модель структуры
  */
 
+namespace Module\Page\Model;
+
+use DOMElement;
+use DOMDocument;
+use SimpleXMLElement;
+
+use Form_Form;
+use Forms_Page_Page;
+use Sfcms_Model;
+use Data_Object;
+use Data_Object_Page;
+use Data_Collection;
+use Sfcms_Model_Exception;
+
 use Module\Catalog\Plugin\Page as CatalogPlugin;
 use Module\News\Plugin\Page as NewsPlugin;
 use Module\Gallery\Plugin\Page as GalleryPlugin;
 
-class Model_Page extends Sfcms_Model
+class PageModel extends Sfcms_Model
 {
     /**
      * Массив, индексируемый по $parent
@@ -25,7 +39,7 @@ class Model_Page extends Sfcms_Model
 
     /**
      * Форма редактирования
-     * @var form_Form
+     * @var Form_Form
      */
     private $form = null;
 
@@ -33,6 +47,17 @@ class Model_Page extends Sfcms_Model
 
     /** @var array ControllerLink Cache */
     private $_controller_link = array();
+
+
+    public function tableClass()
+    {
+        return 'Data_Table_Page';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Page';
+    }
 
     public function init()
     {
@@ -346,85 +371,85 @@ class Model_Page extends Sfcms_Model
      *
      * @return string
      */
-    public function getMenu( $parent, $levelback = 1, DOMElement $node = null )
-    {
-        $do_return = false;
-        if (null === $node) {
-            $do_return = true;
-            $dom       = new DOMDocument( '1.0', 'utf-8' );
-            $dom->appendChild( $node = $dom->createElement( 'div' ) );
-        }
-        else {
-            $dom = $node->ownerDocument;
-        }
-
-        if (count( $this->parents ) == 0) {
-            $this->createParentsIndex();
-        }
-
-        if ($levelback <= 0) {
-            return '';
-        }
-
-        if (!isset( $this->parents[ $parent ] )) {
-            return '';
-        }
-
-        /**
-         * @var DOMElement $ul
-         */
-        $node->appendChild( $ul = $dom->createElement( 'ul' ) );
-
-        $counter     = count( $this->parents[ $parent ] );
-        $total_count = $counter;
-
-        foreach ( array_reverse( $this->parents[ $parent ], 1 ) as $obj ) {
-            if ($obj[ 'hidden' ] == 0 && $obj[ 'deleted' ] == 0) {
-                break;
-            }
-        }
-
-        foreach ( $this->parents[ $parent ] as $branch )
-        {
-            if ($branch[ 'hidden' ] == 0 && $branch[ 'deleted' ] == 0) {
-                $active = $branch[ 'alias' ] == $this->request->get( 'route' );
-
-                /**
-                 * @var DOMElement $li
-                 */
-                $ul->appendChild( $li = $dom->createElement( 'li' ) );
-                /**
-                 * @var DOMElement $a
-                 */
-                $li->appendChild( $a = $dom->createElement( 'a', $branch[ 'name' ] ) );
-                $a->setAttribute( 'href', $this->app()->getRouter()->createLink( $branch[ 'alias' ] ) );
-
-                $classes = array( 'item-' . $branch[ 'id' ] );
-
-                if ($counter == $total_count) {
-                    $classes[ ] = 'first';
-                }
-
-                if ($branch[ 'id' ] == $obj[ 'id' ]) {
-                    $classes[ ] = 'last';
-                }
-
-                if ($active) {
-                    $classes[ ] = 'active';
-                    $a->setAttribute( 'class', 'active' );
-                }
-                $li->setAttribute( 'class', join( ' ', $classes ) );
-                $this->getMenu( $branch[ 'id' ], $levelback - 1, $li );
-            }
-            $counter--;
-        }
-
-        if (!$do_return) {
-            return '';
-        }
-        $dom->formatOutput = true;
-        return $dom->saveHTML();
-    }
+//    public function getMenu( $parent, $levelback = 1, DOMElement $node = null )
+//    {
+//        $do_return = false;
+//        if (null === $node) {
+//            $do_return = true;
+//            $dom       = new DOMDocument( '1.0', 'utf-8' );
+//            $dom->appendChild( $node = $dom->createElement( 'div' ) );
+//        }
+//        else {
+//            $dom = $node->ownerDocument;
+//        }
+//
+//        if (count( $this->parents ) == 0) {
+//            $this->createParentsIndex();
+//        }
+//
+//        if ($levelback <= 0) {
+//            return '';
+//        }
+//
+//        if (!isset( $this->parents[ $parent ] )) {
+//            return '';
+//        }
+//
+//        /**
+//         * @var DOMElement $ul
+//         */
+//        $node->appendChild( $ul = $dom->createElement( 'ul' ) );
+//
+//        $counter     = count( $this->parents[ $parent ] );
+//        $total_count = $counter;
+//
+//        foreach ( array_reverse( $this->parents[ $parent ], 1 ) as $obj ) {
+//            if ($obj[ 'hidden' ] == 0 && $obj[ 'deleted' ] == 0) {
+//                break;
+//            }
+//        }
+//
+//        foreach ( $this->parents[ $parent ] as $branch )
+//        {
+//            if ($branch[ 'hidden' ] == 0 && $branch[ 'deleted' ] == 0) {
+//                $active = $branch[ 'alias' ] == $this->request->get( 'route' );
+//
+//                /**
+//                 * @var DOMElement $li
+//                 */
+//                $ul->appendChild( $li = $dom->createElement( 'li' ) );
+//                /**
+//                 * @var DOMElement $a
+//                 */
+//                $li->appendChild( $a = $dom->createElement( 'a', $branch[ 'name' ] ) );
+//                $a->setAttribute( 'href', $this->app()->getRouter()->createLink( $branch[ 'alias' ] ) );
+//
+//                $classes = array( 'item-' . $branch[ 'id' ] );
+//
+//                if ($counter == $total_count) {
+//                    $classes[ ] = 'first';
+//                }
+//
+//                if ($branch[ 'id' ] == $obj[ 'id' ]) {
+//                    $classes[ ] = 'last';
+//                }
+//
+//                if ($active) {
+//                    $classes[ ] = 'active';
+//                    $a->setAttribute( 'class', 'active' );
+//                }
+//                $li->setAttribute( 'class', join( ' ', $classes ) );
+//                $this->getMenu( $branch[ 'id' ], $levelback - 1, $li );
+//            }
+//            $counter--;
+//        }
+//
+//        if (!$do_return) {
+//            return '';
+//        }
+//        $dom->formatOutput = true;
+//        return $dom->saveHTML();
+//    }
 
     /**
      * Вернет объект формы

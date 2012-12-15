@@ -5,8 +5,24 @@
  * @link http://siteforever.ru
  */
 
-class Model_Manufacturers extends Sfcms_Model
+namespace Module\Market\Model;
+
+use Sfcms_Model;
+use Data_Collection;
+use Forms_Manufacturers_Edit;
+
+class ManufacturerModel extends Sfcms_Model
 {
+
+    public function tableClass()
+    {
+        return 'Data_Table_Manufacturers';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Manufacturers';
+    }
 
     /**
      * Вернет коллекцию производителей, подходящую под список id категорий

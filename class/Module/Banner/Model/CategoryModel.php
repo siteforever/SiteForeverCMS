@@ -3,10 +3,15 @@
  * Модель категории баннеров
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
- 
-class Model_CategoryBanner extends Sfcms_Model
-{
 
+namespace Module\Banner\Model;
+
+use Sfcms_Model;
+use Forms_Banners_CategoryBanner;
+use Model_Gallery;
+
+class CategoryModel extends Sfcms_Model
+{
     /**
      * @var Forms_Banners_CategoryBanner
      */
@@ -16,7 +21,7 @@ class Model_CategoryBanner extends Sfcms_Model
      * Массив с категориями для select
      * @return array
      */
-    function getCategoryBanner()
+    public function getCategoryBanner()
     {
         $parents = array();
         foreach( $this->findAll() as $branch ){
@@ -28,7 +33,7 @@ class Model_CategoryBanner extends Sfcms_Model
      /**
      * @return Forms_Banners_CategoryBanner
      */
-    function getForm()
+    public function getForm()
     {
         if ( null === $this->form ) {
             $this->form = new Forms_Banners_CategoryBanner();
@@ -39,39 +44,36 @@ class Model_CategoryBanner extends Sfcms_Model
      /**
      * Удаление категории
      * @param  $id
-     * @return
+     * @return void
      */
-    function remove( $id )
+    public function remove( $id )
     {
-        /**
-         * @var model_categorybanner $gallery
-         */
         $category   = $this->find( $id );
+        $modelBanner = self::getModel('Banner');
 
         if ( $category ) {
-
-            $images = $this->banner()->findAll(array(
+            $images = $modelBanner->findAll(array(
                 'cond'      => 'cat_id = :cat_id',
                 'params'    => array(':cat_id'=>$category->getId()),
             ));
             foreach ( $images as $img ) {
-                $this->banner()->delete( $img['id'] );
+                $modelBanner->delete( $img['id'] );
             }
-//            $dir = ROOT.$this->config->get('gallery.dir').DIRECTORY_SEPARATOR.substr( '0000'.$category['id'], -4, 4 );
-//            $this->log('del: '.$id.' dir: '.$dir);
-//            @rmdir( $dir );
             $category->markDeleted();
         }
 
         return;
     }
 
-    /**
-     * @return Model_Gallery
-     */
-    function banner()
+    public function tableClass()
     {
-        return self::getModel('Banner');
+        return 'Data_Table_CategoryBanner';
     }
+
+    public function objectClass()
+    {
+        return 'Data_Object_CategoryBanner';
+    }
+
 
 }

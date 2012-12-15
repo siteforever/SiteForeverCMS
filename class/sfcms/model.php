@@ -2,6 +2,7 @@
 /**
  * Интерфейс модели
  */
+
 use Sfcms\Component;
 use RuntimeException;
 
@@ -205,13 +206,14 @@ abstract class Sfcms_Model extends Component
     /**
      * Вернет нужную модель
      * @static
-     * @param  $class_name
+     * @param  $model
      * @return Sfcms_Model
      * @throws RuntimeException
      */
-    final static public function getModel( $class_name )
+    final static public function getModel( $model )
     {
-        if ( ! preg_match('/[\\_]/i', $class_name) ) {
+        $class_name = $model;
+        if ( ! isset( self::$all_class[ $model ] ) && false === strpos( $class_name, '\\') ) {
             // Если указан псевдоним
             // Псевдонимом считается класс, не имеющий символов \ и _
             if ( null === self::$models ) {
@@ -223,14 +225,14 @@ abstract class Sfcms_Model extends Component
             }
         }
 
-        if( ! isset( self::$all_class[ $class_name ] ) ) {
+        if( ! isset( self::$all_class[ $model ] ) ) {
             if( class_exists( $class_name, true ) ) {
-                self::$all_class[ $class_name ] = new $class_name();
+                self::$all_class[ $model ] = new $class_name();
             } else {
                 throw new RuntimeException( sprintf('Model "%s" not found',$class_name) );
             }
         }
-        return self::$all_class[ $class_name ];
+        return self::$all_class[ $model ];
     }
 
     /**

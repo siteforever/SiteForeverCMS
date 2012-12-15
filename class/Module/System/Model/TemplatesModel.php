@@ -2,15 +2,35 @@
 /**
  * Модель шаблонов
  */
-class Model_Templates extends Sfcms_Model
+namespace Module\System\Model;
+
+use Sfcms_Model;
+use Form_Form;
+use Forms_Templates_Edit;
+
+class TemplatesModel extends Sfcms_Model
 {
     /**
      * Форма редактирования
-     * @var form_Form
+     * @var Form_Form
      */
     private $form;
 
     protected $table;
+
+    /**
+     * @return string
+     */
+    public function tableClass()
+    {
+        return 'Data_Table_Templates';
+    }
+
+
+    public function objectClass()
+    {
+        return 'Data_Object_Templates';
+    }
 
     /**
      * Искать шаблон по названию
@@ -38,11 +58,5 @@ class Model_Templates extends Sfcms_Model
         return $this->form;
     }
 
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Templates';
-    }
+
 }

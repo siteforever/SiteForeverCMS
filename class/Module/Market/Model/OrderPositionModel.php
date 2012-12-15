@@ -4,8 +4,12 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Model_OrderPosition extends Sfcms_Model
+
+namespace Module\Market\Model;
+
+use Sfcms_Model;
+
+class OrderPositionModel extends Sfcms_Model
 {
     public function relation()
     {
@@ -14,4 +18,15 @@ class Model_OrderPosition extends Sfcms_Model
             'Product' => array( self::BELONGS, 'Catalog', 'product_id' ),
         );
     }
+
+    public function tableClass()
+    {
+        return 'Data_Table_OrderPosition';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_OrderPosition';
+    }
+
 }

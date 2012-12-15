@@ -20,9 +20,11 @@ return array(
         'setting'   => array(),
     ),
     'models'      => array(
-        'Routes'    => 'Model_Routes',
-        'Settings'  => 'Model_Settings',
-        'Templates' => 'Model_Templates',
-        'User'      => 'Model_User',
+        'Comments'  => 'Module\\System\\Model\\CommentsModel',
+        'Module'    => 'Module\\System\\Model\\ModuleModel',
+        'Routes'    => 'Module\\System\\Model\\RoutesModel',
+        'Settings'  => 'Module\\System\\Model\\SettingsModel',
+        'Templates' => 'Module\\System\\Model\\TemplatesModel',
+        'User'      => 'Module\\System\\Model\\UserModel',
     ),
 );

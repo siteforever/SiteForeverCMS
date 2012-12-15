@@ -4,8 +4,25 @@
  * @link http://siteforever.ru
  * @link http://ermin.ru
  */
-class Model_CatalogGallery extends Sfcms_Model
+namespace Module\Catalog\Model;
+
+use Sfcms_Model;
+use Data_Collection;
+use Data_Object_CatalogGallery;
+
+class GalleryModel extends Sfcms_Model
 {
+
+    public function tableClass()
+    {
+        return 'Data_Table_CatalogGallery';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_CatalogGallery';
+    }
+
     /**
      * Вернет галлерею для продукта
      * @param $prod_id

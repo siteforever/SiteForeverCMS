@@ -3,7 +3,12 @@
  * Модель для изображений галереи
  */
 
-class Model_Gallery extends Sfcms_Model
+namespace Module\Gallery\Model;
+
+use Sfcms_Model;
+use Forms_Gallery_Image;
+
+class GalleryModel extends Sfcms_Model
 {
     protected $form;
 
@@ -14,6 +19,16 @@ class Model_Gallery extends Sfcms_Model
         );
     }
 
+
+    public function tableClass()
+    {
+        return 'Data_Table_Gallery';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Gallery';
+    }
 
     /**
      * Получает следующую позицию для сортировки
@@ -93,12 +108,12 @@ class Model_Gallery extends Sfcms_Model
     }
 
     /**
-     * @return form_Form
+     * @return Forms_Gallery_Image
      */
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new forms_gallery_image();
+            $this->form = new Forms_Gallery_Image();
         }
         return $this->form;
     }

@@ -5,13 +5,24 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Model_Order extends Sfcms_Model
+
+namespace Module\Market\Model;
+
+use Sfcms;
+use Sfcms_Model;
+use Basket;
+use Data_Object_Delivery;
+use Data_Object_Order;
+use Data_Object_OrderPosition;
+use Forms_Basket_Address;
+
+class OrderModel extends Sfcms_Model
 {
     protected $positions = array();
 
     protected $statuses;
 
-    /** @var Model_OrderPosition */
+    /** @var OrderPositionModel */
     public  $model_position;
 
     /**
@@ -23,6 +34,16 @@ class Model_Order extends Sfcms_Model
         $this->model_position   = $this->getModel('OrderPosition');
     }
 
+
+    public function tableClass()
+    {
+        return 'Data_Table_Order';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Order';
+    }
 
     /**
      * Отношения
@@ -79,7 +100,7 @@ class Model_Order extends Sfcms_Model
 
         // Заполняем заказ товарами
 
-        /** @var $orderPositionModel Model_OrderPosition */
+        /** @var $orderPositionModel OrderPositionModel */
         $orderPositionModel = $this->getModel('OrderPosition');
 
         if ( $obj->getId() ) {

@@ -5,11 +5,26 @@
  * @link http://siteforever.ru
  */
 
+namespace Module\System\Model;
+
+use Sfcms_Model;
+
 use Sfcms\JqGrid\Provider;
 use Module\System\Form\ModuleEdit;
 
-class Model_Module extends Sfcms_Model
+class ModuleModel extends Sfcms_Model
 {
+
+    public function tableClass()
+    {
+        return 'Data_Table_Module';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Module';
+    }
+
     protected function onCreateTable()
     {
         $this->createObject( array(
@@ -50,7 +65,7 @@ class Model_Module extends Sfcms_Model
     }
 
     /**
-     * @return Sfcms\JqGrid\Provider
+     * @return Provider
      */
     public function getProvider()
     {

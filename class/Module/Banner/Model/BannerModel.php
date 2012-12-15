@@ -3,8 +3,13 @@
  * Модель баннеров
  * @author Voronin Vladimir <voronin@stdel.ru>
  */
- 
-class Model_Banner extends Sfcms_Model
+
+namespace Module\Banner\Model;
+
+use Sfcms_Model;
+use Forms_Banners_Banner;
+
+class BannerModel extends Sfcms_Model
 {
     /**
      * @var Forms_Banners_Banner
@@ -36,5 +41,15 @@ class Model_Banner extends Sfcms_Model
             return true;
         }
         return false;
+    }
+
+    public function tableClass()
+    {
+        return 'Data_Table_Banner';
+    }
+
+    public function objectClass()
+    {
+        return 'Data_Object_Banner';
     }
 }

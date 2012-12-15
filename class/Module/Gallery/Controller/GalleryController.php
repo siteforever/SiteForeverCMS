@@ -7,6 +7,7 @@
  */
 namespace Module\Gallery\Controller;
 
+use Sfcms;
 use Sfcms_Controller;
 use Request;
 use Exception;
@@ -14,8 +15,8 @@ use Form_Form;
 use Data_Object_Gallery;
 use Data_Object_GalleryCategory;
 use Data_Object_Page;
-use Model_Gallery;
-use Model_GalleryCategory;
+use Module\Gallery\Model\GalleryModel;
+use Module\Gallery\Model\CategoryModel;
 
 class GalleryController extends Sfcms_Controller
 {
@@ -51,8 +52,8 @@ class GalleryController extends Sfcms_Controller
     {
         /**
          * @var Data_Object_Gallery $image
-         * @var Model_Gallery $model
-         * @var Model_GalleryCategory $catModel
+         * @var GalleryModel $model
+         * @var CategoryModel $catModel
          */
 //        $this->request->setTemplate( 'inner' );
         $model    = $this->getModel( 'Gallery' );
@@ -170,8 +171,8 @@ class GalleryController extends Sfcms_Controller
     public function adminAction( $editimage, $name )
     {
         /**
-         * @var model_gallery $model
-         * @var model_galleryCategory $category
+         * @var GalleryModel $model
+         * @var CategoryModel $category
          */
 
         $this->request->setTitle( t( 'Images gallery' ) );
@@ -199,8 +200,8 @@ class GalleryController extends Sfcms_Controller
 
     public function switchimgAction()
     {
-        /** @var $model Model_Gallery */
-        $model = $this->getModel();
+        /** @var $model GalleryModel */
+        $model = $this->getModel('Gallery');
 
         if( $id = $this->request->get( 'id', Request::INT ) ) {
 
@@ -211,9 +212,9 @@ class GalleryController extends Sfcms_Controller
             if( $switch_result !== false ) {
                 $switch_icon = '';
                 if( $switch_result == 1 ) {
-                    $switch_icon = icon( 'lightbulb_off', 'Вкл' );
+                    $switch_icon = Sfcms::html()->icon( 'lightbulb_off', 'Вкл' );
                 } elseif( $switch_result == 2 ) {
-                    $switch_icon = icon( 'lightbulb', 'Выкл' );
+                    $switch_icon = Sfcms::html()->icon( 'lightbulb', 'Выкл' );
                 }
                 return array(
                     'id'    => $id,
@@ -263,7 +264,7 @@ class GalleryController extends Sfcms_Controller
     public function editcatAction()
     {
         /**
-         * @var Model_GalleryCategory $model
+         * @var CategoryModel $model
          * @var Data_Object_GalleryCategory $obj
          */
         $model = $this->getModel( 'GalleryCategory' );
@@ -304,7 +305,7 @@ class GalleryController extends Sfcms_Controller
      */
     public function delcatAction()
     {
-        /** @var Model_GalleryCategory */
+        /** @var CategoryModel */
         $model = $this->getModel( 'GalleryCategory' );
         //        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
         $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
@@ -326,14 +327,14 @@ class GalleryController extends Sfcms_Controller
     public function listAction()
     {
         $this->app()->addScript( '/misc/admin/gallery.js' );
-        /** @var model_galleryCategory $category */
+        /** @var CategoryModel $category */
         $category = $this->getModel( 'GalleryCategory' );
 
         $catId = $this->request->get( 'id', Request::INT );
 
         $cat = $category->find( $catId );
 
-        /** @var model_Gallery $model */
+        /** @var GalleryModel $model */
         $model = $this->getModel( 'Gallery' );
 
 
@@ -425,8 +426,8 @@ class GalleryController extends Sfcms_Controller
      */
     protected function upload( Data_Object_GalleryCategory $cat )
     {
-        /** @var Model_Gallery $model */
-        $model         = $this->getModel();
+        /** @var GalleryModel $model */
+        $model         = $this->getModel('Gallery');
         $max_file_size = $this->config->get( 'gallery.max_file_size' );
         $upload_ok     = 0;
 
