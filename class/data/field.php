@@ -57,7 +57,7 @@ abstract class Data_Field
      * Проверит значение на правильность
      * @abstract
      * @var mixed $value Значение
-     * @return void
+     * @return mixed
      */
     abstract function validate( $value );
 

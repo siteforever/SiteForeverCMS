@@ -114,7 +114,9 @@ class Router
             $result = $prefix . '?route=' . $result . ( count( $par ) ? '&' . join( '&', $par ) : '' );
         }
 
-        return strtolower( $result );
+        $result = preg_match('/\.[a-z0-9]{2,4}$/i', $result) ? $result : strtolower( $result );
+
+        return $result;
     }
 
     /**
@@ -304,6 +306,7 @@ class Router
      */
     public function setRoute( $route, array $params = array() )
     {
+        $route = is_array( $route ) ? reset( $route ) : $route;
         $this->route = trim( $route, '/' );
         $this->controller = 'index';
         $this->action = 'index';

@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Data_Table_Product_Property extends Data_Table
+class Data_Table_ProductProperty extends Data_Table
 {
     /**
      * Create field list
@@ -20,6 +20,7 @@ class Data_Table_Product_Property extends Data_Table
             new Data_Field_Blob( 'value_text', 11, true, null, false ),
             new Data_Field_Int( 'value_int', 11, true, null, false ),
             new Data_Field_Datetime( 'value_datetime', 11, true, null, false ),
+            new Data_Field_Int( 'pos', 11, false, 0 ),
         );
     }
 
@@ -30,5 +31,13 @@ class Data_Table_Product_Property extends Data_Table
     protected function getTable()
     {
         return 'product_property';
+    }
+
+    /**
+     * @return array|string
+     */
+    protected function getPk()
+    {
+        return array('product_id','product_field_id');
     }
 }

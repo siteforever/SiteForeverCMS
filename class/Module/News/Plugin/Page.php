@@ -31,12 +31,14 @@ class Page extends Plugin
 
         /** @var $category \Data_Object_NewsCategory */
         $category->name         = $obj->name;
-        $category->description  = '';
 
-        $category->show_content = 0;
-        $category->show_list    = 1;
-        $category->type_list    = 1;
-        $category->per_page     = 10;
+        if ( ! $category->id ) {
+            $category->description  = '';
+            $category->show_list    = 1;
+            $category->type_list    = 1;
+            $category->show_content = 0;
+            $category->per_page     = 10;
+        }
 
         $category->hidden       = $obj->hidden;
         $category->protected    = $obj->protected;

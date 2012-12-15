@@ -22,6 +22,7 @@ class Data_Table_CatalogGallery extends Data_Table
             new Data_Field_Varchar('thumb', 250),
             new Data_Field_Tinyint('hidden'),
             new Data_Field_Tinyint('main'),
+            new Data_Field_Tinyint('pos'),
         );
     }
 

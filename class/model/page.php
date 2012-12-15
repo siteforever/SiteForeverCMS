@@ -41,6 +41,13 @@ class Model_Page extends Sfcms_Model
         $this->addPlugin( new GalleryPlugin(), 'gallery' );
     }
 
+    public function relation()
+    {
+        return array(
+            'Pages' => array( self::HAS_MANY, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
+        );
+    }
+
     public function onCreateTable()
     {
         /** @var $page Data_Object_Page */
@@ -307,7 +314,7 @@ class Model_Page extends Sfcms_Model
     }
 
     /**
-     * Вернет массив с списком разделов для указания в форме
+     * Вернет массив со списком разделов для указания в форме
      * @param int $parent
      * @param int $level
      * @return array
@@ -334,6 +341,8 @@ class Model_Page extends Sfcms_Model
      * @param int             $parent
      * @param int             $levelback
      * @param DOMElement|null $node
+     *
+     * @deprecated
      *
      * @return string
      */

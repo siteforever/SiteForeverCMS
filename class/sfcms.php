@@ -59,7 +59,6 @@ class Sfcms
 
     /**
      * @param $_source_path
-     * @param $_watermark_path
      * @param string $_file
      * @return bool|resource
      */

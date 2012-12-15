@@ -16,15 +16,21 @@
  * @property string $name
  * @property string $title
  * @property string $path
- * @property int gender
- * @property int hidden
- * @property int protected
- * @property int deleted
+ * @property int $sale
+ * @property int $sale_start
+ * @property int $sale_stop
+ * @property int $salePrice
+ * @property int $gender
+ * @property int $hidden
+ * @property int $protected
+ * @property int $deleted
  * @property Data_Object_Catalog Category
  * @property Data_Collection Goods
  * @property Data_Object_Manufacturers Manufacturer
  * @property Data_Object_CatalogGallery Gallery
  * @property Data_Object_Page Page
+ * @property Data_Collection Properties
+ * @property Data_Object_ProductType Type
  */
 class Data_Object_Catalog extends Data_Object
 {
@@ -58,6 +64,23 @@ class Data_Object_Catalog extends Data_Object
             return $this->get('price2');
         }
         return $this->get('price1');
+    }
+
+    /**
+     * Вернет цену с учетом скидки
+     * @return float|null
+     */
+    public function getSalePrice()
+    {
+        if ( $this->sale ) {
+            $start = mktime( 0,0,0,date('n',$this->data['sale_start']),date('d',$this->data['sale_start']),date('Y',$this->data['sale_start']) );
+            $stop  = mktime( 23,59,59,date('n',$this->data['sale_stop']),date('d',$this->data['sale_stop']),date('Y',$this->data['sale_stop']) );
+            //var_dump( strftime('%X %x' ,$start), strftime('%X %x' ,$stop) );
+            if ( $start <= time() && time() <= $stop ) {
+                return ceil( $this->getPrice() * ( 100 - $this->sale ) / 1000 ) * 10;
+            }
+        }
+        return null;
     }
 
     /**

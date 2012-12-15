@@ -7,8 +7,9 @@
 /**
  * @property int id
  * @property string name
+ * @property Data_Collection Fields
  */
-class Data_Object_Product_Type extends Data_Object
+class Data_Object_ProductType extends Data_Object
 {
 
 }

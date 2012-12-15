@@ -1,6 +1,6 @@
 <?php
 /**
- * Отношение "Принадлежит *"
+ * Отношение "Содержит несколько"
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
@@ -17,7 +17,12 @@ class Data_Relation_Many extends Data_Relation
             $keys[] = $obj->getId();
         };
         if ( count( $keys ) ) {
-            $objects = $this->model->findAll( " {$this->key} IN ( " . implode( ",", $keys ) . " ) " );
+            try {
+                $cond = $this->prepareCond( $keys );
+            } catch ( Data_Relation_Exception $e ) {
+                return;
+            }
+            $objects = $this->model->findAll( $cond );
             foreach ( $objects as $obj ) {
                 $this->addCache( $obj->{$this->key}, $obj );
             };
@@ -30,11 +35,16 @@ class Data_Relation_Many extends Data_Relation
     public function find()
     {
         if ( null === $this->getCache( $this->obj->getId() ) ) {
-            $criteria = array(
-                'cond'  => " {$this->key} IN (:key) ",
-                'params'=> array( ":key"=> $this->obj->getId() ),
-            );
-            $this->setCache( $this->obj->getId(), $this->model->findAll( $criteria ) );
+            $with = array();
+            if ( isset( $this->relation['with'] ) ) {
+                $with = $this->relation['with'];
+            }
+            try {
+                $cond = $this->prepareCond( $this->obj->getId() );
+            } catch( Data_Relation_Exception $e ) {
+                return null;
+            }
+            $this->setCache( $this->obj->getId(), $this->model->with( $with )->findAll( $cond ) );
         }
         return $this->getCache( $this->obj->getId() );
     }

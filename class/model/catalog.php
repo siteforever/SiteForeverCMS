@@ -30,12 +30,14 @@ class Model_Catalog extends Sfcms_Model
     public function relation()
     {
         return array(
-            'Gallery'       => array( self::HAS_MANY, 'CatalogGallery', 'cat_id' ),
+            'Gallery'       => array( self::HAS_MANY, 'CatalogGallery', 'cat_id', 'order' => 'pos' ),
             'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
             'Material'      => array( self::BELONGS, 'Material', 'material' ),
             'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
             'Page'          => array( self::HAS_ONE, 'Page', 'link' ),
+            'Properties'    => array( self::HAS_MANY, 'ProductProperty', 'product_id', 'with'=>array('Field')),
+            'Type'          => array( self::BELONGS, 'ProductType', 'type_id' ),
         );
     }
 
@@ -59,7 +61,8 @@ class Model_Catalog extends Sfcms_Model
 
     /**
      * Вернет потомков всех поколений
-     * @param $parentId
+     * @param int $parentId
+     * @param int $level
      * @return array
      */
     public function getAllChildrensIds( $parentId, $level = 0 )
@@ -574,7 +577,7 @@ class Model_Catalog extends Sfcms_Model
             if( 0 == $branch->cat || 1 == $branch->deleted ) {
                 continue;
             }
-            $list[ $branch->id ] = str_repeat( '&nbsp;', 8 * ( $maxlevelback - $levelback ) ) . $branch->name;
+            $list[ $branch->id ] = str_repeat( '&nbsp;', 4 * ( $maxlevelback - $levelback ) ) . $branch->name;
             $sublist             = $this->getSelectTree( $branch->id, $levelback - 1 );
             if( $sublist ) {
                 foreach( $sublist as $i => $item ) {
@@ -677,7 +680,7 @@ class Model_Catalog extends Sfcms_Model
         $return = "<a href='" . $this->app()->getRouter()->createServiceLink(
             'catalog', 'hidden', array( 'id'=> $id )
         ) . "' class='order_hidden'>";
-        $return .= $hidden ? icon( 'lightbulb_off', 'Выключен' ) : icon( 'lightbulb', 'Включен' );
+        $return .= $hidden ? Sfcms::html()->icon( 'lightbulb_off', 'Выключен' ) : Sfcms::html()->icon( 'lightbulb', 'Включен' );
         $return .= "</a>";
         return $return;
     }
@@ -692,14 +695,24 @@ class Model_Catalog extends Sfcms_Model
         $provider->setModel( $this );
 
         $criteria = $this->createCriteria();
-        $criteria->condition = 'cat = 0 AND deleted = 0';
+        $criteria->condition = '`cat` = 0 AND `deleted` = 0';
 
         $provider->setCriteria( $criteria );
+
+        $categories = $this->getCategoryList();
+
+        /** @var $typeModel  */
+        $typeModel     = $this->getModel( 'ProductType' );
+        $types         = $typeModel->findAll( array('order'=>'name') );
+
+        $manufModel    = $this->getModel( 'Manufacturers' );
+        $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
 
         $provider->setFields(array(
             'id'    => array(
                 'title' => 'Id',
                 'width' => 50,
+                'search' => true,
             ),
             'image' => array(
                 'width' => 80,
@@ -712,21 +725,51 @@ class Model_Catalog extends Sfcms_Model
                 'title' => t('catalog','Name'),
                 'width' => 200,
                 'format' => array(
-                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'trade','edit'=>':id'),
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'trade','edit'=>':id','title'=>t('Edit').' :name'),
                 ),
+                'search' => true,
             ),
             'parent'  => array(
                 'title' => t('catalog','Category'),
                 'value' => 'Category.title',
+                'format' => array(
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'category','edit'=>':id','title'=>t('Edit').' :name'),
+                ),
+                'search' => array(
+                    'value' => array_map(function($name,$id){
+                        return $id.':'.$name;
+                    },$categories,array_keys($categories)),
+                    'sopt' => 'eq',
+                ),
+            ),
+            'type_id' => array(
+                'value' => 'Type.name',
+                'title' => t('catalog','Type'),
+                'search' => array(
+                    'value' => array_merge(array("0:Все типы"),array_map(function($type){
+                        return $type->id . ':' . $type->name;
+                    },iterator_to_array($types))),
+                    'sopt' => 'eq',
+                ),
             ),
             'manufacturer' => array(
                 'value'=>'Manufacturer.name',
-                'title' => t('catalog','Manufacturer')
+                'title' => t('catalog','Manufacturer'),
+                'search' => array(
+                    'value' => array_merge(array("0:Все производители"),array_map(function($manuf){
+                        return $manuf->id . ':' . $manuf->name;
+                    },iterator_to_array($manufacturers))),
+                    'sopt' => 'eq',
+                ),
             ),
-            'articul'   => t('catalog','Articul'),
+            'articul'   => array(
+                'title' => t('catalog','Articul'),
+                'search' => true,
+            ),
             'price1' => array(
                 'value'=>'price',
-                'title'=> t('catalog','Price')
+                'title'=> t('catalog','Price'),
+                'search' => true,
             ),
             'hidden' => array(
                 'title' => t('catalog','Hidden'),

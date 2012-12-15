@@ -23,6 +23,9 @@ return array(
         'rewrite'   => true,
     ),
 
+    'editor' => 'tinymce',
+//    'editor' => 'elrte',
+
     'language'  => 'ru',
 
     // база данных

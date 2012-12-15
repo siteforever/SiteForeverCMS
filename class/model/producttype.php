@@ -5,7 +5,54 @@
  * @link http://siteforever.ru
  */
 
-class Model_Product_Type extends Sfcms_Model
+use Sfcms\JqGrid\Provider;
+
+class Model_ProductType extends Sfcms_Model
 {
 
+    public function relation()
+    {
+        return array(
+            'Fields' => array(self::HAS_MANY,'Productfield','product_type_id'),
+        );
+    }
+
+
+    /**
+     * @return Sfcms\JqGrid\Provider
+     */
+    public function getProvider()
+    {
+        $provider = new Provider( $this->app() );
+        $provider->setModel( $this );
+
+        $criteria = $this->createCriteria();
+//        $criteria->condition = 'cat = 0 AND deleted = 0';
+
+        $provider->setCriteria( $criteria );
+
+        $provider->setFields(array(
+            'id'    => array(
+                'title' => 'Id',
+                'width' => 50,
+            ),
+            'name'  => array(
+                'title' => t('catalog','Name'),
+                'width' => 200,
+                'format' => array(
+                    'link' => array('class'=>'edit', 'controller'=>'prodtype', 'action'=>'edit','id'=>':id','title'=>t('Edit').' :name'),
+                ),
+            ),
+            'delete' => array(
+                'title' => t('Delete'),
+                'width' => 50,
+                'value' => 'delete',
+                'format' => array(
+                    'link' => array('class'=>'delete', 'controller'=>'prodtype','action'=>'delete','id'=>':id'),
+                ),
+            ),
+        ));
+
+        return $provider;
+    }
 }

@@ -113,7 +113,7 @@ define([
 
             // Сортировка
             $("#gallery").sortable({
-                stop: function(event, ui) {
+                update: function(event, ui) {
                     var positions = [];
                     $(this).find('li').each(function(){
                         positions.push($(this).attr('rel'));

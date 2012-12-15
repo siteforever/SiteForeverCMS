@@ -12,11 +12,11 @@ class Data_Field_Int extends Data_Field
     /**
      * Проверит значение на правильность
      * @var mixed $value Значение
-     * @return void
+     * @return mixed
      */
     function validate($value)
     {
-        return filter_var( $value, FILTER_VALIDATE_INT ) === false ? false : true;
+        return filter_var( $value, FILTER_VALIDATE_INT );
     }
 
     /**

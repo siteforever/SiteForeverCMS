@@ -26,6 +26,8 @@ define('jquery/jquery.jqGrid',[
             config     = $list.data('sfcms-config');
 
         config.width = $('#workspace').width();
-        $list.jqGrid( config );//.jqGrid('navGrid',config.pager,{edit:false,add:false,del:false});
+        $list.jqGrid( config)
+            .jqGrid('navGrid',config.pager,{edit:false,add:false,del:false})
+            .jqGrid('filterToolbar',{searchOnEnter : false});
     });
 });

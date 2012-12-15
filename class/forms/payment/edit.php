@@ -14,7 +14,7 @@ class Edit extends Form_Form
     {
         return parent::__construct(array(
             'name' => 'PaymentEdit',
-            'action' => \App::getInstance()->getRouter()->createServiceLink('payment','edit'),
+            'action' => \Sfcms::html()->url('payment/edit'),
             'fields' => array(
                 'id' => array(
                     'type' => 'hidden',

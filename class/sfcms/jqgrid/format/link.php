@@ -34,10 +34,11 @@ class Link implements Format
         $obj = func_get_arg(1);
 
         $params = array_map(function($val) use( $obj ) {
-            if ( ':' == $val{0} ) {
-                return $obj->get( substr($val,1) );
-            }
-            return $val;
+            return preg_match_all('/(:\w+)/',$val, $m)
+                ? array_reduce( $m[1], function( $val, $next ) use ( $obj ) {
+                        return str_replace( $next, $obj->get( substr($next,1) ), $val );
+                    }, $val)
+                : $val;
         },$params);
 
         return Sfcms::html()->link( $value, null, $params );

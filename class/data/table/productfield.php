@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Data_Table_Product_Field extends Data_Table
+class Data_Table_ProductField extends Data_Table
 {
     /**
      * Create field list
@@ -15,10 +15,11 @@ class Data_Table_Product_Field extends Data_Table
     {
         return array(
             new Data_Field_Int( 'id', 11, false, null, true ),
-            new Data_Field_Int( 'product_type_id', 11, false, null, false ),
-            new Data_Field_Varchar( 'type', 250, false, null, false ),
-            new Data_Field_Varchar( 'name', 250, false, null, false ),
-            new Data_Field_Varchar( 'unit', 250, false, null, false ),
+            new Data_Field_Int( 'product_type_id', 11, false, 0 ),
+            new Data_Field_Varchar( 'type', 250, false, '' ),
+            new Data_Field_Varchar( 'name', 250, false, '' ),
+            new Data_Field_Varchar( 'unit', 250, false, '' ),
+            new Data_Field_Int( 'pos', 11, false, 0 ),
         );
     }
 

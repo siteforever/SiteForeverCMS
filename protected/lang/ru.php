@@ -7,6 +7,7 @@ return array_merge(
 
         'Home'                                      => 'Главная',
         'Exit'                                      => 'Выход',
+        'Save & close'                              => 'Cохранить и закрыть',
         'Close'                                     => 'Закрыть',
         'Save changes'                              => 'Сохранить изменения',
 

@@ -215,7 +215,7 @@ abstract class Sfcms_Model extends Component
             // Если указан псевдоним
             // Псевдонимом считается класс, не имеющий символов \ и _
             if ( null === self::$models ) {
-                self::$models = self::app()->getModels();
+                self::$models = App::getInstance()->getModels();
             }
             $modelKey = strtolower( $class_name );
             if ( isset( self::$models[ $modelKey ] ) ) {
@@ -395,9 +395,10 @@ abstract class Sfcms_Model extends Component
      */
     public function with()
     {
-        if ( func_get_arg(0) && is_array( func_get_arg(0) ) ) {
+        if ( 1 == func_num_args() && func_get_arg(0) && is_array( func_get_arg(0) ) ) {
             $this->with = func_get_arg(0);
-        } elseif ( is_string( func_get_arg(0) ) ) {
+        }
+        if ( func_num_args() >= 1 && is_string( func_get_arg(0) ) ) {
             $this->with = func_get_args();
         }
         return $this;

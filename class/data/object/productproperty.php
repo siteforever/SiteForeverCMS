@@ -12,7 +12,23 @@
  * @property int value_int
  * @property string value_datetime
  */
-class Data_Object_Product_Property extends Data_Object
+class Data_Object_ProductProperty extends Data_Object
 {
+    public function getName()
+    {
+        $field = $this->get('Field');
+        return $field->name;
+    }
 
+    public function getValue()
+    {
+        $field = $this->get('Field');
+        return $this->data['value_'.$field->type];
+    }
+
+    public function getUnit()
+    {
+        $field = $this->get('Field');
+        return $field->unit;
+    }
 }

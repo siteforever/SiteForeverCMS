@@ -11,7 +11,7 @@ class Data_Field_Text extends Data_Field
     /**
      * Проверит значение на правильность
      * @var mixed $value Значение
-     * @return void
+     * @return mixed
      */
     function validate($value)
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Отношение "Принадлежит 1"
+ * Отношение "Содержит один"
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
@@ -14,7 +14,12 @@ class Data_Relation_One extends Data_Relation
             $keys[] = $obj->getId();
         }
         if ( count( $keys ) ) {
-            $objects = $this->model->findAll( " $this->key IN ( " . implode( ",", $keys ) . " ) " );
+            try {
+                $cond = $this->prepareCond( $keys );
+            } catch ( Data_Relation_Exception $e ) {
+                return;
+            }
+            $objects = $this->model->findAll( $cond );
             /** @var $o Data_Object */
             foreach ( $objects as $o );
         }
@@ -22,11 +27,15 @@ class Data_Relation_One extends Data_Relation
 
     public function find()
     {
-        $objRel = $this->model->find(" {$this->key} = ? ", array( $this->obj->getId() ) );
+        try {
+            $cond = $this->prepareCond( $this->obj->getId() );
+        } catch ( Data_Relation_Exception $e ) {
+            return;
+        }
+        $objRel = $this->model->find( $cond );
         if ( $objRel ) {
             return $objRel;
         }
         return null;
     }
-
 }

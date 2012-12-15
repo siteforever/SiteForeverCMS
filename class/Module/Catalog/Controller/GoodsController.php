@@ -63,8 +63,19 @@ class GoodsController extends Sfcms_Controller
         /** @var $model Model_Catalog */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
+
+//        $categories = $model->getCategoryList();
+        /** @var $typeModel  */
+//        $typeModel     = $this->getModel( 'ProductType' );
+//        $types         = $typeModel->findAll( array('order'=>'name') );
+//        $typesArray    = array(-1=>'Все типы','Без типа') + $types->column('name');
+
         return array(
-            'provider' => $provider,
+            'provider'      => $provider,
+//            'categories'    => $categories,
+            'category'      => $this->app()->getSession()->get('category') ?: 0,
+//            'types'         => $typesArray,
+            'type'          => $this->app()->getSession()->get('type') ?: -1,
         );
     }
 

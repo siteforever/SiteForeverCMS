@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Data_Table_Product_Type extends Data_Table
+class Data_Table_ProductType extends Data_Table
 {
     /**
      * Create field list

@@ -7,12 +7,17 @@
 
 return array(
     'controllers' => array(
-        'Catalog'   => array(),
+        'Catalog'        => array(),
         'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
-        'Goods'     => array(),
+        'Goods'          => array(),
+        'Prodtype'       => array(),
     ),
     'models' => array(
-        'Catalog'        => 'Model_Catalog',
-        'CatalogGallery' => 'Model_CatalogGallery',
+        'Catalog'         => 'Model_Catalog',
+        'CatalogGallery'  => 'Model_CatalogGallery',
+
+        'ProductType'     => 'Model_ProductType',
+        'ProductProperty' => 'Model_ProductProperty',
+        'ProductField'    => 'Model_ProductField',
     ),
 );

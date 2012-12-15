@@ -13,13 +13,10 @@ define('module/alert',[
     $.blockUI.defaults.css['font-size'] = '16px';
     $.blockUI.defaults.css['border-radius'] = '10px';
     $.blockUI.defaults.css.color = '#fff';
-    $.blockUI.defaults.css.backgroundColor = '#000';
+    $.blockUI.defaults.css.backgroundColor = '#000000';
     $.blockUI.defaults.css.cursor = 'default';
-    $.blockUI.defaults.overlayCSS.backgroundColor = '#000';
-    $.blockUI.defaults.overlayCSS.opacity = 0.4;
-    $.blockUI.defaults.overlayCSS.cursor = 'default';
 
-    var alert = function( msg, timeout ) {
+    var alert = function( msg, timeout, node ) {
         timeout = timeout || 0;
         var deferred = $.Deferred();
 
@@ -36,7 +33,16 @@ define('module/alert',[
             deferred.resolve();
         }
 
-        $.blockUI( options );
+        if ( node ) {
+            var $node = typeof node == 'string' ? $(node) : node,
+                overflow = $node.css('overflow');
+            $node.css('overflow','hidden').block(options);
+            deferred.done(function(){
+                $(node).css('overflow',overflow);
+            });
+        } else {
+            $.blockUI( options );
+        }
 
         return deferred.promise();
     };

@@ -56,8 +56,8 @@ require([
         $(document).on('click','#delivery input', function(){
             $.post('/delivery/select',{'type':$(this).val()},function(response){
                 if( ! response.error ) {
-                    $('#deliveryRow td.basket-sum').html( response.cost );
-                    $('#totalRow td.basket-sum').find('b').html( response.sum );
+                    $('#deliveryRow').find('td.basket-sum').html( response.cost );
+                    $('#totalRow').find('td.basket-sum').find('b').html( response.sum );
                 }
             }, "json");
         });

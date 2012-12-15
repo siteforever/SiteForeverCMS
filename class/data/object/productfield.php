@@ -11,7 +11,7 @@
  * @property string name
  * @property string unit
  */
-class Data_Object_Product_Field extends Data_Object
+class Data_Object_ProductField extends Data_Object
 {
 
 }

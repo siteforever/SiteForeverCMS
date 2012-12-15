@@ -16,7 +16,13 @@ class Data_Relation_Belongs extends Data_Relation
         }
         $keys = array_unique( $keys, SORT_NUMERIC );
         if ( count( $keys ) > 0 ) {
-            $objects = $this->model->findAll( "id IN ( " . implode( ",", $keys ) . " )" );
+            $criteria = $this->model->createCriteria();
+            $criteria->condition = 'id IN (?)';
+            $criteria->params    = $keys;
+            if ( isset( $this->relation['order'] ) ) {
+                $criteria->order = $this->relation['order'];
+            }
+            $objects = $this->model->findAll( $criteria );
             /** @var $o Data_Object */
             foreach ( $objects as $o );
         }

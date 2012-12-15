@@ -49,7 +49,7 @@ class PageController extends Sfcms_Controller
             throw new Sfcms_Http_Exception(t( 'Access denied' ),403);
         }
 
-        // создаем замыкание страниц
+        // создаем замыкание страниц (если одна страница указывает на другую)
         while ( $this->page[ 'link' ] ) {
             $page = $pageModel->find( $this->page[ 'link' ] );
 
@@ -100,14 +100,6 @@ class PageController extends Sfcms_Controller
 //            'html' => join( "\n", $model->html ),
             'data' => $model->parents,
         );
-    }
-
-    /**
-     * Тестовый вид админки
-     */
-    public function admin2Action()
-    {
-
     }
 
 
@@ -232,7 +224,7 @@ class PageController extends Sfcms_Controller
                     $obj = $model->find( $id );
                     $obj->attributes = $form->getData();
                     $obj->update = time();
-                    $obj->save();
+                    $obj->markDirty();
                 } else {
                     $obj = $model->createObject();
                     $obj->attributes = $form->getData();

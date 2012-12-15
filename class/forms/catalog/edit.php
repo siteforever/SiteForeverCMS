@@ -45,6 +45,13 @@ class Forms_Catalog_Edit extends Form_Form
                     'variants'  => $parents,
                 ),
 
+                'type_id'   => array(
+                    'type' => 'hidden',
+//                    'label' => 'Тип товара',
+//                    'value' => '0',
+//                    'variants' => $typesArray,
+                ),
+
                 'path'      => array('type'=>'hidden'),
 
                 'articul'   => array('type'=>'text', 'label'=>'Артикул', 'value'=>'', 'hidden'),
@@ -80,6 +87,16 @@ class Forms_Catalog_Edit extends Form_Form
                 'sort_view' => array(
                     'type'=>'radio', 'label'=>'Выводить опции сортировки', 'value'=>'1',
                     'variants'=>array('1'=>'Выводить','0'=>'Не выводить',),
+                ),
+
+                'sale'      => array(
+                    'type' => 'float', 'label' => 'Скидка, %',
+                ),
+                'sale_start'      => array(
+                    'type' => 'date', 'label' => 'Начало скидки', 'value' => time(),
+                ),
+                'sale_stop'      => array(
+                    'type' => 'date', 'label' => 'Конец скидки', 'value' => time(),
                 ),
 
                 'top'       => array('type'=>'radio', 'label'=>'Вывод в топе', 'value'=>'0',

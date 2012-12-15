@@ -13,6 +13,8 @@ class Pager implements ArrayAccess
     public  $pages  = 1;
     public  $from   = 0;
     public  $to     = 0;
+    public  $next   = '';
+    public  $pred   = '';
     public  $offset = 0;
     public  $perpage= 20;
     public  $count  = 0;
@@ -37,6 +39,7 @@ class Pager implements ArrayAccess
         $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
+            $pred   = Sfcms::html()->url($link,array('page'=>$page-1));
             $p[]    = Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page'=>$page-1) : array());
         }
 
@@ -74,6 +77,7 @@ class Pager implements ArrayAccess
         }
 
         if ( $page < $pages ) {
+            $next   = Sfcms::html()->url($link,array('page'=>$page+1));
             $p[]    = Sfcms::html()->link('след &gt;', $link, array('page'=>$page+1));
         }
 
@@ -83,6 +87,9 @@ class Pager implements ArrayAccess
         $this->offset   = $this->from;
         $this->perpage  = $perpage;
         $this->limit    = ($pages > 1) ? $this->from.','.$this->perpage : '';
+
+        $this->next     = isset( $next ) ? $next : '';
+        $this->pred     = isset( $pred ) ? $pred : '';
 
         $this->page     = $page;
         $this->pages    = $pages;

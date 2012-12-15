@@ -125,6 +125,25 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
     }
 
 
+    public function testGetSalePrice()
+    {
+        $product = $this->model->createObject(array(
+            'id'    => 100500,
+            'parent'=> 100600,
+            'cat'   => 0,
+            'price1'=> 2000,
+            'sale'  => 30,
+            'sale_start' => time(),
+            'sale_stop'  => time(),
+        ));
+
+        $this->assertEquals('1400', $product->salePrice);
+
+        $product->sale_start = time() + 100500;
+
+        $this->assertEquals(null, $product->salePrice);
+    }
+
     public function testGetMainImage()
     {
         // @todo написать тест

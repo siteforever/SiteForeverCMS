@@ -74,6 +74,10 @@ class Provider
         if ( null === $this->criteria ) {
             throw new InvalidArgumentException('Criteria is not defined');
         }
+        if ( $this->criteria->condition && $searchCond = $this->createSearchCondition() ) {
+            $this->criteria->condition .= " AND {$searchCond}";
+        }
+        $this->app->getLogger()->log($this->criteria->condition, 'condition');
         return $this->criteria;
     }
 
@@ -180,6 +184,7 @@ class Provider
                 $return = array(
                     'name' => $k,
                     'index' => $k,
+                    'search' => false,
                 );
                 if ( is_array( $v ) ) {
                     if ( isset( $v['value'] ) ) {
@@ -191,9 +196,20 @@ class Provider
                     if( isset($v['sortable']) ) {
                         $return['sortable'] = $v['sortable'];
                     }
+                    if ( ! empty($v['search']) ) {
+                        $return['search'] = true;
+                        if ( is_array( $v['search'] ) ) {
+                            $return['stype'] = 'select';
+                            if ( isset($v['search']['value']) && is_array($v['search']['value']) ) {
+                                $return['editoptions']['value'] = implode(';',$v['search']['value']);
+                            }
+                        }
+                    }
                 }
                 return $return;
             }, array_keys($this->getFields()), array_values($this->getFields())),
+//            'autoWidth' => true,
+            'autoHeight' => true,
             'height'    => isset( $params['height'] ) ? $params['height'] : $rowNum * $cellHeight,
             'rowNum'    => $rowNum,
             'rowList'   => isset( $params['rowList']) ? explode(',',$params['rowList']) : array(10, 20, 30),
@@ -203,6 +219,7 @@ class Provider
             'sortorder' => "desc",
             'multiselect' => isset( $params['multiselect'] ) ? $params['multiselect'] : false,
         );
+        $this->app->getLogger()->log($config,'$config');
         return $config;
     }
 
@@ -251,7 +268,7 @@ class Provider
                     if ( strpos($key,'.') ) {
                         $p = explode('.', $key);
                         $subObj = $obj->get($p[0]);
-                        $value = $subObj ? $subObj->get($p[1]) : 'fail';
+                        $value = $subObj ? $subObj->get($p[1]) : 'null';
                     } else {
                         $value = $obj->get( $key );
                     }
@@ -268,6 +285,62 @@ class Provider
         }, iterator_to_array( $collection ) );
 
         return json_encode($result);
+    }
+
+    /**
+     * Формирует условие для поиска
+     * @return string
+     */
+    protected function createSearchCondition()
+    {
+        $result = array();
+
+        $searchField  = $this->app->getRequest()->get( 'searchField' );
+        $searchOper   = $this->app->getRequest()->get( 'searchOper' );
+        $searchString = $this->app->getRequest()->get( 'searchString' );
+
+        $operations = array(
+            'eq'    => "`:field` = ':value' ",
+            'ne'    => "`:field` <> ':value' ",
+            'lt'    => "`:field` < ':value' ",
+            'le'    => "`:field` <= ':value' ",
+            'gt'    => "`:field` > ':value' ",
+            'ge'    => "`:field` >= ':value' ",
+            'bw'    => "`:field` LIKE ':value%' ",
+            'bn'    => "`:field` NOT LIKE ':value%' ",// не начинается с
+            'in'    => "`:field` LIKE '%:value%' ", // находится в
+            'ni'    => "`:field` NOT LIKE '%:value%' ", // не находится в
+            'ew'    => "`:field` LIKE '%:value' ", // Заканчивается на
+            'en'    => "`:field` NOT LIKE '%:value' ", //  Не заканчивается на
+            'cn'    => "`:field` LIKE '%:value%' ", //  содержит
+            'nc'    => "`:field` NOT LIKE '%:value%' ", // не содержит
+        );
+
+        if ( $searchField && $searchOper && $searchString ) {
+            $result[] = str_replace(array(':field',':value'),array($searchField,$searchString),$operations[ $searchOper ]);
+        }
+
+        $request = $this->app->getRequest();
+
+        $fields = $this->getFields();
+        $this->app->getLogger()->log($fields, 'getFields');
+
+        $result += array_filter( array_map(function( $id ) use ( $request, $fields, $operations ) {
+            $field = $fields[$id];
+            if ( empty( $field['search'] ) ) {
+                return false;
+            }
+            $sopt = 'bw';
+            if ( isset( $field['search']['sopt'] ) ) {
+                $sopt = $field['search']['sopt'];
+            }
+            $val = $request->get( $id );
+            return $request->get( $id )
+                ? str_replace(array(':field',':value'),array( $id, $val),$operations[$sopt])
+                : false;
+        },array_keys( $fields )));
+
+        return implode(' AND ', $result);
     }
 
     /**

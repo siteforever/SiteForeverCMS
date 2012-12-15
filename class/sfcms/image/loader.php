@@ -10,13 +10,13 @@ class Sfcms_Image_Loader
 
     /**
      * Загрузит изображение
-     * @throws Image_Exception
      * @param string $filename
      * @return resource
+     * @throws Sfcms_Image_Exception
      */
     static function load( $filename )
     {
-        if( file_exists( $filename ) ) {
+        if ( file_exists( $filename ) ) {
             list( $width, $height, $type, $attr ) = getimagesize( $filename );
             switch ( $type ) {
                 case IMAGETYPE_JPEG:
@@ -51,17 +51,19 @@ class Sfcms_Image_Loader
         $ret = false;
         if( preg_match( '/.*\.([^.]+)$/', $filename, $match ) ) {
 
+            App::getInstance()->getLogger()->log($match,'match');
+
             $ext = strtolower( $match[ 1 ] );
 
             switch ( $ext ) {
                 case 'png':
-                    $ret = @imagepng( $img, $filename );
+                    $ret = imagepng( $img, $filename );
                     break;
                 case 'gif':
-                    $ret = @imagegif( $img, $filename );
+                    $ret = imagegif( $img, $filename );
                     break;
                 default: // Jpeg by default
-                    $ret = @imagejpeg( $img, $filename, 90 );
+                    $ret = imagejpeg( $img, $filename, 90 );
             }
         }
         return $ret;

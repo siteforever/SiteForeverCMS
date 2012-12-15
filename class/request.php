@@ -61,6 +61,8 @@ class Request
             }
         }
 
+//        $_REQUEST = array_merge_recursive( $_REQUEST, $_GET, $_POST );
+
         // дополняем массив $_REQUEST не учтенными значениями
         if ( isset( $req ) && $opt_req = explode( '&', $req ) ) {
             foreach ( $opt_req as $opt_req_item ) {
@@ -74,8 +76,7 @@ class Request
         foreach ( $_REQUEST as $key => $val ) {
             if ( is_array( $val ) ) {
                 $this->request[ $key ] = $val;
-            }
-            else {
+            } else {
                 $this->request[ $key ] = addslashes( $val );
             }
         }

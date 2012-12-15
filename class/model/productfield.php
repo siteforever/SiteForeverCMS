@@ -5,7 +5,7 @@
  * @link http://siteforever.ru
  */
 
-class Model_Product_Field extends Sfcms_Model
+class Model_ProductField extends Sfcms_Model
 {
 
 }

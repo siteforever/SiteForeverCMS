@@ -9,7 +9,7 @@ define("module/behavior",[
 ], function( $ ){
     return {
         apply : function( object ){
-            if ( object.behavior && typeof object.behavior == "object") {
+            if ( object.behavior && typeof object.behavior == "object" ) {
 //                console.log( object.behavior );
                 $.each(object.behavior,function( selector ){
 //                    console.log( this );
