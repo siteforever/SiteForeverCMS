@@ -3,7 +3,12 @@
  * Драйвер для Smarty
  * @author KelTanas
  */
-class TPL_Smarty extends TPL_Driver
+namespace Sfcms\Tpl;
+
+use App;
+use Sfcms\Exception;
+
+class Smarty extends Driver
 {
     private $ext = '';
 
@@ -26,13 +31,11 @@ class TPL_Smarty extends TPL_Driver
 
         // класс шаблонизатора
         $ver = $this->config['version'];
-        if( ! $ver ) throw new RuntimeException(t('Smarty version not defined'));
+        if( ! $ver ) throw new Exception(t('Smarty version not defined'));
 
-        App::autoloadUnRegister(array('App', 'autoload'));
-        require_once 'Smarty-'.$ver.DIRECTORY_SEPARATOR.'libs'.DIRECTORY_SEPARATOR.'Smarty.class.php';
-        App::autoloadRegister(array('App','autoload'));
+        require_once sprintf( 'Smarty-%s/libs/Smarty.class.php', $ver );
 
-        $this->engine = new Smarty(); // link (used php5)
+        $this->engine = new \Smarty(); // link (used php5)
         $this->engine->cache_lifetime = $this->config['cache']['livetime'];
         $this->ext    = $this->config['ext'];
 

@@ -3,9 +3,13 @@
  * Абстрактный класс драйвера шаблона
  * @author KelTanas
  */
-use Sfcms\Component;
+namespace Sfcms\Tpl;
 
-abstract class TPL_Driver extends Component
+use Sfcms\Component;
+use Sfcms\View\Breadcrumbs;
+use Sfcms\Exception;
+
+abstract class Driver extends Component
 {
     // движок шаблонизатора
     protected $engine = null;
@@ -35,16 +39,16 @@ abstract class TPL_Driver extends Component
 
     public function get( $key )
     {
-        throw new RuntimeException(t('Driver properties write only'));
+        throw new Exception(t('Driver properties write only'));
     }
 
     /**
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function getBreadcrumbs()
     {
         if ( null === $this->_breacrumbs ) {
-            $this->_breacrumbs  = new View_Breadcrumbs();
+            $this->_breacrumbs  = new Breadcrumbs();
         }
         return $this->_breacrumbs;
     }

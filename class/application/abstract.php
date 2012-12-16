@@ -6,6 +6,10 @@
 
 use Sfcms\Assets;
 use Sfcms\Controller\Resolver;
+use Sfcms\Tpl\Factory;
+use Sfcms\Tpl\Driver;
+use Module\System\Model\TemplatesModel;
+use Module\Page\Model\PageModel;
 
 abstract class Application_Abstract
 {
@@ -16,22 +20,22 @@ abstract class Application_Abstract
      */
     static $config;
     /**
-     * @var TPL_Driver
+     * @var Driver
      */
     static $tpl;
 
     /**
      * Модель для работы с шаблонами из базы
      * Центролизовать необходимо для работы из виджета
-     * @var model_Templates
+     * @var TemplatesModel
      */
     static $templates;
     /**
-     * @var router
+     * @var Router
      */
     static $router;
     /**
-     * @var db
+     * @var Db
      */
     static $db = null;
     /**
@@ -40,7 +44,7 @@ abstract class Application_Abstract
     static $request;
 
     /**
-     * @var Model_Page
+     * @var PageModel
      */
     static $page;
 
@@ -291,18 +295,18 @@ abstract class Application_Abstract
     }
 
     /**
-     * @return TPL_Driver
+     * @return Driver
      */
     public function getTpl()
     {
         if ( is_null( self::$tpl ) ) {
-            self::$tpl  = Tpl_Factory::create( $this );
+            self::$tpl  = Factory::create( $this );
         }
         return self::$tpl;
     }
 
     /**
-     * @return TPL_Driver
+     * @return Driver
      */
     public function getView()
     {
@@ -607,22 +611,28 @@ abstract class Application_Abstract
      * @static
      * @param string $className
      * @return boolean
-     * @throws Exception
+     * @throws \Sfcms\Autoload\Exception
      */
     static public function autoload( $className )
     {
         static $class_count = 0;
 
-        if ( ! preg_match('/^(Module|Archive)/', $className) ) {
+        if ( preg_match('/^smarty/i', $className) ) {
+            return false;
+        }
+
+        if ( ! preg_match('/^(Module|Archive|Sfcms)/', $className) ) {
             $className = strtolower( $className );
         }
+
+        debugVar( $className, 'className' );
 
         if( in_array( $className, array( 'finfo' ) ) ) {
             return false;
         }
 
         if( $className == 'register' ) {
-            throw new Exception( 'Autoload Register class' );
+            throw new \Sfcms\Autoload\Exception( 'Autoload Register class' );
         }
 
         // PEAR format autoload
@@ -636,7 +646,8 @@ abstract class Application_Abstract
             }
             return true;
         }
-        return false;
+        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
+//        return false;
     }
 }
 
@@ -689,4 +700,42 @@ function t( $cat, $text = '', $params = array() )
 function str_random_replace( $subject, $replace, $search = '%h1%' )
 {
     return str_replace( $search, $subject, trim( array_rand( array_flip( explode( "\n", $replace ) ) ) ) );
+}
+
+/**
+ * Логирует состояние переменной в файл debug.txt
+ * @param      $var
+ * @param null $name
+ *
+ * @return bool|int
+ */
+function debugVar( $var, $name = null )
+{
+    static $first = 1;
+    if ( isset( $_SERVER['REMOTE_ADDR'] ) && $_SERVER['REMOTE_ADDR'] != '127.0.0.1' ) {
+        return false;
+    }
+//    if ( ! App::isDebug() ) {
+//        return false;
+//    }
+    $trace = debug_backtrace();
+
+    $aTrace = array();
+    foreach ( $trace as $i => $t ) {
+        if ( isset( $t['file'] ) ) {
+            $aTrace[] = $i . ': ' . $t['file'] . ' line ' . $t['line'];
+        } elseif ( isset( $t['class'] ) ) {
+            $aTrace[] = $i . ': ' . $t['class'] . $t['type'] . $t['function'] . '('. implode( $t['args'] ) . ')';
+        }
+    }
+
+    $content = ( $first ? "\n\n".str_pad('',20,'*')."\n\nDEBUG: "
+        . ( isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : '' )
+        . '   ' . strftime('%Y-%m-%d %X') . "\n\n" : "" )
+        . implode( "\n", $aTrace ) . "\n"
+        . ( null !== $name ? $name . ' = ' : '' )
+        . var_export( $var, 1 ) . "\n\n";
+
+    $first = 0;
+    return file_put_contents( ROOT.'/debug.log', $content, FILE_APPEND );
 }

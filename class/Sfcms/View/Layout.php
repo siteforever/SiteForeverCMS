@@ -3,7 +3,9 @@
  * Представление с layout
  * @author: keltanas <keltanas@gmail.com>
  */
-class Sfcms_View_Layout extends Sfcms_View_IView
+namespace Sfcms\View;
+
+class Layout extends IView
 {
 //    const JQ_UI_THEME = 'redmond';
     const JQ_UI_THEME = 'flick';
@@ -43,15 +45,15 @@ class Sfcms_View_Layout extends Sfcms_View_IView
 
     /**
      * Выбор лэйаута
-     * @return Sfcms_View_Layout
+     * @return Layout
      */
     protected function selectLayout()
     {
         if( $this->getRequest()->get( 'resource' ) == 'system:' ) {
-            $result = new Sfcms_View_Layout_Admin( $this->_app );
+            $result = new Layout\Admin( $this->_app );
             $this->getRequest()->set('admin', true);
         } else {
-            $result = new Sfcms_View_Layout_Page( $this->_app );
+            $result = new Layout\Page( $this->_app );
             $this->getRequest()->set('admin', false);
         }
         return $result;

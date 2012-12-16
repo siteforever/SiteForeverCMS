@@ -4,8 +4,9 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
- 
-class View_Breadcrumbs
+namespace Sfcms\View;
+
+class Breadcrumbs
 {
 
     private $_pieces    = array();
@@ -22,7 +23,7 @@ class View_Breadcrumbs
 
     /**
      * @param array $path
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function fromArray( array $path )
     {
@@ -32,7 +33,7 @@ class View_Breadcrumbs
 
     /**
      * @param $path
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function fromSerialize( $path )
     {
@@ -49,7 +50,7 @@ class View_Breadcrumbs
 
     /**
      * @param $path
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function fromJson( $path )
     {
@@ -83,7 +84,7 @@ class View_Breadcrumbs
     /**
      * @param $url
      * @param $name
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function addPiece( $url, $name )
     {
@@ -92,7 +93,7 @@ class View_Breadcrumbs
     }
 
     /**
-     * @return View_Breadcrumbs
+     * @return Breadcrumbs
      */
     public function clearPieces()
     {
@@ -103,11 +104,11 @@ class View_Breadcrumbs
     /**
      * @param  $name
      * @param  $url
-     * @return View_Breadcrumbs_Crumb
+     * @return Breadcrumbs\Crumb
      */
     protected function createCrumb( $name, $url )
     {
-        return new View_Breadcrumbs_Crumb( $name, $url, $this->_separator );
+        return new Breadcrumbs\Crumb( $name, $url, $this->_separator );
     }
 
     /**
@@ -123,7 +124,7 @@ class View_Breadcrumbs
             }
         }
 
-        $result = '<ul class="breadcrumb"><li>'.join( $this->getSeparator() . '</li><li>', $pieces ).'</li></ul>';
+        $result = '<ul class="breadcrumb"><li>' . join( $this->getSeparator() . '</li><li>', $pieces ).'</li></ul>';
 
         return $result;
     }

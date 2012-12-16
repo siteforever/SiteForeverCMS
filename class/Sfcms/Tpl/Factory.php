@@ -4,31 +4,39 @@
  * @author KelTanas
  */
 
-class Tpl_Exception extends Exception {};
+namespace Sfcms\Tpl;
 
-class Tpl_Factory
+use Sfcms\Exception;
+use Sfcms\Tpl\Smarty;
+use Sfcms\Tpl\Driver;
+use Application_Abstract;
+
+class Factory
 {
     public  static $template_dir;
     public  static $compile_dir;
     public  static $config_dir;
     public  static $cache_dir;
-    
+
     /**
      * Вернет инстанс шаблонизатора
-     * @return TPL_Smarty
+     * @param Application_Abstract $app
+     *
+     * @return Driver
+     * @throws Exception
      */
     static function create( Application_Abstract $app )
     {
         $cfg = $app->getConfig()->get('template');
 
         if ( ! $cfg ) {
-            throw new Tpl_Exception('Config for templates not defined');
+            throw new Exception('Config for templates not defined');
         }
         $driver = $cfg['driver'];
         $theme  = $cfg['theme'];
 
         /**
-         * @var TPL_Driver $obj
+         * @var Driver $obj
          */
         if ( class_exists( $driver ) ) {
             $obj = new $driver();

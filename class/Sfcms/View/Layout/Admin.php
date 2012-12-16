@@ -3,7 +3,11 @@
  * Формируем лэйаут для админки
  * @author: keltanas <keltanas@gmail.com>
  */
-class Sfcms_View_Layout_Admin extends Sfcms_View_Layout
+namespace Sfcms\View\Layout;
+
+use Sfcms\View\Layout;
+
+class Admin extends Layout
 {
     /**
      * @param $result

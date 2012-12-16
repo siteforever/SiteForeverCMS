@@ -41,7 +41,7 @@ class Router
         $this->setRoute( $route );
 
         $this->addRouteRegulation( new Route\Direct );
-        $this->addRouteRegulation( new Route\XML );
+        $this->addRouteRegulation( new Route\Xml );
         $this->addRouteRegulation( new Route\Structure );
         $this->addRouteRegulation( new Route\Defaults );
     }

@@ -3,7 +3,13 @@
  * Интерфейс внешнего представления
  * @author: keltanas <keltanas@gmail.com>
  */
-abstract class Sfcms_View_IView
+namespace Sfcms\View;
+
+use Application_Abstract;
+use Request;
+use Sfcms\Tpl\Driver;
+
+abstract class IView
 {
     /** @var Application_Abstract */
     protected $_app = null;
@@ -22,7 +28,7 @@ abstract class Sfcms_View_IView
     }
 
     /**
-     * @return TPL_Driver
+     * @return Driver
      */
     protected function getTpl()
     {

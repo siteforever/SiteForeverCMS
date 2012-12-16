@@ -10,7 +10,7 @@ use Sfcms\Html;
  
 class Sfcms
 {
-    static $instance;
+    static private $instance;
 
     static protected $html = null;
 
@@ -22,7 +22,7 @@ class Sfcms
      */
     static function getInstance()
     {
-        if ( is_null( self::$instance ) ) {
+        if ( null === self::$instance ) {
             self::$instance = new Sfcms();
         }
     }
@@ -34,7 +34,7 @@ class Sfcms
      */
     static function html()
     {
-        if ( is_null( self::$html ) ) {
+        if ( null === self::$html ) {
             self::$html = new Html();
         }
         return self::$html;
@@ -67,8 +67,7 @@ class Sfcms
         /* Проверка - подключена ли библиотека GD - если её нет, вам необходимо либо самому подключить эту библиотеку
         * (В файле php.ini, секция extensions, необходимо прописать либо раскомментировать строку:
         *   extension=php_gd2.dll - в windows. */
-        if (!extension_loaded('gd'))
-        {
+        if (!extension_loaded('gd')) {
             throw new RuntimeException('GD library not found on this server');
         }
 

@@ -18,6 +18,8 @@ set_error_handler( function ( $errno, $errstr) {
 require_once 'application/abstract.php';
 
 use Sfcms\Controller\Resolver;
+use Sfcms\View\Layout;
+use Sfcms\View\Xhr;
 
 /**
  * Класс приложение
@@ -154,14 +156,15 @@ class App extends Application_Abstract
 
         $result = $this->prepareResult( $result );
 
-//        if ( $this->getRequest()->getContent() && CACHE ) {
-//            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
-//            $this->getCacheManager()->save();
-//        }
+        //        if ( $this->getRequest()->getContent() && CACHE ) {
+        //            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
+        //            $this->getCacheManager()->save();
+        //        }
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
         $result = $this->invokeLayout( $result );
+        debugVar( $result );
         if ( $reload = $this->getRequest()->get('reload') ) {
             $result .= $reload;
         }
@@ -218,9 +221,9 @@ class App extends Application_Abstract
     protected function invokeLayout( $result )
     {
         if( $this->getRequest()->getAjax() ) {
-            $Layout = new Sfcms_View_Xhr( $this );
+            $Layout = new Xhr( $this );
         } else {
-            $Layout = new Sfcms_View_Layout( $this );
+            $Layout = new Layout( $this );
         }
         return $Layout->view( $result );
     }

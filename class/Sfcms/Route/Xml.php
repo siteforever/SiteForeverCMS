@@ -7,7 +7,7 @@
 namespace Sfcms\Route;
 use Sfcms\Route;
 
-class XML extends Route
+class Xml extends Route
 {
     /**
      * @param $route

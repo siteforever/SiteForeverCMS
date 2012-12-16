@@ -3,7 +3,11 @@
  * Формируем лэйаут для страниц
  * @author: keltanas <keltanas@gmail.com>
  */
-class Sfcms_View_Layout_Page extends Sfcms_View_Layout
+namespace Sfcms\View\Layout;
+
+use Sfcms\View\Layout;
+
+class Page extends Layout
 {
     /**
      * @param $result

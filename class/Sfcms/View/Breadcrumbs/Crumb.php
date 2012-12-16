@@ -4,8 +4,11 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
- 
-class View_Breadcrumbs_Crumb
+namespace Sfcms\View\Breadcrumbs;
+
+use Sfcms;
+
+class Crumb
 {
     private $_name  = '';
     private $_alias = '';

@@ -3,7 +3,13 @@
  * Отображение для XMLHttpRequest
  * @author: keltanas <keltanas@gmail.com>
  */
-class Sfcms_View_Xhr extends Sfcms_View_IView
+namespace Sfcms\View;
+
+use Sfcms\View\IView;
+use Application_Exception;
+use Request;
+
+class Xhr extends IView
 {
     /**
      * @param $result
