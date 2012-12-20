@@ -4,9 +4,9 @@
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
- *
- * @property $deleted
  */
+
+use Module\Page\Model\PageModel;
 
 /**
  * @property $id
@@ -28,12 +28,10 @@ class Data_Object_News extends Data_Object
 {
     public function getAlias()
     {
-        $alias = $this->name
-            ? strtolower( $this->id . '-' . Sfcms_i18n::getInstance()->translit( $this->name ) )
-            : $this->id;
-        if ( ! $this->data['alias'] || $this->data['alias'] != $alias ) {
-            $this->data['alias'] = $alias;
-            $this->markDirty();
+        if ( ! $this->data['alias'] || '0' == $this->data['alias']{0} ) {
+            $this->alias = $this->name
+                ? strtolower( $this->id . '-' . Sfcms::i18n()->translit( $this->name ) )
+                : $this->id;
         }
         return $this->data['alias'];
     }
@@ -53,13 +51,13 @@ class Data_Object_News extends Data_Object
 
     public function getUrl()
     {
-        /** @var $pageModel Model_Page */
+        /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         $page = $pageModel->findByControllerLink( 'news', $this->cat_id );
         if ( null !== $page ) {
-            return  $page->alias . '/' . $this->alias;
+            return  $page->alias . '/' . $this->getAlias();
         } else {
-            return $this->alias;
+            return $this->getAlias();
         }
     }
 }

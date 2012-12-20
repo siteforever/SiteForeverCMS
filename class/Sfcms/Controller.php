@@ -2,17 +2,20 @@
 /**
  * Интерфейс контроллера
  * @author: keltanas <keltanas@gmail.com>
- *
- * @property \TPL_Driver $tpl
  */
 use Sfcms\Component as Component;
 use Sfcms\Module as Module;
+use Sfcms\Tpl\Driver;
+use Module\System\Model\TemplatesModel;
 
+/**
+ * @property Driver $tpl
+ */
 abstract class Sfcms_Controller extends Component
 {
     private static $forms = array();
 
-    /** @var TPL_Driver */
+    /** @var Driver */
     private $_tpl = null;
 
     /** @var array */
@@ -33,7 +36,7 @@ abstract class Sfcms_Controller extends Component
     /** @var Data_Object_User */
     protected $user;
 
-    /** @var Model_Templates */
+    /** @var TemplatesModel */
     protected $templates;
 
     public function __construct()
@@ -99,7 +102,7 @@ abstract class Sfcms_Controller extends Component
     }
 
     /**
-     * @return TPL_Driver
+     * @return Driver
      */
     public function getTpl()
     {

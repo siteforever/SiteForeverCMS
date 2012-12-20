@@ -17,6 +17,7 @@ class Data_Object_NewsTest extends PHPUnit_Framework_TestCase
     public function testGetAlias()
     {
         $this->obj->name = 'Привет Мир!';
+        $this->obj->alias = '';
         $this->assertEquals('1-privet-mir', $this->obj->getAlias());
     }
 

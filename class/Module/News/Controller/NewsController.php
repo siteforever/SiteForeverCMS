@@ -10,8 +10,8 @@ namespace Module\News\Controller;
 use Sfcms_Controller;
 use Request;
 use Form_Form;
-use Model_News;
-use Model_NewsCategory;
+use Module\News\Model\NewsModel;
+use Module\News\Model\CategoryModel;
 use Data_Object_News;
 use Data_Object_NewsCategory;
 use Sfcms_Http_Exception;
@@ -44,10 +44,10 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Отображать новость на сайте
-     * @param Model_News $model
+     * @param NewsModel $model
      * @return mixed
      */
-    public function getNews( Model_News $model )
+    public function getNews( NewsModel $model )
     {
         $id = intval( $this->request->get('doc' ) );
         $alias = $this->request->get( 'alias' );
@@ -78,10 +78,10 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Отображать список новостей на сайте
-     * @param Model_News $model
+     * @param NewsModel $model
      * @return mixed
      */
-    public function getNewsList( Model_News $model )
+    public function getNewsList( NewsModel $model )
     {
         /** @var Data_Object_NewsCategory $category */
         $category = $model->category->find( $this->page['link'] );
@@ -131,7 +131,7 @@ class NewsController extends Sfcms_Controller
         $this->request->setTitle(t('news','News'));
         $this->app()->addScript('/misc/admin/news.js');
 
-        /** @var model_News $model */
+        /** @var NewsModel $model */
         $model      = $this->getModel('News');
         $category   = $model->category;
 
@@ -181,7 +181,7 @@ class NewsController extends Sfcms_Controller
     public function editAction( )
     {
         $this->request->setTitle(t('news','News edit'));
-        /** @var $model Model_News */
+        /** @var $model NewsModel */
         $model      = $this->getModel('News');
         /** @var $form Form_Form */
         $form   = $model->getForm();
@@ -225,9 +225,9 @@ class NewsController extends Sfcms_Controller
     public function cateditAction( )
     {
         $this->request->setTitle(t('news','News category'));
-        /** @var $newsModel Model_News */
+        /** @var $newsModel NewsModel */
         $newsModel      = $this->getModel( 'News' );
-        /** @var $categoryModel Model_NewsCategory */
+        /** @var $categoryModel CategoryModel */
         $categoryModel  = $this->getModel( 'NewsCategory' );
 
         $form   = $categoryModel->getForm();

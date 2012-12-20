@@ -75,7 +75,6 @@ class Data_Object_Catalog extends Data_Object
         if ( $this->sale ) {
             $start = mktime( 0,0,0,date('n',$this->data['sale_start']),date('d',$this->data['sale_start']),date('Y',$this->data['sale_start']) );
             $stop  = mktime( 23,59,59,date('n',$this->data['sale_stop']),date('d',$this->data['sale_stop']),date('Y',$this->data['sale_stop']) );
-            //var_dump( strftime('%X %x' ,$start), strftime('%X %x' ,$stop) );
             if ( $start <= time() && time() <= $stop ) {
                 return ceil( $this->getPrice() * ( 100 - $this->sale ) / 1000 ) * 10;
             }

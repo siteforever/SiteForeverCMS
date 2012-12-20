@@ -13,9 +13,7 @@ class Controller_Sitemap extends Sfcms_Controller
         $bc->addPiece('index', 'Главная');
         $bc->addPiece(null, $this->request->getTitle());
 
-        $tree   = $this->getModel('Page')->getMenu(1, 5);
-
-        return '<div class="sitemap">' . $tree . '</div>';
+        return array('parent'=>1,'level'=>5);
     }
 
     public function xmlAction()

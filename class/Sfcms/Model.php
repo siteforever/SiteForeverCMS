@@ -28,6 +28,7 @@ abstract class Sfcms_Model extends Component
      * @var db
      */
     protected $db;
+
     /**
      * @var Request
      */
@@ -244,6 +245,7 @@ abstract class Sfcms_Model extends Component
     final public function createObject( $data = array(), $reFill = false )
     {
 //        $start = microtime( 1 );
+//        debugVar(  $this->objectClass().'.'.$data['id'], __FUNCTION__ );
         // TODO Если создаем существующий объект, то св-ва не перезаписываем
         if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
@@ -258,7 +260,7 @@ abstract class Sfcms_Model extends Component
         $obj = new $class_name( $this, $data );
         if( null !== $obj->id ) {
             $this->addToMap( $obj );
-            $obj->markClean();
+//            $obj->markClean();
         }
         //        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
         return $obj;
