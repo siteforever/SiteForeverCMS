@@ -8,7 +8,7 @@
 namespace Module\News\Controller;
 
 use Sfcms_Controller;
-use Request;
+use Sfcms\Request;
 use Form_Form;
 use Module\News\Model\NewsModel;
 use Module\News\Model\CategoryModel;
@@ -102,7 +102,7 @@ class NewsController extends Sfcms_Controller
             'cond'     => $cond,
             'params'   => $params,
             'limit'    => $paging['limit'],
-            'order'    => '`date` DESC',
+            'order'    => '`date` DESC, `name`',
         ));
 
         $this->tpl->assign(array(

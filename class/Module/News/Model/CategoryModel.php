@@ -7,10 +7,10 @@
  */
 namespace Module\News\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Forms_News_Category;
 
-class CategoryModel extends Sfcms_Model
+class CategoryModel extends Model
 {
     /** @var Forms_News_Category */
     private $form = null;

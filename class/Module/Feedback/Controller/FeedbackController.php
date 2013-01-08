@@ -11,13 +11,13 @@ use Sfcms;
 use Sfcms_Controller;
 use Forms_Feedback_Default;
 
-class Controller_Feedback extends Sfcms_Controller
+class FeedbackController extends Sfcms_Controller
 {
     public function indexAction()
     {
         $this->request->setTitle('Обратная связь');
         $this->request->setTemplate('inner');
-        $bc = $this->getTpl()->getBreadcrumbs()
+        $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',t('Home'))->addPiece(null,$this->request->getTitle());
 
         /** @var $form Forms_Feedback_Default */

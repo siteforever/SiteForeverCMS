@@ -7,9 +7,9 @@
 
 namespace Module\Market\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class MetroModel extends Sfcms_Model
+class MetroModel extends Model
 {
 
     public function tableClass()

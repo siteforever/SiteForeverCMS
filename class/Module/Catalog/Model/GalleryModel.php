@@ -6,11 +6,11 @@
  */
 namespace Module\Catalog\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Data_Collection;
 use Data_Object_CatalogGallery;
 
-class GalleryModel extends Sfcms_Model
+class GalleryModel extends Model
 {
 
     public function tableClass()

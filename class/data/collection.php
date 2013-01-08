@@ -1,4 +1,7 @@
 <?php
+
+use Sfcms\Model;
+
 /**
  * 
  * @author Nikolay Ermin <nikolay@ermin.ru>
@@ -23,7 +26,7 @@ class Data_Collection implements Iterator
 
     /**
      * Объект маппера
-     * @var Sfcms_Model
+     * @var Model
      */
     protected $_mapper;
 
@@ -48,9 +51,9 @@ class Data_Collection implements Iterator
     /**
      * Создаст коллекцию
      * @param $raw
-     * @param Sfcms_Model $mapper
+     * @param Model $mapper
      */
-    public function __construct( $raw = null, Sfcms_Model $mapper = null )
+    public function __construct( $raw = null, Model $mapper = null )
     {
         if ( ! is_null( $raw ) && $raw && ! is_null( $mapper ) ) {
             $this->_raw      = array_values( $raw );

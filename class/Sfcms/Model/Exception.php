@@ -1,8 +1,9 @@
 <?php
+namespace Sfcms\Model;
 /**
  * Исключение модели
  */
-class Sfcms_Model_Exception extends Exception
+class Exception extends \Exception
 {
 }
 

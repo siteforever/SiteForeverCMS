@@ -1,16 +1,20 @@
 <?php
+namespace Sfcms;
+
+use App;
+
 /**
  * Переводчик
  */
 
-class Sfcms_i18n
+class i18n
 {
 
     private $_lang;
     private $_dictionary;
 
     /**
-     * @var Sfcms_i18n
+     * @var i18n
      */
     private static $_instance;
 
@@ -94,7 +98,7 @@ class Sfcms_i18n
 
     /**
      * @static
-     * @return Sfcms_i18n
+     * @return i18n
      */
     public static function getInstance()
     {
@@ -102,7 +106,7 @@ class Sfcms_i18n
             // Locale
             setlocale( LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C' );
             setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
-            self::$_instance = new Sfcms_i18n();
+            self::$_instance = new i18n();
         }
         return self::$_instance;
     }

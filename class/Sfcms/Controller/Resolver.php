@@ -66,7 +66,7 @@ class Resolver extends Component
         } elseif ( isset( $config['file'] ) ) {
             require_once $config['file'];
         } else {
-            require_once strtolower( str_replace(array('_','\\'), DIRECTORY_SEPARATOR, $controllerClass) ).'.php';
+            require_once str_replace(array('_','\\'), DIRECTORY_SEPARATOR, $controllerClass).'.php';
         }
 
         return array('controller' => $controllerClass, 'action' => $action);

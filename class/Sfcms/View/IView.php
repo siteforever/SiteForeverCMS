@@ -5,16 +5,16 @@
  */
 namespace Sfcms\View;
 
-use Application_Abstract;
-use Request;
+use Sfcms\Kernel\Base as Application;
+use Sfcms\Request;
 use Sfcms\Tpl\Driver;
 
 abstract class IView
 {
-    /** @var Application_Abstract */
+    /** @var Application */
     protected $_app = null;
 
-    public function __construct( Application_Abstract $app )
+    public function __construct( Application $app )
     {
         $this->_app = $app;
     }

@@ -1,7 +1,7 @@
 <?php
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
 use Form_Form;
 use Data_Object;
@@ -13,7 +13,7 @@ use Forms\User\Profile as FormProfile;
 use Forms\User\Restore as FormRestore;
 use Forms\User\Password as FormPassword;
 
-class UserModel extends Sfcms_Model
+class UserModel extends Model
 {
     /**
      * Форма входа в систему

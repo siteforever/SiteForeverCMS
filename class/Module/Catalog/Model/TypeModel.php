@@ -8,9 +8,9 @@
 namespace Module\Catalog\Model;
 
 use Sfcms\JqGrid\Provider;
-use Sfcms_Model;
+use Sfcms\Model;
 
-class TypeModel extends Sfcms_Model
+class TypeModel extends Model
 {
     public function relation()
     {

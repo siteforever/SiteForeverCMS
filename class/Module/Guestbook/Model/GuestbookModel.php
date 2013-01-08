@@ -7,9 +7,9 @@
 
 namespace Module\Guestbook\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class GuestbookModel extends Sfcms_Model
+class GuestbookModel extends Model
 {
     public function relation()
     {

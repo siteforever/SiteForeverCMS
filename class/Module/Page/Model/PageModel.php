@@ -11,20 +11,20 @@ use SimpleXMLElement;
 
 use Form_Form;
 use Forms_Page_Page;
-use Sfcms_Model;
+use Sfcms\Model;
 use Data_Object;
 use Data_Object_Page;
 use Data_Collection;
-use Sfcms_Model_Exception;
+use Sfcms\Model\Exception;
 
 use Module\Catalog\Plugin\Page as CatalogPlugin;
 use Module\News\Plugin\Page as NewsPlugin;
 use Module\Gallery\Plugin\Page as GalleryPlugin;
 
-class PageModel extends Sfcms_Model
+class PageModel extends Model
 {
     /**
-     * Массив, индексируемый по $parent
+     * Массив, индексированный по $parent
      * @var array
      */
     public $parents;
@@ -179,18 +179,18 @@ class PageModel extends Sfcms_Model
     /**
      * @param Data_Object $obj
      * @return bool
-     * @throws Sfcms_Model_Exception
+     * @throws Exception
      */
     public function onSaveStart( Data_Object $obj = null )
     {
         /** @var $obj Data_Object_Page  */
         if ( ! $obj instanceof Data_Object_Page ) {
-            throw new Sfcms_Model_Exception('$obj must be "Data_Object_Page" class');
+            throw new Exception('$obj must be "Data_Object_Page" class');
         }
 
         $pageId = $this->checkAlias( $obj->alias );
         if ( false !== $pageId && $obj->getId() != $pageId ) {
-            throw new Sfcms_Model_Exception( t( 'The page with this address already exists' ) );
+            throw new Exception( t( 'The page with this address already exists' ) );
         }
 
         $obj->path = $obj->createPath();
@@ -212,6 +212,7 @@ class PageModel extends Sfcms_Model
 
     /**
      * Вернет список доступных модулей
+     * Нужны для составления списка создания страницы в админке
      * @return array|null
      */
     public function getAvaibleModules()
@@ -324,7 +325,7 @@ class PageModel extends Sfcms_Model
 
 
     /**
-     * Создает дерево $this->tree по данным из $this->all
+     * Создает список $this->parents по данным из $this->all
      */
     public function createParentsIndex()
     {
@@ -460,7 +461,7 @@ class PageModel extends Sfcms_Model
         if (!isset( $this->form )) {
             $this->form = new Forms_Page_Page();
             $this->form->getField( 'controller' )->setVariants( $this->getAvaibleModules() );
-            $this->form->getField( 'protected' )->setVariants( Sfcms_Model::getModel( 'User' )->getGroups() );
+            $this->form->getField( 'protected' )->setVariants( self::getModel( 'User' )->getGroups() );
         }
         return $this->form;
     }

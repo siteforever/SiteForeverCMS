@@ -5,10 +5,10 @@
 
 namespace Module\Gallery\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Forms_Gallery_Image;
 
-class GalleryModel extends Sfcms_Model
+class GalleryModel extends Model
 {
     protected $form;
 
@@ -86,6 +86,18 @@ class GalleryModel extends Sfcms_Model
         $catObj->set('thumb', $imgObj->get('thumb'));
         $catObj->save();
         return $this->db->insertUpdateMulti($this->getTable(), $new_pos);
+    }
+
+    /**
+     * @param int $category_id
+     *
+     * @return array|\Data_Collection
+     */
+    public function findAllByCategory( $category_id )
+    {
+        return $this->findAll(
+            'category_id = :id AND hidden = 0 AND deleted = 0',
+            array(':id'=>$category_id),'pos');
     }
 
     /**

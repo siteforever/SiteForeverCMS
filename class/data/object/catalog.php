@@ -1,4 +1,8 @@
 <?php
+
+use Module\Page\Model\PageModel;
+use Sfcms\i18n;
+
 /**
  * Объект Каталога
  * @author Nikolay Ermin (nikolay@ermin.ru)
@@ -96,7 +100,7 @@ class Data_Object_Catalog extends Data_Object
      */
     public function getAlias()
     {
-        $alias = strtolower( $this->id . '-' . Sfcms_i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
+        $alias = strtolower( $this->id . '-' . i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
         if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
             $this->data['alias'] = $alias;
             $this->markDirty();
@@ -110,7 +114,7 @@ class Data_Object_Catalog extends Data_Object
      */
     public function getUrl()
     {
-        /** @var $modelPage Model_Page */
+        /** @var $modelPage PageModel */
         $modelPage = $this->getModel('Page');
         /** @var $page Data_Object_Page */
         $page = $modelPage->findByControllerLink('catalog', $this->cat ? $this->id : $this->parent);

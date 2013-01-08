@@ -7,12 +7,12 @@
 
 namespace Module\Market\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Data_Collection;
 use Sfcms\JqGrid\Provider;
 use Forms\Material\Edit as FormEdit;
 
-class MaterialModel extends Sfcms_Model
+class MaterialModel extends Model
 {
 
     public function tableClass()

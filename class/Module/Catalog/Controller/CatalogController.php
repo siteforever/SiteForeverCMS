@@ -7,13 +7,13 @@ namespace Module\Catalog\Controller;
 
 use App;
 use Sfcms_Controller;
-use Model_Catalog;
+use Module\Catalog\Model\CatalogModel;
 use Data_Object_Catalog;
 use Data_Object_ProductProperty;
-use Model_Page;
+use Module\Page\Model\PageModel;
 use Sfcms_Model_Exception;
 use Sfcms_Http_Exception;
-use Request;
+use Sfcms\Request;
 use Form_Form;
 use Form_Field;
 use Sfcms;

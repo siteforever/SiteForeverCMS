@@ -1,11 +1,14 @@
 <?php
+
+use Module\Page\Model\PageModel;
+use Sfcms\i18n;
+
 /**
  * Объект Изображения Галереи
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-require_once 'class/data/object.php';
 
 /**
  * @property int id
@@ -34,7 +37,7 @@ class Data_Object_Gallery extends Data_Object
      */
     public function getAlias()
     {
-        $alias = $this->get('name') ? Sfcms_i18n::getInstance()->translit( $this->get('name') ) : $this->getId();
+        $alias = $this->get('name') ? i18n::getInstance()->translit( $this->get('name') ) : $this->getId();
         if ( ! $this->data['alias'] || $this->data['alias'] != $alias ) {
             $this->data['alias'] = $alias;
             $this->markDirty();
@@ -47,7 +50,7 @@ class Data_Object_Gallery extends Data_Object
      */
     public function getUrl()
     {
-        /** @var $pageModel Model_Page */
+        /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         $page = $pageModel->findByControllerLink( 'gallery', $this->category_id );
         if ( null !== $page ) {

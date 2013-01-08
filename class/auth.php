@@ -1,4 +1,6 @@
 <?php
+use Sfcms\Kernel\Base as Service;
+use Module\System\Model\UserModel;
 
 // группы пользователей
 define('USER_GUEST', '0'); // гость
@@ -31,7 +33,7 @@ abstract class Auth
     protected $error = false;
 
     /**
-     * @var Model_User
+     * @var UserModel
      */
     protected $model = null;
 
@@ -58,7 +60,7 @@ abstract class Auth
     }
 
     /**
-     * @return Application_Abstract
+     * @return Service
      */
     public function app()
     {
@@ -251,7 +253,7 @@ abstract class Auth
 
     /**
      * Подтвердить регистрацию
-     * @return void
+     * @return bool
      */
     public function confirm()
     {

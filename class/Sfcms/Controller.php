@@ -7,6 +7,14 @@ use Sfcms\Component as Component;
 use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
 use Module\System\Model\TemplatesModel;
+use Sfcms\Config;
+use Sfcms\Request;
+use Sfcms\Router;
+use Sfcms\Model;
+use Sfcms\Exception;
+use Sfcms\i18n;
+use Sfcms\db;
+use Sfcms\Basket\Base as Basket;
 
 /**
  * @property Driver $tpl
@@ -24,13 +32,13 @@ abstract class Sfcms_Controller extends Component
     /** @var array|Data_Object_Page */
     protected $page;
 
-    /** @var Sfcms_Config $config */
+    /** @var Config $config */
     protected $config;
 
     /** @var Request */
     protected $request;
 
-    /** @var router */
+    /** @var Router */
     protected $router;
 
     /** @var Data_Object_User */
@@ -170,20 +178,22 @@ abstract class Sfcms_Controller extends Component
     /**
      * Вернет указанную модель, либо модель, имя которой соответствует контроллеру
      * @param string $model
-     * @return Sfcms_Model
+     *
+     * @return Model
+     * @throws Exception
      */
-    public function getModel($model=null)
+    public function getModel($model='')
     {
-        if ( null === $model  ) {
+        if ( '' === $model  ) {
             if ( preg_match('@^Controller_(\w+)@',get_class( $this ), $m ) ) {
                 $model = $m[1];
             } elseif ( preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class( $this ), $m) ) {
                 $model = '\\Module\\'.$m[1].'\\Model\\'.$m[2];
             } else {
-                throw new \Sfcms\Exception(sprintf('Model not defined in class %s',get_class($this)));
+                throw new Exception(sprintf('Model not defined in class %s',get_class($this)));
             }
         }
-        return Sfcms_Model::getModel($model);
+        return Model::getModel($model);
     }
 
     /**
@@ -208,7 +218,7 @@ abstract class Sfcms_Controller extends Component
         if ( ! isset( self::$forms[ $name ] ) ) {
             try {
                 $class_name = 'Forms_'.$name;
-                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, strtolower( $class_name ) ).'.php';
+                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, $class_name ).'.php';
                 require_once $file;
                 self::$forms[ $name ] = new $class_name();
             } catch ( Exception $e ) {
@@ -234,7 +244,7 @@ abstract class Sfcms_Controller extends Component
      */
     public function getDB()
     {
-        return Db::getInstance();
+        return db::getInstance();
     }
 
     /**
@@ -266,11 +276,11 @@ abstract class Sfcms_Controller extends Component
     }
 
     /**
-     * @return Sfcms_i18n
+     * @return i18n
      */
     public function i18n()
     {
-        return Sfcms_i18n::getInstance();
+        return i18n::getInstance();
     }
 
     /**

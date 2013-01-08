@@ -23,7 +23,8 @@ return array(
         'rewrite'   => true,
     ),
 
-    'editor' => 'tinymce',
+//    'editor' => 'tinymce',
+    'editor' => 'ckeditor',
 //    'editor' => 'elrte',
 
     'language'  => 'ru',

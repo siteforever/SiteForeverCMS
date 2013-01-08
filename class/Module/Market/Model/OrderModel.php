@@ -9,14 +9,14 @@
 namespace Module\Market\Model;
 
 use Sfcms;
-use Sfcms_Model;
-use Basket;
+use Sfcms\Model;
+use Sfcms\Basket\Base as Basket;
 use Data_Object_Delivery;
 use Data_Object_Order;
 use Data_Object_OrderPosition;
 use Forms_Basket_Address;
 
-class OrderModel extends Sfcms_Model
+class OrderModel extends Model
 {
     protected $positions = array();
 

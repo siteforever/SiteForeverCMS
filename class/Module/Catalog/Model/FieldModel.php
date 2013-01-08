@@ -7,9 +7,9 @@
 
 namespace Module\Catalog\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class FieldModel extends Sfcms_Model
+class FieldModel extends Model
 {
     public function tableClass()
     {

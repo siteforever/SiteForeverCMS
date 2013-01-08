@@ -4,7 +4,7 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
     /** @var Model_Page */
     protected $model;
 
-    /** @var Db */
+    /** @var db */
     protected $db;
 
     protected function setUp()

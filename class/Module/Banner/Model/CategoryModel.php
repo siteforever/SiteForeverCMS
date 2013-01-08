@@ -6,11 +6,11 @@
 
 namespace Module\Banner\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Forms_Banners_CategoryBanner;
-use Model_Gallery;
+use Module\Gallery\Model\GalleryModel;
 
-class CategoryModel extends Sfcms_Model
+class CategoryModel extends Model
 {
     /**
      * @var Forms_Banners_CategoryBanner

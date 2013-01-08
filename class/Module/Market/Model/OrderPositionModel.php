@@ -7,9 +7,9 @@
 
 namespace Module\Market\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class OrderPositionModel extends Sfcms_Model
+class OrderPositionModel extends Model
 {
     public function relation()
     {

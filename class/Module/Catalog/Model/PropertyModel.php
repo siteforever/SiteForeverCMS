@@ -7,7 +7,7 @@
 
 namespace Module\Catalog\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
 /**
  * @property $product_id int
@@ -17,7 +17,7 @@ use Sfcms_Model;
  * @property $value_int int
  * @property $value_datetime datetime
  */
-class PropertyModel extends Sfcms_Model
+class PropertyModel extends Model
 {
     public function relation()
     {

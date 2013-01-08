@@ -6,10 +6,9 @@ namespace Module\Catalog\Controller;
  * @link  http://siteforever.ru
  */
 use Sfcms_Controller;
-use Model_Catalog;
+use Module\Catalog\Model\CatalogModel;
 use Forms\Prodtype\Edit as  FormEdit;
-use Model_ProductField;
-use Data_Object_ProductType;
+use Module\Catalog\Model\FieldModel;
 
 class ProdtypeController extends Sfcms_Controller
 {
@@ -26,7 +25,7 @@ class ProdtypeController extends Sfcms_Controller
     public function adminAction()
     {
         $this->request->setTitle(t('catalog','Product types'));
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('ProductType');
         $provider = $model->getProvider();
         return array(
@@ -40,7 +39,7 @@ class ProdtypeController extends Sfcms_Controller
      */
     public function gridAction()
     {
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('ProductType');
         $provider = $model->getProvider();
         return $provider->getJsonData();
@@ -84,7 +83,7 @@ class ProdtypeController extends Sfcms_Controller
                 $obj->save();
 
                 if ( $obj->getId() && isset($_POST['field']['id']) && is_array($_POST['field']['id']) ) {
-                    /** @var $pfModel Model_ProductField */
+                    /** @var $pfModel FieldModel */
                     $pfModel = $this->getModel('ProductField');
 
                     $fields = array_filter( array_map(function( $i ) use ( $pfModel, $obj ) {

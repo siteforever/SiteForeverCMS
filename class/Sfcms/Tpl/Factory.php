@@ -9,7 +9,7 @@ namespace Sfcms\Tpl;
 use Sfcms\Exception;
 use Sfcms\Tpl\Smarty;
 use Sfcms\Tpl\Driver;
-use Application_Abstract;
+use Sfcms\Kernel\Base as Service;
 
 class Factory
 {
@@ -20,12 +20,12 @@ class Factory
 
     /**
      * Вернет инстанс шаблонизатора
-     * @param Application_Abstract $app
+     * @param Service $app
      *
      * @return Driver
      * @throws Exception
      */
-    static function create( Application_Abstract $app )
+    static function create( Service $app )
     {
         $cfg = $app->getConfig()->get('template');
 

@@ -1,11 +1,12 @@
 <?php
+namespace Sfcms;
 /**
  * Контейнер конфигурации
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  * @link   http://standart-electronics.ru
  */
-class Sfcms_Config
+class Config
 {
     private $config;
 

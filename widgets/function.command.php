@@ -17,7 +17,7 @@ function smarty_function_command( $params )
     $app    = App::getInstance();
 
     if ( ! isset( $params['controller'] ) && ! isset( $params['name'] ) ) {
-        throw new Application_Exception();
+        throw new Exception();
     }
 
     if ( isset( $params['name'] ) ) {

@@ -4,9 +4,9 @@
  */
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class RoutesModel extends Sfcms_Model
+class RoutesModel extends Model
 {
     public function tableClass()
     {

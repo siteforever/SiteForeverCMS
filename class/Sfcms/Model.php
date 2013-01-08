@@ -1,12 +1,28 @@
 <?php
+namespace Sfcms;
+
 /**
  * Интерфейс модели
  */
 
+use App;
 use Sfcms\Component;
+use Sfcms\Model\Plugin;
+use Sfcms\db;
+use Sfcms\Db\Criteria;
 use RuntimeException;
+use PDO;
+use Data_Object_User;
+use Data_Table;
+use Form_Form as Form;
+use Data_Object;
+use Data_Collection as Collection;
+use Data_Query_Builder;
+use Data_Watcher;
+use Data_Field;
+use Data_Relation;
 
-abstract class Sfcms_Model extends Component
+abstract class Model extends Component
 {
     const HAS_MANY      = 'has_many'; // содержет много
     const ONE_TO_MANY   = 'has_many'; // содержет много
@@ -45,7 +61,7 @@ abstract class Sfcms_Model extends Component
     protected $table = null;
 
     /**
-     * @var Form_Form
+     * @var Form
      */
     //protected $form;
 
@@ -127,7 +143,7 @@ abstract class Sfcms_Model extends Component
 
     /**
      * Вызывает нужные плугины
-     * @param string $name
+     * @param $name
      * @param Data_Object $obj
      */
     protected function callPlugins( $name, Data_Object $obj )
@@ -152,10 +168,10 @@ abstract class Sfcms_Model extends Component
 
     /**
      * Добавляет плугин
-     * @param \Sfcms\Model\Plugin $plugin
+     * @param Plugin $plugin
      * @param $namespace
      */
-    protected function addPlugin( \Sfcms\Model\Plugin $plugin, $namespace = 'default' )
+    protected function addPlugin( Plugin $plugin, $namespace = 'default' )
     {
         $this->_plugins[$namespace][] = $plugin;
     }
@@ -208,7 +224,7 @@ abstract class Sfcms_Model extends Component
      * Вернет нужную модель
      * @static
      * @param  $model
-     * @return Sfcms_Model
+     * @return self
      * @throws RuntimeException
      */
     final static public function getModel( $model )
@@ -279,8 +295,8 @@ abstract class Sfcms_Model extends Component
 
     /**
      * Адаптер к наблюдателю для добавления объекта
+     *
      * @param Data_Object $obj
-     * @return void;
      */
     private function addToMap( Data_Object $obj )
     {
@@ -395,7 +411,7 @@ abstract class Sfcms_Model extends Component
 
     /**
      * Установить связи для следующего запроса
-     * @return Sfcms_Model
+     * @return Model
      */
     public function with()
     {
@@ -412,48 +428,50 @@ abstract class Sfcms_Model extends Component
      * Create criteria
      * @deprecated Need use createCriteria()
      * @param array $params
-     * @return Db_Criteria
+     * @return Criteria
      */
     public function criteriaFactory( $params = array() )
     {
         trigger_error('Need use createCriteria()', E_DEPRECATED);
-        return new Db_Criteria( $params );
+        return new Criteria( $params );
     }
 
     /**
      * Create criteria
      * @param array $params
-     * @return Db_Criteria
+     * @return Criteria
      */
     public function createCriteria( $params = array() )
     {
-        return new Db_Criteria( $params );
+        return new Criteria( $params );
     }
 
     /**
      * @param array $data
-     * @return Data_Collection
+     * @return Collection
      */
     public function createCollection( array $data = null )
     {
-        return new Data_Collection( $data, $this );
+        return new Collection( $data, $this );
     }
 
     /**
      * Finding data by primary key
-     * @throws Sfcms_Model_Exception
-     * @param int|array|string|Db_Criteria $crit
+     *
+     * @param int|array|string|Criteria $crit
      * @param array $params
+     *
      * @return Data_Object
+     * @throws Exception
      */
     final public function find( $crit, $params = array() )
     {
         $this->with = array();
         $criteria   = null;
         if( is_object( $crit ) ) {
-            if( $crit instanceof Db_Criteria ) {
-                $criteria = new Data_Criteria( $this->getTable(), $crit );
-            } elseif( $crit instanceof Data_Criteria ) {
+            if( $crit instanceof Criteria ) {
+                $criteria = new Data_Query_Builder( $this->getTable(), $crit );
+            } elseif( $crit instanceof Data_Query_Builder ) {
                 $criteria = $crit;
             }
         }
@@ -488,15 +506,15 @@ abstract class Sfcms_Model extends Component
             $crit = $this->createCriteria( $crit );
         }
 
-        if ( ! is_object( $crit ) && ! $crit instanceof Db_Criteria ) {
-            throw new Sfcms_Model_Exception( 'Not valid criteria' );
+        if ( ! is_object( $crit ) && ! $crit instanceof Criteria ) {
+            throw new Exception( 'Not valid criteria' );
         }
 
         if( ! isset( $criteria ) && isset( $crit ) ) {
-            $criteria = new Data_Criteria( $this->getTable(), $crit );
+            $criteria = new Data_Query_Builder( $this->getTable(), $crit );
         }
 
-        $data = $this->db->fetch( $criteria->getSQL(), DB::F_ASSOC, $crit->params );
+        $data = $this->db->fetch( $criteria->getSQL(), db::F_ASSOC, $crit->params );
 
         if( $data ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
@@ -515,18 +533,18 @@ abstract class Sfcms_Model extends Component
      * @param array $params
      * @param string $order
      * @param string $limit
-     * @return array|Data_Collection
-     * @throws Sfcms_Model_Exception
+     * @return array|Collection
+     * @throws Exception
      */
     final public function findAll( $crit = array(), $params = array(), $order = '', $limit = '' )
     {
         $with       = $this->with;
         $this->with = array();
 
-        if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Db_Criteria ) ) {
-            $criteria = new Data_Criteria( $this->getTable(), $crit );
+        if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Criteria ) ) {
+            $criteria = new Data_Query_Builder( $this->getTable(), $crit );
         } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
-            $criteria = new Data_Criteria( $this->getTable(),
+            $criteria = new Data_Query_Builder( $this->getTable(),
                 array(
                     'cond'  => $crit,
                     'params'=> $params,
@@ -534,10 +552,10 @@ abstract class Sfcms_Model extends Component
                     'limit' => $limit,
                 )
             );
-        } elseif( is_object( $crit ) && $crit instanceof Data_Criteria ) {
+        } elseif( is_object( $crit ) && $crit instanceof Data_Query_Builder ) {
             $criteria = $crit;
         } else {
-            throw new Sfcms_Model_Exception( 'Not valid criteria' );
+            throw new Exception( 'Not valid criteria' );
         }
 
 //        if ( $criteria-> )
@@ -545,7 +563,7 @@ abstract class Sfcms_Model extends Component
         $raw = $this->db->fetchAll( $criteria->getSQL() );
 
         if( count( $raw ) ) {
-            $collection = new Data_Collection( $raw, $this );
+            $collection = new Collection( $raw, $this );
             if( count( $with ) ) {
                 foreach( $with as $rel ) {
                     $relation = $this->getRelation( $rel, $collection->getRow(0) );
@@ -553,7 +571,7 @@ abstract class Sfcms_Model extends Component
                 }
             }
         } else {
-            $collection = new Data_Collection();
+            $collection = new Collection();
         }
         return $collection;
     }
@@ -580,6 +598,7 @@ abstract class Sfcms_Model extends Component
      * @param Data_Object $obj
      *
      * @return null|Data_Relation
+     * @throws \InvalidArgumentException
      */
     private function getRelation( $rel, Data_Object $obj )
     {
@@ -587,18 +606,18 @@ abstract class Sfcms_Model extends Component
 
         if ( ! is_string( $rel ) ) {
             $this->log($rel,'rel');
-            throw new InvalidArgumentException('Argument `rel` is not a string');
+            throw new \InvalidArgumentException('Argument `rel` is not a string');
         }
 
         switch ( $relation[ $rel ][ 0 ] ) {
             case self::BELONGS:
-                return new Data_Relation_Belongs( $rel, $obj );
+                return new \Data_Relation_Belongs( $rel, $obj );
             case self::HAS_ONE:
-                return new Data_Relation_One( $rel, $obj );
+                return new \Data_Relation_One( $rel, $obj );
             case self::HAS_MANY:
-                return new Data_Relation_Many( $rel, $obj );
+                return new \Data_Relation_Many( $rel, $obj );
             case self::STAT:
-                return new Data_Relation_Stat( $rel, $obj );
+                return new \Data_Relation_Stat( $rel, $obj );
         }
         return null;
     }
@@ -718,12 +737,12 @@ abstract class Sfcms_Model extends Component
     final public function count( $cond = '', $params = array() )
     {
         //$this->log( $cond, 'count' );
-        if ( is_object( $cond ) && $cond instanceof Db_Criteria ) {
+        if ( is_object( $cond ) && $cond instanceof Criteria ) {
             $params = $cond->params;
             $cond   = $cond->condition;
         }
 
-        $criteria = new Data_Criteria( $this->getTable(), array(
+        $criteria = new Data_Query_Builder( $this->getTable(), array(
             'select'    => 'COUNT(`id`)',
             'cond'      => $cond,
             'params'    => $params,

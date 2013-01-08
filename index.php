@@ -17,7 +17,7 @@ define('SF_PATH', __DIR__);
 define('ROOT', __DIR__);
 
 // автозагрузка классов
-require_once SF_PATH . DIRECTORY_SEPARATOR . 'class' . DIRECTORY_SEPARATOR . 'app.php';
+require_once SF_PATH . '/class/App.php';
 
 $app = new App( array('protected/config/development.php'));
 $app->run();

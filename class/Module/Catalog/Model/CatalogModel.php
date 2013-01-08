@@ -7,14 +7,16 @@ namespace Module\Catalog\Model;
 
 use Sfcms;
 use Sfcms\JqGrid\Provider;
-use Sfcms_Model;
+use Sfcms\Exception;
+use Sfcms\Model;
 use Data_Object;
 use Data_Object_Catalog;
 use Data_Collection;
 use Forms_Catalog_Edit;
-use db;
+use PDO;
+use Sfcms\db;
 
-class CatalogModel extends Sfcms_Model
+class CatalogModel extends Model
 {
     /**
      * Массив, индексируемый по $parent
@@ -145,41 +147,42 @@ class CatalogModel extends Sfcms_Model
      */
     public function findGoodsByParent( $parent, $limit = '' )
     {
-        $order = $this->config->get( 'catalog.order_default' );
-
-        // Примеряем способ сортировки к списку из конфига
-        $order_list = $this->config->get( 'catalog.order_list' );
-
-
-        if( $order_list && is_array( $order_list ) ) {
-            $set = $this->request->get( 'order' );
-            if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
-                $order = $set;
-            }
-            else {
-                $order = reset( array_keys( $order_list ) );
-            }
-            $this->request->set( 'order', $order );
-            //print $order;
-        }
-
-        //print "order=$order";
-        $gallery_table = $this->gallery()->getTable();
-
-        $list = $this->db->fetchAll(
-            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-            . "FROM {$this->getTable()} cat "
-            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-            . " AND cg.hidden = 0 "
-            . " AND cg.main = 1 "
-            . "WHERE cat.parent = '$parent' "
-            . "    AND cat.cat = 0 "
-            . "    AND cat.deleted = 0 "
-            . "    AND cat.hidden = 0 "
-            . ( $order ? " ORDER BY {$order}" : "" )
-            . "{$limit}"
-        );
-        return $list;
+        throw new Exception('Deprecated method '.__METHOD__);
+//        $order = $this->config->get( 'catalog.order_default' );
+//
+//        // Примеряем способ сортировки к списку из конфига
+//        $order_list = $this->config->get( 'catalog.order_list' );
+//
+//
+//        if( $order_list && is_array( $order_list ) ) {
+//            $set = $this->request->get( 'order' );
+//            if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
+//                $order = $set;
+//            }
+//            else {
+//                $order = reset( array_keys( $order_list ) );
+//            }
+//            $this->request->set( 'order', $order );
+//            //print $order;
+//        }
+//
+//        //print "order=$order";
+//        $gallery_table = $this->gallery()->getTable();
+//
+//        $list = $this->db->fetchAll(
+//            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
+//            . "FROM {$this->getTable()} cat "
+//            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+//            . " AND cg.hidden = 0 "
+//            . " AND cg.main = 1 "
+//            . "WHERE cat.parent = '$parent' "
+//            . "    AND cat.cat = 0 "
+//            . "    AND cat.deleted = 0 "
+//            . "    AND cat.hidden = 0 "
+//            . ( $order ? " ORDER BY {$order}" : "" )
+//            . "{$limit}"
+//        );
+//        return $list;
     }
 
     /**
@@ -218,22 +221,23 @@ class CatalogModel extends Sfcms_Model
      */
     public function findGoodsById( $id_list )
     {
-        if( ! is_array( $id_list ) ) {
-            throw new Exception( 'Аргумент должен быть массивом' );
-        }
-
-        $gallery_table = $this->gallery()->getTable();
-
-        $list = $this->db->fetchAll(
-            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-            . "FROM {$this->getTable()} cat "
-            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-            . "                            AND cg.hidden = 0 "
-            . "                            AND cg.main = 1 "
-            . "WHERE cat.id IN (" . join( ',', $id_list ) . ")",
-            true
-        );
-        return $list;
+        throw new Exception('Deprecated method '.__METHOD__);
+//        if( ! is_array( $id_list ) ) {
+//            throw new Exception( 'Аргумент должен быть массивом' );
+//        }
+//
+//        $gallery_table = $this->gallery()->getTable();
+//
+//        $list = $this->db->fetchAll(
+//            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
+//            . "FROM {$this->getTable()} cat "
+//            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
+//            . "                            AND cg.hidden = 0 "
+//            . "                            AND cg.main = 1 "
+//            . "WHERE cat.id IN (" . join( ',', $id_list ) . ")",
+//            true
+//        );
+//        return $list;
     }
 
 
@@ -484,7 +488,6 @@ class CatalogModel extends Sfcms_Model
             $result = $id;
         }
 
-//        var_dump($result);
         return $result;
     }
 

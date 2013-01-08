@@ -4,11 +4,11 @@
  */
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Form_Form;
 use Forms_Templates_Edit;
 
-class TemplatesModel extends Sfcms_Model
+class TemplatesModel extends Model
 {
     /**
      * Форма редактирования

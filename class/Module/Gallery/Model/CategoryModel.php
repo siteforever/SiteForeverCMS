@@ -1,10 +1,10 @@
 <?php
 namespace Module\Gallery\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Forms_Gallery_Category;
 
-class CategoryModel extends Sfcms_Model
+class CategoryModel extends Model
 {
     protected $form;
 

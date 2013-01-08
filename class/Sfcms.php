@@ -7,6 +7,7 @@
  */
 
 use Sfcms\Html;
+use Sfcms\i18n;
  
 class Sfcms
 {
@@ -41,11 +42,11 @@ class Sfcms
     }
 
     /**
-     * @return Sfcms_i18n
+     * @return i18n
      */
     static function i18n()
     {
-        return Sfcms_i18n::getInstance();
+        return i18n::getInstance();
     }
 
     /**

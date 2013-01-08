@@ -10,7 +10,6 @@ return array(
         'captcha'   => array(),
         'elfinder'  => array(),
         'error'     => array(),
-        'feedback'  => array(),
         'generator' => array(),
         'routes'    => array(),
         'search'    => array(),

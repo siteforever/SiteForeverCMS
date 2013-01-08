@@ -3,6 +3,10 @@
  * Наблюдатель за объектами данных
  * @author keltanas
  */
+use Sfcms\Kernel\Base;
+use Sfcms\Model;
+use Data_Object;
+
 class Data_Watcher
 {
     private $all    = array();
@@ -127,6 +131,7 @@ class Data_Watcher
         if ( $obj->getId() && ! in_array( $obj, $inst->new, true ) ) {
             $inst->dirty[ $inst->globalKey( $obj ) ] = $obj;
         }
+//        debugVar( $inst->globalKey( $obj ), 'addDirty' );
     }
 
     static public function addNew( Data_Object $obj )
@@ -150,11 +155,8 @@ class Data_Watcher
     {
         $inst = self::instance();
         unset( $inst->dirty[$inst->globalKey($obj)] );
-        if ( in_array( $obj, $inst->new, true ) )
+        if ( /*! $obj->getId() &&*/ in_array( $obj, $inst->new, true ) )
         {
-//            $inst->new = array_filter($inst->new, function( $o )use( $obj ){
-//                return $o !== $obj;
-//            });
             $pruned = array();
             foreach( $inst->new as $newobj ) {
                 if ( ! ( $newobj === $obj ) ) {
@@ -163,6 +165,7 @@ class Data_Watcher
             }
             $inst->new = $pruned;
         }
+//        debugVar( $inst->globalKey( $obj ), 'addClean' );
     }
 
     static public function addDelete( Data_Object $obj )
@@ -181,7 +184,7 @@ class Data_Watcher
     public function performOperations()
     {
         /** @var Data_Object $obj */
-        $pdo    = Sfcms_Model::getDB()->getResource();
+        $pdo    = Model::getDB()->getResource();
         $pdo->beginTransaction();
 
         try {

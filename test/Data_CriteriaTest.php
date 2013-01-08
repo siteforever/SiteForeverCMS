@@ -31,7 +31,7 @@ class TestTable extends Data_Table
 class Data_CriteriaTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Data_Criteria
+     * @var Data_Query_Builder
      */
     protected $object;
     protected $table;
@@ -62,7 +62,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testGetSQL()
     {
-        $criteria   = new Data_Criteria($this->table, array());
+        $criteria   = new Data_Query_Builder($this->table, array());
 
         $sql    = "SELECT `id`,`parent`,`active` FROM `{$this->table}`";
 
@@ -70,7 +70,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
 
         //print( "\n".preg_replace('/\s+/', ' ', $criteria->getSQL() )."\n" );
 
-        $criteria   = new Data_Criteria($this->table, array(
+        $criteria   = new Data_Query_Builder($this->table, array(
             'cond'      => '`param1` = :param1 AND `param2` = :param2 AND `par3` = ? AND `par4` = ?',
             'params'    => array(':param1'=>'foo1', ':param2'=>'fo\'o2', 'fo"o3', 'foo4'),
             'order'     => '`pos` DESC',
@@ -90,7 +90,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testParamArray()
     {
-        $criteria   = new Data_Criteria( $this->table, array(
+        $criteria   = new Data_Query_Builder( $this->table, array(
             'cond'      => '`id` IN (:list) ',
             'params'    => array(':list'=>array(1,2,3)),
         ));
@@ -100,7 +100,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( $criteria->getSQL(), $sql );
 
 
-        $criteria = new Data_Criteria($this->table,array(
+        $criteria = new Data_Query_Builder($this->table,array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array(0,1,2,3)),
         ));
@@ -111,7 +111,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
         );
 
 
-        $criteria = new Data_Criteria($this->table,array(
+        $criteria = new Data_Query_Builder($this->table,array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array('',1,2,3)),
         ));
@@ -122,7 +122,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
         );
 
 
-        $criteria = new Data_Criteria($this->table,array(
+        $criteria = new Data_Query_Builder($this->table,array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array('a','b','c','d')),
         ));
@@ -138,7 +138,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testGetParams()
     {
-        $criteria   = new Data_Criteria($this->table, array(
+        $criteria   = new Data_Query_Builder($this->table, array(
             'params'    => array('test', ':test'=>'test'),
         ));
         $this->assertEquals( $criteria->getParams(), array('test', ':test'=>'test'), 'Params not correspond' );
@@ -146,7 +146,7 @@ class Data_CriteriaTest extends PHPUnit_Framework_TestCase
 
     public function testGetAllPages()
     {
-        $criteria = new Data_Criteria($this->table, array(
+        $criteria = new Data_Query_Builder($this->table, array(
             'cond'      => '`deleted` = ?',
             'params'    => array(0),
             'order'     => '`pos`',

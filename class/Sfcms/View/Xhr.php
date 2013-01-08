@@ -6,14 +6,14 @@
 namespace Sfcms\View;
 
 use Sfcms\View\IView;
-use Application_Exception;
-use Request;
+use Exception;
+use Sfcms\Request;
 
 class Xhr extends IView
 {
     /**
      * @param $result
-     * @throws Application_Exception
+     * @throws Exception
      * @return string
      */
     public function view( $result  )

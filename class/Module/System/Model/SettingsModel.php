@@ -5,9 +5,9 @@
  */
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class SettingsModel extends Sfcms_Model
+class SettingsModel extends Model
 {
 
     public function tableClass()

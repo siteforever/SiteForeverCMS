@@ -7,15 +7,15 @@
  */
 namespace Module\News\Model;
 
-use Db_Criteria;
-use Sfcms_Model;
+use Sfcms\Db\Criteria;
+use Sfcms\Model;
 use Form_Form;
 use Forms_News_Edit;
-use Data_Collection;
 use Data_Object_Page;
 use Data_Object_News;
+use Data_Collection as Collection;
 
-class NewsModel extends Sfcms_Model
+class NewsModel extends Model
 {
     private $form = null;
 
@@ -47,6 +47,19 @@ class NewsModel extends Sfcms_Model
     }
 
     /**
+     * Вернет список главных новостей
+     * @param int $limit
+     *
+     * @return array|Collection
+     */
+    public function findAllMainNews( $limit = 5 )
+    {
+        return $this->findAll(
+            'deleted = 0 AND hidden = 0 AND protected = 0 AND main = 1',
+            array(), 'date DESC',$limit);
+    }
+
+    /**
      * Поиск объекта по алиасу
      * @param $alias
      * @return Data_Object_News
@@ -61,8 +74,8 @@ class NewsModel extends Sfcms_Model
     }
 
     /**
-     * @param array|Db_Criteria $crit
-     * @return array|Data_Collection
+     * @param array|Criteria $crit
+     * @return array|Collection
      */
     public function findAllWithLinks($crit = array())
     {

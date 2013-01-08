@@ -97,6 +97,10 @@ return array(
         'Gallery'   => array(),
     ),
 
+    'Feedback'  => array(
+        'Feedback'  => array(),
+    ),
+
     'Guestbook' => array(
         'Guestbook' => array(),
     ),

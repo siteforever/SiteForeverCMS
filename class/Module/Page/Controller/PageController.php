@@ -6,11 +6,11 @@
 namespace Module\Page\Controller;
 
 use Sfcms_Controller;
-use Model_Page;
+use Module\Page\Model\PageModel;
 use Data_Object_Page;
 use Form_Form;
 use Sfcms_Http_Exception;
-use Request;
+use Sfcms\Request;
 
 use Exception;
 
@@ -43,7 +43,7 @@ class PageController extends Sfcms_Controller
      */
     public function indexAction()
     {
-        /** @var $pageModel Model_Page */
+        /** @var $pageModel PageModel */
         $pageModel = $this->getModel( 'Page' );
         if ( ! $this->user->hasPermission( $this->page[ 'protected' ] )) {
             throw new Sfcms_Http_Exception(t( 'Access denied' ),403);
@@ -86,7 +86,7 @@ class PageController extends Sfcms_Controller
 
         $this->app()->addScript('/misc/admin/page.js');
 
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
 
         if ($get_link_add = $this->request->get( 'get_link_add' )) {
@@ -109,7 +109,7 @@ class PageController extends Sfcms_Controller
      */
     public function createAction()
     {
-        /** @var $model Model_Page */
+        /** @var $model PageModel */
         $model = $this->getModel( 'Page' );
         $modules = $model->getAvaibleModules();
 
@@ -133,7 +133,7 @@ class PageController extends Sfcms_Controller
     public function addAction()
     {
         /**
-         * @var Model_Page $model
+         * @var PageModel $model
          */
         $model = $this->getModel( 'Page' );
 
@@ -190,7 +190,7 @@ class PageController extends Sfcms_Controller
      */
     public function editAction( $edit )
     {
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
         $form  = $model->getForm();
 
@@ -212,7 +212,7 @@ class PageController extends Sfcms_Controller
      */
     public function saveAction()
     {
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
 
         $form = $model->getForm();

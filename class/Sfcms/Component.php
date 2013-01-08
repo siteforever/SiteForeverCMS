@@ -17,45 +17,6 @@ abstract class Component implements \ArrayAccess//, Iterator;
 {
     protected $data   = array();
 
-    public function getMonth( $month = null )
-    {
-        if ( null === $month ) {
-            $month = strftime('%m');
-        }
-        $months = array(
-            '01' => 'Января',
-            '02' => 'Февраля',
-            '03' => 'Марта',
-            '04' => 'Апреля',
-            '05' => 'Мая',
-            '06' => 'Июня',
-            '07' => 'Июля',
-            '08' => 'Августа',
-            '09' => 'Сентября',
-            '10' => 'Октября',
-            '11' => 'Ноября',
-            '12' => 'Декабря',
-        );
-        return $months[ $month ];
-    }
-
-    public function getWeekDay( $day = null )
-    {
-        if ( null === $day ) {
-            $day = strftime('%w');
-        }
-        $days = array(
-            1=> 'Понедельник',
-                'Вторник',
-                'Среда',
-                'Четверг',
-                'Пятница',
-                'Суббота',
-                'Воскресенье',
-        );
-        return $days[ $day ];
-    }
-
     /**
      * @return App
      */
@@ -251,7 +212,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
     {
         if ( isset ( $this->data[ $offset ] ) ) {
             $this->data[ $offset ] = null;
-            $this->markDirty();
+            $this->markDirty(); // TODO WTF!!!
         }
     }
 

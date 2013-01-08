@@ -6,7 +6,7 @@
 namespace Sfcms;
 
 use App;
-use Basket;
+use Sfcms\Basket\Base as Basket;
 use Data_Object_Delivery;
 
 class Delivery
@@ -35,12 +35,12 @@ class Delivery
 
 
     /**
-     * @return \Data_Object_Delivery|null
+     * @return Data_Object_Delivery|null
      */
     public function getObject( $id = null )
     {
         if ( null === $this->delivery) {
-            $model = \Sfcms_Model::getModel('Delivery');
+            $model = Model::getModel('Delivery');
             if ( null !== $id ) {
                 $this->delivery = $model->find( $id );
             } elseif ( null !== $this->id ) {

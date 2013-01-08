@@ -7,9 +7,9 @@
 
 namespace Module\Market\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class PaymentModel extends Sfcms_Model
+class PaymentModel extends Model
 {
 
     public function tableClass()

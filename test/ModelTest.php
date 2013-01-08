@@ -37,7 +37,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testGetDB()
     {
-        $this->assertTrue( $this->object->getDB() instanceof DB );
+        $this->assertTrue( $this->object->getDB() instanceof db );
     }
 
     /**

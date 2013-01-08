@@ -6,9 +6,9 @@
  */
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
-class CommentsModel extends Sfcms_Model
+class CommentsModel extends Model
 {
 
     public function tableClass()

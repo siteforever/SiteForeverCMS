@@ -6,10 +6,10 @@
 
 namespace Module\Banner\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Forms_Banners_Banner;
 
-class BannerModel extends Sfcms_Model
+class BannerModel extends Model
 {
     /**
      * @var Forms_Banners_Banner

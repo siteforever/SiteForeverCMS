@@ -9,8 +9,8 @@ namespace Module\Catalog\Controller;
 use App;
 use Sfcms;
 use Sfcms_Controller;
-use Request;
-use Model_CatalogGallery;
+use Sfcms\Request;
+use Module\Catalog\Model\GalleryModel;
 use Data_Object_Catalog;
 use Data_Object_CatalogGallery;
 
@@ -53,7 +53,7 @@ class GalleryController extends Sfcms_Controller
         $positions = $this->request->get('positions');
         if ( $positions ) {
             $positions = array_flip( $positions );
-            /** @var Model_CatalogGallery $catalogGallery */
+            /** @var GalleryModel $catalogGallery */
             $catalogGallery = $this->getModel('CatalogGallery');
             $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
             array_map(function(Data_Object_CatalogGallery $img) use ($positions) {
@@ -77,7 +77,7 @@ class GalleryController extends Sfcms_Controller
      */
     public function deleteAction()
     {
-        /** @var $catalog_gallery Model_CatalogGallery */
+        /** @var $catalog_gallery GalleryModel */
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', Request::INT );
 
@@ -107,7 +107,7 @@ class GalleryController extends Sfcms_Controller
     public function markdefaultAction()
     {
         $this->setAjax();
-        /** @var Model_CatalogGallery $catGalleryModel */
+        /** @var GalleryModel $catGalleryModel */
         $catGalleryModel = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         /** @var $image Data_Object_CatalogGallery */
@@ -132,7 +132,7 @@ class GalleryController extends Sfcms_Controller
      */
     public function getPanel( $id )
     {
-        /** @var Model_CatalogGallery $catalogGallery */
+        /** @var GalleryModel $catalogGallery */
         $catalogGallery = $this->getModel('CatalogGallery');
         $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
 
@@ -179,7 +179,7 @@ class GalleryController extends Sfcms_Controller
         }
 
         /**
-         * @var Model_CatalogGallery $galleryModel
+         * @var GalleryModel $galleryModel
          */
         $galleryModel = $this->getModel( 'CatalogGallery' );
 

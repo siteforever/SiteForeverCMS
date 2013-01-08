@@ -16,7 +16,7 @@ function smarty_function_catmenu($params, $smarty)
     if ( isset($params['url']) ) {
         $url    = $params['url'];
     } else {
-        $pageModel  = Sfcms_Model::getModel('Page');
+        $pageModel  = \Sfcms\Model::getModel('Page');
         /** @var $page Data_Object_Page */
         $page       = $pageModel->find(array(
             'condition' => ' controller = ? AND link = ? ',
@@ -28,8 +28,8 @@ function smarty_function_catmenu($params, $smarty)
             $url = 'index';
         }
     }
-    /** @var $catalog Model_Catalog */
-    $catalog = Sfcms_Model::getModel('Catalog');
+    /** @var $catalog \Module\Catalog\Model\CatalogModel */
+    $catalog = \Sfcms\Model::getModel('Catalog');
 
     $result = $catalog->getMenu( $url, $parent, $level );
     return $result;

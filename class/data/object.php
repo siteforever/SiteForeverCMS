@@ -7,11 +7,12 @@
  */
 
 use Sfcms\Component;
+use Sfcms\Model;
 
 abstract class Data_Object extends Component
 {
     /**
-     * @var Sfcms_Model
+     * @var Model
      */
     protected $model  = null;
 
@@ -34,10 +35,10 @@ abstract class Data_Object extends Component
     private $new = true;
 
     /**
-     * @param Sfcms_Model $model
+     * @param Model $model
      * @param array $data
      */
-    public function __construct( Sfcms_Model $model, $data )
+    public function __construct( Model $model, $data )
     {
         $this->model    = $model;
         $this->table    = $model->getTable();
@@ -77,7 +78,9 @@ abstract class Data_Object extends Component
     /**
      * @param $key
      * @param $value
-     * @return \Data_Object|\Sfcms\Component
+     *
+     * @return $this|Sfcms\Component
+     * @throws UnexpectedValueException
      */
     public function set( $key, $value )
     {
@@ -155,14 +158,14 @@ abstract class Data_Object extends Component
     /**
      * Вернет модель данных
      * @param string $model
-     * @return Sfcms_Model
+     * @return Model
      */
     public function getModel( $model = '' )
     {
         if ( '' === $model )
             return $this->model;
         else
-            return Sfcms_Model::getModel($model);
+            return Model::getModel($model);
     }
 
     public function getTable()

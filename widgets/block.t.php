@@ -18,6 +18,6 @@ function smarty_block_t( $params, $content, $smarty )
     }
 
     if( $content ) {
-        return Sfcms_i18n::getInstance()->write( $cat, $content, $params );
+        return Sfcms::i18n()->write( $cat, $content, $params );
     }
 }

@@ -7,11 +7,11 @@
 
 namespace Module\Market\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 use Data_Collection;
 use Forms_Manufacturers_Edit;
 
-class ManufacturerModel extends Sfcms_Model
+class ManufacturerModel extends Model
 {
 
     public function tableClass()

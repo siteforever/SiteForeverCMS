@@ -7,10 +7,10 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Model_Order;
+use Module\Market\Model\OrderModel;
 use Data_Object_Order;
 use Data_Object_OrderPosition;
-use Request;
+use Sfcms\Request;
 use Sfcms\Robokassa;
 
 class OrderController extends Sfcms_Controller
@@ -43,7 +43,7 @@ class OrderController extends Sfcms_Controller
 
         $user   = $this->app()->getAuth()->currentUser();
 
-        /** @var $order Model_Order */
+        /** @var $order OrderModel */
         $order  = $this->getModel('Order');
 
         if ( ! $user->getId() || $user->perm == USER_GUEST ) {

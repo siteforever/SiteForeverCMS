@@ -7,8 +7,9 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Sfcms\Request;
 use Sfcms_Controller;
-use Model_Catalog;
+use Module\Catalog\Model\CatalogModel;
 use Sfcms\JqGrid\Provider;
 use Sfcms\Yandex\Yml;
 
@@ -43,7 +44,7 @@ class GoodsController extends Sfcms_Controller
         $this->request->setTitle(t('goods','Goods search'));
         $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());
 
-        /** @var Model_Catalog */
+        /** @var CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');
 
         $goods  = $modelCatalog->findGoodsByQuery( $query );
@@ -60,7 +61,7 @@ class GoodsController extends Sfcms_Controller
      */
     public function adminAction()
     {
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
 
@@ -85,7 +86,7 @@ class GoodsController extends Sfcms_Controller
      */
     public function gridAction()
     {
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
         return $provider->getJsonData();
@@ -99,7 +100,7 @@ class GoodsController extends Sfcms_Controller
         if ( ! $id ) {
             return 'id not defined';
         }
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
         $product = $model->find( $id );
         $form = $model->getForm();
@@ -117,7 +118,7 @@ class GoodsController extends Sfcms_Controller
         $yml->setCollection( $products );
         $yml->setCategories( $categories );
 
-        $this->request->setAjax(true, \Request::TYPE_XML);
+        $this->request->setAjax(true, Request::TYPE_XML);
         return $yml->output();
     }
 }

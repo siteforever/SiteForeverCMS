@@ -7,12 +7,12 @@
 
 namespace Module\System\Model;
 
-use Sfcms_Model;
+use Sfcms\Model;
 
 use Sfcms\JqGrid\Provider;
 use Module\System\Form\ModuleEdit;
 
-class ModuleModel extends Sfcms_Model
+class ModuleModel extends Model
 {
 
     public function tableClass()
