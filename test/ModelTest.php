@@ -1,6 +1,17 @@
 <?php
+use Sfcms\Model;
+use Sfcms\db;
+use Sfcms\Kernel\Base as Kernel;
+use Module\System\Object\Test as TestObject;
 
-class Model_Test extends Sfcms_Model {}
+class Model_Test extends Model
+{
+    public function objectClass()
+    {
+        return '\Module\System\Object\Test';
+    }
+
+}
 
 /**
  * Test class for Model.
@@ -9,7 +20,7 @@ class Model_Test extends Sfcms_Model {}
 class ModelTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Sfcms_Model
+     * @var Model
      */
     protected $object;
 
@@ -20,7 +31,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( is_null( $this->object ) ) {
-            $this->object = Sfcms_Model::getModel('Model_Test');
+            $this->object = Model::getModel('Model_Test');
         }
     }
 
@@ -45,7 +56,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testApp()
     {
-        $this->assertTrue( $this->object->app() instanceof Application_Abstract );
+        $this->assertTrue( $this->object->app() instanceof Kernel );
     }
 
     /**
@@ -65,7 +76,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
         if ( ! $obj ) {
             $this->fail('Created object '.var_export($obj, true));
         }
-        $this->assertTrue( $obj instanceof Data_Object_Test );
+        $this->assertTrue( $obj instanceof TestObject );
         $obj->markClean();
     }
 
@@ -74,7 +85,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testObjectClass()
     {
-        $this->assertEquals($this->object->objectClass(), 'Data_Object_Test');
+        $this->assertEquals($this->object->objectClass(), 'TestObject');
     }
 
     /**
@@ -82,7 +93,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testTableClass()
     {
-        $this->assertEquals($this->object->tableClass(), 'Data_Table_Test');
+        $this->assertEquals($this->object->tableClass(), 'TestObject');
     }
 
     /**
@@ -90,7 +101,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testGetTable()
     {
-        $this->assertTrue( $this->object->getTable() instanceof Data_Table_Test );
+        $this->assertTrue( $this->object->getTable() instanceof TestObject );
     }
 
     /**

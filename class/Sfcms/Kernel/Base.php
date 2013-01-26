@@ -12,6 +12,7 @@ require_once 'Functions.php';
 use Sfcms\Assets;
 use Sfcms\Controller\Resolver;
 use Sfcms\Model;
+use Sfcms\Module;
 use Sfcms\Session;
 use Sfcms\Settings;
 use Sfcms\Delivery;
@@ -25,8 +26,8 @@ use Sfcms\Tpl\Driver;
 use Module\System\Model\TemplatesModel;
 use Module\Page\Model\PageModel;
 
-use Data_Object;
-use Data_Object_User;
+use Sfcms\Data\Object;
+use Module\System\Object\User;
 use Sfcms_Basket_Factory;
 use Sfcms_Cache;
 
@@ -78,7 +79,7 @@ abstract class Base
     static $basket;
 
     /**
-     * @var Data_Object
+     * @var Object
      */
     static $user;
 
@@ -182,7 +183,7 @@ abstract class Base
     public function __construct( $cfg_file = null )
     {
         header('X-Powered-By: SiteForeverCMS');
-        self::autoloadRegister(array(self,'autoload'));
+        self::autoloadRegister(array($this,'autoload'));
 
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
@@ -197,13 +198,13 @@ abstract class Base
     
     /**
      * @static
-     * @throws Application_Exception
+     * @throws Exception
      * @return Base
      */
     static public function getInstance()
     {
         if ( null === self::$instance ) {
-            throw new Application_Exception('Application NOT instanced');
+            throw new Exception('Application NOT instanced');
         }
         return self::$instance;
     }
@@ -284,7 +285,6 @@ abstract class Base
 
 
     /**
-     * @throws Application_Exception
      * @return Basket
      */
     public function getBasket()
@@ -415,7 +415,7 @@ abstract class Base
 
     /**
      * Вернет текущего пользователя
-     * @return Data_Object_User
+     * @return User
      */
     public function getUser()
     {
@@ -561,7 +561,7 @@ abstract class Base
             $module_model = $this->getModel('\\Module\\System\\Model\\ModuleModel');
             $modules = $module_model->findAll(array('order'=>'pos'));
 
-            /** @var $module \Data_Object_Module */
+            /** @var $module Module */
             array_map(function( $module ) use ( $_ ) {
                 if ( $module->active ) {
                     $mod_config = require_once $module->path.'/config.php';
@@ -645,9 +645,9 @@ abstract class Base
             return false;
         }
 
-        if ( ! preg_match('/^(Module|Archive|Sfcms|Symfony|Std|Controller|Forms)/', $className) ) {
-            $className = strtolower( $className );
-        }
+//        if ( preg_match('/^()/', $className) ) {
+//            $className = strtolower( $className );
+//        }
 
 //        debugVar( $className, 'autoload::className' );
 
@@ -671,7 +671,6 @@ abstract class Base
             return true;
         }
         throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
-//        return false;
     }
 
     /**

@@ -5,8 +5,11 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Forms_Catalog_Edit extends Form_Form
+
+use Module\Catalog\Model\CatalogModel;
+use Sfcms\Model;
+
+class Forms_Catalog_Edit extends \Sfcms\Form\Form
 {
     protected $filter = null;
 
@@ -15,15 +18,15 @@ class Forms_Catalog_Edit extends Form_Form
      */
     public function __construct()
     {
-        /** @var $model Model_Catalog */
-        $model   = Sfcms_Model::getModel( 'Catalog' );
+        /** @var $model CatalogModel */
+        $model   = Model::getModel( 'Catalog' );
         $parents = $model->getCategoryList();
 
-        $manufModel    = Sfcms_Model::getModel( 'Manufacturers' );
+        $manufModel    = Model::getModel( 'Manufacturers' );
         $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
         $manufArray    = array('Не выбрано') + $manufacturers->column( 'name' );
 
-        $materialModel = Sfcms_Model::getModel( 'Material' );
+        $materialModel = Model::getModel( 'Material' );
         $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
         $materialArray = array('Не выбрано') + $materials->column( 'name' );
 
@@ -122,7 +125,7 @@ class Forms_Catalog_Edit extends Form_Form
                     'type'      => 'radio',
                     'label'     => 'Защита страницы',
                     'value'     => USER_GUEST,
-                    'variants'  => Sfcms_Model::getModel('User')->getGroups()
+                    'variants'  => Model::getModel('User')->getGroups()
                 ),
                 'deleted' => array('type'=>'hidden','value'=>'0'),
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
@@ -146,7 +149,7 @@ class Forms_Catalog_Edit extends Form_Form
      */
     public function applyFilter( $parentId )
     {
-        $catalogFinder = Sfcms_Model::getModel( 'Catalog' );
+        $catalogFinder = Model::getModel( 'Catalog' );
 
         $pitem   = $catalogFinder->find( $parentId );
         $fvalues = null;

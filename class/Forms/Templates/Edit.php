@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
  
-class Forms_Templates_Edit extends form_Form
+class Forms_Templates_Edit extends \Sfcms\Form\Form
 {
     function __construct()
     {

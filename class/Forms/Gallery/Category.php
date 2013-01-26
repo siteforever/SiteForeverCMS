@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 
-class Forms_Gallery_Category extends form_Form
+class Forms_Gallery_Category extends \Sfcms\Form\Form
 {
     function __construct()
     {

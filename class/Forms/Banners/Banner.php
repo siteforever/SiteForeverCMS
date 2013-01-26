@@ -3,11 +3,11 @@
  * Форма для редактирования баннера
  */
  
-class Forms_Banners_Banner extends Form_Form
+class Forms_Banners_Banner extends \Sfcms\Form\Form
 {
 
     function __construct() {
-        $parents    = Sfcms_Model::getModel('CategoryBanner')->getCategoryBanner();
+        $parents    = \Sfcms\Model::getModel('CategoryBanner')->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
             'action'    => Sfcms::html()->url('banner/save'),

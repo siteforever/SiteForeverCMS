@@ -23,7 +23,7 @@ $_REQUEST['id'] = 1;
 $_REQUEST['route']  = 'index';
 
 // автозагрузка классов
-require_once '../class/app.php';
+require_once '../class/App.php';
 
 $app    = new App( array('protected/config/development.php','protected/config/test.php') );
 $app->init();

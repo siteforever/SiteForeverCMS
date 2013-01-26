@@ -5,6 +5,7 @@
 
 namespace Module\Gallery\Model;
 
+use Sfcms\Data\Collection;
 use Sfcms\Model;
 use Forms_Gallery_Image;
 
@@ -15,19 +16,8 @@ class GalleryModel extends Model
     public function relation()
     {
         return array(
-            'Category' => array(self::BELONGS, 'GalleryCategory', 'category_id'),
+            'Category' => array(self::BELONGS, 'Category', 'category_id'),
         );
-    }
-
-
-    public function tableClass()
-    {
-        return 'Data_Table_Gallery';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Gallery';
     }
 
     /**
@@ -91,7 +81,7 @@ class GalleryModel extends Model
     /**
      * @param int $category_id
      *
-     * @return array|\Data_Collection
+     * @return array|Collection
      */
     public function findAllByCategory( $category_id )
     {

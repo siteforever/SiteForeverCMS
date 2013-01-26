@@ -518,6 +518,7 @@ class db
      */
     function insert($table, $data)
     {
+
         // проверка на апостроф
         foreach ($data as $i => $d) {
             $data[ $i ] = $this->resource->quote( $d );

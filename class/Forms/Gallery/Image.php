@@ -2,7 +2,7 @@
 /**
  * Form for editing picture gallery module
  */
-class forms_gallery_image extends form_Form
+class Forms_Gallery_Image extends \Sfcms\Form\Form
 {
     function __construct()
     {

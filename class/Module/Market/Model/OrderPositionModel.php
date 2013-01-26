@@ -18,15 +18,4 @@ class OrderPositionModel extends Model
             'Product' => array( self::BELONGS, 'Catalog', 'product_id' ),
         );
     }
-
-    public function tableClass()
-    {
-        return 'Data_Table_OrderPosition';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_OrderPosition';
-    }
-
 }

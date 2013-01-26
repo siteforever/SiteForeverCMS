@@ -3,9 +3,9 @@ namespace Module\System\Model;
 
 use Sfcms\Model;
 
-use Form_Form;
-use Data_Object;
-use Data_Object_User;
+use Sfcms\Form\Form;
+use Sfcms\Data\Object;
+use Module\System\Object\User;
 use Forms_User_Edit;
 use Forms_User_Register;
 use Forms\User\Login as FormLogin;
@@ -17,46 +17,37 @@ class UserModel extends Model
 {
     /**
      * Форма входа в систему
-     * @var Form_Form
+     * @var Form
      */
     protected $login_form;
     /**
      * Форма восстановления пароля
-     * @var Form_Form
+     * @var Form
      */
     protected $restore_form;
     /**
      * форма регистрации
-     * @var Form_Form
+     * @var Form
      */
     protected $register_form;
     /**
      * форма редактирования
-     * @var Form_Form
+     * @var Form
      */
     protected $edit_form;
 
     /**
      * Форма изменения профиля
-     * @var Form_Form
+     * @var Form
      */
     protected $profile_form;
 
     /**
      * Форма редактирования пароля
-     * @var Form_Form
+     * @var Form
      */
     protected $password_form;
 
-    public function tableClass()
-    {
-        return 'Data_Table_User';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_User';
-    }
 
     /**
      * Группы пользователей
@@ -93,7 +84,7 @@ class UserModel extends Model
     /**
      * Поиск профиля по email
      * @param $email
-     * @return Data_Object
+     * @return Object
      */
     function findByEmail( $email )
     {
@@ -109,10 +100,10 @@ class UserModel extends Model
     }
 
     /**
-     * @param Data_Object|null $obj
+     * @param Object|null $obj
      * @return int
      */
-    public function save( Data_Object $obj )
+    public function save( Object $obj )
     {
         if ( empty( $obj->password ) ) {
             unset( $obj->password );
@@ -125,7 +116,7 @@ class UserModel extends Model
      * @deprecated
      * @return array
      */
-    function getBasketArray( Data_Object $user )
+    function getBasketArray( Object $user )
     {
         $basket = json_decode( $user['basket'], true );
         if ( $basket ) {
@@ -137,11 +128,11 @@ class UserModel extends Model
     /**
      * Установить новые значения для корзины
      * @param array $array
-     * @param Data_Object_User $obj
+     * @param User $obj
      * @return void
      * @deprecated
      */
-    function setBasketFromArray( $array, Data_Object_User $obj )
+    function setBasketFromArray( $array, User $obj )
     {
         $basket = json_encode( $array );
         $obj->basket    = $basket;
@@ -152,7 +143,7 @@ class UserModel extends Model
 
     /**
      * Вернет форму для логина
-     * @return form_Form
+     * @return Form
      */
     function getLoginForm()
     {
@@ -164,7 +155,7 @@ class UserModel extends Model
 
     /**
      * Форма профиля пользователя на сайте
-     * @return form_Form
+     * @return Form
      */
     function getProfileForm()
     {
@@ -200,7 +191,7 @@ class UserModel extends Model
 
     /**
      * Форма редактирования
-     * @return form_Form
+     * @return Form
      */
     function getEditForm()
     {

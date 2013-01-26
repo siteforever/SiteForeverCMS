@@ -1,6 +1,7 @@
 <?php
 
 use Sfcms\Basket\Base as Basket;
+use Module\System\Object\User;
 
 /**
  * @author Nikolay Ermin
@@ -13,18 +14,18 @@ class Sfcms_Basket_Factory
     
     /**
      * Создаст корзину
-     * @param Data_Object_User $user
+     * @param User $user
      * @return Basket
      * @throws Exception
      */
-    static function createBasket( Data_Object_User $user )
+    static function createBasket( User $user )
     {
         if ( self::$created ) {
             throw new Exception('Корзина может быть создана только один раз');
         }
         self::$created = true;
 
-        if ( ! $user instanceof Data_Object_User ) {
+        if ( ! $user instanceof User ) {
             throw new Exception('Not valid User object');
         }
 

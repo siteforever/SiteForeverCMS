@@ -56,7 +56,7 @@ return array_merge(
         'There are no sections'                     => 'Пока нет разделов',
 
 
-        // Manufacturers
+        // Manufacturer
         'Manufacturers'                             => 'Производители',
         'Manufacturer'                              => 'Производитель',
         'Create manufacturer'                       => 'Создать производителя',

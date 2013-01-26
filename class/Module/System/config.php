@@ -11,6 +11,7 @@ return array(
         'elfinder'  => array(),
         'error'     => array(),
         'generator' => array(),
+        'log'       => array('class'=>'Module\\System\\Controller\\LogController'),
         'routes'    => array(),
         'search'    => array(),
         'sitemap'   => array(),
@@ -25,5 +26,6 @@ return array(
         'Settings'  => 'Module\\System\\Model\\SettingsModel',
         'Templates' => 'Module\\System\\Model\\TemplatesModel',
         'User'      => 'Module\\System\\Model\\UserModel',
+        'Log'       => 'Module\\System\\Model\\LogModel',
     ),
 );

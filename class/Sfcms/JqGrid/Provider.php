@@ -5,8 +5,8 @@
 namespace Sfcms\JqGrid;
 
 use App;
-use Sfcms_Model;
-use Db_Criteria;
+use Sfcms\Model;
+use Sfcms\Db\Criteria;
 use Data_Object;
 use Data_Collection;
 use Pager;
@@ -19,10 +19,10 @@ class Provider
     /** @var App */
     private $app = null;
 
-    /** @var Sfcms_Model */
+    /** @var Model */
     private $model = null;
 
-    /** @var Db_Criteria */
+    /** @var Criteria */
     private $criteria = null;
 
     /** @var int */
@@ -41,9 +41,9 @@ class Provider
 
     /**
      * Set model finder
-     * @param Sfcms_Model $model
+     * @param Model $model
      */
-    public function setModel( Sfcms_Model $model )
+    public function setModel( Model $model )
     {
         $this->model = $model;
     }
@@ -58,15 +58,15 @@ class Provider
 
     /**
      * Set database criteria for searching
-     * @param \Db_Criteria $criteria
+     * @param Criteria $criteria
      */
-    public function setCriteria( Db_Criteria $criteria )
+    public function setCriteria( Criteria $criteria )
     {
         $this->criteria = $criteria;
     }
 
     /**
-     * @return \Db_Criteria|null
+     * @return Criteria|null
      * @throws \InvalidArgumentException
      */
     public function getCriteria()

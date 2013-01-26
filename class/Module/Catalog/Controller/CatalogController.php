@@ -8,14 +8,14 @@ namespace Module\Catalog\Controller;
 use App;
 use Sfcms_Controller;
 use Module\Catalog\Model\CatalogModel;
-use Data_Object_Catalog;
-use Data_Object_ProductProperty;
+use Module\Catalog\Object\Catalog;
+use Module\Catalog\Object\Property;
 use Module\Page\Model\PageModel;
-use Sfcms_Model_Exception;
+use Sfcms\Model\Exception;
 use Sfcms_Http_Exception;
 use Sfcms\Request;
-use Form_Form;
-use Form_Field;
+use Sfcms\Form\Form;
+use Sfcms\Form\Field;
 use Sfcms;
 use Sfcms_Filter;
 use Sfcms_Filter_Group;
@@ -66,15 +66,15 @@ class CatalogController extends Sfcms_Controller
     public function indexAction( $alias )
     {
         /**
-         * @var Data_Object_Catalog $item
-         * @var Model_Catalog $catalogModel
-         * @var Model_Page $pageModel
+         * @var Catalog $item
+         * @var CatalogModel $catalogModel
+         * @var PageModel $pageModel
          */
         $catId = $this->page->link;
 
         $catalogModel = $this->getModel( 'Catalog' );
 
-        /** @var $item Data_Object_Catalog */
+        /** @var $item Catalog */
         $item = null;
         if ( $alias ) {
             $item = $catalogModel->find('alias = ?', array($alias));
@@ -110,14 +110,14 @@ class CatalogController extends Sfcms_Controller
 
     /**
      * Открывается категория
-     * @param Data_Object_Catalog $item
+     * @param Catalog $item
      */
-    protected function viewCategory( Data_Object_Catalog $item )
+    protected function viewCategory( Catalog $item )
     {
         // @TODO Сделать вывод товаров с указаним уровня вложенности в параметре
         $level = $this->config->get( 'catalog.level' );
 
-        /** @var $catModel Model_Catalog */
+        /** @var $catModel CatalogModel */
         $catModel     = $this->getModel( 'Catalog' );
         $parent       = $catModel->find( $item->getId() );
 
@@ -202,7 +202,7 @@ class CatalogController extends Sfcms_Controller
 
         // Оптимизированный список свойств
         $properties = array();
-        /** @var Data_Object_Catalog $catItem */
+        /** @var Catalog $catItem */
         foreach( $list as $catItem ) {
             for( $i = 0; $i <= 9; $i ++ ) {
                 $properties[ $catItem->getId() ][ $parent[ 'p' . $i ] ] = $catItem[ 'p' . $i ];
@@ -237,9 +237,9 @@ class CatalogController extends Sfcms_Controller
 
     /**
      * Открывается товар
-     * @param Data_Object_Catalog $item
+     * @param Catalog $item
      */
-    protected function viewProduct( Data_Object_Catalog $item )
+    protected function viewProduct( Catalog $item )
     {
         $catalog_model = $this->getModel( 'Catalog' );
 
@@ -275,9 +275,9 @@ class CatalogController extends Sfcms_Controller
      */
     public function deleteAction()
     {
-        /** @var Data_Object_Catalog $item */
+        /** @var Catalog $item */
         $id = $this->request->get( 'id' );
-        /** @var Model_Catalog $catalog */
+        /** @var CatalogModel $catalog */
         $catalog = $this->getModel( 'Catalog' );
         $item = $catalog->find( $id );
         if( $item ) {
@@ -289,12 +289,12 @@ class CatalogController extends Sfcms_Controller
 
     /**
      * Создать список параметров
-     * @param Data_Object_Catalog $cat
-     * @param Data_Object_Catalog $item
+     * @param Catalog $cat
+     * @param Catalog $item
      *
      * @return array
      */
-    public function buildParamView( Data_Object_Catalog $cat, Data_Object_Catalog $item )
+    public function buildParamView( Catalog $cat, Catalog $item )
     {
         $properties = array( $item->getId() => array() );
 
@@ -339,10 +339,10 @@ class CatalogController extends Sfcms_Controller
         $this->request->setAjax(true, Request::TYPE_JSON);
 
         /**
-         * @var Model_Catalog $catalogFinder
-         * @var Form_Field $field
-         * @var Form_Form $form
-         * @var Data_Object_Catalog $object
+         * @var CatalogModel $catalogFinder
+         * @var Field $field
+         * @var Form $form
+         * @var Catalog $object
          */
         $catalogFinder  = $this->getModel( 'Catalog' );
         $form           = $catalogFinder->getForm();
@@ -361,7 +361,7 @@ class CatalogController extends Sfcms_Controller
                     $type = $object->Type;
                     $fields = $type->Fields;
                     foreach ( $fields as $f ) {
-                        /** @var $property Data_Object_ProductProperty */
+                        /** @var $property Property */
                         $property = $propModel->createObject();
                         $property->product_id = $object->id;
                         $property->product_field_id = $f->id;
@@ -419,7 +419,7 @@ class CatalogController extends Sfcms_Controller
      */
     public function adminBreadcrumbsById( $id )
     {
-        /** @var Data_Object_Catalog $item */
+        /** @var Catalog $item */
         $item = $this->getModel( 'Catalog' )->find( $id );
         if ( $item ) {
             return $this->adminBreadcrumbs( $item->path() );
@@ -435,8 +435,8 @@ class CatalogController extends Sfcms_Controller
     public function adminAction()
     {
         /**
-         * @var Model_Catalog $catalogFinder
-         * @var Data_Object_Catalog $parent
+         * @var CatalogModel $catalogFinder
+         * @var Catalog $parent
          */
         $catalogFinder = $this->getModel( 'Catalog' );
 
@@ -458,10 +458,10 @@ class CatalogController extends Sfcms_Controller
 
         try {
             if ( ! $part ) {
-                throw new Sfcms_Model_Exception();
+                throw new Exception();
             }
             $parent = $catalogFinder->find( $part );
-        } catch( Sfcms_Model_Exception $e ) {
+        } catch( Exception $e ) {
             $parent = $catalogFinder->createObject(
                 array(
                     'id'    => 0,
@@ -525,9 +525,9 @@ class CatalogController extends Sfcms_Controller
     public function tradeAction( $edit, $add, $type )
     {
         /**
-         * @var Model_Catalog $catalogFinder
-         * @var Data_Object_Catalog $pitem
-         * @var Form_Field $field
+         * @var CatalogModel $catalogFinder
+         * @var Catalog $pitem
+         * @var Field $field
          * @var Forms_Catalog_Edit $form
          * @var Sfcms_Filter_Collection $filter
          * @var Sfcms_Filter $fvalues
@@ -553,7 +553,7 @@ class CatalogController extends Sfcms_Controller
             $form->type_id = $type;
         }
 
-        /** @var $item Data_Object_Catalog */
+        /** @var $item Catalog */
         if( $id ) { // если раздел существует
             $item      = $catalogFinder->find( $id );
             $parentId = $item[ 'parent' ];
@@ -631,9 +631,9 @@ class CatalogController extends Sfcms_Controller
     public function categoryAction()
     {
         /**
-         * @var Model_Catalog $catalog
-         * @var Form_Field $field
-         * @var Form_Form $form
+         * @var CatalogModel $catalog
+         * @var Field $field
+         * @var Form $form
          */
         $catalog = $this->getModel( 'Catalog' );
 
@@ -679,7 +679,7 @@ class CatalogController extends Sfcms_Controller
     public function moveAction()
     {
         /**
-         * @var Model_Catalog $catalogFinder
+         * @var CatalogModel $catalogFinder
          */
         $catalogFinder = $this->getModel( 'Catalog' );
         // перемещение
@@ -698,8 +698,8 @@ class CatalogController extends Sfcms_Controller
     public function saveorderAction()
     {
         /**
-         * @var Model_Catalog $catalogFinder
-         * @var Data_Object_Catalog $item
+         * @var CatalogModel $catalogFinder
+         * @var Catalog $item
          */
         $catalogFinder = $this->getModel( 'Catalog' );
 
@@ -722,8 +722,8 @@ class CatalogController extends Sfcms_Controller
     public function hiddenAction()
     {
         /**
-         * @var Model_Catalog $model
-         * @var Data_Object_Catalog $obj
+         * @var CatalogModel $model
+         * @var Catalog $obj
          */
         $model = $this->getModel( 'Catalog' );
         $id    = $this->request->get( 'id' );
@@ -749,7 +749,7 @@ class CatalogController extends Sfcms_Controller
         $content     = 'ничего не удалено';
         if( is_array( $delete_list ) && count( $delete_list ) ) {
             $search = join( ',', $delete_list );
-            if( App::$db->update( $this->getModel('Catalog')->getTableName(),
+            if( App::$db->update( $this->getModel('Catalog')->getTable(),
                     array( 'deleted'=> 1 ), "id IN ({$search})", '' )
             ) {
                 $content = $search;

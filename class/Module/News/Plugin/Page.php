@@ -6,7 +6,10 @@
  */
 
 namespace Module\News\Plugin;
+
+use Module\News\Object\Category;
 use Sfcms\Model\Plugin;
+use Module\Page\Object\Page as PageObject;
 
 class Page extends Plugin
 {
@@ -15,9 +18,9 @@ class Page extends Plugin
      *
      * Цель: создать связь страниц с объектами новостей
      *
-     * @param \Data_Object_Page $obj
+     * @param PageObject $obj
      */
-    public function onSaveStart( \Data_Object_Page $obj )
+    public function onSaveStart( PageObject $obj )
     {
         $categoryModel = $obj->getModel('NewsCategory');
 
@@ -29,7 +32,7 @@ class Page extends Plugin
             $category = $categoryModel->createObject();
         }
 
-        /** @var $category \Data_Object_NewsCategory */
+        /** @var $category Category */
         $category->name         = $obj->name;
 
         if ( ! $category->id ) {

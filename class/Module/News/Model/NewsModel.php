@@ -7,13 +7,13 @@
  */
 namespace Module\News\Model;
 
+use Module\News\Object\News;
+use Module\Page\Object\Page;
+use Sfcms\Data\Collection;
 use Sfcms\Db\Criteria;
 use Sfcms\Model;
-use Form_Form;
+use Sfcms\Form\Form;
 use Forms_News_Edit;
-use Data_Object_Page;
-use Data_Object_News;
-use Data_Collection as Collection;
 
 class NewsModel extends Model
 {
@@ -24,16 +24,6 @@ class NewsModel extends Model
      */
     public $category;
 
-    public function tableClass()
-    {
-        return 'Data_Table_News';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_News';
-    }
-
     public function Init()
     {
         $this->category = self::getModel( 'NewsCategory' );
@@ -42,7 +32,7 @@ class NewsModel extends Model
     public function relation()
     {
         return array(
-            'Category' => array( self::BELONGS, 'NewsCategory', 'cat_id' ),
+            'Category' => array( self::BELONGS, 'Category', 'cat_id' ),
         );
     }
 
@@ -62,7 +52,7 @@ class NewsModel extends Model
     /**
      * Поиск объекта по алиасу
      * @param $alias
-     * @return Data_Object_News
+     * @return News
      */
     public function findByAlias( $alias )
     {
@@ -83,7 +73,7 @@ class NewsModel extends Model
 
         $list_id    = array();
         foreach ( $data_all as $news ) {
-            /** @var Data_Object_News $news */
+            /** @var News $news */
             $list_id[]  = $news->cat_id;
         }
 
@@ -100,7 +90,7 @@ class NewsModel extends Model
 
         foreach( $data_all as $news ) {
             /**
-             * @var Data_Object_Page $page
+             * @var Page $page
              */
             foreach ( $page_data_all as $page ) {
                 if ( $news['cat_id'] == $page['link'] ) {
@@ -115,7 +105,7 @@ class NewsModel extends Model
     }
 
     /**
-     * @return Form_Form
+     * @return Form
      */
     public function getForm()
     {

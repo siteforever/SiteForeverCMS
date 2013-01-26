@@ -4,8 +4,9 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
-class Forms_User_Register extends Form_Form
+use Sfcms\Form\Form;
+
+class Forms_User_Register extends Form
 {
     function __construct()
     {

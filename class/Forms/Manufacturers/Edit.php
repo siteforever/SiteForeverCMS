@@ -5,7 +5,7 @@
  * @link   http://ermin.ru
  */
 
-class Forms_Manufacturers_Edit extends Form_Form
+class Forms_Manufacturers_Edit extends \Sfcms\Form\Form
 {
     public function __construct()
     {

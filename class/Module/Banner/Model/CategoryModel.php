@@ -64,16 +64,4 @@ class CategoryModel extends Model
 
         return;
     }
-
-    public function tableClass()
-    {
-        return 'Data_Table_CategoryBanner';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_CategoryBanner';
-    }
-
-
 }

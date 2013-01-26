@@ -19,16 +19,6 @@ class TypeModel extends Model
         );
     }
 
-    public function tableClass()
-    {
-        return 'Data_Table_ProductType';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_ProductType';
-    }
-
     /**
      * @return Provider
      */

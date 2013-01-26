@@ -37,7 +37,7 @@ class Controller_Setting extends Sfcms_Controller
                 foreach ( $values as $key => $val ) {
                     $settings->set( $module->name, $key, $val );
 
-                    $this->getDB()->insertUpdate( $model->getTableName(), array(
+                    $this->getDB()->insertUpdate( $model->getTable(), array(
                         'module'    => $module->name,
                         'property'  => $key,
                         'value'     => $val,

@@ -34,17 +34,6 @@ class OrderModel extends Model
         $this->model_position   = $this->getModel('OrderPosition');
     }
 
-
-    public function tableClass()
-    {
-        return 'Data_Table_Order';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Order';
-    }
-
     /**
      * Отношения
      * @return array

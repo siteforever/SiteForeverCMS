@@ -7,7 +7,9 @@
 
 namespace Forms\User;
 
-class Password extends \Form_Form
+use Sfcms\Form\Form;
+
+class Password extends Form
 {
     function __construct()
     {

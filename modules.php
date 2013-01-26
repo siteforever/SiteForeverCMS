@@ -28,6 +28,10 @@ return array(
         'url'   => 'users/admin',
     ),
     array(
+        'name'  => 'Журнал',
+        'url'   => 'log/admin',
+    ),
+    array(
         'name'  => 'Интернет магазин',
         'sub'   => array(
             array(

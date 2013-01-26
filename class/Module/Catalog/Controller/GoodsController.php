@@ -65,17 +65,9 @@ class GoodsController extends Sfcms_Controller
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
 
-//        $categories = $model->getCategoryList();
-        /** @var $typeModel  */
-//        $typeModel     = $this->getModel( 'ProductType' );
-//        $types         = $typeModel->findAll( array('order'=>'name') );
-//        $typesArray    = array(-1=>'Все типы','Без типа') + $types->column('name');
-
         return array(
             'provider'      => $provider,
-//            'categories'    => $categories,
             'category'      => $this->app()->getSession()->get('category') ?: 0,
-//            'types'         => $typesArray,
             'type'          => $this->app()->getSession()->get('type') ?: -1,
         );
     }
@@ -108,6 +100,10 @@ class GoodsController extends Sfcms_Controller
         return $form->html(false,false);
     }
 
+    /**
+     * YandexML export
+     * @return string
+     */
     public function ymlAction()
     {
         $model = $this->getModel('Catalog');

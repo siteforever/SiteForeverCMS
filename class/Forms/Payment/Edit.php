@@ -6,9 +6,9 @@
  */
 namespace Forms\Payment;
 
-use Form_Form;
+use Sfcms\Form\Form;
 
-class Edit extends Form_Form
+class Edit extends Form
 {
     public function __construct()
     {

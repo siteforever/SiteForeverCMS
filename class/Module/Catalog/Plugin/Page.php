@@ -8,9 +8,9 @@
 namespace Module\Catalog\Plugin;
 
 use App;
+use Module\Catalog\Object\Catalog;
 use Sfcms\Model\Plugin;
-use Data_Object_Page;
-use Data_Object_Catalog;
+use Module\Page\Object\Page as PageObject;
 
 class Page extends Plugin
 {
@@ -20,11 +20,11 @@ class Page extends Plugin
      * Вызывается при пересортировке страниц.
      * Сюда передается объект страницы с новым параметром link.
      *
-     * @param Data_Object_Page $obj
+     * @param PageObject $obj
      */
-    public function resort( Data_Object_Page $obj )
+    public function resort( PageObject $obj )
     {
-        /** @var $catObj Data_Object_Catalog */
+        /** @var $catObj Catalog */
         $catObj = App::getInstance()->getModel('Catalog')->find( $obj->link );
         $catObj->pos = $obj->pos;
         $catObj->markDirty();
@@ -35,14 +35,14 @@ class Page extends Plugin
      *
      * Цель: создать связь страниц с объектами каталога
      *
-     * @param Data_Object_Page $obj
+     * @param PageObject $obj
      */
-    public function onSaveStart( Data_Object_Page $obj )
+    public function onSaveStart( PageObject $obj )
     {
         $catalogModel = $obj->getModel('Catalog');
         $pageModel    = $obj->getModel('Page');
 
-        /** @var $category Data_Object_Catalog */
+        /** @var $category Catalog */
         $category = null;
         if ( $obj->link ) {
             $category = $catalogModel->find( $obj->link );
@@ -56,14 +56,14 @@ class Page extends Plugin
             && ( $category->hidden != $obj->hidden || $category->protected != $obj->protected || $category->deleted != $obj->deleted ) )
         {
             array_map(function( $product ) use ( $obj ) {
-                /** @var $product Data_Object_Catalog */
+                /** @var $product Catalog */
                 $product->hidden = $obj->hidden;
                 $product->protected = $obj->protected;
                 $product->deleted = $obj->deleted;
             },iterator_to_array($category->Goods));
         }
 
-        /** @var $category Data_Object_Catalog */
+        /** @var $category Catalog */
         $category->name         = $obj->name;
         $category->pos          = $obj->pos;
         $category->hidden       = $obj->hidden;
@@ -73,7 +73,7 @@ class Page extends Plugin
         $category->cat = 1;
 
         if ( $obj->parent && ! $category->parent ) {
-            /** @var $parentPage Data_Object_Page */
+            /** @var $parentPage PageObject */
             $parentPage = $pageModel->find( $obj->parent );
             if ( $parentPage->controller == $obj->controller && $parentPage->link ) {
                 $category->parent = $parentPage->link;

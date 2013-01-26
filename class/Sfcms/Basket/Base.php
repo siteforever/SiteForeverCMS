@@ -2,8 +2,8 @@
 namespace Sfcms\Basket;
 
 use App;
-use Data_Object;
-use Data_Object_User;
+use Sfcms\Data\Object;
+use Module\System\Object\User;
 use Sfcms_Basket_Exception;
 
 /**
@@ -20,11 +20,11 @@ abstract class Base
     protected $data = array();
 
     /**
-     * @var Data_Object_User
+     * @var User
      */
     protected $user = null;
 
-    public function __construct( Data_Object $user )
+    public function __construct( Object $user )
     {
         App::getInstance()->addScript('/misc/etc/basket.js');
 

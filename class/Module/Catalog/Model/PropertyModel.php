@@ -25,15 +25,4 @@ class PropertyModel extends Model
             'Field' => array(self::BELONGS, 'ProductField', 'product_field_id', 'order' => 'pos'),
         );
     }
-
-    public function tableClass()
-    {
-        return 'Data_Table_ProductProperty';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_ProductProperty';
-    }
-
 }

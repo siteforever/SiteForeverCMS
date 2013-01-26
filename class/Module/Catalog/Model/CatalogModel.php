@@ -9,9 +9,9 @@ use Sfcms;
 use Sfcms\JqGrid\Provider;
 use Sfcms\Exception;
 use Sfcms\Model;
-use Data_Object;
-use Data_Object_Catalog;
-use Data_Collection;
+use Sfcms\Data\Object;
+use Module\Catalog\Object\Catalog;
+use Sfcms\Data\Collection;
 use Forms_Catalog_Edit;
 use PDO;
 use Sfcms\db;
@@ -26,7 +26,7 @@ class CatalogModel extends Model
 
     /**
      * Списков разделов в кэше
-     * @var Data_Collection
+     * @var Sfcms\Data\Collection
      */
     protected $all = null;
 
@@ -50,16 +50,6 @@ class CatalogModel extends Model
             'Properties'    => array( self::HAS_MANY, 'ProductProperty', 'product_id', 'with'=>array('Field')),
             'Type'          => array( self::BELONGS, 'ProductType', 'type_id' ),
         );
-    }
-
-    public function tableClass()
-    {
-        return 'Data_Table_Catalog';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Catalog';
     }
 
 
@@ -89,7 +79,7 @@ class CatalogModel extends Model
     public function getAllChildrensIds( $parentId, $level = 0 )
     {
         $level--;
-        /** @var $child Data_Object_Catalog */
+        /** @var $child Catalog */
         $categoriesId = array();
         $children = $this->getChildrenFor( $parentId );
         foreach ( $children as $child ) {
@@ -139,53 +129,6 @@ class CatalogModel extends Model
     }
 
     /**
-     * Искать продукты по родителю
-     * @param        $parent
-     * @param string $limit
-     *
-     * @return array
-     */
-    public function findGoodsByParent( $parent, $limit = '' )
-    {
-        throw new Exception('Deprecated method '.__METHOD__);
-//        $order = $this->config->get( 'catalog.order_default' );
-//
-//        // Примеряем способ сортировки к списку из конфига
-//        $order_list = $this->config->get( 'catalog.order_list' );
-//
-//
-//        if( $order_list && is_array( $order_list ) ) {
-//            $set = $this->request->get( 'order' );
-//            if( $set && $this->config->get( 'catalog.order_list.' . $set ) ) {
-//                $order = $set;
-//            }
-//            else {
-//                $order = reset( array_keys( $order_list ) );
-//            }
-//            $this->request->set( 'order', $order );
-//            //print $order;
-//        }
-//
-//        //print "order=$order";
-//        $gallery_table = $this->gallery()->getTable();
-//
-//        $list = $this->db->fetchAll(
-//            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-//            . "FROM {$this->getTable()} cat "
-//            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-//            . " AND cg.hidden = 0 "
-//            . " AND cg.main = 1 "
-//            . "WHERE cat.parent = '$parent' "
-//            . "    AND cat.cat = 0 "
-//            . "    AND cat.deleted = 0 "
-//            . "    AND cat.hidden = 0 "
-//            . ( $order ? " ORDER BY {$order}" : "" )
-//            . "{$limit}"
-//        );
-//        return $list;
-    }
-
-    /**
      * Искать категории по родителю
      * @param        $parent
      * @param string $limit
@@ -211,40 +154,11 @@ class CatalogModel extends Model
         return $list;
     }
 
-    /**
-     * Поиск списка товаров из списка id
-     * @throws Exception
-     *
-     * @param array $id_list
-     *
-     * @return array
-     */
-    public function findGoodsById( $id_list )
-    {
-        throw new Exception('Deprecated method '.__METHOD__);
-//        if( ! is_array( $id_list ) ) {
-//            throw new Exception( 'Аргумент должен быть массивом' );
-//        }
-//
-//        $gallery_table = $this->gallery()->getTable();
-//
-//        $list = $this->db->fetchAll(
-//            "SELECT cat.*, cg.image, cg.middle, cg.thumb "
-//            . "FROM {$this->getTable()} cat "
-//            . "LEFT JOIN {$gallery_table} cg ON cg.cat_id = cat.id "
-//            . "                            AND cg.hidden = 0 "
-//            . "                            AND cg.main = 1 "
-//            . "WHERE cat.id IN (" . join( ',', $id_list ) . ")",
-//            true
-//        );
-//        return $list;
-    }
-
 
     /**
      * Товары, отсортированные по top
      * @param int $limit
-     * @return array|Data_Collection
+     * @return array|Collection
      */
     public function findProductsSortTop( $limit = 4 )
     {
@@ -257,7 +171,7 @@ class CatalogModel extends Model
     /**
      * Поиск товаров по ключевой фразе
      * @param $query
-     * @return Data_Collection
+     * @return Collection
      */
     public function findGoodsByQuery( $query )
     {
@@ -274,7 +188,7 @@ class CatalogModel extends Model
                 '%'.$query.'%'
             )
         );
-        return new Data_Collection( $list, $this );
+        return new Collection( $list, $this );
     }
 
     /**
@@ -302,13 +216,13 @@ class CatalogModel extends Model
     }
 
     /**
-     * @param Data_Object_Catalog $obj
+     * @param Catalog $obj
      * @return bool
      */
-    public function onSaveStart( Data_Object $obj = null )
+    public function onSaveStart( Object $obj = null )
     {
         // If object will update
-        /** @var $obj Data_Object_Catalog */
+        /** @var $obj Catalog */
         if( $obj->getId() ) {
             $obj->path = $this->createSerializedPath( $obj->getId() );
         }
@@ -328,17 +242,19 @@ class CatalogModel extends Model
     }
 
     /**
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return boolean
      */
-    public function onSaveSuccess( Data_Object $obj = null )
+    public function onSaveSuccess( Object $obj = null )
     {
-        /** @var $obj Data_Object_Catalog */
+        /** @var $obj Catalog */
         // If object was just created
         if ( ! $obj->path ) {
             $obj->path = $this->createSerializedPath( $obj->getId() );
             $this->save( $obj );
+            return true;
         }
+        parent::onSaveSuccess( $obj );
     }
 
 
@@ -353,7 +269,7 @@ class CatalogModel extends Model
     {
         $path = array();
         while( $id ) {
-            /** @var $obj Data_Object_Catalog */
+            /** @var $obj Catalog */
             $obj = $this->find( $id );
             if( $obj ) {
                 $path[ ] = array(
@@ -592,8 +508,8 @@ class CatalogModel extends Model
         }
 
         /**
-         * @var Data_Object_Catalog $branch
-         * @var Data_Object_Catalog $obj
+         * @var Catalog $branch
+         * @var Catalog $obj
          */
         foreach( $this->parents[ $parent ] as $branch ) {
             if( 0 == $branch->cat || 1 == $branch->deleted ) {
@@ -642,11 +558,11 @@ class CatalogModel extends Model
 
     /**
      * Переместить товары в нужный раздел
-     * @return void
+     * @return string
      */
     public function moveList()
     {
-        /** @var Data_Object_Catalog $item */
+        /** @var Catalog $item */
         $list   = $this->request->get( 'move_list' );
         $target = $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT );
         // TODO Не происходит пересчета порядка позиций
@@ -656,9 +572,10 @@ class CatalogModel extends Model
                 $item         = $this->find( $item_id );
                 $item->parent = $target;
                 $item->path   = '';
-                $this->update( $item );
+                $this->save( $item );
             }
         }
+        return 'Successfully';
     }
 
     /**

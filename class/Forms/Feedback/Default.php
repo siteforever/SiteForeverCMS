@@ -4,13 +4,8 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  * @link   http://standart-electronics.ru
- *
- * @property Form_Field $name
- * @property Form_Field $email
- * @property Form_Field $title
- * @property Form_Field $message
  */
-class Forms_Feedback_Default extends Form_Form
+class Forms_Feedback_Default extends \Sfcms\Form\Form
 {
     public function __construct()
     {

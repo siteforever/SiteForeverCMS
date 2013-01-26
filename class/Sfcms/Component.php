@@ -8,7 +8,7 @@
 namespace Sfcms;
 
 use App;
-use Data_Object;
+use Sfcms\Data\Object;
 
 /**
  * @property $attributes
@@ -123,7 +123,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
 
     /**
      * @param $name
-     * @return array|Data_Object|mixed|null
+     * @return array|Object|mixed|null
      */
     public function __get($name)
     {
@@ -191,7 +191,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param mixed $value <p>
      * The value to set.
      * </p>
-     * @return Data_Object
+     * @return Object
      */
     public function offsetSet($offset, $value)
     {

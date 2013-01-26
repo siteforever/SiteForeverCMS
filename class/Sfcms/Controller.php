@@ -16,6 +16,11 @@ use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 
+use Module\Page\Object\Page;
+use Module\System\Object\User;
+
+use Sfcms\Data\Watcher;
+
 /**
  * @property Driver $tpl
  */
@@ -29,7 +34,7 @@ abstract class Sfcms_Controller extends Component
     /** @var array */
     protected $params;
 
-    /** @var array|Data_Object_Page */
+    /** @var array|Page */
     protected $page;
 
     /** @var Config $config */
@@ -41,7 +46,7 @@ abstract class Sfcms_Controller extends Component
     /** @var Router */
     protected $router;
 
-    /** @var Data_Object_User */
+    /** @var User */
     protected $user;
 
     /** @var TemplatesModel */
@@ -260,15 +265,15 @@ abstract class Sfcms_Controller extends Component
     }
 
     /**
-     * @param Data_Object_Page $page
+     * @param Page $page
      */
-    public function setPage( Data_Object_Page $page)
+    public function setPage( Page $page)
     {
         $this->page = $page;
     }
 
     /**
-     * @return Data_Object_Page
+     * @return Page
      */
     public function getPage()
     {
@@ -308,7 +313,7 @@ abstract class Sfcms_Controller extends Component
      */
     protected function reload( $url = '', $params = array(), $timeout = 0, $return = false )
     {
-        Data_Watcher::instance()->performOperations();
+        Watcher::instance()->performOperations();
 
         $script = 'window.location.href = "'
                 . $this->app()->getRouter()->createLink( $url, $params ) . '";';

@@ -42,14 +42,4 @@ class BannerModel extends Model
         }
         return false;
     }
-
-    public function tableClass()
-    {
-        return 'Data_Table_Banner';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Banner';
-    }
 }

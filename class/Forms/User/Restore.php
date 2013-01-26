@@ -7,9 +7,12 @@
 
 namespace Forms\User;
 
-class Restore extends \Form_Form
+use Sfcms\Form\Form;
+use Sfcms\Request;
+
+class Restore extends Form
 {
-    public function __construct( $config = array(), \Request $request = null )
+    public function __construct( $config = array(), Request $request = null )
     {
         parent::__construct( array(
             'name' => 'restore',

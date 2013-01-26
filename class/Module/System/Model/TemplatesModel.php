@@ -4,33 +4,19 @@
  */
 namespace Module\System\Model;
 
+use Sfcms\Form\Form;
 use Sfcms\Model;
-use Form_Form;
 use Forms_Templates_Edit;
 
 class TemplatesModel extends Model
 {
     /**
      * Форма редактирования
-     * @var Form_Form
+     * @var Form
      */
     private $form;
 
     protected $table;
-
-    /**
-     * @return string
-     */
-    public function tableClass()
-    {
-        return 'Data_Table_Templates';
-    }
-
-
-    public function objectClass()
-    {
-        return 'Data_Object_Templates';
-    }
 
     /**
      * Искать шаблон по названию
@@ -47,7 +33,7 @@ class TemplatesModel extends Model
 
     /**
      * Вернет объект формы
-     * @return form_Form
+     * @return Form
      */
     public function getForm()
     {

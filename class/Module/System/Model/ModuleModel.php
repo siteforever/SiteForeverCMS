@@ -14,17 +14,6 @@ use Module\System\Form\ModuleEdit;
 
 class ModuleModel extends Model
 {
-
-    public function tableClass()
-    {
-        return 'Data_Table_Module';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Module';
-    }
-
     protected function onCreateTable()
     {
         $this->createObject( array(

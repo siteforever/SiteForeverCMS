@@ -7,7 +7,9 @@
 
 namespace Forms\User;
 
-class Profile extends \Form_Form
+use Sfcms\Form\Form;
+
+class Profile extends Form
 {
     function __construct()
     {

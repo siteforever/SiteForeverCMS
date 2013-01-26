@@ -3,8 +3,10 @@
  * Форма редактирования пользователя в админке
  * @author E.Nikolay <keltanas@gmail.com>
  */
- 
-class Forms_User_Edit extends form_Form
+use Sfcms\Model;
+use Sfcms\Form\Form;
+
+class Forms_User_Edit extends Form
 {
     public function __construct()
     {
@@ -35,7 +37,7 @@ class Forms_User_Edit extends form_Form
                 'last'      => array('type'=>'date', 'label'=>'Последний вход',),
                 'perm'      => array(
                         'type'      => 'select',
-                        'variants'  => Sfcms_Model::getModel('User')->getGroups(),
+                        'variants'  => Model::getModel('User')->getGroups(),
                         'label'     => 'Группа',
                         'value'     => '3'
                 ),

@@ -12,14 +12,4 @@ use Sfcms\Model;
 class OrderStatusModel extends Model
 {
 
-    public function tableClass()
-    {
-        return 'Data_Table_OrderStatus';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_OrderStatus';
-    }
-
 }

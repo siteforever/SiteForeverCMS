@@ -6,8 +6,10 @@
  */
 
 namespace Forms\User;
+
+use Sfcms\Form\Form;
  
-class Login extends \Form_Form
+class Login extends Form
 {
     public function __construct()
     {

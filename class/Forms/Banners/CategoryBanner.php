@@ -3,7 +3,7 @@
  * Форма категорий баннеров
  */
  
-class Forms_Banners_CategoryBanner extends Form_Form
+class Forms_Banners_CategoryBanner extends \Sfcms\Form\Form
 {
     function __construct()
     {

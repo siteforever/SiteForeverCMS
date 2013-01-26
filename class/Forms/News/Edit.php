@@ -5,17 +5,18 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Forms_News_Edit extends Form_Form
+
+use Sfcms\Model;
+
+class Forms_News_Edit extends \Sfcms\Form\Form
 {
 
     function __construct()
     {
         $app    = App::getInstance();
 
-        $category   = Sfcms_Model::getModel('NewsCategory');
+        $category   = Model::getModel('NewsCategory');
         $cats_data = $category->findAll();
-
 
         $cats   = array(0=>'Ничего не выбрано');
         foreach ( $cats_data as $_cd ) {
@@ -60,7 +61,7 @@ class Forms_News_Edit extends Form_Form
                     'type'      => 'radio',
                     'label'     => 'Защита страницы',
                     'value'     => USER_GUEST,
-                    'variants'  => Sfcms_Model::getModel('User')->getGroups(),
+                    'variants'  => Model::getModel('User')->getGroups(),
                 ),
 
                 'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

@@ -7,7 +7,7 @@
 
 use Sfcms\Kernel\Base;
 
-class Forms_Basket_Address extends Form_Form
+class Forms_Basket_Address extends \Sfcms\Form\Form
 {
     public function __construct()
     {

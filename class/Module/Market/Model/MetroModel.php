@@ -12,14 +12,4 @@ use Sfcms\Model;
 class MetroModel extends Model
 {
 
-    public function tableClass()
-    {
-        return 'Data_Table_Metro';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Metro';
-    }
-
 }

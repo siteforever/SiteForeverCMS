@@ -6,21 +6,22 @@ namespace Sfcms;
  */
 
 use App;
+use Module\System\Model\LogModel;
 use Sfcms\Component;
+use Sfcms\Data\Collection;
+use Sfcms\Data\Query\Builder as QueryBuilder;
 use Sfcms\Model\Plugin;
 use Sfcms\db;
 use Sfcms\Db\Criteria;
 use RuntimeException;
 use PDO;
-use Data_Object_User;
-use Data_Table;
-use Form_Form as Form;
-use Data_Object;
-use Data_Collection as Collection;
-use Data_Query_Builder;
-use Data_Watcher;
-use Data_Field;
-use Data_Relation;
+use Module\System\Object\User;
+use Sfcms\Data\Table;
+use Sfcms\Form\Form;
+use Sfcms\Data\Object;
+use Sfcms\Data\Watcher;
+use Sfcms\Data\Field;
+use Sfcms\Data\Relation;
 
 abstract class Model extends Component
 {
@@ -51,12 +52,12 @@ abstract class Model extends Component
     protected $request;
 
     /**
-     * @var Data_Object_User
+     * @var User
      */
     protected $user;
 
     /**
-     * @var Data_Table
+     * @var Table
      */
     protected $table = null;
 
@@ -66,7 +67,7 @@ abstract class Model extends Component
     //protected $form;
 
     /**
-     * @var Data_Object
+     * @var Object
      */
     protected $data;
 
@@ -144,9 +145,9 @@ abstract class Model extends Component
     /**
      * Вызывает нужные плугины
      * @param $name
-     * @param Data_Object $obj
+     * @param Object $obj
      */
-    protected function callPlugins( $name, Data_Object $obj )
+    protected function callPlugins( $name, Object $obj )
     {
         if ( strpos( trim( $name, ':' ), ':' ) ) {
             list( $namespace, $name ) = explode( ':', $name );
@@ -182,9 +183,14 @@ abstract class Model extends Component
      *
      * <p>Пример:</p>
      * <pre>array(
-     *     'Category' => array(self::BELONGS, 'GalleryCategory', 'category_id'),
+     *     'Category' => array(self::BELONGS, 'CategoryModel', 'category_id', 'order'=>'date', 'limit'=>20),
      * );</pre>
-     *
+     * <ul>
+     *     <li>Первый параметр - тип отношения</li>
+     *     <li>Второй параметр - модель, с помощью которой будет происходить поиск</li>
+     *     <li>Третий параметр - ключ, по которому будет происходить поиск</li>
+     *     <li>order и limit   - Дополнительные параметры</li>
+     * </ul>
      * @return array
      */
     public function relation()
@@ -194,10 +200,10 @@ abstract class Model extends Component
 
     /**
      * Проверяет существование таблицы
-     * @param Data_Table $table
+     * @param string $table
      * @return boolean
      */
-    private function isExistTable( Data_Table $table )
+    private function isExistTable( $table )
     {
         if( ! isset( self::$exists_tables ) ) {
             self::$exists_tables = array();
@@ -206,18 +212,18 @@ abstract class Model extends Component
                 self::$exists_tables[ ] = $t[ 0 ];
             }
         }
-        return in_array( (string)$table, self::$exists_tables );
+        return in_array( $table, self::$exists_tables );
     }
 
     /**
      * Добавит созданную таблицу в кэш
-     * @param Data_Table $table
+     * @param string $table
      * @return void
      */
-    private function addNewTable( Data_Table $table )
+    private function addNewTable( $table )
     {
         $this->getDB()->query( $this->table->getCreateTable() );
-        self::$exists_tables[ ] = (string)$table;
+        self::$exists_tables[ ] = $table;
     }
 
     /**
@@ -230,6 +236,7 @@ abstract class Model extends Component
     final static public function getModel( $model )
     {
         $class_name = $model;
+        // Если нет в кэше и указан не абсолютный путь
         if ( ! isset( self::$all_class[ $model ] ) && false === strpos( $class_name, '\\') ) {
             // Если указан псевдоним
             // Псевдонимом считается класс, не имеющий символов \ и _
@@ -241,7 +248,7 @@ abstract class Model extends Component
                 $class_name = self::$models[ $modelKey ];
             }
         }
-
+//        \App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
         if( ! isset( self::$all_class[ $model ] ) ) {
             if( class_exists( $class_name, true ) ) {
                 self::$all_class[ $model ] = new $class_name();
@@ -256,7 +263,7 @@ abstract class Model extends Component
      * Создать объект
      * @param array $data Массив инициализации объекта
      * @param bool $reFill Принудительно записать поля, если создается объект из массива, име.щего id
-     * @return Data_Object
+     * @return Object
      */
     final public function createObject( $data = array(), $reFill = false )
     {
@@ -273,10 +280,11 @@ abstract class Model extends Component
             }
         }
         $class_name = $this->objectClass();
+        /** @var $obj Object */
         $obj = new $class_name( $this, $data );
         if( null !== $obj->id ) {
             $this->addToMap( $obj );
-//            $obj->markClean();
+            $obj->markClean();
         }
         //        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
         return $obj;
@@ -286,31 +294,31 @@ abstract class Model extends Component
     /**
      * Адаптер к наблюдателю для получения объекта
      * @param int $id
-     * @return Data_Object
+     * @return Object
      */
     private function getFromMap( $id )
     {
-        return Data_Watcher::exists( $this->objectClass(), $id );
+        return Watcher::exists( $this->objectClass(), $id );
     }
 
     /**
      * Адаптер к наблюдателю для добавления объекта
      *
-     * @param Data_Object $obj
+     * @param Object $obj
      */
-    private function addToMap( Data_Object $obj )
+    private function addToMap( Object $obj )
     {
-        Data_Watcher::add( $obj );
+        Watcher::add( $obj );
     }
 
 
     /**
-     * Класс для контейнера данных
+     * Класс для сущности доменного объекта
      * @return string
      */
     public function objectClass()
     {
-        return 'Data_Object_' . substr( get_class( $this ), 6 );
+        return str_replace( array('\Model','Model'), array('\Object',''), get_class( $this ) );
     }
 
     /**
@@ -320,19 +328,21 @@ abstract class Model extends Component
      */
     public function tableClass()
     {
-        return 'Data_Table_' . substr( get_class( $this ), 6 );
+        return $this->objectClass();
     }
 
     /**
      * Вернет таблицу модели
-     * @return Data_Table
+     * @return string
      */
     final public function getTable()
     {
         if( null === $this->table ) {
-            $class_name = $this->tableClass();
+            $class = $this->tableClass();
 
-            $this->table = new $class_name();
+            $this->table = $class::getTable();
+
+//            App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
 
             if( $this->config->get( 'db.migration' ) ) {
                 if( $this->isExistTable( $this->table ) ) {
@@ -341,10 +351,6 @@ abstract class Model extends Component
                     $this->addNewTable( $this->table );
                     $this->onCreateTable();
                 }
-            }
-
-            if ( $this->config->get('db.autoGenerateMeta') ) {
-                $this->db->createMetaDataXML( (string) $this->table );
             }
         }
 
@@ -357,12 +363,14 @@ abstract class Model extends Component
      */
     private function migration()
     {
-        $sys_fields  = $this->getTable()->getFields();
-        $have_fields = $this->getDB()->getFields( (string)$this->getTable() );
+        $class = $this->objectClass();
+        $sys_fields  = $class::getFields();
+        $table = $class::getTable();
+        $have_fields = $this->getDB()->getFields( $this->getTable() );
 
         $txtsys_fields = array();
         foreach( $sys_fields as $sfield ) {
-            /** @var Data_Field $sfield */
+            /** @var Field $sfield */
             $txtsys_fields[ ] = $sfield->getName();
         }
 
@@ -373,7 +381,7 @@ abstract class Model extends Component
 
         if( count( $add_array ) || count( $del_array ) ) {
             foreach( $del_array as $col ) {
-                $sql[ ] = "ALTER TABLE `{$this->getTable()}` DROP COLUMN `$col`";
+                $sql[ ] = "ALTER TABLE `{$table}` DROP COLUMN `$col`";
             }
             foreach( $add_array as $key => $col ) {
                 $after = '';
@@ -401,15 +409,6 @@ abstract class Model extends Component
     }
 
     /**
-     * Вернет текстовое имя таблицы
-     * @return string
-     */
-    final public function getTableName()
-    {
-        return (string)$this->getTable();
-    }
-
-    /**
      * Установить связи для следующего запроса
      * @return Model
      */
@@ -422,18 +421,6 @@ abstract class Model extends Component
             $this->with = func_get_args();
         }
         return $this;
-    }
-
-    /**
-     * Create criteria
-     * @deprecated Need use createCriteria()
-     * @param array $params
-     * @return Criteria
-     */
-    public function criteriaFactory( $params = array() )
-    {
-        trigger_error('Need use createCriteria()', E_DEPRECATED);
-        return new Criteria( $params );
     }
 
     /**
@@ -461,7 +448,7 @@ abstract class Model extends Component
      * @param int|array|string|Criteria $crit
      * @param array $params
      *
-     * @return Data_Object
+     * @return Object
      * @throws Exception
      */
     final public function find( $crit, $params = array() )
@@ -470,8 +457,8 @@ abstract class Model extends Component
         $criteria   = null;
         if( is_object( $crit ) ) {
             if( $crit instanceof Criteria ) {
-                $criteria = new Data_Query_Builder( $this->getTable(), $crit );
-            } elseif( $crit instanceof Data_Query_Builder ) {
+                $criteria = new QueryBuilder( $this->objectClass(), $crit );
+            } elseif( $crit instanceof QueryBuilder ) {
                 $criteria = $crit;
             }
         }
@@ -511,7 +498,7 @@ abstract class Model extends Component
         }
 
         if( ! isset( $criteria ) && isset( $crit ) ) {
-            $criteria = new Data_Query_Builder( $this->getTable(), $crit );
+            $criteria = new QueryBuilder( $this->objectClass(), $crit );
         }
 
         $data = $this->db->fetch( $criteria->getSQL(), db::F_ASSOC, $crit->params );
@@ -542,9 +529,9 @@ abstract class Model extends Component
         $this->with = array();
 
         if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Criteria ) ) {
-            $criteria = new Data_Query_Builder( $this->getTable(), $crit );
+            $criteria = new QueryBuilder( $this->objectClass(), $crit );
         } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
-            $criteria = new Data_Query_Builder( $this->getTable(),
+            $criteria = new QueryBuilder( $this->objectClass(),
                 array(
                     'cond'  => $crit,
                     'params'=> $params,
@@ -552,7 +539,7 @@ abstract class Model extends Component
                     'limit' => $limit,
                 )
             );
-        } elseif( is_object( $crit ) && $crit instanceof Data_Query_Builder ) {
+        } elseif( is_object( $crit ) && $crit instanceof QueryBuilder ) {
             $criteria = $crit;
         } else {
             throw new Exception( 'Not valid criteria' );
@@ -580,9 +567,9 @@ abstract class Model extends Component
      * Поиск по отношению
      * @param string $rel
      * @param mixed $obj
-     * @return array|Data_Object|null
+     * @return array|Object|null
      */
-    final public function findByRelation( $rel, Data_Object $obj )
+    final public function findByRelation( $rel, Object $obj )
     {
         $relation = $this->getRelation( $rel, $obj );
         if ( $relation ) {
@@ -595,51 +582,52 @@ abstract class Model extends Component
     /**
      * Фабрика отношений
      * @param string      $rel
-     * @param Data_Object $obj
+     * @param Object $obj
      *
-     * @return null|Data_Relation
+     * @return null|Relation
      * @throws \InvalidArgumentException
      */
-    private function getRelation( $rel, Data_Object $obj )
+    private function getRelation( $rel, Object $obj )
     {
-        $relation = $obj->getModel()->relation();
+        $relation = $this->relation();
 
         if ( ! is_string( $rel ) ) {
-            $this->log($rel,'rel');
+//            $this->log($rel,'rel');
             throw new \InvalidArgumentException('Argument `rel` is not a string');
         }
 
         switch ( $relation[ $rel ][ 0 ] ) {
             case self::BELONGS:
-                return new \Data_Relation_Belongs( $rel, $obj );
+                return new Relation\Belongs( $rel, $obj );
             case self::HAS_ONE:
-                return new \Data_Relation_One( $rel, $obj );
+                return new Relation\One( $rel, $obj );
             case self::HAS_MANY:
-                return new \Data_Relation_Many( $rel, $obj );
+                return new Relation\Many( $rel, $obj );
             case self::STAT:
-                return new \Data_Relation_Stat( $rel, $obj );
+                return new Relation\Stat( $rel, $obj );
         }
         return null;
     }
 
     /**
      * Сохраняет данные модели в базе
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return int
      */
-    public function save( Data_Object $obj )
+    public function save( Object $obj )
     {
         if( ! $this->onSaveStart( $obj ) ) {
             return false;
         }
 //        $data      = $obj->attributes;
-        $fields    = $this->getTable()->getFields();
+        $class     = $this->objectClass();
+        $fields    = $class::getFields();
 //        $changed   = $obj->changed();
         $save_data = array();
 
 //        $this->log( $obj->attributes, get_class($obj).'.'.$obj->getId() );
 
-        /** @var Data_Field $field */
+        /** @var Field $field */
         foreach( $fields as $field ) {
             $val = $obj->get( $field->getName() );
             if( 'id' != $field->getName() && null !== $val ) {
@@ -653,9 +641,9 @@ abstract class Model extends Component
 
         $ret = null;
         if( null !== $obj->getId() ) {
-            $ret = $this->db->update( $this->getTableName(), $save_data, '`id` = ' . $obj->getId() );
+            $ret = $this->db->update( $this->getTable(), $save_data, '`id` = ' . $obj->getId() );
         } else {
-            $ret     = $this->db->insert( $this->getTableName(), $save_data );
+            $ret     = $this->db->insert( $this->getTable(), $save_data );
             $obj->set('id', $ret);
             $this->addToMap( $obj );
         }
@@ -666,10 +654,10 @@ abstract class Model extends Component
     }
 
     /**
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return boolean
      */
-    public function onSaveStart( Data_Object $obj = null )
+    public function onSaveStart( Object $obj = null )
     {
         return true;
     }
@@ -677,11 +665,24 @@ abstract class Model extends Component
     /**
      * Тут нельзя вызывать сохраниение объекта, или вызывать очень осторожно.
      * Иначе возникнет бесконечный цикл
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return boolean
      */
-    public function onSaveSuccess( Data_Object $obj = null )
+    public function onSaveSuccess( Object $obj = null )
     {
+        // Записываем все события в таблицу log
+        if ( $this->config->get('db.log') ) {
+            /** @var $logModel LogModel */
+            $logModel = $this->getModel('Module\\System\\Model\\LogModel');
+            $this->getDB()->insert($logModel->getTable(),
+                array(
+                    'user'      => $this->app()->getAuth()->currentUser()->getId() ?: 0,
+                    'object'    => get_class( $obj ),
+                    'action'    => 'save',
+                    'timestamp' => time(),
+                )
+            );
+        }
         return true;
     }
 
@@ -698,8 +699,8 @@ abstract class Model extends Component
 
         $obj = $this->find( $id );
         if( $obj ) {
-            Data_Watcher::del( $obj );
-            if( $this->getDB()->delete( $this->getTableName(), '`id` = :id', array( ':id'=> $obj->getId() ) ) ) {
+            Watcher::del( $obj );
+            if( $this->getDB()->delete( $this->getTable(), '`id` = :id', array( ':id'=> $obj->getId() ) ) ) {
                 $this->onDeleteSuccess( $id );
                 return true;
             }
@@ -730,7 +731,7 @@ abstract class Model extends Component
 
     /**
      * Вернет количество записей по условию
-     * @param string|Db_Criteria $cond
+     * @param string|Criteria $cond
      * @param array $params
      * @return int
      */
@@ -742,7 +743,7 @@ abstract class Model extends Component
             $cond   = $cond->condition;
         }
 
-        $criteria = new Data_Query_Builder( $this->getTable(), array(
+        $criteria = new QueryBuilder( $this->objectClass(), array(
             'select'    => 'COUNT(`id`)',
             'cond'      => $cond,
             'params'    => $params,

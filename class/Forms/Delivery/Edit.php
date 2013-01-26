@@ -5,7 +5,7 @@
  * @link   http://siteforever.ru
  */
 
-class Forms_Delivery_Edit extends Form_Form
+class Forms_Delivery_Edit extends \Sfcms\Form\Form
 {
     public function __construct()
     {

@@ -8,17 +8,6 @@ class CategoryModel extends Model
 {
     protected $form;
 
-
-    public function tableClass()
-    {
-        return 'Data_Table_GalleryCategory';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_GalleryCategory';
-    }
-
     /**
      * @return Gallery
      */

@@ -17,15 +17,4 @@ class GuestbookModel extends Model
             'Category' => array( self::BELONGS, 'Page', 'link' ),
         );
     }
-
-    public function tableClass()
-    {
-        return 'Data_Table_Guestbook';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Guestbook';
-    }
-
 }

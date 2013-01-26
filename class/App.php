@@ -22,6 +22,7 @@ use Sfcms\Model;
 use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sfcms\Controller\Resolver;
+use Sfcms\Data\Watcher;
 use Sfcms\View\Layout;
 use Sfcms\View\Xhr;
 use Sfcms\i18n;
@@ -139,7 +140,7 @@ class App extends Base
         // Выполнение операций по обработке объектов
         try {
 //            debugVar( Data_Watcher::instance()->dumpDirty(), 'dumpDirty' );
-            Data_Watcher::instance()->performOperations();
+            Watcher::instance()->performOperations();
         } catch ( ModelException $e ) {
             $response = $this->getRequest()->setResponseError( $e );
             $result .= $response['msg'];

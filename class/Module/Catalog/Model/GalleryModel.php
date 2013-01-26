@@ -7,27 +7,16 @@
 namespace Module\Catalog\Model;
 
 use Sfcms\Model;
-use Data_Collection;
-use Data_Object_CatalogGallery;
+use Sfcms\Data\Collection;
+use Module\Catalog\Object\Gallery;
 
 class GalleryModel extends Model
 {
-
-    public function tableClass()
-    {
-        return 'Data_Table_CatalogGallery';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_CatalogGallery';
-    }
-
     /**
      * Вернет галлерею для продукта
      * @param $prod_id
      * @param $hidden
-     * @return Data_Collection
+     * @return Collection
      */
     public function findGalleryByProduct( $prod_id, $hidden = 1 )
     {
@@ -76,10 +65,10 @@ class GalleryModel extends Model
     {
         $images = $this->findGalleryByProduct( $cat, null );
         foreach ( $images as $obj ) {
-            /** @var $obj Data_Object_CatalogGallery */
+            /** @var $obj Gallery */
             $obj->main = 0;
         }
-        /** @var $image Data_Object_CatalogGallery */
+        /** @var $image Gallery */
         $image = $this->find( $id );
         $image->main = 1;
     }

@@ -9,7 +9,7 @@ namespace Forms\Material;
 use Form_Form;
 use Sfcms;
 
-class Edit extends Form_Form
+class Edit extends Sfcms\Form\Form
 {
     public function __construct()
     {

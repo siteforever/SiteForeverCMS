@@ -14,12 +14,11 @@ define("module/behavior",[
                 $.each(object.behavior,function( selector ){
 //                    console.log( this );
                     if ( typeof this == "object" ) {
-                        $.each( this, function( eventType ) {
-//                            console.log(eventType,selector,this);
-                            var callBack = this;
+                        $.each( this, function( eventType, callBack ) {
+//                            console.log(eventType,selector,callBack);
                             $(document).on(
                                 eventType, selector, [ callBack, object ],
-                                function( event ){
+                                function( event ) {
                                     return event.data[0].call( event.data[1], event, this );
                                 }
                             );
@@ -27,6 +26,7 @@ define("module/behavior",[
                         return true;
                     }
                     console.error( typeof this + ' not supported' );
+                    return false;
                 });
             }
         }

@@ -9,12 +9,12 @@ use DOMElement;
 use DOMDocument;
 use SimpleXMLElement;
 
-use Form_Form;
+use Sfcms\Form\Form;
 use Forms_Page_Page;
 use Sfcms\Model;
-use Data_Object;
-use Data_Object_Page;
-use Data_Collection;
+use Sfcms\Data\Object;
+use Module\Page\Object\Page;
+use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
 
 use Module\Catalog\Plugin\Page as CatalogPlugin;
@@ -31,7 +31,7 @@ class PageModel extends Model
 
     /**
      * Списков разделов в кэше
-     * @var Data_Collection
+     * @var Collection
      */
     protected $all = null;
 
@@ -39,7 +39,7 @@ class PageModel extends Model
 
     /**
      * Форма редактирования
-     * @var Form_Form
+     * @var Form
      */
     private $form = null;
 
@@ -47,17 +47,6 @@ class PageModel extends Model
 
     /** @var array ControllerLink Cache */
     private $_controller_link = array();
-
-
-    public function tableClass()
-    {
-        return 'Data_Table_Page';
-    }
-
-    public function objectClass()
-    {
-        return 'Data_Object_Page';
-    }
 
     public function init()
     {
@@ -75,7 +64,7 @@ class PageModel extends Model
 
     public function onCreateTable()
     {
-        /** @var $page Data_Object_Page */
+        /** @var $page Page */
         $page = $this->createObject();
         $page->parent   = 0;
         $page->name     = t('Home');
@@ -93,7 +82,7 @@ class PageModel extends Model
 
     /**
      * Выбирает из базы и кэширует структуру страниц
-     * @return array|Data_Collection|null
+     * @return array|Collection|null
      */
     public function getAll()
     {
@@ -106,9 +95,9 @@ class PageModel extends Model
 
     /**
      * Добавить в общую коллекцию страниц
-     * @param Data_Object_Page $obj
+     * @param Page $obj
      */
-    public function addToAll( Data_Object_Page $obj )
+    public function addToAll( Page $obj )
     {
         $this->all->add( $obj );
         $this->parents[ $obj->parent ][ $obj->id ] = $obj;
@@ -128,7 +117,7 @@ class PageModel extends Model
         $sort   = array_flip($sort);
 
         foreach ( $pages as $pageObj ) {
-            /** @var $pageObj Data_Object_Page */
+            /** @var $pageObj Page */
             $pageObj->pos = $sort[$pageObj->id];
             $this->callPlugins($pageObj->controller.':resort', $pageObj);
         }
@@ -141,14 +130,14 @@ class PageModel extends Model
      * @param $controller
      * @param $link
      *
-     * @return Data_Object_Page
+     * @return Page
      */
     public function findByControllerLink( $controller, $link )
     {
         if ( isset( $this->_controller_link[$controller][$link] ) ) {
             return $this->_controller_link[$controller][$link];
         }
-        /** @var $page Data_Object_Page */
+        /** @var $page Page */
         foreach ( $this->getAll() as $page ) {
             if ( $link == $page->link && $controller == $page->controller ) {
                 $this->_controller_link[$controller][$link] = $page;
@@ -166,7 +155,7 @@ class PageModel extends Model
     public function checkAlias( $alias = null )
     {
         $find = false;
-        /** @var $page Data_Object_Page */
+        /** @var $page Page */
         foreach( $this->getAll() as $page ) {
             if ( $page->alias == $alias ) {
                 $find = $page->id;
@@ -177,15 +166,15 @@ class PageModel extends Model
     }
 
     /**
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return bool
      * @throws Exception
      */
-    public function onSaveStart( Data_Object $obj = null )
+    public function onSaveStart( Object $obj = null )
     {
-        /** @var $obj Data_Object_Page  */
-        if ( ! $obj instanceof Data_Object_Page ) {
-            throw new Exception('$obj must be "Data_Object_Page" class');
+        /** @var $obj Page  */
+        if ( ! $obj instanceof Page ) {
+            throw new Exception('$obj must be "Page" class');
         }
 
         $pageId = $this->checkAlias( $obj->alias );
@@ -201,12 +190,13 @@ class PageModel extends Model
     }
 
     /**
-     * @param Data_Object $obj
+     * @param Object $obj
      * @return boolean
      */
-    public function onSaveSuccess( Data_Object $obj = null )
+    public function onSaveSuccess( Object $obj = null )
     {
-        /** @var $obj Data_Object_Page */
+        parent::onSaveSuccess($obj);
+        /** @var $obj Page */
         return true;
     }
 
@@ -331,7 +321,7 @@ class PageModel extends Model
     {
         $this->parents = array();
         // создаем массив, индексируемый по родителям
-        /** @var Data_Object_Page $obj */
+        /** @var Page $obj */
         if ( count($this->parents) == 0 ) {
             foreach ( $this->getAll() as $obj ) {
                 $this->parents[ $obj->parent ][ $obj->id ] = $obj;
@@ -351,7 +341,7 @@ class PageModel extends Model
         if ( ! $this->parents ) {
             $this->createParentsIndex();
         }
-        /** @var $obj Data_Object_Page */
+        /** @var $obj Page */
         foreach( $this->parents[ $parent ] as $obj ) {
             $return[ $obj->id ] = str_repeat('&nbsp;', $level * 4) . $obj->name;
             if ( isset( $this->parents[$obj->id] ) ) {

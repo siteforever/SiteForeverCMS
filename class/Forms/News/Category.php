@@ -5,8 +5,10 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
-class Forms_News_Category extends Form_Form
+
+use Sfcms\Model;
+
+class Forms_News_Category extends \Sfcms\Form\Form
 {
     function __construct()
     {
@@ -59,7 +61,7 @@ class Forms_News_Category extends Form_Form
                              'type'      => 'radio',
                              'label'     => 'Защита страницы',
                              'value'     => USER_GUEST,
-                             'variants'  => Sfcms_Model::getModel('User')->getGroups(),
+                             'variants'  => Model::getModel('User')->getGroups(),
                      ),
 
                      'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

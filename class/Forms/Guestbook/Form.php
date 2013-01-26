@@ -3,7 +3,7 @@
  * Форма сообщения в гостевой
  * @author: keltanas <keltanas@gmail.com>
  */
-class Forms_Guestbook_Form extends Form_Form
+class Forms_Guestbook_Form extends \Sfcms\Form\Form
 {
     public function __construct()
     {
