@@ -21,11 +21,13 @@
         "psr-0" : {
             "" : "class/",
             "Sfcms" : "class/",
-            "Module" : "class/",
-            "Std" : "class/"
+            "Module" : ["lib/","class/"],
+            "Std" : "class/",
+            "Form" : ["lib/","class/"]
         },
         "files" : ["class/Functions.php","class/App.php"]
     },
+    "include-path": ["lib/","class/"],
     "require-dev": {
         "phpunit/php-invoker": "1.1.*",
         "phpunit/phpunit": "3.7.*",

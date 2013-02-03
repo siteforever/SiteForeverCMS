@@ -223,8 +223,12 @@ abstract class Sfcms_Controller extends Component
         if ( ! isset( self::$forms[ $name ] ) ) {
             try {
                 $class_name = 'Forms_'.$name;
-                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, $class_name ).'.php';
-                require_once $file;
+//                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, $class_name ).'.php';
+//                try {
+//                    require_once $file;
+//                } catch ( ErrorException $e ) {
+//                    die('Form class '.$class_name.' not found');
+//                }
                 self::$forms[ $name ] = new $class_name();
             } catch ( Exception $e ) {
                 throw new Exception('Form class '.$class_name.' not found');
