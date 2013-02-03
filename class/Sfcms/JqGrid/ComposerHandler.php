@@ -27,20 +27,10 @@ class ComposerHandler {
             throw new Exception(sprintf('Param "%s" not defined',  $outDir ));
         }
 
-        var_dump( $_SERVER );
+        $rootDir = getenv('PWD');
 
-        $requires = $pack->getRequires();
-        if ( isset( $requires['keltanas/site-forever-cms'] ) )  {
-            $rootDir = realpath( __DIR__.'/../../../../../..' );
-        } else {
-            $rootDir = realpath( __DIR__.'/../../..' );
-        }
-
-
-
-
-        $source = realpath( __DIR__.'/../../..' ) . '/vendor/tonytomov';
-        $out    = realpath( __DIR__.'/../../../../../..' ) . '/static/admin/jquery/jqgrid';
+        $source = $rootDir . '/vendor/tonytomov';
+        $out    = $rootDir . '/'.$extra[ $outDir ].'/admin/jquery/jqgrid';
 
         $modules = array(
             'jqGrid/js/i18n/grid.locale-ru',
