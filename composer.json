@@ -64,5 +64,8 @@
         "post-update-cmd": [
             "Sfcms\\JqGrid\\ComposerHandler::installAssets"
         ]
+    },
+    "extra": {
+        "sfcms-static-dir" : "static"
     }
 }
