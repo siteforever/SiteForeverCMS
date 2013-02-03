@@ -181,7 +181,7 @@ abstract class Base
     public function __construct( $cfg_file = null )
     {
         header('X-Powered-By: SiteForeverCMS');
-//        self::autoloadRegister(array($this,'autoload'));
+        self::autoloadRegister(array($this,'autoload'));
 
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
@@ -630,37 +630,33 @@ abstract class Base
     }
 
 
-//    /**
-//     * @static
-//     * @param string $className
-//     * @return boolean
-//     * @throws \Sfcms\Autoload\Exception
-//     */
-//    static public function autoload( $className )
-//    {
-//        static $class_count = 0;
-//
-//        if ( preg_match('/^smarty/i', $className) ) {
-//            return false;
-//        }
-//
-//        if( in_array( $className, array( 'finfo' ) ) ) {
-//            return false;
-//        }
-//
-//        // PEAR format autoload
-//        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
-//        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
-//        $file       = $className . '.php';
-//
-//        if( @include_once $file ) {
-//            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
-//                $class_count ++;
-//            }
-//            return true;
-//        }
-//        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
-//    }
+    /**
+     * @static
+     * @param string $className
+     * @return boolean
+     * @throws \Sfcms\Autoload\Exception
+     */
+    static public function autoload( $className )
+    {
+        static $class_count = 0;
+
+        if ( ! preg_match('/^(Forms|Module)/i', $className) ) {
+            return false;
+        }
+
+        // PEAR format autoload
+        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
+        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
+        $file       = $className . '.php';
+
+        if( @include_once $file ) {
+            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
+                $class_count ++;
+            }
+            return true;
+        }
+        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
+    }
 
     /**
      * Run under development environment

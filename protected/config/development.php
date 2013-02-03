@@ -25,6 +25,8 @@ return array(
 
 //    'editor' => 'tinymce',
     'editor' => 'ckeditor',
+//    'editor' => 'tinymce',
+    'editor' => 'ckeditor',
 //    'editor' => 'elrte',
 
     'language'  => 'ru',
@@ -46,7 +48,6 @@ return array(
         // драйвер шаблонизатора
         // это класс, поддерживающий интерфейс TPL_Driver
         'driver'    => '\\Sfcms\\Tpl\\Smarty',
-        'version'   => '3.1.11',
         'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
         'ext'       => 'tpl', // расширение шаблонов
         'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system', // каталог шаблонов админки
