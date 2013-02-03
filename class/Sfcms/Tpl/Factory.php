@@ -41,15 +41,15 @@ class Factory
         if ( class_exists( $driver ) ) {
             $obj = new $driver();
             //Register::setTpl( $obj );
-            $themeCat = ROOT."/themes/{$theme}/templates";
+            $themeCat = ROOT."/themes/{$theme}";
             if ( is_dir( $themeCat ) ) {
                 $obj->setTplDir( $themeCat );
             } else {
                 throw new Exception( 'Theme "'.$theme.'" not found' );
             }
-            $runtime    = ROOT."/_runtime";
-            $tpl_c  = $runtime."/_templates_c";
-            $cache  = $runtime."/_cache";
+            $runtime    = ROOT."/runtime";
+            $tpl_c  = $runtime."/templates_c";
+            $cache  = $runtime."/cache";
 
             if ( ! is_dir( $tpl_c ) ) {
                 @mkdir( $tpl_c, 0755, true );
