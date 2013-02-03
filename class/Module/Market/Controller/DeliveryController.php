@@ -8,8 +8,8 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Data_Object_Delivery;
-use Request;
+use Module\Market\Object\Delivery;
+use Sfcms\Request;
 use Forms_Delivery_Edit;
 
 class DeliveryController extends Sfcms_Controller
@@ -73,7 +73,7 @@ class DeliveryController extends Sfcms_Controller
         $model  = $this->getModel('Delivery');
         $items  = $model->findAll( sprintf('id IN (%s)', join(',', $sort)) );
         $sort   = array_flip( $sort );
-        /** @param $item Data_Object_Delivery */
+        /** @param $item Delivery */
         foreach( $items as $item ) {
             $item->pos = $sort[ $item->id ];
         }

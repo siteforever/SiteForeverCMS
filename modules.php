@@ -28,6 +28,10 @@ return array(
         'url'   => 'users/admin',
     ),
     array(
+        'name'  => 'Журнал',
+        'url'   => 'log/admin',
+    ),
+    array(
         'name'  => 'Интернет магазин',
         'sub'   => array(
             array(
@@ -37,6 +41,10 @@ return array(
             array(
                 'name'  => t('Goods'),
                 'url'   => 'goods/admin'
+            ),
+            array(
+                'name'  => t('catalog','Product types'),
+                'url'   => 'prodtype/admin'
             ),
             array(
                 'name'  => t('material','Materials'),
@@ -68,38 +76,38 @@ return array(
                 'url'   => 'elfinder/finder',
                 'class' => 'filemanager',
             ),
-            array(
-                'name'  => 'Архивация базы',
-                'url'   => '/_runtime/sxd',
-                'class' => 'dumper',
-            ),
+//            array(
+//                'name'  => 'Архивация базы',
+//                'url'   => '/_runtime/sxd',
+//                'class' => 'dumper',
+//            ),
             array(
                 'name'  => 'Поиск',
                 'url'   => 'search/admin',
             ),
         )
     ),
-    array(
-        'name' => 'Система',
-        'sub' => array(
-            array(
-                'name'  => 'Маршруты',
-                'url'   => 'routes/admin',
-            ),
-            array(
-                'name'  => 'Конфигурация системы',
-                'url'   => 'system',
-            ),
-            array(
-                'name'  => 'Настройка',
-                'url'   => 'setting/admin',
-            ),
-            array(
-                'name'  => 'Генератор',
-                'url'   => 'generator',
-            ),
-        ),
-    ),
+//    array(
+//        'name' => 'Система',
+//        'sub' => array(
+//            array(
+//                'name'  => 'Маршруты',
+//                'url'   => 'routes/admin',
+//            ),
+//            array(
+//                'name'  => 'Конфигурация системы',
+//                'url'   => 'system',
+//            ),
+//            array(
+//                'name'  => 'Настройка',
+//                'url'   => 'setting/admin',
+//            ),
+//            array(
+//                'name'  => 'Генератор',
+//                'url'   => 'generator',
+//            ),
+//        ),
+//    ),
     array(
         'name'  => 'Выход',
         'url'   => 'users/logout',

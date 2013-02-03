@@ -1,9 +1,16 @@
 <?php
+require_once SF_PATH.'/class/Sfcms/Data/Relation.php';
+require_once SF_PATH.'/class/Sfcms/Data/Relation/Belongs.php';
 
-class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
+use Module\Gallery\Object\Gallery;
+use Module\Gallery\Object\Category;
+use Sfcms\Data\Watcher;
+use Sfcms\Model;
+
+class GalleryTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Data_Object_Gallery
+     * @var Gallery
      */
     protected $gallery;
 
@@ -12,34 +19,27 @@ class Data_Object_GalleryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        Data_Watcher::instance()->clear();
-        $this->gallery    = Sfcms_Model::getModel('Gallery')->createObject(
+        Watcher::instance()->clear();
+        $this->gallery    = Model::getModel('Gallery')->createObject(
             array(
                 'id'            => 1,
                 'category_id'   => 7,
                 'name'          => 'Панасоник',
                 'link'          => 'index',
-                'description'   => '',
-                'image'         => '',
-                'middle'        => '',
-                'thumb'         => '',
-                'pos'           => '',
-                'main'          => '',
-                'hidden'        => '',
             )
         );
     }
 
     public function testGetCategory()
     {
-        $this->assertInstanceOf('Data_Object_GalleryCategory', $this->gallery->Category);
+        $this->assertInstanceOf('\Module\Gallery\Object\Category', $this->gallery->Category);
     }
 
-//    public function testGetAlias()
-//    {
-//        $this->assertEquals(
-//            'supplies/panasonik',
-//            $this->gallery->url
-//        );
-//    }
+    public function testGetAlias()
+    {
+        $this->assertEquals(
+            'portfolio/panasonik',
+            $this->gallery->url
+        );
+    }
 }

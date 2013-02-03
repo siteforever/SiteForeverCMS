@@ -6,7 +6,7 @@
  * @link http://siteforever.ru
  */
 header("content-type: text/html; charset=cp866");
-require_once 'class/sfcms/installer.php';
+require_once 'class/Sfcms/installer.php';
 
 error_reporting( 0 );
 define('DS', DIRECTORY_SEPARATOR);

@@ -6,7 +6,7 @@
 define([
     "jquery",
     "siteforever"
-],function($,$s){
+],function($){
     return {
         "behavior" : {
             "a.filterEmail" : {
@@ -25,7 +25,7 @@ define([
             }
         },
         "init" : function() {
-            $('.datepicker').datepicker( $s.datepicker );
+            $('.datepicker').datepicker( window.datepicker );
         }
     }
 });

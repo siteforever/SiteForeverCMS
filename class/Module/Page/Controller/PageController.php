@@ -6,11 +6,11 @@
 namespace Module\Page\Controller;
 
 use Sfcms_Controller;
-use Model_Page;
-use Data_Object_Page;
-use Form_Form;
+use Module\Page\Model\PageModel;
+use Module\Page\Object\Page;
+use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
-use Request;
+use Sfcms\Request;
 
 use Exception;
 
@@ -43,13 +43,13 @@ class PageController extends Sfcms_Controller
      */
     public function indexAction()
     {
-        /** @var $pageModel Model_Page */
+        /** @var $pageModel PageModel */
         $pageModel = $this->getModel( 'Page' );
         if ( ! $this->user->hasPermission( $this->page[ 'protected' ] )) {
             throw new Sfcms_Http_Exception(t( 'Access denied' ),403);
         }
 
-        // создаем замыкание страниц
+        // создаем замыкание страниц (если одна страница указывает на другую)
         while ( $this->page[ 'link' ] ) {
             $page = $pageModel->find( $this->page[ 'link' ] );
 
@@ -86,7 +86,7 @@ class PageController extends Sfcms_Controller
 
         $this->app()->addScript('/misc/admin/page.js');
 
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
 
         if ($get_link_add = $this->request->get( 'get_link_add' )) {
@@ -102,14 +102,6 @@ class PageController extends Sfcms_Controller
         );
     }
 
-    /**
-     * Тестовый вид админки
-     */
-    public function admin2Action()
-    {
-
-    }
-
 
     /**
      * Создает страницу
@@ -117,7 +109,7 @@ class PageController extends Sfcms_Controller
      */
     public function createAction()
     {
-        /** @var $model Model_Page */
+        /** @var $model PageModel */
         $model = $this->getModel( 'Page' );
         $modules = $model->getAvaibleModules();
 
@@ -141,7 +133,7 @@ class PageController extends Sfcms_Controller
     public function addAction()
     {
         /**
-         * @var Model_Page $model
+         * @var PageModel $model
          */
         $model = $this->getModel( 'Page' );
 
@@ -151,13 +143,13 @@ class PageController extends Sfcms_Controller
         $module    = $this->request->get( 'module' );
 
         // родительский раздел
-        /** @var $parent Data_Object_Page */
+        /** @var $parent Page */
         $parent = null;
         if ( $parent_id ) {
             $parent = $model->find( $parent_id );
         }
 
-        /** @var $form Form_Form */
+        /** @var $form Form */
         $form = $model->getForm();
 
         $form->setData(
@@ -198,7 +190,7 @@ class PageController extends Sfcms_Controller
      */
     public function editAction( $edit )
     {
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
         $form  = $model->getForm();
 
@@ -220,19 +212,19 @@ class PageController extends Sfcms_Controller
      */
     public function saveAction()
     {
-        /** @var Model_Page $model */
+        /** @var PageModel $model */
         $model = $this->getModel( 'Page' );
 
         $form = $model->getForm();
 
         if ($form->getPost()) {
             if ($form->validate()) {
-                /** @var $obj Data_Object_Page */
+                /** @var $obj Page */
                 if ( $id = $form->getField('id')->getValue() ) {
                     $obj = $model->find( $id );
                     $obj->attributes = $form->getData();
                     $obj->update = time();
-                    $obj->save();
+                    $obj->markDirty();
                 } else {
                     $obj = $model->createObject();
                     $obj->attributes = $form->getData();
@@ -292,11 +284,10 @@ class PageController extends Sfcms_Controller
     /**
      * Меняет св-во hidden у страницы
      */
-    public function hiddenAction()
+    public function hiddenAction( $id )
     {
-        $id   = $this->request->get( 'id' );
         $page = $this->getModel( 'Page' )->find( $id );
-        $page->set( 'hidden', 0 == $page->get( 'hidden' ) ? 1 : 0 );
+        $page->hidden = intval( ! $page->hidden );
         $page->save();
         return array( 'page' => $page );
     }
@@ -313,7 +304,7 @@ class PageController extends Sfcms_Controller
 
         $return = array();
 
-        /** @var Data_Object_Page $page */
+        /** @var Page $page */
         foreach ( $pages as $page ) {
             try {
                 $page->save();

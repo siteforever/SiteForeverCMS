@@ -15,10 +15,66 @@
  * basket.sum - сумма товаров в корзине
  */
 
-define([
+define("module/form",[
     "jquery",
     "jquery/jquery.form"
 ],function($){
+
+    var errorHandler = function( response ) {
+        if ( response.error ) {
+            $( $form ).find('div.control-group[data-field-name]').each(function(){
+                var errorMsg = response.errors[ $(this).data('field-name') ];
+                if( errorMsg ) {
+                    $(this).addClass('error');
+                    var divError = $('div.error', this);
+                    if ( divError.length ) {
+                        divError.html( errorMsg );
+                    } else {
+                        var divControls = $('div.controls', this),
+                            divMsg = '<div class="error">' + errorMsg + '</div>';
+                        divControls.length
+                            ? $(divMsg).insertAfter($(divControls).find(':input'))
+                            : $(this).append(divMsg);
+                    }
+                } else {
+                    $(this).removeClass('error').find('div.error').remove();
+                }
+            });
+        }
+    };
+
+    var basketHandler = function( response ){
+        var item;
+        if ( response.basket ) {
+            for ( i in response.basket ) {
+                if ( /^\d+$/.test(i) ) {
+                    item = response.basket[i];
+                    $('tr[data-key='+i+']').find('.basket-sum')
+                        .html( ( parseFloat(item.count) * parseFloat(item.price) ).toFixed(2).replace('.',',') );
+                }
+            }
+            if ( response.basket.delitems ) {
+                for( i in response.basket.delitems ) {
+                    $('tr[data-key='+response.basket.delitems[i]+']').remove();
+                }
+            }
+            $('.basket-count','#totalRow').find('b').html( response.basket.count );
+            $('.basket-sum','#totalRow').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
+        }
+    };
+
+    var deliveryHandler = function( response ){
+        if ( response.delivery && response.delivery.cost ) {
+            $('.basket-sum','#deliveryRow').html( response.delivery.cost );
+        }
+    };
+
+    var redirectHandler = function( response ){
+        if ( response.redirect ) {
+            window.location.href = response.redirect;
+        }
+    }
+
     $(document).ready(function(){
         /**
          * Ajax Validate Forms
@@ -28,58 +84,13 @@ define([
             "iframe" : false,
             "dataType" : "json",
             "success" : function( response, status, xhr, $form ){
-                var item;
-
-                if ( response.error ) {
-                    $( $form ).find('div.control-group[data-field-name]').each(function(){
-                        var errorMsg = response.errors[ $(this).data('field-name') ];
-                        if( errorMsg ) {
-                            $(this).addClass('error');
-                            var divError = $('div.error', this);
-                            if ( divError.length ) {
-                                divError.html( errorMsg );
-                            } else {
-                                var divControls = $('div.controls', this),
-                                    divMsg = '<div class="error">' + errorMsg + '</div>';
-                                divControls.length
-                                    ? $(divMsg).insertAfter($(divControls).find(':input'))
-                                    : $(this).append(divMsg);
-                            }
-                        } else {
-                            $(this).removeClass('error').find('div.error').remove();
-                        }
-                    });
-                }
-
-                if ( response.basket ) {
-                    for ( i in response.basket ) {
-                        if ( /^\d+$/.test(i) ) {
-                            item = response.basket[i];
-                            $('tr[data-key='+i+']').find('.basket-sum')
-                                .html( ( parseFloat(item.count) * parseFloat(item.price) ).toFixed(2).replace('.',',') );
-                        }
-                    }
-                    if ( response.basket.delitems ) {
-                        for( i in response.basket.delitems ) {
-                            $('tr[data-key='+response.basket.delitems[i]+']').remove();
-                        }
-                    }
-                    $('.basket-count','#totalRow').find('b').html( response.basket.count );
-                    $('.basket-sum','#totalRow').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
-                }
-
-                if ( response.delivery && response.delivery.cost ) {
-                    $('.basket-sum','#deliveryRow').html( response.delivery.cost );
-                }
-
+                errorHandler( response );
+                basketHandler( response );
+                deliveryHandler( response );
+                redirectHandler( response );
 //                if ( script && script.formResponse && typeof script.formResponse == 'function' ) {
 //                    script.formResponse( response );
 //                }
-
-                if ( response.redirect ) {
-                    window.location.href = response.redirect;
-                }
-
             }
         });
     });

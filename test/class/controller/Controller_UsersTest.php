@@ -1,6 +1,6 @@
 <?php
 
-require_once 'controller/users.php';
+//require_once 'Controller/Users.php';
 
 /**
  * Test class for Controller_Users.
@@ -64,9 +64,6 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
 
-//        var_dump( $return );
-//        var_dump( $result );
-
         $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
@@ -112,7 +109,6 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
-        //var_dump( $return );
         $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
@@ -133,7 +129,6 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->editAction( null );
         $result = $this->app->getRequest()->getContent();
-        //var_dump( $return );
         $this->assertEmpty($result);
         $this->assertInternalType('array', $return);
         $this->arrayHasKey('form', $return);
@@ -159,7 +154,6 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $return = $this->controller->restoreAction();
         $result = $this->app->getRequest()->getContent();
 
-//        var_dump( $return['form']->html() );
         $this->assertEmpty($result);
 
         $this->assertInternalType('array', $return);

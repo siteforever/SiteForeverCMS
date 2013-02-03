@@ -8,10 +8,10 @@
 namespace Module\News\Controller;
 
 use Sfcms_Controller;
-use Request;
-use Model_News;
-use Data_Object_News;
-use Db_Criteria;
+use Sfcms\Request;
+use Module\News\Model\NewsModel;
+use Module\News\Object\News;
+use Sfcms\Db\Criteria;
 use DOMDocument;
 
 class RssController extends Sfcms_Controller
@@ -23,11 +23,11 @@ class RssController extends Sfcms_Controller
 
         // @TODO Нет абсолютного подтверждения работы этого модуля
         /**
-         * @var Model_News $model
+         * @var NewsModel $model
          */
         $model = $this->getModel('News');
 
-        $criteria   = new Db_Criteria(array(
+        $criteria   = new Criteria(array(
             'cond'      => ' hidden = 0 AND protected = 0 AND deleted = 0 ',
             'params'    => array(),
             'order'     => 'date DESC',
@@ -58,7 +58,7 @@ class RssController extends Sfcms_Controller
         $channelDom->appendChild( $dom->createElement('description', $this->config->get('sitename')) );
         $channelDom->appendChild( $dom->createElement('generator', 'SiteForeverCMS') );
 
-        /** @var $article Data_Object_News */
+        /** @var $article News */
         foreach( $news as $article ) {
             $description = $article['notice'];
             $description = str_replace('&nbsp;', ' ', $description);

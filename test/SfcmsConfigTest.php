@@ -1,19 +1,21 @@
 <?php
 /**
- *
+ * Тест конфига
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
+use Sfcms\Config;
+
 class SfcmsConfigTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Sfcms_Config
+     * @var Config
      */
     public $obj;
 
     protected function setUp()
     {
-        $this->obj  = new Sfcms_Config();
+        $this->obj  = new Config();
         $this->obj->set('sitename','SiteForeverCMS');
         $this->obj->setDefault('db',array( 'login' => 'siteforever', ));
         $this->obj->setDefault('test',array(

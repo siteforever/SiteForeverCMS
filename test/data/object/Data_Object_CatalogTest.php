@@ -2,16 +2,22 @@
 /**
  * Тест объекта каталога
  */
+use Module\Catalog\Model\CatalogModel;
+use Module\Page\Model\PageModel;
+use Sfcms\Data\Watcher;
+use Module\Catalog\Object\Catalog;
+use Module\Page\Object\Page;
+
 class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Model_Catalog
+     * @var CatalogModel
      */
     public $model   = null;
 
     protected function setUp()
     {
-        Data_Watcher::instance()->clear();
+        Watcher::instance()->clear();
         $this->model    =  app::getInstance()->getModel('Catalog');
     }
 
@@ -19,7 +25,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
     public function testPath()
     {
         /**
-         * @var Data_Object_Catalog $obj10
+         * @var Catalog $obj10
          */
         $obj10    = $this->model->createObject(
             array(
@@ -51,7 +57,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
 
     public function testGetAlias()
     {
-        /** @var $obj Data_Object_Catalog */
+        /** @var $obj Catalog */
         $obj   = $this->model->createObject(
             array(
                 'id'    => 1,
@@ -80,9 +86,9 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
 
     public function testGetUrl()
     {
-        /** @var $modelPage Model_Page */
+        /** @var $modelPage PageModel */
         $modelPage  = $this->model->getModel('Page');
-        /** @var $page Data_Object_Page */
+        /** @var $page Page */
         $page   = $modelPage->createObject();
         $page->id   = 100500;
         $page->name = 'Электроника';
@@ -124,6 +130,25 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1000, $product->getPrice(true));
     }
 
+
+    public function testGetSalePrice()
+    {
+        $product = $this->model->createObject(array(
+            'id'    => 100500,
+            'parent'=> 100600,
+            'cat'   => 0,
+            'price1'=> 2000,
+            'sale'  => 30,
+            'sale_start' => time(),
+            'sale_stop'  => time(),
+        ));
+
+        $this->assertEquals('1400', $product->salePrice);
+
+        $product->sale_start = time() + 100500;
+
+        $this->assertEquals(null, $product->salePrice);
+    }
 
     public function testGetMainImage()
     {

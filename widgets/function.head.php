@@ -9,20 +9,25 @@
  * -------------------------------------------------------------
  * @example {head}
  */
+use Sfcms\View\Layout;
+
 function smarty_function_head( $params )
 {
     $app        = App::getInstance();
     $request    = $app->getRequest();
     $config     = $app->getConfig();
 
+    $untiCache = substr( md5(mktime(null,0,0)), 0, 8 );
+
+
     $head = array();
     $head[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
 
-    if ( $request->get('keywords') ) {
-        $head[] = "<meta name=\"keywords\" content=\"".$request->get('keywords')."\" />";
+    if ( $request->getKeywords() ) {
+        $head[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\" />";
     }
-    if ( $request->get('description') ) {
-        $head[] = "<meta name=\"description\" content=\"".$request->get('description')."\" />";
+    if ( $request->getDescription() ) {
+        $head[] = "<meta name=\"description\" content=\"".$request->getDescription()."\" />";
     }
     
     $head[] = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />";
@@ -30,22 +35,9 @@ function smarty_function_head( $params )
 
     if ( file_exists( ROOT.DS.'favicon.png' ) ) {
         $head[] = "<link rel=\"icon\" type=\"image/png\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.png\" />";
-    } elseif ( file_exists( ROOT.DS.'favicon.ico' ) ) {
+    }
+    if ( file_exists( ROOT.DS.'favicon.ico' ) ) {
         $head[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\" />";
-    }
-
-    $useLess = false;
-    if ( $request->get('admin') ) {
-        $app->addStyle('/misc/jqGrid/css/ui.jqgrid.css');
-    }
-
-    foreach( $app->getStyle() as $style ) {
-        if ( preg_match('/.*\.css$/', $style) ) {
-            $head[ ] = "<link type=\"text/css\" rel=\"stylesheet\" href=\"$style\">";
-        } elseif ( preg_match('/.*\.less$/', $style) ) {
-            $head[ ] = "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"$style\">";
-            $useLess = true;
-        }
     }
 
     $rjsConfig = array(
@@ -57,30 +49,35 @@ function smarty_function_head( $params )
         ),
         'paths'=> array(
             'fancybox' => 'jquery/fancybox/jquery.fancybox-1.3.1' . (App::isDebug() ? '' : '.pack'),
-            'jui' => 'jquery/jquery-ui-'.Sfcms_View_Layout::JQ_UI_VERSION.'.custom.min',
+            'jui' => 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min',
             'twitter' => 'bootstrap/js/bootstrap' . (App::isDebug() ? '' : '.min'),
             'siteforever' => 'module/siteforever',
             'runtime' => '../_runtime',
-            'i18n'  => '../_runtime/i18n.ru',
             'theme' => '/themes/'.App::getInstance()->getConfig('template.theme'),
+            'i18n'  => '../_runtime/i18n.'.$app->getConfig('language'),
+        ),
+        'map' => array(
+            '*' => array(
+            ),
         ),
     );
 
-
     if ( $request->get('admin') ) {
+
         $rjsConfig['paths']['app'] = 'admin';
-        $rjsConfig['paths']['controller'] = 'admin/'.$request->getController();
+//        $rjsConfig['paths']['controller'] = ;
         $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
 
-        $rjsConfig['map'] = array(
-            '*' => array(
-                'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
-                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
-//                'jqgrid'  => 'admin/jquery/jqgrid',
-                'jqgrid'  => 'admin/jquery/jqgrid-min',
-            ),
+        $rjsConfig['map']['*'] += array(
+            'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
+            'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
+//            'jqgrid'  => 'admin/jquery/jqgrid',
+            'controller' => 'admin/'.$request->getController(),
         );
+
+        $rjsConfig['map']['*']['jqgrid'] = '../static/admin/jquery/jqgrid/jqgrid';
+        $app->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
 
@@ -95,12 +92,24 @@ function smarty_function_head( $params )
                     . "</script>";
         }
 
-
     } else {
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
         $head[] = "<script type='text/javascript' src='/misc/require-jquery-min.js' data-main='site'></script>";
     }
 
+
+    // Подключение стилей в заголовок
+    $useLess = false;
+    $head = array_merge( $head, array_map(function($style) use ( &$useLess, $untiCache ) {
+        if ( preg_match('/.*\.css$/', $style) ) {
+            return "<link type=\"text/css\" rel=\"stylesheet\" href=\"{$style}?{$untiCache}\">";
+        }
+        if ( preg_match('/.*\.less$/', $style) ) {
+            $useLess = true;
+            return "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"{$style}?{$untiCache}\">";
+        }
+        return '';
+    }, $app->getStyle()) );
 
 
     if ( $useLess ) {

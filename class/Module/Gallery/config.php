@@ -10,7 +10,7 @@ return array(
         'Gallery'   => array(),
     ),
     'models' => array(
-        'Gallery'        => 'Model_Gallery',
-        'GalleryCategory' => 'Model_GalleryCategory',
+        'Gallery'         => 'Module\Gallery\Model\GalleryModel',
+        'GalleryCategory' => 'Module\Gallery\Model\CategoryModel',
     ),
 );

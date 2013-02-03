@@ -12,7 +12,7 @@
                 <span class="brand">SiteForeverCMS</span>
                 <ul class="nav">
                     <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {t}Goto site{/t}</a></li>
-                    <li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>
+                    {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>*}
                 </ul>
                 <ul class="nav pull-right">
                     <li>{a href="users/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>
@@ -27,6 +27,9 @@
             </div>
         </div>
     </div>
+</div>
+<div class="modal-backdrop in" id="loading-application">
+    <div>{t}Initialisation{/t}</div>
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -53,14 +56,16 @@
         </div>
 
         <div class="span9" id="workspace">
-            {if $request->getTitle()}<h2>{$request->getTitle()}</h2>{/if}
+            {*<div class="well">*}
+                {if $request->getTitle()}<h2>{$request->getTitle()}</h2>{/if}
 
-            {if $feedback}<div class="alert alert-block">
-                <a class="close" data-dismiss="alert" href="#">&times;</a>
-                {$feedback}
-            </div>{/if}
+                {if $feedback}<div class="alert alert-block">
+                    <a class="close" data-dismiss="alert" href="#">&times;</a>
+                    {$feedback}
+                </div>{/if}
 
-            {$request->getContent()}
+                {$request->getContent()}
+            {*</div>*}
         </div>
 
         <div class="clear"></div>

@@ -5,10 +5,9 @@
  */
 define([
     "jquery",
-    "siteforever",
     "module/modal",
-    "i18n"
-],function($, $s, Modal){
+    "siteforever"
+],function($, Modal){
     return {
         "init" : function() {
             $( 'a.do_delete').each(function(){

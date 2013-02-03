@@ -1,17 +1,22 @@
 <?php
+use Module\Page\Model\PageModel;
+use Sfcms\Data\Watcher;
+use Sfcms\Model;
+use Sfcms\db;
+
 class Model_PageTest extends PHPUnit_Framework_TestCase
 {
-    /** @var Model_Page */
+    /** @var PageModel */
     protected $model;
 
-    /** @var Db */
+    /** @var db */
     protected $db;
 
     protected function setUp()
     {
-        $this->model = Sfcms_Model::getModel('Page');
-        $this->db    = Sfcms_Model::getDB();
-        Data_Watcher::instance()->clear();
+        $this->model = Model::getModel('Page');
+        $this->db    = Model::getDB();
+        Watcher::instance()->clear();
     }
 
     /**
@@ -29,7 +34,8 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
         $posNew = $posOld;
         shuffle( $posNew );
         $this->model->resort( $posNew );
-        Data_Watcher::instance()->performOperations();
+
+        Watcher::instance()->performOperations();
 
         $data2 = $this->db->fetchAll('SELECT id, pos FROM '.$this->model->getTable().' WHERE id IN ('.join(',',$posOld).')');
         $posCheck = array_flip( $posNew );
@@ -37,7 +43,7 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
             $this->assertEquals( $posCheck[$d['id']], $d['pos'], 'Sort order not changed' );
         }
         $this->model->resort( $posOld );
-        Data_Watcher::instance()->performOperations();
+        Watcher::instance()->performOperations();
     }
 
 }

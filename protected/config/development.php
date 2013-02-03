@@ -23,6 +23,10 @@ return array(
         'rewrite'   => true,
     ),
 
+//    'editor' => 'tinymce',
+    'editor' => 'ckeditor',
+//    'editor' => 'elrte',
+
     'language'  => 'ru',
 
     // база данных
@@ -41,7 +45,7 @@ return array(
         'theme'     => 'basic',
         // драйвер шаблонизатора
         // это класс, поддерживающий интерфейс TPL_Driver
-        'driver'    => 'TPL_Smarty',
+        'driver'    => '\\Sfcms\\Tpl\\Smarty',
         'version'   => '3.1.11',
         'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
         'ext'       => 'tpl', // расширение шаблонов

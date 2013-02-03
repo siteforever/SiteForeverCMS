@@ -9,6 +9,7 @@ return array(
         'Banner'    => array(),
     ),
     'models' => array(
-        'Banner' => 'Model_Banner',
+        'Banner' => 'Module\\Banner\\Model\\BannerModel',
+        'CategoryBanner' => 'Module\\Banner\\Model\\CategoryModel',
     ),
 );

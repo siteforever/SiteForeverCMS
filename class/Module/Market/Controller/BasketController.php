@@ -9,11 +9,11 @@ namespace Module\Market\Controller;
 
 use Sfcms;
 use Sfcms_Controller;
-use Form_Form;
+use Sfcms\Form\Form;
 use Forms_Basket_Address;
-use Data_Object_Delivery;
-use Model_Order;
-use Model_Catalog;
+use Module\Market\Object\Delivery;
+use Module\Market\Model\OrderModel;
+use Module\Catalog\Model\CatalogModel;
 
 class BasketController extends Sfcms_Controller
 {
@@ -75,7 +75,7 @@ class BasketController extends Sfcms_Controller
         },$this->getBasket()->getAll()) );
 
         // Получаем товары из каталога
-        /** @var $catalogModel Model_Catalog */
+        /** @var $catalogModel CatalogModel */
         $catalogModel   = $this->getModel('Catalog');
         $products       = count($productIds)
             ? $catalogModel->findAll('id IN (?)', array($productIds))
@@ -149,10 +149,10 @@ class BasketController extends Sfcms_Controller
 
     /**
      * Ajax validate
-     * @param Form_Form $form
+     * @param Form $form
      * @return array
      */
-    private function ajaxValidate( Form_Form $form )
+    private function ajaxValidate( Form $form )
     {
         $result = array('error'=>0);
 
@@ -161,7 +161,7 @@ class BasketController extends Sfcms_Controller
             $basket_counts = $this->request->get('basket_counts');
 
             if ( $basket_counts && is_array( $basket_counts ) ) {
-                /** @var $basket \Basket */
+                /** @var $basket Sfcms\Basket\Base */
                 array_walk($basket_counts, function($prod_count, $key, $basket){
                     $basket->setCount( $key, $prod_count > 0 ? $prod_count : 1 );
                 }, $this->getBasket());
@@ -195,7 +195,7 @@ class BasketController extends Sfcms_Controller
                     $delivery = $this->app()->getDelivery();
                     $this->app()->getSession()->set('delivery',$delivery->getType());
 
-                    /** @var $orderModel Model_Order */
+                    /** @var $orderModel OrderModel */
                     $orderModel    = $this->getModel('Order');
                     $order = $orderModel->createOrder( $this->getBasket(), $form, $delivery );
 

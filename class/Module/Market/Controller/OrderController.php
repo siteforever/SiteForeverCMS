@@ -7,10 +7,10 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Model_Order;
-use Data_Object_Order;
-use Data_Object_OrderPosition;
-use Request;
+use Module\Market\Model\OrderModel;
+use Module\Market\Object\Order;
+use Module\Market\Object\OrderPosition;
+use Sfcms\Request;
 use Sfcms\Robokassa;
 
 class OrderController extends Sfcms_Controller
@@ -43,7 +43,7 @@ class OrderController extends Sfcms_Controller
 
         $user   = $this->app()->getAuth()->currentUser();
 
-        /** @var $order Model_Order */
+        /** @var $order OrderModel */
         $order  = $this->getModel('Order');
 
         if ( ! $user->getId() || $user->perm == USER_GUEST ) {
@@ -61,7 +61,7 @@ class OrderController extends Sfcms_Controller
         $item = $this->request->get('item', Request::INT);
 
         if ( $item ) {
-            /** @var $orderObj Data_Object_Order */
+            /** @var $orderObj Order */
             $orderObj = $order->find( $item );
             
             if ( $orderObj ) {
@@ -115,7 +115,7 @@ class OrderController extends Sfcms_Controller
 
 
         $model = $this->getModel('Order');
-        /** @var $order Data_Object_Order */
+        /** @var $order Order */
         $order = $model->find( $id );
 
         if ( ! $order ) {
@@ -144,7 +144,7 @@ class OrderController extends Sfcms_Controller
             case 'robokassa' :
                 $robokassa = new Robokassa( $this->config->get('service.robokassa') );
                 $robokassa->setInvId( $order->id );
-                $robokassa->setOutSum( $sum + ($delivery?$delivery->cost():0) );
+                $robokassa->setOutSum( $sum + $delivery->cost($sum) );
                 $robokassa->setDesc(sprintf('Оплата заказа №%s в интернет-магазине %s',
                                     $order->id, $this->app()->getConfig('sitename')));
                 break;
@@ -238,7 +238,7 @@ class OrderController extends Sfcms_Controller
     public function adminEdit( $id )
     {
         $model = $this->getModel('Order');
-        /** @var $order Data_Object_Order */
+        /** @var $order Order */
         $order      = $model->find( $id );
         $positions  = $order->Positions;
         $user       = $order->User;

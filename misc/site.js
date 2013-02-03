@@ -4,19 +4,18 @@
  * @link   http://siteforever.ru
  */
 require([
-    "jquery"
-  , "siteforever"
-  , "etc/basket"
-  , "theme/js/script"
-  , "module/form"
-  , "etc/catalog"
-  , "jquery/jquery.gallery"
-  , "jquery/jquery.captcha"
-  , "twitter"
+      "jquery"
+    , "module/basket"
+    , "module/behavior"
+    , "theme/js/script"
+    , "jquery/jquery.gallery"
+    , "jquery/jquery.captcha"
+    , "siteforever"
+    , "twitter"
 ],function(
     $
-  , $s
   , basket
+  , behavior
   , script
 ){
     $(document).ready($.proxy(function($){
@@ -25,8 +24,11 @@ require([
             basket.init();
         }
 
-        if ( script && script.init && "function" == typeof script.init) {
-            script.init();
+        if ( script ) {
+            if ( script.init && "function" == typeof script.init ) {
+                script.init();
+            }
+            behavior.apply( script );
         }
 
         $('a.gallery').gallery();
@@ -45,7 +47,7 @@ require([
                 $(this).parent().find('input.b-product-basket-count').val(),
                 $(this).data('price'),
                 properties.join(", "),
-                script.basket &&  typeof script.basket == 'function' ? script.basket : false
+                script.basket && typeof script.basket == 'function' ? script.basket : false
             );
         });
 
@@ -54,11 +56,12 @@ require([
         $(document).on('click','#delivery input', function(){
             $.post('/delivery/select',{'type':$(this).val()},function(response){
                 if( ! response.error ) {
-                    $('#deliveryRow td.basket-sum').html( response.cost );
-                    $('#totalRow td.basket-sum').find('b').html( response.sum );
+                    $('#deliveryRow').find('td.basket-sum').html( response.cost );
+                    $('#totalRow').find('td.basket-sum').find('b').html( response.sum );
                 }
             }, "json");
         });
+
 
         $('input.basket-count').on('change', function(){
             if ( $(this).val() <= 0 ) $(this).val(1);

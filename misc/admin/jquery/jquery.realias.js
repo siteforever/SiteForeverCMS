@@ -5,7 +5,11 @@
  * @file   admin/jquery/jquery.realias.js
  */
 
-define("admin/jquery/jquery.realias",["jquery"], function($){
+define("admin/jquery/jquery.realias",[
+    "jquery",
+    "i18n",
+    "module/alert"
+], function($,i18n,$alert){
     $.fn.realias = function () {
         return $(this).live('click',function () {
             if ($("#realias_dialog").length == 0) {
@@ -19,7 +23,7 @@ define("admin/jquery/jquery.realias",["jquery"], function($){
                     title:'Пересчет алиасов',
                     buttons: [
                         {
-                            text: $s.i18n('Close'),
+                            text: i18n('Close'),
                             click: function() {
                                 $(this ).dialog('close');
                             }
@@ -27,9 +31,9 @@ define("admin/jquery/jquery.realias",["jquery"], function($){
                     ]
                 });
             }
-            $s.alert('<p>Ведется пересчет...<br />Не закрывайте окно.</p>');
+            $alert('<p>Ведется пересчет...<br />Не закрывайте окно.</p>');
             $.post($(this).attr('href'), function (request) {
-                $s.alert.close();
+                $alert.close();
                 $("#realias_dialog").html(request).dialog("open");
             });
             return false;

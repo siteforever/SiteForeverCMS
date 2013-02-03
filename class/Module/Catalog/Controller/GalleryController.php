@@ -9,10 +9,10 @@ namespace Module\Catalog\Controller;
 use App;
 use Sfcms;
 use Sfcms_Controller;
-use Request;
-use Model_CatalogGallery;
-use Data_Object_Catalog;
-use Data_Object_CatalogGallery;
+use Sfcms\Request;
+use Module\Catalog\Model\GalleryModel;
+use Module\Catalog\Object\Catalog;
+use Module\Catalog\Object\Gallery;
 
 class GalleryController extends Sfcms_Controller
 {
@@ -40,12 +40,31 @@ class GalleryController extends Sfcms_Controller
         );
     }
 
-    public function indexAction()
+    /**
+     * @param int $id
+     *
+     * @return mixed|string
+     */
+    public function indexAction( $id )
     {
         $this->setAjax();
         $this->request->setAjax( true, Request::TYPE_ANY );
 
-        if ( $id = $this->request->get( 'id', Request::INT ) ) {
+        $positions = $this->request->get('positions');
+        if ( $positions ) {
+            $positions = array_flip( $positions );
+            /** @var GalleryModel $catalogGallery */
+            $catalogGallery = $this->getModel('CatalogGallery');
+            $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
+            array_map(function(Gallery $img) use ($positions) {
+                if ( isset( $positions[$img->id] ) ) {
+                    $img->pos = $positions[$img->id];
+                }
+            }, iterator_to_array( $images ));
+            return array('error'=>0);
+        }
+
+        if ( $id ) {
             $this->tpl->cat = $id;
             return $this->getPanel( $id );
         }
@@ -58,10 +77,11 @@ class GalleryController extends Sfcms_Controller
      */
     public function deleteAction()
     {
-        /** @var $catalog_gallery Model_CatalogGallery */
+        /** @var $catalog_gallery GalleryModel */
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', Request::INT );
 
+        /** @var $image Gallery */
         $image = $catalog_gallery->find( $id );
 
         if ( null === $image ) {
@@ -87,10 +107,10 @@ class GalleryController extends Sfcms_Controller
     public function markdefaultAction()
     {
         $this->setAjax();
-        /** @var Model_CatalogGallery $catGalleryModel */
+        /** @var GalleryModel $catGalleryModel */
         $catGalleryModel = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
-        /** @var $image Data_Object_CatalogGallery */
+        /** @var $image Gallery */
         $image = $catGalleryModel->find( $id );
 
         if ( null !== $image ) {
@@ -112,14 +132,17 @@ class GalleryController extends Sfcms_Controller
      */
     public function getPanel( $id )
     {
-        /** @var Model_CatalogGallery $catalogGallery */
+        /** @var GalleryModel $catalogGallery */
         $catalogGallery = $this->getModel('CatalogGallery');
-        $images = $catalogGallery->findAll(
-            array(
-                 'cond'      => ' cat_id = ? ',
-                 'params'    => array( $id ),
-            )
-        );
+        $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
+
+        $hasMain = array_reduce(iterator_to_array( $images ), function($result, Gallery $obj){
+            return $result || (bool) $obj->main;
+        }, false);
+
+        if ( ! $hasMain && $images->count() ) {
+            $images->rewind()->main = 1;
+        }
         $this->tpl->gallery = $images;
         $this->tpl->cat     = $id;
         return $this->tpl->fetch('system:cataloggallery.panel');
@@ -130,8 +153,8 @@ class GalleryController extends Sfcms_Controller
      */
     public function uploadAction()
     {
-//        $this->setAjax();
-//        $this->request->setAjax( true, Request::TYPE_ANY );
+        $this->setAjax();
+        $this->request->setAjax( true, Request::TYPE_ANY );
 
         $max_file_size = $this->config->get( 'catalog.gallery_max_file_size' );
 
@@ -145,7 +168,7 @@ class GalleryController extends Sfcms_Controller
             );
         }
 
-        /** @var $trade Data_Object_Catalog */
+        /** @var $trade Catalog */
         $trade = $this->getModel('Catalog')->find( $prodId );
 
         $images = $trade->Gallery;
@@ -156,7 +179,7 @@ class GalleryController extends Sfcms_Controller
         }
 
         /**
-         * @var Model_CatalogGallery $galleryModel
+         * @var GalleryModel $galleryModel
          */
         $galleryModel = $this->getModel( 'CatalogGallery' );
 
@@ -168,7 +191,7 @@ class GalleryController extends Sfcms_Controller
             foreach ( $images[ 'error' ] as $i => $err ) {
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
-                        /** @var $objImage Data_Object_CatalogGallery */
+                        /** @var $objImage Gallery */
                         $objImage = $galleryModel->createObject();
 
                         if ( $images[ 'size' ][ $i ] <= $max_file_size
@@ -188,6 +211,9 @@ class GalleryController extends Sfcms_Controller
                             $src = $images[ 'tmp_name' ][ $i ];
 
                             $objImage->cat_id = $prodId;
+                            $objImage->hidden = 0;
+                            $objImage->main   = 0;
+                            $objImage->pos    = 100;
                             $objImage->save();
                             $g_id = $objImage->getId();
 
@@ -220,14 +246,15 @@ class GalleryController extends Sfcms_Controller
             }
         }
 
-        if ( $formSent ) {
-            if ( $uploadOk ) {
-                return t('Изображения загружены');
-            }
-            return t('Изображения не загружены');
-        }
-
-        return 'Undefined Error';
+//        if ( $formSent ) {
+//            if ( $uploadOk ) {
+//                return t('Изображения загружены');
+//            }
+//            return t('Изображения не загружены');
+//        }
+//
+//        return 'Undefined Error';
+        return $this->getPanel( $prodId );
     }
 
     /**

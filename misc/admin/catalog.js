@@ -6,20 +6,26 @@
  */
 define([
     "jquery",
-    "siteforever",
     "module/modal",
     "i18n",
+    "module/alert",
+    "admin/catalog/gallery",
+    "admin/catalog/product",
+    "siteforever",
     "jui"
-],function($, $s, Modal, i18n){
+],function( $, Modal, i18n, $alert, _gallery, _product ){
 
-    return {
+    return $.extend(true, _gallery, _product, {
+
         "behavior" : {
 
             "a.edit" : {
                 "click" : function( event, node ) {
-                    $.get( $(node).attr('href'), $.proxy( function( response ){
-                        this.Modal.title("Правка ").body( response).show();
-                    }, this ) );
+                    this.editUrl = $(node).attr('href');
+                    this.Modal.title("Правка ");
+                    $.get( this.editUrl, $.proxy(function( response ){
+                        this.Modal.body( response ).show();
+                    },this));
                     return false;
                 }
             },
@@ -53,7 +59,7 @@ define([
 
             '#catalog_save_position' : {
                 "click" : function( event, node ){
-                    $s.alert('Сохранение...');
+                    $alert('Сохранение...');
                     var pos = [];
                     $('input.trade_pos').each( function(){
                         pos.push( { key: $(this).attr('rel'), val: $(this).val() } );
@@ -94,88 +100,11 @@ define([
                     href = href.replace(/\/$/, '').replace(/(\/goods_filter=[^\/]+?)*$/, '');
                     window.location.href = href;
                 }
-            },
-
-            /**
-             * GALLERY
-             */
-            'a.gallery-item-add' : {
-                "click" : function( event, node ){
-                    if ( ! $('#gallery_dialog').length ) {
-                        $('<div id="gallery_dialog"/>').appendTo('body')
-                            .dialog( this.galleryUploadDialog )
-                            .dialog( "option", "close", $.proxy( function() {
-                                $.get( $('div.a-gallery').data('url'), function( response ) {
-                                    $('div.a-gallery').replaceWith( response );
-                                });
-                            }, this ));
-                    }
-                    $('#gallery_dialog').html($s.i18n('Loading...')).dialog('open');
-                    $.get( $( node ).attr('href'), $.proxy( function ( response ) {
-                        $('#gallery_dialog').html( response );
-                    }, this) );
-                    return false;
-                }
-            },
-
-            // удалить изображение
-            'a.del_gallery_image' : {
-                "click" :  function( event, node ){
-                    if ( ! confirm('Действительно хотите удалить изображение?') ) {
-                        return false;
-                    }
-                    try {
-                        $s.alert('Удаление');
-                        $.get( $(node).attr('href'), function ( response ) {
-                            if ( response.error ) {
-                                $s.alert(response.msg);
-                                return;
-                            }
-                            $('div.a-gallery').replaceWith(response.msg);
-                            $s.alert.close();
-                        },'json');
-                    } catch (e) {
-                        console.error(e.message );
-                    }
-                    return false;
-                }
-            },
-
-            // сделать изображение главным
-            'a.main_gallery_image' : {
-                "click" : function( event, node ){
-                    $.get($(node).attr('href'), function(response){
-                        $('div.a-gallery:first').replaceWith(response);
-                    });
-                    return false;
-                }
             }
         },
 
         "init" : function(){
             this.Modal = new Modal('CatalogEdit');
-        },
-
-
-        "galleryUploadDialog" : {
-            autoOpen : false,
-            title : "Добавить изображения",
-            buttons : {
-                "Загрузить" : function() {
-                    $(this).find('form').ajaxSubmit({
-                        target : '#gallery_dialog',
-                        success : function() {
-                            setTimeout($.proxy(function(){
-                                $(this).dialog('close');
-                            },this), 1000);
-                        }
-                    });
-                },
-                "Закрыть" : function() {
-                    $(this).dialog('close');
-                }
-            }
         }
-
-    }
+    });
 });

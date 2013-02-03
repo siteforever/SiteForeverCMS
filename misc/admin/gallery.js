@@ -5,12 +5,13 @@
  */
 define([
     "jquery",
-    "siteforever",
     "wysiwyg",
     "module/modal",
     "i18n",
+    "module/alert",
+    "siteforever",
     "jui"
-], function($, $s, wysiwyg, Modal){
+], function($, wysiwyg, Modal, i18n, $alert){
     return {
         "behavior" : {
             "#gallery div.gallery_name" : {
@@ -40,7 +41,7 @@ define([
             },
             "a.do_delete" : {
                 "click" : function( event, node ) {
-                    return confirm($s.i18n('Want to delete?'));
+                    return confirm(i18n('Want to delete?'));
                 }
             },
             "a.gallery_picture_edit" : {
@@ -78,9 +79,9 @@ define([
                             if ( response.error == '0' && response.id ) {
                                 $('#gallery li[rel=' + response.id + '] a.gallery_picture_switch' ).html( response.img );
                             } else {
-                                $s.alert( response.msg );
+                                $alert( response.msg );
                             }
-                        } catch(e) { $s.alert(e.message) }
+                        } catch(e) { $alert(e.message) }
                     }, 'json');
                     return false;
                 }
@@ -112,7 +113,7 @@ define([
 
             // Сортировка
             $("#gallery").sortable({
-                stop: function(event, ui) {
+                update: function(event, ui) {
                     var positions = [];
                     $(this).find('li').each(function(){
                         positions.push($(this).attr('rel'));

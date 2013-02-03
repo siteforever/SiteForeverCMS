@@ -14,7 +14,7 @@ define('admin/editor/tinymce',[
                 // Location of TinyMCE script
                 "script_url" :    '/misc/tiny_mce/tiny_mce.js',
                 // General options
-                "width" :           '650',
+                "width" :           '100%',
                 "height" :          '300',
                 "theme" :           'advanced',
                 "skin" :            'default',

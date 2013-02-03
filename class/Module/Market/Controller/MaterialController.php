@@ -15,7 +15,7 @@ class MaterialController extends Sfcms_Controller
     public function access()
     {
         return array(
-            USER_ADMIN => array('admin','jqgrid','edit','save','delete'),
+            USER_ADMIN => array('admin','grid','edit','save','delete'),
         );
     }
 
@@ -45,7 +45,7 @@ class MaterialController extends Sfcms_Controller
      * Реакция на аяксовый запрос от jqGrid
      * @return string
      */
-    public function jqgridAction()
+    public function gridAction()
     {
         /** @var $model Model_Material */
         $model = $this->getModel('Material');

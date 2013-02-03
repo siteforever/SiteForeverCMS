@@ -8,12 +8,12 @@
 namespace Module\News\Controller;
 
 use Sfcms_Controller;
-use Request;
-use Form_Form;
-use Model_News;
-use Model_NewsCategory;
-use Data_Object_News;
-use Data_Object_NewsCategory;
+use Sfcms\Request;
+use Sfcms\Form\Form;
+use Module\News\Model\NewsModel;
+use Module\News\Model\CategoryModel;
+use Module\News\Object\News;
+use Module\News\Object\Category;
 use Sfcms_Http_Exception;
 use Exception;
 
@@ -44,14 +44,14 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Отображать новость на сайте
-     * @param Model_News $model
+     * @param NewsModel $model
      * @return mixed
      */
-    public function getNews( Model_News $model )
+    public function getNews( NewsModel $model )
     {
         $id = intval( $this->request->get('doc' ) );
         $alias = $this->request->get( 'alias' );
-        /** @var $news Data_Object_News */
+        /** @var $news News */
         if ( $id ) {
             $news = $model->find( $id );
         } elseif ( $alias ) {
@@ -78,12 +78,12 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Отображать список новостей на сайте
-     * @param Model_News $model
+     * @param NewsModel $model
      * @return mixed
      */
-    public function getNewsList( Model_News $model )
+    public function getNewsList( NewsModel $model )
     {
-        /** @var Data_Object_NewsCategory $category */
+        /** @var Category $category */
         $category = $model->category->find( $this->page['link'] );
 
         if ( ! $category ) {
@@ -102,7 +102,7 @@ class NewsController extends Sfcms_Controller
             'cond'     => $cond,
             'params'   => $params,
             'limit'    => $paging['limit'],
-            'order'    => '`date` DESC',
+            'order'    => '`date` DESC, `name`',
         ));
 
         $this->tpl->assign(array(
@@ -131,7 +131,7 @@ class NewsController extends Sfcms_Controller
         $this->request->setTitle(t('news','News'));
         $this->app()->addScript('/misc/admin/news.js');
 
-        /** @var model_News $model */
+        /** @var NewsModel $model */
         $model      = $this->getModel('News');
         $category   = $model->category;
 
@@ -181,9 +181,9 @@ class NewsController extends Sfcms_Controller
     public function editAction( )
     {
         $this->request->setTitle(t('news','News edit'));
-        /** @var $model Model_News */
+        /** @var $model NewsModel */
         $model      = $this->getModel('News');
-        /** @var $form Form_Form */
+        /** @var $form Form */
         $form   = $model->getForm();
 
         if ( $form->getPost() ) {
@@ -225,9 +225,9 @@ class NewsController extends Sfcms_Controller
     public function cateditAction( )
     {
         $this->request->setTitle(t('news','News category'));
-        /** @var $newsModel Model_News */
+        /** @var $newsModel NewsModel */
         $newsModel      = $this->getModel( 'News' );
-        /** @var $categoryModel Model_NewsCategory */
+        /** @var $categoryModel CategoryModel */
         $categoryModel  = $this->getModel( 'NewsCategory' );
 
         $form   = $categoryModel->getForm();
@@ -279,7 +279,7 @@ class NewsController extends Sfcms_Controller
         $catId     = $this->request->get('id', Request::INT);
 
         try {
-            /** @var $catObj Data_Object_NewsCategory */
+            /** @var $catObj Category */
             $catObj = $category->find( $catId );
 
             $news = $model->findAll( array(
@@ -287,7 +287,7 @@ class NewsController extends Sfcms_Controller
                 'params'=> array( ':cat_id'=> $catId ),
             ) );
 
-            /** @var $obj Data_Object_News */
+            /** @var $obj News */
             foreach ( $news as $obj ) {
                 $obj->deleted = 1;
             }
@@ -312,7 +312,7 @@ class NewsController extends Sfcms_Controller
         $model      = $this->getModel('News');
         /**/
         $newsId    = $this->request->get('id', Request::INT);
-        /** @var $obj Data_Object_News */
+        /** @var $obj News */
         $obj    = $model->find( $newsId );
 //        $catId = $obj->cat_id;
         $obj->deleted = 1;

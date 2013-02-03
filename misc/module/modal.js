@@ -5,16 +5,16 @@
  * @constructor
  */
 
-define([
+define('module/modal',[
     "jquery",
     "wysiwyg",
+    "i18n",
     "siteforever",
     "twitter",
     "jui",
-    "i18n",
     "jquery/jquery.form",
     "admin/jquery/jquery.filemanager"
-], function( $, wysiwyg, $s ){
+], function( $, wysiwyg, i18n ){
 
     var SfModal = function( id ) {
         this._id = id;
@@ -23,7 +23,7 @@ define([
         }
         this.domnode = $('#'+id);
         this.domnode.on('shown', function(){
-            $('.datepicker').datepicker( $s.datepicker );
+            $('.datepicker').datepicker( window.datepicker );
             $(document).on('dblclick','input.image',$.fn.filemanager.input);
             wysiwyg.init();
         });
@@ -44,8 +44,8 @@ define([
             + '</div>'
             + '<div class="modal-body">{{body}}</div>'
             + '<div class="modal-footer">'
-                + '<a href="#" class="btn btn-primary save">' + $s.i18n('Save changes') + '</a>'
-                + '<a href="#" class="btn" data-dismiss="modal">' + $s.i18n('Close') + '</a>'
+                + '<a href="#" class="btn btn-primary save">' + i18n('Save changes') + '</a>'
+                + '<a href="#" class="btn" data-dismiss="modal">' + i18n('Close') + '</a>'
             + '</div>'
         + '</div>'
 

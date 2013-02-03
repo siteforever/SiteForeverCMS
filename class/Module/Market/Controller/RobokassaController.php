@@ -8,7 +8,7 @@ namespace Module\Market\Controller;
 
 use Sfcms_Controller;
 use Sfcms\Robokassa;
-use Data_Object_Order;
+use Module\Market\Object\Order;
 
 class RobokassaController extends Sfcms_Controller
 {
@@ -31,7 +31,7 @@ class RobokassaController extends Sfcms_Controller
         if ( ! $InvId || ! $OutSum || ! $SignatureValue ) {
             return 'Params not defined';
         }
-        /** @var $order Data_Object_Order  */
+        /** @var $order Order  */
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
 
@@ -74,7 +74,7 @@ class RobokassaController extends Sfcms_Controller
         }
         $this->request->setAjax(true);
 
-        /** @var $order Data_Object_Order  */
+        /** @var $order Order  */
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
 
@@ -119,7 +119,7 @@ class RobokassaController extends Sfcms_Controller
             return 'Params not defined';
         }
         $roboConfig = $this->config->get('service.robokassa');
-        /** @var $order Data_Object_Order  */
+        /** @var $order Order  */
         $orderModel = $this->getModel('Order');
         $order = $orderModel->find( $InvId );
 

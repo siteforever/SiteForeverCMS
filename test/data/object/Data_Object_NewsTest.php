@@ -1,22 +1,27 @@
 <?php
+use Module\News\Object\News;
+use Module\News\Model\NewsModel;
+use Sfcms\Data\Watcher;
+use Sfcms\Model;
 
-class Data_Object_NewsTest extends PHPUnit_Framework_TestCase
+class Object_NewsTest extends PHPUnit_Framework_TestCase
 {
-    /** @var Data_Object_News */
+    /** @var News */
     protected $obj;
-    /** @var Model_News */
+    /** @var NewsModel */
     protected $model;
 
     protected function setUp()
     {
-        Data_Watcher::instance()->clear();
-        $this->model = Sfcms_Model::getModel('News');
+        Watcher::instance()->clear();
+        $this->model = Model::getModel('News');
         $this->obj   = $this->model->find(1);
     }
 
     public function testGetAlias()
     {
         $this->obj->name = 'Привет Мир!';
+        $this->obj->alias = '';
         $this->assertEquals('1-privet-mir', $this->obj->getAlias());
     }
 

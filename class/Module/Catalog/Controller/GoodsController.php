@@ -7,9 +7,11 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Sfcms\Request;
 use Sfcms_Controller;
-use Model_Catalog;
+use Module\Catalog\Model\CatalogModel;
 use Sfcms\JqGrid\Provider;
+use Sfcms\Yandex\Yml;
 
 class GoodsController extends Sfcms_Controller
 {
@@ -21,7 +23,7 @@ class GoodsController extends Sfcms_Controller
     public function access()
     {
         return array(
-            USER_ADMIN => array('admin','jqgrid'),
+            USER_ADMIN => array('admin','grid','edit'),
         );
     }
 
@@ -42,7 +44,7 @@ class GoodsController extends Sfcms_Controller
         $this->request->setTitle(t('goods','Goods search'));
         $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());
 
-        /** @var Model_Catalog */
+        /** @var $modelCatalog CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');
 
         $goods  = $modelCatalog->findGoodsByQuery( $query );
@@ -59,11 +61,14 @@ class GoodsController extends Sfcms_Controller
      */
     public function adminAction()
     {
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
+
         return array(
-            'provider' => $provider,
+            'provider'      => $provider,
+            'category'      => $this->app()->getSession()->get('category') ?: 0,
+            'type'          => $this->app()->getSession()->get('type') ?: -1,
         );
     }
 
@@ -71,11 +76,45 @@ class GoodsController extends Sfcms_Controller
      * Реакция на аяксовый запрос от jqGrid
      * @return string
      */
-    public function jqgridAction()
+    public function gridAction()
     {
-        /** @var $model Model_Catalog */
+        /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
         $provider = $model->getProvider();
         return $provider->getJsonData();
+    }
+
+    /**
+     * @param int $id
+     */
+    public function editAction( $id )
+    {
+        if ( ! $id ) {
+            return 'id not defined';
+        }
+        /** @var $model CatalogModel */
+        $model = $this->getModel('Catalog');
+        $product = $model->find( $id );
+        $form = $model->getForm();
+        $form->setData( $product->attributes );
+        return $form->html(false,false);
+    }
+
+    /**
+     * YandexML export
+     * @return string
+     */
+    public function ymlAction()
+    {
+        $model = $this->getModel('Catalog');
+        $products = $model->findAll('cat = 0 AND hidden = 0 AND deleted = 0 AND protected = 0');
+        $categories = $model->findAll('cat = 1 AND hidden = 0 AND deleted = 0 AND protected = 0');
+
+        $yml = new Yml( $this->app() );
+        $yml->setCollection( $products );
+        $yml->setCategories( $categories );
+
+        $this->request->setAjax(true, Request::TYPE_XML);
+        return $yml->output();
     }
 }

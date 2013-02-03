@@ -1,6 +1,6 @@
 The MIT License
 
-Copyright (c) 2011 Nikolay A. Ermin (http://ermin.ru)
+Copyright (c) 2013 Nikolay A. Ermin (http://siteforever.ru)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

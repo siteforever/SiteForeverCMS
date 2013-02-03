@@ -7,7 +7,7 @@
 
 return array(
     'controllers' => array(
-        'feedback' => array(),
+        'feedback'  => array(),
     ),
     'models'      => array(
     ),

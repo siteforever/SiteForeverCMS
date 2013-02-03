@@ -10,6 +10,6 @@ return array(
         'Page'  => array(),
     ),
     'models' => array(
-        'Page' => 'Model_Page',
+        'Page' => 'Module\\Page\\Model\\PageModel',
     ),
 );

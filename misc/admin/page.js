@@ -6,14 +6,13 @@
 
 define([
     "jquery",
-    "siteforever",
     "module/modal",
     "i18n",
+    "siteforever",
     "jui",
-//    "admin/jquery/jquery.realias",
     "jquery/jquery.form",
     "admin/admin"
-], function($, $s, Modal, i18n) {
+], function($, Modal, i18n) {
 
     return {
         "behavior" : {
@@ -87,14 +86,14 @@ define([
 
             /**
              * Edit page dialog
-             * @type {$s.Modal}
+             * @type {Modal}
              */
             this.editModal = new Modal( 'pageEdit' );
             this.editModal.onSave( this.editSave );
 
             /**
              * Create page dialog
-             * @type {$s.Modal}
+             * @type {Modal}
              */
             this.createModal = new Modal( 'pageCreate' );
             this.createModal.onSave( this.createSave, [this.editModal]);
@@ -128,10 +127,10 @@ define([
                 'module':   $( '#module' ).val(),
                 'name':     $( '#name' ).val(),
                 'parent':   $( '#id' ).val()
-            }).then( $.proxy( function( editModal, $s, response ){
+            }).then( $.proxy( function( editModal, response ){
                 this.hide();
                 editModal.title( i18n('page','Create page') ).body( response ).show();
-            }, this, editModal, $s ) );
+            }, this, editModal ) );
         },
 
         /**

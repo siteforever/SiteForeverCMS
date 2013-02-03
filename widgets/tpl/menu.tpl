@@ -15,7 +15,6 @@
                     {$first = 0}
                 {/if}
             {/foreach}
-
         </ul>
     {/if}
 

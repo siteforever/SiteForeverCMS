@@ -14,6 +14,9 @@ a:hover {
     color: #40df0b;
 }
 
+.clear {
+    clear: both;
+}
 
 ul {
     margin-bottom:1em;
@@ -190,4 +193,22 @@ div.guestbook_answer {
 div.guestbook_title {
     font-style: italic;
     margin-bottom: 15px;
+}
+
+.b-product-properties-item,
+.b-catalog-product-properties-item {
+    margin-bottom: 0.5em;
+}
+.b-product-properties-key,
+.b-catalog-product-properties-key {
+    float: left;
+    font-weight: bold;
+    width: 150px;
+    height: 1.2em;
+    line-height: 1.2em;
+    overflow: hidden;
+}
+.b-product-properties-val,
+.b-catalog-product-properties-val {
+    margin-left: 100px;
 }

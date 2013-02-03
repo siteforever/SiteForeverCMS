@@ -1,25 +1,24 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: user
- * Date: 10.11.11
- * Time: 11:15
- * To change this template use File | Settings | File Templates.
- */ 
-class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
+use Sfcms\Model;
+use Module\Gallery\Object\Category;
+use Module\Gallery\Model\CategoryModel;
+use Module\Gallery\Model\GalleryModel;
+use Sfcms\Data\Watcher;
+
+class Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Data_Object_GalleryCategory
+     * @var Category
      */
     protected $galleryCategory;
 
     /**
-     * @var Model_GalleryCategory
+     * @var CategoryModel
      */
     protected $modelCategory;
 
     /**
-     * @var Model_Gallery
+     * @var GalleryModel
      */
     protected $model;
 
@@ -28,9 +27,9 @@ class Data_Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        Data_Watcher::instance()->clear();
-        $this->modelCategory  = Sfcms_Model::getModel('GalleryCategory');
-        $this->model          = Sfcms_Model::getModel('Gallery');
+        Watcher::instance()->clear();
+        $this->modelCategory  = Model::getModel('GalleryCategory');
+        $this->model          = Model::getModel('Gallery');
 
         $this->galleryCategory = $this->modelCategory->createObject(
             array(

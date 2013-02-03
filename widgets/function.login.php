@@ -18,7 +18,7 @@ function smarty_function_login($params, $smarty)
     $tpl    = $app->getTpl();
     $user   = $app->getAuth()->currentUser();
 
-    $tpl->assign('form', Sfcms_Model::getModel('User')->getLoginForm() );
+    $tpl->assign('form', \Sfcms\Model::getModel('User')->getLoginForm() );
     $tpl->assign('user', $user->getAttributes() );
     if ( $user->perm == USER_GUEST )
     {
@@ -28,5 +28,5 @@ function smarty_function_login($params, $smarty)
         $tpl->assign('auth', '0');
     }
 
-    return $tpl->fetch('users.head_login');;
+    return $tpl->fetch('users.head_login');
 }

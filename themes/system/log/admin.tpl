@@ -1,0 +1,1 @@
+{jqgrid name="logs" provider=$provider rowNum=20 multiselect=1}

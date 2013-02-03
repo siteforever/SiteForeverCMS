@@ -26,4 +26,5 @@ class Module extends SfModule
         return 'Catalog';
     }
 
+
 }

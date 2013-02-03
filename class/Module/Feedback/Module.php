@@ -11,4 +11,12 @@ use Sfcms\Module as SfModule;
 
 class Module extends SfModule
 {
+    /**
+     * @inherit
+     */
+    public static function relatedField()
+    {
+        return 'id';
+    }
+
 }

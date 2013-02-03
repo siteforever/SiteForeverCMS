@@ -7,8 +7,7 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Data_Object_Order;
-use TCPDF;
+use Module\Market\Object\Order;
 use numeric;
 
 class OrderPdfController extends Sfcms_Controller
@@ -21,7 +20,7 @@ class OrderPdfController extends Sfcms_Controller
         $order_id = $this->request->get('order_id', FILTER_VALIDATE_INT);
         $order_model = $this->getModel('Order');
 
-        /** @var $order Data_Object_Order */
+        /** @var $order Order */
         $order = $order_model->find( $order_id );
 
         if ( $this->user->id != $order->user_id ) {
@@ -47,8 +46,9 @@ class OrderPdfController extends Sfcms_Controller
 
     /**
      * Вывести PDF
-     * @param  $account
-     * @param  $rows
+     * @param array $account
+     * @param array $rows
+     * @deprecated
      * @return void
      */
     function outputPdf( array $order, array $rows )

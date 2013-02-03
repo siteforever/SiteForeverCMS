@@ -5,10 +5,10 @@
 namespace Module\Banner\Controller;
 
 use Sfcms_Controller;
-use Request;
-use Model_Banner;
-use Data_Object_Banner;
-use Model_CategoryBanner;
+use Sfcms\Request;
+use Module\Banner\Model\BannerModel;
+use Module\Banner\Object\Banner;
+use Module\Banner\Model\CategoryModel;
 use Sfcms\Exception;
 
 class BannerController extends Sfcms_Controller
@@ -67,12 +67,12 @@ class BannerController extends Sfcms_Controller
      */
     public function redirectBannerAction( $id )
     {
-        /** @var $model Model_Banner */
+        /** @var $model BannerModel */
         $model = $this->getModel( 'Banner' );
         if ( ! $id ) {
             return $this->redirect( $this->router->createLink('error') );
         }
-        /** @var $obj Data_Object_Banner */
+        /** @var $obj Banner */
         $obj = $model->find( $id );
         $obj->count_click++;
         return $this->redirect( $obj->url );
@@ -85,7 +85,7 @@ class BannerController extends Sfcms_Controller
      */
     public function saveCatAction( $id )
     {
-        /** @var Model_CategoryBanner $model */
+        /** @var CategoryModel $model */
         $model = $this->getModel( 'CategoryBanner' );
         $form  = $model->getForm();
 
@@ -100,7 +100,7 @@ class BannerController extends Sfcms_Controller
         }
         if ( $id ) {
             try {
-                /** @var $obj Data_Object_Banner */
+                /** @var $obj Banner */
                 $obj = $model->find( $id );
             } catch ( Exception $e ) {
                 return $e->getMessage();
@@ -117,7 +117,7 @@ class BannerController extends Sfcms_Controller
      */
     public function delCatAction()
     {
-        /** @var $model Model_CategoryBanner */
+        /** @var $model CategoryModel */
         $model = $this->getModel( 'CategoryBanner' );
         $id    = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         if ($id) {
@@ -133,7 +133,7 @@ class BannerController extends Sfcms_Controller
      */
     public function delAction( $id )
     {
-        /** @var $model Model_Banner */
+        /** @var $model BannerModel */
         $model = $this->getModel( 'Banner' );
         $cat   = $model->find( $id );
         if ( $cat ) {
@@ -155,9 +155,9 @@ class BannerController extends Sfcms_Controller
     public function catAction( $id )
     {
         $this->app()->addScript('/misc/admin/banner.js');
-        /** @var $model Model_Banner */
+        /** @var $model BannerModel */
         $model    = $this->getModel( 'Banner' );
-        /** @var $category Model_CategoryBanner */
+        /** @var $category CategoryModel */
         $category = $this->getModel( 'CategoryBanner' );
 
         if ( $id ) {
@@ -192,7 +192,7 @@ class BannerController extends Sfcms_Controller
      */
     public function editAction()
     {
-        /** @var Model_Banner $model */
+        /** @var BannerModel $model */
         $model = $this->getModel( 'Banner' );
         $form  = $model->getForm();
         $this->request->setAjax( 1, Request::TYPE_ANY );
@@ -228,7 +228,7 @@ class BannerController extends Sfcms_Controller
      */
     public function saveAction()
     {
-        /** @var Model_Banner $model */
+        /** @var BannerModel $model */
         $model = $this->getModel( 'Banner' );
         $form  = $model->getForm();
         if ($form->getPost()) {

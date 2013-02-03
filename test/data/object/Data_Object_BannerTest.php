@@ -2,16 +2,20 @@
 /**
  * Тест объекта каталога
  */
+use Sfcms\Data\Watcher;
+use Module\Banner\Model\BannerModel;
+use Sfcms\Data\Exception;
+
 class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Model_Banner
+     * @var BannerModel
      */
     public $model   = null;
 
     protected function setUp()
     {
-        Data_Watcher::instance()->clear();
+        Watcher::instance()->clear();
         $this->model    =  app::getInstance()->getModel('Banner');
         $_SERVER['HTTP_HOST'] = 'example.com';
     }
@@ -58,7 +62,7 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
 
         try {
             $banner->block;
-        } catch( Data_Exception $e ) {
+        } catch( Exception $e ) {
             return true;
         }
         $this->fail('Expected exception');

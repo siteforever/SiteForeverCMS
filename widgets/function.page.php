@@ -7,14 +7,14 @@
 
 /**
  * @param  $params['id']
- * @return void
+ * @return string
  */
 function smarty_function_page( $params )
 {
     if ( ! isset( $params['id'] ) || ! is_int( $params['id'] ) ) {
         return 'Using {page id=57}';
     }
-    $model   = Sfcms_Model::getModel('Page');
+    $model   = \Sfcms\Model::getModel('Page');
     $page   = $model->find( $params['id'] );
 
     if ( ! $page ) {

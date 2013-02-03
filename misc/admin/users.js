@@ -6,10 +6,9 @@
 
 define([
     "jquery",
-    "siteforever",
     "module/modal",
-    "i18n"
-], function( $, $s, Modal, i18n ){
+    "siteforever"
+], function( $, Modal ){
     return {
         "behavior" : {
             "a.edit" : {

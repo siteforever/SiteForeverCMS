@@ -42,9 +42,9 @@ function smarty_function_lastnews( $params, $smarty )
     }
 
     /**
-     * @var model_news $model
+     * @var \Module\News\Model\NewsModel $model
      */
-    $model = Sfcms_Model::getModel('News');
+    $model = \Sfcms\Model::getModel('News');
 
     $list = $model->findAll( join( " AND ", $where ), $param, $sort, $params[ 'limit' ] );
 

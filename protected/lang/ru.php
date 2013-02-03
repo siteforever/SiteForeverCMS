@@ -7,8 +7,11 @@ return array_merge(
 
         'Home'                                      => 'Главная',
         'Exit'                                      => 'Выход',
+        'Save & close'                              => 'Cохранить и закрыть',
         'Close'                                     => 'Закрыть',
         'Save changes'                              => 'Сохранить изменения',
+
+        'Initialisation'                            => 'Инициализация',
 
         'Main'                                      => 'Главная',
         'Inner'                                     => 'Внутренняя',
@@ -53,7 +56,7 @@ return array_merge(
         'There are no sections'                     => 'Пока нет разделов',
 
 
-        // Manufacturers
+        // Manufacturer
         'Manufacturers'                             => 'Производители',
         'Manufacturer'                              => 'Производитель',
         'Create manufacturer'                       => 'Создать производителя',

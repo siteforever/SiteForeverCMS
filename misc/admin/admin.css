@@ -35,6 +35,19 @@ small {
     font-size: 80% !important;
 }
 
+
+#loading-application {
+    position: absolute;
+}
+    #loading-application div {
+        position: relative;
+        top: 50%;
+        margin-top: -0.5em;
+        text-align: center;
+        font-size: 30px;
+        color: #fff;
+    }
+
 .form-horizontal .control-group {
     margin-bottom: 10px;
 }
@@ -182,14 +195,26 @@ input.image {
 .a-gallery {
 
 }
+    .a-gallery ul {
+        margin-left: 0;
+    }
+
     .a-gallery-item {
+        position: relative;
         float: left;
         width: 100px;
         height: 120px;
         border: 1px #999 solid;
+        background: #ffffff;
         margin: 0 10px 10px 0;
         overflow: hidden;
     }
+        .a-gallery-item-panel {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100px;
+        }
 
     .a-gallery-item-add {
         height: 100px;
@@ -231,6 +256,43 @@ div.siteforeverModal {
     /*margin-top: -20%;*/
 }
 
+.goods-panel {
+    margin-bottom: 10px;
+}
+.goods-panel input, .goods-panel select {
+    margin-bottom: 0;
+}
+
+.blockOverlay {
+    background: #000000;
+    opacity: 0.4;
+}
+.blockMsg {
+    background: #000000;
+    border: none;
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 15px;
+}
+
+fieldset {
+    border: 1px #E5E5E5 solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+fieldset legend {
+    display: inline-block;
+    width: auto;
+    border: none;
+    margin: 0;
+    font-size: 20px;
+    line-height: normal;
+    padding: 0;
+}
+
 .ui-jqgrid .ui-jqgrid-btable th,
 .ui-jqgrid .ui-jqgrid-btable td,
 .ui-jqgrid .ui-jqgrid-sortable,
@@ -254,3 +316,17 @@ div.siteforeverModal {
     padding: 0;
 }
 .ui-jqgrid .ui-pg-button:hover { padding: 1px 0 0 1px !important; }
+
+.ui-search-toolbar input[type=text] {
+    height: 29px !important;
+}
+
+.ui-widget-overlay {
+    background: #000;
+    opacity: .8;
+}
+
+#searchcntfbox_products_list select {
+    width: 120px;
+    margin-bottom: 0;
+}
