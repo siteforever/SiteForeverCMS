@@ -1,0 +1,43 @@
+{
+    "name" : "keltanas/SiteForeverCMS",
+    "keywords": [ "siteforever", "cms", "keltanas" ],
+    "homepage": "http://siteforever.ru",
+    "license": "MIT",
+    "authors" : [
+        {
+            "name" : "Nikolay A. Ermin",
+            "email" : "keltanas@gmail.com",
+            "homepage": "http://ermin.ru",
+            "role": "Developer"
+        }
+    ],
+    "support" : {
+        "email" : "keltanas@gmail.com",
+        "source" : "https://github.com/keltanas/SiteForeverCMS",
+        "issues" : "https://github.com/keltanas/SiteForeverCMS/issues",
+        "wiki" : "http://wiki.siteforever.ru"
+    },
+    "autoload": {
+        "psr-0" : {
+            "" : "class/",
+            "Sfcms" : "class/",
+            "Module" : "class/",
+            "Std" : "class/"
+        },
+        "files" : ["class/Functions.php","class/App.php"]
+    },
+    "require-dev": {
+        "phpunit/php-invoker": "1.1.*",
+        "phpunit/phpunit": "3.7.*",
+        "phpunit/phpunit-mock-objects": "1.2.*",
+        "phpunit/php-code-coverage": "1.2.*",
+        "phpunit/php-file-iterator": "1.3.*"
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": "2.1.*",
+        "smarty/smarty": "3.1.*",
+        "firephp/firephp-core": "dev-master",
+        "ccampbell/chromephp": "dev-master"
+    }
+}

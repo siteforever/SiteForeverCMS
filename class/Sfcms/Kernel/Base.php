@@ -7,8 +7,6 @@
 
 namespace Sfcms\Kernel;
 
-require_once 'Functions.php';
-
 use Sfcms\Assets;
 use Sfcms\Controller\Resolver;
 use Sfcms\Model;
@@ -183,7 +181,7 @@ abstract class Base
     public function __construct( $cfg_file = null )
     {
         header('X-Powered-By: SiteForeverCMS');
-        self::autoloadRegister(array($this,'autoload'));
+//        self::autoloadRegister(array($this,'autoload'));
 
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
@@ -542,8 +540,9 @@ abstract class Base
     public function hasModule( $name )
     {
         // todo Реализодвать нормально, пока не используется
-        return false;
-        if ( null === $this->_modules ) $this->loadModulesConfigs();
+        if ( null === $this->_modules ) {
+            $this->loadModulesConfigs();
+        }
         return array_reduce($this->_modules,function( $result, $item ) use ( $name ) {
             return $result || ( $item == $name );
         }, false);
@@ -558,13 +557,13 @@ abstract class Base
     {
         if ( ! $this->_modules_config ) {
             $_ = $this;
-            $module_model = $this->getModel('\\Module\\System\\Model\\ModuleModel');
+            $module_model = $this->getModel('\Module\System\Model\ModuleModel');
             $modules = $module_model->findAll(array('order'=>'pos'));
 
-            /** @var $module Module */
+            /** @var $module \Module\System\Object\Module */
             array_map(function( $module ) use ( $_ ) {
                 if ( $module->active ) {
-                    $mod_config = require_once $module->path.'/config.php';
+                    $mod_config = require_once 'class/'.$module->path.'/config.php';
                     $_->_modules_config[ $module->name ] = $mod_config;//['controllers'];
                 }
             },$modules->getObjects());
@@ -631,43 +630,37 @@ abstract class Base
     }
 
 
-    /**
-     * @static
-     * @param string $className
-     * @return boolean
-     * @throws \Sfcms\Autoload\Exception
-     */
-    static public function autoload( $className )
-    {
-        static $class_count = 0;
-
-        if ( preg_match('/^smarty/i', $className) ) {
-            return false;
-        }
-
-//        if ( preg_match('/^()/', $className) ) {
-//            $className = strtolower( $className );
+//    /**
+//     * @static
+//     * @param string $className
+//     * @return boolean
+//     * @throws \Sfcms\Autoload\Exception
+//     */
+//    static public function autoload( $className )
+//    {
+//        static $class_count = 0;
+//
+//        if ( preg_match('/^smarty/i', $className) ) {
+//            return false;
 //        }
-
-//        debugVar( $className, 'autoload::className' );
-
-        if( in_array( $className, array( 'finfo' ) ) ) {
-            return false;
-        }
-
-        // PEAR format autoload
-        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
-        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
-        $file       = $className . '.php';
-
-        if( @include_once $file ) {
-            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
-                $class_count ++;
-            }
-            return true;
-        }
-        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
-    }
+//
+//        if( in_array( $className, array( 'finfo' ) ) ) {
+//            return false;
+//        }
+//
+//        // PEAR format autoload
+//        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
+//        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
+//        $file       = $className . '.php';
+//
+//        if( @include_once $file ) {
+//            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
+//                $class_count ++;
+//            }
+//            return true;
+//        }
+//        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
+//    }
 
     /**
      * Run under development environment

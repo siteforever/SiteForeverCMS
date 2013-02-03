@@ -29,7 +29,6 @@ class Resolver extends Component
      * в каком файле и пространстве имен он находится.
      *
      * @return array
-     * @throws RuntimeException
      */
     public function resolveController( $controller = null, $action = null, $module = 'default' )
     {
@@ -60,13 +59,11 @@ class Resolver extends Component
         }
 
         if ( isset( $config['module'] ) ) {
-            $controllerClass = "Module\\".ucfirst(strtolower($config['module']))."\\"
-                             . str_replace( '_', '\\', $controllerClass ).'Controller';
-            require_once str_replace( '\\', DIRECTORY_SEPARATOR, trim( $controllerClass, '\\' ) ).'.php';
-        } elseif ( isset( $config['file'] ) ) {
-            require_once $config['file'];
-        } else {
-            require_once str_replace(array('_','\\'), DIRECTORY_SEPARATOR, $controllerClass).'.php';
+            $controllerClass = sprintf(
+                'Module\\%s\\%sController',
+                ucfirst(strtolower($config['module'])),
+                str_replace( '_', '\\', $controllerClass )
+            );
         }
 
         return array('controller' => $controllerClass, 'action' => $action);

@@ -12,7 +12,7 @@
                 <span class="brand">SiteForeverCMS</span>
                 <ul class="nav">
                     <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {t}Goto site{/t}</a></li>
-                    <li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>
+                    {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>*}
                 </ul>
                 <ul class="nav pull-right">
                     <li>{a href="users/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>

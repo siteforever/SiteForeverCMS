@@ -17,13 +17,11 @@ define('TEST', true);
 $_SERVER['HTTP_HOST'] = 'test';
 $_SERVER['REQUEST_METHOD'] = 'TEST';
 
-require_once 'PHPUnit/Autoload.php';
+//require_once 'PHPUnit/Autoload.php';
+require_once SF_PATH.'/vendor/autoload.php';
 
 $_REQUEST['id'] = 1;
 $_REQUEST['route']  = 'index';
 
-// автозагрузка классов
-require_once '../class/App.php';
-
-$app    = new App( array('protected/config/development.php','protected/config/test.php') );
+$app    = new App( array(SF_PATH.'/protected/config/development.php',SF_PATH.'/protected/config/test.php') );
 $app->init();

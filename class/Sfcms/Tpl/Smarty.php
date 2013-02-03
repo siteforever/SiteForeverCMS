@@ -22,7 +22,6 @@ class Smarty extends Driver
             'ext'       => 'tpl',
             'compile_check' => true,
             'caching'   => false,
-            'version'   => '3.1.11',
             'cache'     => array(
                 'livetime' => 84600,
             ),
@@ -30,11 +29,6 @@ class Smarty extends Driver
         $this->config = $this->app()->getConfig('template');
 
         // класс шаблонизатора
-        $ver = $this->config['version'];
-        if( ! $ver ) throw new Exception(t('Smarty version not defined'));
-
-        require_once sprintf( 'Smarty-%s/libs/Smarty.class.php', $ver );
-
         $this->engine = new \Smarty(); // link (used php5)
         $this->engine->cache_lifetime = $this->config['cache']['livetime'];
         $this->ext    = $this->config['ext'];

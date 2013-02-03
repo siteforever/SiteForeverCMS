@@ -2,11 +2,8 @@
 // директории для подключения
 $include_list   = array();
 if ( SF_PATH != ROOT ) {
-    $include_list[] = ROOT.DIRECTORY_SEPARATOR.'class';
     $include_list[] = ROOT;
 }
-$include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'class';
-$include_list[] = SF_PATH.DIRECTORY_SEPARATOR.'vendors';
 $include_list[] = SF_PATH;
 $include_list[] = str_replace('.:', '', get_include_path());
 set_include_path( join( PATH_SEPARATOR, $include_list ));
@@ -14,8 +11,6 @@ set_include_path( join( PATH_SEPARATOR, $include_list ));
 set_error_handler( function ( $errno, $errstr) {
     throw new Exception( $errstr, $errno );
 }, E_WARNING & E_NOTICE & E_DEPRECATED & E_USER_WARNING & E_USER_NOTICE & E_ERROR );
-
-require_once 'Sfcms/Kernel/Base.php';
 
 use Sfcms\Kernel\Base;
 use Sfcms\Model;

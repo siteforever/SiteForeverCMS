@@ -65,8 +65,8 @@ class Structure extends Route
     {
 //        $className = Module::getModuleClass( ucfirst( strtolower( $page->controller ) ) );
         $className = Module::getModuleClass( $page->controller );
-        $field = $className::relatedField();
-        $id = $page->get( $field );
+        $field  = $className::relatedField();
+        $id     = $page->get( $field );
         return array(
             'controller' => $page->controller,
             'action'     => $page->action,
