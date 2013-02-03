@@ -352,4 +352,5 @@ class Provider
         $className = 'Sfcms\\JqGrid\\Format\\'.ucfirst( strtolower($name) );
         return new $className( $params );
     }
+
 }

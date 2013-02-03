@@ -38,6 +38,29 @@
         "symfony/symfony": "2.1.*",
         "smarty/smarty": "3.1.*",
         "firephp/firephp-core": "dev-master",
-        "ccampbell/chromephp": "dev-master"
+        "ccampbell/chromephp": "dev-master",
+        "tonytomov/jqGrid" : "4.4.4"
+    },
+    "repositories":[
+        {
+            "type":"package",
+            "package":{
+                "name":"tonytomov/jqGrid",
+                "version":"4.4.4",
+                "source":{
+                    "type":"git",
+                    "url":"https://github.com/tonytomov/jqGrid",
+                    "reference":"master"
+                }
+            }
+        }
+    ],
+    "scripts": {
+        "post-install-cmd": [
+            "Sfcms\\JqGrid\\ComposerHandler::installAssets"
+        ],
+        "post-update-cmd": [
+            "Sfcms\\JqGrid\\ComposerHandler::installAssets"
+        ]
     }
 }

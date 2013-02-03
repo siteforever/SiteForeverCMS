@@ -40,22 +40,6 @@ function smarty_function_head( $params )
         $head[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\" />";
     }
 
-    if ( $request->get('admin') ) {
-        $app->addStyle('/misc/jqGrid/css/ui.jqgrid.css');
-    }
-
-    $useLess = false;
-    $head = array_merge( $head, array_map(function($style) use ( &$useLess, $untiCache ) {
-        if ( preg_match('/.*\.css$/', $style) ) {
-            return "<link type=\"text/css\" rel=\"stylesheet\" href=\"{$style}?{$untiCache}\">";
-        }
-        if ( preg_match('/.*\.less$/', $style) ) {
-            $useLess = true;
-            return "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"{$style}?{$untiCache}\">";
-        }
-        return '';
-    }, $app->getStyle()) );
-
     $rjsConfig = array(
         'baseUrl'=> '/misc',
         'shim' => array(
@@ -89,9 +73,11 @@ function smarty_function_head( $params )
             'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
             'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (App::isDebug() ? '.full' : '.min'),
 //            'jqgrid'  => 'admin/jquery/jqgrid',
-            'jqgrid'  => 'admin/jquery/jqgrid-min',
             'controller' => 'admin/'.$request->getController(),
         );
+
+        $rjsConfig['map']['*']['jqgrid'] = '../static/admin/jquery/jqgrid/jqgrid';
+        $app->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
 
         $head[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
 
@@ -111,6 +97,19 @@ function smarty_function_head( $params )
         $head[] = "<script type='text/javascript' src='/misc/require-jquery-min.js' data-main='site'></script>";
     }
 
+
+    // Подключение стилей в заголовок
+    $useLess = false;
+    $head = array_merge( $head, array_map(function($style) use ( &$useLess, $untiCache ) {
+        if ( preg_match('/.*\.css$/', $style) ) {
+            return "<link type=\"text/css\" rel=\"stylesheet\" href=\"{$style}?{$untiCache}\">";
+        }
+        if ( preg_match('/.*\.less$/', $style) ) {
+            $useLess = true;
+            return "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"{$style}?{$untiCache}\">";
+        }
+        return '';
+    }, $app->getStyle()) );
 
 
     if ( $useLess ) {

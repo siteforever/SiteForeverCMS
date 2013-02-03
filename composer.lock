@@ -1,5 +1,5 @@
 {
-    "hash": "e90e1fb9e2a19bce20f0ba6920181585",
+    "hash": "86f7c42c88acbc6a62098f404851b793",
     "packages": [
         {
             "name": "ccampbell/chromephp",
@@ -279,6 +279,16 @@
             "keywords": [
                 "framework"
             ]
+        },
+        {
+            "name": "tonytomov/jqGrid",
+            "version": "4.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tonytomov/jqGrid",
+                "reference": "master"
+            },
+            "type": "library"
         },
         {
             "name": "twig/twig",

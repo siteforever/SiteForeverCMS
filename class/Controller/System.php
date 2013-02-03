@@ -52,39 +52,4 @@ class Controller_System extends Sfcms_Controller
         $this->request->setTitle(t('Assembly'));
     }
 
-
-    /**
-     * Сборка jqgrid модуля
-     */
-    public function jqgridAction()
-    {
-        $modules = array(
-            'jqGrid/js/i18n/grid.locale-ru',
-            'jqGrid/js/grid.base',
-            'jqGrid/js/grid.common',
-            'jqGrid/js/grid.formedit',
-            'jqGrid/js/grid.inlinedit',
-            'jqGrid/js/grid.celledit',
-            'jqGrid/js/grid.subgrid',
-            'jqGrid/js/grid.treegrid',
-            'jqGrid/js/grid.grouping',
-            'jqGrid/js/grid.custom',
-            'jqGrid/js/grid.tbltogrid',
-            'jqGrid/js/grid.import',
-            'jqGrid/js/jquery.fmatter',
-            'jqGrid/js/JsonXml',
-            'jqGrid/js/grid.jqueryui',
-            'jqGrid/js/grid.filter',
-//            'jquery/jquery.jqGrid',
-        );
-        $assemble = array_map(function($mod){
-            return file_get_contents( SF_PATH .'/misc/'.$mod.'.js' )."\n"
-                .('jquery/jquery.jqGrid' != $mod ? sprintf('define("%s",function(){});',$mod)."\n" : '' );
-        },$modules);
-
-        $content = join("\n",$assemble);
-//        $content = Sfcms::html()->jsMin( $content );
-        file_put_contents(SF_PATH.'/misc/admin/jquery/jqgrid.js', $content);
-        return 'done';
-    }
 }
