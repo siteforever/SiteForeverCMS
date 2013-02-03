@@ -8,6 +8,7 @@ namespace Sfcms\Data;
 
 use Sfcms\Data\Relation\Exception;
 use Sfcms\Data\Collection;
+use Sfcms\Data\Object;
 use Sfcms\Db\Criteria;
 use Sfcms\Model;
 
@@ -54,6 +55,7 @@ abstract class Relation
      * @param $keys
      *
      * @return Criteria
+     * @throws Exception
      */
     protected function prepareCond( $keys )
     {

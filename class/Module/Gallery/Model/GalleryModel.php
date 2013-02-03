@@ -16,7 +16,7 @@ class GalleryModel extends Model
     public function relation()
     {
         return array(
-            'Category' => array(self::BELONGS, 'Category', 'category_id'),
+            'Category' => array(self::BELONGS, 'GalleryCategory', 'category_id'),
         );
     }
 

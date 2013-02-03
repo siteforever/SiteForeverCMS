@@ -34,6 +34,7 @@
  */
 namespace Module\Catalog\Object;
 
+use Module\Catalog\Model\CatalogModel;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms\Data\Object;
@@ -57,7 +58,9 @@ class Catalog extends Object
                 return $this->get('path');
             }
         }
-        $path = $this->getModel()->createSerializedPath( $this->getId() );
+        /** @var $model CatalogModel */
+        $model = $this->getModel('Catalog');
+        $path = $model->createSerializedPath( $this->getId() );
         return $path;
     }
 
@@ -213,7 +216,7 @@ class Catalog extends Object
      * Вернет список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int('id', 11, true, null, true),
@@ -259,7 +262,7 @@ class Catalog extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'catalog';
     }

@@ -42,7 +42,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function get( $key )
     {
-        $method = 'get'.$key;
+        $method = 'get'.ucfirst(strtolower($key));
         if ( method_exists( $this, $method ) && 'id' != $key ) {
             return $this->$method();
         } else if ( isset( $this->data[ $key ] ) ) {

@@ -46,7 +46,7 @@ class CatalogModel extends Model
             'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
             'Material'      => array( self::BELONGS, 'Material', 'material' ),
             'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
-            'Page'          => array( self::HAS_ONE, 'Page', 'link' ),
+            'Page'          => array( self::HAS_ONE, 'Page', 'link', 'where' => array('controller' => 'catalog') ),
             'Properties'    => array( self::HAS_MANY, 'ProductProperty', 'product_id', 'with'=>array('Field')),
             'Type'          => array( self::BELONGS, 'ProductType', 'type_id' ),
         );

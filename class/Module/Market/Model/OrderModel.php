@@ -11,9 +11,9 @@ namespace Module\Market\Model;
 use Sfcms;
 use Sfcms\Model;
 use Sfcms\Basket\Base as Basket;
-use Data_Object_Delivery;
-use Data_Object_Order;
-use Data_Object_OrderPosition;
+use Module\Market\Object\Delivery;
+use Module\Market\Object\Order;
+use Module\Market\Object\OrderPosition;
 use Forms_Basket_Address;
 
 class OrderModel extends Model
@@ -54,14 +54,14 @@ class OrderModel extends Model
     /**
      * Создать заказ
      * @param Basket $basket
-     * @param Data_Object_Delivery $delivery
-     * @return bool|Data_Object_Order
+     * @param Delivery $delivery
+     * @return bool|Order
      */
     public function createOrder( Basket $basket, Forms_Basket_Address $form, Sfcms\Delivery $delivery )
     {
         $basketData = $basket->getAll();
 
-        /** @var $obj Data_Object_Order */
+        /** @var $obj Order */
         $obj    = $this->createObject();
         $obj->attributes = $form->getData();
 
@@ -97,7 +97,7 @@ class OrderModel extends Model
             $total_count = 0;
             $total_summa = 0;
             foreach( $basketData as $data ) {
-                /** @var $position Data_Object_OrderPosition */
+                /** @var $position OrderPosition */
                 $position   = $orderPositionModel->createObject();
                 $position->attributes = array(
                     'ord_id'    => $obj->getId(),
@@ -122,7 +122,7 @@ class OrderModel extends Model
             $this->app()->getTpl()->assign(array(
                 'order'     => $obj,
                 'sitename'  => $this->config->get('sitename'),
-                'ord_link'  => $this->app()->getConfig('siteurl').$obj->getUrl(),
+                'ord_link'  => $this->app()->getConfig()->get('siteurl').$obj->getUrl(),
                 'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
                 'date'      => date('H:i d.m.Y'),
                 'order_n'   => $obj->getId(),

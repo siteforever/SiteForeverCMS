@@ -7,8 +7,8 @@ namespace Module\Page\Controller;
 
 use Sfcms_Controller;
 use Module\Page\Model\PageModel;
-use Data_Object_Page;
-use Form_Form;
+use Module\Page\Object\Page;
+use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
 use Sfcms\Request;
 
@@ -143,13 +143,13 @@ class PageController extends Sfcms_Controller
         $module    = $this->request->get( 'module' );
 
         // родительский раздел
-        /** @var $parent Data_Object_Page */
+        /** @var $parent Page */
         $parent = null;
         if ( $parent_id ) {
             $parent = $model->find( $parent_id );
         }
 
-        /** @var $form Form_Form */
+        /** @var $form Form */
         $form = $model->getForm();
 
         $form->setData(
@@ -219,7 +219,7 @@ class PageController extends Sfcms_Controller
 
         if ($form->getPost()) {
             if ($form->validate()) {
-                /** @var $obj Data_Object_Page */
+                /** @var $obj Page */
                 if ( $id = $form->getField('id')->getValue() ) {
                     $obj = $model->find( $id );
                     $obj->attributes = $form->getData();
@@ -284,11 +284,10 @@ class PageController extends Sfcms_Controller
     /**
      * Меняет св-во hidden у страницы
      */
-    public function hiddenAction()
+    public function hiddenAction( $id )
     {
-        $id   = $this->request->get( 'id' );
         $page = $this->getModel( 'Page' )->find( $id );
-        $page->set( 'hidden', 0 == $page->get( 'hidden' ) ? 1 : 0 );
+        $page->hidden = intval( ! $page->hidden );
         $page->save();
         return array( 'page' => $page );
     }
@@ -305,7 +304,7 @@ class PageController extends Sfcms_Controller
 
         $return = array();
 
-        /** @var Data_Object_Page $page */
+        /** @var Page $page */
         foreach ( $pages as $page ) {
             try {
                 $page->save();

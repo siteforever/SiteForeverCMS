@@ -22,7 +22,7 @@ class Field extends Object
      * Create field list
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new TField\Int( 'id', 11, false, null, true ),
@@ -38,7 +38,7 @@ class Field extends Object
      * DB table name
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'product_field';
     }

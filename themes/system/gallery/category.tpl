@@ -13,14 +13,17 @@
             {else}
                 <a href="{$img.link|default:$img.image}" title="{$img.name}" target="{$category.target}">
             {/if}
-        {/if} {* _none *}
-            {thumb src=$img.image alt=$img.name width=$category.thumb_width height=$category.thumb_height method=$category.thumb_method color=$category.color}
+        {/if}
+
+        {thumb src=$img.image alt=$img.name width=$category.thumb_width height=$category.thumb_height method=$category.thumb_method color=$category.color}
+
         {if $category.target != '_none'}</a>{/if} {* _none *}
+
         {if $img.name}
             {if $category.target == '_self'}
-            <a href="{$img->alias}">{$img.name}</a>
+                <a href="{$img->url}">{$img.name}</a>
             {else}
-            <div>{$img.name}</div>
+                <div>{$img.name}</div>
             {/if}
         {/if}
         </li>

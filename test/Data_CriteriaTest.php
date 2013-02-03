@@ -12,7 +12,7 @@ class TestTable extends \Sfcms\Data\Table
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'test';
     }
@@ -21,7 +21,7 @@ class TestTable extends \Sfcms\Data\Table
      * Создаст список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int('id'),

@@ -11,8 +11,8 @@ use Sfcms;
 use Sfcms_Controller;
 use Sfcms\Request;
 use Module\Catalog\Model\GalleryModel;
-use Data_Object_Catalog;
-use Data_Object_CatalogGallery;
+use Module\Catalog\Object\Catalog;
+use Module\Catalog\Object\Gallery;
 
 class GalleryController extends Sfcms_Controller
 {
@@ -56,7 +56,7 @@ class GalleryController extends Sfcms_Controller
             /** @var GalleryModel $catalogGallery */
             $catalogGallery = $this->getModel('CatalogGallery');
             $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
-            array_map(function(Data_Object_CatalogGallery $img) use ($positions) {
+            array_map(function(Gallery $img) use ($positions) {
                 if ( isset( $positions[$img->id] ) ) {
                     $img->pos = $positions[$img->id];
                 }
@@ -81,7 +81,7 @@ class GalleryController extends Sfcms_Controller
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', Request::INT );
 
-        /** @var $image Data_Object_CatalogGallery */
+        /** @var $image Gallery */
         $image = $catalog_gallery->find( $id );
 
         if ( null === $image ) {
@@ -110,7 +110,7 @@ class GalleryController extends Sfcms_Controller
         /** @var GalleryModel $catGalleryModel */
         $catGalleryModel = $this->getModel( 'CatalogGallery' );
         $id              = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
-        /** @var $image Data_Object_CatalogGallery */
+        /** @var $image Gallery */
         $image = $catGalleryModel->find( $id );
 
         if ( null !== $image ) {
@@ -136,7 +136,7 @@ class GalleryController extends Sfcms_Controller
         $catalogGallery = $this->getModel('CatalogGallery');
         $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
 
-        $hasMain = array_reduce(iterator_to_array( $images ), function($result, Data_Object_CatalogGallery $obj){
+        $hasMain = array_reduce(iterator_to_array( $images ), function($result, Gallery $obj){
             return $result || (bool) $obj->main;
         }, false);
 
@@ -168,7 +168,7 @@ class GalleryController extends Sfcms_Controller
             );
         }
 
-        /** @var $trade Data_Object_Catalog */
+        /** @var $trade Catalog */
         $trade = $this->getModel('Catalog')->find( $prodId );
 
         $images = $trade->Gallery;
@@ -191,7 +191,7 @@ class GalleryController extends Sfcms_Controller
             foreach ( $images[ 'error' ] as $i => $err ) {
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
-                        /** @var $objImage Data_Object_CatalogGallery */
+                        /** @var $objImage Gallery */
                         $objImage = $galleryModel->createObject();
 
                         if ( $images[ 'size' ][ $i ] <= $max_file_size

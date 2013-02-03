@@ -655,10 +655,6 @@ abstract class Base
             return false;
         }
 
-        if( $className == 'register' ) {
-            throw new \Sfcms\Autoload\Exception( 'Autoload Register class' );
-        }
-
         // PEAR format autoload
         $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
         $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );

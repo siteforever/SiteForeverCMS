@@ -1,17 +1,21 @@
 <?php
+use Module\Market\Object\Order;
+use Module\Market\Model\OrderModel;
+use Sfcms\Model;
+use Sfcms\Data\Watcher;
 
 class Data_Object_OrderTest extends PHPUnit_Framework_TestCase
 {
-    /** @var Model_Order */
+    /** @var OrderModel */
     protected $model;
 
-    /** @var Data_Object_Order */
+    /** @var Order */
     protected $obj;
 
     protected function setUp()
     {
-        /** @var Model_Order */
-        $this->model = Sfcms_Model::getModel('Order');
+        /** @var OrderModel */
+        $this->model = Model::getModel('Order');
 
         $this->obj  = $this->model->createObject(array(
             'id'    => 100500,
@@ -23,7 +27,7 @@ class Data_Object_OrderTest extends PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        Data_Watcher::instance()->clear();
+        Watcher::instance()->clear();
     }
 
 

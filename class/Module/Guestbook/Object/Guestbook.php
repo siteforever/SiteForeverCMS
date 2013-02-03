@@ -28,7 +28,7 @@ class Guestbook extends Object
      * Create field list
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int( 'id', 11, false, null, true ),
@@ -49,7 +49,7 @@ class Guestbook extends Object
      * DB table name
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'guestbook';
     }

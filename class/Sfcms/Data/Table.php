@@ -33,82 +33,12 @@ abstract class Table extends Component
     protected static $fields   = array();
 
     /**
-     * Построение запроса для создания таблицы
-     * @return string
-     */
-    public function getCreateTable()
-    {
-        $ret = sprintf("CREATE TABLE `%s` (\n\t", static::getTable());
-
-        $params = array();
-
-        /**
-         * @var Field $field
-         */
-        foreach ( $this->getFields() as $field ) {
-            $params[] = $field->toString();
-        }
-
-        if ( $this->getPk() ) {
-            if ( is_array($this->getPk()) ) {
-                $pk = '`'.join('`,`', $this->getPk()).'`';
-            } else {
-                $pk = "`".str_replace(',', '`,`', $this->getPk())."`";
-            }
-            $params[] = "PRIMARY KEY ({$pk})";
-        }
-
-        foreach ( $this->getKeys() as $key => $val ) {
-
-            $found = false;
-
-            if ( is_array( $val ) ) {
-                foreach ( $val as $v ) {
-                    $subfound   = false;
-                    foreach ( $this->getFields() as $field ) {
-                        if ( $field->getName() == $v ) {
-                            $subfound   = true;
-                            break;
-                        }
-                    }
-                    $found  = $found || $subfound;
-                }
-                $val    = implode(',', $val);
-            }
-            else {
-                foreach ( $this->getFields() as $field ) {
-                    if ( $field->getName() == $val ) {
-                        $found = true;
-                        break;
-                    }
-                }
-            }
-
-            if ( ! $found ) {
-                //die('Key column doesn`t exist in table');
-                throw new Exception("Key column '{$val}' doesn`t exist in table");
-            }
-
-            $val    = str_replace(',', '`,`', $val);
-            if ( is_numeric($key) ) {
-                $key    = $val;
-            }
-            $params[] = "KEY `{$key}` (`{$val}`)";
-        }
-
-        $ret .= join(",\n\t", $params)."\n";
-
-        $ret .= ") ENGINE={$this->engine} DEFAULT CHARSET=utf8";
-        return $ret;
-    }
-
-    /**
      * Вернет имя таблицы
      * @return string
      */
     public function __toString()
     {
-        return ( defined('DBPREFIX') ? DBPREFIX : '' ) . $this->getTable();
+        return ( defined('DBPREFIX') ? DBPREFIX : '' ) . $this->table();
     }
 
     /**
@@ -116,7 +46,7 @@ abstract class Table extends Component
      * @return string
      * @throws Exception
      */
-    public static function getTable()
+    public static function table()
     {
         throw new Exception(sprintf('Need declare method in "%s::%s()"', get_called_class(), __FUNCTION__));
     }
@@ -127,7 +57,7 @@ abstract class Table extends Component
      * @return array
      * @throws Exception
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         throw new Exception(sprintf('Need declare method in "%s::%s()"', get_called_class(), __FUNCTION__));
     }
@@ -137,11 +67,11 @@ abstract class Table extends Component
      * @abstract
      * @return array
      */
-    public static function getFields()
+    public static function fields()
     {
         $class = get_called_class();
         if ( ! isset( static::$fields[ $class ] ) ) {
-            static::$fields[ $class ] = static::doGetFields();
+            static::$fields[ $class ] = static::doFields();
         }
         return static::$fields[ $class ];
     }
@@ -150,7 +80,7 @@ abstract class Table extends Component
      * Вернет первичный ключ
      * @return string
      */
-    protected function getPk()
+    public static function pk()
     {
         return 'id';
     }
@@ -159,7 +89,7 @@ abstract class Table extends Component
      * Вернет список индексных ключей
      * @return array
      */
-    protected function getKeys()
+    public static function keys()
     {
         return array();
     }

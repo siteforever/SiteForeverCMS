@@ -2,17 +2,20 @@
 /**
  * Тест объекта страницы
  */
+use Module\Page\Object\Page;
+use Sfcms\Data\Watcher;
+use Sfcms\Model;
 
 class Data_Object_PageTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Data_Object_Page
+     * @var Page
      */
     protected $page;
 
     public function setUp()
     {
-        Data_Watcher::instance()->clear();
+        Watcher::instance()->clear();
     }
 
     public function testTest()
@@ -22,10 +25,10 @@ class Data_Object_PageTest extends PHPUnit_Framework_TestCase
 
     public function testGetAlias()
     {
-        $this->page = Sfcms_Model::getModel('Page')->find(1);
+        $this->page = Model::getModel('Page')->find(1);
         $this->assertEquals('index', $this->page->getAlias());
 
-        $this->page = Sfcms_Model::getModel('Page')->find(3);
+        $this->page = Model::getModel('Page')->find(3);
         $this->assertEquals('about', $this->page->getAlias());
     }
 

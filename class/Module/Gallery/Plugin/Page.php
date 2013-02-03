@@ -8,6 +8,8 @@
 namespace Module\Gallery\Plugin;
 
 use Sfcms\Model\Plugin;
+use Module\Page\Object\Page as PageObj;
+use Module\Gallery\Object\Category;
 
 class Page extends Plugin
 {
@@ -16,9 +18,9 @@ class Page extends Plugin
      *
      * Цель: создать связь страниц с объектами галереи
      *
-     * @param \Data_Object_Page $obj
+     * @param PageObj $obj
      */
-    public function onSaveStart( \Data_Object_Page $obj )
+    public function onSaveStart( PageObj $obj )
     {
         $categoryModel = $obj->getModel('GalleryCategory');
 
@@ -27,7 +29,7 @@ class Page extends Plugin
         } else {
             $category = $categoryModel->createObject();
         }
-        /** @var $category \Data_Object_Catalog */
+        /** @var $category Category */
         $category->name         = $obj->name;
         $category->hidden       = $obj->hidden;
         $category->protected    = $obj->protected;

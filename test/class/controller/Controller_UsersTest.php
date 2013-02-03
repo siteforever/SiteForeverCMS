@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Controller/Users.php';
+//require_once 'Controller/Users.php';
 
 /**
  * Test class for Controller_Users.

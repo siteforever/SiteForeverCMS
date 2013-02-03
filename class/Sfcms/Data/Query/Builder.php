@@ -52,8 +52,8 @@ class Builder
         $sql    = array();
         $select = '*';
         $table_class = $this->_obj_class;
-        $table  = $table_class::getTable();
-        $fields = $table_class::getFields();
+        $table  = $table_class::table();
+        $fields = $table_class::fields();
 
         // Заменяем * на список полей
         if ( '*' == $this->_criteria->select ) {

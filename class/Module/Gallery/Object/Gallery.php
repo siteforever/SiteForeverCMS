@@ -11,7 +11,7 @@ namespace Module\Gallery\Object;
 use Module\Page\Model\PageModel;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
-use Sfcms\i18n;
+use Sfcms;
 
 /**
  * @property int id
@@ -40,8 +40,8 @@ class Gallery extends Object
      */
     public function getAlias()
     {
-        $alias = $this->get('name') ? i18n::getInstance()->translit( $this->get('name') ) : $this->getId();
-        if ( ! $this->data['alias'] || $this->data['alias'] != $alias ) {
+        $alias = $this->get('name') ? Sfcms::i18n()->translit( $this->get('name') ) : $this->getId();
+        if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
             $this->data['alias'] = $alias;
             $this->markDirty();
         }
@@ -89,7 +89,7 @@ class Gallery extends Object
      * Create field list
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int( 'id', 11, false, null, true ),
@@ -110,7 +110,7 @@ class Gallery extends Object
      * DB table name
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'gallery';
     }

@@ -92,7 +92,7 @@ class Order extends Object
      * Создаст список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             // field, size, nonull, default, autoincrement
@@ -116,12 +116,12 @@ class Order extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'order';
     }
 
-    protected function getKeys()
+    public static function keys()
     {
         return array('status'=>'status', 'user_id'=>array('date','user_id'), 'date'=>'date');
     }

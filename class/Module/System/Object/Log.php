@@ -17,7 +17,7 @@ class Log extends Object
      * Create field list
      * @return array
      */
-    protected function doGetFields()
+    protected function doFields()
     {
         return array(
             new Field\Int( 'id', 11, false, null, true ),
@@ -32,7 +32,7 @@ class Log extends Object
      * DB table name
      * @return string
      */
-    public function getTable()
+    public function table()
     {
         return 'log';
     }

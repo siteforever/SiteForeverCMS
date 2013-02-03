@@ -558,9 +558,10 @@ class db
         }
 
         // проверка на апостроф
-        foreach ($data as $i => $d) {
-            $data[ $i ] = $this->resource->quote( $d );
-        }
+        $data = array_map( array($this->resource, 'quote'), $data );
+//        foreach ($data as $i => $d) {
+//            $data[ $i ] = $this->resource->quote( $d );
+//        }
 
         $set = array ();
         if (is_array ( $data ) && count ( $data )) {

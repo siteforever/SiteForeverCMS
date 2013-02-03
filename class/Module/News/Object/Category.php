@@ -30,7 +30,7 @@ class Category extends Object
      * Вернет список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int('id', 11, true, null, true),
@@ -50,7 +50,7 @@ class Category extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'news_cats';
     }

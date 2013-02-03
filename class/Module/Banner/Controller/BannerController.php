@@ -7,7 +7,7 @@ namespace Module\Banner\Controller;
 use Sfcms_Controller;
 use Sfcms\Request;
 use Module\Banner\Model\BannerModel;
-use Data_Object_Banner;
+use Module\Banner\Object\Banner;
 use Module\Banner\Model\CategoryModel;
 use Sfcms\Exception;
 
@@ -72,7 +72,7 @@ class BannerController extends Sfcms_Controller
         if ( ! $id ) {
             return $this->redirect( $this->router->createLink('error') );
         }
-        /** @var $obj Data_Object_Banner */
+        /** @var $obj Banner */
         $obj = $model->find( $id );
         $obj->count_click++;
         return $this->redirect( $obj->url );
@@ -100,7 +100,7 @@ class BannerController extends Sfcms_Controller
         }
         if ( $id ) {
             try {
-                /** @var $obj Data_Object_Banner */
+                /** @var $obj Banner */
                 $obj = $model->find( $id );
             } catch ( Exception $e ) {
                 return $e->getMessage();

@@ -44,7 +44,7 @@ class GoodsController extends Sfcms_Controller
         $this->request->setTitle(t('goods','Goods search'));
         $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());
 
-        /** @var CatalogModel */
+        /** @var $modelCatalog CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');
 
         $goods  = $modelCatalog->findGoodsByQuery( $query );

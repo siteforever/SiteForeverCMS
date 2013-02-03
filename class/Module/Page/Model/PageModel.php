@@ -58,7 +58,8 @@ class PageModel extends Model
     public function relation()
     {
         return array(
-            'Pages' => array( self::HAS_MANY, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
+            'Pages'  => array( self::HAS_MANY, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
+            'Parent' => array( self::BELONGS, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
         );
     }
 

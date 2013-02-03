@@ -16,7 +16,7 @@ class Template extends Object
      * Вернет список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Varchar('name', 100, true),
@@ -30,12 +30,12 @@ class Template extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'templates';
     }
 
-    protected function getPk()
+    public static function pk()
     {
         return 'name';
     }

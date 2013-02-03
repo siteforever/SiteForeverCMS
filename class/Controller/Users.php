@@ -266,7 +266,6 @@ class Controller_Users extends Sfcms_Controller
     {
         /** @var UserModel $model */
         $model  = $this->getModel('user');
-die(__METHOD__);
         //$this->request->set('tpldata.page.name', 'Edit Profile');
         $this->request->setTitle(t('user','Edit profile'));
         $this->tpl->getBreadcrumbs()

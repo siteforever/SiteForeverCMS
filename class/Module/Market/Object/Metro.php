@@ -23,7 +23,7 @@ class Metro extends Object
      * Create field list
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int( 'id', 10, false, null, true ),
@@ -38,7 +38,7 @@ class Metro extends Object
      * DB table name
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'metro';
     }

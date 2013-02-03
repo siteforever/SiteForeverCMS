@@ -28,7 +28,7 @@ class OrderPosition extends Object
      * Создаст список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int('id', 11, true, null, true),
@@ -49,12 +49,12 @@ class OrderPosition extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'order_pos';
     }
 
-    protected function getKeys()
+    public static function keys()
     {
         return array(
             'ord_id',

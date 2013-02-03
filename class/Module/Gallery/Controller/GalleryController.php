@@ -9,12 +9,12 @@ namespace Module\Gallery\Controller;
 
 use Sfcms;
 use Sfcms_Controller;
-use Request;
+use Sfcms\Request;
 use Exception;
-use Form_Form;
-use Data_Object_Gallery;
-use Data_Object_GalleryCategory;
-use Data_Object_Page;
+use Sfcms\Form\Form;
+use Module\Gallery\Object\Gallery;
+use Module\Gallery\Object\Category;
+use Module\Page\Object\Page;
 use Module\Gallery\Model\GalleryModel;
 use Module\Gallery\Model\CategoryModel;
 
@@ -51,7 +51,7 @@ class GalleryController extends Sfcms_Controller
     public function indexAction()
     {
         /**
-         * @var Data_Object_Gallery $image
+         * @var Gallery $image
          * @var GalleryModel $model
          * @var CategoryModel $catModel
          */
@@ -83,7 +83,7 @@ class GalleryController extends Sfcms_Controller
 
             $pred = $model->find( $crit );
 
-            /** @var $category Data_Object_GalleryCategory */
+            /** @var $category Category */
             $category = $catModel->find( $image->category_id );
 
             $this->getTpl()->assign('image', $image);
@@ -141,7 +141,7 @@ class GalleryController extends Sfcms_Controller
                  'params'    => array( $this->page->getId() ),
             ) );
 
-            /** @var Data_Object_Page $obj */
+            /** @var Page $obj */
             $listSubpagesIds = array();
             foreach ( $subPages as $obj ) {
                 if ( $obj->get( 'link' ) && $obj->get( 'controller' ) == 'gallery' ) {
@@ -265,7 +265,7 @@ class GalleryController extends Sfcms_Controller
     {
         /**
          * @var CategoryModel $model
-         * @var Data_Object_GalleryCategory $obj
+         * @var Category $obj
          */
         $model = $this->getModel( 'GalleryCategory' );
         $form  = $model->getForm();
@@ -291,7 +291,7 @@ class GalleryController extends Sfcms_Controller
             }
 
             $form->setData( $obj->getAttributes() );
-            if( get_class( $obj ) !== 'Data_Object_GalleryCategory' ) {
+            if( get_class( $obj ) !== '\Module\Gallery\Object\Category' ) {
                 $form->alias = $obj->getAlias();
             }
         }
@@ -358,16 +358,16 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Редактирование картинки
-     * @var model_gallery $model
+     * @var GalleryModel $model
      * @return mixed
      */
     public function editAction()
     {
         $model = $this->getModel( 'Gallery' );
-        /** @var $form Form_Form */
+        /** @var $form Form */
         $form = $this->getForm( 'gallery_image' );
 
-        /** @var Data_Object_Gallery $obj */
+        /** @var Gallery $obj */
         if( $form->getPost() ) {
             if( $form->validate() ) {
                 $obj = $form->id ? $model->find( $form->id ) : $model->createObject();
@@ -403,8 +403,8 @@ class GalleryController extends Sfcms_Controller
         $result = array();
         try {
             $images = $model->findAll();
-            /** @var Data_Object_GalleryCategory $cat */
-            /** @var Data_Object_Gallery $img */
+            /** @var Category $cat */
+            /** @var Gallery $img */
             foreach( $images as $img ) {
                 try {
                     $img->save();
@@ -421,10 +421,10 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Загрузка файлов
-     * @param Data_Object_GalleryCategory $cat
+     * @param Category $cat
      * @return
      */
-    protected function upload( Data_Object_GalleryCategory $cat )
+    protected function upload( Category $cat )
     {
         /** @var GalleryModel $model */
         $model         = $this->getModel('Gallery');
@@ -446,7 +446,7 @@ class GalleryController extends Sfcms_Controller
             foreach( $images[ 'error' ] as $i => $err ) {
                 switch ( $err ) {
                     case UPLOAD_ERR_OK:
-                        /** @var $image Data_Object_Gallery */
+                        /** @var $image Gallery */
                         $image = $model->createObject( array(
                                                     'pos'   => $pos,
                                                     'main'  => '0',

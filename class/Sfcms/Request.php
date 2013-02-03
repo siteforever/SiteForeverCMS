@@ -5,6 +5,7 @@ use App;
 use Sfcms\Assets;
 use Sfcms_Http_Exception as Exception;
 use Sfcms\Kernel\Base as Service;
+use SimpleXMLElement;
 
 /**
  * Объект запроса

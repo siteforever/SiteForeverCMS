@@ -7,9 +7,9 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Request;
-use Model_Manufacturers;
-use Data_Object_Manufacturers;
+use Sfcms\Request;
+use Module\Market\Model\ManufacturerModel;
+use Module\Market\Object\Manufacturer;
 
 class ManufacturerController extends Sfcms_Controller
 {
@@ -43,7 +43,7 @@ class ManufacturerController extends Sfcms_Controller
         $id    = $this->request->get( 'id' );
 
         if ( $id ) {
-            /** @var $item Data_Object_Manufacturers */
+            /** @var $item Manufacturer */
             $item = $model->find( $id );
             $this->request->setTitle( $item->name );
             $this->getTpl()->getBreadcrumbs()
@@ -73,7 +73,7 @@ class ManufacturerController extends Sfcms_Controller
 
         $this->app()->addScript( '/misc/admin/manufacturers.js' );
 
-        /** @var $model Model_Manufacturers */
+        /** @var $model ManufacturerModel */
         $model  = $this->getModel( 'Manufacturers' );
         $count  = $model->count();
         $paging = $this->paging( $count, 20, 'manufacturers/admin' );
@@ -87,7 +87,7 @@ class ManufacturerController extends Sfcms_Controller
     {
         $this->request->setTitle( t( 'Manufacturers' ) );
 
-        /** @var $model Model_Manufacturers */
+        /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
         $form  = $model->getForm();
 
@@ -106,7 +106,7 @@ class ManufacturerController extends Sfcms_Controller
     {
         $this->request->setTitle( t( 'Manufacturers' ) );
 
-        /** @var $model Model_Manufacturers */
+        /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
         $form  = $model->getForm();
 
@@ -128,9 +128,9 @@ class ManufacturerController extends Sfcms_Controller
         $this->request->setTitle( t( 'Manufacturers' ) );
 
         $id = $this->request->get( 'id', Request::INT );
-        /** @var $model Model_Manufacturers */
+        /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
-        /** @var $obj Data_Object_Manufacturers */
+        /** @var $obj ManufacturerModel */
         $obj  = $model->find( $id );
         $name = $obj->name;
         $model->delete( $id );

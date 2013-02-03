@@ -1,11 +1,13 @@
 <?php
+use Sfcms\Model;
+use Sfcms\JqGrid\Provider;
 /**
  * JqGrid data provider test
  */
 class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Sfcms_Model
+     * @var Model
      */
     private $model;
 
@@ -13,14 +15,14 @@ class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->model = Sfcms_Model::getModel('Catalog');
+        $this->model = Model::getModel('Catalog');
     }
 
 
     public function testGetJson()
     {
-        \App::$request->set('rows',10);
-        $provider = new Sfcms\JqGrid\Provider( \App::getInstance() );
+        App::$request->set('rows',10);
+        $provider = new Provider( App::getInstance() );
         $criteria = $this->model->createCriteria();
         $criteria->condition = 'cat = 0 AND deleted = 0 AND hidden = 0 AND protected <= 0';
 

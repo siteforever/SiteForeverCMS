@@ -6,16 +6,18 @@
  * @link   http://standart-electronics.ru
  */
 
-class Form_FormTest extends PHPUnit_Framework_TestCase
+use Sfcms\Form\Form;
+
+class form_FormTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Form_Form
+     * @var Form
      */
     protected $form;
 
     protected function setUp()
     {
-        $this->form = new Form_Form( array(
+        $this->form = new Form( array(
                 'name'  => 'test',
            ), App::getInstance()->getRequest() );
     }
@@ -32,9 +34,9 @@ class Form_FormTest extends PHPUnit_Framework_TestCase
 
         try {
             $this->assertEquals( null, $this->form->getField( 'id' ) );
-        } catch ( Form_Exception $e ) {
+        } catch ( Exception $e ) {
             $this->form->addField( $field );
-            $this->assertInstanceOf('Form_Field', $this->form->getField('id'));
+            $this->assertInstanceOf('\Sfcms\Form\Field', $this->form->getField('id'));
             return;
         }
         $this->fail('Expected exception');

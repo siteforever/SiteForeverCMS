@@ -57,14 +57,9 @@ abstract class Model extends Component
     protected $user;
 
     /**
-     * @var Table
+     * @var string
      */
     protected $table = null;
-
-    /**
-     * @var Form
-     */
-    //protected $form;
 
     /**
      * @var Object
@@ -172,7 +167,7 @@ abstract class Model extends Component
      * @param Plugin $plugin
      * @param $namespace
      */
-    protected function addPlugin( Plugin $plugin, $namespace = 'default' )
+    public function addPlugin( Plugin $plugin, $namespace = 'default' )
     {
         $this->_plugins[$namespace][] = $plugin;
     }
@@ -222,8 +217,78 @@ abstract class Model extends Component
      */
     private function addNewTable( $table )
     {
-        $this->getDB()->query( $this->table->getCreateTable() );
+        $this->getDB()->query( $this->getCreateTable() );
         self::$exists_tables[ ] = $table;
+    }
+
+
+    /**
+     * Построение запроса для создания таблицы
+     * @return string
+     */
+    public function getCreateTable()
+    {
+        $ret = sprintf("CREATE TABLE `%s` (\n\t", $this->getTable());
+
+        $params = array();
+        $object_class = $this->objectClass();
+
+        $params = array_map(function( $field ){
+                /** @var Field $field */
+                return $field->toString();
+            }, $object_class::fields());
+
+        if ( $object_class::pk() ) {
+            if ( is_array($object_class::pk()) ) {
+                $pk = '`'.join('`,`', $object_class::pk()).'`';
+            } else {
+                $pk = "`".str_replace(',', '`,`', $object_class::pk())."`";
+            }
+            $params[] = "PRIMARY KEY ({$pk})";
+        }
+
+        foreach ( $object_class::keys() as $key => $val ) {
+
+            $found = false;
+
+            if ( is_array( $val ) ) {
+                foreach ( $val as $v ) {
+                    $subfound   = false;
+                    foreach ( $object_class::fields() as $field ) {
+                        if ( $field->getName() == $v ) {
+                            $subfound   = true;
+                            break;
+                        }
+                    }
+                    $found  = $found || $subfound;
+                }
+                $val    = implode(',', $val);
+            }
+            else {
+                foreach ( $object_class::fields() as $field ) {
+                    if ( $field->getName() == $val ) {
+                        $found = true;
+                        break;
+                    }
+                }
+            }
+
+            if ( ! $found ) {
+                //die('Key column doesn`t exist in table');
+                throw new Exception("Key column '{$val}' doesn`t exist in table");
+            }
+
+            $val    = str_replace(',', '`,`', $val);
+            if ( is_numeric($key) ) {
+                $key    = $val;
+            }
+            $params[] = "KEY `{$key}` (`{$val}`)";
+        }
+
+        $ret .= join(",\n\t", $params)."\n";
+
+        $ret .= ") ENGINE={$this->engine} DEFAULT CHARSET=utf8";
+        return $ret;
     }
 
     /**
@@ -340,7 +405,7 @@ abstract class Model extends Component
         if( null === $this->table ) {
             $class = $this->tableClass();
 
-            $this->table = $class::getTable();
+            $this->table = $class::table();
 
 //            App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
 
@@ -364,8 +429,8 @@ abstract class Model extends Component
     private function migration()
     {
         $class = $this->objectClass();
-        $sys_fields  = $class::getFields();
-        $table = $class::getTable();
+        $sys_fields  = $class::fields();
+        $table = $class::table();
         $have_fields = $this->getDB()->getFields( $this->getTable() );
 
         $txtsys_fields = array();
@@ -453,7 +518,6 @@ abstract class Model extends Component
      */
     final public function find( $crit, $params = array() )
     {
-        $this->with = array();
         $criteria   = null;
         if( is_object( $crit ) ) {
             if( $crit instanceof Criteria ) {
@@ -503,16 +567,15 @@ abstract class Model extends Component
 
         $data = $this->db->fetch( $criteria->getSQL(), db::F_ASSOC, $crit->params );
 
+        $obj = null;
         if( $data ) {
             $obj = $this->getFromMap( $data[ 'id' ] );
-            if( null !== $obj ) {
-                return $obj;
-            } else {
-                $obj_data = $this->createObject( $data );
-                return $obj_data;
+            if( null === $obj ) {
+                $obj = $this->createObject( $data );
             }
         }
-        return null;
+
+        return $obj;
     }
 
     /**
@@ -529,9 +592,9 @@ abstract class Model extends Component
         $this->with = array();
 
         if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Criteria ) ) {
-            $criteria = new QueryBuilder( $this->objectClass(), $crit );
+            $queryBuilder = new QueryBuilder( $this->objectClass(), $crit );
         } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
-            $criteria = new QueryBuilder( $this->objectClass(),
+            $queryBuilder = new QueryBuilder( $this->objectClass(),
                 array(
                     'cond'  => $crit,
                     'params'=> $params,
@@ -540,14 +603,14 @@ abstract class Model extends Component
                 )
             );
         } elseif( is_object( $crit ) && $crit instanceof QueryBuilder ) {
-            $criteria = $crit;
+            $queryBuilder = $crit;
         } else {
             throw new Exception( 'Not valid criteria' );
         }
 
 //        if ( $criteria-> )
 
-        $raw = $this->db->fetchAll( $criteria->getSQL() );
+        $raw = $this->db->fetchAll( $queryBuilder->getSQL() );
 
         if( count( $raw ) ) {
             $collection = new Collection( $raw, $this );
@@ -621,7 +684,7 @@ abstract class Model extends Component
         }
 //        $data      = $obj->attributes;
         $class     = $this->objectClass();
-        $fields    = $class::getFields();
+        $fields    = $class::fields();
 //        $changed   = $obj->changed();
         $save_data = array();
 

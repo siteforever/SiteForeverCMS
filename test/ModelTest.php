@@ -85,7 +85,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testObjectClass()
     {
-        $this->assertEquals($this->object->objectClass(), 'TestObject');
+        $this->assertEquals($this->object->objectClass(), '\Module\System\Object\Test');
     }
 
     /**
@@ -93,7 +93,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testTableClass()
     {
-        $this->assertEquals($this->object->tableClass(), 'TestObject');
+        $this->assertEquals($this->object->tableClass(), '\Module\System\Object\Test');
     }
 
     /**
@@ -101,15 +101,16 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testGetTable()
     {
-        $this->assertTrue( $this->object->getTable() instanceof TestObject );
+        $this->assertEquals( 'test', $this->object->getTable() );
     }
 
     /**
      * @todo Implement testGetTableName().
      */
-    public function testGetTableName()
+    public function testTable()
     {
-        $this->assertEquals( $this->object->getTableName(), DBPREFIX.'test' );
+        $object_class = $this->object->objectClass();
+        $this->assertEquals( $object_class::table(), DBPREFIX.'test' );
     }
 
     /**

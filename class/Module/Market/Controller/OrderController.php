@@ -8,8 +8,8 @@ namespace Module\Market\Controller;
 
 use Sfcms_Controller;
 use Module\Market\Model\OrderModel;
-use Data_Object_Order;
-use Data_Object_OrderPosition;
+use Module\Market\Object\Order;
+use Module\Market\Object\OrderPosition;
 use Sfcms\Request;
 use Sfcms\Robokassa;
 
@@ -61,7 +61,7 @@ class OrderController extends Sfcms_Controller
         $item = $this->request->get('item', Request::INT);
 
         if ( $item ) {
-            /** @var $orderObj Data_Object_Order */
+            /** @var $orderObj Order */
             $orderObj = $order->find( $item );
             
             if ( $orderObj ) {
@@ -115,7 +115,7 @@ class OrderController extends Sfcms_Controller
 
 
         $model = $this->getModel('Order');
-        /** @var $order Data_Object_Order */
+        /** @var $order Order */
         $order = $model->find( $id );
 
         if ( ! $order ) {
@@ -238,7 +238,7 @@ class OrderController extends Sfcms_Controller
     public function adminEdit( $id )
     {
         $model = $this->getModel('Order');
-        /** @var $order Data_Object_Order */
+        /** @var $order Order */
         $order      = $model->find( $id );
         $positions  = $order->Positions;
         $user       = $order->User;

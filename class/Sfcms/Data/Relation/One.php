@@ -14,17 +14,17 @@ class One extends Relation
 {
     public function with( Collection $collection )
     {
-        $keys = array();
-        /** @var $obj Object */
-        foreach ( $collection as $obj ) {
-            $keys[] = $obj->getId();
-        }
+        $keys = array_map(function( $obj ){
+            /** @var $obj Object */
+            return $obj->getId();
+        }, iterator_to_array( $collection ));
         if ( count( $keys ) ) {
             try {
                 $cond = $this->prepareCond( $keys );
             } catch ( Exception $e ) {
                 return;
             }
+            // Загружаем объекты в Object Watcher
             $objects = $this->model->findAll( $cond );
             /** @var $o Object */
             foreach ( $objects as $o );

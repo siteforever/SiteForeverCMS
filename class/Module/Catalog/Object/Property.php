@@ -41,7 +41,7 @@ class Property extends Object
      * Create field list
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int( 'product_id', 11, false, null, false ),
@@ -58,7 +58,7 @@ class Property extends Object
      * DB table name
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'product_property';
     }
@@ -66,7 +66,7 @@ class Property extends Object
     /**
      * @return array|string
      */
-    protected function getPk()
+    public static function pk()
     {
         return array('product_id','product_field_id');
     }

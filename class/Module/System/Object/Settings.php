@@ -16,7 +16,7 @@ class Settings extends Object
      * Создаст список полей
      * @return array
      */
-    protected static function doGetFields()
+    protected static function doFields()
     {
         return array(
             //new Field\Int('id', 11, true, null, true),
@@ -30,12 +30,12 @@ class Settings extends Object
      * Вернет имя таблицы
      * @return string
      */
-    public static function getTable()
+    public static function table()
     {
         return 'settings';
     }
 
-    protected function getPk()
+    public static function pk()
     {
         return 'module,property';
     }
