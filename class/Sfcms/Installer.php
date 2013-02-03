@@ -17,11 +17,6 @@ class Sfcms_Installer
     {
         $this->symlink( SF_PATH . self::DS . 'images', ROOT . self::DS . 'images' );
         $this->symlink( SF_PATH . self::DS . 'misc', ROOT . self::DS . 'misc' );
-
-        if( ! is_dir( ROOT . self::DS. '_runtime' . self::DS . 'sxd' ) ) {
-            $this->copyDir( SF_PATH . self::DS . 'vendors' . self::DS . 'sxd',
-                ROOT . self::DS. '_runtime' . self::DS . 'sxd' );
-        }
     }
 
 

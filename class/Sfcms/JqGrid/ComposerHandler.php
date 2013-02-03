@@ -10,6 +10,7 @@ use ErrorException;
 use Sfcms;
 use Exception;
 use Composer\Script\Event;
+use Composer\Package\RootPackage;
 
 class ComposerHandler {
     /**
@@ -17,13 +18,25 @@ class ComposerHandler {
      */
     public static function installAssets( Event $event )
     {
-        var_dump( $event->getComposer()->getPackage() );
-        $extra = $event->getComposer()->getPackage()->getExtra();
+        /** @var $pack RootPackage */
+        $pack = $event->getComposer()->getPackage();
 
+        $extra = $pack->getExtra();
         $outDir = 'sfcms-static-dir';
         if ( ! isset( $extra[ $outDir ] ) ) {
             throw new Exception(sprintf('Param "%s" not defined',  $outDir ));
         }
+
+        var_dump( $_SERVER );
+
+        $requires = $pack->getRequires();
+        if ( isset( $requires['keltanas/site-forever-cms'] ) )  {
+            $rootDir = realpath( __DIR__.'/../../../../../..' );
+        } else {
+            $rootDir = realpath( __DIR__.'/../../..' );
+        }
+
+
 
 
         $source = realpath( __DIR__.'/../../..' ) . '/vendor/tonytomov';
