@@ -34,96 +34,15 @@
  * Если в имени класса контроллера присутствует знак подчеркивания "_", то он будет заменен на знак пространства имен.
  *
  * В следствии устранения путаницы, не рекомендуется использовать директивы class и module совместно, но возможно.
- *
- * @deprecated
  */
-
-// В настоящее время утратил силу. Служит только для примера и в качестве документации.
-// Все контроллеры загружаются из своих модулей
 return array(
-    'System' => array(
-        'captcha'   => array(),
-        'elfinder'  => array(),
-        'error'     => array(),
-        'feedback'  => array(),
-        'generator' => array(),
-        'routes'    => array(),
-        'search'    => array(),
-        'sitemap'   => array(),
-        'system'    => array(),
-        'users'     => array(),
-        'setting'   => array(),
-    ),
-
-    'Banner' => array(
-        'banner'    => array(),
-    ),
-
-    'Market'    => array(
-        'Basket'    => array(),
-        'Delivery'  => array(),
-        'Manufacturers' => array( 'class'  => 'Controller\Manufacturer', ),
-        'Material'  => array(),
-        'Order'     => array(),
-        'OrderAdmin'=> array(),
-        'Orderpdf'  => array(),
-        'Xmlprice'  => array(),
-        'Payment'   => array(),
-        'Producttype' => array(),
-        'Robokassa' => array(),
-    ),
-
-    'Catalog'   => array(
-        'Catalog'   => array(),
-        'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
-        'Goods'     => array(),
-        'settings'  => array(
-            'order_default' => array('type'=>'text','value'=>'name',),
-            'order_list'    => array('type'=>'select','value'=>'list',
-                                    'options' => array(
-                                        ''          => 'Без сортировки',
-                                        'name'      => 'По наименованию',
-                                        'price1'    => 'По цене (0->макс)',
-                                        'price1-d'  => 'По цене (макс->0)',
-                                        'articul'   => 'По артикулу',
-                                    ),
-                                ),
-            'onPage'        => 10,
-            'level'         => 0,
-        ),
-    ),
-
-    'Gallery'   => array(
-        'Gallery'   => array(),
-    ),
-
-    'Feedback'  => array(
-        'Feedback'  => array(),
-    ),
-
-    'Guestbook' => array(
-        'Guestbook' => array(),
-    ),
-
-    'Page' => array(
-        'Page'  => array(),
-    ),
-
-    'News' => array(
-        'News'  => array(),
-        'Rss'   => array(),
-    ),
-
-    'Editor'    => array(
-        'settings'  => array(
-            'type' => array(
-                'type'      => 'select',
-                'value' => 'ckeditor',
-                'options'   => array(
-                    'tinymce'   => 'Tiny MCE',
-                    'ckeditor'  => 'CKEditor',
-                ),
-            ),
-       ),
-    ),
+    array('name'=>'Banner',     'class'=>'Module\Banner\Module'),
+    array('name'=>'Catalog',    'class'=>'Module\Catalog\Module'),
+    array('name'=>'Feedback',   'class'=>'Module\Feedback\Module'),
+    array('name'=>'Gallery',    'class'=>'Module\Gallery\Module'),
+    array('name'=>'Guestbook',  'class'=>'Module\Guestbook\Module'),
+    array('name'=>'Market',     'class'=>'Module\Market\Module'),
+    array('name'=>'News',       'class'=>'Module\News\Module'),
+    array('name'=>'Page',       'class'=>'Module\Page\Module'),
+    array('name'=>'System',     'class'=>'Module\System\Module'),
 );

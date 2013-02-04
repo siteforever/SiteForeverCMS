@@ -143,7 +143,7 @@ abstract class Base
      * Список установленных в систему модулей
      * @var array
      */
-    protected $_modules = array();
+    public $_modules = array();
 
     /**
      * Вернет менеджер Кэша
@@ -181,7 +181,7 @@ abstract class Base
     public function __construct( $cfg_file = null )
     {
         header('X-Powered-By: SiteForeverCMS');
-        self::autoloadRegister(array($this,'autoload'));
+//        self::autoloadRegister(array($this,'autoload'));
 
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
@@ -557,16 +557,16 @@ abstract class Base
     {
         if ( ! $this->_modules_config ) {
             $_ = $this;
-            $module_model = $this->getModel('\Module\System\Model\ModuleModel');
-            $modules = $module_model->findAll(array('order'=>'pos'));
+            $modules = include_once(ROOT . '/protected/modules.php');
 
-            /** @var $module \Module\System\Object\Module */
             array_map(function( $module ) use ( $_ ) {
-                if ( $module->active ) {
-                    $mod_config = require_once 'class/'.$module->path.'/config.php';
-                    $_->_modules_config[ $module->name ] = $mod_config;//['controllers'];
-                }
-            },$modules->getObjects());
+                $_->_modules[ $module['name'] ] = new $module['class']( $_, $module['name'] );
+            },$modules);
+
+            /** @var $module \Sfcms\Module */
+            array_map(function( $module ) use ( $_ ) {
+                $_->_modules_config[ $module->getName() ] = $module->config();
+            },$this->_modules);
         }
         return $this->_modules_config;
     }
@@ -630,33 +630,33 @@ abstract class Base
     }
 
 
-    /**
-     * @static
-     * @param string $className
-     * @return boolean
-     * @throws \Sfcms\Autoload\Exception
-     */
-    static public function autoload( $className )
-    {
-        static $class_count = 0;
-
-        if ( ! preg_match('/^(Forms|Module)/i', $className) ) {
-            return false;
-        }
-
-        // PEAR format autoload
-        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
-        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
-        $file       = $className . '.php';
-
-        if( @include_once $file ) {
-            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
-                $class_count ++;
-            }
-            return true;
-        }
-        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
-    }
+//    /**
+//     * @static
+//     * @param string $className
+//     * @return boolean
+//     * @throws \Sfcms\Autoload\Exception
+//     */
+//    static public function autoload( $className )
+//    {
+//        static $class_count = 0;
+//
+//        if ( ! preg_match('/^(Forms|Module)/i', $className) ) {
+//            return false;
+//        }
+//
+//        // PEAR format autoload
+//        $className = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $className );
+//        $className = str_replace( '_', DIRECTORY_SEPARATOR, $className );
+//        $file       = $className . '.php';
+//
+//        if( @include_once $file ) {
+//            if( defined( 'DEBUG_AUTOLOAD' ) && DEBUG_AUTOLOAD ) {
+//                $class_count ++;
+//            }
+//            return true;
+//        }
+//        throw new \Sfcms\Autoload\Exception( sprintf('Class %s not found', $className) );
+//    }
 
     /**
      * Run under development environment

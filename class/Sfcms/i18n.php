@@ -65,6 +65,7 @@ class i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
+
         $dictFile   = SF_PATH  . '/protected/lang/' . $this->_lang . '.php';
         if( ! file_exists( $dictFile ) ) {
             throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile );

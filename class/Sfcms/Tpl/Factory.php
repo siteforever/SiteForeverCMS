@@ -41,7 +41,7 @@ class Factory
         if ( class_exists( $driver ) ) {
             $obj = new $driver();
             //Register::setTpl( $obj );
-            $themeCat = ROOT."/themes/{$theme}";
+            $themeCat = ROOT."/themes/{$theme}/templates";
             if ( is_dir( $themeCat ) ) {
                 $obj->setTplDir( $themeCat );
             } else {

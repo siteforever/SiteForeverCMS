@@ -20,4 +20,14 @@ class Module extends SfModule
     {
         return 'id';
     }
+
+    /**
+     * Должна вернуть массив конфига для модуля
+     * @return mixed
+     */
+    public function config()
+    {
+        return include_once __DIR__ . '/config.php';
+    }
+
 }
