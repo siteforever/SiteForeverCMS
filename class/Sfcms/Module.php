@@ -18,14 +18,18 @@ abstract class Module
     /** @var string */
     protected $name;
 
+    /** @var string */
+    protected $path;
+
     /** @param array */
     protected static $controllers = null;
 
 
-    public function __construct( App $app, $name )
+    public function __construct( App $app, $name, $path )
     {
         $this->app = $app;
         $this->name = $name;
+        $this->path = $path;
     }
 
     /**
@@ -47,6 +51,11 @@ abstract class Module
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**

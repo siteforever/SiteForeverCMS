@@ -530,7 +530,6 @@ abstract class Base
     public function getModules()
     {
         // todo от этого метода зависят классы Settings и Controller_Settings, поэтому пока вернем пустой массив
-//        if ( null === $this->_modules ) $this->loadModulesConfigs();
         return $this->_modules;
     }
 
@@ -560,7 +559,8 @@ abstract class Base
             $modules = include_once(ROOT . '/protected/modules.php');
 
             array_map(function( $module ) use ( $_ ) {
-                $_->_modules[ $module['name'] ] = new $module['class']( $_, $module['name'] );
+                $class = $module['path'].'\Module';
+                $_->_modules[ $module['name'] ] = new $class( $_, $module['name'], $module['path'] );
             },$modules);
 
             /** @var $module \Sfcms\Module */
@@ -571,6 +571,23 @@ abstract class Base
         return $this->_modules_config;
     }
 
+
+    /**
+     * @param $name
+     *
+     * @return Module
+     * @throws Exception
+     */
+    public function getModule( $name )
+    {
+        if ( null === $this->_modules ) {
+            $this->loadModulesConfigs();
+        }
+        if ( ! isset( $this->_modules[$name] ) ) {
+            throw new Exception(sprintf('Module "%s" not defined', $name));
+        }
+        return $this->_modules[$name];
+    }
 
 
     /**
@@ -609,6 +626,7 @@ abstract class Base
             foreach ( $this->_modules_config as $module => $config ) {
                 foreach ( $config['controllers'] as $controller => $params ) {
                     if ( 'System' == $module ) {
+                        // todo нужно перенести бесхозные контроллеры м модуль System и избавиться от этого костыля
                         $params['module'] = null;
                     } else {
                         $params['module'] = $module;

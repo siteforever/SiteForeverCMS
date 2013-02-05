@@ -30,7 +30,7 @@ class Resolver extends Component
      *
      * @return array
      */
-    public function resolveController( $controller = null, $action = null, $module = 'default' )
+    public function resolveController( $controller = null, $action = null, $moduleName = null )
     {
         $request = $this->app()->getRequest();
 
@@ -44,7 +44,7 @@ class Resolver extends Component
 
         // Если не удалось определить контроллер, как известный, то инициировать ош. 404
         if ( ! isset( $this->_controllers[ $controller ] ) ) {
-            $this->log(sprintf('Controller `%s` not found', $controller),__FUNCTION__);
+            $this->log(sprintf('Controller "%s" not found', $controller),__FUNCTION__);
             $controller = 'error';
             $action = 'error404Action';
             $request->setController($controller);
@@ -52,21 +52,27 @@ class Resolver extends Component
         }
 
         $config = $this->_controllers[ $controller ];
+
+
+        $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
+
+
         if ( isset( $config['class'] ) ) {
             $controllerClass = $config['class'];
         } else {
             $controllerClass = 'Controller_' . ucfirst($controller);
         }
 
-        if ( isset( $config['module'] ) ) {
+        if ( $moduleName ) {
+            $module = $this->app()->getModule( $moduleName );
             $controllerClass = sprintf(
-                'Module\\%s\\%sController',
-                ucfirst(strtolower($config['module'])),
+                '%s\\%sController',
+                $module->getPath(),
                 str_replace( '_', '\\', $controllerClass )
             );
         }
 
-        return array('controller' => $controllerClass, 'action' => $action);
+        return array('controller' => $controllerClass, 'action' => $action, 'module'=>$moduleName);
     }
 
     /**
@@ -106,10 +112,11 @@ class Resolver extends Component
         }
 
         if ( ! class_exists( $command['controller'] ) ) {
-            header('Status: 404 Not Found');
-            $request->set('controller', 'page');
-            $request->set('action', 'error404');
-            $command = $this->resolveController();
+            throw new Sfcms_Http_Exception( printf('Controller class "%s" not exists', $command['controller']), 404 );
+//            header('Status: 404 Not Found');
+//            $request->set('controller', 'error');
+//            $request->set('action', 'error404');
+//            $command = $this->resolveController();
         }
 
         $ref = new ReflectionClass($command['controller']);

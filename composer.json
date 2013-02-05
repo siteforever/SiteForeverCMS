@@ -19,11 +19,11 @@
     },
     "autoload": {
         "psr-0" : {
-            "" : "class/",
+            "" : ["class/","lib/"],
             "Sfcms" : "class/",
-            "Module" : ["lib/","class/"],
+            "Module" : ["class/"],
             "Std" : "class/",
-            "Form" : ["lib/","class/"]
+            "Forms" : ["class/"]
         },
         "files" : ["class/Functions.php","class/App.php"]
     },

@@ -6,43 +6,22 @@
  */
 
 /**
- * Массив контроллеров
+ * Массив модулей
  *
- * В качестве ключей идут названия модулей. В качестве значений - массив с контроллерами в данном модуле.
+ * Показывает, какие модули подключены к системе в данный момент
  *
- * В качестве значений контроллеров - массив, который может содержать индивидуальные для контроллера данные.
- * Например, файл, в котором находится класс контроллера, название класса контроллера.
- *
- * Благодаря настройкам этого массива можно иерархично делить контроллеры по модулям, разбивать их на группы.
- *
- * Если для контроллер находится в модуле System, то он должен находится в папке controller, доступной для
- * операций include и request. Имя файла должно совпадать с именем контроллера и быть в нижнем регистре.
- *
- * Если указан ключ file, то Resolver попытается подключить этот файл, в надежде, что класс контроллера находится
- * в нем. Если его в этом файле не будет, то к классу будет применен стандартный автозагрузчик.
- * Этот прем можно использовать также, если для контроллера нужно подключить какой-то дополнительный файл.
- * Однако, такой необходимости еще не было.
- *
- * Если указан ключ class, то Resolver установит этот класс в качестве контроллера. Далее класс будет
- * преобразован по правилам PSR-0, тем добавлением, что имя пути и файла будут в нижнем регистре (Это важно
- * для использования на *nix серверах)
- *
- * Наконец, если в настройках указан ключ module, то класс будет запрошен в пространстве имен этого модуля,
- * которое определяется автоматически как:
- * - Если не указан ключ class: \Module\<ModuleName>\Controller\<Controller\Name>Controller
- * - Если указан ключ class: \Module\<ModuleName>\<Class\Name>Controller
- * Если в имени класса контроллера присутствует знак подчеркивания "_", то он будет заменен на знак пространства имен.
- *
- * В следствии устранения путаницы, не рекомендуется использовать директивы class и module совместно, но возможно.
+ * - name: это имя модуля, под которым он будет находится в системе
+ * - path: Это путь в пространстве имен, в котором находится модуль
  */
 return array(
-    array('name'=>'Banner',     'class'=>'Module\Banner\Module'),
-    array('name'=>'Catalog',    'class'=>'Module\Catalog\Module'),
-    array('name'=>'Feedback',   'class'=>'Module\Feedback\Module'),
-    array('name'=>'Gallery',    'class'=>'Module\Gallery\Module'),
-    array('name'=>'Guestbook',  'class'=>'Module\Guestbook\Module'),
-    array('name'=>'Market',     'class'=>'Module\Market\Module'),
-    array('name'=>'News',       'class'=>'Module\News\Module'),
-    array('name'=>'Page',       'class'=>'Module\Page\Module'),
-    array('name'=>'System',     'class'=>'Module\System\Module'),
+    array('name'=>'Banner',     'path'=>'Module\Banner'),
+    array('name'=>'Catalog',    'path'=>'Module\Catalog'),
+    array('name'=>'Feedback',   'path'=>'Module\Feedback'),
+    array('name'=>'Gallery',    'path'=>'Module\Gallery'),
+    array('name'=>'Guestbook',  'path'=>'Module\Guestbook'),
+    array('name'=>'Market',     'path'=>'Module\Market'),
+    array('name'=>'News',       'path'=>'Module\News'),
+    array('name'=>'Page',       'path'=>'Module\Page'),
+    array('name'=>'System',     'path'=>'Module\System'),
+    array('name'=>'Foo',        'path'=>'Acme\Module\Foo'),
 );
