@@ -551,6 +551,7 @@ abstract class Base
     /**
      * Загружает конфиги модулей
      * @return array
+     * @throws Exception
      */
     protected function loadModulesConfigs()
     {
@@ -558,10 +559,20 @@ abstract class Base
             $_ = $this;
             $modules = include_once(ROOT . '/protected/modules.php');
 
-            array_map(function( $module ) use ( $_ ) {
-                $class = $module['path'].'\Module';
-                $_->_modules[ $module['name'] ] = new $class( $_, $module['name'], $module['path'] );
-            },$modules);
+            try {
+                array_map(function( $module ) use ( $_ ) {
+                    if ( ! isset( $module['path'] ) ) {
+                        throw new Exception('Directive "path" not defined in modules config');
+                    }
+                    if ( ! isset( $module['name'] ) ) {
+                        throw new Exception('Directive "name" not defined in modules config');
+                    }
+                    $class = $module['path'].'\Module';
+                    $_->_modules[ $module['name'] ] = new $class( $_, $module['name'], $module['path'] );
+                },$modules);
+            } catch ( \Exception $e ) {
+                die( $e->getMessage() );
+            }
 
             /** @var $module \Sfcms\Module */
             array_map(function( $module ) use ( $_ ) {

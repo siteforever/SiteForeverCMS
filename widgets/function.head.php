@@ -52,9 +52,9 @@ function smarty_function_head( $params )
             'jui' => 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min',
             'twitter' => 'bootstrap/js/bootstrap' . (App::isDebug() ? '' : '.min'),
             'siteforever' => 'module/siteforever',
-            'runtime' => '../_runtime',
+            'runtime' => '../runtime',
             'theme' => '/themes/'.App::getInstance()->getConfig('template.theme'),
-            'i18n'  => '../_runtime/i18n.'.$app->getConfig('language'),
+            'i18n'  => '../static/i18n/'.$app->getConfig('language'),
         ),
         'map' => array(
             '*' => array(
