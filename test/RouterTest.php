@@ -300,6 +300,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals( 'HTC-Evo-3D', $this->request->get('alias') );
     }
 
+    public function testFooModule()
+    {
+        $this->router->setRoute('foo');
+        $this->router->routing(true);
+        $this->assertEquals('foo', $this->request->getController());
+        $this->assertEquals('index', $this->request->getAction());
+    }
+
     /**
      * Маршрут включая модуль
      */

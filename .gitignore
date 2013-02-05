@@ -1,9 +1,7 @@
-/.idea*
-/index.php
-/_runtime*
-/protected/_runtime*
-/files*
-/thumbs*
+/.idea/
+/runtime/
+/files/
+/thumbs/
 /logger.txt
 /vendor/
 /static/

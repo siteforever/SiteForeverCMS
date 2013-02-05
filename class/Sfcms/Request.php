@@ -173,7 +173,7 @@ class Request
      */
     public function getAction()
     {
-        return $this->get( 'action' );
+        return $this->get( 'action', FILTER_DEFAULT, 'index' );
     }
 
     /**

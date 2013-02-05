@@ -8,16 +8,29 @@ namespace Sfcms\JqGrid;
 
 use ErrorException;
 use Sfcms;
+use Exception;
+use Composer\Script\Event;
+use Composer\Package\RootPackage;
 
 class ComposerHandler {
     /**
      * Этот метод нужен для композера. Он делает сборку библиотек jqGrig в удобоваримый для require-js файл
      */
-    public static function installAssets( $event )
+    public static function installAssets( Event $event )
     {
-//        var_dump( get_class_methods( $event->getComposer()->getPackage()->getExtra('sfcms-jqgrid-build') ) );
-        $source = realpath( __DIR__.'/../../..' ) . '/vendor/tonytomov';
-        $out    = realpath( __DIR__.'/../../..' ) . '/static/admin/jquery/jqgrid';
+        /** @var $pack RootPackage */
+        $pack = $event->getComposer()->getPackage();
+
+        $extra = $pack->getExtra();
+        $outDir = 'sfcms-static-dir';
+        if ( ! isset( $extra[ $outDir ] ) ) {
+            throw new Exception(sprintf('Param "%s" not defined',  $outDir ));
+        }
+
+        $rootDir = getenv('PWD');
+
+        $source = $rootDir . '/vendor/tonytomov';
+        $out    = $rootDir . '/'.$extra[ $outDir ].'/admin/jquery/jqgrid';
 
         $modules = array(
             'jqGrid/js/i18n/grid.locale-ru',

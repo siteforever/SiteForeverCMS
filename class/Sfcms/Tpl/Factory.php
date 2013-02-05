@@ -47,9 +47,9 @@ class Factory
             } else {
                 throw new Exception( 'Theme "'.$theme.'" not found' );
             }
-            $runtime    = ROOT."/_runtime";
-            $tpl_c  = $runtime."/_templates_c";
-            $cache  = $runtime."/_cache";
+            $runtime    = ROOT."/runtime";
+            $tpl_c  = $runtime."/templates_c";
+            $cache  = $runtime."/cache";
 
             if ( ! is_dir( $tpl_c ) ) {
                 @mkdir( $tpl_c, 0755, true );

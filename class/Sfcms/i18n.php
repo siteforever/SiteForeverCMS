@@ -65,14 +65,21 @@ class i18n
     public function setLanguage( $lang = 'en' )
     {
         $this->_lang = $lang;
+
         $dictFile   = SF_PATH  . '/protected/lang/' . $this->_lang . '.php';
         if( ! file_exists( $dictFile ) ) {
             throw new Exception( 'Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile );
         }
         $this->_dictionary = @include( $dictFile );
 
+        $dest = ROOT . '/static/i18n';
+
+        if ( ! is_dir( $dest ) ) {
+            mkdir( $dest, 0777, true );
+        }
+
         // Prepare dictionary for JS
-        $jsDictFile = ROOT.'/_runtime/i18n.'.$this->_lang.'.js';
+        $jsDictFile = $dest.'/'.$this->_lang.'.js';
         $jsI18nFile = SF_PATH.'/misc/module/i18n.js';
 
         if ( App::isDebug() && file_exists( $jsDictFile ) ) {

@@ -25,8 +25,6 @@ return array(
 
 //    'editor' => 'tinymce',
     'editor' => 'ckeditor',
-//    'editor' => 'tinymce',
-    'editor' => 'ckeditor',
 //    'editor' => 'elrte',
 
     'language'  => 'ru',

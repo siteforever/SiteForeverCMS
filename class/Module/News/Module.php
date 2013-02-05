@@ -15,4 +15,14 @@ class Module extends SfModule
     {
         return 'NewsCategory';
     }
+
+    /**
+     * Должна вернуть массив конфига для модуля
+     * @return mixed
+     */
+    public function config()
+    {
+        return include_once __DIR__ . '/config.php';
+    }
+
 }

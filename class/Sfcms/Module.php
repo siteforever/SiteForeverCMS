@@ -12,16 +12,31 @@ use Sfcms_Http_Exception;
 
 abstract class Module
 {
+    /** @var App */
     protected $app;
+
+    /** @var string */
+    protected $name;
+
+    /** @var string */
+    protected $path;
 
     /** @param array */
     protected static $controllers = null;
 
 
-    public function __construct()
+    public function __construct( App $app, $name, $path )
     {
-        $this->app = App::getInstance();
+        $this->app = $app;
+        $this->name = $name;
+        $this->path = $path;
     }
+
+    /**
+     * Должна вернуть массив конфига для модуля
+     * @return mixed
+     */
+    public abstract function config();
 
     /**
      * Вернет поле, которое связывает страницу с ее модулем
@@ -31,6 +46,16 @@ abstract class Module
     public static function relatedField()
     {
         return 'link';
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 
     /**
