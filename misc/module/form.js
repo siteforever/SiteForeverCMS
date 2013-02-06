@@ -20,12 +20,14 @@ define("module/form",[
     "jquery/jquery.form"
 ],function($){
 
-    var errorHandler = function( response ) {
+    // error handler
+    $(document).on('sfcms.form.success', function( event, response, status, xhr, $form ) {
         if ( response.error ) {
-            $( $form ).find('div.control-group[data-field-name]').each(function(){
-                var errorMsg = response.errors[ $(this).data('field-name') ];
+            $form.find('div.control-group[data-field-name]').each(function(){
+                var $this = $(this);
+                var errorMsg = response.errors[ $this.data('field-name') ];
                 if( errorMsg ) {
-                    $(this).addClass('error');
+                    $this.addClass('error');
                     var divError = $('div.error', this);
                     if ( divError.length ) {
                         divError.html( errorMsg );
@@ -34,46 +36,22 @@ define("module/form",[
                             divMsg = '<div class="error">' + errorMsg + '</div>';
                         divControls.length
                             ? $(divMsg).insertAfter($(divControls).find(':input'))
-                            : $(this).append(divMsg);
+                            : $this.append(divMsg);
                     }
                 } else {
-                    $(this).removeClass('error').find('div.error').remove();
+                    $this.removeClass('error').find('div.error').remove();
                 }
             });
         }
-    };
+    });
 
-    var basketHandler = function( response ){
-        var item;
-        if ( response.basket ) {
-            for ( i in response.basket ) {
-                if ( /^\d+$/.test(i) ) {
-                    item = response.basket[i];
-                    $('tr[data-key='+i+']').find('.basket-sum')
-                        .html( ( parseFloat(item.count) * parseFloat(item.price) ).toFixed(2).replace('.',',') );
-                }
-            }
-            if ( response.basket.delitems ) {
-                for( i in response.basket.delitems ) {
-                    $('tr[data-key='+response.basket.delitems[i]+']').remove();
-                }
-            }
-            $('.basket-count','#totalRow').find('b').html( response.basket.count );
-            $('.basket-sum','#totalRow').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
-        }
-    };
-
-    var deliveryHandler = function( response ){
-        if ( response.delivery && response.delivery.cost ) {
-            $('.basket-sum','#deliveryRow').html( response.delivery.cost );
-        }
-    };
-
-    var redirectHandler = function( response ){
+    // redirect handler
+    $(document).on('sfcms.form.success', function( event, response ){
         if ( response.redirect ) {
+            event.stopPropagation();
             window.location.href = response.redirect;
         }
-    }
+    });
 
     $(document).ready(function(){
         /**
@@ -84,13 +62,7 @@ define("module/form",[
             "iframe" : false,
             "dataType" : "json",
             "success" : function( response, status, xhr, $form ){
-                errorHandler( response );
-                basketHandler( response );
-                deliveryHandler( response );
-                redirectHandler( response );
-//                if ( script && script.formResponse && typeof script.formResponse == 'function' ) {
-//                    script.formResponse( response );
-//                }
+                $(document).trigger('sfcms.form.success', arguments);
             }
         });
     });

@@ -38,6 +38,35 @@ define([
         },
 
         "init" : function() {
+
+            // basket handler
+            $(document).on('sfcms.form.success', function( event, response ){
+                var item;
+                if ( response.basket ) {
+                    for ( var i in response.basket ) {
+                        if ( /^\d+$/.test(i) ) {
+                            item = response.basket[i];
+                            $('tr[data-key='+i+']').find('.basket-sum')
+                                .html( ( parseFloat(item.count) * parseFloat(item.price) ).toFixed(2).replace('.',',') );
+                        }
+                    }
+                    if ( response.basket.delitems ) {
+                        for( i in response.basket.delitems ) {
+                            $('tr[data-key=' + response.basket.delitems[i] + ']').remove();
+                        }
+                    }
+                    $('.basket-count','#totalRow').find('b').html( response.basket.count );
+                    $('.basket-sum','#totalRow').find('b').html( (response.basket.sum).toFixed(2).replace('.',',') );
+                }
+            });
+
+            // delivery handler
+            $(document).on('sfcms.form.success', function( event, response ){
+                if ( response.delivery && response.delivery.cost ) {
+                    $('.basket-sum','#deliveryRow').html( response.delivery.cost );
+                }
+            });
+
         }
     }
 });
