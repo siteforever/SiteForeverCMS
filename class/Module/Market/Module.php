@@ -30,4 +30,26 @@ class Module extends SfModule
         return include_once __DIR__ . '/config.php';
     }
 
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Интернет магазин',
+                'sub'   => array(
+                    array(
+                        'name'  => t('Payment'),
+                        'url'   => 'payment/admin'
+                    ),
+                    array(
+                        'name'  => t('delivery','Delivery'),
+                        'url'   => 'delivery/admin'
+                    ),
+                    array(
+                        'name'  => 'Заказы',
+                        'url'   => 'order/admin',
+                    ),
+                ),
+            ),
+        );
+    }
 }

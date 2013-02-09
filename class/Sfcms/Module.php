@@ -88,7 +88,17 @@ abstract class Module
      */
     public static function relatedModel()
     {
-        return 'Page';
+//        return 'Page';
+        return null;
     }
 
+    public function admin_menu()
+    {
+        return array(
+//            array(
+//                'name' => 'module_name',
+//                'url'  => 'module/path',
+//            ),
+        );
+    }
 }

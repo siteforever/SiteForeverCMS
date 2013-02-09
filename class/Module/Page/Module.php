@@ -25,4 +25,13 @@ class Module extends SfModule
         return include_once __DIR__ . '/config.php';
     }
 
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Структура',
+                'url'   => 'page/admin',
+            )
+        );
+    }
 }

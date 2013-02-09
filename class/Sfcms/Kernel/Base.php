@@ -600,6 +600,16 @@ abstract class Base
         return $this->_modules[$name];
     }
 
+    /**
+     * Get array for creating menu from modules in admin panel
+     * @return mixed
+     */
+    public function adminMenuModules()
+    {
+        return array_reduce( $this->getModules(), function( $total, $module ){
+            return null === $module->admin_menu() ? $total : array_merge_recursive( $total, $module->admin_menu() );
+        }, array() );
+    }
 
     /**
      * @return array

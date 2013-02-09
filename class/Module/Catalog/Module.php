@@ -35,4 +35,35 @@ class Module extends SfModule
         return include_once __DIR__ . '/config.php';
     }
 
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Каталог',
+                'sub'   => array(
+                    array(
+                        'name'  => 'Каталог',
+                        'url'   => 'catalog/admin',
+                    ),
+                    array(
+                        'name'  => t('Goods'),
+                        'url'   => 'goods/admin'
+                    ),
+                    array(
+                        'name'  => t('catalog','Product types'),
+                        'url'   => 'prodtype/admin'
+                    ),
+                    array(
+                        'name'  => t('material','Materials'),
+                        'url'   => 'material/admin'
+                    ),
+                    array(
+                        'name'  => t('Manufacturers'),
+                        'url'   => 'manufacturers/admin'
+                    ),
+                )
+            )
+        );
+    }
+
 }

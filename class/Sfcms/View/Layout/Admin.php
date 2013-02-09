@@ -40,9 +40,9 @@ class Admin extends Layout
         $adminJs[] = file_get_contents( SF_PATH.$misc.DS.'admin'.DS.'jquery'.DS.'jquery.filemanager.js' );
         $adminJs[] = file_get_contents( SF_PATH.$misc.DS.'admin'.DS.'jquery'.DS.'jquery.realias.js' );
         $adminJs[] = file_get_contents( SF_PATH.$misc.DS.'admin'.DS.'admin.js' );
-        file_put_contents( ROOT.DS.'_runtime'.DS.'admin.js', join("\n\n", $adminJs) );
+        file_put_contents( ROOT.DS.'runtime'.DS.'admin.js', join("\n\n", $adminJs) );
 
-        $this->_app->addScript( '/_runtime/admin.js' );
+        $this->_app->addScript( '/runtime/admin.js' );
 
         $this->_app->addStyle( $this->getMisc() . '/bootstrap/css/bootstrap.css' );
         $this->_app->addScript( $this->getMisc() . '/bootstrap/js/bootstrap.js' );

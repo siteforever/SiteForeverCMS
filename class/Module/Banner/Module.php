@@ -19,4 +19,19 @@ class Module extends SfModule
     {
         return include_once __DIR__ . '/config.php';
     }
+
+    public static function relatedModel()
+    {
+        return 'Page';
+    }
+
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Баннеры',
+                'url'   => 'banner/admin',
+            )
+        );
+    }
 }

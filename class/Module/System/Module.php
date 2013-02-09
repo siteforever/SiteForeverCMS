@@ -20,4 +20,61 @@ class Module extends SfModule
         return include_once __DIR__ . '/config.php';
     }
 
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Пользователи',
+                'url'   => 'users/admin',
+            ),
+            array(
+                'name'  => 'Журнал',
+                'url'   => 'log/admin',
+            ),
+            array(
+                'name'=> 'Сервис',
+                'sub' => array(
+                    array(
+                        'name'  => 'Менеджер файлов',
+                        'url'   => 'elfinder/finder',
+                        'class' => 'filemanager',
+                    ),
+                    //            array(
+                    //                'name'  => 'Архивация базы',
+                    //                'url'   => '/_runtime/sxd',
+                    //                'class' => 'dumper',
+                    //            ),
+                    array(
+                        'name'  => 'Поиск',
+                        'url'   => 'search/admin',
+                    ),
+                )
+            ),
+            //    array(
+            //        'name' => 'Система',
+            //        'sub' => array(
+            //            array(
+            //                'name'  => 'Маршруты',
+            //                'url'   => 'routes/admin',
+            //            ),
+            //            array(
+            //                'name'  => 'Конфигурация системы',
+            //                'url'   => 'system',
+            //            ),
+            //            array(
+            //                'name'  => 'Настройка',
+            //                'url'   => 'setting/admin',
+            //            ),
+            //            array(
+            //                'name'  => 'Генератор',
+            //                'url'   => 'generator',
+            //            ),
+            //        ),
+            //    ),
+            array(
+                'name'  => 'Выход',
+                'url'   => 'users/logout',
+            ),
+        );
+    }
 }

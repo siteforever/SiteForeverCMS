@@ -28,6 +28,10 @@ class Resolver extends Component
      * конфига принимает решение о том, какой класс должен выполнять функции контроллера,
      * в каком файле и пространстве имен он находится.
      *
+     * @param $controller
+     * @param $action
+     * @param $moduleName
+     *
      * @return array
      */
     public function resolveController( $controller = null, $action = null, $moduleName = null )
@@ -53,9 +57,7 @@ class Resolver extends Component
 
         $config = $this->_controllers[ $controller ];
 
-
         $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
-
 
         if ( isset( $config['class'] ) ) {
             $controllerClass = $config['class'];
@@ -113,10 +115,6 @@ class Resolver extends Component
 
         if ( ! class_exists( $command['controller'] ) ) {
             throw new Sfcms_Http_Exception( printf('Controller class "%s" not exists', $command['controller']), 404 );
-//            header('Status: 404 Not Found');
-//            $request->set('controller', 'error');
-//            $request->set('action', 'error404');
-//            $command = $this->resolveController();
         }
 
         $ref = new ReflectionClass($command['controller']);
@@ -230,10 +228,6 @@ class Resolver extends Component
     {
         $this->app()->getRequest()->setTemplate('index');
         $this->app()->getRequest()->set('resource', 'system:');
-        if ( file_exists(ROOT.'/modules.php') ) {
-            $this->app()->getRequest()->set('modules', require_once(ROOT.'/modules.php'));
-        } elseif ( ROOT != SF_PATH && file_exists(SF_PATH.'/modules.php') ) {
-            $this->app()->getRequest()->set('modules', require_once(SF_PATH.'/modules.php'));
-        }
+        $this->app()->getRequest()->set('modules', $this->app()->adminMenuModules());
     }
 }
