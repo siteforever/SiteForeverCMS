@@ -5,6 +5,7 @@
  */
 namespace Module\Catalog\Model;
 
+use Module\Page\Object\Page;
 use Sfcms;
 use Sfcms\JqGrid\Provider;
 use Sfcms\Exception;
@@ -38,6 +39,12 @@ class CatalogModel extends Model
     protected $form = null;
 
 
+    public function init()
+    {
+        $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this,'onCatalogSaveStart'));
+        $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this,'onCatalogSaveSuccess'));
+    }
+
     public function relation()
     {
         return array(
@@ -52,6 +59,78 @@ class CatalogModel extends Model
         );
     }
 
+    /**
+     * Вызывается перед сохранением страницы
+     *
+     * Цель: создать связь страниц с объектами каталога
+     *
+     * @param \Sfcms\Model\ModelEvent $event
+     */
+    public function pluginPageSaveStart( Model\ModelEvent $event )
+    {
+        /** @var $page Page */
+        $page       = $event->getObject();
+        $pageModel  = $event->getModel();
+
+        /** @var $category Catalog */
+        $category = null;
+        if ( $page->link ) {
+            $category = $this->find( $page->link );
+        }
+        if ( ! $category ) {
+            $category = $this->createObject();
+        }
+
+        // Надо скрыть или показать все товары в данной категории, если изменился уровень видимости категории
+        if ( $category->id
+            && ( $category->hidden != $page->hidden || $category->protected != $page->protected || $category->deleted != $page->deleted ) )
+        {
+            array_map(function( $product ) use ( $page ) {
+                    /** @var $product Catalog */
+                    $product->hidden = $page->hidden;
+                    $product->protected = $page->protected;
+                    $product->deleted = $page->deleted;
+                },iterator_to_array($category->Goods));
+        }
+
+        /** @var $category Catalog */
+        $category->name         = $page->name;
+        $category->pos          = $page->pos;
+        $category->hidden       = $page->hidden;
+        $category->protected    = $page->protected;
+        $category->deleted      = $page->deleted;
+
+        $category->cat = 1;
+
+        if ( $page->parent && ! $category->parent ) {
+            /** @var $parentPage Page */
+            $parentPage = $pageModel->find( $page->parent );
+            if ( $parentPage->controller == $page->controller && $parentPage->link ) {
+                $category->parent = $parentPage->link;
+            } else {
+                $category->parent = 0;
+            }
+        }
+        $category->save();
+        $page->link = $category->id;
+    }
+
+    /**
+     * Пересортировка
+     *
+     * Вызывается при пересортировке страниц.
+     * Сюда передается объект страницы с новым параметром link.
+     *
+     * @param \Sfcms\Model\ModelEvent $event
+     */
+    public function pluginPageResort( Model\ModelEvent $event )
+    {
+        $obj = $event->getObject();
+        /** @var $catObj Catalog */
+        $catObj = $this->find( $obj->link );
+        $catObj->pos = $obj->pos;
+        $catObj->markDirty();
+    }
 
     /**
      * Вернет прямых потомков для раздела
@@ -216,11 +295,11 @@ class CatalogModel extends Model
     }
 
     /**
-     * @param Catalog $obj
-     * @return bool
+     * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onSaveStart( Object $obj = null )
+    public function onCatalogSaveStart( Model\ModelEvent $event )
     {
+        $obj = $event->getObject();
         // If object will update
         /** @var $obj Catalog */
         if( $obj->getId() ) {
@@ -237,24 +316,21 @@ class CatalogModel extends Model
                 $objPage->markDirty();
             }
         }
-
-        return true;
     }
 
     /**
-     * @param Object $obj
-     * @return boolean
+     * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onSaveSuccess( Object $obj = null )
+    public function onCatalogSaveSuccess( Model\ModelEvent $event )
     {
         /** @var $obj Catalog */
+        $obj = $event->getObject();
+
         // If object was just created
         if ( ! $obj->path ) {
             $obj->path = $this->createSerializedPath( $obj->getId() );
             $this->save( $obj );
-            return true;
         }
-        parent::onSaveSuccess( $obj );
     }
 
 

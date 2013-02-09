@@ -34,6 +34,8 @@ use Sfcms\Basket\Base as Basket;
 use Std_Logger;
 use Auth;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 abstract class Base
 {
     static protected $instance = null;
@@ -169,6 +171,11 @@ abstract class Base
      * @var Delivery;
      */
     protected $_devivery = null;
+
+    /**
+     * @var EventDispatcher
+     */
+    protected $_event_dispatcher = null;
 
 
 
@@ -560,7 +567,7 @@ abstract class Base
             $modules = include_once(ROOT . '/protected/modules.php');
 
             try {
-                array_map(function( $module ) use ( $_ ) {
+                array_map( function( $module ) use ( $_ ) {
                     if ( ! isset( $module['path'] ) ) {
                         throw new Exception('Directive "path" not defined in modules config');
                     }
@@ -569,16 +576,23 @@ abstract class Base
                     }
                     $class = $module['path'].'\Module';
                     $_->_modules[ $module['name'] ] = new $class( $_, $module['name'], $module['path'] );
-                },$modules);
+                }, $modules );
             } catch ( \Exception $e ) {
                 die( $e->getMessage() );
             }
 
-            /** @var $module \Sfcms\Module */
+            // Сперва загрузим все конфиги
             array_map(function( $module ) use ( $_ ) {
                 $_->_modules_config[ $module->getName() ] = $module->config();
             },$this->_modules);
+
+            // А потом инициализируем
+            // Т.к. для инициализации могут потребоваться зависимые модули
+            array_map(function( $module ) use ( $_ ) {
+                return method_exists( $module, 'init' ) ? $module->init() : false;
+            },$this->_modules);
         }
+
         return $this->_modules_config;
     }
 
@@ -668,6 +682,16 @@ abstract class Base
         return isset( $this->_controllers[$name] );
     }
 
+    /**
+     * @return EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        if ( null === $this->_event_dispatcher ) {
+            $this->_event_dispatcher = new EventDispatcher();
+        }
+        return $this->_event_dispatcher;
+    }
 
 //    /**
 //     * @static

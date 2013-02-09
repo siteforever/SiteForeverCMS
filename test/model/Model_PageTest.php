@@ -19,6 +19,11 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
         Watcher::instance()->clear();
     }
 
+    public function testModelClass()
+    {
+        $this->assertEquals('page', $this->model->eventAlias());
+    }
+
     /**
      * Тест выбирает страницы, принадлежащие главной и перемешивает их.
      * Потом проверяет, что они правильно перемешались.

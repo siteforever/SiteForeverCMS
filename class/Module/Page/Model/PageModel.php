@@ -17,10 +17,6 @@ use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
 
-use Module\Catalog\Plugin\Page as CatalogPlugin;
-use Module\News\Plugin\Page as NewsPlugin;
-use Module\Gallery\Plugin\Page as GalleryPlugin;
-
 class PageModel extends Model
 {
     /**
@@ -50,9 +46,8 @@ class PageModel extends Model
 
     public function init()
     {
-        $this->addPlugin( new CatalogPlugin(), 'catalog' );
-        $this->addPlugin( new NewsPlugin(), 'news' );
-        $this->addPlugin( new GalleryPlugin(), 'gallery' );
+        $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this,'onPageSaveStart'));
+//        $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this,'onPageSaveSuccess'));
     }
 
     public function relation()
@@ -120,7 +115,8 @@ class PageModel extends Model
         foreach ( $pages as $pageObj ) {
             /** @var $pageObj Page */
             $pageObj->pos = $sort[$pageObj->id];
-            $this->callPlugins($pageObj->controller.':resort', $pageObj);
+            $this->trigger(sprintf('plugin.page-%s.resort', $pageObj->controller), new Model\ModelEvent( $pageObj, $this ));
+//            $this->callPlugins($pageObj->controller.':resort', $pageObj);
         }
 
         return 'done';
@@ -167,16 +163,14 @@ class PageModel extends Model
     }
 
     /**
-     * @param Object $obj
-     * @return bool
-     * @throws Exception
+     * @param \Sfcms\Model\ModelEvent $event
+     *
+     * @throws \Sfcms\Model\Exception
      */
-    public function onSaveStart( Object $obj = null )
+    public function onPageSaveStart( Model\ModelEvent $event )
     {
         /** @var $obj Page  */
-        if ( ! $obj instanceof Page ) {
-            throw new Exception('$obj must be "Page" class');
-        }
+        $obj = $event->getObject();
 
         $pageId = $this->checkAlias( $obj->alias );
         if ( false !== $pageId && $obj->getId() != $pageId ) {
@@ -186,19 +180,9 @@ class PageModel extends Model
         $obj->path = $obj->createPath();
 
         // Настраиваем связь с модулями
-        $this->callPlugins( "{$obj->controller}:onSaveStart", $obj);
-        return true;
-    }
-
-    /**
-     * @param Object $obj
-     * @return boolean
-     */
-    public function onSaveSuccess( Object $obj = null )
-    {
-        parent::onSaveSuccess($obj);
-        /** @var $obj Page */
-        return true;
+        // @todo Должно определяться по имени модели, но в странице не указана связанная модель, а только контроллер
+        $this->trigger(sprintf('plugin.page-%s.save.start', $obj->controller), $event);
+//        $this->callPlugins( "{$obj->controller}:onSaveStart", $obj);
     }
 
     /**
@@ -351,97 +335,6 @@ class PageModel extends Model
         }
         return $return;
     }
-
-    /**
-     * Вернет HTML-меню
-     *
-     * @param int             $parent
-     * @param int             $levelback
-     * @param DOMElement|null $node
-     *
-     * @deprecated
-     *
-     * @return string
-     */
-//    public function getMenu( $parent, $levelback = 1, DOMElement $node = null )
-//    {
-//        $do_return = false;
-//        if (null === $node) {
-//            $do_return = true;
-//            $dom       = new DOMDocument( '1.0', 'utf-8' );
-//            $dom->appendChild( $node = $dom->createElement( 'div' ) );
-//        }
-//        else {
-//            $dom = $node->ownerDocument;
-//        }
-//
-//        if (count( $this->parents ) == 0) {
-//            $this->createParentsIndex();
-//        }
-//
-//        if ($levelback <= 0) {
-//            return '';
-//        }
-//
-//        if (!isset( $this->parents[ $parent ] )) {
-//            return '';
-//        }
-//
-//        /**
-//         * @var DOMElement $ul
-//         */
-//        $node->appendChild( $ul = $dom->createElement( 'ul' ) );
-//
-//        $counter     = count( $this->parents[ $parent ] );
-//        $total_count = $counter;
-//
-//        foreach ( array_reverse( $this->parents[ $parent ], 1 ) as $obj ) {
-//            if ($obj[ 'hidden' ] == 0 && $obj[ 'deleted' ] == 0) {
-//                break;
-//            }
-//        }
-//
-//        foreach ( $this->parents[ $parent ] as $branch )
-//        {
-//            if ($branch[ 'hidden' ] == 0 && $branch[ 'deleted' ] == 0) {
-//                $active = $branch[ 'alias' ] == $this->request->get( 'route' );
-//
-//                /**
-//                 * @var DOMElement $li
-//                 */
-//                $ul->appendChild( $li = $dom->createElement( 'li' ) );
-//                /**
-//                 * @var DOMElement $a
-//                 */
-//                $li->appendChild( $a = $dom->createElement( 'a', $branch[ 'name' ] ) );
-//                $a->setAttribute( 'href', $this->app()->getRouter()->createLink( $branch[ 'alias' ] ) );
-//
-//                $classes = array( 'item-' . $branch[ 'id' ] );
-//
-//                if ($counter == $total_count) {
-//                    $classes[ ] = 'first';
-//                }
-//
-//                if ($branch[ 'id' ] == $obj[ 'id' ]) {
-//                    $classes[ ] = 'last';
-//                }
-//
-//                if ($active) {
-//                    $classes[ ] = 'active';
-//                    $a->setAttribute( 'class', 'active' );
-//                }
-//                $li->setAttribute( 'class', join( ' ', $classes ) );
-//                $this->getMenu( $branch[ 'id' ], $levelback - 1, $li );
-//            }
-//            $counter--;
-//        }
-//
-//        if (!$do_return) {
-//            return '';
-//        }
-//        $dom->formatOutput = true;
-//        return $dom->saveHTML();
-//    }
 
     /**
      * Вернет объект формы

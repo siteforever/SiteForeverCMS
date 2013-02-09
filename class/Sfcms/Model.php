@@ -22,6 +22,7 @@ use Sfcms\Data\Object;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
+use Symfony\Component\EventDispatcher\Event;
 
 abstract class Model extends Component
 {
@@ -116,6 +117,12 @@ abstract class Model extends Component
         $this->db  = self::$dao;
         $this->pdo = $this->db->getResource();
 
+        if ( method_exists( $this, 'onSaveStart' ) ) {
+            $this->on( sprintf('%s.save.start', $this->eventAlias()), array( $this, 'onSaveStart' ));
+        }
+        if ( method_exists( $this, 'onSaveSuccess' ) ) {
+            $this->on( sprintf('%s.save.success', $this->eventAlias()), array( $this, 'onSaveSuccess' ));
+        }
         $this->init();
     }
 
@@ -138,9 +145,8 @@ abstract class Model extends Component
 
 
     /**
-     * Вызывает нужные плугины
-     * @param $name
-     * @param Object $obj
+     * @param             $name
+     * @param Data\Object $obj
      */
     protected function callPlugins( $name, Object $obj )
     {
@@ -672,16 +678,25 @@ abstract class Model extends Component
         return null;
     }
 
+    public function eventAlias()
+    {
+        if ( preg_match('/(\w+)model$/i', get_class($this), $match) )
+            return strtolower( $match[1] );
+        else
+            throw new \ErrorException('Can not define event alias');
+    }
+
     /**
      * Сохраняет данные модели в базе
-     * @param Object $obj
-     * @return int
+     * @param Data\Object $obj
+     *
+     * @return bool|int|null
      */
     public function save( Object $obj )
     {
-        if( ! $this->onSaveStart( $obj ) ) {
-            return false;
-        }
+        $event = new Model\ModelEvent($obj, $this);
+        $this->trigger( sprintf('%s.save.start', $this->eventAlias()), $event );
+
 //        $data      = $obj->attributes;
         $class     = $this->objectClass();
         $fields    = $class::fields();
@@ -699,10 +714,10 @@ abstract class Model extends Component
         }
 
         if ( ! count( $save_data ) ) {
-            return null;
+            return false;
         }
 
-        $ret = null;
+        $ret = false;
         if( null !== $obj->getId() ) {
             $ret = $this->db->update( $this->getTable(), $save_data, '`id` = ' . $obj->getId() );
         } else {
@@ -710,29 +725,21 @@ abstract class Model extends Component
             $obj->set('id', $ret);
             $this->addToMap( $obj );
         }
-        if( null !== $ret ) {
-            $this->onSaveSuccess( $obj );
+        if( false !== $ret ) {
+            $this->trigger( sprintf('%s.save.success', $this->eventAlias()), $event );
         }
         return $ret;
     }
 
     /**
-     * @param Object $obj
-     * @return boolean
-     */
-    public function onSaveStart( Object $obj = null )
-    {
-        return true;
-    }
-
-    /**
      * Тут нельзя вызывать сохраниение объекта, или вызывать очень осторожно.
      * Иначе возникнет бесконечный цикл
-     * @param Object $obj
-     * @return boolean
+     *
+     * @param Model\ModelEvent $event
      */
-    public function onSaveSuccess( Object $obj = null )
+    public function onSaveSuccess( Model\ModelEvent $event )
     {
+        $obj = $event->getObject();
         // Записываем все события в таблицу log
         if ( $this->config->get('db.log') ) {
             /** @var $logModel LogModel */
@@ -746,7 +753,6 @@ abstract class Model extends Component
                 )
             );
         }
-        return true;
     }
 
     /**

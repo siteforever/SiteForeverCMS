@@ -490,7 +490,7 @@ class CatalogController extends Sfcms_Controller
         $paging = $this->paging( $count, 10, $this->router->createServiceLink('catalog','admin',array('part'=>$part)) );
 
         $crit[ 'limit' ] = $paging->limit;
-        $crit[ 'order' ] = 'cat DESC, pos DESC';
+        $crit[ 'order' ] = 'pos';
 
         $list = $catalogFinder->findAll( $crit );
 

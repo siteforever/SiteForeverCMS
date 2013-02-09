@@ -1,6 +1,7 @@
 <?php
 namespace Module\Gallery\Model;
 
+use Module\Gallery\Object\Category;
 use Sfcms\Model;
 use Forms_Gallery_Category;
 
@@ -22,6 +23,31 @@ class CategoryModel extends Model
             'Images' => array( self::HAS_MANY, 'Gallery', 'category_id' ),
             'Page'   => array( self::HAS_ONE, 'Page', 'link' ),
         );
+    }
+
+    /**
+     * Вызывается перед сохранением страницы
+     *
+     * Цель: создать связь страниц с объектами галереи
+     *
+     * @param \Sfcms\Model\ModelEvent $event
+     */
+    public function pluginPageSaveStart( Model\ModelEvent $event )
+    {
+        $obj = $event->getObject();
+        if ( $obj->link ) {
+            $category = $this->find( $obj->link );
+        } else {
+            $category = $this->createObject();
+        }
+        /** @var $category Category */
+        $category->name         = $obj->name;
+        $category->hidden       = $obj->hidden;
+        $category->protected    = $obj->protected;
+        $category->deleted      = $obj->deleted;
+
+        $category->save();
+        $obj->link = $category->id;
     }
 
     /**

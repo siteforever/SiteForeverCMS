@@ -1,6 +1,5 @@
 <?php
 
-use App;
 use Sfcms\Model;
 
 /**

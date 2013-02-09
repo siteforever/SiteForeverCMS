@@ -7,6 +7,7 @@
 
 namespace Module\Gallery;
 
+use Sfcms\Model;
 use Sfcms\Module as SfModule;
 
 class Module extends SfModule
@@ -28,6 +29,13 @@ class Module extends SfModule
     public function config()
     {
         return include_once __DIR__ . '/config.php';
+    }
+
+    public function init()
+    {
+        $model = Model::getModel('GalleryCategory');
+        $dispatcher = $this->app->getEventDispatcher();
+        $dispatcher->addListener('plugin.page-gallery.save.start', array($model,'pluginPageSaveStart'));
     }
 
     public function admin_menu()

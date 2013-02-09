@@ -8,6 +8,7 @@
 namespace Module\Catalog;
 
 use Sfcms\Module as SfModule;
+use Sfcms\Model;
 
 class Module extends SfModule
 {
@@ -33,6 +34,14 @@ class Module extends SfModule
     public function config()
     {
         return include_once __DIR__ . '/config.php';
+    }
+
+    public function init()
+    {
+        $model = Model::getModel('Catalog');
+        $dispatcher = $this->app->getEventDispatcher();
+        $dispatcher->addListener('plugin.page-catalog.save.start', array($model,'pluginPageSaveStart'));
+        $dispatcher->addListener('plugin.page-catalog.resort', array($model,'pluginPageResort'));
     }
 
     public function admin_menu()
