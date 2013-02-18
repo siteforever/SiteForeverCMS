@@ -374,7 +374,7 @@ abstract class Field
 
         if ( ! $this->checkValue( $this->getValue() ) ) {
             $this->_error   = 3;
-            $this->_msg    = "&laquo;{$this->_label}&raquo; не соответсвует формату";
+            $this->_msg    = $this->_msg ?: "&laquo;{$this->_label}&raquo; не соответсвует формату";
             return false;
         }
 

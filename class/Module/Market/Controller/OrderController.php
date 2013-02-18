@@ -247,7 +247,7 @@ class OrderController extends Sfcms_Controller
             $order->status = $new_status;
         }
 
-        $this->request->setTitle("Заказ <b>№ {$order->id}</b> от ".strftime('%d.%m.%Y (%H:%M)'));
+        $this->request->setTitle("Заказ <b>№ {$order->id}</b> от ".strftime('%d.%m.%Y (%H:%M)',$order->date));
 
         $summa = $positions->sum('sum');
         $count = $positions->sum('count');
