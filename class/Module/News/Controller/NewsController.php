@@ -102,7 +102,7 @@ class NewsController extends Sfcms_Controller
             'cond'     => $cond,
             'params'   => $params,
             'limit'    => $paging['limit'],
-            'order'    => '`date` DESC, `name`',
+            'order'    => '`date` DESC, `id` DESC',
         ));
 
         $this->tpl->assign(array(
