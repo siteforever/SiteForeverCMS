@@ -678,12 +678,17 @@ abstract class Model extends Component
         return null;
     }
 
+    /**
+     * Генерирует псевдоним для события
+     * @return string
+     * @throws \ErrorException
+     */
     public function eventAlias()
     {
         if ( preg_match('/(\w+)model$/i', get_class($this), $match) )
             return strtolower( $match[1] );
         else
-            throw new \ErrorException('Can not define event alias');
+            throw new \ErrorException("Can not define event alias.\nYou need redefine \"eventAlias()\" method.");
     }
 
     /**

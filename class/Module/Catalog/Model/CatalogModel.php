@@ -242,7 +242,7 @@ class CatalogModel extends Model
     public function findProductsSortTop( $limit = 4 )
     {
         return $this->with('Gallery')
-            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0',array(),'top DESC', $limit);
+            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND absent != 1',array(),'top DESC', $limit);
     }
 
 

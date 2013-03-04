@@ -11,6 +11,10 @@ class Model_Test extends Model
         return '\Module\System\Object\Test';
     }
 
+    public function eventAlias()
+    {
+        return 'test';
+    }
 }
 
 /**

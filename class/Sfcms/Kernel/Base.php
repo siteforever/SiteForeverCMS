@@ -200,6 +200,16 @@ abstract class Base
         // Загрузка параметров модулей
         $this->getControllers();
     }
+
+    /**
+     * Защита от ошибок сериализации.
+     * Иногда возникают во время тестов.
+     * @return array
+     */
+    public function __sleep()
+    {
+        return array();
+    }
     
     /**
      * @static
@@ -666,10 +676,15 @@ abstract class Base
                     } else {
                         $params['module'] = $module;
                     }
+                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
                     $this->_controllers[strtolower($controller)] = $params;
                 }
             }
         }
+        $this->getLogger()->log(sprintf('Request->route = "%s", $_REQUEST[route] = "%s"',
+                $this->getRequest()->get('route'),
+                $_REQUEST['route']
+            ));
         return $this->_controllers;
     }
 
