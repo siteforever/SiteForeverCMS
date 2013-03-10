@@ -681,10 +681,6 @@ abstract class Base
                 }
             }
         }
-        $this->getLogger()->log(sprintf('Request->route = "%s", $_REQUEST[route] = "%s"',
-                $this->getRequest()->get('route'),
-                $_REQUEST['route']
-            ));
         return $this->_controllers;
     }
 
