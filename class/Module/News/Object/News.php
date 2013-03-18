@@ -50,7 +50,7 @@ class News extends Object
 
     public function getTitle()
     {
-        if ( isset( $this->data['title'] ) ) {
+        if ( ! empty( $this->data['title'] ) ) {
             return $this->data['title'];
         }
         return $this->data['name'];
