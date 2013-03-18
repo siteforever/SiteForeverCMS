@@ -162,6 +162,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function trigger( $eventName, Event $event )
     {
+        $this->log($eventName, 'trigger');
         return $this->app()->getEventDispatcher()->dispatch( $eventName, $event );
     }
 

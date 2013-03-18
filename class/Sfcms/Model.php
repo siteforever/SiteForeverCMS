@@ -701,6 +701,7 @@ abstract class Model extends Component
     {
         $event = new Model\ModelEvent($obj, $this);
         $this->trigger( sprintf('%s.save.start', $this->eventAlias()), $event );
+        $this->trigger( 'save.start', $event );
 
 //        $data      = $obj->attributes;
         $class     = $this->objectClass();
@@ -732,6 +733,7 @@ abstract class Model extends Component
         }
         if( false !== $ret ) {
             $this->trigger( sprintf('%s.save.success', $this->eventAlias()), $event );
+            $this->trigger( 'save.success', $event );
         }
         return $ret;
     }
@@ -744,20 +746,8 @@ abstract class Model extends Component
      */
     public function onSaveSuccess( Model\ModelEvent $event )
     {
-        $obj = $event->getObject();
-        // Записываем все события в таблицу log
-        if ( $this->config->get('db.log') ) {
-            /** @var $logModel LogModel */
-            $logModel = $this->getModel('Module\\System\\Model\\LogModel');
-            $this->getDB()->insert($logModel->getTable(),
-                array(
-                    'user'      => $this->app()->getAuth()->currentUser()->getId() ?: 0,
-                    'object'    => get_class( $obj ),
-                    'action'    => 'save',
-                    'timestamp' => time(),
-                )
-            );
-        }
+        // Никогда не вызовется
+        // Для вызова надо переоределить в модели
     }
 
     /**

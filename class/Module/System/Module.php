@@ -7,6 +7,7 @@
 
 namespace Module\System;
 
+use Sfcms\Model;
 use Sfcms\Module as SfModule;
 
 class Module extends SfModule
@@ -18,6 +19,13 @@ class Module extends SfModule
     public function config()
     {
         return include_once __DIR__ . '/config.php';
+    }
+
+    public function init()
+    {
+        $model = Model::getModel('Module\\System\\Model\\LogModel');
+        $dispatcher = $this->app->getEventDispatcher();
+        $dispatcher->addListener('save.start', array($model,'pluginAllSaveStart'));
     }
 
     public function admin_menu()

@@ -676,7 +676,7 @@ abstract class Base
                     } else {
                         $params['module'] = $module;
                     }
-                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
+//                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
                     $this->_controllers[strtolower($controller)] = $params;
                 }
             }

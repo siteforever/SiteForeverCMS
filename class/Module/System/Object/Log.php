@@ -9,6 +9,16 @@ namespace Module\System\Object;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 
+/**
+ * Class Log
+ * @package Module\System\Object
+ *
+ * @property $id
+ * @property $user
+ * @property $object
+ * @property $action
+ * @property $timestamp
+ */
 class Log extends Object
 {
     protected $engine   = 'MyISAM';
@@ -17,7 +27,7 @@ class Log extends Object
      * Create field list
      * @return array
      */
-    protected function doFields()
+    protected static function doFields()
     {
         return array(
             new Field\Int( 'id', 11, false, null, true ),
@@ -32,7 +42,7 @@ class Log extends Object
      * DB table name
      * @return string
      */
-    public function table()
+    public static function table()
     {
         return 'log';
     }
