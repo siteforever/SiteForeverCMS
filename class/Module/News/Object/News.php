@@ -18,6 +18,7 @@
  * @property $title
  * @property $keywords
  * @property $description
+ * @property $priority
  * @property $hidden
  * @property $protected
  * @property $deleted
@@ -34,7 +35,7 @@ class News extends Object
 {
     public function getAlias()
     {
-        if ( ! $this->data['alias'] || '0' == $this->data['alias']{0} ) {
+        if ( empty( $this->data['alias'] ) || '0' == $this->data['alias']{0} ) {
             $this->alias = $this->name
                 ? strtolower( $this->id . '-' . Sfcms::i18n()->translit( $this->name ) )
                 : $this->id;
@@ -83,6 +84,7 @@ class News extends Object
             new Field\Varchar('name', 250),
             new Field\Varchar('image', 250, false, ''),
             new Field\Tinyint('main', 1, false, 0),
+            new Field\Tinyint('priority', 1, false, 0),
             new Field\Int('date'),
 
             new Field\Text('notice'),

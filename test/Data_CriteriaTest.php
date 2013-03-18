@@ -6,39 +6,13 @@
 use Sfcms\Data\Field;
 use Sfcms\Data\Query\Builder as QueryBuilder;
 
-class TestTable extends \Sfcms\Data\Table
-{
-    /**
-     * Вернет имя таблицы
-     * @return string
-     */
-    public static function table()
-    {
-        return 'test';
-    }
-
-    /**
-     * Создаст список полей
-     * @return array
-     */
-    protected static function doFields()
-    {
-        return array(
-            new Field\Int('id'),
-            new Field\Int('parent'),
-            new Field\Int('active'),
-        );
-    }
-}
-
 class CriteriaTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var QueryBuilder
-     */
+    /** @var QueryBuilder */
     protected $object;
-    
-    protected $table;
+
+    /** @var \Module\System\Object\Test */
+    protected $obj;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -46,9 +20,9 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-
-        if ( ! isset( $this->table ) ) {
-            $this->table  = new TestTable();
+        if ( ! isset( $this->obj ) ) {
+            $model = \Sfcms\Model::getModel('\\Module\\System\\Model\\TestModel');
+            $this->obj  = $model->createObject();
         }
     }
 
@@ -66,22 +40,22 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testGetSQL()
     {
-        $criteria   = new QueryBuilder($this->table, array());
+        $criteria   = new QueryBuilder($this->obj->getModel(), array());
 
-        $sql    = "SELECT `id`,`parent`,`active` FROM `{$this->table}`";
+        $sql    = "SELECT `id`,`value` FROM `test`";
 
         $this->assertEquals( $sql, $criteria->getSQL() );
 
         //print( "\n".preg_replace('/\s+/', ' ', $criteria->getSQL() )."\n" );
 
-        $criteria   = new QueryBuilder($this->table, array(
+        $criteria   = new QueryBuilder($this->obj->getModel(), array(
             'cond'      => '`param1` = :param1 AND `param2` = :param2 AND `par3` = ? AND `par4` = ?',
             'params'    => array(':param1'=>'foo1', ':param2'=>'fo\'o2', 'fo"o3', 'foo4'),
             'order'     => '`pos` DESC',
             'limit'     => '1, 2'
         ));
 
-        $sql    = "SELECT `id`,`parent`,`active` FROM `{$this->table}` ".
+        $sql    = "SELECT `id`,`value` FROM `test` ".
                 "WHERE `param1` = 'foo1' AND `param2` = 'fo&#39;o2' AND `par3` = 'fo&#34;o3' AND `par4` = 'foo4' ".
                 "ORDER BY `pos` DESC LIMIT 1, 2";
 
@@ -94,45 +68,45 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testParamArray()
     {
-        $criteria   = new QueryBuilder( $this->table, array(
+        $criteria   = new QueryBuilder( $this->obj->getModel(), array(
             'cond'      => '`id` IN (:list) ',
             'params'    => array(':list'=>array(1,2,3)),
         ));
 
-        $sql    = "SELECT `id`,`parent`,`active` FROM `{$this->table}` WHERE `id` IN (1,2,3)";
+        $sql    = "SELECT `id`,`value` FROM `test` WHERE `id` IN (1,2,3)";
 
         $this->assertEquals( $criteria->getSQL(), $sql );
 
 
-        $criteria = new QueryBuilder($this->table,array(
+        $criteria = new QueryBuilder($this->obj->getModel(),array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array(0,1,2,3)),
         ));
 
         $this->assertEquals(
-            'SELECT `id`,`parent`,`active` FROM `test` WHERE `id` IN (0,1,2,3)',
+            'SELECT `id`,`value` FROM `test` WHERE `id` IN (0,1,2,3)',
             $criteria->getSQL()
         );
 
 
-        $criteria = new QueryBuilder($this->table,array(
+        $criteria = new QueryBuilder($this->obj->getModel(),array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array('',1,2,3)),
         ));
 
         $this->assertEquals(
-            'SELECT `id`,`parent`,`active` FROM `test` WHERE `id` IN (1,2,3)',
+            'SELECT `id`,`value` FROM `test` WHERE `id` IN (1,2,3)',
             $criteria->getSQL()
         );
 
 
-        $criteria = new QueryBuilder($this->table,array(
+        $criteria = new QueryBuilder($this->obj->getModel(),array(
             'cond'  => '`id` IN (?)',
             'params'=> array(array('a','b','c','d')),
         ));
 
         $this->assertEquals(
-            'SELECT `id`,`parent`,`active` FROM `test` WHERE `id` IN (\'a\',\'b\',\'c\',\'d\')',
+            'SELECT `id`,`value` FROM `test` WHERE `id` IN (\'a\',\'b\',\'c\',\'d\')',
             $criteria->getSQL()
         );
     }
@@ -142,7 +116,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
      */
     public function testGetParams()
     {
-        $criteria   = new QueryBuilder($this->table, array(
+        $criteria   = new QueryBuilder($this->obj->getModel(), array(
             'params'    => array('test', ':test'=>'test'),
         ));
         $this->assertEquals( $criteria->getParams(), array('test', ':test'=>'test'), 'Params not correspond' );
@@ -150,14 +124,14 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
 
     public function testGetAllPages()
     {
-        $criteria = new QueryBuilder($this->table, array(
+        $criteria = new QueryBuilder($this->obj->getModel(), array(
             'cond'      => '`deleted` = ?',
             'params'    => array(0),
             'order'     => '`pos`',
         ));
 
         $this->assertEquals(
-            'SELECT `id`,`parent`,`active` FROM `test` WHERE `deleted` = 0 ORDER BY `pos`',
+            'SELECT `id`,`value` FROM `test` WHERE `deleted` = 0 ORDER BY `pos`',
             $criteria->getSQL()
         );
     }

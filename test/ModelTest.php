@@ -3,19 +3,8 @@ use Sfcms\Model;
 use Sfcms\db;
 use Sfcms\Kernel\Base as Kernel;
 use Module\System\Object\Test as TestObject;
-
-class Model_Test extends Model
-{
-    public function objectClass()
-    {
-        return '\Module\System\Object\Test';
-    }
-
-    public function eventAlias()
-    {
-        return 'test';
-    }
-}
+use Sfcms\Data\Watcher;
+use Sfcms\Data\Collection;
 
 /**
  * Test class for Model.
@@ -26,7 +15,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     /**
      * @var Model
      */
-    protected $object;
+    protected $model = null;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -34,9 +23,10 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        if ( is_null( $this->object ) ) {
-            $this->object = Model::getModel('Model_Test');
+        if ( null === $this->model ) {
+            $this->model = Model::getModel('\\Module\\System\\Model\\TestModel');
         }
+        Watcher::instance()->clear();
     }
 
     /**
@@ -48,35 +38,38 @@ class ModelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testGetDB().
+     *
      */
     public function testGetDB()
     {
-        $this->assertTrue( $this->object->getDB() instanceof db );
+        $this->assertTrue( $this->model->getDB() instanceof db );
     }
 
     /**
-     * @todo Implement testApp().
+     *
      */
     public function testApp()
     {
-        $this->assertTrue( $this->object->app() instanceof Kernel );
+        $this->assertTrue( $this->model->app() instanceof Kernel );
     }
 
     /**
-     * @todo Implement testGetModel().
+     *
      */
     public function testGetModel()
     {
-        $this->assertTrue( $this->object->getModel('Model_Test') instanceof Model_Test );
+        $this->assertTrue(
+            $this->model->getModel('\\Module\\System\\Model\\TestModel') instanceof \Module\System\Model\TestModel
+        );
     }
 
     /**
-     * @todo Implement testCreateObject().
+     *
      */
     public function testCreateObject()
     {
-        $obj = $this->object->createObject();
+        /** @var $obj TestObject */
+        $obj = $this->model->createObject();
         if ( ! $obj ) {
             $this->fail('Created object '.var_export($obj, true));
         }
@@ -85,53 +78,53 @@ class ModelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testObjectClass().
+     *
      */
     public function testObjectClass()
     {
-        $this->assertEquals($this->object->objectClass(), '\Module\System\Object\Test');
+        $this->assertEquals($this->model->objectClass(), '\Module\System\Object\Test');
     }
 
     /**
-     * @todo Implement testTableClass().
+     *
      */
     public function testTableClass()
     {
-        $this->assertEquals($this->object->tableClass(), '\Module\System\Object\Test');
+        $this->assertEquals($this->model->tableClass(), '\Module\System\Object\Test');
     }
 
     /**
-     * @todo Implement testGetTable().
+     *
      */
     public function testGetTable()
     {
-        $this->assertEquals( 'test', $this->object->getTable() );
+        $this->assertEquals( 'test', $this->model->getTable() );
     }
 
     /**
-     * @todo Implement testGetTableName().
+     *
      */
     public function testTable()
     {
-        $object_class = $this->object->objectClass();
+        $object_class = $this->model->objectClass();
         $this->assertEquals( $object_class::table(), DBPREFIX.'test' );
     }
 
     /**
-     * @todo Implement testSave().
+     *
      */
     public function testSave()
     {
-        $obj1   = $this->object->createObject();
+        $obj1   = $this->model->createObject();
         $obj1->value = 'val1';
-        $obj2   = $this->object->createObject();
+        $obj2   = $this->model->createObject();
         $obj2->value = 'val2';
-        $this->assertNotNull( $this->object->save($obj1) );
-        $this->assertNotNull( $this->object->save($obj2) );
+        $this->assertNotNull( $this->model->save($obj1) );
+        $this->assertNotNull( $this->model->save($obj2) );
     }
 
     /**
-     * @todo Implement testCount().
+     *
      */
     public function testCount()
     {
@@ -139,49 +132,50 @@ class ModelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testFind().
+     *
      */
     public function testFind()
     {
-        $obj    = $this->object->find(2);
+        $obj    = $this->model->find(2);
         $this->assertNotNull($obj);
         $this->assertEquals($obj->getId(), 2);
         $this->assertEquals($obj->value, 'val2');
 
-        $obj    = $this->object->find(1);
+        $obj    = $this->model->find(1);
         $this->assertNotNull($obj);
         $this->assertEquals($obj->getId(), 1);
         $this->assertEquals($obj->value, 'val1');
     }
 
     /**
-     * @todo Implement testFindAll().
+     *
      */
     public function testFindAll()
     {
-        $all    = $this->object->findAll();
+        /** @var $all Collection */
+        $all    = $this->model->findAll();
         $this->assertEquals( $all->count(), 2 );
-        /*$this->assertEquals( $all, array(
+        $this->assertEquals( $all->getData(), array(
             array('id'=>1,'value'=>'val1'),
             array('id'=>2,'value'=>'val2'),
-        ));*/
+        ));
     }
 
     /**
-     * @todo Implement testDelete().
+     *
      */
     public function testDelete()
     {
-        $this->object->delete(1);
-        $this->assertNull( $this->object->find(1) );
+        $this->model->delete(1);
+        $this->assertNull( $this->model->find(1) );
 
-        $this->object->delete(2);
-        $this->assertNull( $this->object->find(2) );
+        $this->model->delete(2);
+        $this->assertNull( $this->model->find(2) );
         
-        $this->assertEquals($this->object->count(), 0);
+        $this->assertEquals($this->model->count(), 0);
 
-        $pdo    = $this->object->getDB()->getResource();
-        $pdo->exec("DROP TABLE `{$this->object->getTable()}`");
+        $pdo    = $this->model->getDB()->getResource();
+        $pdo->exec("DROP TABLE `test`");
     }
 
 //

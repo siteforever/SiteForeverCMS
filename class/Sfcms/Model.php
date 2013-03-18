@@ -435,6 +435,7 @@ abstract class Model extends Component
     private function migration()
     {
         $class = $this->objectClass();
+        $this->log($class::table(),__FUNCTION__);
         $sys_fields  = $class::fields();
         $table = $class::table();
         $have_fields = $this->getDB()->getFields( $this->getTable() );
@@ -527,7 +528,7 @@ abstract class Model extends Component
         $criteria   = null;
         if( is_object( $crit ) ) {
             if( $crit instanceof Criteria ) {
-                $criteria = new QueryBuilder( $this->objectClass(), $crit );
+                $criteria = new QueryBuilder( $this, $crit );
             } elseif( $crit instanceof QueryBuilder ) {
                 $criteria = $crit;
             }
@@ -568,7 +569,7 @@ abstract class Model extends Component
         }
 
         if( ! isset( $criteria ) && isset( $crit ) ) {
-            $criteria = new QueryBuilder( $this->objectClass(), $crit );
+            $criteria = new QueryBuilder( $this, $crit );
         }
 
         $data = $this->db->fetch( $criteria->getSQL(), db::F_ASSOC, $crit->params );
@@ -598,9 +599,9 @@ abstract class Model extends Component
         $this->with = array();
 
         if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Criteria ) ) {
-            $queryBuilder = new QueryBuilder( $this->objectClass(), $crit );
+            $queryBuilder = new QueryBuilder( $this, $crit );
         } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
-            $queryBuilder = new QueryBuilder( $this->objectClass(),
+            $queryBuilder = new QueryBuilder( $this,
                 array(
                     'cond'  => $crit,
                     'params'=> $params,
@@ -807,7 +808,7 @@ abstract class Model extends Component
             $cond   = $cond->condition;
         }
 
-        $criteria = new QueryBuilder( $this->objectClass(), array(
+        $criteria = new QueryBuilder( $this, array(
             'select'    => 'COUNT(`id`)',
             'cond'      => $cond,
             'params'    => $params,

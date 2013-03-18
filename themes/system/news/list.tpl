@@ -11,7 +11,8 @@
     <th width="20">#</th>
     <th>{t cat="news"}Name{/t}</th>
     <th>{t cat="news"}Date{/t}</th>
-    <th>{t cat="news"}Main{/t}</th>
+    <th>{t cat="news"}Priority{/t}</th>
+    <th>{t cat="news"}On main{/t}</th>
     <th>{t cat="news"}Actions{/t}</th>
 </tr>
 </thead>
@@ -23,6 +24,7 @@
             {$item.name|truncate:100}</a>
     </td>
     <td>{$item.date|date_format:"%x"}</td>
+    <td>{$item.priority}</td>
     <td>{if $item.main}{icon name="accept" title=t('Yes')}{/if}</td>
     <td>
         {if $item.hidden}{icon name="lightbulb_off" title=t('Off')}{else}{icon name="lightbulb" title=t('On')}{/if}

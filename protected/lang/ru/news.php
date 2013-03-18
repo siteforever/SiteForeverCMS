@@ -18,6 +18,8 @@ return array(
     'Description' => 'Описание',
     'Articles' => 'Статей',
     'Action' => 'Действия',
+    'Priority' => 'Приоритет',
+    'On main'   => 'На главной',
 
     'Date' => 'Дата',
     'Actions' => 'Действия',

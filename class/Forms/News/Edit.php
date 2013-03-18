@@ -43,6 +43,12 @@ class Forms_News_Edit extends \Sfcms\Form\Form
                     'value'=>'0',
                     'variants' => array('0' => 'Нет', '1' => 'Да'),
                 ),
+                'priority'  => array(
+                    'type'=>'radio',
+                    'label'=>'Приоритет',
+                    'value'=>'0',
+                    'variants' => array('0'=>'0','1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),
+                ),
 
                 'notice'    => array('type'=>'textarea', 'value'=>'', 'label'=>'Вступление',),
                 'text'      => array('type'=>'textarea', 'value'=>'', 'label'=>'Текст',),

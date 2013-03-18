@@ -46,7 +46,7 @@ class NewsModel extends Model
     {
         return $this->findAll(
             'deleted = 0 AND hidden = 0 AND protected = 0 AND main = 1',
-            array(), 'date DESC',$limit);
+            array(), '`date` DESC, `priority` DESC, `id` DESC',$limit);
     }
 
     /**

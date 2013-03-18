@@ -11,6 +11,7 @@ namespace Sfcms\Data\Query;
 use Sfcms\Data\Exception;
 use Sfcms\Data\Field;
 use Sfcms\Db\Criteria;
+use Sfcms\Model;
 
 class Builder
 {
@@ -22,14 +23,14 @@ class Builder
     /**
      * @var string
      */
-    private $_obj_class;
+    private $_model;
 
     /**
-     * @param string $obj_class
+     * @param Model $model
      * @param array|Criteria $criteria
      * @throws Exception
      */
-    public function __construct( $obj_class, $criteria = null )
+    public function __construct( Model $model, $criteria = null )
     {
         if ( is_array( $criteria ) ) {
             $this->_criteria = new Criteria( $criteria );
@@ -40,7 +41,7 @@ class Builder
         } else {
             throw new Exception('Criteria format fail');
         }
-        $this->_obj_class= $obj_class;
+        $this->_model= $model;
     }
 
     /**
@@ -51,9 +52,9 @@ class Builder
     {
         $sql    = array();
         $select = '*';
-        $table_class = $this->_obj_class;
-        $table  = $table_class::table();
-        $fields = $table_class::fields();
+        $table  = $this->_model->getTable();
+        $obj_class = $this->_model->objectClass();
+        $fields = $obj_class::fields();
 
         // Заменяем * на список полей
         if ( '*' == $this->_criteria->select ) {

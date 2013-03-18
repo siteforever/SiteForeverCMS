@@ -102,7 +102,7 @@ class NewsController extends Sfcms_Controller
             'cond'     => $cond,
             'params'   => $params,
             'limit'    => $paging['limit'],
-            'order'    => '`date` DESC, `id` DESC',
+            'order'    => '`date` DESC, `priority` DESC, `id` DESC',
         ));
 
         $this->tpl->assign(array(
@@ -162,7 +162,7 @@ class NewsController extends Sfcms_Controller
             'cond'      => 'cat_id = :cat_id AND deleted = 0',
             'params'    => array(':cat_id'=>$catId),
             'limit'     => $paging->limit,
-            'order'     => '`date` DESC, `id` DESC',
+            'order'     => '`date` DESC, `priority` DESC, `id` DESC',
         ));
 
         $cat    = $this->getModel('NewsCategory')->find( $catId );

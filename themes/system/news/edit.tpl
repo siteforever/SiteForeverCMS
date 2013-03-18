@@ -17,6 +17,7 @@
         {$form->htmlFieldWrapped('cat_id')}
         {$form->htmlFieldWrapped('date')}
         {$form->htmlFieldWrapped('main')}
+        {$form->htmlFieldWrapped('priority')}
         {$form->htmlFieldWrapped('image')}
     </div>
 

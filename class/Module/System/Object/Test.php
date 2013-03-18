@@ -12,7 +12,6 @@ use Sfcms\Data\Field;
 
 class Test extends Object
 {
-
     /**
      * Создаст список полей
      * @return array
