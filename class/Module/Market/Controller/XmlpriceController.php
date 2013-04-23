@@ -12,8 +12,6 @@ class XMLPriceController extends Sfcms_Controller
     function indexAction()
     {
         $this->request->set('template', 'inner');
-        $this->request->setContent('XML Price');
-
         $start  = microtime(true);
 
         $xml_file   = ROOT.DIRECTORY_SEPARATOR.'prices.xml';
@@ -31,6 +29,6 @@ class XMLPriceController extends Sfcms_Controller
         }
         $html[] = "</table>";
 
-        $this->request->setContent(join($html, "\n").(round(microtime(true)-$start,4)).' sec');
+        return join($html, "\n") . (round(microtime(true) - $start, 4)) . ' sec';
     }
 }

@@ -31,6 +31,11 @@ abstract class Driver extends Component
 
     abstract function setCplDir( $dir );
 
+    public function render($tpl, $params)
+    {
+        $this->assign($params);
+        return $this->fetch($tpl);
+    }
 
     public function set( $key, $value )
     {

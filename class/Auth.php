@@ -1,5 +1,5 @@
 <?php
-use Sfcms\Kernel\Base as Service;
+use Sfcms\Kernel\KernelBase as Service;
 use Module\System\Model\UserModel;
 use Module\System\Object\User;
 

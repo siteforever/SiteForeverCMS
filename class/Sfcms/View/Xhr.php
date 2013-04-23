@@ -5,52 +5,47 @@
  */
 namespace Sfcms\View;
 
-use Sfcms\View\IView;
+use Sfcms\View\ViewAbstract;
 use Exception;
 use Sfcms\Request;
+use Sfcms\Kernel\KernelEvent;
 
-class Xhr extends IView
+class Xhr extends ViewAbstract
 {
     /**
-     * @param $result
+     * @param KernelEvent $event
      * @throws Exception
      * @return string
      */
-    public function view( $result  )
+    public function view(KernelEvent $event)
     {
-        header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-        header( 'Cache-Control: post-check=0, pre-check=0', false );
-        header( 'Pragma: no-cache' );
+        $response = $event->getResponse();
+        $content = $event->getResult() ? $event->getResult() : $response->getContent();
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        $response->headers->set('Cache-Control', 'post-check=0, pre-check=0', false);
+        $response->headers->set('Pragma', 'no-cache');
 
-        $return = '';
+        $response->setCharset('utf-8');
 
-        switch ( $this->getRequest()->getAjaxType() ) {
-
-            case Request::TYPE_JSON:
-                header( 'Content-type: text/json; charset=utf-8' );
-                if( $result ) {
-                    if( is_object( $result ) || is_array( $result ) ) {
-                        $result = json_encode( $result );
-                    }
-                    $return = $result;
-                } else {
-                    $return = $this->getRequest()->getResponseAsJson();
+        $types = $this->getRequest()->getRequest()->getAcceptableContentTypes();
+        switch ($types[0]) {
+            case 'application/json':
+                $response->headers->set('Content-type', 'application/json');
+                if (is_object($content) || is_array($content)) {
+                    $response->setContent(json_encode($content));
                 }
                 break;
 
-            case Request::TYPE_XML:
-                header( 'Content-type: text/xml; charset=utf-8' );
-                $return = $this->getRequest()->getContent();
+            case 'text/xml':
+                $response->headers->set('Content-type', 'text/xml');
                 break;
 
             default:
-                if( count( $this->getRequest()->getFeedback() ) ) {
-                    $return = '<div class="feedback">' . $this->getRequest()->getFeedbackString() . '</div>';
-                }
-                if( $this->getRequest()->getContent() ) {
-                    $return = $this->getRequest()->getContent();
+                if (count( $this->getRequest()->getFeedback())) {
+                    $result = '<div class="feedback">' . $this->getRequest()->getFeedbackString() . '</div>';
+                    $response->setContent($result . $response->getContent());
                 }
         }
-        return $return;
+        return $event;
     }
 }

@@ -11,31 +11,28 @@ class Config
     private $config;
 
     /**
-     * @param string|array $cfg_file
+     * Если передан null, то ищет файл по константе CONFIG
+     * Если передана строка, то ищет файл по этой строке
+     * Если передан массив, то принимает его как конфиг
+     *
+     * @param string|array|null $cfg_file
+     * @throws Exception
      */
     public function __construct($cfg_file = null)
     {
-        if (is_null($cfg_file)) {
-            if (defined('CONFIG')) {
-                $cfg_file = 'protected/config/' . CONFIG . '.php';
-            }
+        if (is_null($cfg_file) && defined('CONFIG')) {
+            $cfg_file = 'application/' . CONFIG . '.php';
         }
-
         if (is_array($cfg_file)) {
-            $result = array();
-            foreach ( $cfg_file as $cfg ) {
-                $config = require $cfg;
-                $result = array_merge( $result, $config );
-            }
-            $this->config = $result;
-            return;
+            $this->config = $cfg_file;
+            return $this;
         }
-
         if (is_string($cfg_file) && file_exists($cfg_file)) {
-            $this->config = require $cfg_file;
-            return;
+            $this->config = require_once $cfg_file;
+            return $this;
         }
-//        throw new Application_Exception('Configuration file "'.$cfg_file.'" not found');
+        var_dump(get_include_path());
+        throw new Exception('Configuration file "'.$cfg_file.'" not found');
     }
 
     /**

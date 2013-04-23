@@ -3,5 +3,7 @@
 /files/
 /thumbs/
 /logger.txt
-/vendor/
+/vendor/*
 /static/
+/composer.phar
+/composer.lock

@@ -24,6 +24,7 @@ return array(
         'Module'    => 'Module\\System\\Model\\ModuleModel',
         'Routes'    => 'Module\\System\\Model\\RoutesModel',
         'Settings'  => 'Module\\System\\Model\\SettingsModel',
+        'Session'   => 'Module\\System\\Model\\SessionModel',
         'Templates' => 'Module\\System\\Model\\TemplatesModel',
         'User'      => 'Module\\System\\Model\\UserModel',
         'Log'       => 'Module\\System\\Model\\LogModel',

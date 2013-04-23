@@ -15,6 +15,9 @@ use Sfcms\Exception;
 use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use \Symfony\Component\HttpFoundation\JsonResponse;
 
 use Module\Page\Object\Page;
 use Module\System\Object\User;
@@ -64,29 +67,30 @@ abstract class Sfcms_Controller extends Component
         $this->getBasket();
 
         $defaults = $this->defaults();
-        if ( $defaults ) {
-            $this->config->setDefault( $defaults[0], $defaults[1] );
+        if ($defaults) {
+            $this->config->setDefault($defaults[0], $defaults[1]);
         }
 
-        $pageId     = $this->request->get( 'pageid', Request::INT );
+
+        $pageId     = $this->request->getRequest()->get('pageid', 0);
         $controller = $this->request->getController();
         $action     = $this->request->getAction();
 
         // Define page
         $page = null;
-        if ( $controller ) {
-            $moduleClass = Module::getModuleClass( strtolower( $controller ) );
-            if ( $pageId && 'index' == $action ) {
+        if ($controller) {
+            $moduleClass = Module::getModuleClass(strtolower($controller));
+            if ($pageId && 'index' == $action) {
                 $relField = $moduleClass::relatedField();
-                $model = $this->getModel('Page');
-                $page  = $model->find("`$relField` = ? AND `controller` = ?", array( $pageId, $controller ));
+                $model    = $this->getModel('Page');
+                $page     = $model->find("`$relField` = ? AND `controller` = ?", array($pageId, $controller));
             }
         }
 
         if ( null !== $page ) {
             // todo Если страница указана как объект, то в нее нельзя сохранять левые данные
             $this->request->setTemplate($page->get('template') );
-            $this->request->setContent( $page->get('content') );
+//            $this->request->setContent( $page->get('content') );
             $this->request->setTitle(   $page->get('title') );
             $this->request->setDescription( $page->get('description') );
             $this->request->setKeywords( $page->get('keywords') );
@@ -96,7 +100,7 @@ abstract class Sfcms_Controller extends Component
         $this->page     = $page;
 
         if ( $this->app()->isDebug() ) {
-            $this->log( $this->request->debug(), 'Request' );
+//            $this->log( $this->request, 'Request' );
             if ( $this->page ) {
                 $this->log( $this->page->getAttributes(), 'Page' );
             }
@@ -300,12 +304,10 @@ abstract class Sfcms_Controller extends Component
      */
     protected function redirect( $url = '', $params = array() )
     {
-        if( preg_match( '@^http@', $url ) ) {
-            $this->request->set('redirect', $url);
-        } else {
-            $this->request->set('redirect', $this->app()->getRouter()->createLink( $url, $params ));
+        if (! preg_match( '@^http@', $url )) {
+            $url = $this->app()->getRouter()->createLink($url, $params);
         }
-        return true;
+        return new RedirectResponse($url);
     }
 
     /**
@@ -313,18 +315,44 @@ abstract class Sfcms_Controller extends Component
      * @param string $url
      * @param array $params
      * @param $timeout
-     * @param $return
+     *
+     * @return Response
      */
-    protected function reload( $url = '', $params = array(), $timeout = 0, $return = false )
+    protected function reload( $url = '', $params = array(), $timeout = 0 )
     {
         Watcher::instance()->performOperations();
+        return $this->render('error.reload', array(
+            'url' => $this->app()->getRouter()->createLink( $url, $params ),
+            'timeout' => $timeout,
+        ));
+    }
 
-        $script = 'window.location.href = "'
-                . $this->app()->getRouter()->createLink( $url, $params ) . '";';
-        if ( $timeout ) {
-            $script = "setTimeout( function(){ $script }, $timeout );";
+    /**
+     * Rendering params to template
+     * @param string $tpl
+     * @param array $params
+     *
+     * @return Response
+     */
+    protected function render($tpl, $params=array())
+    {
+        $this->getTpl()->assign($params);
+        return new Response($this->getTpl()->fetch($tpl));
+    }
+
+    /**
+     * Wrapping array to json response
+     * @param array $params
+     * @param null  $handle
+     *
+     * @return JsonResponse
+     */
+    protected function renderJson($params=array(), $handle=null)
+    {
+        $response = new JsonResponse($params);
+        if ($handle) {
+            $response->setCallback($handle);
         }
-        $reload = '<script type="text/javascript">'.$script.'</script>';
-        $this->request->set('reload', $reload);
+        return $response;
     }
 }

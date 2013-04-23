@@ -44,29 +44,31 @@ class PageController extends Sfcms_Controller
     public function indexAction()
     {
         /** @var $pageModel PageModel */
-        $pageModel = $this->getModel( 'Page' );
-        if ( ! $this->user->hasPermission( $this->page[ 'protected' ] )) {
-            throw new Sfcms_Http_Exception(t( 'Access denied' ),403);
+        $pageModel = $this->getModel('Page');
+        if (!$this->user->hasPermission($this->page['protected'])) {
+            throw new Sfcms_Http_Exception(t('Access denied'), 403);
         }
 
         // создаем замыкание страниц (если одна страница указывает на другую)
-        while ( $this->page[ 'link' ] ) {
-            $page = $pageModel->find( $this->page[ 'link' ] );
+        while ($this->page['link']) {
+            $page = $pageModel->find($this->page['link']);
 
-            if ( ! $this->user->hasPermission( $page[ 'protected' ] ) ) {
-                 throw new Sfcms_Http_Exception(t( 'Access denied' ),403);
+            if (!$this->user->hasPermission($page['protected'])) {
+                throw new Sfcms_Http_Exception(t('Access denied'), 403);
             }
-            $this->page[ 'content' ] = $page[ 'content' ];
-            $this->page[ 'link' ]    = $page[ 'link' ];
+            $this->page['content'] = $page['content'];
+            $this->page['link']    = $page['link'];
         }
 
-        if ( 'page' == $this->page->controller && $this->page[ 'id' ] != 1) {
-            $subpages = $pageModel->parents[ $this->page['id'] ];
-            if ( count( $subpages ) ) {
-                $this->tpl->assign( 'subpages', $subpages );
-                $this->tpl->assign( 'page', $this->page );
+        if ('page' == $this->page->controller && $this->page['id'] != 1) {
+            $subpages = $pageModel->parents[$this->page['id']];
+            if (count($subpages)) {
+                $this->tpl->assign('subpages', $subpages);
+                $this->tpl->assign('page', $this->page);
             }
         }
+
+        return $this->page->content;
     }
 
     public function protectedAction()
@@ -81,23 +83,20 @@ class PageController extends Sfcms_Controller
     public function adminAction()
     {
         // используем шаблон админки
-        $this->request->set( 'template', 'index' );
-        $this->request->setTitle( t('Site structure') );
+        $this->request->set('template', 'index');
+        $this->request->setTitle(t('Site structure'));
 
         $this->app()->addScript('/misc/admin/page.js');
 
         /** @var PageModel $model */
-        $model = $this->getModel( 'Page' );
+        $model = $this->getModel('Page');
 
-        if ($get_link_add = $this->request->get( 'get_link_add' )) {
-            $this->tpl->id = $get_link_add;
-            return $this->tpl->fetch( 'system:get_link_add' );
+        if ($get_link_add = $this->request->get('get_link_add')) {
+            return $this->render('system:get_link_add', array('id' => $get_link_add));
         }
 
         $model->createParentsIndex();
-//        $model->createHtmlList();
         return array(
-//            'html' => join( "\n", $model->html ),
             'data' => $model->parents,
         );
     }
@@ -105,15 +104,15 @@ class PageController extends Sfcms_Controller
 
     /**
      * Создает страницу
+     * @param int $id
      * @return mixed
      */
-    public function createAction()
+    public function createAction($id)
     {
         /** @var $model PageModel */
         $model = $this->getModel( 'Page' );
         $modules = $model->getAvaibleModules();
 
-        $id     = $this->request->get('id', Request::INT);
         if( null === $id ) {
             return t('Unknown error');
         }
@@ -128,9 +127,10 @@ class PageController extends Sfcms_Controller
 
     /**
      * Добавления
+     * @param int $parent
      * @return mixed
      */
-    public function addAction()
+    public function addAction($parent)
     {
         /**
          * @var PageModel $model
@@ -138,15 +138,14 @@ class PageController extends Sfcms_Controller
         $model = $this->getModel( 'Page' );
 
         // идентификатор раздела, в который надо добавить
-        $parent_id = $this->request->get( 'parent', Request::INT, 0 );
         $name      = $this->request->get( 'name' );
         $module    = $this->request->get( 'module' );
 
         // родительский раздел
-        /** @var $parent Page */
-        $parent = null;
-        if ( $parent_id ) {
-            $parent = $model->find( $parent_id );
+        /** @var $parentObj Page */
+        $parentObj = null;
+        if ( $parent ) {
+            $parentObj = $model->find( $parent );
         }
 
         /** @var $form Form */
@@ -154,24 +153,24 @@ class PageController extends Sfcms_Controller
 
         $form->setData(
             array(
-                'parent'    => $parent_id,
+                'parent'    => $parent,
                 'template'  => 'inner',
                 'author'    => $this->app()->getAuth()->getId(),
                 'content'   => '<p>'.t( 'Home page for the filling' ).'',
                 'date'      => time(),
                 'update'    => time(),
-                'pos'       => $model->getNextPos( $parent_id ),
+                'pos'       => $model->getNextPos( $parent ),
             )
         );
 
         $alias = $this->i18n()->translit( trim( $name, ' /' ) );
-        if ( $parent && $parent->alias && 'index' != $parent->alias ) {
-            $alias = trim( $parent->alias, ' /' ).'/'.$alias;
+        if ( $parentObj && $parentObj->alias && 'index' != $parentObj->alias ) {
+            $alias = trim( $parentObj->alias, ' /' ).'/'.$alias;
         }
         $form->getField('alias')->setValue( $alias );
 
-        if ( $parent && $parent->sort ) {
-            $form->getField('sort')->setValue( $parent->sort );
+        if ( $parentObj && $parentObj->sort ) {
+            $form->getField('sort')->setValue( $parentObj->sort );
         }
 
         $form->getField('action')->setValue('index');
@@ -271,12 +270,12 @@ class PageController extends Sfcms_Controller
 
 
     /**
-     * @return void
+     * @return string
      */
     public function nameconvertAction()
     {
         $this->request->setTemplate( 'inner' );
-        $this->request->setContent( __METHOD__ );
+        return __METHOD__;
     }
 
 

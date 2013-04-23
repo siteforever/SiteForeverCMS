@@ -17,6 +17,10 @@ use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
 
+/**
+ * Class PageModel
+ * @package Module\Page\Model
+ */
 class PageModel extends Model
 {
     /**

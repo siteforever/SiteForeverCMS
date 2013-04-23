@@ -23,8 +23,8 @@ class Controller_Users extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system'    => array('admin','adminEdit','save'),
-            'protected' => array('edit'),
+            USER_ADMIN  => array('admin','adminEdit','save'),
+            USER_USER   => array('edit', 'cabinet'),
         );
     }
 
@@ -51,11 +51,31 @@ class Controller_Users extends Sfcms_Controller
                 return array('error' => 1, 'msg' => $auth->getMessage());
             }
             return array('success' => 1, 'msg' => $auth->getMessage());
-//            return;
         }
 
         return $this->loginAction();
     }
+
+
+    /**
+     * @return array
+     * @throws Sfcms_Http_Exception
+     */
+    public function cabinetAction()
+    {
+        $auth   = $this->app()->getAuth();
+        $user   = $auth->currentUser();
+
+        $this->tpl->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null,t('user','User cabiner'));
+
+        if ( $user->getId() ) {
+            // отображаем кабинет
+            $this->request->setTitle(t('user','User cabiner'));
+            return array( 'user' => $user );
+        }
+        throw new Sfcms_Http_Exception(t('Access denied'), 403);
+    }
+
 
     /**
      * Управление пользователем
@@ -209,13 +229,8 @@ class Controller_Users extends Sfcms_Controller
         $user   = $auth->currentUser();
 
         if ( $user->getId() ) {
-//            return $this->cabinetAction();
             return $this->redirect('users/cabinet');
         }
-
-//        if ( $this->request->isAjax() ) {
-//            return Request::TYPE_JSON == $this->request->getAjaxType() ? array('msg'=>'login failed') : 'login failed';
-//        }
 
         // вход в систему
         $form = $model->getLoginForm();
@@ -223,39 +238,17 @@ class Controller_Users extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 if ( $auth->login( $form->login, $form->password ) ) {
-                    return $this->redirect($_SERVER['HTTP_REFERER']);
+                    return $this->redirect($this->request->getRequest()->server->get('HTTP_REFERER'));
                 } else {
                     $this->getTpl()->assign('error',1);
                     $this->getTpl()->assign('msg',$auth->getMessage());
                 }
             }
-//            else {
-//                $this->request->setResponseError( 1, $form->getFeedbackString() );
-//            }
         }
         $this->request->setTitle(t('user','Sign in site'));
         $this->tpl->assign('form', $form );
 
         return $this->tpl->fetch('users.login');
-    }
-
-    /**
-     * @return mixed
-     */
-    public function cabinetAction()
-    {
-        $auth   = $this->app()->getAuth();
-        $user   = $auth->currentUser();
-
-        $this->tpl->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null,t('user','User cabiner'));
-
-        if ( $user->getId() ) {
-            // отображаем кабинет
-            $this->request->setTitle(t('user','User cabiner'));
-            return array( 'user' => $user->getAttributes() );
-        } else {
-            $this->reload('users/login');
-        }
     }
 
     /**

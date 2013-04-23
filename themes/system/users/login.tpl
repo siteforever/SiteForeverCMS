@@ -2,11 +2,9 @@
 <div class="alert alert-error">{$msg}</div>
 {/if}
 
-{$form->html()}
+{$form->html(false)}
 
-<div class="controls">
-    <div class="btn-group">
-        {a href="users/register" class="btn"}{t cat="user"}Join{/t}{/a}
-        {a href="users/restore" class="btn"}{t cat="user"}Password recovery{/t}{/a}
-    </div>
-</div>
+<ul>
+    <li>{a href="users/register"}{t cat="user"}Join{/t}{/a}</li>
+    <li>{a href="users/restore"}{t cat="user"}Password recovery{/t}{/a}</li>
+</ul>

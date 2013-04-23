@@ -8,7 +8,7 @@ define("admin/jquery/jquery.filemanager",[
     "jquery",
     "require",
     "jui",
-    "elfinder/js/elfinder.min",
+    "elfinder/js/elfinder",
     "elfinder/js/i18n/elfinder.ru"
 //    "elfinder-2.0-rc1/js/elfinder.min",
 //    "elfinder-2.0-rc1/js/i18n/elfinder.ru"

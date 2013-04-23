@@ -42,12 +42,21 @@ class Assets
         return $this->_scripts;
     }
 
+    /**
+     * @param $alias relative "/static" path in dot notation
+     * @param $path absolute path to publishing *.js file
+     */
+    public function publishScript($alias, $path)
+    {
+
+    }
+
     public function addScript($script)
     {
         $this->_scripts[ $script ] = $script;
     }
 
-    public function cleanScript()
+    public function cleanScripts()
     {
         $this->_scripts = array();
     }

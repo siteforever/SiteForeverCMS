@@ -14,6 +14,7 @@ class OrderPdfController extends Sfcms_Controller
 {
     function indexAction()
     {
+        throw new \Sfcms\Exception('Old method');
         $this->request->setTitle('Распечатать заказ');
         $this->request->setContent('Распечатать заказ');
 

@@ -38,7 +38,7 @@ abstract class Table extends Component
      */
     public function __toString()
     {
-        return ( defined('DBPREFIX') ? DBPREFIX : '' ) . $this->table();
+        return $this->app()->getConfig('db.prefix') . $this->table();
     }
 
     /**

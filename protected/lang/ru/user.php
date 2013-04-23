@@ -56,4 +56,11 @@ return array(
     'Your password is not suitable'             => 'Ваш пароль не подходит',
     'Authorization was successful'              => 'Авторизация прошла успешно',
     'Your login is not registered'              => 'Ваш логин не зарегистрирован',
+
+
+    // Groups
+    'Guest' => 'Гость',
+    'User' => 'Пользователь',
+    'Whole user' => 'Постоянный покупатель',
+    'Admin' => 'Админ',
 );

@@ -73,13 +73,13 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Удаление изображения
+     * @param int $id
      * @return mixed
      */
-    public function deleteAction()
+    public function deleteAction($id)
     {
         /** @var $catalog_gallery GalleryModel */
         $catalog_gallery = $this->getModel( 'CatalogGallery' );
-        $id              = $this->request->get( 'id', Request::INT );
 
         /** @var $image Gallery */
         $image = $catalog_gallery->find( $id );

@@ -50,10 +50,10 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     public function testAccess()
     {
         $access = $this->controller->access();
-        $this->assertArrayHasKey('system', $access);
-        $this->assertContains('admin', $access['system']);
-        $this->assertContains('adminEdit', $access['system']);
-        $this->assertContains('save', $access['system']);
+        $this->assertArrayHasKey(USER_ADMIN, $access);
+        $this->assertContains('admin', $access[USER_ADMIN]);
+        $this->assertContains('adminEdit', $access[USER_ADMIN]);
+        $this->assertContains('save', $access[USER_ADMIN]);
     }
 
     /**

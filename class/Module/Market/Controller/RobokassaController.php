@@ -14,7 +14,7 @@ class RobokassaController extends Sfcms_Controller
 {
     public function init()
     {
-        $this->request->setLayout('inner');
+        $this->request->setTemplate('inner');
         $this->request->setTitle(t('Robokassa'));
         $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Main'))->addPiece(null,t('Robokassa'));
     }

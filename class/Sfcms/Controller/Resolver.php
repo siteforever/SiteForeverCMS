@@ -44,15 +44,15 @@ class Resolver extends Component
         if ( null === $action ) {
             $action = $request->getAction();
         }
-        $action = strtolower( $action ) . 'Action';
+        $actionMethod = strtolower( $action ) . 'Action';
 
         // Если не удалось определить контроллер, как известный, то инициировать ош. 404
         if ( ! isset( $this->_controllers[ $controller ] ) ) {
             $this->log(sprintf('Controller "%s" not found', $controller),__FUNCTION__);
             $controller = 'error';
-            $action = 'error404Action';
+            $actionMethod = 'error404Action';
             $request->setController($controller);
-            $request->setAction($action);
+            $request->setAction($actionMethod);
         }
 
         $config = $this->_controllers[ $controller ];
@@ -74,7 +74,7 @@ class Resolver extends Component
             );
         }
 
-        return array('controller' => $controllerClass, 'action' => $action, 'module'=>$moduleName);
+        return array('controller' => $controllerClass, 'action' => $actionMethod, 'module'=>$moduleName);
     }
 
     /**
@@ -87,11 +87,10 @@ class Resolver extends Component
     {
         $result = null;
 
-        $request = $this->app()->getRequest();
-        if ( 0 == count( $command ) ) {
+        if (!$command) {
             $command = $this->resolveController();
-            if ( ! $command ) {
-                throw new Sfcms_Http_Exception('Controller not resolved',404);
+            if (!$command) {
+                throw new Sfcms_Http_Exception('Controller not resolved', 404);
             }
         }
 
@@ -200,11 +199,11 @@ class Resolver extends Component
                 }
                 $ruleMethods = is_string($ruleMethods) ? array_map( 'trim', explode(',',$ruleMethods) ) : $ruleMethods;
                 if( ! is_array($ruleMethods) ) {
-                    throw new RuntimeException( 'Expected string or array' );
+                    throw new RuntimeException('Expected string or array');
                 }
                 $ruleMethods = array_map( function($method){
-                    if ( false === stripos( $method, 'action' ) ) {
-                        $method = strtolower( $method ) . 'Action';
+                    if (false === stripos($method, 'action')) {
+                        $method = strtolower($method) . 'Action';
                     }
                     return $method;
                 }, $ruleMethods );
@@ -214,7 +213,7 @@ class Resolver extends Component
                             $this->setSystemPage();
                         }
                     } else {
-                        throw new Sfcms_Http_Exception( t('Access denied'), 403 );
+                        throw new Sfcms_Http_Exception(t('Access denied'), 403);
                     }
                 }
             }

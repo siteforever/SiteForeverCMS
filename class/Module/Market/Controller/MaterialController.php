@@ -7,8 +7,8 @@
 namespace Module\Market\Controller;
 
 use Sfcms_Controller;
-use Request;
-use Model_Material;
+use Sfcms\Request;
+use Module\Market\Model\MaterialModel;
 
 class MaterialController extends Sfcms_Controller
 {
@@ -32,7 +32,7 @@ class MaterialController extends Sfcms_Controller
     public function adminAction()
     {
         $this->request->setTitle(t('material','Materials'));
-        /** @var $model Model_Material */
+        /** @var $model MaterialModel */
         $model = $this->getModel('Material');
         $provider = $model->getProvider();
         return array(
@@ -47,21 +47,24 @@ class MaterialController extends Sfcms_Controller
      */
     public function gridAction()
     {
-        /** @var $model Model_Material */
+        /** @var $model MaterialModel */
         $model = $this->getModel('Material');
         $provider = $model->getProvider();
         return $provider->getJsonData();
     }
 
-    public function editAction()
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    public function editAction($id)
     {
         $this->request->setTitle( t('material','Materials') );
 
-        /** @var $model Model_Material */
+        /** @var $model MaterialModel */
         $model = $this->getModel( 'Material' );
         $form  = $model->getForm();
-
-        $id = $this->request->get( 'id', Request::INT );
 
         if ( $id ) {
             $obj = $model->find( $id );
@@ -75,7 +78,7 @@ class MaterialController extends Sfcms_Controller
     {
         $this->request->setTitle( t( 'Materials' ) );
 
-        /** @var $model Model_Material */
+        /** @var $model MaterialModel */
         $model = $this->getModel( 'Material' );
         $form  = $model->getForm();
 

@@ -97,15 +97,13 @@ class CatalogController extends Sfcms_Controller
 
     /**
      * Вернет Cat_id запроса
+     * @param int $id
+     * @param int $cat
      * @return int
      */
-    protected function getCatId()
+    protected function getCatId($id, $cat)
     {
-        $result = $this->request->get( 'id', Request::INT );
-        if( ! $result ) {
-            $result = $this->request->get( 'cat', Request::INT );
-        }
-        return $result;
+        return $id ?: $cat;
     }
 
     /**
@@ -348,8 +346,8 @@ class CatalogController extends Sfcms_Controller
         $form           = $catalogFinder->getForm();
 
         // Если форма отправлена
-        if( $form->getPost() ) {
-            if( $form->validate() ) {
+        if ($form->getPost()) {
+            if ($form->validate()) {
                 $object = $form->id ? $catalogFinder->find($form->id) : $catalogFinder->createObject();
                 $object->attributes =  $form->getData();
                 $object->save();
@@ -627,8 +625,11 @@ class CatalogController extends Sfcms_Controller
 
     /**
      * Правка категории
+     * @param int $edit
+     * @param int $add
+     * @return array
      */
-    public function categoryAction()
+    public function categoryAction($edit, $add)
     {
         /**
          * @var CatalogModel $catalog
@@ -637,8 +638,8 @@ class CatalogController extends Sfcms_Controller
          */
         $catalog = $this->getModel( 'Catalog' );
 
-        $id        = $this->request->get( 'edit', Request::INT );
-        $parent_id = $this->request->get( 'add', Request::INT, 0 );
+        $id        = $edit;
+        $parent_id = $add ?: 0;
 
         $form = $catalog->getForm();
 
@@ -681,15 +682,12 @@ class CatalogController extends Sfcms_Controller
         /**
          * @var CatalogModel $catalogFinder
          */
-        $catalogFinder = $this->getModel( 'Catalog' );
+        $catalogFinder = $this->getModel('Catalog');
         // перемещение
-        if( $this->request->get( 'move_list' ) ) {
-            $this->request->setContent(
-                $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT )
-            );
-            $this->request->setResponseError( 0, $catalogFinder->moveList() );
-            return;
+        if( $this->request->getRequest()->query->get( 'move_list' ) ) {
+            return array('msg' => $catalogFinder->moveList());
         }
+        return array('msg' => 'Fail');
     }
 
     /**

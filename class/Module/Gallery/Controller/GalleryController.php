@@ -168,7 +168,7 @@ class GalleryController extends Sfcms_Controller
      * @param string $name
      * @return mixed
      */
-    public function adminAction( $editimage, $name )
+    public function adminAction($editimage, $name)
     {
         /**
          * @var GalleryModel $model
@@ -198,12 +198,17 @@ class GalleryController extends Sfcms_Controller
 //        return 1;
     }
 
-    public function switchimgAction()
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    public function switchimgAction($id)
     {
         /** @var $model GalleryModel */
         $model = $this->getModel('Gallery');
 
-        if( $id = $this->request->get( 'id', Request::INT ) ) {
+        if ($id) {
 
             $obj    = $model->find( $id );
             $switch_result = $model->hideSwitch( $obj->getId() );
@@ -234,22 +239,21 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Удаление картинки
-     * @return mixed
+     * @param int $id
+     *
+     * @return array|mixed
      */
-    public function deleteAction()
+    public function deleteAction($id)
     {
         $model = $this->getModel( 'Gallery' );
-
-        $imgId = $this->request->get( 'id', Request::INT );
-
-        if( $imgId ) {
-            $image = $model->find( $imgId );
+        if( $id ) {
+            $image = $model->find( $id );
             $image->deleted = 1;
             if( $image->save() ) {
                 return array(
                     'error' => 0,
                     'msg' => t('Image was deleted'),
-                    'id' => $imgId,
+                    'id' => $id,
                 );
             }
             return array('error' => 1, 'msg' => t( 'Can not delete' ));
@@ -259,9 +263,10 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Редактирование категории
+     * @param int $id
      * @return mixed
      */
-    public function editcatAction()
+    public function editcatAction($id)
     {
         /**
          * @var CategoryModel $model
@@ -282,9 +287,9 @@ class GalleryController extends Sfcms_Controller
             }
         }
 
-        if( $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
+        if ($id) {
             try {
-                $obj = $model->find( $id );
+                $obj = $model->find($id);
                 $this->request->setTitle( $obj->name );
             } catch( Exception $e ) {
                 return $e->getMessage();
@@ -301,14 +306,14 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Удалить категорию
+     * @param int $id
      * @return mixed
      */
-    public function delcatAction()
+    public function delcatAction($id)
     {
         /** @var CategoryModel */
         $model = $this->getModel( 'GalleryCategory' );
         //        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
-        $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
         $cat = $model->find( $id );
         if ( $cat ) {
             $cat->deleted = 1;
@@ -322,21 +327,20 @@ class GalleryController extends Sfcms_Controller
 
     /**
      * Просмотр категории
-     * @return mixed
+     * @param int $id
+     *
+     * @return array
      */
-    public function listAction()
+    public function listAction($id)
     {
         $this->app()->addScript( '/misc/admin/gallery.js' );
         /** @var CategoryModel $category */
         $category = $this->getModel( 'GalleryCategory' );
 
-        $catId = $this->request->get( 'id', Request::INT );
-
-        $cat = $category->find( $catId );
+        $cat = $category->find( $id );
 
         /** @var GalleryModel $model */
         $model = $this->getModel( 'Gallery' );
-
 
         if( isset( $_FILES[ 'image' ] ) ) {
             $this->upload( $cat );
@@ -344,7 +348,7 @@ class GalleryController extends Sfcms_Controller
 
         $images = $model->findAll( array(
             'cond'  => 'category_id = :cat_id AND deleted = 0',
-            'params'=> array( ':cat_id'=> $catId ),
+            'params'=> array( ':cat_id'=> $id ),
             'order' => 'pos',
         ) );
 

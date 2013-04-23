@@ -64,7 +64,7 @@
                     {$feedback}
                 </div>{/if}
 
-                {$request->getContent()}
+                {$response->getContent()}
             {*</div>*}
         </div>
 

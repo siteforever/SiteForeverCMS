@@ -83,15 +83,18 @@ class ManufacturerController extends Sfcms_Controller
     }
 
 
-    public function editAction()
+    /**
+     * @param int $id
+     *
+     * @return array
+     */
+    public function editAction($id)
     {
         $this->request->setTitle( t( 'Manufacturers' ) );
 
         /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
         $form  = $model->getForm();
-
-        $id = $this->request->get( 'id', Request::INT );
 
         if ( $id ) {
             $obj = $model->find( $id );
@@ -123,11 +126,14 @@ class ManufacturerController extends Sfcms_Controller
     }
 
 
-    public function deleteAction()
+    /**
+     * @param int $id
+     *
+     * @return string
+     */
+    public function deleteAction($id)
     {
         $this->request->setTitle( t( 'Manufacturers' ) );
-
-        $id = $this->request->get( 'id', Request::INT );
         /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
         /** @var $obj ManufacturerModel */

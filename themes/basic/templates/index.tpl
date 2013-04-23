@@ -31,7 +31,7 @@
                     <div class="alert">{$request->getFeedbackString()}</div>
                 {/if}
 
-                {$request->getContent()}
+                {$response->getContent()}
             </div>
         </div>
     {*</div>*}

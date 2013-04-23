@@ -138,6 +138,7 @@ class BannerController extends Sfcms_Controller
         $cat   = $model->find( $id );
         if ( $cat ) {
             if ( $model->delete( $id ) ) {
+                // @todo переделать эту хуйню
                 $this->request->setResponse( 'id', $id );
                 return $this->request->setResponseError( 0, t( 'Delete successfully' ) );
             } else {
@@ -188,15 +189,16 @@ class BannerController extends Sfcms_Controller
     }
 
     /**
+     * @param int $id
      * @return bool|int
      */
-    public function editAction()
+    public function editAction($id)
     {
         /** @var BannerModel $model */
         $model = $this->getModel( 'Banner' );
         $form  = $model->getForm();
         $this->request->setAjax( 1, Request::TYPE_ANY );
-        if ( $id = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT ) ) {
+        if ($id) {
             try {
                 $obj = $model->find( $id );
             }

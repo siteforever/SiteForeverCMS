@@ -7,6 +7,7 @@ namespace Sfcms\Form;
  * @link   http://ermin.ru
  * @link   http://standart-electronics.ru
  */
+use Sfcms\Form\Exception;
 use Sfcms\Request;
 
 abstract class FormAbstract
@@ -321,10 +322,12 @@ abstract class FormAbstract
     /**
      * Установит массив значений
      * Как правило, нужно для использования с базой данных
-     * @param array $data
-     * @return array
+     *
+     * @param array|\ArrayAccess $data
+     * @return bool
+     * @throws Exception
      */
-    public function setData( array $data )
+    public function setData( $data )
     {
         if ( count($this->_fields) == 0 ) {
             throw new Exception( 'Форма не содержит полей' );

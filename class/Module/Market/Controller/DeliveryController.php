@@ -33,12 +33,15 @@ class DeliveryController extends Sfcms_Controller
     }
 
 
-    public function editAction()
+    /**
+     * @param int $id
+     *
+     * @return array|string
+     */
+    public function editAction($id)
     {
         $form = new Forms_Delivery_Edit();
         $model = $this->getModel('Delivery');
-
-        $id = $this->request->get('id',Request::INT);
 
         if ( $id ) {
             $obj = $model->find( $id );
@@ -82,11 +85,11 @@ class DeliveryController extends Sfcms_Controller
 
     /**
      * Выбор способа доставки
+     * @param int $type
      * @return array
      */
-    public function selectAction()
+    public function selectAction($type)
     {
-        $type = $this->request->get('type', Request::INT);
         try {
             $delivery = $this->app()->getDelivery();
             $delivery->setType( $type );

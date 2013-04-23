@@ -143,29 +143,28 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Список новостей для админки
+     * @param int $id
      * @return mixed
      */
-    public function listAction()
+    public function listAction($id)
     {
         /**/
         $this->request->setTitle(t('news','News'));
         $this->app()->addScript('/misc/admin/news.js');
 
         $model      = $this->getModel('News');
-        /**/
-        $catId =  $this->request->get('id', Request::INT);
 
-        $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$catId));
-        $paging = $this->paging( $count, 20, $this->router->createServiceLink('news','list',array('id'=>$catId)));
+        $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$id));
+        $paging = $this->paging( $count, 20, $this->router->createServiceLink('news','list',array('id'=>$id)));
 
         $list = $model->findAll(array(
             'cond'      => 'cat_id = :cat_id AND deleted = 0',
-            'params'    => array(':cat_id'=>$catId),
+            'params'    => array(':cat_id'=>$id),
             'limit'     => $paging->limit,
             'order'     => '`date` DESC, `priority` DESC, `id` DESC',
         ));
 
-        $cat    = $this->getModel('NewsCategory')->find( $catId );
+        $cat    = $this->getModel('NewsCategory')->find( $id );
 
         return array(
             'paging'    => $paging,
@@ -176,9 +175,11 @@ class NewsController extends Sfcms_Controller
 
     /**
      * Редактрование новости для админки
+     * @param int $id
+     * @param int $cat
      * @return mixed
      */
-    public function editAction( )
+    public function editAction($id, $cat)
     {
         $this->request->setTitle(t('news','News edit'));
         /** @var $model NewsModel */
@@ -195,34 +196,33 @@ class NewsController extends Sfcms_Controller
             return array('error'=>1, 'msg'=>$this->request->getFeedbackString());
         }
 
-        $edit   = $this->request->get('id', FILTER_SANITIZE_NUMBER_INT);
-
-        if ( $edit ) {
-            $news   = $model->find( $edit );
+        if ( $id ) {
+            $news   = $model->find( $id );
             $form->setData( $news->getAttributes() );
         } else {
             $news   = $model->createObject();
         }
 
-        $cat    = null;
+        $catObj = null;
         if ( isset( $news['cat_id'] ) && $news['cat_id'] ) {
-            $cat    = $model->category->find( $news['cat_id'] );
+            $catObj = $model->category->find( $news['cat_id'] );
         }
-        if ( null === $cat && $this->request->get('cat', Request::INT) ) {
-            $cat    = $model->category->find( $this->request->get('cat', Request::INT) );
+        if ( null === $catObj && $cat ) {
+            $catObj = $model->category->find( $cat );
         }
 
         return array(
             'form'  => $form,
-            'cat'   => $cat,
+            'cat'   => $catObj,
         );
     }
 
     /**
      * Править категорию для админки
+     * @param int $id
      * @return mixed
      */
-    public function cateditAction( )
+    public function cateditAction($id)
     {
         $this->request->setTitle(t('news','News category'));
         /** @var $newsModel NewsModel */
@@ -249,42 +249,39 @@ class NewsController extends Sfcms_Controller
             }
         }
 
-        $edit   = $this->request->get('id', Request::INT);
-
-        if ( $edit ) {
-            $news   = $categoryModel->find( $edit );
+        if ($id) {
+            $news   = $categoryModel->find($id);
             $form->setData( $news->getAttributes() );
         }
 
-        if ( $edit !== false ) {
-            $this->tpl->assign(array(
+        if ($news) {
+            return $this->render('news.catedit', array(
                 'form'  => $form,
             ));
-            return $this->tpl->fetch('news.catedit');
         }
         return t('Unknown error');
     }
 
     /**
      * Удаление категории новостей и ее подновостей
+     * @param int $id
      * @return mixed
      */
-    public function catdeleteAction( )
+    public function catdeleteAction($id)
     {
         /**/
         $this->request->setTitle(t('news','News category'));
         $model      = $this->getModel('News');
         /**/
         $category   = $this->getModel('NewsCategory');
-        $catId     = $this->request->get('id', Request::INT);
 
         try {
             /** @var $catObj Category */
-            $catObj = $category->find( $catId );
+            $catObj = $category->find($id);
 
             $news = $model->findAll( array(
                 'cond'  => 'cat_id = :cat_id',
-                'params'=> array( ':cat_id'=> $catId ),
+                'params'=> array( ':cat_id'=> $id ),
             ) );
 
             /** @var $obj News */
@@ -303,17 +300,15 @@ class NewsController extends Sfcms_Controller
     }
 
     /**
+     * @param int $id
      * @return mixed
      */
-    public function deleteAction()
+    public function deleteAction($id)
     {
-        /**/
         $this->request->setTitle(t('News'));
         $model      = $this->getModel('News');
-        /**/
-        $newsId    = $this->request->get('id', Request::INT);
         /** @var $obj News */
-        $obj    = $model->find( $newsId );
+        $obj    = $model->find($id);
 //        $catId = $obj->cat_id;
         $obj->deleted = 1;
 //        $this->reload('news/list', array('id'=>$catId));

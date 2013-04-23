@@ -3,33 +3,6 @@
  * Объект Страницы
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
-
- * @property int id
- * @property int parent
- * @property string name
- * @property string template
- * @property string alias
- * @property int alias_id
- * @property string path
- * @property int date
- * @property int update
- * @property int pos
- * @property int link
- * @property string controller
- * @property string action
- * @property string sort
- * @property string title
- * @property string notice
- * @property string content
- * @property string thumb
- * @property string image
- * @property string keywords
- * @property string description
- * @property int author
- * @property int hidden
- * @property int protected
- * @property int system
- * @property int deleted
  */
 namespace Module\Page\Object;
 
@@ -37,6 +10,36 @@ use Sfcms;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 
+/**
+ * Class Page
+ * @package Module\Page\Object
+ *
+ * @property int $id INT(11) NOT NULL AUTO_INCREMENT
+ * @property int $parent INT(11) NOT NULL DEFAULT 0
+ * @property string $name VARCHAR(255) NOT NULL
+ * @property string $template VARCHAR(50) NOT NULL DEFAULT 'inner'
+ * @property string $alias VARCHAR(250) NOT NULL DEFAULT ''
+ * @property string $path TEXT DEFAULT ''
+ * @property int $date INT(11) NOT NULL DEFAULT 0
+ * @property int $update INT(11) NOT NULL DEFAULT 0
+ * @property int $pos INT(11) NOT NULL DEFAULT 0
+ * @property int $link INT(11) NOT NULL DEFAULT 0
+ * @property string $controller VARCHAR(20) DEFAULT 'page'
+ * @property string $action VARCHAR(20) DEFAULT 'index'
+ * @property string $sort VARCHAR(20) DEFAULT 'pos ASC'
+ * @property string $title VARCHAR(80) DEFAULT ''
+ * @property string $notice TEXT DEFAULT ''
+ * @property string $content TEXT DEFAULT ''
+ * @property string $thumb VARCHAR(250) DEFAULT ''
+ * @property string $image VARCHAR(250) DEFAULT ''
+ * @property string $keywords VARCHAR(255) DEFAULT NULL
+ * @property string $description VARCHAR(255) DEFAULT NULL
+ * @property int $author INT(11) NOT NULL DEFAULT 0
+ * @property int $hidden INT(1) NOT NULL DEFAULT 0
+ * @property int $protected INT(1) NOT NULL DEFAULT 0
+ * @property int $system INT(1) NOT NULL DEFAULT 0
+ * @property int $deleted INT(1) NOT NULL DEFAULT 0
+ */
 class Page extends Object
 {
     /**
@@ -46,7 +49,7 @@ class Page extends Object
      */
     public function getHlContent( array $words )
     {
-        $result = $this->get('content');
+        $result = $this->content;
         foreach ( $words as $word ) {
             if ( strlen( $word ) > 3 ) {
                 $result = str_ireplace( $word, '<b class="highlight">'.$word.'</b>', $result );
@@ -168,7 +171,7 @@ class Page extends Object
             new Field\Varchar('name', 80, true, ''),
             new Field\Varchar('template', 50, true, 'inner'),
             new Field\Varchar('alias', 250, true, ''),
-            //            new Field\Int('alias_id', 11, true, '0'),
+//            new Field\Int('alias_id', 11, true, '0'),
             new Field\Text('path'),
             new Field\Int('date', 11, true, '0'),
             new Field\Int('update', 11, true, '0'),

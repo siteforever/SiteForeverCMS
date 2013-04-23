@@ -121,7 +121,7 @@ class Controller_Elfinder extends Sfcms_Controller
     public function finderAction()
     {
         $this->request->set('resource', 'system:');
-        $this->request->setLayout('elfinder');
+        $this->request->setTemplate('elfinder');
         return;
     }
 }

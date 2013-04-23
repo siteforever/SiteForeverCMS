@@ -6,21 +6,23 @@
 namespace Sfcms\View\Layout;
 
 use Sfcms\View\Layout;
+use Sfcms\Kernel\KernelEvent;
 
 class Page extends Layout
 {
     /**
-     * @param $result
-     * @return string
+     * @param KernelEvent $event
+     * @return KernelEvent
      */
-    public function view( $result )
+    public function view(KernelEvent $event)
     {
+        $this->init();
 //        $this->_app->addStyle( $this->getMisc() . '/reset.css' );
 //        $this->_app->addStyle( $this->getMisc() . '/siteforever.css' );
 
-        if( file_exists( trim( $this->getCss(), '/' ) . '/style.css' ) ) {
+//        if( file_exists( SF_PATH . DS . trim( $this->getCss(), '/' ) . '/style.css' ) ) {
             $this->_app->addStyle( $this->getCss() . '/style.css' );
-        }
+//        }
         if( file_exists( trim( $this->getCss(), '/' ) . '/print.css' ) ) {
             $this->_app->addStyle( $this->getCss() . '/print.css' );
         }
@@ -34,10 +36,10 @@ class Page extends Layout
 //            $this->_app->addScript( $this->getMisc() . '/admin/panel.js' );
 //        }
 
-        $layout = $this->getTpl()->fetch(
-            $this->getRequest()->get( 'resource' )
-            . $this->getRequest()->get( 'template' )
-        );
-        return $layout;
+        $this->getTpl()->assign('response', $event->getResponse());
+        $event->getResponse()->setContent($this->getTpl()->fetch(
+            $this->getRequest()->get('resource') . $this->getRequest()->get('template')
+        ));
+        return $event;
     }
 }

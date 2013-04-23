@@ -25,15 +25,16 @@
             "Std" : "class/",
             "Forms" : ["class/"]
         },
-        "files" : ["class/Functions.php","class/App.php"]
+        "files" : ["class/Functions.php"]
     },
-    "include-path": ["lib/","class/"],
+    "include-path": ["./", "lib/","class/"],
     "require-dev": {
         "phpunit/php-invoker": "1.1.*",
         "phpunit/phpunit": "3.7.*",
         "phpunit/phpunit-mock-objects": "1.2.*",
         "phpunit/php-code-coverage": "1.2.*",
-        "phpunit/php-file-iterator": "1.3.*"
+        "phpunit/php-file-iterator": "1.3.*",
+        "phpunit/phpunit-selenium": "1.2.*"
     },
     "require": {
         "php": ">=5.3.3",
@@ -41,7 +42,9 @@
         "smarty/smarty": "3.1.*",
         "firephp/firephp-core": "dev-master",
         "ccampbell/chromephp": "dev-master",
-        "tonytomov/jqGrid" : "4.4.4"
+        "tonytomov/jqGrid" : "4.4.4",
+        "Studio-42/elFinder" : "2",
+        "mrclay/minify": "dev-master"
     },
     "repositories":[
         {
@@ -55,14 +58,38 @@
                     "reference":"master"
                 }
             }
+        },
+        {
+            "type":"package",
+            "package":{
+                "name":"Studio-42/elFinder",
+                "version":"2",
+                "source":{
+                    "type":"git",
+                    "url":"https://github.com/Studio-42/elFinder",
+                    "reference":"2.x"
+                },
+                "autoload" : {
+                    "psr-0" : {
+                        "elFinder" : "php/elFinder.class.php",
+                        "elFinderConnector" : "php/elFinderConnector.class.php",
+                        "elFinderVolumeDriver" : "php/elFinderVolumeDriver.class.php",
+                        "elFinderVolumeFTP" : "php/elFinderVolumeFTP.class.php",
+                        "elFinderVolumeLocalFileSystem" : "php/elFinderVolumeLocalFileSystem.class.php",
+                        "elFinderVolumeMySQL" : "php/elFinderVolumeMySQL.class.php"
+                    }
+                }
+            }
         }
     ],
     "scripts": {
         "post-install-cmd": [
-            "Sfcms\\JqGrid\\ComposerHandler::installAssets"
+            "Sfcms\\JqGrid\\ComposerHandler::installAssets",
+            "Sfcms\\ElFinder\\ComposerHandler::installAssets"
         ],
         "post-update-cmd": [
-            "Sfcms\\JqGrid\\ComposerHandler::installAssets"
+            "Sfcms\\JqGrid\\ComposerHandler::installAssets",
+            "Sfcms\\ElFinder\\ComposerHandler::installAssets"
         ]
     },
     "extra": {

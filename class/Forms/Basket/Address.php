@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
 
-use Sfcms\Kernel\Base;
+use Sfcms\Kernel\KernelBase;
 
 class Forms_Basket_Address extends \Sfcms\Form\Form
 {

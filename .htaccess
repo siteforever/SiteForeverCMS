@@ -28,8 +28,8 @@ RewriteEngine on
 RewriteBase /
 
 # На запросы к php файлам кроме программы sxd выводить 404 Not found
-RewriteCond %{THE_REQUEST} !(sxd)
-RewriteRule ^(.*)\.php$ / [L,R=404]
+#RewriteCond %{THE_REQUEST} !(sxd)
+#RewriteRule ^(.*)\.php$ / [L,R=404]
 
 # Переписываем пути, если есть подозрение, что идет обращение к странице сайта
 RewriteCond %{REQUEST_FILENAME} !(php|ico|jpg|jpeg|png|gif|css|js)$

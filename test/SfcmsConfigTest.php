@@ -15,8 +15,9 @@ class SfcmsConfigTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->obj  = new Config();
-        $this->obj->set('sitename','SiteForeverCMS');
+        $this->obj  = new Config(array(
+            'sitename' => 'SiteForeverCMS',
+        ));
         $this->obj->setDefault('db',array( 'login' => 'siteforever', ));
         $this->obj->setDefault('test',array(
             'foo1'  => 'foo1',

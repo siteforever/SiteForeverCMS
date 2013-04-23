@@ -9,7 +9,7 @@ namespace Sfcms\Tpl;
 use Sfcms\Exception;
 use Sfcms\Tpl\Smarty;
 use Sfcms\Tpl\Driver;
-use Sfcms\Kernel\Base as Service;
+use Sfcms\Kernel\KernelBase as Service;
 
 class Factory
 {

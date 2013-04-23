@@ -58,8 +58,6 @@ class OrderController extends Sfcms_Controller
         }
 
         // просмотр заказа
-        $item = $this->request->get('item', Request::INT);
-
         if ( $item ) {
             /** @var $orderObj Order */
             $orderObj = $order->find( $item );

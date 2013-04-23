@@ -20,6 +20,6 @@ define('ROOT', __DIR__);
 require_once SF_PATH.'/vendor/autoload.php';
 //require_once SF_PATH . '/class/App.php';
 
-$app = new App( array('protected/config/development.php'));
+$app = new App('application/development.php');
 $app->run();
 

@@ -17,7 +17,7 @@ class BasketTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $app    = App::getInstance();
-        $this->object   = $app->getBasket();
+        $this->object = $app->getBasket();
     }
 
     /**

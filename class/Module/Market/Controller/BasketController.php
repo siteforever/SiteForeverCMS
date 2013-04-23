@@ -44,7 +44,6 @@ class BasketController extends Sfcms_Controller
 //        $catalogModel    = $this->getModel('Catalog');
 
         $this->request->setTitle(t('basket','Basket'));
-        $this->request->setContent(t('basket','Basket'));
         $this->request->set('template', 'inner');
 
         $this->getTpl()->getBreadcrumbs()

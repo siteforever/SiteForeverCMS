@@ -60,7 +60,7 @@ class ComposerHandler {
         $content = Sfcms::html()->jsMin( $content );
 
         try {
-            mkdir( rtrim( $out, '/' ), 0777, true );
+            mkdir( rtrim( $out, '/' ), 0755, true );
         } catch( ErrorException $e ) {
             print sprintf("Catalog %s not created. %s\n", rtrim( $out, '/' ), $e->getMessage());
         }

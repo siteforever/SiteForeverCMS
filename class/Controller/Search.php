@@ -14,7 +14,7 @@ class Controller_Search extends Sfcms_Controller
     public function init()
     {
         parent::init();
-        $this->request->setLayout('inner');
+        $this->request->setTemplate('inner');
     }
 
 

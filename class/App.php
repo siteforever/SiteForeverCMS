@@ -1,18 +1,10 @@
 <?php
-// директории для подключения
-$include_list   = array();
-if ( SF_PATH != ROOT ) {
-    $include_list[] = ROOT;
-}
-$include_list[] = SF_PATH;
-$include_list[] = str_replace('.:', '', get_include_path());
-set_include_path( join( PATH_SEPARATOR, $include_list ));
-
 set_error_handler( function ( $errno, $errstr) {
     throw new Exception( $errstr, $errno );
 }, E_WARNING & E_NOTICE & E_DEPRECATED & E_USER_WARNING & E_USER_NOTICE & E_ERROR );
 
-use Sfcms\Kernel\Base;
+use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +22,7 @@ use Sfcms\Model\Exception as ModelException;
  * @link   http://ermin.ru
  * @link   http://siteforever.ru
  */
-class App extends Base
+class App extends KernelBase
 {
     /**
      * Запуск приложения
@@ -41,9 +33,10 @@ class App extends Base
     {
         self::$start_time = microtime( true );
         $this->init();
-        $result = $this->handleRequest();
+        $response = $this->handleRequest();
         $this->flushDebug();
-        print $result;
+        $response->prepare($this->getRequest()->getRequest());
+        $response->send();
     }
 
     /**
@@ -71,33 +64,29 @@ class App extends Base
             $this->getConfig()->set('language',$this->getRequest()->get('lang'));
         }
         i18n::getInstance()->setLanguage(
-            $this->getConfig()->get( 'language' )
+            $this->getConfig()->get('language')
         );
+        $this->getRequest()->getRequest()->setLocale($this->getConfig()->get('language'));
 
         // TIME_ZONE
-        date_default_timezone_set( 'Europe/Moscow' );
-
-        // DB prefix
-        if( ! defined( 'DBPREFIX' ) ) {
-            if ( $this->getConfig()->get( 'db.prefix' ) ) {
-                define( 'DBPREFIX', $this->getConfig()->get( 'db.prefix' ) );
-            } else {
-                define( 'DBPREFIX', '' );
-            }
-        }
+        date_default_timezone_set($this->getConfig('timezone') ?: 'Europe/Moscow');
 
         if( ! defined( 'MAX_FILE_SIZE' ) ) {
             define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
         }
         $installer = new Sfcms_Installer();
         $installer->installationStatic();
+
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'));
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'));
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'invokeLayout'));
     }
 
 
     /**
      * Обработка запросов
      * @static
-     * @return mixed
+     * @return Response
      */
     protected function handleRequest()
     {
@@ -111,119 +100,109 @@ class App extends Base
         self::$init_time = microtime( 1 ) - self::$start_time;
         self::$controller_time = microtime( 1 );
 
-
+        $result = null;
+        $response = null;
         try {
             $result = $this->getResolver()->dispatch();
+        } catch ( Sfcms_Http_Exception $e ) {
+            $response = new Response($e->getMessage(), $e->getCode()?:500);
+            if (403 == $e->getCode()) {
+                $response->headers->set('Location', $this->getRouter()->createServiceLink('users','login'));
+                return $response;
+            }
         } catch ( Exception $e ) {
-            $error  = $this->getRequest()->setResponseError( $e );
-            $result = $error['msg'];
+            $this->getLogger()->log($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine());
+            $this->getLogger()->log($e->getTraceAsString());
+            return new Response($e->getMessage() . (static::isDebug() ? '<pre>' . $e->getTraceAsString() : ''), 500);
         }
 
-//        if ( is_string( $result ) ) {
-//            $response = new Response( $result );
-//        } elseif ( $result instanceof Response ) {
-//            $response = $result;
-//            $result   = $response->getContent();
-//        }
-
-//        if ( $this->getRequest()->getContent() && CACHE ) {
-//            $this->getCacheManager()->setCache( $this->getRequest()->getContent() );
-//            $this->getCacheManager()->save();
-//        }
-        $result = $this->prepareResult( $result );
+        if (! $response && is_string($result)) {
+            $response = new Response($result);
+        } elseif ($result instanceof Response) {
+            $response = $result;
+        } elseif (!$response) {
+            $response = new Response();
+        }
 
         // Выполнение операций по обработке объектов
         try {
-//            debugVar( Data_Watcher::instance()->dumpDirty(), 'dumpDirty' );
             Watcher::instance()->performOperations();
         } catch ( ModelException $e ) {
-            $response = $this->getRequest()->setResponseError( $e );
-            $result .= $response['msg'];
-        }
-
-        // Redirect
-        if ( $this->getRequest()->get('redirect') ) {
-            if ( self::isTest() ) {
-                print "Status: 301 Moved Permanently\n";
-                print 'Location: '.$this->getRequest()->get('redirect')."\n";
-            } else {
-                header('Status: 301 Moved Permanently');
-                header('Location: '.$this->getRequest()->get('redirect'));
-            }
-            return null;
+            $response->setStatusCode(500);
+            $response->setContent($e->getMessage());
         }
 
         // If result is image... This needing for captcha
         if ( is_resource( $result ) && imageistruecolor( $result ) ) {
-            header('Content-type: image/png');
+            $response->headers->set('Content-type', 'image/png');
             imagepng( $result );
-            return null;
+            return $response;
         }
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
-        $result = $this->invokeLayout( $result );
-        if ( $reload = $this->getRequest()->get('reload') ) {
-            $result .= $reload;
-        }
-        return $result;
+        $event = new KernelEvent($response, $this->getRequest()->getRequest(), $result);
+        $this->getEventDispatcher()->dispatch('kernel.response', $event);
+
+        return $event->getResponse();
     }
 
     /**
-     * Обработает и подготовит результат
-     * @param $result
+     * Если контроллер вернул массив, то преобразует его в строку и сохранит в Response
+     * @param KernelEvent $event
      * @return string
      */
-    protected function prepareResult( $result )
+    public function prepareResult(KernelEvent $event)
     {
-//        $this->getLogger()->log( $result, 'result' );
-//        $this->getLogger()->log( $this->getRequest()->getResponse(), 'response' );
-        if ( ! $result ) {
-            // Сначала пытаемся достать из Response
-            $result = $this->getRequest()->getResponse();
-        }
-
-//        if ( ! $result ) { // Потом достаем из основного потока вывода
-//            $result = ob_get_contents();
-//        }
-//        ob_end_clean();
-
-//        $this->getLogger()->log($this->getRequest()->getAjaxType(),'ajax type');
-        if ( is_array( $result ) && Request::TYPE_JSON == $this->getRequest()->getAjaxType() ) {
+        $result = $event->getResult();
+        $response = $event->getResponse();
+        $format = $this->getRequest()->getRequest()->getRequestFormat();
+        if (is_array($result) && 'json' == $format) {
             // Если надо вернуть JSON из массива
-            $result = json_encode( $result );
+            $result = json_encode($result);
         }
-//        $this->getLogger()->log( $result, 'result' );
-
-        // Имеет больший приоритет, чем данные в Request->content
-        if ( is_array( $result ) ) {
+        // Имеет больший приоритет, чем данные в Request-Request->content
+        if (is_array($result) && 'html' == $format) {
             // Если надо отпарсить шаблон с данными из массива
-            $this->getTpl()->assign( $result );
-            $template   = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
-            $result = $this->getTpl()->fetch( $template );
+            $this->getTpl()->assign($result);
+            $template = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
+            $result   = $this->getTpl()->fetch($template);
         }
+        // Просто установить итоговую строку как контент
+        if (is_string($result)) {
+            $response->setContent($result);
+        }
+        return $event;
+    }
 
-        if ( is_string( $result ) ) {
-            // Просто установить итоговую строку как контент
-            $this->getRequest()->setContent( $result );
+    /**
+     * Перезагрузка страницы
+     * @param KernelEvent $event
+     *
+     * @return KernelEvent
+     */
+    public function prepareReload(KernelEvent $event)
+    {
+        if ( $reload = $this->getRequest()->get('reload') ) {
+            $event->getResponse()->setContent($event->getResponse()->getContent() . $reload);
         }
-        return $result;
+        return $event;
     }
 
     /**
      * Вызвать отображение
-     * @param mixed $result
+     * @param KernelEvent $event
      *
-     * @return mixed
+     * @return KernelEvent
      */
-    protected function invokeLayout( $result )
+    public function invokeLayout(KernelEvent $event)
     {
         if( $this->getRequest()->getAjax() ) {
-            $Layout = new Xhr( $this );
+            $Layout = new Xhr($this);
         } else {
-            $Layout = new Layout( $this );
+            $Layout = new Layout($this);
         }
-        return $Layout->view( $result );
+        return $Layout->view($event);
     }
 
 
@@ -239,11 +218,11 @@ class App extends Base
         if ( App::isDebug() ) {
             if ( $this->getConfig()->get( 'db.debug' ) ) {
                 Model::getDB()->saveLog();
+                $this->getLogger()->log(
+                    "Total SQL: " . count( Model::getDB()->getLog() )
+                        . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
+                );
             }
-            $this->getLogger()->log(
-                "Total SQL: " . count( Model::getDB()->getLog() )
-                    . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
-            );
             $this->getLogger()->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
             $this->getLogger()->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
             $exec_time = microtime( true ) - self::$start_time;

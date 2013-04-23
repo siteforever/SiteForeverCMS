@@ -30,8 +30,7 @@ class GuestbookController extends Sfcms_Controller
     public function indexAction()
     {
         if ( null === $this->page ) {
-            $this->request->setContent( t('Can not be used without page') );
-            return;
+            return t('Can not be used without page');
         }
         $this->request->setTitle( $this->page->title );
 
@@ -85,15 +84,11 @@ class GuestbookController extends Sfcms_Controller
 
         $messages   = $model->findAll( $crit );
 
-//        $this->log( $messages->current()->message );
-
-        $this->tpl->assign(array(
+        return $this->render('guestbook.index', array(
             'messages'  => $messages,
             'paging'    => $paging,
             'form'      => $form,
         ));
-
-        $this->tpl->fetch('guestbook.index');
     }
 
 
@@ -140,26 +135,26 @@ class GuestbookController extends Sfcms_Controller
         $model  = $this->getModel('Guestbook');
 
         if ( $id ) {
-            $msg = $model->find( $id );
+            $message = $model->find( $id );
         } else {
-            $msg = $model->createObject();
+            $message = $model->createObject();
         }
 
         $form   = new Forms_Guestbook_Edit();
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                $msg->setAttributes( $form->getData() );
-                $msg->markDirty();
+                $message->setAttributes( $form->getData() );
+                $message->markDirty();
                 return array( 'error'=>0, 'msg'=>t('Data save successfully'));
             } else {
                 return array( 'error'=>1, 'msg'=>$form->getFeedbackString());
             }
         }
 
-        $form->setData( $msg );
+        $form->setData( $message );
 
         return array(
-            'msg'   => $msg,
+            'msg'   => $message,
             'form'  => $form,
         );
     }

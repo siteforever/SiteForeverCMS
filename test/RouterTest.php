@@ -162,12 +162,12 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testFindRoute()
     {
         // find route in routes.xml
-        $this->router->setRoute( 'page/nameconvert/id/123/page/7' )->routing(true);
-        $this->assertEquals( $this->request->get( 'controller' ), 'page' );
-        $this->assertEquals( $this->request->get( 'action' ), 'nameconvert' );
+        $this->router->setRoute('page/nameconvert/id/123/page/7')->routing(true);
+        $this->assertEquals($this->request->get('controller'), 'page');
+        $this->assertEquals($this->request->get('action'), 'nameconvert');
 
-        $this->assertEquals( '7', $this->request->get( 'page' ) );
-        $this->assertEquals( '123', $this->request->get( 'id' ) );
+        $this->assertEquals('7', $this->request->get('page'));
+        $this->assertEquals('123', $this->request->get('id'));
     }
 
     public function testFindRouteAdminUsers()

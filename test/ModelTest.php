@@ -1,7 +1,7 @@
 <?php
 use Sfcms\Model;
 use Sfcms\db;
-use Sfcms\Kernel\Base as Kernel;
+use Sfcms\Kernel\KernelBase as Kernel;
 use Module\System\Object\Test as TestObject;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Collection;
@@ -107,7 +107,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     public function testTable()
     {
         $object_class = $this->model->objectClass();
-        $this->assertEquals( $object_class::table(), DBPREFIX.'test' );
+        $this->assertEquals( $object_class::table(), 'test' );
     }
 
     /**
