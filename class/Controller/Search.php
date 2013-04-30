@@ -113,10 +113,10 @@ class Controller_Search extends Sfcms_Controller
 //        ));
 //
 //        $content    = $this->tpl->fetch('search.index');
-//        $this->request->setContent( $content );
 //
 //        $this->request->setTitle('Поиск');
 //        $this->request->set('template', 'inner');
+//        return $content;
 //    }
 
     private function filterFulltext( $search )

@@ -45,17 +45,20 @@
 
         <div class="custom-properties">
             {foreach $fields as $field}
-                <div class="control-group">
-                    <label for="field{$field->id}" class="control-label">{$field->name}</label>
-                    <div class="controls field-text">
-                        {if $field->type != 'text'}
-                            <input type="text" id="field{$field->id}" name="field[{$field->id}]" data-type="{$field->type}">
-                            {else}
-                            <textarea id="field{$field->id}" class="plain" name="field[{$field->id}]"></textarea>
-                        {/if}
-                        {$field->unit}
-                    </div>
+            <div class="control-group">
+                <label for="field{$field->id}" class="control-label">{$field->name}</label>
+                <div class="controls field-text">
+                    {if $field->type != 'text'}
+                    <input type="text" id="field{$field->id}"
+                           name="field[{$field->id}]" data-type="{$field->type}"
+                           value="{$field->getValue($item)}">
+                    {else}
+                    <textarea id="field{$field->id}" class="plain" name="field[{$field->id}]">
+                        {$field->getValue($item)}</textarea>
+                    {/if}
+                    {$field->unit}
                 </div>
+            </div>
             {/foreach}
         </div>
 

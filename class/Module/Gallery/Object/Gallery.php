@@ -12,6 +12,8 @@ use Module\Page\Model\PageModel;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 use Sfcms;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @property int id
@@ -35,6 +37,27 @@ use Sfcms;
  */
 class Gallery extends Object
 {
+    /** @var UploadedFile */
+    protected $file;
+
+
+    /**
+     * Set and move uploaded file
+     * @param UploadedFile $file
+     */
+    public function setUploadedFile(UploadedFile $file)
+    {
+        $dest = $this->app()->getConfig('gallery.dir') . DS . substr('0000' . $this->category_id, -4, 4);
+        if (!$this->getId()) {
+            $this->save(true);
+        }
+        $this->file = $file->move(ROOT . $dest, $this->getId() . '_' . $file->getClientOriginalName());
+        $this->image = $dest . '/' . $this->file->getBasename();
+        if ( 0 == $this->pos ) {
+            $this->Category->image = $this->image;
+        }
+    }
+
     /**
      * @return string
      */

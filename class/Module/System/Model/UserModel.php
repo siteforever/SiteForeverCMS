@@ -66,19 +66,21 @@ class UserModel extends Model
     /**
      * @return void
      */
-    function onCreateTable()
+    public function onCreateTable()
     {
-        $obj    = $this->createObject(array(
-                'login'     => 'admin',
-                'perm'      => USER_ADMIN,
-                'status'    => '1',
-                'date'      => time(),
-                'email'     => $this->config->get('admin'),
-          ));
+        /** @var $obj User */
+        $obj = $this->createObject(
+            array(
+                'login'  => 'admin',
+                'perm'   => USER_ADMIN,
+                'status' => '1',
+                'date'   => time(),
+                'email'  => $this->config->get('admin'),
+            )
+        );
 
         $obj->changePassword('admin');
-
-        $this->save( $obj );
+        $obj->save();
     }
 
     /**
@@ -86,7 +88,7 @@ class UserModel extends Model
      * @param $email
      * @return Object
      */
-    function findByEmail( $email )
+    public function findByEmail( $email )
     {
         $data = $this->find(array(
             'cond'      => 'email = :email',
@@ -100,15 +102,15 @@ class UserModel extends Model
     }
 
     /**
-     * @param Object|null $obj
-     * @return int
+     * Hide password
+     * @param Model\ModelEvent $event
      */
-    public function save( Object $obj )
+    public function onSaveStart(Model\ModelEvent $event)
     {
-        if ( empty( $obj->password ) ) {
-            unset( $obj->password );
+        $obj = $event->getObject();
+        if (empty($obj->password)) {
+            unset($obj->password);
         }
-        return parent::save( $obj );
     }
 
     /**
@@ -116,7 +118,7 @@ class UserModel extends Model
      * @deprecated
      * @return array
      */
-    function getBasketArray( Object $user )
+    public function getBasketArray( Object $user )
     {
         $basket = json_decode( $user['basket'], true );
         if ( $basket ) {
@@ -132,7 +134,7 @@ class UserModel extends Model
      * @return void
      * @deprecated
      */
-    function setBasketFromArray( $array, User $obj )
+    public function setBasketFromArray( $array, User $obj )
     {
         $basket = json_encode( $array );
         $obj->basket    = $basket;
@@ -145,7 +147,7 @@ class UserModel extends Model
      * Вернет форму для логина
      * @return Form
      */
-    function getLoginForm()
+    public function getLoginForm()
     {
         if ( is_null( $this->login_form ) ) {
             $this->login_form = new FormLogin();
@@ -157,7 +159,7 @@ class UserModel extends Model
      * Форма профиля пользователя на сайте
      * @return Form
      */
-    function getProfileForm()
+    public function getProfileForm()
     {
         if ( is_null( $this->profile_form ) ) {
             $this->profile_form = new FormProfile();
@@ -165,7 +167,7 @@ class UserModel extends Model
         return $this->profile_form;
     }
 
-    function getPasswordForm()
+    public function getPasswordForm()
     {
         if ( is_null( $this->password_form ) ) {
             $this->password_form = new FormPassword();
@@ -173,7 +175,7 @@ class UserModel extends Model
         return $this->password_form;
     }
 
-    function getRestoreForm()
+    public function getRestoreForm()
     {
         if ( is_null( $this->restore_form ) ) {
             $this->restore_form = new FormRestore();
@@ -181,7 +183,7 @@ class UserModel extends Model
         return $this->restore_form;
     }
 
-    function getRegisterForm()
+    public function getRegisterForm()
     {
         if ( is_null( $this->register_form ) ) {
             $this->register_form = new Forms_User_Register();
@@ -193,7 +195,7 @@ class UserModel extends Model
      * Форма редактирования
      * @return Form
      */
-    function getEditForm()
+    public function getEditForm()
     {
         if ( is_null( $this->edit_form ) ) {
             $this->edit_form = new Forms_User_Edit();

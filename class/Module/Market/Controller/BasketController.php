@@ -17,7 +17,6 @@ use Module\Catalog\Model\CatalogModel;
 
 class BasketController extends Sfcms_Controller
 {
-
     public function indexAction( $address )
     {
         $form = new Forms_Basket_Address();
@@ -100,22 +99,24 @@ class BasketController extends Sfcms_Controller
     /**
      * Добавит в корзину товар
      *
-     * @param int $basket_prod_id
-     * @param string $basket_prod_name
-     *
+     * @param $_REQUEST['basket_prod_id']
+     * @param $_REQUEST['basket_prod_name']
      * @param $_REQUEST['basket_prod_count']
      * @param $_REQUEST['basket_prod_price']
      * @param $_REQUEST['basket_prod_details']
      *
      * @return string
      */
-    public function addAction( $basket_prod_id, $basket_prod_name )
+    public function addAction()
     {
-        if ( $basket_prod_id || $basket_prod_name )
-        {
-            $basket_prod_count      = $this->request->get('basket_prod_count');
-            $basket_prod_price      = $this->request->get('basket_prod_price');
-            $basket_prod_details    = $this->request->get('basket_prod_details');
+        $post = $this->request->request;
+
+        $basket_prod_name = $post->get('basket_prod_name');
+        $basket_prod_id   = $post->get('basket_prod_id');
+        if ( $basket_prod_id || $basket_prod_name ) {
+            $basket_prod_count      = $post->get('basket_prod_count');
+            $basket_prod_price      = $post->get('basket_prod_price');
+            $basket_prod_details    = $post->get('basket_prod_details');
 
             $this->getBasket()->add(
                 $basket_prod_id,

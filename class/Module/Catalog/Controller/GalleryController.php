@@ -108,35 +108,35 @@ class GalleryController extends Sfcms_Controller
     {
         $this->setAjax();
         /** @var GalleryModel $catGalleryModel */
-        $catGalleryModel = $this->getModel( 'CatalogGallery' );
-        $id              = $this->request->get( 'id', FILTER_SANITIZE_NUMBER_INT );
+        $catGalleryModel = $this->getModel('CatalogGallery');
+        $id              = $this->request->get('id');
         /** @var $image Gallery */
-        $image = $catGalleryModel->find( $id );
+        $image = $catGalleryModel->find($id);
 
         if ( null !== $image ) {
             $cat_id = $image->cat_id;
-            $catGalleryModel->setDefault( $id, $cat_id );
+            $catGalleryModel->setDefault($id, $cat_id);
             if ( $cat_id ) {
-                return $this->getPanel( $cat_id );
+                return $this->getPanel($cat_id);
             } else {
-                return t( 'Category not defined' );
+                return t('Category not defined');
             }
         }
-        return t( 'Image not found' );
+        return t('Image not found');
     }
 
     /**
      * Вернет HTML код для админ-панели картинок
-     * @param $id
+     * @param int $id
      * @return string
      */
-    public function getPanel( $id )
+    public function getPanel($id)
     {
         /** @var GalleryModel $catalogGallery */
         $catalogGallery = $this->getModel('CatalogGallery');
-        $images = $catalogGallery->findAll('cat_id = ?', array( $id ),'pos');
+        $images = $catalogGallery->findAll('cat_id = ?', array($id), 'pos');
 
-        $hasMain = array_reduce(iterator_to_array( $images ), function($result, Gallery $obj){
+        $hasMain = array_reduce(iterator_to_array($images), function($result, Gallery $obj){
             return $result || (bool) $obj->main;
         }, false);
 

@@ -37,7 +37,7 @@ small {
 
 
 #loading-application {
-    position: absolute;
+    position: fixed;
 }
     #loading-application div {
         position: relative;
@@ -324,6 +324,7 @@ fieldset legend {
 .ui-widget-overlay {
     background: #000;
     opacity: .8;
+    position: fixed;
 }
 
 #searchcntfbox_products_list select {

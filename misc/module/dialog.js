@@ -13,13 +13,10 @@ define('module/dialog',[
 ],function( $, i18n, $alert ){
 
     var dialog = function( /* string */ id, /* object */ obj ){
-
         id = id || 'sfcms_dialog';
-
         this.obj = obj;
 
         if ( ! $('#'+id).length ) {
-
             var cfg = {
                 resizable: false,
                 autoOpen: false,
@@ -44,15 +41,11 @@ define('module/dialog',[
 
             this.$dialog = $('<div id="'+id+'" title="{{ title }}"/>').appendTo('body').hide().dialog(cfg);
 
-
             this.$dialog.dialog("option", "buttons",[
-
                 {'text': i18n('Save'), 'click' :$.proxy(this.save,this)},
-
                 {'text': i18n('Save & close'), 'click' :$.proxy(function() {
                     this.save().done( $.proxy( this.close, this ) );
                 },this)},
-
                 {'text': i18n('Close'), 'click' :$.proxy(this.close,this)}
             ]);
         }
@@ -95,10 +88,13 @@ define('module/dialog',[
         var deferred = $.Deferred();
         $('form', this.$dialog).ajaxSubmit({
             dataType: "json",
-            success :$.proxy(function( response ) {
-                $alert( response.msg, 1000, this.$dialog.parent() ).done( response.error ? deferred.reject : deferred.resolve );
+            success: $.proxy(function (response) {
+                if (response.errors) {
+
+                }
+                $alert(response.msg, 1000, this.$dialog.parent()).done(response.error ? deferred.reject : deferred.resolve);
                 // apply onSave
-                if ( this.obj.onSave && typeof this.obj.onSave == 'function' ) {
+                if (!response.error && this.obj.onSave && typeof this.obj.onSave == 'function' ) {
                     deferred.done($.proxy(this.obj.onSave, this.obj, response));
                 }
             },this)

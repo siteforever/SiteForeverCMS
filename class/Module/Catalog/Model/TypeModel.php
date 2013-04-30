@@ -15,7 +15,7 @@ class TypeModel extends Model
     public function relation()
     {
         return array(
-            'Fields' => array(self::HAS_MANY,'ProductField','product_type_id'),
+            'Fields' => array(self::HAS_MANY, 'ProductField', 'product_type_id'),
         );
     }
 

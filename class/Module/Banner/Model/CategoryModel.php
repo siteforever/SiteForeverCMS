@@ -46,20 +46,20 @@ class CategoryModel extends Model
      * @param  $id
      * @return void
      */
-    public function remove( $id )
+    public function remove($id)
     {
-        $category   = $this->find( $id );
+        $category = $this->find($id);
         $modelBanner = self::getModel('Banner');
 
         if ( $category ) {
-            $images = $modelBanner->findAll(array(
+            $banners = $modelBanner->findAll(array(
                 'cond'      => 'cat_id = :cat_id',
                 'params'    => array(':cat_id'=>$category->getId()),
             ));
-            foreach ( $images as $img ) {
-                $modelBanner->delete( $img['id'] );
+            foreach ($banners as $banner) {
+                $banner->deleted = 1;
             }
-            $category->markDeleted();
+            $category->deleted = 1;
         }
 
         return;

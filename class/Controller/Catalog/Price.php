@@ -3,7 +3,7 @@
  * Загрузка прайса в каталог
  * @author: keltanas <keltanas@gmail.com>
  */
-class Controller_Catalog_Price
+class Controller_Catalog_Price extends Sfcms_Controller
 {
     /**
      * Загрузка прайса
@@ -12,7 +12,7 @@ class Controller_Catalog_Price
     public function action()
     {
         /**
-         * @var Model_Catalog $model
+         * @var \Module\Catalog\Model\CatalogModel $model
          */
         $model = $this->getModel( 'Catalog' );
         $this->request->setTitle( 'Загрузить прайслист' );
@@ -120,7 +120,7 @@ class Controller_Catalog_Price
             }
         }
 
-        $this->request->setContent( $this->tpl->fetch( 'catalog.load_price' ) );
+        $this->render('catalog.load_price');
     }
 
 }

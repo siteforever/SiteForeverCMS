@@ -27,9 +27,10 @@ class Config
             $this->config = $cfg_file;
             return $this;
         }
-        if (is_string($cfg_file) && file_exists($cfg_file)) {
-            $this->config = require_once $cfg_file;
+        try {
+            $this->config = @require_once $cfg_file;
             return $this;
+        } catch (\Exception $e) {
         }
         var_dump(get_include_path());
         throw new Exception('Configuration file "'.$cfg_file.'" not found');

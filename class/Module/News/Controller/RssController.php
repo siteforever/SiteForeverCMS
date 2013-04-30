@@ -54,7 +54,7 @@ class RssController extends Sfcms_Controller
         $rssDom->appendChild( $channelDom = $dom->createElement('channel') );
 
         $channelDom->appendChild( $dom->createElement('title', $this->config->get('sitename')) );
-        $channelDom->appendChild( $dom->createElement('link', $this->config->get('siteurl')) );
+        $channelDom->appendChild( $dom->createElement('link', $this->request->getSchemeAndHttpHost()) );
         $channelDom->appendChild( $dom->createElement('description', $this->config->get('sitename')) );
         $channelDom->appendChild( $dom->createElement('generator', 'SiteForeverCMS') );
 
@@ -65,17 +65,14 @@ class RssController extends Sfcms_Controller
 
             $channelDom->appendChild( $itemDom = $dom->createElement('item') );
             $itemDom->appendChild( $dom->createElement('title', htmlentities( $article->title ) ) );
-            $itemDom->appendChild( $dom->createElement('link', $this->config->get('siteurl').'/'.$article->url) );
+            $itemDom->appendChild( $dom->createElement('link', $this->request->getSchemeAndHttpHost().'/'.$article->url) );
             $itemDom->appendChild( $dom->createElement('description', $description ) );
             $itemDom->appendChild( $dom->createElement('pubDate', date('r', $article['date']) ) );
         }
 
 //        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
         //$xml_string = htmlspecialchars_decode( $xml_string );
-
-        if ( ! defined('TEST') && $this->config->get('debug.profiler') ) {
-            $dom->formatOutput = true;
-        }
+        $dom->formatOutput = true;
         return $dom->saveXML();
     }
 }

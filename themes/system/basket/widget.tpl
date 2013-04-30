@@ -17,6 +17,5 @@
     <div class="b-basket-spacer"></div>
     <ul>
         <li><a {href url="basket"}>Просмотр &gt;&gt;</a></li>
-        <li><a {href url="order/create"}>Оформить заказ &gt;&gt;</a></li>
     </ul>
 </div>

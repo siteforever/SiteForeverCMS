@@ -42,19 +42,23 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param $key
      * @return mixed
      */
-    public function get( $key )
+    public function get($key)
     {
-        $method = 'get'.ucfirst(strtolower($key));
-        if ( method_exists( $this, $method ) && 'id' != $key ) {
-            return $this->$method();
-        } else if ( isset( $this->data[ $key ] ) ) {
-            return $this->data[ $key ];
+        $result = null;
+        $method = 'get' . ucfirst($key);
+        if (method_exists($this, $method) && 'getId' != $method) {
+            $result = $this->$method();
+        } else if (isset($this->data[$key])) {
+            $result = $this->data[$key];
         }
-        $method = 'onGet'.$key;
-        if ( method_exists( $this, $method ) ) {
-            $this->$method();
+
+        // @todo Переписать на event manager
+        $method = 'onGet' . $key;
+        if (method_exists($this, $method)) {
+            $this->$method($result);
         }
-        return null;
+
+        return $result;
     }
 
     /**
@@ -62,17 +66,18 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param $value
      * @return self
      */
-    public function set( $key, $value )
+    public function set($key, $value)
     {
-        $method = 'set'.$key;
-        if ( method_exists( $this, $method ) && 'id' != $key ) {
-            $this->$method( $value );
+        $method = 'set' . ucfirst($key);
+        if (method_exists($this, $method) && 'setId' != $method) {
+            $this->$method($value);
         } else {
             $this->data[$key] = $value;
         }
 
-        $method = 'onSet'.ucfirst($key);
-        if ( method_exists( $this, $method ) ) {
+        // @todo Переписать на event manager
+        $method = 'onSet' . ucfirst($key);
+        if (method_exists($this, $method)) {
             $this->$method();
         }
 
@@ -129,7 +134,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __get($name)
     {
-        return $this->get( $name );
+        return $this->get($name);
     }
 
     /**
@@ -160,10 +165,10 @@ abstract class Component implements \ArrayAccess//, Iterator;
      *
      * @return Event
      */
-    public function trigger( $eventName, Event $event )
+    public function trigger($eventName, Event $event)
     {
-        $this->log($eventName, 'trigger');
-        return $this->app()->getEventDispatcher()->dispatch( $eventName, $event );
+//        $this->log($eventName, 'trigger');
+        return $this->app()->getEventDispatcher()->dispatch($eventName, $event);
     }
 
     /**
@@ -173,12 +178,12 @@ abstract class Component implements \ArrayAccess//, Iterator;
      *
      * @throws RuntimeException
      */
-    public function on( $eventName, $callback, $priority = 0 )
+    public function on($eventName, $callback, $priority = 0)
     {
-        if ( ! ( is_array( $callback ) || $callback instanceof \Closure ) ) {
-            throw new RuntimeException( '"$callback" must be Array or Closure' );
+        if (!(is_array($callback) || $callback instanceof \Closure)) {
+            throw new RuntimeException('"$callback" must be Array or Closure');
         }
-        $this->app()->getEventDispatcher()->addListener( $eventName, $callback, $priority );
+        $this->app()->getEventDispatcher()->addListener($eventName, $callback, $priority);
     }
 
 

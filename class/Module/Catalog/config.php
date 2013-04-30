@@ -7,10 +7,10 @@
 
 return array(
     'controllers' => array(
-        'Catalog'        => array(),
-        'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
         'Goods'          => array(),
         'Prodtype'       => array(),
+        'Catalog'        => array(),
+        'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
     ),
     'models' => array(
         'Catalog'         => 'Module\Catalog\Model\CatalogModel',

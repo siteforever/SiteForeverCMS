@@ -20,14 +20,15 @@ class Xhr extends ViewAbstract
     public function view(KernelEvent $event)
     {
         $response = $event->getResponse();
-        $content = $event->getResult() ? $event->getResult() : $response->getContent();
-        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
-        $response->headers->set('Cache-Control', 'post-check=0, pre-check=0', false);
-        $response->headers->set('Pragma', 'no-cache');
+        $content = $event->getResult() && $event->getResult() !== $event->getResponse()
+            ? $event->getResult() : $response->getContent();
+//        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+//        $response->headers->set('Cache-Control', 'post-check=0, pre-check=0', false);
+//        $response->headers->set('Pragma', 'no-cache');
 
         $response->setCharset('utf-8');
 
-        $types = $this->getRequest()->getRequest()->getAcceptableContentTypes();
+        $types = $this->getRequest()->getAcceptableContentTypes();
         switch ($types[0]) {
             case 'application/json':
                 $response->headers->set('Content-type', 'application/json');

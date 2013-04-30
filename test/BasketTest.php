@@ -6,7 +6,7 @@
 class BasketTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Basket
+     * @var Sfcms\Basket\Base
      */
     protected $object;
 

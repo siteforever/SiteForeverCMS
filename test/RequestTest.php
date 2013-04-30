@@ -18,12 +18,14 @@ class RequestTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $_GET['test1']  = 'test1';
-        $_GET['test2']  = 'test2';
-        $_GET['email']  = 'foo@example.com';
-        $_GET['test']['foo']    = 'foo';
-        $_GET['digit']  = 5;
-        $this->request = new Request();
+//        $_GET['_format'] = 'html';
+        $this->request = Request::create('/', 'GET', array(
+                'test1' => 'test1',
+                'test2' => 'test2',
+                'email' => 'foo@example.com',
+                'test' => array('foo' => 'foo'),
+                'digit' => 5,
+            ));
     }
 
     /**
@@ -49,17 +51,19 @@ class RequestTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Sfcms\Request::getAjaxType
      */
     public function testGetAjaxType()
     {
-        $this->assertEquals( $this->request->getAjaxType(), 'html', 'Ajax type not ANY' );
+        $this->assertEquals('html', $this->request->getRequestFormat());
+        $this->assertEquals('html', $this->request->getAjaxType());
     }
 
     /**
      */
     public function testGetError()
     {
-        $this->assertEquals( $this->request->getError(), 0, 'Error found' );
+        $this->assertEquals($this->request->getError(), 0, 'Error found');
     }
 
     /**
@@ -142,8 +146,8 @@ class RequestTest extends PHPUnit_Framework_TestCase
 
     public function testSet()
     {
-        $this->request->set('test', 'test');
-        $this->assertEquals( $this->request->get('test'), 'test', 'Setted value not equal getted value' );
+        $this->request->query->set('test', 'test_value');
+        $this->assertEquals('test_value', $this->request->get('test'));
     }
 
     public function testGet()

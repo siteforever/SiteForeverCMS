@@ -51,10 +51,6 @@ class Module extends SfModule
                 'name'  => 'Каталог',
                 'sub'   => array(
                     array(
-                        'name'  => 'Каталог',
-                        'url'   => 'catalog/admin',
-                    ),
-                    array(
                         'name'  => t('Goods'),
                         'url'   => 'goods/admin'
                     ),
@@ -69,6 +65,10 @@ class Module extends SfModule
                     array(
                         'name'  => t('Manufacturers'),
                         'url'   => 'manufacturers/admin'
+                    ),
+                    array(
+                        'name'  => 'Каталог',
+                        'url'   => 'catalog/admin',
                     ),
                 )
             )

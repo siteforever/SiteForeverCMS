@@ -72,7 +72,7 @@ abstract class Sfcms_Controller extends Component
         }
 
 
-        $pageId     = $this->request->getRequest()->get('pageid', 0);
+        $pageId     = $this->request->get('pageid', 0);
         $controller = $this->request->getController();
         $action     = $this->request->getAction();
 
@@ -81,28 +81,31 @@ abstract class Sfcms_Controller extends Component
         if ($controller) {
             $moduleClass = Module::getModuleClass(strtolower($controller));
             if ($pageId && 'index' == $action) {
-                $relField = $moduleClass::relatedField();
+                $relField = call_user_func(array($moduleClass, 'relatedField'));
                 $model    = $this->getModel('Page');
-                $page     = $model->find("`$relField` = ? AND `controller` = ?", array($pageId, $controller));
+                if ('id' == $relField) {
+                    $page = $model->find($pageId);
+                } else {
+                    $page = $model->find("`$relField` = ? AND `controller` = ?", array($pageId, $controller));
+                }
             }
         }
 
         if ( null !== $page ) {
-            // todo Если страница указана как объект, то в нее нельзя сохранять левые данные
-            $this->request->setTemplate($page->get('template') );
-//            $this->request->setContent( $page->get('content') );
-            $this->request->setTitle(   $page->get('title') );
-            $this->request->setDescription( $page->get('description') );
-            $this->request->setKeywords( $page->get('keywords') );
-            $this->tpl->getBreadcrumbs()->fromSerialize( $page->get('path') );
+            // Если страница указана как объект, то в нее нельзя сохранять левые данные
+            $this->request->setTemplate($page->get('template'));
+            $this->request->setTitle($page->get('title'));
+            $this->request->setDescription($page->get('description'));
+            $this->request->setKeywords($page->get('keywords'));
+            $this->tpl->getBreadcrumbs()->fromSerialize($page->get('path'));
         }
 
-        $this->page     = $page;
+        $this->page = $page;
 
-        if ( $this->app()->isDebug() ) {
-//            $this->log( $this->request, 'Request' );
-            if ( $this->page ) {
-                $this->log( $this->page->getAttributes(), 'Page' );
+        if ($this->app()->isDebug()) {
+            //            $this->log( $this->request, 'Request' );
+            if ($this->page) {
+                $this->log($this->page->getAttributes(), 'Page');
             }
         }
 
@@ -300,7 +303,7 @@ abstract class Sfcms_Controller extends Component
      * Перенаправление на другой урл
      * @param string $url
      * @param array $params
-     * @return bool
+     * @return RedirectResponse
      */
     protected function redirect( $url = '', $params = array() )
     {

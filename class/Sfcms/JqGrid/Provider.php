@@ -5,10 +5,10 @@
 namespace Sfcms\JqGrid;
 
 use App;
+use Sfcms\Data\Collection;
+use Sfcms\Data\Object;
 use Sfcms\Model;
 use Sfcms\Db\Criteria;
-use Data_Object;
-use Data_Collection;
 use Pager;
 use InvalidArgumentException;
 
@@ -165,11 +165,13 @@ class Provider
         $rowNum = isset( $params['rowNum'] ) ? $params['rowNum'] : 20;
         $cellHeight = 28; // todo костыль, определяющий высоту таблицы, исходя из высоты ячейки
 
-        $controller = isset( $params['controller'] ) ? $params['controller'] : $this->app->getRequest()->get('controller');
-        $action     = isset( $params['action'] ) ? $params['action'] : 'grid';
+        $controller = isset($params['controller'])
+            ? $params['controller']
+            : $this->app->getRequest()->getController();
+        $action     = isset($params['action']) ? $params['action'] : 'grid';
 
         $config = array(
-            'url'=>$this->app->getRouter()->createServiceLink($controller,$action),
+            'url' => $this->app->getRouter()->createServiceLink($controller, $action),
             'datatype'   => "json",
             'colNames'   => array_map(function ($v) {
                 if (is_array($v) && isset($v['title'])) {
@@ -236,17 +238,23 @@ class Provider
         $criteria->limit = $pager->limit;
         $criteria->order = $this->getOrder();
 
+        $fields = $this->getFields();
         $with = array_filter(array_map(function($field){
-            if ( is_array($field) && isset($field['value']) && strpos($field['value'],'.') ) {
-                list( $return ) = explode('.', $field['value']);
-                return $return;
+            if (is_array($field)) {
+                if (isset($field['value']) && strpos($field['value'],'.')) {
+                    list($return) = explode('.', $field['value']);
+                    return $return;
+                }
+                if (isset($field['with'])) {
+                    return $field['with'];
+                }
             }
             return false;
-        },$this->getFields()));
+        }, $fields));
 
 //        $this->app->getLogger()->log( $with ? '1' : '0','$with' );
 
-        /** @var $collection Data_Collection */
+        /** @var $collection Collection */
         $collection = $this->getModel()->with($with)->findAll( $criteria );
 
         $result = array();
@@ -255,34 +263,35 @@ class Provider
         $result['records'] = $pager->count;
 
         $_ = $this;
-        /** @var $obj Data_Object */
-        $result['rows'] = array_map(function( $obj ) use ( $_ ) {
+        /** @var $obj Object */
+        $result['rows'] = array_map(function(Object $obj) use ($_, $fields) {
             return array(
-                'id' => $obj->getId(),
-                'cell' => array_map(function($key,$val) use ( $obj, $_ ) {
-                    if ( is_array( $val ) ) {
-                        if ( isset($val['value']) ) {
+                'id' => $obj->id,
+                'cell' => array_map(function($key,$val) use ($obj, $_) {
+                    if (is_array($val)) {
+                        if (isset($val['value'])) {
                             $key = $val['value'];
                         }
                     }
-                    if ( strpos($key,'.') ) {
+                    if (false !== strpos($key, '.', 1)) {
                         $p = explode('.', $key);
+                        /** @var $subObj Object */
                         $subObj = $obj->get($p[0]);
                         $value = $subObj ? $subObj->get($p[1]) : 'null';
                     } else {
-                        $value = $obj->get( $key );
+                        $value = $obj->get($key);
                     }
-                    if ( isset( $val['format'] ) && is_array( $val['format'] ) ) {
-                        array_walk( $val['format'], function( $val, $key ) use ( $obj, $_, &$value ) {
+                    if (isset($val['format']) && is_array($val['format'])) {
+                        array_walk( $val['format'], function ($val, $key) use ($obj, $_, &$value) {
                             /** @var $format Format */
                             $format = $_->getFormat( $key, $val );
                             $value = $format->apply( $value, $obj );
                         });
                     }
                     return $value;
-                },array_keys( $_->getFields() ), array_values($_->getFields()) ),
+                }, array_keys($fields), array_values($fields)),
             );
-        }, iterator_to_array( $collection ) );
+        }, iterator_to_array($collection));
 
         return json_encode($result);
     }
@@ -317,7 +326,7 @@ class Provider
         );
 
         if ( $searchField && $searchOper && $searchString ) {
-            $result[] = str_replace(array(':field',':value'),array($searchField,$searchString),$operations[ $searchOper ]);
+            $result[] = str_replace(array(':field', ':value'), array($searchField, $searchString), $operations[$searchOper]);
         }
 
         $request = $this->app->getRequest();
@@ -325,7 +334,7 @@ class Provider
         $fields = $this->getFields();
         $this->app->getLogger()->log($fields, 'getFields');
 
-        $result += array_filter( array_map(function( $id ) use ( $request, $fields, $operations ) {
+        $result += array_filter( array_map(function($id) use ($request, $fields, $operations) {
             $field = $fields[$id];
             if ( empty( $field['search'] ) ) {
                 return false;
@@ -334,11 +343,11 @@ class Provider
             if ( isset( $field['search']['sopt'] ) ) {
                 $sopt = $field['search']['sopt'];
             }
-            $val = $request->get( $id );
-            return $request->get( $id )
-                ? str_replace(array(':field',':value'),array( $id, $val),$operations[$sopt])
+            $val = $request->get($id);
+            return $val
+                ? str_replace(array(':field',':value'),array($id, $val),$operations[$sopt])
                 : false;
-        },array_keys( $fields )));
+        }, array_keys($fields)));
 
         return implode(' AND ', $result);
     }

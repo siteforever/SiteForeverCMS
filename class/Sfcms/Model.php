@@ -6,10 +6,12 @@ namespace Sfcms;
  */
 
 use App;
+use Sfcms\Data\Object as DomainObject;
 use Module\System\Model\LogModel;
 use Sfcms\Component;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Query\Builder as QueryBuilder;
+use Sfcms\Model\ModelEvent;
 use Sfcms\Model\Plugin;
 use Sfcms\db;
 use Sfcms\Db\Criteria;
@@ -18,7 +20,6 @@ use PDO;
 use Module\System\Object\User;
 use Sfcms\Data\Table;
 use Sfcms\Form\Form;
-use Sfcms\Data\Object;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
@@ -26,21 +27,21 @@ use Symfony\Component\EventDispatcher\Event;
 
 abstract class Model extends Component
 {
-    const HAS_MANY      = 'has_many'; // содержет много
-    const ONE_TO_MANY   = 'has_many'; // содержет много
-    const HAS_ONE       = 'has_one'; // содержет один
-    const ONE_TO_ONE    = 'has_one'; // содержет один
-    const BELONGS       = 'belongs'; // принадлежит
-    const MANY_TO_ONE   = 'belongs'; // принадлежит
+    const HAS_MANY = 'has_many'; // содержет много
+    const ONE_TO_MANY = 'has_many'; // содержет много
+    const HAS_ONE = 'has_one'; // содержет один
+    const ONE_TO_ONE = 'has_one'; // содержет один
+    const BELONGS = 'belongs'; // принадлежит
+    const MANY_TO_ONE = 'belongs'; // принадлежит
 
-    const STAT          = 'stat'; // статистическая связь
+    const STAT = 'stat'; // статистическая связь
 
     /**
      * Тип таблицы
      * @var string
      */
     //protected $engine   = 'MyISAM';
-    protected $engine   = 'InnoDB';
+    protected $engine = 'InnoDB';
 
     /**
      * @var db
@@ -63,7 +64,7 @@ abstract class Model extends Component
     protected $table = null;
 
     /**
-     * @var Object
+     * @var DomainObject
      */
     protected $data;
 
@@ -100,6 +101,13 @@ abstract class Model extends Component
     private $_plugins = array();
 
     /**
+     * Кеш запросов для текущей модели
+     * Кешируются запросы вида field = value или field IN (values)
+     * @var array
+     */
+    private $_queries_cache = array();
+
+    /**
      * Создание модели
      */
     final private function __construct()
@@ -110,18 +118,18 @@ abstract class Model extends Component
 
         // база данных
         // определяется только в моделях
-        if( is_null( self::$dao ) ) {
-            self::$dao = db::getInstance( $this->config->get( 'db' ) );
-            self::$dao->setLoggerClass( $this->app()->getLogger() );
+        if (is_null(self::$dao)) {
+            self::$dao = db::getInstance($this->config->get('db'));
+            self::$dao->setLoggerClass($this->app()->getLogger());
         }
         $this->db  = self::$dao;
         $this->pdo = $this->db->getResource();
 
-        if ( method_exists( $this, 'onSaveStart' ) ) {
-            $this->on( sprintf('%s.save.start', $this->eventAlias()), array( $this, 'onSaveStart' ));
+        if (method_exists($this, 'onSaveStart')) {
+            $this->on('save.start', array($this, 'onSaveStart'));
         }
-        if ( method_exists( $this, 'onSaveSuccess' ) ) {
-            $this->on( sprintf('%s.save.success', $this->eventAlias()), array( $this, 'onSaveSuccess' ));
+        if (method_exists($this, 'onSaveSuccess')) {
+            $this->on('save.success', array($this, 'onSaveSuccess'));
         }
         $this->init();
     }
@@ -146,24 +154,24 @@ abstract class Model extends Component
 
     /**
      * @param             $name
-     * @param Data\Object $obj
+     * @param Data\DomainObject $obj
      */
-    protected function callPlugins( $name, Object $obj )
+    protected function callPlugins($name, DomainObject $obj)
     {
-        if ( strpos( trim( $name, ':' ), ':' ) ) {
-            list( $namespace, $name ) = explode( ':', $name );
+        if (strpos(trim($name, ':'), ':')) {
+            list($namespace, $name) = explode(':', $name);
         } else {
             $namespace = 'default';
         }
-//        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
+        //        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
         // Если нет плагинов, ничего не делаем
-        if ( ! isset( $this->_plugins[ $namespace ] ) ) {
+        if (!isset($this->_plugins[$namespace])) {
             return;
         }
-        foreach( $this->_plugins[$namespace] as $plugin ) {
-//            $this->log( get_class($plugin), 'modelPlugin' );
-            if ( method_exists( $plugin, $name ) ) {
-                $plugin->$name( $obj );
+        foreach ($this->_plugins[$namespace] as $plugin) {
+            //            $this->log( get_class($plugin), 'modelPlugin' );
+            if (method_exists($plugin, $name)) {
+                $plugin->$name($obj);
             }
         }
     }
@@ -171,9 +179,9 @@ abstract class Model extends Component
     /**
      * Добавляет плугин
      * @param Plugin $plugin
-     * @param $namespace
+     * @param        $namespace
      */
-    public function addPlugin( Plugin $plugin, $namespace = 'default' )
+    public function addPlugin(Plugin $plugin, $namespace = 'default')
     {
         $this->_plugins[$namespace][] = $plugin;
     }
@@ -202,184 +210,195 @@ abstract class Model extends Component
     /**
      * Проверяет существование таблицы
      * @param string $table
+     *
      * @return boolean
      */
-    private function isExistTable( $table )
+    private function isExistTable($table)
     {
-        if( ! isset( self::$exists_tables ) ) {
+        if (!isset(self::$exists_tables)) {
             self::$exists_tables = array();
-            $tables = $this->db->fetchAll( "SHOW TABLES", false, DB::F_ARRAY );
-            foreach( $tables as $t ) {
-                self::$exists_tables[ ] = $t[ 0 ];
+            $tables              = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
+            foreach ($tables as $t) {
+                self::$exists_tables[] = $t[0];
             }
         }
-        return in_array( $table, self::$exists_tables );
+
+        return in_array($table, self::$exists_tables);
     }
 
     /**
      * Добавит созданную таблицу в кэш
      * @param string $table
+     *
      * @return void
      */
-    private function addNewTable( $table )
+    private function addNewTable($table)
     {
-        $this->getDB()->query( $this->getCreateTable() );
-        self::$exists_tables[ ] = $table;
+        $this->getDB()->query($this->getCreateTable());
+        self::$exists_tables[] = $table;
     }
 
 
     /**
      * Построение запроса для создания таблицы
+     *
      * @return string
      */
     public function getCreateTable()
     {
-        $ret = sprintf("CREATE TABLE `%s` (\n\t", $this->getTable());
+        $result = array(sprintf("CREATE TABLE `%s` (\n\t", $this->getTable()));
 
-        $params = array();
         $object_class = $this->objectClass();
+        $fields = call_user_func(array($object_class, 'fields'));
+        $pk     = call_user_func(array($object_class, 'pk'));
 
-        $params = array_map(function( $field ){
-                /** @var Field $field */
-                return $field->toString();
-            }, $object_class::fields());
+        $params = array_map(function ($field) {
+            /** @var Field $field */
+            return $field->toString();
+        }, $fields);
 
-        if ( $object_class::pk() ) {
-            if ( is_array($object_class::pk()) ) {
-                $pk = '`'.join('`,`', $object_class::pk()).'`';
+        if ($pk) {
+            if (is_array($pk)) {
+                $pk = '`' . join('`,`', $pk) . '`';
             } else {
-                $pk = "`".str_replace(',', '`,`', $object_class::pk())."`";
+                $pk = "`" . str_replace(',', '`,`', $pk) . "`";
             }
             $params[] = "PRIMARY KEY ({$pk})";
         }
 
-        foreach ( $object_class::keys() as $key => $val ) {
-
+        foreach (call_user_func(array($object_class, 'keys')) as $key => $val) {
             $found = false;
-
-            if ( is_array( $val ) ) {
-                foreach ( $val as $v ) {
-                    $subfound   = false;
-                    foreach ( $object_class::fields() as $field ) {
-                        if ( $field->getName() == $v ) {
-                            $subfound   = true;
+            if (is_array($val)) {
+                foreach ($val as $v) {
+                    $subfound = false;
+                    foreach ($fields as $field) {
+                        /** @var $field Field */
+                        if ($field->getName() == $v) {
+                            $subfound = true;
                             break;
                         }
                     }
-                    $found  = $found || $subfound;
+                    $found = $found || $subfound;
                 }
-                $val    = implode(',', $val);
-            }
-            else {
-                foreach ( $object_class::fields() as $field ) {
-                    if ( $field->getName() == $val ) {
+                $val = implode(',', $val);
+            } else {
+                foreach ($fields as $field) {
+                    /** @var $field Field */
+                    if ($field->getName() == $val) {
                         $found = true;
                         break;
                     }
                 }
             }
 
-            if ( ! $found ) {
+            if (!$found) {
                 //die('Key column doesn`t exist in table');
                 throw new Exception("Key column '{$val}' doesn`t exist in table");
             }
 
-            $val    = str_replace(',', '`,`', $val);
-            if ( is_numeric($key) ) {
-                $key    = $val;
+            $val = str_replace(',', '`,`', $val);
+            if (is_numeric($key)) {
+                $key = $val;
             }
             $params[] = "KEY `{$key}` (`{$val}`)";
         }
 
-        $ret .= join(",\n\t", $params)."\n";
+        $result[] = join(",\n\t", $params) . "\n";
 
-        $ret .= ") ENGINE={$this->engine} DEFAULT CHARSET=utf8";
-        return $ret;
+        $result[] = ") ENGINE={$this->engine} DEFAULT CHARSET=utf8";
+
+        return join("\n", $result);
     }
 
     /**
      * Вернет нужную модель
      * @static
+     *
      * @param  $model
+     *
      * @return self
      * @throws RuntimeException
      */
-    final static public function getModel( $model )
+    final static public function getModel($model)
     {
         $class_name = $model;
         // Если нет в кэше и указан не абсолютный путь
-        if ( ! isset( self::$all_class[ $model ] ) && false === strpos( $class_name, '\\') ) {
+        if (!isset(self::$all_class[$model]) && false === strpos($class_name, '\\')) {
             // Если указан псевдоним
             // Псевдонимом считается класс, не имеющий символов \ и _
-            if ( null === self::$models ) {
+            if (null === self::$models) {
                 self::$models = App::getInstance()->getModels();
             }
-            $modelKey = strtolower( $class_name );
-            if ( isset( self::$models[ $modelKey ] ) ) {
-                $class_name = self::$models[ $modelKey ];
+            $modelKey = strtolower($class_name);
+            if (isset(self::$models[$modelKey])) {
+                $class_name = self::$models[$modelKey];
             }
         }
-//        \App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
-        if( ! isset( self::$all_class[ $model ] ) ) {
-            if( class_exists( $class_name, true ) ) {
-                self::$all_class[ $model ] = new $class_name();
+        //        \App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
+        if (!isset(self::$all_class[$model])) {
+            if (class_exists($class_name, true)) {
+                self::$all_class[$model] = new $class_name();
             } else {
-                throw new RuntimeException( sprintf('Model "%s" not found',$class_name) );
+                throw new RuntimeException(sprintf('Model "%s" not found', $class_name));
             }
         }
-        return self::$all_class[ $model ];
+
+        return self::$all_class[$model];
     }
 
     /**
      * Создать объект
-     * @param array $data Массив инициализации объекта
-     * @param bool $reFill Принудительно записать поля, если создается объект из массива, име.щего id
-     * @return Object
+     * @param array $data   Массив инициализации объекта
+     * @param bool  $reFill Принудительно записать поля, если создается объект из массива, име.щего id
+     *
+     * @return DomainObject
      */
-    final public function createObject( $data = array(), $reFill = false )
+    final public function createObject($data = array(), $reFill = false)
     {
-//        $start = microtime( 1 );
-//        debugVar(  $this->objectClass().'.'.$data['id'], __FUNCTION__ );
-        // TODO Если создаем существующий объект, то св-ва не перезаписываем
-        if( isset( $data[ 'id' ] ) && null !== $data[ 'id' ] && '' !== $data[ 'id' ] ) {
-            $obj = $this->getFromMap( $data[ 'id' ] );
-            if ( $obj ) {
-                if ( $reFill ) {
+        $class_name = $this->objectClass();
+        $pk = call_user_func(array($class_name, 'pkAsArray'));
+        $id = array();
+        foreach ($pk as $pri) {
+            $id[$pri] = isset($data[$pri]) ? $data[$pri] : null;
+        }
+        if (!in_array(null, $id, true)) {
+            $obj = $this->getFromMap($id);
+            if ($obj) {
+                if ($reFill) {
                     $obj->attributes = $data;
                 }
                 return $obj;
             }
         }
-        $class_name = $this->objectClass();
-        /** @var $obj Object */
-        $obj = new $class_name( $this, $data );
-        if( null !== $obj->id ) {
-            $this->addToMap( $obj );
-            $obj->markClean();
+        /** @var $obj DomainObject */
+        $obj = new $class_name($this, $data);
+        if (!in_array(null, $id, true)) {
+            $this->addToMap($obj);
         }
-        //        print get_class($obj).'.'.$obj->getId().';'.round(microtime(1)-$start,3)."|\n";
+
         return $obj;
     }
 
 
     /**
      * Адаптер к наблюдателю для получения объекта
-     * @param int $id
-     * @return Object
+     * @param array $id
+     *
+     * @return DomainObject
      */
-    private function getFromMap( $id )
+    private function getFromMap($id)
     {
-        return Watcher::exists( $this->objectClass(), $id );
+        return Watcher::exists($this->objectClass(), $id);
     }
 
     /**
      * Адаптер к наблюдателю для добавления объекта
      *
-     * @param Object $obj
+     * @param DomainObject $obj
      */
-    private function addToMap( Object $obj )
+    private function addToMap(DomainObject $obj)
     {
-        Watcher::add( $obj );
+        Watcher::add($obj);
     }
 
 
@@ -389,7 +408,7 @@ abstract class Model extends Component
      */
     public function objectClass()
     {
-        return str_replace( array('\Model','Model'), array('\Object',''), get_class( $this ) );
+        return str_replace(array('\Model', 'Model'), array('\Object', ''), get_class($this));
     }
 
     /**
@@ -408,18 +427,18 @@ abstract class Model extends Component
      */
     final public function getTable()
     {
-        if( null === $this->table ) {
+        if (null === $this->table) {
             $class = $this->tableClass();
 
-            $this->table = $class::table();
+            $this->table = call_user_func(array($class, 'table'));
 
 //            App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
 
-            if( $this->config->get( 'db.migration' ) ) {
-                if( $this->isExistTable( $this->table ) ) {
+            if ($this->config->get('db.migration')) {
+                if ($this->isExistTable($this->table)) {
                     $this->migration();
                 } else {
-                    $this->addNewTable( $this->table );
+                    $this->addNewTable($this->table);
                     $this->onCreateTable();
                 }
             }
@@ -435,41 +454,67 @@ abstract class Model extends Component
     private function migration()
     {
         $class = $this->objectClass();
-        $this->log($class::table(),__FUNCTION__);
-        $sys_fields  = $class::fields();
-        $table = $class::table();
-        $have_fields = $this->getDB()->getFields( $this->getTable() );
+        $sys_fields  = call_user_func(array($class, 'fields'));
+        $table       = call_user_func(array($class, 'table'));
+        $have_fields = $this->getFields();
 
-        $txtsys_fields = array();
-        foreach( $sys_fields as $sfield ) {
-            /** @var Field $sfield */
-            $txtsys_fields[ ] = $sfield->getName();
-        }
+        $txtsys_fields = array_map(function(Field $field){return $field->getName();}, $sys_fields);
 
-        $add_array = array_diff( $txtsys_fields, $have_fields );
-        $del_array = array_diff( $have_fields, $txtsys_fields );
+        $add_array = array_diff($txtsys_fields, $have_fields);
+        $del_array = array_diff($have_fields, $txtsys_fields);
 
         $sql = array();
 
-        if( count( $add_array ) || count( $del_array ) ) {
-            foreach( $del_array as $col ) {
-                $sql[ ] = "ALTER TABLE `{$table}` DROP COLUMN `$col`";
+        if (count($add_array) || count($del_array)) {
+            foreach ($del_array as $col) {
+                $sql[] = "ALTER TABLE `{$table}` DROP COLUMN `$col`";
             }
-            foreach( $add_array as $key => $col ) {
+            foreach ($add_array as $key => $col) {
                 $after = '';
-                if( $key == 0 ) {
+                if ($key == 0) {
                     $after = ' FIRST';
                 }
-                if( $key > 0 ) {
-                    $after = ' AFTER `' . $sys_fields[ $key - 1 ]->getName() . '`';
+                if ($key > 0) {
+                    $after = ' AFTER `' . $sys_fields[$key - 1]->getName() . '`';
                 }
-                $sql[ ] = "ALTER TABLE `{$this->getTable()}` ADD COLUMN " . $sys_fields[ $key ] . $after;
+                $sql[] = "ALTER TABLE `{$this->getTable()}` ADD COLUMN " . $sys_fields[$key] . $after;
             }
 
-            foreach( $sql as $query ) {
-                $this->getDB()->query( $query );
+            foreach ($sql as $query) {
+                $this->getDB()->query($query);
             }
         }
+    }
+
+    /**
+     * Вернет список полей
+     *
+     * @param string $table
+     *
+     * @return array
+     */
+    protected function getFields()
+    {
+        $table = $this->getTable();
+        $start = microtime(true);
+        $pdo   = $this->getDB()->getResource();
+
+        $result = $pdo->prepare("SHOW COLUMNS FROM `$table`");
+
+        $fields = array();
+
+        if (!$result->execute()) {
+            throw new \ErrorException('Result Fields Query not valid');
+        }
+
+        foreach ($result->fetchAll(PDO::FETCH_OBJ) as $field) {
+            $fields[] = $field->Field;
+        }
+
+        $exec = round(microtime(true) - $start, 4);
+        $this->log("SHOW COLUMNS FROM `$table`" . " [$exec сек]", 'SQL');
+
+        return $fields;
     }
 
     /**
@@ -486,196 +531,304 @@ abstract class Model extends Component
      */
     public function with()
     {
-        if ( 1 == func_num_args() && func_get_arg(0) && is_array( func_get_arg(0) ) ) {
+        if (1 == func_num_args() && func_get_arg(0) && is_array(func_get_arg(0))) {
             $this->with = func_get_arg(0);
         }
-        if ( func_num_args() >= 1 && is_string( func_get_arg(0) ) ) {
+        if (func_num_args() >= 1 && is_string(func_get_arg(0))) {
             $this->with = func_get_args();
         }
+
         return $this;
     }
 
     /**
      * Create criteria
+     *
      * @param array $params
+     *
      * @return Criteria
      */
-    public function createCriteria( $params = array() )
+    public function createCriteria($params = array())
     {
-        return new Criteria( $params );
+        return new Criteria($params);
     }
 
     /**
      * @param array $data
+     *
      * @return Collection
      */
-    public function createCollection( array $data = null )
+    public function createCollection(array $data = null)
     {
-        return new Collection( $data, $this );
+        return new Collection($data, $this);
     }
 
     /**
      * Finding data by primary key
      *
-     * @param int|array|string|Criteria $crit
-     * @param array $params
+     * @param $pk
      *
-     * @return Object
+     * @return DomainObject
+     */
+    final public function findByPk($pk)
+    {
+        $class = $this->objectClass();
+        $pkFields = call_user_func(array($class, 'pkAsArray'));
+        if (!is_array($pk)) {
+            $pk = array($pk);
+        }
+        $pk = array_combine($pkFields, $pk);
+        $obj = $this->getFromMap($pk);
+        if ($obj) {
+            return $obj;
+        }
+        $cond = array();
+        $params = array();
+        foreach ($pk as $pri => $value) {
+            $cond[] = "`{$pri}` = :{$pri}";
+            $params[':'.$pri] = $value;
+        }
+
+        $crit = $this->createCriteria();
+        $crit->condition = join(' AND ', $cond);
+        $crit->params = $params;
+        $crit->limit = 1;
+
+        return $this->find($crit);
+    }
+
+    /**
+     * Finding data by criteria
+     *
+     * @param int|array|string|Criteria $crit
+     * @param array                     $params
+     *
+     * @return DomainObject
      * @throws Exception
      */
-    final public function find( $crit, $params = array() )
+    final public function find($crit, $params = array())
     {
-        $criteria   = null;
-        if( is_object( $crit ) ) {
-            if( $crit instanceof Criteria ) {
-                $criteria = new QueryBuilder( $this, $crit );
-            } elseif( $crit instanceof QueryBuilder ) {
-                $criteria = $crit;
+        $query = null;
+        if (is_object($crit)) {
+            if ($crit instanceof Criteria) {
+                $query = new QueryBuilder($this, $crit);
+            } elseif ($crit instanceof QueryBuilder) {
+                $query = $crit;
             }
         }
         // не определился критерий, но параметр - число
         // тогда полагаем, что параметр - это ID объекта
-        if( null === $criteria && is_numeric( $crit ) ) {
-            $obj = $this->getFromMap( $crit );
-            if( $obj ) {
-                return $obj;
-            }
-            $crit = array(
-                'cond'  => 'id = :id',
-                'params'=> array( ':id'=> $crit ),
-                'limit' => '1',
-            );
-        } elseif( is_array( $crit ) ) {
+        if (null === $query && is_numeric($crit)) {
+            return $this->findByPk($crit);
+        } elseif (is_array($crit)) {
             $default = array(
-                'select'    => '*',
-                'cond'      => 'id = :id',
-                'params'    => array( ':id'=> 1 ),
-                'limit'     => '1',
+                'select' => '*',
+                'cond'   => '',
+                'params' => array(),
+                'limit'  => 1,
             );
-            $crit   = array_merge( $default, $crit );
-        } elseif ( is_string( $crit ) ) {
+            $crit = array_merge($default, $crit);
+        } elseif (is_string($crit)) {
             $crit = array(
-                'cond' => $crit,
+                'cond'   => $crit,
                 'params' => $params,
+                'limit'  => 1,
             );
         }
 
-        if ( is_array( $crit ) )  {
-            $crit = $this->createCriteria( $crit );
+        if (is_array($crit)) {
+            $crit = $this->createCriteria($crit);
         }
 
-        if ( ! is_object( $crit ) && ! $crit instanceof Criteria ) {
-            throw new Exception( 'Not valid criteria' );
+        if (!(is_object($crit) || $crit instanceof Criteria)) {
+            throw new Exception('Not valid criteria');
         }
 
-        if( ! isset( $criteria ) && isset( $crit ) ) {
-            $criteria = new QueryBuilder( $this, $crit );
+        if (null === $query && $crit) {
+            $query = new QueryBuilder($this, $crit);
         }
 
-        $data = $this->db->fetch( $criteria->getSQL(), db::F_ASSOC, $crit->params );
+        $sql  = $query->getSQL();
+        $data = $this->db->fetch($sql, db::F_ASSOC, $crit->params);
 
-        $obj = null;
-        if( $data ) {
-            $obj = $this->getFromMap( $data[ 'id' ] );
-            if( null === $obj ) {
-                $obj = $this->createObject( $data );
+        if ($data) {
+            $obj = $this->createObject($data);
+            if ($obj->isStateCreate()) {
+                $obj->markClean();
+            }
+            return $obj;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find object by array params
+     *
+     * <code>
+     * $params = array('field1' => 'value1', 'field2' => 'value2');
+     * </code>
+     *
+     * @param $criteria
+     *
+     * @not_tested
+     *
+     * @return DomainObject
+     */
+    public function findBy($criteria)
+    {
+        $keys = $this->getKeys();
+        $findKeys = array_keys($criteria);
+        foreach ($keys as $name => $index) {
+            if ($index == $findKeys) {
+                $obj = Watcher::existsByIndex($this->objectClass(), array($name => $criteria));
             }
         }
+        $cond = array();
+        $params = array();
+        foreach ($criteria as $key => $value) {
+            $cond[$key] = $value;
+        }
+        $c = $this->createCriteria();
+        $c->condition = $cond;
+        $c->params = $params;
+        $c->limit = 1;
+        return $this->find($c);
+    }
 
-        return $obj;
+    /**
+     * @return mixed
+     */
+    public function getKeys()
+    {
+        return call_user_func(array($this->objectClass(), 'keys'));
     }
 
     /**
      * @param array|string $crit
-     * @param array $params
-     * @param string $order
-     * @param string $limit
+     * @param array        $params
+     * @param string       $order
+     * @param string       $limit
+     *
      * @return array|Collection
      * @throws Exception
      */
-    final public function findAll( $crit = array(), $params = array(), $order = '', $limit = '' )
+    final public function findAll($crit = array(), $params = array(), $order = '', $limit = '')
     {
         $with       = $this->with;
         $this->with = array();
 
-        if( is_array( $crit ) || ( is_object( $crit ) && $crit instanceof Criteria ) ) {
-            $queryBuilder = new QueryBuilder( $this, $crit );
-        } elseif( is_string( $crit ) && is_array( $params ) && '' != $crit ) {
-            $queryBuilder = new QueryBuilder( $this,
-                array(
-                    'cond'  => $crit,
-                    'params'=> $params,
-                    'order' => $order,
-                    'limit' => $limit,
-                )
-            );
-        } elseif( is_object( $crit ) && $crit instanceof QueryBuilder ) {
-            $queryBuilder = $crit;
+        $cache_match = null;
+        // ==== CACHING ====
+        if ($crit instanceof Criteria) {
+            if (preg_match('@^`(\w+)`\s(IN|=)\s\(?(.*?)\)?$@', $crit->condition, $cache_match)) {
+                if ('=' == $cache_match[2]) {
+                    $hash_key = $this->objectClass() . $cache_match[1] . $crit->params[$cache_match[3]];
+                    if (isset($this->_queries_cache[$hash_key])) {
+                        return $this->_queries_cache[$hash_key];
+                    }
+                }
+            }
+        }
+        // ==== /CACHING ====
+
+        if (is_array($crit) || (is_object($crit) && $crit instanceof Criteria)) {
+            $query = new QueryBuilder($this, $crit);
+        } elseif (is_string($crit) && is_array($params) && '' != $crit) {
+            $query = new QueryBuilder($this, array(
+                'cond'   => $crit,
+                'params' => $params,
+                'order'  => $order,
+                'limit'  => $limit,
+            ));
+        } elseif (is_object($crit) && $crit instanceof QueryBuilder) {
+            $query = $crit;
         } else {
-            throw new Exception( 'Not valid criteria' );
+            throw new Exception('Not valid criteria');
         }
 
-//        if ( $criteria-> )
+        $raw = $this->db->fetchAll($query->getSQL());
 
-        $raw = $this->db->fetchAll( $queryBuilder->getSQL() );
-
-        if( count( $raw ) ) {
-            $collection = new Collection( $raw, $this );
-            if( count( $with ) ) {
-                foreach( $with as $rel ) {
-                    $relation = $this->getRelation( $rel, $collection->getRow(0) );
-                    $relation->with( $collection );
+        if (count($raw)) {
+            $collection = new Collection($raw, $this);
+            // ==== CACHING ====
+            if ($cache_match && 'IN' == $cache_match[2]) {
+                $cache_values = $crit->params[$cache_match[3]];
+                if (!is_array($cache_values)) {
+                    $cache_values = array($cache_values);
+                }
+                foreach ($cache_values as $cache_value) {
+                    $hash_key = $this->objectClass() . $cache_match[1] . $cache_value;
+                    if (!isset($this->_queries_cache[$hash_key])) {
+                        $raw_filtered = array_filter(
+                            $raw,
+                            function ($data) use ($cache_match, $cache_value) {
+                                return isset($data[$cache_match[1]]) && $data[$cache_match[1]] == $cache_value;
+                            }
+                        );
+                        $this->_queries_cache[$hash_key] = new Collection($raw_filtered, $this);
+                    }
+                }
+            }
+            // ==== /CACHING ====
+            if (count($with)) {
+                foreach ($with as $rel) {
+                    $relation = $this->getRelation($rel, $collection->getRow(0));
+                    $relation->with($collection);
                 }
             }
         } else {
             $collection = new Collection();
         }
+
         return $collection;
     }
 
     /**
      * Поиск по отношению
      * @param string $rel
-     * @param mixed $obj
-     * @return array|Object|null
+     * @param mixed  $obj
+     *
+     * @return array|DomainObject|null
      */
-    final public function findByRelation( $rel, Object $obj )
+    final public function findByRelation($rel, DomainObject $obj)
     {
-        $relation = $this->getRelation( $rel, $obj );
-        if ( $relation ) {
+        $relation = $this->getRelation($rel, $obj);
+        if ($relation) {
             return $relation->find();
         }
+
         return null;
     }
 
 
     /**
      * Фабрика отношений
-     * @param string      $rel
-     * @param Object $obj
+     * @param string $rel
+     * @param DomainObject $obj
      *
      * @return null|Relation
      * @throws \InvalidArgumentException
      */
-    private function getRelation( $rel, Object $obj )
+    private function getRelation($rel, DomainObject $obj)
     {
         $relation = $this->relation();
 
-        if ( ! is_string( $rel ) ) {
-//            $this->log($rel,'rel');
+        if (!is_string($rel)) {
             throw new \InvalidArgumentException('Argument `rel` is not a string');
         }
 
-        switch ( $relation[ $rel ][ 0 ] ) {
+        switch ($relation[$rel][0]) {
             case self::BELONGS:
-                return new Relation\Belongs( $rel, $obj );
+                return new Relation\Belongs($rel, $obj);
             case self::HAS_ONE:
-                return new Relation\One( $rel, $obj );
+                return new Relation\One($rel, $obj);
             case self::HAS_MANY:
-                return new Relation\Many( $rel, $obj );
+                return new Relation\Many($rel, $obj);
             case self::STAT:
-                return new Relation\Stat( $rel, $obj );
+                return new Relation\Stat($rel, $obj);
         }
+
         return null;
     }
 
@@ -686,56 +839,70 @@ abstract class Model extends Component
      */
     public function eventAlias()
     {
-        if ( preg_match('/(\w+)model$/i', get_class($this), $match) )
-            return strtolower( $match[1] );
-        else
-            throw new \ErrorException("Can not define event alias.\nYou need redefine \"eventAlias()\" method.");
+        if (preg_match('/(\w+)model$/i', get_class($this), $match)) {
+            return strtolower($match[1]);
+        }
+        throw new \ErrorException("Can not define event alias.\nYou need redefine \"eventAlias()\" method.");
     }
 
     /**
      * Сохраняет данные модели в базе
-     * @param Data\Object $obj
+     * @param DomainObject $obj
+     * @param bool   $forceInsert
      *
-     * @return bool|int|null
+     * @return bool|int
      */
-    public function save( Object $obj )
+    public function save(DomainObject $obj, $forceInsert = false)
     {
         $event = new Model\ModelEvent($obj, $this);
-        $this->trigger( sprintf('%s.save.start', $this->eventAlias()), $event );
-        $this->trigger( 'save.start', $event );
+        $this->trigger('save.start', $event);
+        $this->trigger(sprintf('%s.save.start', $this->eventAlias()), $event);
 
-//        $data      = $obj->attributes;
-        $class     = $this->objectClass();
-        $fields    = $class::fields();
-//        $changed   = $obj->changed();
+        $fields = call_user_func(array($this->objectClass(), 'fields'));
+        $id = $obj->pkValues();
+        $id_keys = array_keys($id);
         $save_data = array();
-
-//        $this->log( $obj->attributes, get_class($obj).'.'.$obj->getId() );
-
         /** @var Field $field */
-        foreach( $fields as $field ) {
-            $val = $obj->get( $field->getName() );
-            if( 'id' != $field->getName() && null !== $val ) {
-                $save_data[ $field->getName() ] = $val;
+        foreach ($fields as $field) {
+            $val = $obj->get($field->getName());
+//            if (!isset($id[$field->getName()]) && null !== $val) {
+            if (!$obj->isStateDirty() || ($obj->isStateDirty() && $obj->isChanged($field->getName()))) {
+                $save_data[$field->getName()] = $val;
             }
+//            }
         }
 
-        if ( ! count( $save_data ) ) {
-            return false;
+        // Nothing to save
+        if (0 == count($save_data)) {
+            return true;
         }
 
         $ret = false;
-        if( null !== $obj->getId() ) {
-            $ret = $this->db->update( $this->getTable(), $save_data, '`id` = ' . $obj->getId() );
+        if (!$forceInsert && !in_array(null, $id, true) && $obj->isStateDirty()) {
+            $where = array_map(function ($key, $val) {
+                return "`{$key}` = '{$val}'";
+            }, $id_keys, $id);
+            $ret = $this->db->update($this->getTable(), $save_data, join(' AND ', $where));
         } else {
-            $ret     = $this->db->insert( $this->getTable(), $save_data );
-            $obj->set('id', $ret);
-            $this->addToMap( $obj );
+            if (count($id) == 1) {
+                /** @var $field Field */
+                $field   = $obj->field($id_keys[0]);
+                if (!($field->isAutoIncrement() && null === $obj->get($id_keys[0]))) {
+                    return false;
+                }
+            }
+            $ret = $this->db->insert($this->getTable(), $save_data);
+            if ($ret && 1 == count($id)) {
+                $obj->setId($ret);
+            }
+            $this->addToMap($obj);
         }
-        if( false !== $ret ) {
-            $this->trigger( sprintf('%s.save.success', $this->eventAlias()), $event );
-            $this->trigger( 'save.success', $event );
+        if (false !== $ret) {
+            $this->trigger('save.success', $event);
+            $this->trigger(sprintf('%s.save.success', $this->eventAlias()), $event);
+            $obj->markClean();
         }
+
         return $ret;
     }
 
@@ -743,9 +910,9 @@ abstract class Model extends Component
      * Тут нельзя вызывать сохраниение объекта, или вызывать очень осторожно.
      * Иначе возникнет бесконечный цикл
      *
-     * @param Model\ModelEvent $event
+     * @param ModelEvent $event
      */
-    public function onSaveSuccess( Model\ModelEvent $event )
+    public function onSaveSuccess(Model\ModelEvent $event)
     {
         // Никогда не вызовется
         // Для вызова надо переоределить в модели
@@ -754,42 +921,47 @@ abstract class Model extends Component
     /**
      * Удаляет строку из таблицы
      * @param int $id
+     *
      * @return boolean|mixed
      */
-    final public function delete( $id )
+    final public function delete($id)
     {
-        if( $this->onDeleteStart( $id ) === false ) {
+        $obj = $this->find($id);
+        $event = new ModelEvent($obj, $this);
+
+        if ($this->onDeleteStart($id) === false) {
+            return false;
+        }
+        $this->trigger('delete.start', $event);
+        if (!$event->getContinue()) {
+            return false;
+        }
+        $this->trigger(sprintf('%s.delete.start', $this->eventAlias()), $event);
+        if (!$event->getContinue()) {
             return false;
         }
 
-        $obj = $this->find( $id );
-        if( $obj ) {
-            Watcher::del( $obj );
-            if( $this->getDB()->delete( $this->getTable(), '`id` = :id', array( ':id'=> $obj->getId() ) ) ) {
-                $this->onDeleteSuccess( $id );
+        if ($obj) {
+            if ($this->getDB()->delete($this->getTable(), '`id` = :id', array(':id' => $obj->getId()))) {
+                Watcher::del($obj);
+                $this->trigger('delete.success', $event);
+                $this->trigger(sprintf('%s.delete.success', $this->eventAlias()), $event);
                 return true;
             }
         }
+
         return false;
     }
 
     /**
      * Событие, вызывается перед удалением объекта
      * Если вернет false, объект не будет удален
+     *
      * @param int $id
+     *
      * @return boolean
      */
-    public function onDeleteStart( $id = null )
-    {
-        return true;
-    }
-
-    /**
-     * Событие, вызывается после успешного удаления объекта
-     * @param int $id
-     * @return boolean
-     */
-    public function onDeleteSuccess( $id = null )
+    public function onDeleteStart($id = null)
     {
         return true;
     }
@@ -797,28 +969,29 @@ abstract class Model extends Component
     /**
      * Вернет количество записей по условию
      * @param string|Criteria $cond
-     * @param array $params
+     * @param array           $params
+     *
      * @return int
      */
-    final public function count( $cond = '', $params = array() )
+    final public function count($cond = '', $params = array())
     {
         //$this->log( $cond, 'count' );
-        if ( is_object( $cond ) && $cond instanceof Criteria ) {
+        if (is_object($cond) && $cond instanceof Criteria) {
             $params = $cond->params;
             $cond   = $cond->condition;
         }
 
-        $criteria = new QueryBuilder( $this, array(
-            'select'    => 'COUNT(`id`)',
-            'cond'      => $cond,
-            'params'    => $params,
-        ) );
+        $criteria = new QueryBuilder($this, array(
+            'select' => 'COUNT(`id`)',
+            'cond'   => $cond,
+            'params' => $params,
+        ));
 
         $sql = $criteria->getSQL();
 
-        $count = $this->db->fetchOne( $sql );
+        $count = $this->db->fetchOne($sql);
 
-        if( $count ) {
+        if ($count) {
             return $count;
         }
 

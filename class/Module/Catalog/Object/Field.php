@@ -18,6 +18,17 @@ use Sfcms\Data\Field as TField;
 
 class Field extends Object
 {
+    public function getValue(Catalog $product)
+    {
+        $propertyModel = $this->getModel('ProductProperty');
+        /** @var $property Property */
+        $property = $propertyModel->findByPk(array($product->getId(), $this->getId()));
+        if ($property) {
+            return $property->value;
+        }
+        return null;
+    }
+
     /**
      * Create field list
      * @return array

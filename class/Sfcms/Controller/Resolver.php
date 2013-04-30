@@ -11,6 +11,7 @@ namespace Sfcms\Controller;
 use Sfcms\Component;
 use ReflectionClass;
 use RuntimeException;
+use Sfcms\Request;
 use Sfcms_Http_Exception;
 
 class Resolver extends Component
@@ -28,18 +29,17 @@ class Resolver extends Component
      * конфига принимает решение о том, какой класс должен выполнять функции контроллера,
      * в каком файле и пространстве имен он находится.
      *
+     * @param Request $request
      * @param $controller
      * @param $action
      * @param $moduleName
      *
      * @return array
      */
-    public function resolveController( $controller = null, $action = null, $moduleName = null )
+    public function resolveController(Request $request, $controller = null, $action = null, $moduleName = null)
     {
-        $request = $this->app()->getRequest();
-
         if ( null === $controller ) {
-            $controller = strtolower( $request->getController() );
+            $controller = strtolower($request->getController());
         }
         if ( null === $action ) {
             $action = $request->getAction();
@@ -79,16 +79,17 @@ class Resolver extends Component
 
     /**
      * Запуск контроллера
+     * @param Request $request
      * @param array $command
      * @return null|string
      * @throws \Sfcms_Http_Exception
      */
-    public function dispatch(array $command = array())
+    public function dispatch(Request $request, array $command = array())
     {
         $result = null;
 
         if (!$command) {
-            $command = $this->resolveController();
+            $command = $this->resolveController($request);
             if (!$command) {
                 throw new Sfcms_Http_Exception('Controller not resolved', 404);
             }
@@ -131,13 +132,12 @@ class Resolver extends Component
         $this->acl( $access, $command );
 
         try {
-            $method     = $ref->getMethod( $command[ 'action' ] );
+            $method = $ref->getMethod($command['action']);
         } catch( \ReflectionException $e ) {
             throw new Sfcms_Http_Exception($e->getMessage(),404);
         }
-        $arguments  = $this->prepareArguments( $method );
-
-        $result     = $method->invokeArgs( $controller, $arguments );
+        $arguments = $this->prepareArguments($method);
+        $result = $method->invokeArgs($controller, $arguments);
 
         return $result;
     }

@@ -14,6 +14,7 @@ return array_merge(
         'Initialisation'                            => 'Инициализация',
 
         'Main'                                      => 'Главная',
+        'Sitemap'                                   => 'Карта сайта',
         'Inner'                                     => 'Внутренняя',
         'Inner with Left'                           => 'Внутренняя с левым меню',
 
@@ -24,6 +25,7 @@ return array_merge(
 
         'Data save successfully'                    => 'Данные сохранены успешно',
         'Data not saved'                            => 'Данные не сохранены',
+        'Delete successfully'                       => 'Удалено успешно',
         'delete success'                            => 'удален успешно',
 
         'Dumper of database'                        => 'Дампер базы данных',

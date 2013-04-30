@@ -17,6 +17,7 @@ use Module\Gallery\Object\Category;
 use Module\Page\Object\Page;
 use Module\Gallery\Model\GalleryModel;
 use Module\Gallery\Model\CategoryModel;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class GalleryController extends Sfcms_Controller
 {
@@ -25,7 +26,8 @@ class GalleryController extends Sfcms_Controller
         return array(
             'gallery',
             array(
-                'dir' => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'gallery',
+                'dir' => '/files/gallery',
+                'mime' => array('image/jpeg', 'image/gif', 'image/png'),
                 'max_file_size' => defined('MAX_FILE_SIZE') ? MAX_FILE_SIZE : 2 * 1024 * 1024,
             ),
         );
@@ -38,7 +40,7 @@ class GalleryController extends Sfcms_Controller
     public function access()
     {
         return array(
-            'system'    => array(
+            USER_ADMIN    => array(
                 'admin', 'edit', 'list', 'delete', 'realias', 'delcat', 'editcat', 'switchimg',
             ),
         );
@@ -86,47 +88,48 @@ class GalleryController extends Sfcms_Controller
             /** @var $category Category */
             $category = $catModel->find( $image->category_id );
 
-            $this->getTpl()->assign('image', $image);
-            $this->getTpl()->assign('next', $next);
-            $this->getTpl()->assign('pred', $pred);
-            $this->getTpl()->assign('category', $category);
+            $bc = $this->getTpl()->getBreadcrumbs()->addPiece(null, $image->name);
 
-            $bc = $this->getTpl()->getBreadcrumbs();
-            $bc->addPiece( null, $image->name );
-
-            $this->request->setTitle( $image->title );
-            return $this->tpl->fetch( 'gallery.image' );
+            $this->request->setTitle($image->title);
+            return $this->render('gallery.image', array(
+                    'image' => $image,
+                    'next'  => $next,
+                    'pred'  => $pred,
+                    'category' => $category,
+                ));
         }
 
         $catId = $this->page->link;
         $category = null;
-        if ( $catId ) {
-            $category = $catModel->find( $catId );
+        if ($catId) {
+            $category = $catModel->find($catId);
         }
 
-        if ( $category ) {
+        if ($category) {
             $crit = array(
-                'cond'      => 'category_id = ? AND deleted != 1 AND hidden != 1',
-                'params'    => array( $category->getId() ),
+                'cond'   => 'category_id = ? AND deleted != 1 AND hidden != 1',
+                'params' => array($category->getId()),
             );
 
-            $count = $model->count( $crit[ 'cond' ], $crit[ 'params' ] );
+            $count = $model->count($crit['cond'], $crit['params']);
 
-            $paging = $this->paging( $count, $category->perpage, $this->page->alias );
+            $paging = $this->paging($count, $category->perpage, $this->page->alias);
 
-            $crit[ 'limit' ] = $paging[ 'limit' ];
-            $crit[ 'order' ] = 'pos';
+            $crit['limit'] = $paging['limit'];
+            $crit['order'] = 'pos';
 
-            $rows = $model->findAll( $crit );
+            $rows = $model->findAll($crit);
 
-            $this->tpl->assign( array(
-                'category' => $category,
-                'rows' => $rows,
-                'page' => $this->page,
-                'paging' => $paging,
-            ));
+            $this->tpl->assign(
+                array(
+                    'category' => $category,
+                    'rows'     => $rows,
+                    'page'     => $this->page,
+                    'paging'   => $paging,
+                )
+            );
 
-            return $this->tpl->fetch( 'gallery.category' );
+            return $this->tpl->fetch('gallery.category');
         }
 
         /**
@@ -175,27 +178,26 @@ class GalleryController extends Sfcms_Controller
          * @var CategoryModel $category
          */
 
-        $this->request->setTitle( t( 'Images gallery' ) );
+        $this->request->setTitle(t('Images gallery'));
+        $model    = $this->getModel('Gallery');
+        $category = $this->getModel('GalleryCategory');
 
-        $model = $this->getModel( 'Gallery' );
-
-        $category = $this->getModel( 'GalleryCategory' );
-
-        if ( $editimage ) {
-            $image = $model->find( $editimage );
+        if ($editimage) {
+            $image       = $model->find($editimage);
             $image->name = $name;
+
             return 'ok';
         }
 
-        if( $this->request->get( 'positions' ) ) {
+        if ($this->request->get('positions')) {
             return $model->reposition();
         }
 
         $cat_list = $category->findAll('deleted != 1');
 
-        $this->tpl->categories = $cat_list;
-//        $this->request->setContent( $this->tpl->fetch( 'gallery.admin_category' ) );
-//        return 1;
+        return $this->render('gallery.admin', array(
+            'categories' => $cat_list,
+        ));
     }
 
     /**
@@ -296,11 +298,11 @@ class GalleryController extends Sfcms_Controller
             }
 
             $form->setData( $obj->getAttributes() );
-            if( get_class( $obj ) !== '\Module\Gallery\Object\Category' ) {
+            if (get_class($obj) !== 'Module\\Gallery\\Object\\Category') {
                 $form->alias = $obj->getAlias();
             }
         }
-        $this->tpl->form = $form;
+        return array('form' => $form);
 //        return $this->tpl->fetch( 'system:gallery.admin_category_edit' );
     }
 
@@ -312,17 +314,12 @@ class GalleryController extends Sfcms_Controller
     public function delcatAction($id)
     {
         /** @var CategoryModel */
-        $model = $this->getModel( 'GalleryCategory' );
-        //        $id = $this->request->get('delcat', FILTER_SANITIZE_NUMBER_INT);
-        $cat = $model->find( $id );
-        if ( $cat ) {
+        $model = $this->getModel('GalleryCategory');
+        $cat   = $model->find($id);
+        if ($cat) {
             $cat->deleted = 1;
-            $cat->save();
         }
-//        if( $id ) {
-//            $model->delete( $id );
-//        }
-        return $this->redirect( 'gallery/admin' );
+        return $this->redirect('gallery/admin');
     }
 
     /**
@@ -367,9 +364,9 @@ class GalleryController extends Sfcms_Controller
      */
     public function editAction()
     {
-        $model = $this->getModel( 'Gallery' );
+        $model = $this->getModel('Gallery');
         /** @var $form Form */
-        $form = $this->getForm( 'gallery_image' );
+        $form = $this->getForm('Gallery_Image');
 
         /** @var Gallery $obj */
         if( $form->getPost() ) {
@@ -395,7 +392,7 @@ class GalleryController extends Sfcms_Controller
         $form->setData( $atr );
 
         return array('form'=>$form);
-}
+    }
 
     /**
      * @return mixed
@@ -435,80 +432,61 @@ class GalleryController extends Sfcms_Controller
         $max_file_size = $this->config->get( 'gallery.max_file_size' );
         $upload_ok     = 0;
 
-        if( isset( $_FILES[ 'image' ] ) && is_array( $_FILES[ 'image' ] ) ) {
-            $images = $_FILES[ 'image' ];
+        if ($this->request->files->has('image')) {
+
+            $images = $this->request->files->get('image');
             $names  = array();
 
-            if( $this->request->get( 'name' ) ) {
-                $names = $this->request->get( 'name' );
+            if ($this->request->request->has('name')) {
+                $names = $this->request->request->get('name');
             }
 
             $pos = $model->getNextPosition( $cat->getId() );
             $pos = $pos ? $pos : 0;
 
 
-            foreach( $images[ 'error' ] as $i => $err ) {
-                switch ( $err ) {
-                    case UPLOAD_ERR_OK:
-                        /** @var $image Gallery */
-                        $image = $model->createObject( array(
-                                                    'pos'   => $pos,
-                                                    'main'  => '0',
-                                                    'hidden'=> '0',
-                                                ) );
-                        $pos ++;
-                        if( $images[ 'size' ][ $i ] <= $max_file_size
-                            && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
-                        ) {
-                            $upload_ok = 1;
-                            $dest      = $this->config->get( 'gallery.dir' ) . DIRECTORY_SEPARATOR . substr(
-                                '0000' . $cat->getId(), - 4, 4 );
-                            if( ! is_dir( ROOT . $dest ) ) {
-                                mkdir( ROOT . $dest, 0777, true );
-                            }
-                            $src                = $images[ 'tmp_name' ][ $i ];
-                            $image->category_id = $cat->getId();
-                            if( isset( $names[ $i ] ) ) {
-                                $image->name = $names[ $i ];
-                            }
-                            $model->save( $image );
-                            $g_id         = $image->getId();
-                            $img          = $dest . DIRECTORY_SEPARATOR . $g_id . '_' . $images[ 'name' ][ $i ];
-                            if( move_uploaded_file( $src, ROOT . $img ) ) {
-                                $image->image = str_replace( DIRECTORY_SEPARATOR, '/', $img );
-                            }
-                            $image->save();
-                            if ( 0 == $image->pos ) {
-                                $cat->image = $image->image;
-                                $cat->save();
-                            }
-                        } else {
-                            $this->request->addFeedback(
-                                "Exceeds the maximum size {$images['size'][$i]} from $max_file_size"
-                            );
-                        }
-                        break;
-                    case UPLOAD_ERR_FORM_SIZE:
-                        $this->request->addFeedback( 'form size error' );
-                        break;
-                    case UPLOAD_ERR_EXTENSION:
-                        $this->request->addFeedback( 'extension error' );
-                        break;
-                    case UPLOAD_ERR_PARTIAL:
-                        $this->request->addFeedback( 'partial error' );
-                        break;
-                    case UPLOAD_ERR_NO_FILE:
-                        $this->request->addFeedback( 'no file' );
-                        break;
-                    default:
-                        $this->request->addFeedback( 'unknown error' );
+            foreach ($images as $i => $file) {
+                /** @var $file UploadedFile */
+                if ($file->isValid()) {
+                    if (!in_array($file->getClientMimeType(), $this->config->get('gallery.mime'))) {
+                        $this->request->addFeedback(t('Mime type not access in').' '.$file->getClientOriginalName());
+                        continue;
+                    }
+                    /** @var $image Gallery */
+                    $image = $model->createObject();
+                    $image->pos = $pos++;
+                    $image->main = 0;
+                    $image->hidden = 0;
+                    $image->name = $names[$i];
+//                    $image->Category = $cat;
+                    $image->category_id = $cat->getId();
+                    $image->setUploadedFile($file);
+
+                    $upload_ok = 1;
+                } else {
+                    switch($file->getError()){
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $this->request->addFeedback( t('Form size error') );
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            $this->request->addFeedback( t('Extension error') );
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            $this->request->addFeedback( t('Partial error') );
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            $this->request->addFeedback( t('No file') );
+                            break;
+                        default:
+                            $this->request->addFeedback( t('Unknown error') );
+                    }
                 }
             }
         }
-        if( $upload_ok ) {
-            $this->request->addFeedback( t( 'Images are loaded' ) );
+        if ($upload_ok) {
+            $this->request->addFeedback(t('Images are loaded'));
         } else {
-            $this->request->addFeedback( t( 'Image not loaded' ) );
+            $this->request->addFeedback(t('Image not loaded'));
         }
         return;
     }

@@ -24,6 +24,9 @@ class One extends Relation
             } catch ( Exception $e ) {
                 return;
             }
+            if (isset($this->relation['with'])) {
+                $this->model->with($this->relation['with']);
+            }
             // Загружаем объекты в Object Watcher
             $objects = $this->model->findAll( $cond );
             /** @var $o Object */
@@ -37,6 +40,9 @@ class One extends Relation
             $cond = $this->prepareCond( $this->obj->getId() );
         } catch ( Exception $e ) {
             return false;
+        }
+        if (isset($this->relation['with'])) {
+            $this->model->with($this->relation['with']);
         }
         $objRel = $this->model->find( $cond );
         if ( $objRel ) {

@@ -147,7 +147,7 @@ abstract class KernelBase
      * Список установленных в систему модулей
      * @var array
      */
-    public $_modules = array();
+    private $_modules = array();
 
     /**
      * Вернет менеджер Кэша
@@ -189,9 +189,6 @@ abstract class KernelBase
 
     public function __construct($cfg_file)
     {
-        if(!defined('TEST')) {
-            @header('X-Powered-By: SiteForeverCMS');
-        }
 //        self::autoloadRegister(array($this,'autoload'));
 
         if ( is_null( self::$instance ) ) {
@@ -214,7 +211,7 @@ abstract class KernelBase
     {
         return array();
     }
-    
+
     /**
      * @static
      * @throws Exception
@@ -332,7 +329,14 @@ abstract class KernelBase
     public function getRequest()
     {
         if ( is_null( self::$request ) ) {
-            self::$request  = new Request();
+            self::$request  = Request::createFromGlobals();
+            $acceptableContentTypes = self::$request->getAcceptableContentTypes();
+            $format = null;
+            if ($acceptableContentTypes) {
+                $format = self::$request->getFormat($acceptableContentTypes[0]);
+            }
+            self::$request->setRequestFormat($format);
+            self::$request->setApp($this);
         }
         return self::$request;
     }
@@ -358,7 +362,7 @@ abstract class KernelBase
 
     /**
      * @param $param
-     * @return Config|mixed
+     * @return Config|string|mixed
      */
     public function getConfig( $param = null )
     {
@@ -577,6 +581,10 @@ abstract class KernelBase
         }, false);
     }
 
+    public function setModule($name, Module $module)
+    {
+        $this->_modules[$name] = $module;
+    }
 
     /**
      * Загружает конфиги модулей
@@ -585,36 +593,45 @@ abstract class KernelBase
      */
     protected function loadModulesConfigs()
     {
-        if ( ! $this->_modules_config ) {
+        if (!$this->_modules_config) {
             $_ = $this;
 
             $modules = self::getConfig('modules');
 
             try {
-                array_map( function( $module ) use ( $_ ) {
-                    if ( ! isset( $module['path'] ) ) {
-                        throw new Exception('Directive "path" not defined in modules config');
-                    }
-                    if ( ! isset( $module['name'] ) ) {
-                        throw new Exception('Directive "name" not defined in modules config');
-                    }
-                    $class = $module['path'].'\Module';
-                    $_->_modules[ $module['name'] ] = new $class( $_, $module['name'], $module['path'] );
-                }, $modules );
-            } catch ( \Exception $e ) {
-                die( $e->getMessage() );
+                array_map(
+                    function ($module) use ($_) {
+                        if (!isset($module['path'])) {
+                            throw new Exception('Directive "path" not defined in modules config');
+                        }
+                        if (!isset($module['name'])) {
+                            throw new Exception('Directive "name" not defined in modules config');
+                        }
+                        $class = $module['path'] . '\Module';
+                        $_->setModule($module['name'], new $class($_, $module['name'], $module['path']));
+                    },
+                    $modules
+                );
+            } catch (\Exception $e) {
+                die($e->getMessage());
             }
 
             // Сперва загрузим все конфиги
-            array_map(function( Module $module ) use ( $_ ) {
-                $_->_modules_config[ $module->getName() ] = $module->config();
-            },$this->_modules);
+            array_map(
+                function (Module $module) use ($_) {
+                    $_->_modules_config[$module->getName()] = $module->config();
+                },
+                $this->_modules
+            );
 
             // А потом инициализируем
             // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(function( $module ) use ( $_ ) {
-                return method_exists( $module, 'init' ) ? $module->init() : false;
-            },$this->_modules);
+            array_map(
+                function ($module) use ($_) {
+                    return method_exists($module, 'init') ? call_user_func(array($module, 'init')) : false;
+                },
+                $this->_modules
+            );
         }
 
         return $this->_modules_config;
@@ -685,7 +702,7 @@ abstract class KernelBase
             foreach ( $this->_modules_config as $module => $config ) {
                 foreach ( $config['controllers'] as $controller => $params ) {
                     if ( 'System' == $module ) {
-                        // todo нужно перенести бесхозные контроллеры м модуль System и избавиться от этого костыля
+                        // todo нужно перенести бесхозные контроллеры в модуль System и избавиться от этого костыля
                         $params['module'] = null;
                     } else {
                         $params['module'] = $module;

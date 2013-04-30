@@ -70,10 +70,10 @@ class ModelTest extends PHPUnit_Framework_TestCase
     {
         /** @var $obj TestObject */
         $obj = $this->model->createObject();
-        if ( ! $obj ) {
-            $this->fail('Created object '.var_export($obj, true));
+        if (!$obj) {
+            $this->fail('Created object ' . var_export($obj, true));
         }
-        $this->assertTrue( $obj instanceof TestObject );
+        $this->assertTrue($obj instanceof TestObject);
         $obj->markClean();
     }
 
@@ -107,7 +107,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     public function testTable()
     {
         $object_class = $this->model->objectClass();
-        $this->assertEquals( $object_class::table(), 'test' );
+        $this->assertEquals(call_user_func(array($object_class, 'table')), 'test');
     }
 
     /**
@@ -115,12 +115,16 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testSave()
     {
-        $obj1   = $this->model->createObject();
+        $obj1 = $this->model->createObject();
         $obj1->value = 'val1';
-        $obj2   = $this->model->createObject();
+        $obj2 = $this->model->createObject();
         $obj2->value = 'val2';
-        $this->assertNotNull( $this->model->save($obj1) );
-        $this->assertNotNull( $this->model->save($obj2) );
+        $this->assertNotEquals(false, $this->model->save($obj1));
+        $this->assertNotEquals(false, $this->model->save($obj2));
+        $obj1->value = 'val11';
+        $obj2->value = 'val22';
+        $this->assertNotEquals(false, $this->model->save($obj1));
+        $this->assertNotEquals(false, $this->model->save($obj2));
     }
 
     /**
@@ -136,15 +140,15 @@ class ModelTest extends PHPUnit_Framework_TestCase
      */
     public function testFind()
     {
-        $obj    = $this->model->find(2);
+        $obj = $this->model->find(2);
         $this->assertNotNull($obj);
-        $this->assertEquals($obj->getId(), 2);
-        $this->assertEquals($obj->value, 'val2');
+        $this->assertEquals(2, $obj->getId());
+        $this->assertEquals($obj->value, 'val22');
 
         $obj    = $this->model->find(1);
         $this->assertNotNull($obj);
-        $this->assertEquals($obj->getId(), 1);
-        $this->assertEquals($obj->value, 'val1');
+        $this->assertEquals(1, $obj->getId());
+        $this->assertEquals($obj->value, 'val11');
     }
 
     /**
@@ -153,11 +157,11 @@ class ModelTest extends PHPUnit_Framework_TestCase
     public function testFindAll()
     {
         /** @var $all Collection */
-        $all    = $this->model->findAll();
-        $this->assertEquals( $all->count(), 2 );
-        $this->assertEquals( $all->getData(), array(
-            array('id'=>1,'value'=>'val1'),
-            array('id'=>2,'value'=>'val2'),
+        $all = $this->model->findAll();
+        $this->assertEquals(2, $all->count());
+        $this->assertEquals($all->getData(), array(
+            array('id'=>1,'value'=>'val11'),
+            array('id'=>2,'value'=>'val22'),
         ));
     }
 
@@ -174,11 +178,10 @@ class ModelTest extends PHPUnit_Framework_TestCase
         
         $this->assertEquals($this->model->count(), 0);
 
-        $pdo    = $this->model->getDB()->getResource();
+        $pdo = $this->model->getDB()->getResource();
         $pdo->exec("DROP TABLE `test`");
     }
 
-//
 //    public function testMigration()
 //    {
 //        $reflection = new ReflectionMethod( get_class( $this->object ), 'migration' );

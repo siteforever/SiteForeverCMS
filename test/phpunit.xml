@@ -9,12 +9,13 @@
         convertNoticesToExceptions  = "true"
         convertWarningsToExceptions = "true"
         processIsolation            = "false"
-        stopOnFailure               = "true"
+        stopOnFailure               = "false"
         syntaxCheck                 = "false"
         bootstrap                   = "./bootstrap.php" >
     <php>
         <const name="TEST" value="true"/>
-        <server name="HTTP_HOST" value="test"/>
+        <server name="HTTP_HOST" value="example.com"/>
+        <server name="SERVER_PORT" value="80"/>
         <server name="REQUEST_METHOD" value="TEST"/>
         <request name="id" value="1"/>
         <request name="route" value="index"/>

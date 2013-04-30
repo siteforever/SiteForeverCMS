@@ -25,7 +25,7 @@ abstract class Field
      * @param string|null $default
      * @param bool $autoincrement
      */
-    function __construct( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    public function __construct( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
     {
         $this->name     = $name;
         $this->length   = $length;
@@ -34,7 +34,7 @@ abstract class Field
         $this->autoincrement    = $autoincrement;
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->toString();
     }
@@ -43,9 +43,17 @@ abstract class Field
      * Имя поля
      * @return string
      */
-    function getName()
+    public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAutoIncrement()
+    {
+        return $this->autoincrement;
     }
 
     /**

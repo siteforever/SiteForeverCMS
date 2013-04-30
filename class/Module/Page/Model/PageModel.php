@@ -5,14 +5,11 @@
 
 namespace Module\Page\Model;
 
-use DOMElement;
-use DOMDocument;
 use SimpleXMLElement;
 
 use Sfcms\Form\Form;
 use Forms_Page_Page;
 use Sfcms\Model;
-use Sfcms\Data\Object;
 use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
@@ -119,8 +116,10 @@ class PageModel extends Model
         foreach ( $pages as $pageObj ) {
             /** @var $pageObj Page */
             $pageObj->pos = $sort[$pageObj->id];
-            $this->trigger(sprintf('plugin.page-%s.resort', $pageObj->controller), new Model\ModelEvent( $pageObj, $this ));
-//            $this->callPlugins($pageObj->controller.':resort', $pageObj);
+            $this->trigger(
+                "plugin.page-{$pageObj->controller}.resort",
+                new Model\ModelEvent($pageObj, $this)
+            );
         }
 
         return 'done';

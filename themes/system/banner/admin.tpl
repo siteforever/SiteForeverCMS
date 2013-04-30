@@ -28,6 +28,6 @@
 {/foreach}
 </table>
 <p class="page">{if isset($paging)}{$paging.html}{/if}</p>
-<a class="cat_add button" title="{t}Add category{/t}" {href controller="banner" action="savecat"}>
+<a class="cat_add btn" title="{t}Add category{/t}" {href controller="banner" action="savecat"}>
 {icon name="add" title="Добавить"}
-{t}Add category{/t}.</a>
+{t}Add category{/t}</a>

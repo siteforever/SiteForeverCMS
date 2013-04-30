@@ -39,7 +39,7 @@ class Layout extends ViewAbstract
             'template' => $this->getRequest()->getTemplate(),
             'config'   => $this->_app->getConfig(),
             'feedback' => $this->getRequest()->getFeedbackString(),
-            'host'     => $this->getRequest()->getRequest()->server->get('HTTP_HOST', 'console'),
+            'host'     => $this->getRequest()->getHost(),
             'request'  => $this->getRequest(),
         ) );
     }

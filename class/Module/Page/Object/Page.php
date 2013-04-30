@@ -112,7 +112,7 @@ class Page extends Object
      */
     public function getTitle()
     {
-        if ( $this->data['title'] ) {
+        if (!empty($this->data['title'])) {
             return $this->data['title'];
         }
         return $this->data['name'];
@@ -125,7 +125,7 @@ class Page extends Object
     public function setActive( $active = 1 )
     {
         $this->data['active'] = $active;
-        if ( $parent = $this->getModel()->find( $this->parent ) ) {
+        if ($this->parent && $parent = $this->getModel()->find($this->parent)) {
             $parent->setActive($active);
         }
     }

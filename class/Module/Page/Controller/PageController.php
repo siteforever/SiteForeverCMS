@@ -261,9 +261,9 @@ class PageController extends Sfcms_Controller
      */
     public function resortAction()
     {
-        $sort = $this->request->get( 'sort' );
+        $sort = $this->request->get('sort');
         if ($sort) {
-            return $this->getModel( 'Page' )->resort( $sort );
+            return $this->getModel('Page')->resort($sort);
         }
         return t('Unknown error');
     }

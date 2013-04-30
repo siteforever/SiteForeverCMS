@@ -38,10 +38,10 @@ class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             '{' .'"page":1,'
                 .'"total":2,'
-                .'"records":"11",'
+                .'"records":"12",'
                 .'"rows":['
                     .'{"id":"7","cell":["7","HTC Evo 3D","HTC","15000.00"]},'
-                    .'{"id":"8","cell":["8","Jeep Cheerokee","Jeep","15.00"]},'
+                    .'{"id":"8","cell":["8","Jeep Cheerokee","Jeep","1500.00"]},'
                     .'{"id":"9","cell":["9","HTC One X","HTC","17000.00"]},'
                     .'{"id":"10","cell":["10","HTC Sensation","HTC","18000.00"]},'
                     .'{"id":"11","cell":["11","iPhone 4S","Apple","0.00"]},'

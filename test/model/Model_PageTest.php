@@ -31,24 +31,29 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
     public function testResort()
     {
         $data = $this->db->fetchAll(
-            'SELECT id, pos FROM '.$this->model->getTable().' WHERE parent = 1'
+            sprintf('SELECT id, pos FROM %s WHERE parent = 1', $this->model->getTable())
         );
         $posOld = array_map(function($d){
             return $d['id'];
         }, $data);
         $posNew = $posOld;
-        shuffle( $posNew );
-        $this->model->resort( $posNew );
+        shuffle($posNew);
+        $this->model->resort($posNew);
 
         Watcher::instance()->performOperations();
+        Watcher::instance()->clear();
 
-        $data2 = $this->db->fetchAll('SELECT id, pos FROM '.$this->model->getTable().' WHERE id IN ('.join(',',$posOld).')');
+        $data2 = $this->db->fetchAll(
+            sprintf('SELECT id, pos FROM %s WHERE id IN (%s)', $this->model->getTable(), join(',',$posOld))
+        );
         $posCheck = array_flip( $posNew );
         foreach( $data2 as $d ) {
-            $this->assertEquals( $posCheck[$d['id']], $d['pos'], 'Sort order not changed' );
+//            if (42 == $d['id']) continue;
+            $this->assertEquals($posCheck[$d['id']], $d['pos'], 'Sort order page.' . $d['id'] . ' not changed');
         }
         $this->model->resort( $posOld );
         Watcher::instance()->performOperations();
+        Watcher::instance()->clear();
     }
 
 }

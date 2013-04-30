@@ -1,5 +1,5 @@
 
-<div class="hproduct well" itemscope itemtype="http://schema.org/Product">
+<div class="hproduct" itemscope itemtype="http://schema.org/Product">
     <div class="row-fluid">
         {if $item.image}
         <div class="span3">
@@ -12,16 +12,18 @@
         {/if}
 
         <div class="span9">
-            {if $item.articul}<div>Артикул: <span>{$item.articul}</span></div>{/if}
-            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <div class="b-catalog-product-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
                 <span>Цена:</span>
                 <span class="b-product-price" itemprop="price">{$item.price|string_format:"%.2f"}</span>
                 <span>{$item.currency}</span>
             </div>
 
-            {if $item->Manufacturer}<div>
-                <span>{t}Manufacturer{/t}:</span>
-                <span class="brand">{$item->Manufacturer->name}</span>
+            {if $item.articul}<div>Артикул: <span>{$item.articul}</span></div>{/if}
+
+            {if $item->Manufacturer}
+            <div class="b-catalog-product-properties-item">
+                <div class="b-catalog-product-properties-key">{t}Manufacturer{/t}:</div>
+                <div class="b-catalog-product-properties-val">{$item->Manufacturer->name}</div>
             </div>{/if}
 
             <div class="b-product-properties">
@@ -34,10 +36,11 @@
                     {/if}
                 {/foreach}
                 {foreach $item->Properties as $prop}
+                    {if $prop->value}
                     <div class="b-product-properties-item">
                         <div class="b-product-properties-key">{$prop->name}:</div>
                         <div class="b-product-properties-val">{$prop->value} {$prop->unit}</div>
-                    </div>
+                    </div>{/if}
                 {/foreach}
             </div>
 

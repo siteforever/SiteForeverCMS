@@ -35,8 +35,9 @@ class App extends KernelBase
         $this->init();
         $response = $this->handleRequest();
         $this->flushDebug();
-        $response->prepare($this->getRequest()->getRequest());
+        $response->prepare($this->getRequest());
         $response->send();
+//        print round(microtime(1) - self::$start_time, 3);
     }
 
     /**
@@ -57,22 +58,22 @@ class App extends KernelBase
     public function init()
     {
         // Language
-        $this->getConfig()->setDefault( 'language', 'en' );
-        if ( ! $this->getRequest()->get('lang') ) {
+        $this->getConfig()->setDefault('language', 'en');
+        if (!$this->getRequest()->get('lang')) {
             $this->getRequest()->set('lang', $this->getConfig('language'));
         } else {
-            $this->getConfig()->set('language',$this->getRequest()->get('lang'));
+            $this->getConfig()->set('language', $this->getRequest()->get('lang'));
         }
         i18n::getInstance()->setLanguage(
             $this->getConfig()->get('language')
         );
-        $this->getRequest()->getRequest()->setLocale($this->getConfig()->get('language'));
+        $this->getRequest()->setLocale($this->getConfig()->get('language'));
 
         // TIME_ZONE
-        date_default_timezone_set($this->getConfig('timezone') ?: 'Europe/Moscow');
+        date_default_timezone_set($this->getConfig('timezone') ? : 'Europe/Moscow');
 
-        if( ! defined( 'MAX_FILE_SIZE' ) ) {
-            define( 'MAX_FILE_SIZE', 2 * 1024 * 1024 );
+        if (!defined('MAX_FILE_SIZE')) {
+            define('MAX_FILE_SIZE', 2 * 1024 * 1024);
         }
         $installer = new Sfcms_Installer();
         $installer->installationStatic();
@@ -80,6 +81,7 @@ class App extends KernelBase
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'));
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'));
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'invokeLayout'));
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'createSignature'));
     }
 
 
@@ -92,8 +94,6 @@ class App extends KernelBase
     {
         // запуск сессии
         $this->getSession();
-//        ob_start();
-
         // маршрутизатор
         $this->getRouter()->routing();
 
@@ -103,7 +103,7 @@ class App extends KernelBase
         $result = null;
         $response = null;
         try {
-            $result = $this->getResolver()->dispatch();
+            $result = $this->getResolver()->dispatch($this->getRequest());
         } catch ( Sfcms_Http_Exception $e ) {
             $response = new Response($e->getMessage(), $e->getCode()?:500);
             if (403 == $e->getCode()) {
@@ -133,7 +133,7 @@ class App extends KernelBase
         }
 
         // If result is image... This needing for captcha
-        if ( is_resource( $result ) && imageistruecolor( $result ) ) {
+        if (is_resource($result) && imageistruecolor($result)) {
             $response->headers->set('Content-type', 'image/png');
             imagepng( $result );
             return $response;
@@ -141,7 +141,7 @@ class App extends KernelBase
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
-        $event = new KernelEvent($response, $this->getRequest()->getRequest(), $result);
+        $event = new KernelEvent($response, $this->getRequest(), $result);
         $this->getEventDispatcher()->dispatch('kernel.response', $event);
 
         return $event->getResponse();
@@ -156,13 +156,13 @@ class App extends KernelBase
     {
         $result = $event->getResult();
         $response = $event->getResponse();
-        $format = $this->getRequest()->getRequest()->getRequestFormat();
+        $format = $this->getRequest()->getRequestFormat();
         if (is_array($result) && 'json' == $format) {
             // Если надо вернуть JSON из массива
             $result = json_encode($result);
         }
         // Имеет больший приоритет, чем данные в Request-Request->content
-        if (is_array($result) && 'html' == $format) {
+        if (is_array($result) && ('html' == $format || null === $format)) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign($result);
             $template = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
@@ -205,14 +205,20 @@ class App extends KernelBase
         return $Layout->view($event);
     }
 
+    public function createSignature(Sfcms\Kernel\KernelEvent $event)
+    {
+        if (!$this->getConfig('silent')) {
+            $event->getResponse()->headers->set('X-Powered-By', 'SiteForeverCMS');
+        }
+    }
+
 
     /**
      * Flushing debug info
      */
     protected function flushDebug()
     {
-        // todo
-        // Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
+        // todo Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
         if ( App::isDebug() ) {

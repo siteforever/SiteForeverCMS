@@ -1,9 +1,20 @@
 <?php
 /**
  * Объект баннера
+ *
  * @author Voronin Vladimir (voronin@stdel.ru)
- *
- *
+ */
+namespace Module\Banner\Object;
+
+use Sfcms;
+use Sfcms\Data\Exception;
+use Sfcms\Data\Object;
+use Sfcms\Data\Field;
+
+/**
+ * Class Banner
+ * @package Module\Banner\Object
+
  * @property $id
  * @property $cat_id
  * @property $name
@@ -13,14 +24,8 @@
  * @property $count_click
  * @property $target
  * @property $content
+ * @property $deleted
  */
-namespace Module\Banner\Object;
-
-use Sfcms;
-use Sfcms\Data\Exception;
-use Sfcms\Data\Object;
-use Sfcms\Data\Field;
-
 class Banner extends Object
 {
     /**
@@ -29,13 +34,15 @@ class Banner extends Object
      */
     public function getUrl()
     {
-        if ( preg_match('/^http/', $this->data['url']) ) {
-            $url = $this->data['url'];
-        } else {
-            $url =  'http' . ( isset( $_SERVER[ 'HTTPS' ] ) && 'off' !== $_SERVER['HTTPS'] ? "s" : "" ) . '://'
-                           . $_SERVER[ "HTTP_HOST" ] . $this->data['url'];
+        if (isset($this->data['url'])) {
+            if (preg_match('/^http/', $this->data['url'])) {
+                $url = $this->data['url'];
+            } else {
+                $url = \App::$request->getSchemeAndHttpHost() . '/' . trim($this->data['url'], '/');
+            }
+            return $url;
         }
-        return $url;
+        return null;
     }
 
     public function getBlock()
@@ -71,6 +78,7 @@ class Banner extends Object
             new Field\Int('count_click'),
             new Field\Varchar('target', 255),
             new Field\Text('content'),
+            new Field\Int('deleted', 1, false, 0),
         );
     }
 }

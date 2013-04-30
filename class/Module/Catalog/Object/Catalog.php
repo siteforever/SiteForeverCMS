@@ -4,6 +4,21 @@
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
+ */
+namespace Module\Catalog\Object;
+
+use Module\Catalog\Model\CatalogModel;
+use Module\Market\Object\Manufacturer;
+use Module\Page\Model\PageModel;
+use Module\Page\Object\Page;
+use Sfcms\Data\Collection;
+use Sfcms\Data\Object;
+use Sfcms\Data\Field;
+use Sfcms\i18n;
+
+/**
+ * Class Catalog
+ * @package Module\Catalog\Object
  *
  * @property int $id
  * @property int $parent
@@ -26,21 +41,12 @@
  * @property int $deleted
  * @property Catalog Category
  * @property Collection Goods
- * @property Manufacturers Manufacturer
+ * @property Manufacturer Manufacturer
  * @property Gallery Gallery
  * @property Page Page
  * @property Collection Properties
  * @property Type Type
  */
-namespace Module\Catalog\Object;
-
-use Module\Catalog\Model\CatalogModel;
-use Module\Page\Model\PageModel;
-use Module\Page\Object\Page;
-use Sfcms\Data\Object;
-use Sfcms\Data\Field;
-use Sfcms\i18n;
-
 class Catalog extends Object
 {
 //    protected $_gallery = null;
@@ -108,11 +114,16 @@ class Catalog extends Object
     public function getAlias()
     {
         $alias = strtolower( $this->id . '-' . i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
-        if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
+        if (empty($this->data['alias']) || $this->data['alias'] != $alias) {
             $this->data['alias'] = $alias;
-            $this->markDirty();
+            if (!$this->isStateCreate()) {
+                $this->changed['alias'] = true;
+            }
+            if ($this->isStateClean()) {
+                $this->markDirty();
+            }
         }
-        return $alias;
+        return $this->data['alias'];
     }
 
     /**
@@ -266,4 +277,17 @@ class Catalog extends Object
     {
         return 'catalog';
     }
+
+    public static function keys()
+    {
+        return array(
+            'showed' => array('deleted', 'hidden', 'cat'),
+            'cat',
+            'alias',
+            'hidden',
+            'deleted',
+        );
+    }
+
+
 }

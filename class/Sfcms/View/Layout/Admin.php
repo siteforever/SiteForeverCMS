@@ -51,7 +51,7 @@ class Admin extends Layout
 
         $this->getTpl()->assign('response', $event->getResponse());
         $event->getResponse()->setContent($this->getTpl()->fetch(
-            $this->getRequest()->get('resource') . $this->getRequest()->get('template')
+            $this->getRequest()->get('resource') . $this->getRequest()->getTemplate()
         ));
         return $event;
     }

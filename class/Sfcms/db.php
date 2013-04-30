@@ -733,36 +733,6 @@ class db
     }
 
     /**
-     * Вернет список полей
-     *
-     * @param string $table
-     * @return array
-     */
-    function getFields( $table )
-    {
-        $start = microtime(true);
-
-        $this->result   = $this->resource->prepare("SHOW COLUMNS FROM `$table`");
-
-        $fields = array();
-
-        if ( ! $this->result->execute() ) {
-            throw new ErrorException('Result Fields Query not valid');
-        }
-
-        foreach ( $this->result->fetchAll(PDO::FETCH_OBJ) as $field  ) {
-            $fields[] = $field->Field;
-        }
-
-        $exec = round(microtime(true)-$start, 4);
-
-        $this->time += $exec;
-        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec сек]" );
-
-        return $fields;
-    }
-
-    /**
      * Экранирует символы
      * @param $str
      * @return string

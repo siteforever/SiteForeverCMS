@@ -33,12 +33,6 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
 
         $banner->url = '/test';
         $this->assertEquals('http://example.com/test',$banner->url);
-
-        $_SERVER['HTTPS'] = true;
-        $this->assertEquals('https://example.com/test',$banner->url);
-
-        $_SERVER['HTTPS'] = 'off';
-        $this->assertEquals('http://example.com/test',$banner->url);
     }
 
 
@@ -58,7 +52,7 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
             $banner->block
         );
 
-        $banner->id = null;
+        $banner = clone $banner;
 
         try {
             $banner->block;

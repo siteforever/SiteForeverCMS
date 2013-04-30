@@ -19,8 +19,7 @@ define([
          * @param price
          * @param details
          */
-        "add" : function( id, product, count, price, details, callback ) {
-
+        "add": function (id, product, count, price, details, callback) {
             callback = callback && typeof callback == 'function' ? callback : function( response ){
                 alert( response.msg, 2000 );
                 $(this.class_name).replaceWith( response.widget );

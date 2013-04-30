@@ -195,6 +195,18 @@ div.guestbook_title {
     margin-bottom: 15px;
 }
 
+.b-catalog-product-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.b-catalog-product-price {
+    float: right;
+    font-size: 2em;
+    margin-bottom: 5px;
+}
+
 .b-product-properties-item,
 .b-catalog-product-properties-item {
     margin-bottom: 0.5em;

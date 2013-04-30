@@ -40,15 +40,14 @@ abstract class Auth
 
     public function __construct()
     {
-        $this->model    = $this->app()->getModel('User');
+        $this->model = $this->app()->getModel('User');
 
-        if ( $this->getId() ) {
-            $obj                = $this->model->find( (int) $this->getId() );
-            if ( $obj ) {
-                $this->user         = $obj;
-                if ( ! $this->app()->getRequest()->isAjax() && $this->user->last + 600 < time() ) {
-                    $this->user->last   = time();
-                    $this->user->markDirty();
+        if ($this->getId()) {
+            $obj = $this->model->findByPk($this->getId());
+            if ($obj) {
+                $this->user = $obj;
+                if (!$this->app()->getRequest()->isAjax() && $this->user->last + 600 < time()) {
+                    $this->user->last = time();
                 }
                 return;
             }
@@ -57,7 +56,6 @@ abstract class Auth
             'login' => 'guest',
             'perm'  => USER_GUEST,
         ));
-        $this->user->markClean();
     }
 
     /**
@@ -169,7 +167,6 @@ abstract class Auth
             'login'  => 'guest',
             'perm'   => USER_GUEST,
         ));
-        $this->user->markClean();
     }
 
     /**
@@ -263,7 +260,7 @@ abstract class Auth
         /**
          * @var User $user
          */
-        $user_id = $request->get('userid', FILTER_VALIDATE_INT);
+        $user_id = $request->get('userid');
         $confirm = $request->get('confirm');
 
         if ( $user_id && $confirm )

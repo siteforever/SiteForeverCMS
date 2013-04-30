@@ -14,23 +14,26 @@ class Many extends Relation
 {
     static protected $_cache = array();
 
-    public function with( Collection $collection )
+    public function with(Collection $collection)
     {
         /** @var $obj Object */
-        $keys = array_map(function( $obj ){
+        $keys = array_map(function($obj) {
             return $obj->getId();
-        }, iterator_to_array( $collection ));
+        }, iterator_to_array($collection));
 
-        if ( count( $keys ) ) {
+        if (count($keys)) {
             try {
-                $cond = $this->prepareCond( $keys );
-            } catch ( Exception $e ) {
+                $cond = $this->prepareCond($keys);
+            } catch (Exception $e) {
                 return;
             }
-            $objects = $this->model->findAll( $cond );
-            foreach ( $objects as $obj ) {
-                $this->addCache( $obj->{$this->key}, $obj );
-            };
+            if (isset($this->relation['with'])) {
+                $this->model->with($this->relation['with']);
+            }
+            $objects = $this->model->findAll($cond);
+            foreach ($objects as $obj) {
+                $this->addCache($obj->{$this->key}, $obj);
+            }
         }
     }
 
@@ -39,50 +42,50 @@ class Many extends Relation
      */
     public function find()
     {
-        if ( null === $this->getCache( $this->obj->getId() ) ) {
-            $with = array();
-            if ( isset( $this->relation['with'] ) ) {
-                $with = $this->relation['with'];
+        if (null === $this->getCache($this->obj->getId())) {
+            if (isset($this->relation['with'])) {
+                $this->model->with($this->relation['with']);
             }
             try {
-                $cond = $this->prepareCond( $this->obj->getId() );
-            } catch( Exception $e ) {
+                $cond = $this->prepareCond($this->obj->getId());
+            } catch(Exception $e) {
                 return null;
             }
-            $this->setCache( $this->obj->getId(), $this->model->with( $with )->findAll( $cond ) );
+            $this->setCache($this->obj->getId(), $this->model->findAll($cond));
         }
-        return $this->getCache( $this->obj->getId() );
+
+        return $this->getCache($this->obj->getId());
     }
 
     /**
      * @param $id
      * @param $collection
      */
-    protected function setCache( $id, Collection $collection )
+    protected function setCache($id, Collection $collection)
     {
-        self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] = $collection;
+        self::$_cache[$this->getModelName()][$this->key][$id] = $collection;
     }
 
     /**
      * @param $id
      * @param $obj
      */
-    protected function addCache( $id, Object $obj )
+    protected function addCache($id, Object $obj)
     {
-        if ( empty( self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] ) ) {
-            self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] = new Collection();
+        if (empty(self::$_cache[$this->getModelName()][$this->key][$id])) {
+            self::$_cache[$this->getModelName()][$this->key][$id] = new Collection();
         }
-        self::$_cache[ $this->getModelName() ][ $this->key ][ $id ]->add( $obj );
+        self::$_cache[$this->getModelName()][$this->key][$id]->add($obj);
     }
 
     /**
      * @param $id
      * @return mixed
      */
-    protected function getCache( $id )
+    protected function getCache($id)
     {
-        if ( isset( self::$_cache[ $this->getModelName() ][ $this->key ][ $id ] ) ) {
-            return self::$_cache[ $this->getModelName() ][ $this->key ][ $id ];
+        if (isset(self::$_cache[$this->getModelName()][$this->key][$id])) {
+            return self::$_cache[$this->getModelName()][$this->key][$id];
         }
         return null;
     }

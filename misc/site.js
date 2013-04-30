@@ -20,15 +20,15 @@ require([
 ){
     $(document).ready($.proxy(function($){
 
-        if ( basket && basket.init && "function" == typeof basket.init) {
+        if (basket && basket.init && "function" == typeof basket.init) {
             basket.init();
         }
 
-        if ( script ) {
-            if ( script.init && "function" == typeof script.init ) {
+        if (script) {
+            if (script.init && "function" == typeof script.init) {
                 script.init();
             }
-            behavior.apply( script );
+            behavior.apply(script);
         }
 
         $('a.gallery').gallery();
@@ -47,7 +47,7 @@ require([
                 $(this).parent().find('input.b-product-basket-count').val(),
                 $(this).data('price'),
                 properties.join(", "),
-                script.basket && typeof script.basket == 'function' ? script.basket : false
+                script && script.basket && typeof script.basket == 'function' ? script.basket : false
             );
         });
 

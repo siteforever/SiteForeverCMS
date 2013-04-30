@@ -30,6 +30,9 @@ class Forms_Catalog_Edit extends \Sfcms\Form\Form
         $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
         $materialArray = array('Не выбрано') + $materials->column( 'name' );
 
+        $typeModel     = Model::getModel('Module\Catalog\Model\TypeModel');
+        $types         = $typeModel->findAll(array('order'=>'name'));
+
         parent::__construct(array(
             'name'  => 'catalog',
             'title' => 'Раздел каталога',
@@ -46,13 +49,15 @@ class Forms_Catalog_Edit extends \Sfcms\Form\Form
                     'label'     => 'Раздел',
                     'value'     => '0',
                     'variants'  => $parents,
+                    'required',
                 ),
 
                 'type_id'   => array(
-                    'type' => 'hidden',
-//                    'label' => 'Тип товара',
-//                    'value' => '0',
-//                    'variants' => $typesArray,
+                    'type' => 'select',
+                    'label' => 'Тип товара',
+                    'value' => '0',
+                    'variants' => array('Не выбрано') + $types->column('name'),
+                    'required',
                 ),
 
                 'path'      => array('type'=>'hidden'),
@@ -174,18 +179,15 @@ class Forms_Catalog_Edit extends \Sfcms\Form\Form
     public function applyProperties( array $properties, $fvalues = null )
     {
         foreach( $properties as $k => $p ) {
-            if ( preg_match( '/p(\d+)/', $k, $m ) ) {
-                $field = $this->getField( $k );
-                trim( $p ) ? $field->setLabel( $p ) : $field->hide();
+            if ( preg_match('/^p(\d+)$/', $k, $m)) {
+                $field = $this->getField($k);
+                trim($p) ? $field->setLabel($p) : $field->hide();
 
                 /** @var Sfcms_Filter_Group $fGroup */
-                if ( $fvalues && $fGroup = $fvalues->getFilterGroup( $m[1] ) ) {
-                    if (  is_array( $fGroup->getData() ) && ! $field->getValue() ) {
-                        $this->getField( $k )->setValue(
-                            str_ireplace(
-                                'Все|', '',
-                                implode( '|', $fGroup->getData() )
-                            )
+                if ($fvalues && $fGroup = $fvalues->getFilterGroup($m[1])) {
+                    if (is_array($fGroup->getData()) && !$field->getValue()) {
+                        $this->getField($k)->setValue(
+                            str_ireplace(array('Все|','All|'), '', implode('|', $fGroup->getData()))
                         );
                     }
                 }

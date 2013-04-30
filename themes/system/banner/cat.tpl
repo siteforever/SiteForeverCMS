@@ -37,7 +37,7 @@
     </tr>
 {/foreach}
 </table>
-<p><a class="ban_add button" {href controller="banner" action="edit" cat=$cat->id} title="Добавить баннер">
+<p><a class="ban_add btn" {href controller="banner" action="edit" cat=$cat->id} title="Добавить баннер">
     {icon name="picture_add"} Добавить
 </a></p>
 <p class="page">{$paging.html}</p>

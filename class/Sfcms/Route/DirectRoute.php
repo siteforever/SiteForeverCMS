@@ -6,23 +6,25 @@
  */
 
 namespace Sfcms\Route;
+use Sfcms\Request;
 use Sfcms\Route;
 use ReflectionClass;
 use App;
 
-class Direct extends Route
+class DirectRoute extends Route
 {
     /** @param array */
     private static $controllers = null;
 
     private $app;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
         $this->app = App::getInstance();
         if ( null === self::$controllers ) {
             self::$controllers = $this->app->getControllers();
         }
+        parent::__construct($request);
     }
 
     /**
@@ -34,15 +36,18 @@ class Direct extends Route
         $routePieces = explode( '/', $route );
 
         // Проверяем путь в списке контроллеров
-        if ( isset( self::$controllers[ $routePieces[0] ] ) ) {
-            if ( ! isset( $routePieces[1] ) ) {
+        if (isset(self::$controllers[$routePieces[0]])) {
+            if (!isset($routePieces[1])) {
                 return false;
             }
 
             $resolver = $this->app->getResolver();
-            $command = $resolver->resolveController( $routePieces[0], $routePieces[1] );
+            $request  = $this->request;
+            $request->setController($routePieces[0]);
+            $request->setAction($routePieces[1]);
+            $command = $resolver->resolveController($request);
 
-            $relectionClass = new ReflectionClass( $command['controller'] );
+            $relectionClass = new ReflectionClass($command['controller']);
 
             if ( $relectionClass->hasMethod( $command['action'] ) ) {
                 $controller = $routePieces[ 0 ];

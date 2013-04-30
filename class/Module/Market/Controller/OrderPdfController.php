@@ -12,13 +12,12 @@ use numeric;
 
 class OrderPdfController extends Sfcms_Controller
 {
-    function indexAction()
+    public function indexAction()
     {
         throw new \Sfcms\Exception('Old method');
         $this->request->setTitle('Распечатать заказ');
-        $this->request->setContent('Распечатать заказ');
 
-        $order_id = $this->request->get('order_id', FILTER_VALIDATE_INT);
+        $order_id = $this->request->get('order_id');
         $order_model = $this->getModel('Order');
 
         /** @var $order Order */
@@ -185,7 +184,7 @@ class OrderPdfController extends Sfcms_Controller
 
         $pdf->SetFont('', 'B', 14);
 
-        $doc_name = $this->request->get('contract', FILTER_VALIDATE_INT) === false ? "СЧЁТ" : "ДОГОВОР-СЧЁТ";
+        $doc_name = $this->request->get('contract') === false ? "СЧЁТ" : "ДОГОВОР-СЧЁТ";
 
         $pdf->Cell(190, 8, $doc_name." № И-{$order['id']} от {$date}", 0, true, "C");
         $pdf->SetFont('', 'N', 8);
@@ -326,7 +325,7 @@ class OrderPdfController extends Sfcms_Controller
         //$pdf->Cell( 170, 4, "Срок поставки ориентировочно 2 - 3 недели.", 0, 1, 'L' );
 
         //$this->write(8, cp2utf("Итого к оплате: Шесть тысяч пять рублей 33 копейки\n"));
-        if ( !$this->request->get( 'contract', FILTER_VALIDATE_INT ) )
+        if ( !$this->request->get( 'contract' ) )
         {
             $pdf->SetFont('', '', 7);
             $pdf->write(4, "Счет действителен в течении 5 банковских дней. Датой платежа считается дата поступления денежных средств на расчетный счет Продавца.\n");

@@ -48,14 +48,17 @@ class CatalogModel extends Model
     public function relation()
     {
         return array(
-            'Gallery'       => array( self::HAS_MANY, 'CatalogGallery', 'cat_id', 'order' => 'pos' ),
-            'Category'      => array( self::BELONGS, 'Catalog', 'parent' ),
-            'Manufacturer'  => array( self::BELONGS, 'Manufacturers', 'manufacturer' ),
-            'Material'      => array( self::BELONGS, 'Material', 'material' ),
-            'Goods'         => array( self::HAS_MANY, 'Catalog', 'parent' ),
-            'Page'          => array( self::HAS_ONE, 'Page', 'link', 'where' => array('controller' => 'catalog') ),
-            'Properties'    => array( self::HAS_MANY, 'ProductProperty', 'product_id', 'with'=>array('Field')),
-            'Type'          => array( self::BELONGS, 'ProductType', 'type_id' ),
+            'Gallery'      => array(self::HAS_MANY, 'CatalogGallery', 'cat_id', 'order' => 'pos'),
+            'Category'     => array(self::BELONGS, 'Catalog', 'parent'),
+            'Manufacturer' => array(self::BELONGS, 'Manufacturers', 'manufacturer'),
+            'Material'     => array(self::BELONGS, 'Material', 'material'),
+            'Goods'        => array(self::HAS_MANY, 'Catalog', 'parent', 'where'=>array('cat'=>0)),
+            'Page'         => array(self::HAS_ONE, 'Page', 'link', 'where' => array('controller' => 'catalog')),
+            'Properties'   => array(
+                self::HAS_MANY, 'ProductProperty', 'product_id',
+                'with'  => array('Field'), 'order' => 'pos'
+            ),
+            'Type'         => array(self::BELONGS, 'ProductType', 'type_id'),
         );
     }
 
@@ -104,7 +107,7 @@ class CatalogModel extends Model
 
         if ( $page->parent && ! $category->parent ) {
             /** @var $parentPage Page */
-            $parentPage = $pageModel->find( $page->parent );
+            $parentPage = $pageModel->find($page->parent);
             if ( $parentPage->controller == $page->controller && $parentPage->link ) {
                 $category->parent = $parentPage->link;
             } else {
@@ -127,7 +130,7 @@ class CatalogModel extends Model
     {
         $obj = $event->getObject();
         /** @var $catObj Catalog */
-        $catObj = $this->find( $obj->link );
+        $catObj = $this->find($obj->link);
         $catObj->pos = $obj->pos;
         $catObj->markDirty();
     }
@@ -313,7 +316,6 @@ class CatalogModel extends Model
                 $objPage->name = $obj->name;
                 $objPage->hidden = $obj->hidden;
                 $objPage->protected = $obj->protected;
-                $objPage->markDirty();
             }
         }
     }
@@ -407,14 +409,14 @@ class CatalogModel extends Model
      */
     public function createTree()
     {
-        if( null === $this->parents ) {
+        if (null === $this->parents) {
             $this->parents = array();
-            if( count( $this->all ) == 0 ) {
-                $this->all = $this->findAll( 'cat = ? AND deleted = ?', array( 1, 0 ), 'pos DESC' );
+            if (count($this->all) == 0) {
+                $this->all = $this->findAll('`deleted` = 0 AND `hidden` = 0 AND `cat` = 1', array(), 'pos DESC');
             }
             // создаем массив, индексируемый по родителям
-            foreach( $this->all as $obj ) {
-                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+            foreach ($this->all as $obj) {
+                $this->parents[$obj->parent][$obj->id] = $obj;
             }
         }
         return $this->parents;
@@ -639,16 +641,16 @@ class CatalogModel extends Model
     public function moveList()
     {
         /** @var Catalog $item */
-        $list   = $this->request->get( 'move_list' );
-        $target = $this->request->get( 'target', FILTER_SANITIZE_NUMBER_INT );
+        $list   = $this->request->get('move_list');
+        $target = $this->request->get('target');
         // TODO Не происходит пересчета порядка позиций
 
-        if( $target !== "" && is_numeric( $target ) && $list && is_array( $list ) ) {
-            foreach( $list as $item_id ) {
-                $item         = $this->find( $item_id );
+        if ($target !== "" && is_numeric($target) && $list && is_array($list)) {
+            foreach ($list as $item_id) {
+                $item         = $this->find($item_id);
                 $item->parent = $target;
                 $item->path   = '';
-                $this->save( $item );
+                $this->save($item);
             }
         }
         return 'Successfully';
@@ -706,13 +708,13 @@ class CatalogModel extends Model
      */
     public function getProvider()
     {
-        $provider = new Provider( $this->app() );
-        $provider->setModel( $this );
+        $provider = new Provider($this->app());
+        $provider->setModel($this);
 
         $criteria = $this->createCriteria();
         $criteria->condition = '`cat` = 0 AND `deleted` = 0';
 
-        $provider->setCriteria( $criteria );
+        $provider->setCriteria($criteria);
 
         $categories = $this->getCategoryList();
 
@@ -732,6 +734,7 @@ class CatalogModel extends Model
             'image' => array(
                 'width' => 80,
                 'sortable' => false,
+                'with' => 'Gallery',
                 'format' => array(
                     'image' => array('width'=>50,'height'=>50),
                 ),

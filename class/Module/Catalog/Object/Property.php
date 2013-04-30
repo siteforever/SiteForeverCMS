@@ -15,8 +15,24 @@
 namespace Module\Catalog\Object;
 
 use Sfcms\Data\Object;
-use Sfcms\Data\Field;
+use Sfcms\Data\Field as TField;
 
+/**
+ * Class Property
+ * @package Module\Catalog\Object
+ *
+ * @property $product_id
+ * @property $product_field_id
+ * @property $value_string
+ * @property $value_text
+ * @property $value_int
+ * @property $value_datetime
+ * @property $pos
+ *
+ * @property $name
+ * @property $value
+ * @property $unit
+ */
 class Property extends Object
 {
     public function getName()
@@ -29,6 +45,13 @@ class Property extends Object
     {
         $field = $this->get('Field');
         return $this->data['value_'.$field->type];
+    }
+
+    public function setValue($value)
+    {
+        $field = $this->get('Field');
+        $this->set('value_' . $field->type, $value);
+        return $this;
     }
 
     public function getUnit()
@@ -44,13 +67,13 @@ class Property extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'product_id', 11, false, null, false ),
-            new Field\Int( 'product_field_id', 11, false, null, false ),
-            new Field\Varchar( 'value_string', 255, true, null, false ),
-            new Field\Blob( 'value_text', 11, true, null, false ),
-            new Field\Int( 'value_int', 11, true, null, false ),
-            new Field\Datetime( 'value_datetime', 11, true, null, false ),
-            new Field\Int( 'pos', 11, false, 0 ),
+            new TField\Int( 'product_id', 11, false, null, false ),
+            new TField\Int( 'product_field_id', 11, false, null, false ),
+            new TField\Varchar( 'value_string', 255, true, null, false ),
+            new TField\Blob( 'value_text', 11, true, null, false ),
+            new TField\Int( 'value_int', 11, true, null, false ),
+            new TField\Datetime( 'value_datetime', 11, true, null, false ),
+            new TField\Int( 'pos', 11, false, 0 ),
         );
     }
 
@@ -70,4 +93,13 @@ class Property extends Object
     {
         return array('product_id','product_field_id');
     }
+
+    public static function keys()
+    {
+        return array(
+            'product_id' => 'product_id',
+        );
+    }
+
+
 }

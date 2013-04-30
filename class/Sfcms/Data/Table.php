@@ -30,7 +30,7 @@ abstract class Table extends Component
      * Список полей
      * @var array
      */
-    protected static $fields   = array();
+    protected static $fields = array();
 
     /**
      * Вернет имя таблицы
@@ -70,10 +70,30 @@ abstract class Table extends Component
     public static function fields()
     {
         $class = get_called_class();
-        if ( ! isset( static::$fields[ $class ] ) ) {
-            static::$fields[ $class ] = static::doFields();
+        if (!isset(static::$fields[$class])) {
+            static::$fields[$class] = static::doFields();
         }
-        return static::$fields[ $class ];
+
+        return static::$fields[$class];
+    }
+
+    /**
+     * Get field by name
+     *
+     * @param $name
+     *
+     * @return null|Field
+     */
+    public function field($name)
+    {
+        $fields = static::fields();
+        /** @var $field Field */
+        foreach ($fields as $field) {
+            if ($field->getName() == $name) {
+                return $field;
+            }
+        }
+        return null;
     }
 
     /**
@@ -93,75 +113,4 @@ abstract class Table extends Component
     {
         return array();
     }
-//
-//    /**
-//     * Поле целого чисиа
-//     * @param  $name
-//     * @param int $length
-//     * @param bool $notnull
-//     * @param null $default
-//     * @param bool $autoincrement
-//     * @return Field\Int
-//     */
-//    public function getInt( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
-//    {
-//        return new Field\Int( $name, $length, $notnull, $default, $autoincrement );
-//    }
-//
-//    /**
-//     * Поле короткого целого
-//     * @param  $name
-//     * @param int $length
-//     * @param bool $notnull
-//     * @param null $default
-//     * @param bool $autoincrement
-//     * @return Field\Tinyint
-//     */
-//    public function getTinyint( $name, $length = 4, $notnull = false, $default = null, $autoincrement = false )
-//    {
-//        return new Field\Tinyint( $name, $length, $notnull, $default, $autoincrement );
-//    }
-//
-//    /**
-//     * Текстовое поле
-//     * @param  $name
-//     * @param bool $notnull
-//     * @return Field\Text
-//     */
-//    public function getText( $name, $notnull = false )
-//    {
-//        $length     = null;
-//        $default    = null;
-//        $autoincrement  = null;
-//        return new Field\Text( $name, $length, $notnull, $default, $autoincrement );
-//    }
-//
-//    /**
-//     * Строка переменной длины
-//     * @param  $name
-//     * @param int $length
-//     * @param bool $notnull
-//     * @param null $default
-//     * @param bool $autoincrement
-//     * @return Field\Varchar
-//     */
-//    public function getVarchar( $name, $length = 255, $notnull = false, $default = null, $autoincrement = false )
-//    {
-//        return new Field\Varchar( $name, $length, $notnull, $default, $autoincrement );
-//    }
-//
-//    /**
-//     * Число с плавающей точкой
-//     * @param  $name
-//     * @param string $length
-//     * @param bool $notnull
-//     * @param null $default
-//     * @param bool $autoincrement
-//     * @return Field\Decimal
-//     */
-//    public function getDecimal( $name, $length = '13,2', $notnull = false, $default = null, $autoincrement = false )
-//    {
-//        return new Field\Decimal( $name, $length, $notnull, $default, $autoincrement );
-//    }
-
 }

@@ -2,8 +2,8 @@
 /**
  * Интервейс контейнера для данных
  * @author Nikolay Ermin (nikolay@ermin.ru)
- * @link http://ermin.ru
- * @link http://siteforever.ru
+ * @link   http://ermin.ru
+ * @link   http://siteforever.ru
  */
 namespace Sfcms\Data;
 
@@ -15,12 +15,12 @@ abstract class Object extends Table
     /**
      * @var Model
      */
-    protected $model  = null;
+    protected $model = null;
 
     /**
      * @var Table
      */
-    protected $table  = null;
+    protected $table = null;
 
     /**
      * @var array|null
@@ -33,53 +33,63 @@ abstract class Object extends Table
      */
     protected $changed = array();
 
-    private $new = true;
+    const STATE_CREATE = 0;
+    const STATE_CLEAN  = 10;
+    const STATE_NEW    = 20;
+    const STATE_DIRTY  = 30;
+    const STATE_DELETE = 40;
+
+    protected $state;
 
     /**
      * @param Model $model
      * @param array $data
      */
-    public function __construct( Model $model, $data )
+    public function __construct(Model $model, $data = array())
     {
+        $this->state    = self::STATE_CREATE;
+        $this->changed  = array();
         $this->model    = $model;
         $this->table    = $model->getTable();
         $this->relation = $this->model->relation();
-
-        $this->new = empty( $data['id'] );
-        $this->setAttributes( $data );
-        $this->new = false;
-
-        // @TODO Пока не будем помечать новые объекты для добавления
-        /*
-         * Сделать несколько состояний для объектов:
-         *   - Совсем новый   - просто заглушка
-         *   - Новый для базы - будет сохранен в базу
-         *   - Существующий   - загружен из базы
-         */
-        /*if ( is_null( $this->getId() ) ) {
-            $this->markNew();
-        }*/
+        $this->setAttributes($data);
     }
 
     /**
      * Вернет список измененных полей
      * @return array
      */
-    public function changed()
+    public function changedFields()
     {
         return $this->changed;
     }
 
     /**
+     * Was changed field $name
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function isChanged($name)
+    {
+        if (isset($this->changed[$name])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * @param $key
+     *
      * @return array|Object|mixed|null
      */
-    public function get( $key )
+    public function get($key)
     {
-        if ( isset( $this->relation[ $key ] ) ) {
-            return $this->model->findByRelation( $key, $this );
+        if (isset($this->relation[$key])) {
+            return $this->model->findByRelation($key, $this);
         }
-        return parent::get( $key );
+
+        return parent::get($key);
     }
 
     /**
@@ -89,39 +99,35 @@ abstract class Object extends Table
      * @return $this|Component
      * @throws \UnexpectedValueException
      */
-    public function set( $key, $value )
+    public function set($key, $value)
     {
-        $oldValue = isset( $this->data[$key] ) ? $this->data[$key] : null;
-        parent::set( $key, $value );
-
-        if ( 'id' == $key && $oldValue && $value && $oldValue != $value ) {
-            throw new \UnexpectedValueException('Changing id is not allowed');
+        $pk = static::pkAsArray();
+        if (in_array($key, $pk) && $this->$key && $this->$key != $value) {
+            throw new \UnexpectedValueException('Changing pk is not allowed');
         }
-
-        if ( null === $oldValue || $oldValue != $value ) {
-            //if ( ! $this->new ) {
-                //$this->changed[ $key ] = $key;
-            $event = 'onSet'.ucfirst( strtolower( $key ) );
-            if ( method_exists( $this, $event ) ) {
-                $this->$event();
-            }
-            //}
-            if ( empty( $this->data['id'] ) ) {
-                $this->markNew();
-            } else {
+        $oldValue = null;
+        if ('attributes' != $key) {
+            $oldValue = $this->$key;
+        }
+        parent::set($key, $value);
+        if ('attributes' != $key && $oldValue != $value) {
+            $this->changed[$key] = true;
+            if ($this->isStateClean()) {
                 $this->markDirty();
             }
         }
+
         return $this;
     }
 
     /**
      * @param $name
+     *
      * @return void
      */
     public function __unset($name)
     {
-        parent::__unset( $name );
+        parent::__unset($name);
         $this->markDirty();
     }
 
@@ -130,58 +136,113 @@ abstract class Object extends Table
      */
     public function __clone()
     {
-        $this->data['id'] = null;
+        foreach (static::pkAsArray() as $pri) {
+            $this->data[$pri] = null;
+        }
         $this->markNew();
     }
 
     /**
-     * Установить id
-     * @param $id
+     * Returns primary key fields as array items
      *
-     * @return mixed
+     * @return array
+     */
+    public static function pkAsArray()
+    {
+        $pk = static::pk();
+        if (!is_array($pk)) {
+            $pk = array($pk);
+        }
+
+        return $pk;
+    }
+
+    /**
+     * Returns primary keys values
+     *
+     * @return array
+     */
+    public function pkValues()
+    {
+        $result = array();
+        foreach (static::pkAsArray() as $pri) {
+            $result[$pri] = $this->$pri;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Установить id
+     * <p>Принимается primary key как в качестве скаляра, так и в виде массива.</p>
+     *
+     * <ul>
+     * <li>Если используется скаляр, и у таблицы БД 1 pk, то будет присвоено значение этому pk</li>
+     * <li>Если используется массив и у таблицы несколько pk, то будут присвоены значения соответсвенно массиву,
+     * возвращаемому методом static::pk()</li>
+     * </ul>
+     *
+     * <p>В случае, если присваивается ид на объект, уже имеющий ид, то будет выброшено исключение.</p>
+     *
+     * @param int|string|array $id
+     *
+     * @return Object
      * @throws Exception
      */
-    public function setId( $id )
+    public function setId($id)
     {
-        if ( ! isset( $this->data['id'] ) && is_numeric( $id ) ) {
-            $this->data['id']   = $id;
-            return;
+        $pk = static::pkAsArray();
+        if (1 == count($pk) && !is_array($id)) {
+            $pk = $pk[0];
+            if (null === $this->$pk) {
+                $this->$pk = $id;
+                return $this;
+            }
+        } elseif(count($pk) > 0 && is_array($id)) {
+            foreach($pk as $i => $key) {
+                if (null !== $this->$key) {
+                    break;
+                }
+                $this->$key = $id[$i];
+            }
         }
         throw new Exception('Attempting to set an existing object id');
     }
 
     /**
-     * Вернет id
-     * @return int|null
+     * Вернет значение id
+     *
+     * @return int|array|null
      */
     public function getId()
     {
-        if ( isset( $this->data['id'] ) && $this->data['id'] ) {
-            return $this->data['id'];
-        }
-        return null;
+        return empty($this->data['id']) ? null : $this->data['id'];
     }
 
     /**
      * Вернет модель данных
      * @param string $model
+     *
      * @return Model
      */
-    public function getModel( $model = '' )
+    public function getModel($model = '')
     {
-        if ( '' === $model )
+        if ('' === $model) {
             return $this->model;
-        else
+        } else {
             return Model::getModel($model);
+        }
     }
 
     /**
      * Сохранение
+     * @param bool $forceInsert
+     *
      * @return int
      */
-    public function save()
+    public function save($forceInsert = false)
     {
-        return $this->model->save( $this );
+        return $this->model->save($this, $forceInsert);
     }
 
     /**
@@ -189,43 +250,104 @@ abstract class Object extends Table
      */
     public function delete()
     {
-        $this->model->delete( $this->getId() );
+        $this->model->delete($this->getId());
     }
 
     /**
      * Как новый
-     * @return void
+     * @return Object
      */
     public function markNew()
     {
-        Watcher::addNew( $this );
+        if (!$this->isStateNew()) {
+            Watcher::addNew($this);
+            $this->state = self::STATE_NEW;
+        }
+        return $this;
     }
 
     /**
      * Как удаленный
-     * @return void
+     * @return Object
      */
     public function markDeleted()
     {
-        Watcher::addDelete( $this );
+        if (!$this->isStateDelete()) {
+            Watcher::addDelete($this);
+            $this->state = self::STATE_DELETE;
+        }
+        return $this;
     }
 
     /**
      * На обновление
-     * @return void
+     * @return Object
      */
     public function markDirty()
     {
-        Watcher::addDirty( $this );
+        if (!$this->isStateDirty()) {
+            Watcher::addDirty($this);
+            $this->state = self::STATE_DIRTY;
+        }
+        return $this;
     }
 
     /**
      * Стереть везде
-     * @return void
+     * @return Object
      */
     public function markClean()
     {
-        Watcher::addClean( $this );
+        if (!$this->isStateClean()) {
+            Watcher::addClean($this);
+            $this->changed = array();
+            $this->state = self::STATE_CLEAN;
+        }
+        return $this;
     }
 
+    /**
+     * Get inner state
+     * @return int
+     */
+    public function state()
+    {
+        return $this->state;
+    }
+
+    /**
+     * Check inner state
+     * @param $state
+     *
+     * @return bool
+     */
+    public function isState($state)
+    {
+        return $state == $this->state();
+    }
+
+    public function isStateDirty()
+    {
+        return $this->isState(self::STATE_DIRTY);
+    }
+
+    public function isStateClean()
+    {
+        return $this->isState(self::STATE_CLEAN);
+    }
+
+    public function isStateNew()
+    {
+        return $this->isState(self::STATE_NEW);
+    }
+
+    public function isStateDelete()
+    {
+        return $this->isState(self::STATE_DELETE);
+    }
+
+    public function isStateCreate()
+    {
+        return $this->isState(self::STATE_CREATE);
+    }
 }

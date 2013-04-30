@@ -35,17 +35,19 @@ class News extends Object
 {
     public function getAlias()
     {
-        if ( empty( $this->data['alias'] ) || '0' == $this->data['alias']{0} ) {
-            $this->alias = $this->name
-                ? strtolower( $this->id . '-' . Sfcms::i18n()->translit( $this->name ) )
+        if (empty($this->data['alias']) || '0' == $this->data['alias']{0}) {
+            $this->data['alias'] = $this->name
+                ? strtolower($this->id . '-' . Sfcms::i18n()->translit($this->name))
                 : $this->id;
+            $this->changed['alias'] = true;
         }
         return $this->data['alias'];
     }
 
     public function onSetName()
     {
-        $this->changed['alias'] = 'alias';
+        $this->data['alias'] = null;
+        $this->getAlias();
     }
 
     public function getTitle()

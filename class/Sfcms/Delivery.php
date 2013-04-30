@@ -7,7 +7,8 @@ namespace Sfcms;
 
 use App;
 use Sfcms\Basket\Base as Basket;
-use Data_Object_Delivery;
+use Module\Market\Object\Delivery as DeliveryObject;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class Delivery
 {
@@ -19,37 +20,42 @@ class Delivery
     /** @var Basket */
     protected $basket;
 
-    /** @var Data_Object_Delivery */
+    /** @var DeliveryObject */
     protected $delivery = null;
 
 
     /**
      * @param Session $session
+     * @param Basket  $basket
      */
-    public function __construct( Session $session, Basket $basket )
+    public function __construct(Session $session, Basket $basket)
     {
         $this->basket  = $basket;
         $this->session = $session;
-        $this->id = $this->session->get('delivery');
+        $this->id      = $this->session->get('delivery');
     }
 
 
     /**
-     * @return Data_Object_Delivery|null
+     * @param $id
+     *
+     * @return DeliveryObject|null
+     * @throws Exception
      */
-    public function getObject( $id = null )
+    public function getObject($id = null)
     {
-        if ( null === $this->delivery) {
+        if (null === $this->delivery) {
             $model = Model::getModel('Delivery');
-            if ( null !== $id ) {
-                $this->delivery = $model->find( $id );
-            } elseif ( null !== $this->id ) {
-                $this->delivery = $model->find( $this->id );
+            if (null !== $id) {
+                $this->delivery = $model->find($id);
+            } elseif (null !== $this->id) {
+                $this->delivery = $model->find($this->id);
             }
-            if ( null === $this->delivery ) {
+            if (null === $this->delivery) {
                 throw new Exception('Delivery not found', 1);
             }
         }
+
         return $this->delivery;
     }
 
@@ -57,21 +63,23 @@ class Delivery
     /**
      * Стоимость доставки
      * @param float $sum
+     *
      * @return float
      */
-    public function cost( $sum = null )
+    public function cost($sum = null)
     {
         try {
             $obj = $this->getObject();
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             return null;
         }
-        if ( null === $sum && $this->basket->getSum() ) {
+        if (null === $sum && $this->basket->getSum()) {
             $sum = $this->basket->getSum();
         }
-        if ( $sum >= 5000 ) {
+        if ($sum >= 5000) {
             return $obj->cost <= 500 ? 0 : $obj->cost - 500;
         }
+
         return $obj->cost;
     }
 
@@ -82,10 +90,10 @@ class Delivery
     }
 
 
-    public function setType( $type )
+    public function setType($type)
     {
-        if ( $this->id ) {
-            $this->getObject( $type );
+        if ($this->id) {
+            $this->getObject($type);
         }
         $this->id = $type;
         $this->session->set('delivery', $this->id);

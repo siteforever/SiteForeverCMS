@@ -49,7 +49,7 @@
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
-            <td class="right basket-sum">{if $delivery}{$delivery.cost|number_format}{/if}</td>
+            <td class="right basket-sum">{if $delivery}{$delivery->cost()|number_format}{/if}</td>
             <td>&nbsp;</td>
         </tr>
     </tbody>
@@ -60,7 +60,7 @@
             <td></td>
             <td></td>
             <td class="right basket-count"><b>{$all_count}</b></td>
-            {if $delivery}{$basketSum = $all_summa + $delivery.cost}
+            {if $delivery}{$basketSum = $all_summa + $delivery->cost()}
             {else}{$basketSum = $all_summa}{/if}
             <td class="right basket-sum"><b>{$basketSum|number_format}</b></td>
             <td><input type="submit" class="btn" id="recalculate" name="recalculate" value="{t cat="basket"}Calculate{/t}" /></td>
@@ -71,7 +71,7 @@
 
     <hr>
 
-    <div class="row-fluid">
+    <div class="row">
         <div class="span6">
             <div class="well">
                 <h3>Контактные данные</h3>

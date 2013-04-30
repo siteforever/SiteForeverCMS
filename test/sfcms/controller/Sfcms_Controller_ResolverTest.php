@@ -14,8 +14,8 @@ class Sfcms_Controller_ResolverTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->resolver = App::getInstance()->getResolver();
-        $this->request = App::getInstance()->getRequest();
+        $this->resolver = new \Sfcms\Controller\Resolver();
+        $this->request = \Sfcms\Request::create('/');
     }
 
 
@@ -24,42 +24,38 @@ class Sfcms_Controller_ResolverTest extends PHPUnit_Framework_TestCase
      */
     public function testResolveController()
     {
-        $this->request->clearAll();
-        $result = $this->resolver->resolveController('page');
+        $request = $this->request;
+        $request->setController('page');
+        $result = $this->resolver->resolveController($request);
         $this->assertEquals('Module\Page\Controller\PageController', $result['controller']);
         $this->assertEquals('indexAction', $result['action']);
 
-        $this->request->clearAll();
         $this->request->setController('page');
         $this->request->setAction('edit');
-        $result = $this->resolver->resolveController();
+        $result = $this->resolver->resolveController($request);
         $this->assertEquals('Module\Page\Controller\PageController', $result['controller']);
         $this->assertEquals('editAction', $result['action']);
 
-        $this->request->clearAll();
-        $result = $this->resolver->resolveController('search');
+        $result = $this->resolver->resolveController($request, 'search', 'index');
         $this->assertEquals('Controller_Search', $result['controller']);
         $this->assertEquals('indexAction', $result['action']);
 
-        $this->request->clearAll();
         $this->request->setController('foo');
-        $result = $this->resolver->resolveController();
+        $this->request->setAction('index');
+        $result = $this->resolver->resolveController($request);
         $this->assertEquals('Acme\Module\Foo\Controller\FooController', $result['controller']);
         $this->assertEquals('indexAction', $result['action']);
 
-        $this->request->clearAll();
-        $result = $this->resolver->resolveController('foo');
-        $this->assertEquals('Acme\Module\Foo\Controller\FooController', $result['controller']);
-        $this->assertEquals('indexAction', $result['action']);
-
-        $this->request->clearAll();
-        $result = $this->resolver->resolveController('foo','index','foo');
+        $result = $this->resolver->resolveController($request, 'foo','index','foo');
         $this->assertEquals('Acme\Module\Foo\Controller\FooController', $result['controller']);
         $this->assertEquals('indexAction', $result['action']);
         $this->assertEquals('Foo', $result['module']);
 
-//        $this->assertArrayHasKey('module', $result);
-//        $this->assertArrayHasKey('controller', $result);
-//        $this->assertArrayHasKey('action', $result);
+        $request->setModule('foo');
+        $request->setController('foo');
+        $request->setAction('index');
+        $result = $this->resolver->resolveController($request);
+        $this->assertEquals('Acme\Module\Foo\Controller\FooController', $result['controller']);
+        $this->assertEquals('indexAction', $result['action']);
     }
 }

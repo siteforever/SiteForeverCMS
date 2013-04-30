@@ -33,7 +33,7 @@ class Pager implements ArrayAccess
 
         $p      = array();
 
-        $page   = App::$request->get('page');
+        $page   = App::getInstance()->getRequest()->get('page');
         $page   = $page ? $page : 1;
 
         $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);

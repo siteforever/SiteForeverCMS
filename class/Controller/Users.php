@@ -238,7 +238,7 @@ class Controller_Users extends Sfcms_Controller
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 if ( $auth->login( $form->login, $form->password ) ) {
-                    return $this->redirect($this->request->getRequest()->server->get('HTTP_REFERER'));
+                    return $this->redirect($this->request->server->get('HTTP_REFERER'));
                 } else {
                     $this->getTpl()->assign('error',1);
                     $this->getTpl()->assign('msg',$auth->getMessage());

@@ -225,15 +225,16 @@ class OrderController extends Sfcms_Controller
         ));
 
         $this->request->setTitle('Заказы');
-        return $this->tpl->fetch('system:order.admin');
+        return $this->render('system:order.admin');
     }
 
     /**
      * Редактирование заказа
      * @param int $id
+     * @param int $new_status
      * @return mixed
      */
-    public function adminEdit( $id )
+    public function adminEdit( $id, $new_status )
     {
         $model = $this->getModel('Order');
         /** @var $order Order */
@@ -241,7 +242,7 @@ class OrderController extends Sfcms_Controller
         $positions  = $order->Positions;
         $user       = $order->User;
 
-        if ( $new_status = $this->request->get('new_status', FILTER_VALIDATE_INT) ) {
+        if ($new_status) {
             $order->status = $new_status;
         }
 
@@ -259,6 +260,6 @@ class OrderController extends Sfcms_Controller
             'user'      => $user,
         ));
 
-        return $this->tpl->fetch('system:order.admin_edit');
+        return $this->render('system:order.admin_edit');
     }
 }
