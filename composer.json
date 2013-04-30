@@ -43,8 +43,7 @@
         "firephp/firephp-core": "dev-master",
         "ccampbell/chromephp": "dev-master",
         "tonytomov/jqGrid" : "4.4.4",
-        "Studio-42/elFinder" : "2",
-        "mrclay/minify": "dev-master"
+        "Studio-42/elFinder" : "2"
     },
     "repositories":[
         {

@@ -30,7 +30,7 @@ class ComposerHandler
             throw new Exception(sprintf('Param "%s" not defined',  $outDir ));
         }
 
-        print_r($_SERVER);
+//        print_r($_SERVER);
 
         $rootDir = getenv('PWD');
 
