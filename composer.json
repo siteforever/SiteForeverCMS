@@ -40,10 +40,10 @@
         "php": ">=5.3.3",
         "symfony/symfony": "2.1.*",
         "smarty/smarty": "3.1.*",
-        "firephp/firephp-core": "dev-master",
-        "ccampbell/chromephp": "dev-master",
+        "firephp/firephp-core": "0.4.0",
+        "ccampbell/chromephp": "4.0.0",
         "tonytomov/jqGrid" : "4.4.4",
-        "Studio-42/elFinder" : "2"
+        "helios-ag/fm-elfinder": "2.*@dev"
     },
     "repositories":[
         {
@@ -55,28 +55,6 @@
                     "type":"git",
                     "url":"https://github.com/tonytomov/jqGrid",
                     "reference":"master"
-                }
-            }
-        },
-        {
-            "type":"package",
-            "package":{
-                "name":"Studio-42/elFinder",
-                "version":"2",
-                "source":{
-                    "type":"git",
-                    "url":"https://github.com/Studio-42/elFinder",
-                    "reference":"2.x"
-                },
-                "autoload" : {
-                    "psr-0" : {
-                        "elFinder" : "php/elFinder.class.php",
-                        "elFinderConnector" : "php/elFinderConnector.class.php",
-                        "elFinderVolumeDriver" : "php/elFinderVolumeDriver.class.php",
-                        "elFinderVolumeFTP" : "php/elFinderVolumeFTP.class.php",
-                        "elFinderVolumeLocalFileSystem" : "php/elFinderVolumeLocalFileSystem.class.php",
-                        "elFinderVolumeMySQL" : "php/elFinderVolumeMySQL.class.php"
-                    }
                 }
             }
         }
