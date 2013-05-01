@@ -24,7 +24,7 @@ class Gallery extends Object
      */
     public function getThumb()
     {
-        if ( $this->data['thumb'] ) {
+        if (!empty($this->data['thumb'])) {
             return $this->data['thumb'];
         }
         return $this->image;
