@@ -40,9 +40,9 @@
         "php": ">=5.3.3",
         "symfony/symfony": "2.1.*",
         "smarty/smarty": "3.1.*",
-        "firephp/firephp-core": "0.4.0",
+        "firephp/firephp-core": "v0.4.0",
         "ccampbell/chromephp": "4.0.0",
-        "tonytomov/jqGrid" : "4.4.4",
+        "tonytomov/jqGrid" : "4.4",
         "helios-ag/fm-elfinder": "2.*@dev"
     },
     "repositories":[
@@ -50,11 +50,11 @@
             "type":"package",
             "package":{
                 "name":"tonytomov/jqGrid",
-                "version":"4.4.4",
+                "version":"4.4",
                 "source":{
                     "type":"git",
                     "url":"https://github.com/tonytomov/jqGrid",
-                    "reference":"master"
+                    "reference":"tags/v4.4.5"
                 }
             }
         }
