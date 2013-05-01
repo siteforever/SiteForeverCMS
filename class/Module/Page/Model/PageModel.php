@@ -75,6 +75,7 @@ class PageModel extends Model
         $page->action   = 'index';
         $page->content  = $this->app()->getTpl()->fetch('system:page.model.default');
         $page->author   = 1;
+        $page->markNew();
     }
 
     /**
