@@ -128,7 +128,9 @@ abstract class Object extends Table
     public function __unset($name)
     {
         parent::__unset($name);
-        $this->markDirty();
+        if ($this->isStateClean()) {
+            $this->markDirty();
+        }
     }
 
     /**
@@ -194,7 +196,8 @@ abstract class Object extends Table
         $pk = static::pkAsArray();
         if (1 == count($pk) && !is_array($id)) {
             $pk = $pk[0];
-            if (null === $this->$pk) {
+            $pk_val = $this->$pk;
+            if (null === $pk_val || "" === $pk_val) {
                 $this->$pk = $id;
                 return $this;
             }

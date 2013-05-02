@@ -887,7 +887,7 @@ abstract class Model extends Component
             if (count($id) == 1) {
                 /** @var $field Field */
                 $field   = $obj->field($id_keys[0]);
-                if (!($field->isAutoIncrement() && null === $obj->get($id_keys[0]))) {
+                if (!($field->isAutoIncrement() && !$obj->get($id_keys[0]))) {
                     return false;
                 }
             }
@@ -927,6 +927,9 @@ abstract class Model extends Component
     final public function delete($id)
     {
         $obj = $this->find($id);
+        if (!$obj) {
+            return false;
+        }
         $event = new ModelEvent($obj, $this);
 
         if ($this->onDeleteStart($id) === false) {
@@ -949,8 +952,6 @@ abstract class Model extends Component
                 return true;
             }
         }
-
-        return false;
     }
 
     /**

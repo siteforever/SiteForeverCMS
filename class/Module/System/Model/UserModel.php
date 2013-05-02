@@ -108,8 +108,10 @@ class UserModel extends Model
     public function onSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
-        if (empty($obj->password)) {
-            unset($obj->password);
+        if (get_class($obj) == $this->objectClass()) {
+            if (empty($obj->password)) {
+                unset($obj->password);
+            }
         }
     }
 

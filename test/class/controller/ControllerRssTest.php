@@ -21,7 +21,7 @@ class ControllerRssTest extends PHPUnit_Framework_TestCase
         $result = $controller->indexAction();
         $this->assertInternalType('string', $result);
         $this->assertStringStartsWith(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<rss version=\"2.0\"><channel><title>SiteForeverCMS</title>",
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<rss version=\"2.0\">\n  <channel>\n    <title>SiteForeverCMS</title>",
             $result
         );
     }

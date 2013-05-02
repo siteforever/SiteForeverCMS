@@ -37,7 +37,7 @@ class LogModel extends Model
                     $log->object = get_class($obj);
                     $log->action = 'save';
                     $log->timestamp = time();
-                    $log->save();
+                    $log->markNew();
                 }
             }
         } catch( \Exception $e ) {

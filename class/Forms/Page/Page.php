@@ -20,7 +20,7 @@ class Forms_Page_Page extends \Sfcms\Form\Form
                     'id'         => array(
                         'type' => 'hidden',
                         'label'=> 'ID',
-                        'value'=> '0',
+                        'value'=> null,
                     ),
                     'parent' => array(
                         'type' => 'select',
