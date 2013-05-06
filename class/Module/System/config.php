@@ -23,6 +23,7 @@ return array(
         'Comments'  => 'Module\\System\\Model\\CommentsModel',
         'Module'    => 'Module\\System\\Model\\ModuleModel',
         'Routes'    => 'Module\\System\\Model\\RoutesModel',
+        'Search'    => 'Module\\System\\Model\\SessionModel',
         'Settings'  => 'Module\\System\\Model\\SettingsModel',
         'Session'   => 'Module\\System\\Model\\SessionModel',
         'Templates' => 'Module\\System\\Model\\TemplatesModel',

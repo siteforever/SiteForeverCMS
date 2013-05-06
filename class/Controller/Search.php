@@ -41,17 +41,20 @@ class Controller_Search extends Sfcms_Controller
 
         $search = $this->filterFulltext( $search );
 
-        $result = $this->getDB()->fetchAll(
-                "SELECT * "
-                ."FROM `search` "
-                ."WHERE MATCH( `title`,`keywords`,`content` ) AGAINST ( ? IN BOOLEAN MODE ) "
-                ."LIMIT 20",
-            false,
-            db::F_ASSOC,
-            array(
-                $search
-            )
-        );
+        $model = $this->getModel('Search');
+        $result = $model->findAll(array(
+            'crit' => 'MATCH(`title`,`keywords`,`content`) AGAINST (? IN BOOLEAN MODE)',
+            'params' => array($search),
+            'limit' => 20,
+        ));
+//        $result = $model->getDB()->fetchAll(join(" ", array(
+//                "SELECT *",
+//                "FROM `{$model->getTable()}`",
+//                "WHERE ",
+//                "LIMIT 20",
+//            )),
+//            false, db::F_ASSOC, array()
+//        );
 
         return array(
             'search' => $search,
@@ -171,9 +174,9 @@ class Controller_Search extends Sfcms_Controller
         // Pages
         $pageModel = $this->getModel('Page');
         $pages = $pageModel->findAll('hidden = 0 AND protected = 0 AND deleted = 0');
-        /** @var $pageObj Data_Object_Page */
+        /** @var $pageObj \Module\Page\Object\Page */
         foreach ( $pages as $pageObj ) {
-            $this->getDB()->insertUpdate( 'search', array(
+            $pageModel->getDB()->insertUpdate( 'search', array(
                 'alias' => $pageObj->url,
                 'object' => 'page',
                 'module' => 'default',
@@ -189,7 +192,7 @@ class Controller_Search extends Sfcms_Controller
         // News
         $newsModel = $this->getModel('News');
         $news = $newsModel->findAll('hidden = 0 AND protected = 0 AND deleted = 0');
-        /** @var $newsObj Data_Object_News */
+        /** @var $newsObj \Module\News\Object\News */
         foreach ( $news as $newsObj ) {
             $this->getDB()->insertUpdate( 'search', array(
                 'alias' => $newsObj->url,
@@ -207,7 +210,7 @@ class Controller_Search extends Sfcms_Controller
         // Trades
         $catModel = $this->getModel('Catalog');
         $trades = $catModel->findAll('cat = 0 AND hidden = 0 AND protected = 0 AND deleted = 0');
-        /** @var $catObj Data_Object_Catalog */
+        /** @var $catObj \Module\Catalog\Object\Catalog */
         foreach ( $trades as $catObj ) {
             $this->getDB()->insertUpdate( 'search', array(
                 'alias' => $catObj->url,

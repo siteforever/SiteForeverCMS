@@ -86,23 +86,25 @@ class Layout extends ViewAbstract
         $config = $this->_app->getConfig();
 
         $return = array();
-        $return[] = "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />";
-        $return[] = "<meta name=\"generator\" content=\"SiteForever CMS\" />";
+        $return[] = '<meta http-equiv="content-type" content="text/html; charset=UTF-8">';
+//        $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
+        $return[] = '<meta name="viewport" content="width=device-width,initial-scale=1">';
+        $return[] = '<meta name="generator" content="SiteForever CMS">';
         $return[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
 
         if ( $request->getKeywords() ) {
-            $return[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\" />";
+            $return[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\">";
         }
         if ( $request->getDescription() ) {
-            $return[] = "<meta name=\"description\" content=\"".$request->getDescription()."\" />";
+            $return[] = "<meta name=\"description\" content=\"".$request->getDescription()."\">";
         }
 
-        $return[] = "<link title=\"\" type=\"application/rss+xml\" rel=\"alternate\" href=\"http://{$_SERVER['HTTP_HOST']}/rss\" />";
+        $return[] = "<link title=\"\" type=\"application/rss+xml\" rel=\"alternate\" href=\"http://{$_SERVER['HTTP_HOST']}/rss\">";
 
         if (file_exists(ROOT . DS . 'favicon.png')) {
-            $return[] = "<link rel=\"icon\" type=\"image/png\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.png\" />";
+            $return[] = "<link rel=\"icon\" type=\"image/png\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.png\">";
         } elseif (file_exists(ROOT . DS . 'favicon.ico')) {
-            $return[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\" />";
+            $return[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\">";
         }
 
         if ($request->get('admin')) {
@@ -149,8 +151,6 @@ class Layout extends ViewAbstract
             ),
             'paths'=> array(
                 'fancybox' => 'jquery/fancybox/jquery.fancybox-1.3.1' . (\App::isDebug() ? '' : '.pack'),
-                'jui' => 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min',
-                'twitter' => 'bootstrap/js/bootstrap' . (\App::isDebug() ? '' : '.min'),
                 'siteforever' => 'module/siteforever',
                 'runtime' => '../runtime',
                 'theme' => '/themes/'.$this->_app->getConfig('template.theme'),
@@ -162,9 +162,15 @@ class Layout extends ViewAbstract
             ),
         );
 
+        if (!$this->_app->getConfig('misc.noBootstrap')) {
+            $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
+        }
+
         if ( $request->get('admin') ) {
 
             $rjsConfig['paths']['app'] = 'admin';
+            $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';
+            $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . (\App::isDebug() ? '' : '.min');
 //            $rjsConfig['paths']['controller'] = ;
             $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');

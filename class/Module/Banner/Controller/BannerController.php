@@ -92,11 +92,12 @@ class BannerController extends Sfcms_Controller
 
         if( $form->getPost() ) {
             if( $form->validate() ) {
-                $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject();
+                $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
-                return array('error'=>0,'msg'=> t( 'Data save successfully' ));
+
+                return $this->renderJson(array('error' => 0, 'msg' => t('Data save successfully')));
             } else {
-                return array('error'=>1,'msg'=> $form->getFeedbackString());
+                return $this->renderJson(array('error' => 1, 'msg' => $form->getFeedbackString()));
             }
         }
         if ( $id ) {
@@ -239,7 +240,7 @@ class BannerController extends Sfcms_Controller
         $form  = $model->getForm();
         if ($form->getPost()) {
             if ($form->validate()) {
-                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject();
+                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
 
                 return $this->renderJson(array('error' => 0, 'msg' => t('Data save successfully')));

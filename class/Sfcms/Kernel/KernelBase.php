@@ -486,7 +486,9 @@ abstract class KernelBase
             $this->_assets  = new Assets();
 //            $this->addStyle( '/misc/jquery/lightbox/css/jquery.lightbox-0.5.css' );
             $this->_assets->addStyle('/misc/jquery/fancybox/jquery.fancybox-1.3.1.css');
-            $this->_assets->addStyle('/misc/bootstrap/css/bootstrap.css');
+            if (!$this->getConfig('misc.noBootstrap')) {
+                $this->_assets->addStyle('/misc/bootstrap/css/bootstrap.css');
+            }
 
 //            $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
 //            $this->addScript( $misc . '/jquery/lightbox/jquery.lightbox-0.5.js' );
@@ -700,15 +702,17 @@ abstract class KernelBase
 
             $this->_controllers = array();
             foreach ( $this->_modules_config as $module => $config ) {
-                foreach ( $config['controllers'] as $controller => $params ) {
-                    if ( 'System' == $module ) {
-                        // todo нужно перенести бесхозные контроллеры в модуль System и избавиться от этого костыля
-                        $params['module'] = null;
-                    } else {
-                        $params['module'] = $module;
+                if (isset($config['controllers'])) {
+                    foreach ( $config['controllers'] as $controller => $params ) {
+                        if ( 'System' == $module ) {
+                            // todo нужно перенести бесхозные контроллеры в модуль System и избавиться от этого костыля
+                            $params['module'] = null;
+                        } else {
+                            $params['module'] = $module;
+                        }
+                        //                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
+                        $this->_controllers[strtolower($controller)] = $params;
                     }
-//                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
-                    $this->_controllers[strtolower($controller)] = $params;
                 }
             }
         }

@@ -5,6 +5,11 @@
         <controller>rss</controller>
     </route>
 
+    <!-- SITE MAP -->
+    <route alias="sitemap">
+        <controller>sitemap</controller>
+    </route>
+
     <route alias="admin" system="1">
         <controller>page</controller>
         <action>admin</action>

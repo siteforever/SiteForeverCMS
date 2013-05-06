@@ -13,7 +13,7 @@ class Controller_Sitemap extends Sfcms_Controller
         $bc->addPiece('index', t('Home'));
         $bc->addPiece(null, $this->request->getTitle());
 
-        return array('parent'=>1,'level'=>5);
+        return array('parent'=>0,'level'=>2);
     }
 
     public function xmlAction()
