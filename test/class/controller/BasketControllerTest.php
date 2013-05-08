@@ -6,7 +6,7 @@
 class BasketControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Controller_Basket
+     * @var \Module\Market\Controller\BasketController
      */
     protected $object;
 

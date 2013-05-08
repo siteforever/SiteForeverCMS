@@ -22,8 +22,9 @@
     </php>
     <testsuites>
         <testsuite name="Project Test Suite">
-            <directory>.</directory>
-            <exclude>./web/*</exclude>
+            <directory suffix="Test.php">.</directory>
+            <directory suffix="Test.php">../class/Module/*/Test</directory>
+            <!--<exclude>./web/*</exclude>-->
         </testsuite>
     </testsuites>
 </phpunit>

@@ -56,8 +56,10 @@ class PageController extends Sfcms_Controller
             if (!$this->user->hasPermission($page['protected'])) {
                 throw new Sfcms_Http_Exception(t('Access denied'), 403);
             }
-            $this->page['content'] = $page['content'];
-            $this->page['link']    = $page['link'];
+            if (!$page['link']) {
+                return $this->redirect($page['alias']);
+            }
+            $this->page = $page;
         }
 
         if ('page' == $this->page->controller && $this->page['id'] != 1) {
@@ -179,7 +181,7 @@ class PageController extends Sfcms_Controller
 
         $this->request->setTitle( t('Create page') );
         $this->tpl->assign('form', $form);
-        return $this->tpl->fetch( 'system:page.edit' );
+        return $this->tpl->fetch('page.edit');
     }
 
 
@@ -223,7 +225,6 @@ class PageController extends Sfcms_Controller
                     $obj = $model->find( $id );
                     $obj->attributes = $form->getData();
                     $obj->update = time();
-                    $obj->markDirty();
                 } else {
                     $obj = $model->createObject();
                     $obj->attributes = $form->getData();

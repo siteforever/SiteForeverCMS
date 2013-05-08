@@ -9,12 +9,13 @@ define('module/modal',[
     "jquery",
     "wysiwyg",
     "i18n",
+    "module/alert",
     "siteforever",
     "twitter",
     "jui",
     "jquery/jquery.form",
     "admin/jquery/jquery.filemanager"
-], function( $, wysiwyg, i18n ){
+], function( $, wysiwyg, i18n, $alert ){
 
     var SfModal = function( id ) {
         this._id = id;
@@ -72,6 +73,7 @@ define('module/modal',[
         * Обработчик кнопки сохранения по умолчанию
         */
         , onSaveHandler : function(){
+            $alert("Сохранение", $('.modal-body', this.domnode));
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
                 success: $.proxy(function( response ){
@@ -114,16 +116,18 @@ define('module/modal',[
          */
         , msgSuccess : function( msg, timeout ) {
             var deferred = new $.Deferred();
-            $( '.modal-body', this.domnode ).find('.alert').remove().end()
-                .prepend('<div class="alert alert-success"><a class="close" data-dismiss="alert" href="#">×</a>'+msg+'</div>');
-            if ( timeout ) {
-                setTimeout($.proxy( function( deferred ) {
-                    this.hide.call(this);
-                    deferred.resolve();
-                },this, deferred), timeout);
-            } else {
+            $alert(msg, timeout, $('.modal-body', this.domnode)).done($.proxy(function(){
+                this.hide.call(this);
                 deferred.resolve();
-            }
+            }, this));
+//            if ( timeout ) {
+//                setTimeout($.proxy( function( deferred ) {
+//                    this.hide.call(this);
+//                    deferred.resolve();
+//                },this, deferred), timeout);
+//            } else {
+//                deferred.resolve();
+//            }
             return deferred.promise();
         }
 
@@ -134,6 +138,7 @@ define('module/modal',[
          */
         , msgError : function( msg ) {
             var deferred = new $.Deferred();
+            $alert(msg, 1000, $('.modal-body', this.domnode));
             $( '.modal-body', this.domnode).find('.alert').remove().end()
                 .prepend('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>'+msg+'</div>');
             deferred.resolve();
@@ -141,8 +146,13 @@ define('module/modal',[
         }
 
         , show : function() {
+            var deferred = new $.Deferred();
             this.domnode.modal('show');
-            return this;
+            $('.modal-body', this.domnode).scrollTop(0);
+            $(this.domnode).on("shown", function(){
+                deferred.resolve();
+            });
+            return deferred.promise();
         }
 
         , hide : function() {

@@ -21,15 +21,19 @@ abstract class Driver extends Component
         throw new Exception(t("Interface TPL_Driver does not support the method {$fname}"));
     }
     
-    abstract function assign( $params, $value = null );
+    abstract public function assign( $params, $value = null );
     
-    abstract function display( $tpl, $cache_id = null );
+    abstract public function display( $tpl, $cache_id = null );
 
-    abstract function fetch( $tpl, $cache_id = null );
+    abstract public function fetch( $tpl, $cache_id = null );
     
-    abstract function setTplDir( $dir );
+    abstract public function setTplDir( $dir );
 
-    abstract function setCplDir( $dir );
+    abstract public function getTplDir();
+
+    abstract public function addTplDir($dir);
+
+    abstract public function setCplDir( $dir );
 
     public function render($tpl, $params)
     {

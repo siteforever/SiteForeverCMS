@@ -5,7 +5,6 @@
  */
 namespace Sfcms\Tpl;
 
-use App;
 use Sfcms\Exception;
 
 class Smarty extends Driver
@@ -14,24 +13,32 @@ class Smarty extends Driver
 
     private $config = array();
 
-    public function __construct()
+    public function __construct($config)
     {
-        $this->app()->getConfig()->setDefault('template', array(
-            'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system',
-            'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
-            'ext'       => 'tpl',
-            'compile_check' => true,
-            'caching'   => false,
-            'cache'     => array(
-                'livetime' => 84600,
-            ),
-        ));
-        $this->config = $this->app()->getConfig('template');
+        $this->config = array_merge(array(
+                'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system',
+                'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
+                'ext'       => 'tpl',
+                'compile_check' => true,
+                'caching'   => false,
+                'cache'     => array(
+                    'livetime' => 84600,
+                ),
+            ), $config);
 
         // класс шаблонизатора
         $this->engine = new \Smarty(); // link (used php5)
         $this->engine->cache_lifetime = $this->config['cache']['livetime'];
         $this->ext    = $this->config['ext'];
+
+        if (!isset($this->config['theme'])) {
+            throw new Exception('Theme name in "template.theme" not defined');
+        }
+
+//        $this->engine->addTemplateDir(array(
+//            'themes'.DIRECTORY_SEPARATOR.$this->config['theme'].DIRECTORY_SEPARATOR.'templates',
+//            $this->config['admin'],
+//        ));
 
         $this->engine->compile_check = $this->config['compile_check'];
         $this->engine->caching = $this->config['caching'];
@@ -62,14 +69,15 @@ class Smarty extends Driver
     public function convertTplName( $tpl )
     {
         // Если у шаблона не указан ресурс, то выбираем между темой и системой
-        if ( ! preg_match('/(\w+):(.*)/', $tpl, $m) ) {
-            if ( $this->theme_exists( $tpl ) ) {
-                $tpl    = 'theme:'.$tpl;
-            } elseif ( $this->system_exists( $tpl ) ) {
-                $tpl    = 'system:'.$tpl;
-            } else {
-                throw new Exception('Шаблон '.$tpl.' не найден');
-            }
+        if (0 === strpos($tpl, 'theme:')) {
+            $tpl = str_replace('theme:', '', $tpl);
+//            if ( $this->theme_exists( $tpl ) ) {
+//                $tpl    = 'theme:'.$tpl;
+//            } elseif ( $this->system_exists( $tpl ) ) {
+//                $tpl    = 'system:'.$tpl;
+//            } else {
+//                throw new Exception('Шаблон '.$tpl.' не найден');
+//            }
         }
         return $tpl;
     }
@@ -116,7 +124,7 @@ class Smarty extends Driver
      */
     public function theme_exists( $tpl_name )
     {
-        $theme = $this->app()->getConfig()->get('template.theme');
+        $theme = $this->config['theme'];
         $path = 'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'templates';
 
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
@@ -132,7 +140,7 @@ class Smarty extends Driver
      */
     public function system_exists( $tpl_name )
     {
-        $path = $this->app()->getConfig()->get('template.admin');
+        $path = $this->config['admin'];
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
             return true;
         }
@@ -159,13 +167,20 @@ class Smarty extends Driver
     {
         $this->engine->setTemplateDir($dir);
     }
-    
+
+    public function addTplDir($dir)
+    {
+        $this->engine->addTemplateDir($dir);
+    }
+
     /**
      * Вывести каталог шаблонов
+     *
+     * @return array
      */
     public function getTplDir()
     {
-        return $this->engine->getTemplateDir(0);
+        return $this->engine->getTemplateDir();
     }
     
     /**

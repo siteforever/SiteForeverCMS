@@ -8,6 +8,7 @@
 return array(
     'controllers' => array(
         'Page'  => array(),
+        'Sitemap'  => array(),
     ),
     'models' => array(
         'Page' => 'Module\\Page\\Model\\PageModel',

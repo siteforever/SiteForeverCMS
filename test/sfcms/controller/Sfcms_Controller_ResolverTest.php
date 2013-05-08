@@ -37,7 +37,7 @@ class Sfcms_Controller_ResolverTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('editAction', $result['action']);
 
         $result = $this->resolver->resolveController($request, 'search', 'index');
-        $this->assertEquals('Controller_Search', $result['controller']);
+        $this->assertEquals('Module\Search\Controller\SearchController', $result['controller']);
         $this->assertEquals('indexAction', $result['action']);
 
         $this->request->setController('foo');

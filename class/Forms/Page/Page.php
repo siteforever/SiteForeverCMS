@@ -71,14 +71,14 @@ class Forms_Page_Page extends \Sfcms\Form\Form
                     'controller' => array(
                         'type'      => 'select',
                         'label'     => 'Контроллер',
+                        'variants'  => \Sfcms\Model::getModel('Page')->getAvaibleModules(),
                         'required',
-                        'hidden',
                     ),
                     'link'       => array(
                         'type' => 'int',
                         'label'=> 'Ссылка на раздел',
                         'value'=> '0',
-                        'hidden',
+//                        'hidden',
                     ),
                     'action'     => array(
                         'type' => 'text',

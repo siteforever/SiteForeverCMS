@@ -30,13 +30,13 @@ class Builder
      * @param array|Criteria $criteria
      * @throws Exception
      */
-    public function __construct( Model $model, $criteria = null )
+    public function __construct(Model $model, $criteria = null)
     {
-        if ( is_array( $criteria ) ) {
-            $this->_criteria = new Criteria( $criteria );
-        } elseif ( is_null( $criteria ) ) {
+        if (is_array($criteria)) {
+            $this->_criteria = new Criteria($criteria);
+        } elseif (is_null($criteria)) {
             $this->_criteria = new Criteria();
-        } elseif ( is_object( $criteria ) && $criteria instanceof Criteria ) {
+        } elseif (is_object($criteria) && $criteria instanceof Criteria) {
             $this->_criteria = $criteria;
         } else {
             throw new Exception('Criteria format fail');

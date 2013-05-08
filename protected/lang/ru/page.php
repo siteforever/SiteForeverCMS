@@ -32,4 +32,10 @@ return array(
     'Parent' => 'Верхний раздел',
 
     'Page :name' => 'Страница :name',
+
+    'Search phrase is too short' => 'Поисковая фраза слишком короткая',
+    'Type your query'            => 'Введите запрос',
+    'You searched for'           => 'Вы искали',
+    'Search this site'           => 'Поиск по сайту',
+    'Nothing was found'          => 'Ничего не найдено',
 );

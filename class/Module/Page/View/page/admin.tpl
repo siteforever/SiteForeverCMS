@@ -1,4 +1,4 @@
-{include file="system:page/funcorderhidden.tpl"}
+{include file="page/funcorderhidden.tpl"}
 
 {* Print icon *}
 {function selectIcon}
@@ -6,7 +6,9 @@
     {if $branch->controller == "gallery"}{$icon = "folder_picture"}{else}
         {if $branch->controller == "news"}{$icon = "folder_feed"}{else}
             {if $branch->controller == "page"}
-                {if isset($data[$branch->id])}{$icon = "folder_explore"}{else}{$icon = "page"}{/if}
+                {if $branch->link}{$icon = "folder_link"}
+                {elseif isset($data[$branch->id])}{$icon = "folder_explore"}
+                {else}{$icon = "page"}{/if}
             {else}{$icon = "folder"}{/if}
         {/if}
     {/if}
@@ -23,6 +25,7 @@
         <span id="item{$branch->id}">
             {selectIcon branch=$branch}
             {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
+            {if $branch->link}&nbsp;[{$branch->link}]{/if}
             <span class="tools">
                 {*{$branch->linkEdit}*}
                 <small>

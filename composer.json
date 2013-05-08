@@ -38,12 +38,14 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.1.*",
+        "symfony/symfony": "2.2.*@dev",
         "smarty/smarty": "3.1.*",
+        "twitter/bootstrap": "v2.3.1",
         "firephp/firephp-core": "v0.4.0",
         "ccampbell/chromephp": "4.0.0",
         "tonytomov/jqGrid" : "4.4",
-        "helios-ag/fm-elfinder": "2.*@dev"
+        "helios-ag/fm-elfinder": "2.*@dev",
+        "swiftmailer/swiftmailer": "v5.0.0"
     },
     "repositories":[
         {

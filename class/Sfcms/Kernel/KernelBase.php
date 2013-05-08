@@ -347,7 +347,42 @@ abstract class KernelBase
     public function getTpl()
     {
         if ( is_null( self::$tpl ) ) {
-            self::$tpl  = Factory::create( $this );
+            $config = $this->getConfig('template');
+
+            if ( ! $config ) {
+                throw new Exception('Config for templates not defined');
+            }
+            $theme  = $config['theme'];
+
+            self::$tpl  = Factory::create($config);
+            $themeCat = ROOT."/themes/{$theme}/templates";
+
+            self::$tpl->setTplDir(array());
+            if (is_dir($themeCat)) {
+                self::$tpl->addTplDir($themeCat);
+            } else {
+                throw new Exception('Theme "' . $theme . '" not found');
+            }
+            if (is_dir(SF_PATH."/themes/system")) {
+                self::$tpl->addTplDir(SF_PATH."/themes/system");
+            }
+            $runtime    = ROOT."/runtime";
+            $tpl_c  = $runtime."/templates_c";
+            $cache  = $runtime."/cache";
+
+            if (!is_dir($tpl_c)) {
+                @mkdir($tpl_c, 0755, true);
+            }
+            if (!is_dir($cache)) {
+                @mkdir($cache, 0755, true);
+            }
+            self::$tpl->setCplDir($tpl_c);
+            self::$tpl->setCacheDir($cache);
+
+            self::$tpl->setWidgetsDir(SF_PATH . '/widgets');
+            if (ROOT != SF_PATH) {
+                self::$tpl->setWidgetsDir(ROOT . '/widgets');
+            }
         }
         return self::$tpl;
     }
@@ -610,6 +645,11 @@ abstract class KernelBase
                             throw new Exception('Directive "name" not defined in modules config');
                         }
                         $class = $module['path'] . '\Module';
+                        $reflection = new \ReflectionClass($class);
+                        $place = dirname($reflection->getFileName());
+                        if (is_dir($place.'/View')) {
+                            $_->getTpl()->addTplDir($place.'/View');
+                        }
                         $_->setModule($module['name'], new $class($_, $module['name'], $module['path']));
                     },
                     $modules
@@ -675,14 +715,19 @@ abstract class KernelBase
     {
         if ( null === $this->_models ) {
             $this->loadModulesConfigs();
-            $this->_models = array_change_key_case( array_filter( array_reduce( $this->_modules_config, function($total, $current){
-                return $total + array_map(function($model){
-                    return is_string( $model )
-                        ? $model
-                        : ( is_array( $model ) && isset( $model['class'] )
-                            ? $model['class'] : '' );
-                },$current['models']);
-            }, array() ) ) );
+            $this->_models = array_change_key_case(
+                array_filter(
+                    array_reduce(
+                        $this->_modules_config,
+                        function ($total, $current) {
+                            return isset($current['models']) ? $total + array_map(
+                                function ($model) {
+                                    return is_string($model)
+                                        ? $model : (is_array($model) && isset($model['class']) ? $model['class'] : '');
+                                },
+                                $current['models']
+                            ) : $total;
+                        }, array())));
         }
         return $this->_models;
     }

@@ -16,6 +16,10 @@ class Module extends SfModule
         return 'id';
     }
 
+    public function init()
+    {
+    }
+
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed

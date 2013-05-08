@@ -73,7 +73,7 @@ class PageModel extends Model
         $page->pos      = 0;
         $page->controller = 'page';
         $page->action   = 'index';
-        $page->content  = $this->app()->getTpl()->fetch('system:page.model.default');
+        $page->content  = $this->app()->getTpl()->fetch('page.model.default');
         $page->author   = 1;
         $page->markNew();
     }
@@ -86,7 +86,7 @@ class PageModel extends Model
     {
         if ( null === $this->all ) {
             // Кэшируем структуру страниц
-            $this->all = $this->findAll('deleted = ?',array(0),'pos');
+            $this->all = $this->findAll('deleted = ?', array(0), 'pos');
         }
         return $this->all;
     }
@@ -202,8 +202,7 @@ class PageModel extends Model
             $controllers_file = '/protected/controllers.xml';
             if (file_exists( ROOT . $controllers_file )) {
                 $content = file_get_contents( ROOT . $controllers_file );
-            }
-            elseif (ROOT != SF_PATH && file_exists( SF_PATH . $controllers_file )) {
+            } elseif (ROOT != SF_PATH && file_exists( SF_PATH . $controllers_file )) {
                 $content = file_get_contents( SF_PATH . $controllers_file );
             }
 
@@ -215,8 +214,8 @@ class PageModel extends Model
 
             $this->available_modules = array();
 
-            foreach ( $xml_controllers->children() as $child ) {
-                $this->available_modules[ (string) $child[ 'name' ] ] = array( 'label'=> (string) $child->label );
+            foreach ($xml_controllers->children() as $child) {
+                $this->available_modules[(string)$child['name']] = array('label' => (string)$child->label);
             }
         }
 
@@ -305,17 +304,22 @@ class PageModel extends Model
 
     /**
      * Создает список $this->parents по данным из $this->all
+     *
+     * @return array
      */
     public function createParentsIndex()
     {
-        $this->parents = array();
-        // создаем массив, индексируемый по родителям
-        /** @var Page $obj */
-        if ( count($this->parents) == 0 ) {
-            foreach ( $this->getAll() as $obj ) {
-                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+        if (!$this->parents) {
+            $this->parents = array();
+            // создаем массив, индексируемый по родителям
+            /** @var Page $obj */
+            if ( count($this->parents) == 0 ) {
+                foreach ( $this->getAll() as $obj ) {
+                    $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+                }
             }
         }
+        return $this->parents;
     }
 
     /**

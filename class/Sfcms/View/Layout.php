@@ -174,6 +174,13 @@ class Layout extends ViewAbstract
 //            $rjsConfig['paths']['controller'] = ;
             $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
+            $rjsConfig['shim']['backbone'] = array(
+                'deps' => array('underscore', 'jquery'),
+                'exports' => 'Backbone',
+            );
+            $rjsConfig['shim']['underscore'] = array(
+                'exports' => '_',
+            );
 
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte

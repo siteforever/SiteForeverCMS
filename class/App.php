@@ -124,14 +124,6 @@ class App extends KernelBase
             $response = new Response();
         }
 
-        // Выполнение операций по обработке объектов
-        try {
-            Watcher::instance()->performOperations();
-        } catch ( ModelException $e ) {
-            $response->setStatusCode(500);
-            $response->setContent($e->getMessage());
-        }
-
         // If result is image... This needing for captcha
         if (is_resource($result) && imageistruecolor($result)) {
             $response->headers->set('Content-type', 'image/png');
@@ -143,6 +135,14 @@ class App extends KernelBase
 
         $event = new KernelEvent($response, $this->getRequest(), $result);
         $this->getEventDispatcher()->dispatch('kernel.response', $event);
+
+        // Выполнение операций по обработке объектов
+        try {
+            Watcher::instance()->performOperations();
+        } catch ( ModelException $e ) {
+            $response->setStatusCode(500);
+            $response->setContent($e->getMessage());
+        }
 
         return $event->getResponse();
     }

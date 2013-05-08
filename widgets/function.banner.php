@@ -28,7 +28,7 @@ function smarty_function_banner($params)
         return "";
     }
     $banner->count_show++;
-    $banner->save();
+//    $banner->save();
 
     App::getInstance()->getTpl()->assign(array(
         'banner'    => $banner,

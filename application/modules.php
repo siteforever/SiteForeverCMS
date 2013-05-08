@@ -9,5 +9,6 @@ return array(
     array('name'=>'Feedback',   'path'=>'Module\Feedback'),
     array('name'=>'Market',     'path'=>'Module\Market'),
     array('name'=>'Foo',        'path'=>'Acme\Module\Foo'),
+    array('name'=>'Search',     'path'=>'Module\Search'),
     array('name'=>'System',     'path'=>'Module\System'),
 );

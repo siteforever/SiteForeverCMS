@@ -8,11 +8,12 @@ define([
     "jquery",
     "module/modal",
     "i18n",
+    "module/alert",
     "siteforever",
     "jui",
     "jquery/jquery.form",
     "admin/admin"
-], function($, Modal, i18n) {
+], function($, Modal, i18n, $alert) {
 
     return {
         "behavior" : {
@@ -38,8 +39,9 @@ define([
 
             '#structureWrapper a.edit' : {
                 "click" : function( event, node ) {
+                    $alert("Loading...", $('.modal-body', this.domnode));
                     $.post( $(node).attr('href') ).then( $.proxy(function( response ){
-                        this.editModal.title(i18n('page','Edit page')).body(response).show();
+                        this.editModal.title(i18n('page','Edit page')).body(response).show().done($alert.close);
                     }, this ));
                     return false;
                 }

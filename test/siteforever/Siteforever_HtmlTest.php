@@ -7,7 +7,7 @@
 class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Siteforever_Html
+     * @var Sfcms\Html
      */
     protected $html;
 

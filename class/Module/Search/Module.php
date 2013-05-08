@@ -18,16 +18,15 @@ class Module extends SfModule
     {
         return array(
             'controllers' => array(
-                'search' => 'Module\\Search\\Controller\\SearchController',
+                'search' => array('Module\\Search\\Controller\\SearchController'),
             ),
             'model' => array(
-                'Search' => 'Module\\Search\\Model\\SearchModel',
+//                'Search' => 'Module\\Search\\Model\\SearchModel',
             ),
         );
     }
 
     public function init()
     {
-
     }
 }

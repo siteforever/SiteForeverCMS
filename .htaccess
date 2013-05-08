@@ -23,6 +23,14 @@ php_value register_globals          off
     Order allow,deny
     Deny from all
 </Files>
+#<Directory "/vendor">
+#    Order allow,deny
+#    Deny from all
+#</Directory>
+#<Directory "/class">
+#    Order allow,deny
+#    Deny from all
+#</Directory>
 
 RewriteEngine on
 RewriteBase /
