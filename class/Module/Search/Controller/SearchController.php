@@ -47,7 +47,7 @@ class SearchController extends Sfcms_Controller
         $modelPage = $this->getModel('Page');
         $crit = $modelPage->createCriteria(array(
 //                'cond' => 'MATCH(`title`,`keywords`,`content`) AGAINST (? IN BOOLEAN MODE)',
-            'cond' => '`title` LIKE :s OR `keywords` LIKE :s OR `content` LIKE :s',
+            'cond' => '(`title` LIKE :s OR `keywords` LIKE :s OR `content` LIKE :s) AND deleted = 0 AND hidden = 0',
             'params' => array(':s'=>$search),
         ));
         $count  = $modelPage->count($crit);

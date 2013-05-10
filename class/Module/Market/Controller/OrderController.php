@@ -225,7 +225,7 @@ class OrderController extends Sfcms_Controller
         ));
 
         $this->request->setTitle('Заказы');
-        return $this->render('system:order.admin');
+        return $this->render('order.admin');
     }
 
     /**
@@ -260,6 +260,6 @@ class OrderController extends Sfcms_Controller
             'user'      => $user,
         ));
 
-        return $this->render('system:order.admin_edit');
+        return $this->render('order.admin_edit');
     }
 }

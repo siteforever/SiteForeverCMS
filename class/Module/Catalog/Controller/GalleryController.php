@@ -145,7 +145,7 @@ class GalleryController extends Sfcms_Controller
         }
         $this->tpl->gallery = $images;
         $this->tpl->cat     = $id;
-        return $this->tpl->fetch('system:cataloggallery.panel');
+        return $this->tpl->fetch('cataloggallery.panel');
     }
 
     /**

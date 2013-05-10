@@ -24,7 +24,7 @@ class Controller_System extends Sfcms_Controller
             }
         }
         $sys = ini_get_all(null, false);
-        return $this->render('system:system.index', array(
+        return $this->render('system.index', array(
             'sys'     => $sys,
             'msys'    => $msys,
             'modules' => $modules,

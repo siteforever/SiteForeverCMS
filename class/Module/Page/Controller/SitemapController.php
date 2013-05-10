@@ -47,7 +47,8 @@ class SitemapController extends \Sfcms_Controller
                     return false;
                 }
                 $urlset->appendChild($url = $urlset->ownerDocument->createElement('url'));
-                $url->appendChild($url->ownerDocument->createElement('loc', $host . '/' . $page->alias));
+                $alias = 'index' == $page->alias ? '' : $page->alias;
+                $url->appendChild($url->ownerDocument->createElement('loc', $host . '/' . $alias));
                 $url->appendChild($url->ownerDocument->createElement('lastmod', strftime('%Y-%m-%d', $page->update)));
             }, iterator_to_array($pages));
 

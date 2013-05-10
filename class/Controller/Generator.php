@@ -74,9 +74,9 @@ class Controller_Generator extends Sfcms_Controller
 
         $this->tpl->assign('fields', $fields);
 
-        $omodel  = $this->tpl->fetch('system:generator.tpl.model');
-        $oobject = $this->tpl->fetch('system:generator.tpl.object');
-        $otable  = $this->tpl->fetch('system:generator.tpl.table');
+        $omodel  = $this->tpl->fetch('generator.tpl.model');
+        $oobject = $this->tpl->fetch('generator.tpl.object');
+        $otable  = $this->tpl->fetch('generator.tpl.table');
 
         $path   = ROOT.DIRECTORY_SEPARATOR.'class'.DIRECTORY_SEPARATOR;
         $fmodel  = $path.'model'.DIRECTORY_SEPARATOR.$filename;

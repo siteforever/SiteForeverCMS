@@ -9,11 +9,12 @@ define([
     "module/modal",
     "i18n",
     "module/alert",
+    "module/console",
     "siteforever",
     "jui",
     "jquery/jquery.form",
     "admin/admin"
-], function($, Modal, i18n, $alert) {
+], function($, Modal, i18n, $alert, console) {
 
     return {
         "behavior" : {
@@ -67,7 +68,6 @@ define([
                             $.post( $(node).attr('href'), function ( result ) {
                                 if ( ! result.error ) {
                                     $('li[data-id="'+result.id+'"]').remove();
-                                    console.log( result );
                                 }
                             },"json");
                         }

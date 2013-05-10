@@ -1,2 +1,2 @@
-{include file="system:page/funcorderhidden.tpl"}
+{include file="page/funcorderhidden.tpl"}
 {call orderHidden page=$page}

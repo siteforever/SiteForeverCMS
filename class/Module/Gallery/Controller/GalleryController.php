@@ -303,7 +303,7 @@ class GalleryController extends Sfcms_Controller
             }
         }
         return array('form' => $form);
-//        return $this->tpl->fetch( 'system:gallery.admin_category_edit' );
+//        return $this->tpl->fetch( 'gallery.admin_category_edit' );
     }
 
     /**

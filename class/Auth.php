@@ -229,7 +229,7 @@ abstract class Auth
             $tpl->sitename = $config->get('sitename');
             $tpl->siteurl  = $config->get('siteurl');
 
-            $msg = $tpl->fetch('system:users.mail.register');
+            $msg = $tpl->fetch('users.mail.register');
 
             //print $msg;
 

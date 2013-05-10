@@ -94,7 +94,7 @@ class PageController extends Sfcms_Controller
         $model = $this->getModel('Page');
 
         if ($get_link_add = $this->request->get('get_link_add')) {
-            return $this->render('system:get_link_add', array('id' => $get_link_add));
+            return $this->render('get_link_add', array('id' => $get_link_add));
         }
 
         $model->createParentsIndex();
@@ -268,17 +268,6 @@ class PageController extends Sfcms_Controller
         }
         return t('Unknown error');
     }
-
-
-    /**
-     * @return string
-     */
-    public function nameconvertAction()
-    {
-        $this->request->setTemplate( 'inner' );
-        return __METHOD__;
-    }
-
 
 
     /**

@@ -35,7 +35,9 @@ require([
      */
     $('#loading-application').each(function(){
         $(this).fadeOut(200,function(){
-            $(this).remove();
+            $(this).hide(function(){
+                $(this).remove();
+            });
         });
     });
 //    $('.datepicker').datepicker( window.datepicker );

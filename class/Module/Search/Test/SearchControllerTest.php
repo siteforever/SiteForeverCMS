@@ -8,26 +8,38 @@ namespace Module\Search\Test;
 
 
 use Module\Search\Controller\SearchController;
+use Sfcms\Request;
 
 class SearchControllerTest extends \PHPUnit_Framework_TestCase
 {
     /** @var SearchController */
     public $controller;
 
+    /** @var Request */
+    public $request;
+
     protected function setUp()
     {
         $this->controller = new SearchController();
+        $this->request    = \App::getInstance()->getRequest();
     }
 
     public function testIndexAction()
     {
+        $this->request->query->set('query', null);
+        $response = $this->controller->indexAction();
+        $this->assertNull($response['query']);
+
+        $this->request->query->set('query', 'ab');
         $response = $this->controller->indexAction();
         $this->assertEquals($response['error'], 'Поисковая фраза слишком короткая');
-        \App::getInstance()->getRequest()->query->set('query', 'страница');
+
+        $this->request->query->set('query', 'страница');
         $response = $this->controller->indexAction();
         $this->arrayHasKey('search', $response);
-        $this->arrayHasKey('result', $response);
-        $this->assertEquals(6, $response['result']->count());
+        $this->assertInstanceOf('Sfcms\Data\Collection', $response['result']);
+        $this->assertEquals(18, $response['paging']->count);
+        $this->assertEquals('/search/query=страница/page=2', $response['paging']->next);
     }
 
 }

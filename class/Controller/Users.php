@@ -132,7 +132,7 @@ class Controller_Users extends Sfcms_Controller
         $this->tpl->assign('paging', $paging);
         $this->tpl->assign('groups', $this->config->get('users.groups'));
 
-        return $this->tpl->fetch('system:users.admin');
+        return $this->tpl->fetch('users.admin');
     }
 
     /**
@@ -489,7 +489,7 @@ class Controller_Users extends Sfcms_Controller
                     if ( strcmp( $form->getField('password1')->getValue(), $form->getField('password2')->getValue() ) === 0 ) {
                         $user->changePassword( $form->getField('password1')->getValue() );
                         $this->request->addFeedback(t('user','Password successfully updated'));
-                        return $this->tpl->fetch('system:users.password_success');
+                        return $this->tpl->fetch('users.password_success');
                     }
                     else {
                         $this->request->addFeedback(t('user','You must enter a new password 2 times'));
