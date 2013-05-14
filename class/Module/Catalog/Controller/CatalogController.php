@@ -114,48 +114,17 @@ class CatalogController extends Sfcms_Controller
     protected function viewCategory(Catalog $item)
     {
         $level = $this->config->get('catalog.level');
-
-        /** @var $catModel CatalogModel */
-        $catModel = $this->getModel('Catalog');
-        $parent   = $catModel->find($item->getId());
-
-        $categoriesId = array($item->getId());
-        if ($level != 1) {
-            $categoriesId = array_merge(
-                $categoriesId,
-                $catModel->getAllChildrensIds($item->getId(), $level - 1)
-            );
-        }
+        $pageNum = $this->request->query->getDigits('page', 1);
 
         $filter = $this->request->get('filter', array());
 
-        $manufId    = isset($filter['manufacturer']) && $filter['manufacturer'] ? $filter['manufacturer'] : false;
-        $materialId = isset($filter['material']) && $filter['material'] ? $filter['material'] : false;
+        $manufacturerId = isset($filter['manufacturer']) && $filter['manufacturer'] ? $filter['manufacturer'] : false;
+        $materialId     = isset($filter['material']) && $filter['material'] ? $filter['material'] : false;
 
-        $criteria = $catModel->createCriteria();
 
-        $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 ";
-        if (count($categoriesId)) {
-            $criteria->condition .= ' AND `parent` IN (?) ';
-            $criteria->params[] = $categoriesId;
-        }
-        if ($manufId) {
-            $criteria->condition .= ' AND `manufacturer` IN (?) ';
-            $criteria->params[] = $manufId;
-        }
-        if ($materialId) {
-            $criteria->condition .= ' AND `material` IN (?) ';
-            $criteria->params[] = $materialId;
-        }
-//            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
-//            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
-
-        // количество товаров
-        $count = $catModel->count($criteria);
         $order = $this->config->get('catalog.order_default');
-
-        // Примеряем способ сортировки к списку из конфига
         $orderList = $this->config->get('catalog.order_list');
+        // Примеряем способ сортировки к списку из конфига
         if ($orderList && is_array($orderList)) {
             if (!($set = $this->request->get('order'))) {
                 $set = $this->app()->getSession()->get('Sort') ? : false;
@@ -167,85 +136,145 @@ class CatalogController extends Sfcms_Controller
             }
         }
 
-        if ($order) {
-            $criteria->order = str_replace('-d', ' DESC', $order);
-        }
-
-        $paging = $this->paging(
-            $count,
-            $this->config->get('catalog.onPage'),
-            $this->router->createLink( $parent->url )
-        );
-
-        $criteria->limit = $paging->limit;
+        $cache = $this->cache();
+        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
 
 
-        $list = $catModel->with('Gallery', 'Manufacturer', 'Material', 'Properties')->findAll($criteria);
+        if ($cache->isNotExpired($cacheKey)) {
+            $response = $cache->get($cacheKey);
+        } else {
+            /** @var $catModel CatalogModel */
+            $catModel = $this->getModel('Catalog');
+            $parent   = $catModel->find($item->getId());
 
-        // Оптимизированный список свойств
-        $properties = array();
-        /** @var Catalog $catItem */
-        foreach( $list as $catItem ) {
-            for( $i = 0; $i <= 9; $i ++ ) {
-                $properties[ $catItem->getId() ][ $parent[ 'p' . $i ] ] = $catItem[ 'p' . $i ];
+            $categoriesId = array($item->getId());
+            if ($level != 1) {
+                $categoriesId = array_merge(
+                    $categoriesId,
+                    $catModel->getAllChildrensIds($item->getId(), $level - 1)
+                );
             }
+
+            $criteria = $catModel->createCriteria();
+
+            $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 ";
+            if (count($categoriesId)) {
+                $criteria->condition .= ' AND `parent` IN (?) ';
+                $criteria->params[] = $categoriesId;
+            }
+            if ($manufacturerId) {
+                $criteria->condition .= ' AND `manufacturer` IN (?) ';
+                $criteria->params[] = $manufacturerId;
+            }
+            if ($materialId) {
+                $criteria->condition .= ' AND `material` IN (?) ';
+                $criteria->params[] = $materialId;
+            }
+            //            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
+            //            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
+
+            // количество товаров
+            $count = $catModel->count($criteria);
+            if ($order) {
+                $criteria->order = str_replace('-d', ' DESC', $order);
+            }
+
+            $paging = $this->paging(
+                $count,
+                $this->config->get('catalog.onPage'),
+                $this->router->createLink( $parent->url )
+            );
+
+            $criteria->limit = $paging->limit;
+
+
+            $list = $catModel->with('Gallery', 'Manufacturer', 'Material', 'Properties')->findAll($criteria);
+
+            // Оптимизированный список свойств
+            $properties = array();
+            /** @var Catalog $catItem */
+            foreach( $list as $catItem ) {
+                for( $i = 0; $i <= 9; $i ++ ) {
+                    $properties[ $catItem->getId() ][ $parent[ 'p' . $i ] ] = $catItem[ 'p' . $i ];
+                }
+            }
+
+            $cats = $catModel->findAll( array(
+                    'cond'      => 'deleted = 0 AND hidden = 0 AND cat = 1 AND parent = ?',
+                    'params'    => array($item->getId()),
+                    'order'     => 'pos DESC',
+                )
+            );
+            $response = $this->render('catalog.viewcategory', array(
+                'parent'    => $parent,
+                'properties'=> $properties,
+                'manufacturers' => $this->getModel('Manufacturers')->findAllByCatalogCategories($categoriesId),
+                'materials' => $this->getModel('Material')->findAllByCatalogCategories($categoriesId),
+                'category'  => $item,
+                'list'      => $list,
+                'cats'      => $cats,
+                'paging'    => $paging,
+                'user'      => $this->user,
+                'order_list'=> $this->config->get('catalog.order_list'),
+                'order_val' => $this->request->get('order'),
+            ));
+            $cache->set($cacheKey, $response->getContent());
         }
 
-        $cats = $catModel->findAll( array(
-                'cond'      => 'deleted = 0 AND hidden = 0 AND cat = 1 AND parent = ?',
-                'params'    => array($item->getId()),
-                'order'     => 'pos DESC',
-            )
-        );
-
-        return $this->render('catalog.viewcategory', array(
-            'parent'    => $parent,
-            'properties'=> $properties,
-            'manufacturers' => $this->getModel('Manufacturers')->findAllByCatalogCategories($categoriesId),
-            'materials' => $this->getModel('Material')->findAllByCatalogCategories($categoriesId),
-            'category'  => $item,
-            'list'      => $list,
-            'cats'      => $cats,
-            'paging'    => $paging,
-            'user'      => $this->user,
-            'order_list'=> $this->config->get('catalog.order_list'),
-            'order_val' => $this->request->get('order'),
-        ));
+        return $response;
     }
 
     /**
      * Открывается товар
+     *
      * @param Catalog $item
+     *
+     * @return string
      */
-    protected function viewProduct( Catalog $item )
+    protected function viewProduct(Catalog $item)
     {
-        $catalog_model = $this->getModel( 'Catalog' );
+        $catalog_model = $this->getModel('Catalog');
 
-        $properties = array();
+        $cache = $cache = $this->cache();
+        $cacheKey = 'product' . $item->id;
 
-        if( $item->parent ) {
-            $category   = $catalog_model->find( $item[ 'parent' ] );
-            $properties = $this->buildParamView( $category, $item );
+        if ($cache->isNotExpired($cacheKey)) {
+            $content = $cache->get($cacheKey);
+        } else {
+            $properties = array();
+
+            if ($item->parent) {
+                $category   = $catalog_model->find($item['parent']);
+                $properties = $this->buildParamView($category, $item);
+            }
+
+            $gallery_model = $this->getModel('CatalogGallery');
+
+            $gallery = $gallery_model->findAll(
+                array(
+                    'cond'   => ' cat_id = ? AND hidden = 0 ',
+                    'params' => array($item->id),
+                )
+            );
+
+            $this->tpl->assign(
+                array(
+                    'item'       => $item,
+                    'inBasket'   => $this->getBasket()->getCount($item->id),
+                    'parent'     => $item->parent ? $catalog_model->find($item->parent) : null,
+                    'properties' => $properties,
+                    'gallery'    => $gallery,
+                    'user'       => $this->user,
+                )
+            );
+
+            $content = $this->tpl->fetch('catalog.viewproduct');
+            $cache->set($cacheKey, $content);
         }
 
-        $gallery_model = $this->getModel( 'CatalogGallery' );
+        $this->request->setTitle($item->name);
 
-        $gallery = $gallery_model->findAll( array(
-            'cond'      => ' cat_id = ? AND hidden = 0 ',
-            'params'    => array( $item->id ),
-        ) );
-
-        $this->tpl->assign( array(
-            'item'      => $item,
-            'inBasket'  => $this->getBasket()->getCount( $item->id ),
-            'parent'    => $item->parent ? $catalog_model->find( $item->parent ) : null,
-            'properties'=> $properties,
-            'gallery'   => $gallery,
-            'user'      => $this->user,
-        ) );
-
-        $this->request->setTitle( $item->name );
-        return $this->tpl->fetch( 'catalog.viewproduct' );
+        return $content;
     }
 
     /**

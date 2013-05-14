@@ -47,7 +47,6 @@ class GalleryController extends Sfcms_Controller
      */
     public function indexAction( $id )
     {
-        $this->setAjax();
         $this->request->setAjax( true, Request::TYPE_ANY );
 
         $positions = $this->request->get('positions');
@@ -106,7 +105,7 @@ class GalleryController extends Sfcms_Controller
      */
     public function markdefaultAction()
     {
-        $this->setAjax();
+        $this->request->setAjax(true);
         /** @var GalleryModel $catGalleryModel */
         $catGalleryModel = $this->getModel('CatalogGallery');
         $id              = $this->request->get('id');
@@ -153,7 +152,6 @@ class GalleryController extends Sfcms_Controller
      */
     public function uploadAction()
     {
-        $this->setAjax();
         $this->request->setAjax( true, Request::TYPE_ANY );
 
         $max_file_size = $this->config->get( 'catalog.gallery_max_file_size' );

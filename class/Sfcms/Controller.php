@@ -55,6 +55,9 @@ abstract class Sfcms_Controller extends Component
     /** @var TemplatesModel */
     protected $templates;
 
+    /** @var Sfcms\Cache\CacheInterface */
+    protected static $cache = null;
+
     public function __construct()
     {
         $this->config   = $this->app()->getConfig();
@@ -209,16 +212,6 @@ abstract class Sfcms_Controller extends Component
     }
 
     /**
-     * Установка обработчика на ajax
-     * @param $ajax
-     * @return void
-     */
-    public function setAjax( $ajax = true )
-    {
-        $this->request->setAjax( $ajax );
-    }
-
-    /**
      * Return form by name/alias
      * @param $name
      *
@@ -227,30 +220,21 @@ abstract class Sfcms_Controller extends Component
      */
     public function getForm( $name )
     {
-        if ( ! isset( self::$forms[ $name ] ) ) {
+        if (!isset(self::$forms[$name])) {
+            $className = 'Forms_' . $name;
             try {
-                $class_name = 'Forms_'.$name;
 //                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, $class_name ).'.php';
 //                try {
 //                    require_once $file;
 //                } catch ( ErrorException $e ) {
 //                    die('Form class '.$class_name.' not found');
 //                }
-                self::$forms[ $name ] = new $class_name();
-            } catch ( Exception $e ) {
-                throw new Exception('Form class '.$class_name.' not found');
+                self::$forms[$name] = new $className();
+            } catch (Exception $e) {
+                throw new Exception('Form class ' . $className . ' not found');
             }
         }
         return self::$forms[ $name ];
-    }
-
-    /**
-     * Вернет статус обработки ajax
-     * @return boolean
-     */
-    public function getAjax()
-    {
-        return $this->app()->getRequest()->getAjax();
     }
 
     /**
@@ -261,6 +245,29 @@ abstract class Sfcms_Controller extends Component
     public function getDB()
     {
         return db::getInstance();
+    }
+
+    public function cache()
+    {
+        if (null === static::$cache) {
+            if ($this->config->get('cache')) {
+                switch ($this->config->get('cache.type')) {
+                    case 'file':
+                        static::$cache = new \Sfcms\Cache\CacheFile($this->config->get('cache.livecycle'));
+                        break;
+                    case 'apc':
+                        if (!function_exists('apc_cache_info')) {
+                            throw new Exception('Module APC is not active');
+                        }
+                        static::$cache = new \Sfcms\Cache\CacheApc($this->config->get('cache.livecycle'));
+                        break;
+                }
+            }
+            if (null === static::$cache) {
+                static::$cache = new \Sfcms\Cache\CacheBlank(0);
+            }
+        }
+        return static::$cache;
     }
 
     /**

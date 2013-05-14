@@ -5,8 +5,6 @@ return array(
         'profiler'   => false,
     ),
 
-    'cache' => false,
-
     'logger'    => 'auto',
     //    'logger'    => 'html',
     //    'logger'    => 'file',
@@ -17,6 +15,11 @@ return array(
 
     'url'       => array(
         'rewrite'   => true,
+    ),
+
+    'cache' => array(
+        'type' => 'apc',
+        'livecycle' => 600,
     ),
 
     //    'editor' => 'tinymce',

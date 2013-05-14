@@ -42,7 +42,8 @@ class SitemapController extends \Sfcms_Controller
 
         $host = $this->request->getSchemeAndHttpHost();
 
-        array_map(function (Page $page) use ($urlset, $host) {
+        array_map(
+            function (Page $page) use ($urlset, $host) {
                 if ($page->link) {
                     return false;
                 }
@@ -50,9 +51,10 @@ class SitemapController extends \Sfcms_Controller
                 $alias = 'index' == $page->alias ? '' : $page->alias;
                 $url->appendChild($url->ownerDocument->createElement('loc', $host . '/' . $alias));
                 $url->appendChild($url->ownerDocument->createElement('lastmod', strftime('%Y-%m-%d', $page->update)));
-            }, iterator_to_array($pages));
+            },
+            iterator_to_array($pages)
+        );
 
-        $this->setAjax(true);
         $dom->formatOutput = true;
         $response = new Response($dom->saveXML());
         $response->headers->set('Content-type', $this->request->getMimeType('xml'), true);
