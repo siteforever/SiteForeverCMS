@@ -10,6 +10,7 @@ namespace Module\System\Controller;
 use Sfcms;
 use Sfcms\Controller;
 use Sfcms_Http_Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class ErrorController extends Controller
 {
@@ -21,6 +22,6 @@ class ErrorController extends Controller
     {
         $this->request->setTemplate('inner');
         $this->request->setTitle( Sfcms::i18n()->write('Page not found') );
-        throw new Sfcms_Http_Exception($this->tpl->fetch('error/404.tpl'), 404);
+        return new Response($this->tpl->fetch('error/404.tpl'), 404) ;
     }
 }

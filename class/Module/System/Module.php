@@ -7,8 +7,10 @@
 
 namespace Module\System;
 
+use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Module extends SfModule
 {
@@ -18,7 +20,27 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'captcha'   => array(),
+                'elfinder'  => array(),
+//                'error'     => array(),
+                'generator' => array(),
+                'log'       => array(),
+                'routes'    => array(),
+                'system'    => array(),
+                'setting'   => array(),
+            ),
+            'models'      => array(
+                'Comments'  => 'Module\\System\\Model\\CommentsModel',
+                'Module'    => 'Module\\System\\Model\\ModuleModel',
+                'Routes'    => 'Module\\System\\Model\\RoutesModel',
+                'Settings'  => 'Module\\System\\Model\\SettingsModel',
+                'Session'   => 'Module\\System\\Model\\SessionModel',
+                'Templates' => 'Module\\System\\Model\\TemplatesModel',
+                'Log'       => 'Module\\System\\Model\\LogModel',
+            ),
+        );
     }
 
     public function init()
@@ -26,6 +48,25 @@ class Module extends SfModule
         $model = Model::getModel('Module\\System\\Model\\LogModel');
         $dispatcher = $this->app->getEventDispatcher();
         $dispatcher->addListener('save.start', array($model,'pluginAllSaveStart'));
+        $dispatcher->addListener('kernel.response', array($this, 'onKernelResponse'));
+    }
+
+    /**
+     * Handling the response
+     * @param KernelEvent $event
+     */
+    public function onKernelResponse(KernelEvent $event)
+    {
+        $response = $event->getResponse();
+        if (403 == $response->getStatusCode()) {
+            if (!$this->app->getAuth()->getId()) {
+                $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
+                $event->setResponse($response);
+            }
+        }
+        if (404 == $response->getStatusCode()) {
+            $response->setContent($this->app->getTpl()->fetch('error.404'));
+        }
     }
 
     public function admin_menu()

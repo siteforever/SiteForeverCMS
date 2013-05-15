@@ -1,3 +1,5 @@
-define([],function(){
-
+define([
+    "jquery",
+    "fancybox"
+],function($){
 });

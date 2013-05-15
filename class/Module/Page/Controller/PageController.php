@@ -49,6 +49,10 @@ class PageController extends Controller
             throw new Sfcms_Http_Exception(t('Access denied'), 403);
         }
 
+        if ($this->page && $this->request->attributes->has('alias')) {
+            throw new Sfcms_Http_Exception(t('Page not found'), 404);
+        }
+
         // создаем замыкание страниц (если одна страница указывает на другую)
         while ($this->page['link']) {
             $page = $pageModel->find($this->page['link']);

@@ -106,16 +106,16 @@ class Resolver extends Component
         $this->log( $command, 'Command' );
 
         // если запрос является системным
-        if ( $this->app()->getRouter()->isSystem() ) {
-            if ( $this->app()->getAuth()->currentUser()->hasPermission( USER_ADMIN ) ) {
+        if ($this->app()->getRouter()->isSystem()) {
+            if ($this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage();
             } else {
-                throw new Sfcms_Http_Exception( t('Access denied'), 403 );
+                throw new Sfcms_Http_Exception(t('Access denied'), 403);
             }
         }
 
-        if ( ! class_exists( $command['controller'] ) ) {
-            throw new Sfcms_Http_Exception( printf('Controller class "%s" not exists', $command['controller']), 404 );
+        if (!class_exists($command['controller'])) {
+            throw new Sfcms_Http_Exception(printf('Controller class "%s" not exists', $command['controller']), 404);
         }
 
         $ref = new ReflectionClass($command['controller']);

@@ -8,6 +8,7 @@ namespace Module\Guestbook\Controller;
 use Sfcms\Controller;
 use Forms_Guestbook_Form;
 use Forms_Guestbook_Edit;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class GuestbookController extends Controller
 {
@@ -31,6 +32,9 @@ class GuestbookController extends Controller
     {
         if ( null === $this->page ) {
             return t('Can not be used without page');
+        }
+        if ($this->request->attributes->has('alias')) {
+            throw new HttpException(404, t('Page not found'));
         }
         $this->request->setTitle( $this->page->title );
 

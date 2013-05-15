@@ -83,8 +83,8 @@ class CatalogController extends Controller
             $item = $catalogModel->find($catId);
         }
 
-        if( null === $item ) {
-            throw new Sfcms_Http_Exception(t( 'Catalogue part not found with id ' ) . $catId, 404);
+        if (null === $item) {
+            throw new Sfcms_Http_Exception(t('Catalogue part not found with id ') . $catId, 404);
         }
 
         if ( 0 == $item->cat ) {

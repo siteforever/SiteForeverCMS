@@ -25,7 +25,7 @@
         <span id="item{$branch->id}">
             {selectIcon branch=$branch}
             {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
-            {if $branch->link}&nbsp;[{$branch->link}]{/if}
+            <small>{$branch->alias}</small>
             <span class="tools">
                 {*{$branch->linkEdit}*}
                 <small>
@@ -39,7 +39,9 @@
             </span>
             <span class="order">
                 {call orderHidden page=$branch}
-                <span class="id_number">#{$branch->id}</span>
+                <span class="id_number">#{$branch->id}
+                    {if $branch->link}&nbsp;{icon name="link"}{$branch->link}{/if}
+                </span>
             </span>
         </span>
         {if isset($data[$branch->id])}{tree parent=$branch->id level=$level+1}{/if}

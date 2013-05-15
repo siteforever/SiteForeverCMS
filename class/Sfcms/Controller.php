@@ -82,30 +82,24 @@ abstract class Controller extends Component
         $action     = $this->request->getAction();
 
         // Define page
-        $page = null;
+        $pageObj = null;
         if ($controller) {
-            $moduleClass = Module::getModuleClass(strtolower($controller));
             if ($pageId && 'index' == $action) {
-                $relField = call_user_func(array($moduleClass, 'relatedField'));
                 $model    = $this->getModel('Page');
-                if ('id' == $relField) {
-                    $page = $model->find($pageId);
-                } else {
-                    $page = $model->find("`$relField` = ? AND `controller` = ?", array($pageId, $controller));
-                }
+                $pageObj = $model->find($pageId);
             }
         }
 
-        if ( null !== $page ) {
+        if ( null !== $pageObj ) {
             // Если страница указана как объект, то в нее нельзя сохранять левые данные
-            $this->request->setTemplate($page->get('template'));
-            $this->request->setTitle($page->get('title'));
-            $this->request->setDescription($page->get('description'));
-            $this->request->setKeywords($page->get('keywords'));
-            $this->tpl->getBreadcrumbs()->fromSerialize($page->get('path'));
+            $this->request->setTemplate($pageObj->get('template'));
+            $this->request->setTitle($pageObj->get('title'));
+            $this->request->setDescription($pageObj->get('description'));
+            $this->request->setKeywords($pageObj->get('keywords'));
+            $this->tpl->getBreadcrumbs()->fromSerialize($pageObj->get('path'));
         }
 
-        $this->page = $page;
+        $this->page = $pageObj;
 
         if ($this->app()->isDebug()) {
             //            $this->log( $this->request, 'Request' );
@@ -153,7 +147,7 @@ abstract class Controller extends Component
     public function access()
     {
         return array(
-            'system'    => array(
+            USER_ADMIN    => array(
                 'admin',
             ),
         );
@@ -225,12 +219,6 @@ abstract class Controller extends Component
         if (!isset(self::$forms[$name])) {
             $className = 'Forms_' . $name;
             try {
-//                $file   = str_replace(array('_','.'), DIRECTORY_SEPARATOR, $class_name ).'.php';
-//                try {
-//                    require_once $file;
-//                } catch ( ErrorException $e ) {
-//                    die('Form class '.$class_name.' not found');
-//                }
                 self::$forms[$name] = new $className();
             } catch (Exception $e) {
                 throw new Exception('Form class ' . $className . ' not found');

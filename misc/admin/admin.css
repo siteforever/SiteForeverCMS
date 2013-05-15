@@ -23,6 +23,7 @@ input[type=text] {
 input.cke_dialog_ui_input_text {
     height: 14px !important;
     margin: 0 !important;
+    font-size: 12px;
 }
 a.btn {
     line-height: 18px;
@@ -156,10 +157,11 @@ input.image {
                 background: none;
             }
             div.b-main-structure li span span.id_number {
-                text-align: right;
+                text-align: left;
                 overflow: hidden;
-                width: 50px;
+                width: 100px;
                 float: right;
+                white-space: nowrap;
             }
             div.b-main-structure li span span.order {
                 text-align:right;

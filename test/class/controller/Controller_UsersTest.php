@@ -63,7 +63,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
 
-        $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
+        $this->assertStringStartsWith('<form action="/user/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -108,7 +108,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     {
         $return = $this->controller->indexAction( null, null );
         $result = $this->app->getRequest()->getContent();
-        $this->assertStringStartsWith('<form action="/users/login" class="form-horizontal"', trim( $return ) );
+        $this->assertStringStartsWith('<form action="/user/login" class="form-horizontal"', trim( $return ) );
         $this->assertEmpty( $result );
     }
 
@@ -159,7 +159,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
         $this->arrayHasKey('form', $return);
         $this->assertInternalType('string', $return['form']->html());
         $this->assertStringStartsWith(
-            '<form action="/users/restore" class="form-horizontal" '
+            '<form action="/user/restore" class="form-horizontal" '
                 . 'enctype="multipart/form-data" id="form_restore" method="post" name="form_restore"',
             $return['form']->html()
         );

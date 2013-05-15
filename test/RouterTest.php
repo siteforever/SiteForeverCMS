@@ -179,7 +179,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->request->getAction(), 'index');
 
         $this->assertEquals('35', $this->request->get('doc'));
-        $this->assertEquals('1', $this->request->get('pageid'));
+        $this->assertEquals('2', $this->request->get('pageid'));
     }
 
     public function testFindRouteUsersCabinet()
@@ -259,7 +259,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('index', $this->request->getAction());
-        $this->assertEquals('1', $this->request->get('pageid'));
+        $this->assertEquals('2', $this->request->get('pageid'));
     }
 
     public function testNewsRoute()

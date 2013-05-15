@@ -31,6 +31,14 @@ class KernelEvent extends Event
         return $this->response;
     }
 
+    /**
+     * @param \Symfony\Component\HttpFoundation\Response $response
+     */
+    public function setResponse($response)
+    {
+        $this->response = $response;
+    }
+
     public function setResult($result)
     {
         $this->result = $result;

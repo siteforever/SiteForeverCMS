@@ -14,6 +14,7 @@ use Sfcms\View\Layout;
 use Sfcms\View\Xhr;
 use Sfcms\i18n;
 use Sfcms\Model\Exception as ModelException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Класс приложение
@@ -101,15 +102,13 @@ class App extends KernelBase
         self::$controller_time = microtime( 1 );
 
         $result = null;
+        /** @var Response $response */
         $response = null;
         try {
             $result = $this->getResolver()->dispatch($this->getRequest());
-        } catch ( Sfcms_Http_Exception $e ) {
-            $response = new Response($e->getMessage(), $e->getCode()?:500);
-            if (403 == $e->getCode()) {
-                $response->headers->set('Location', $this->getRouter()->createServiceLink('user','login'));
-                return $response;
-            }
+        } catch (HttpException $e) {
+            $this->getLogger()->log($e->getMessage());
+            $response = new Response($e->getMessage(), $e->getStatusCode()?:500);
         } catch ( Exception $e ) {
             $this->getLogger()->log($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine());
             $this->getLogger()->log($e->getTraceAsString());

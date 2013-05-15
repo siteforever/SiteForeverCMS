@@ -65,16 +65,12 @@ class StructureRoute extends Route
      */
     private function getPageState(Page $page)
     {
-        $className = Module::getModuleClass($page->controller);
-        $field     = call_user_func(array($className, 'relatedField'));
-        $id        = $page->get($field);
-
         return array(
             'controller' => $page->controller,
             'action'     => $page->action,
             'params'     => array(
                 'template' => $page->template,
-                'pageid'   => $id,
+                'pageid'   => $page->id,
                 'system'   => $page->system,
             ),
         );
