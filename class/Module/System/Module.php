@@ -60,8 +60,8 @@ class Module extends SfModule
         $response = $event->getResponse();
         if (403 == $response->getStatusCode()) {
             if (!$this->app->getAuth()->getId()) {
-                $event->setResponse($response);
                 $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
+                $event->setResponse($response);
             }
         }
         if (404 == $response->getStatusCode()) {
