@@ -153,4 +153,6 @@ return array_merge(
         'Page :name' => 'Страница :name',
 
         'subway'    => 'метро',
+
+        'Code is not valid' => 'Код не верный',
     ) );

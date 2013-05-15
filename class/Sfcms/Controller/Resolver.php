@@ -14,6 +14,7 @@ use ReflectionClass;
 use RuntimeException;
 use Sfcms\Request;
 use Sfcms_Http_Exception;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Resolver extends Component
 {
@@ -36,6 +37,8 @@ class Resolver extends Component
      * @param $moduleName
      *
      * @return array
+     * @throws HttpException
+     * @throws RuntimeException
      */
     public function resolveController(Request $request, $controller = null, $action = null, $moduleName = null)
     {
@@ -45,19 +48,18 @@ class Resolver extends Component
         if ( null === $action ) {
             $action = $request->getAction();
         }
-        $actionMethod = strtolower( $action ) . 'Action';
+        $actionMethod = strtolower($action) . 'Action';
 
         // Если не удалось определить контроллер, как известный, то инициировать ош. 404
-        if ( ! isset( $this->_controllers[ $controller ] ) ) {
-            $this->log(sprintf('Controller "%s" not found', $controller),__FUNCTION__);
-            $controller = 'error';
-            $actionMethod = 'error404Action';
-            $request->setController($controller);
-            $request->setAction($actionMethod);
+        if (!isset($this->_controllers[$controller])) {
+            throw new HttpException(404, 'Controller not found');
         }
 
-        $config = $this->_controllers[ $controller ];
+        if (!is_array($this->_controllers[$controller])) {
+            throw new RuntimeException(sprintf('Configuration of the controller "%s" should be an array', $controller));
+        }
 
+        $config = $this->_controllers[$controller];
         $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
 
         if ( isset( $config['class'] ) ) {
@@ -83,7 +85,7 @@ class Resolver extends Component
      * @param Request $request
      * @param array $command
      * @return null|string
-     * @throws \Sfcms_Http_Exception
+     * @throws HttpException
      */
     public function dispatch(Request $request, array $command = array())
     {
@@ -92,16 +94,9 @@ class Resolver extends Component
         if (!$command) {
             $command = $this->resolveController($request);
             if (!$command) {
-                throw new Sfcms_Http_Exception('Controller not resolved', 404);
+                throw new HttpException(404, 'Controller not resolved');
             }
         }
-
-        // возможность использовать кэш
-//        $cache = $this->app()->getCacheManager();
-//        if ( $cache->isAvaible() && $cache->isCached() ) {
-//            $this->log('Result from cache');
-//            return $cache->getCache();
-//        }
 
         $this->log( $command, 'Command' );
 
@@ -110,12 +105,12 @@ class Resolver extends Component
             if ($this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage();
             } else {
-                throw new Sfcms_Http_Exception(t('Access denied'), 403);
+                throw new HttpException(403, t('Access denied'));
             }
         }
 
         if (!class_exists($command['controller'])) {
-            throw new Sfcms_Http_Exception(printf('Controller class "%s" not exists', $command['controller']), 404);
+            throw new HttpException(404, sprintf('Controller class "%s" not exists', $command['controller']));
         }
 
         $ref = new ReflectionClass($command['controller']);
@@ -126,16 +121,12 @@ class Resolver extends Component
         // Защита системных действий
         $access = $controller->access();
 
-//        if ( ! $ref->hasMethod($command['action'])) {
-//            $command['action'] = 'indexAction';
-//        }
-
         $this->acl( $access, $command );
 
         try {
             $method = $ref->getMethod($command['action']);
         } catch( \ReflectionException $e ) {
-            throw new Sfcms_Http_Exception($e->getMessage(),404);
+            throw new HttpException(404, $e->getMessage());
         }
         $arguments = $this->prepareArguments($method);
         $result = $method->invokeArgs($controller, $arguments);

@@ -12,12 +12,11 @@ use Sfcms\Component;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Query\Builder as QueryBuilder;
 use Sfcms\Model\ModelEvent;
-use Sfcms\Model\Plugin;
 use Sfcms\db;
 use Sfcms\Db\Criteria;
 use RuntimeException;
 use PDO;
-use Module\System\Object\User;
+use Module\User\Object\User;
 use Sfcms\Data\Table;
 use Sfcms\Form\Form;
 use Sfcms\Data\Watcher;
@@ -40,8 +39,7 @@ abstract class Model extends Component
      * Тип таблицы
      * @var string
      */
-    //protected $engine   = 'MyISAM';
-    protected $engine = 'InnoDB';
+    protected $engine = 'InnoDB'; // 'MyISAM';
 
     /**
      * @var db
@@ -98,8 +96,6 @@ abstract class Model extends Component
      */
     protected $pdo = null;
 
-    private $_plugins = array();
-
     /**
      * Кеш запросов для текущей модели
      * Кешируются запросы вида field = value или field IN (values)
@@ -114,15 +110,14 @@ abstract class Model extends Component
     {
         $this->request = $this->app()->getRequest();
         $this->config  = $this->app()->getConfig();
-        //$this->user     = $this->app()->getAuth()->currentUser();
 
         // база данных
         // определяется только в моделях
-        if (is_null(self::$dao)) {
-            self::$dao = db::getInstance($this->config->get('db'));
-            self::$dao->setLoggerClass($this->app()->getLogger());
+        if (is_null(static::$dao)) {
+            static::$dao = db::getInstance($this->config->get('db'));
+            static::$dao->setLoggerClass($this->app()->getLogger());
         }
-        $this->db  = self::$dao;
+        $this->db  = static::$dao;
         $this->pdo = $this->db->getResource();
 
         if (method_exists($this, 'onSaveStart')) {
@@ -140,7 +135,7 @@ abstract class Model extends Component
      */
     static public function getDB()
     {
-        return self::$dao;
+        return static::$dao;
     }
 
     /**
@@ -150,42 +145,6 @@ abstract class Model extends Component
     protected function init()
     {
     }
-
-
-    /**
-     * @param             $name
-     * @param Data\DomainObject $obj
-     */
-    protected function callPlugins($name, DomainObject $obj)
-    {
-        if (strpos(trim($name, ':'), ':')) {
-            list($namespace, $name) = explode(':', $name);
-        } else {
-            $namespace = 'default';
-        }
-        //        $this->log( 'ns: '.$namespace . '; pln: ' . $name, 'callModelPlugins' );
-        // Если нет плагинов, ничего не делаем
-        if (!isset($this->_plugins[$namespace])) {
-            return;
-        }
-        foreach ($this->_plugins[$namespace] as $plugin) {
-            //            $this->log( get_class($plugin), 'modelPlugin' );
-            if (method_exists($plugin, $name)) {
-                $plugin->$name($obj);
-            }
-        }
-    }
-
-    /**
-     * Добавляет плугин
-     * @param Plugin $plugin
-     * @param        $namespace
-     */
-    public function addPlugin(Plugin $plugin, $namespace = 'default')
-    {
-        $this->_plugins[$namespace][] = $plugin;
-    }
-
 
     /**
      * Отношения модели с другими моделями
@@ -217,7 +176,7 @@ abstract class Model extends Component
     {
         if (!isset(self::$exists_tables)) {
             self::$exists_tables = array();
-            $tables              = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
+            $tables = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
             foreach ($tables as $t) {
                 self::$exists_tables[] = $t[0];
             }
@@ -238,11 +197,11 @@ abstract class Model extends Component
         self::$exists_tables[] = $table;
     }
 
-
     /**
      * Построение запроса для создания таблицы
      *
      * @return string
+     * @throws Exception
      */
     public function getCreateTable()
     {
@@ -334,7 +293,6 @@ abstract class Model extends Component
                 $class_name = self::$models[$modelKey];
             }
         }
-        //        \App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
         if (!isset(self::$all_class[$model])) {
             if (class_exists($class_name, true)) {
                 self::$all_class[$model] = new $class_name();
@@ -432,8 +390,6 @@ abstract class Model extends Component
 
             $this->table = call_user_func(array($class, 'table'));
 
-//            App::getInstance()->getLogger()->log($class_name,__FUNCTION__);
-
             if ($this->config->get('db.migration')) {
                 if ($this->isExistTable($this->table)) {
                     $this->migration();
@@ -458,7 +414,12 @@ abstract class Model extends Component
         $table       = call_user_func(array($class, 'table'));
         $have_fields = $this->getFields();
 
-        $txtsys_fields = array_map(function(Field $field){return $field->getName();}, $sys_fields);
+        $txtsys_fields = array_map(
+            function (Field $field) {
+                return $field->getName();
+            },
+            $sys_fields
+        );
 
         $add_array = array_diff($txtsys_fields, $have_fields);
         $del_array = array_diff($have_fields, $txtsys_fields);
@@ -492,6 +453,7 @@ abstract class Model extends Component
      * @param string $table
      *
      * @return array
+     * @throws \ErrorException
      */
     protected function getFields()
     {

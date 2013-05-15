@@ -24,7 +24,6 @@ class Module extends SfModule
             'controllers' => array(
                 'captcha'   => array(),
                 'elfinder'  => array(),
-//                'error'     => array(),
                 'generator' => array(),
                 'log'       => array(),
                 'routes'    => array(),
@@ -48,6 +47,7 @@ class Module extends SfModule
         $model = Model::getModel('Module\\System\\Model\\LogModel');
         $dispatcher = $this->app->getEventDispatcher();
         $dispatcher->addListener('save.start', array($model,'pluginAllSaveStart'));
+        $dispatcher->addListener('kernel.response', array($this, 'onKernelResponseImage'));
         $dispatcher->addListener('kernel.response', array($this, 'onKernelResponse'));
     }
 
@@ -60,14 +60,29 @@ class Module extends SfModule
         $response = $event->getResponse();
         if (403 == $response->getStatusCode()) {
             if (!$this->app->getAuth()->getId()) {
-                $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
                 $event->setResponse($response);
+                $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
             }
         }
         if (404 == $response->getStatusCode()) {
+            $this->app->getTpl()->assign('request', $event->getRequest());
             $response->setContent($this->app->getTpl()->fetch('error.404'));
         }
     }
+
+    /**
+     * If result is image... This needing for captcha
+     * @param KernelEvent $event
+     */
+    public function onKernelResponseImage(KernelEvent $event)
+    {
+        if (is_resource($event->getResult()) && imageistruecolor($event->getResult())) {
+            $event->getResponse()->headers->set('Content-type', 'image/png');
+            imagepng($event->getResult());
+            $event->stopPropagation();
+        }
+    }
+
 
     public function admin_menu()
     {
@@ -88,11 +103,11 @@ class Module extends SfModule
                         'url'   => 'elfinder/finder',
                         'class' => 'filemanager',
                     ),
-                    //            array(
-                    //                'name'  => 'Архивация базы',
-                    //                'url'   => '/_runtime/sxd',
-                    //                'class' => 'dumper',
-                    //            ),
+            //            array(
+            //                'name'  => 'Архивация базы',
+            //                'url'   => '/_runtime/sxd',
+            //                'class' => 'dumper',
+            //            ),
                     array(
                         'name'  => 'Поиск',
                         'url'   => 'search/admin',

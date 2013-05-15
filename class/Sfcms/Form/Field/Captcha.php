@@ -32,13 +32,12 @@ class Captcha extends Field
     protected function checkValue( $value )
     {
         $captcha_code = App::getInstance()->getSession()->get('captcha_code');
-        if ( strtolower( $captcha_code ) == strtolower( $value ) ) {
+        if (strtolower($captcha_code) == strtolower($value)) {
             return true;
-        } else {
-            $this->_msg    = 'Код не верный';
-            $this->_form->addFeedback( $this->_msg );
-            return false;
         }
+        $this->_msg = t('Code is not valid');
+        $this->_form->addFeedback($this->_msg);
+        return false;
     }
 
 }

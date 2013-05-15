@@ -6,6 +6,7 @@
 namespace Sfcms\Kernel;
 
 use Sfcms\Assets;
+use Sfcms\Cache\CacheInterface;
 use Sfcms\Controller\Resolver;
 use Sfcms\Model;
 use Sfcms\Module;
@@ -235,8 +236,7 @@ abstract class KernelBase
     public function __set($name, $value)
     {
         $this
-            ->getLogger()
-            ->log( sprintf('%s = %s',$name,$value), 'app_set' );
+            ->getLogger()->log(sprintf('%s = %s', $name, $value), 'app_set');
     }
 
     /**
@@ -289,12 +289,29 @@ abstract class KernelBase
 
     /**
      * Вернет объект кэша
-     * @return Sfcms_Cache
+     *
+     * @return CacheInterface
+     * @throws Exception
      */
     public function getCacheManager()
     {
         if ( null === $this->_cache ) {
-            $this->_cache = new Sfcms_Cache( $this );
+            if ($config = $this->getConfig('cache')) {
+                switch ($config['type']) {
+                    case 'file':
+                        $this->_cache = new \Sfcms\Cache\CacheFile($config['livecycle']);
+                        break;
+                    case 'apc':
+                        if (!function_exists('apc_cache_info')) {
+                            throw new Exception('Module APC is not active');
+                        }
+                        $this->_cache = new \Sfcms\Cache\CacheApc($config['livecycle']);
+                        break;
+                }
+            }
+            if (null === $this->_cache) {
+                $this->_cache = new \Sfcms\Cache\CacheBlank(0);
+            }
         }
         return $this->_cache;
     }
@@ -427,7 +444,7 @@ abstract class KernelBase
             return $this->_logger;
         }
 
-        if ( ! self::isDebug() ) {
+        if ( ! static::isDebug() ) {
             $this->_logger = Std_Logger::getInstance( new \Std_Logger_Blank() );
             return $this->_logger;
         }
@@ -749,13 +766,7 @@ abstract class KernelBase
             foreach ( $this->_modules_config as $module => $config ) {
                 if (isset($config['controllers'])) {
                     foreach ( $config['controllers'] as $controller => $params ) {
-                        if ( 'System' == $module ) {
-                            // todo нужно перенести бесхозные контроллеры в модуль System и избавиться от этого костыля
-                            $params['module'] = null;
-                        } else {
-                            $params['module'] = $module;
-                        }
-                        //                    $this->getLogger()->log(sprintf('Load controller "%s"(%s)',strtolower($controller),join(',',$params)));
+                        $params['module'] = $module;
                         $this->_controllers[strtolower($controller)] = $params;
                     }
                 }

@@ -123,13 +123,6 @@ class App extends KernelBase
             $response = new Response();
         }
 
-        // If result is image... This needing for captcha
-        if (is_resource($result) && imageistruecolor($result)) {
-            $response->headers->set('Content-type', 'image/png');
-            imagepng( $result );
-            return $response;
-        }
-
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
         $event = new KernelEvent($response, $this->getRequest(), $result);

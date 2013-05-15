@@ -237,27 +237,12 @@ abstract class Controller extends Component
         return db::getInstance();
     }
 
+    /**
+     * @return CacheInterface
+     */
     public function cache()
     {
-        if (null === static::$cache) {
-            if ($this->config->get('cache')) {
-                switch ($this->config->get('cache.type')) {
-                    case 'file':
-                        static::$cache = new \Sfcms\Cache\CacheFile($this->config->get('cache.livecycle'));
-                        break;
-                    case 'apc':
-                        if (!function_exists('apc_cache_info')) {
-                            throw new Exception('Module APC is not active');
-                        }
-                        static::$cache = new \Sfcms\Cache\CacheApc($this->config->get('cache.livecycle'));
-                        break;
-                }
-            }
-            if (null === static::$cache) {
-                static::$cache = new \Sfcms\Cache\CacheBlank(0);
-            }
-        }
-        return static::$cache;
+        return $this->app()->getCacheManager();
     }
 
     /**
