@@ -11,5 +11,16 @@ return array_merge(require_once 'base.php', array(
     'cache' => false,
     'logger'    => 'file',
     'language'  => 'ru',
-    'siteurl'   => 'example.test',
+    'siteurl'   => 'localhost',
+
+        // база данных
+    'db' => array(
+        'login'     => 'siteforever',
+        'password'  => 'siteforever',
+        'host'      => 'localhost',
+        'database'  => 'siteforever_test',
+        'debug'     => true,
+        'migration' => true,
+    ),
+
 ));

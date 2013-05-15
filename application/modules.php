@@ -1,6 +1,7 @@
 <?php
 return array(
     array('name'=>'Page',       'path'=>'Module\Page'),
+    array('name'=>'User',       'path'=>'Module\User'),
     array('name'=>'News',       'path'=>'Module\News'),
     array('name'=>'Banner',     'path'=>'Module\Banner'),
     array('name'=>'Gallery',    'path'=>'Module\Gallery'),
@@ -8,7 +9,7 @@ return array(
     array('name'=>'Catalog',    'path'=>'Module\Catalog'),
     array('name'=>'Feedback',   'path'=>'Module\Feedback'),
     array('name'=>'Market',     'path'=>'Module\Market'),
-    array('name'=>'Foo',        'path'=>'Acme\Module\Foo'),
     array('name'=>'Search',     'path'=>'Module\Search'),
     array('name'=>'System',     'path'=>'Module\System'),
+    array('name'=>'Foo',        'path'=>'Acme\Module\Foo'),
 );

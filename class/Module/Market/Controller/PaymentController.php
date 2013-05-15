@@ -6,11 +6,11 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 
 use Forms\Payment\Edit as FormEdit;
 
-class PaymentController extends Sfcms_Controller
+class PaymentController extends Controller
 {
     public function access()
     {

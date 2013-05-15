@@ -3,7 +3,7 @@ namespace Sfcms\Basket;
 
 use App;
 use Sfcms\Data\Object;
-use Module\System\Object\User;
+use Module\User\Object\User;
 use Sfcms_Basket_Exception;
 
 /**
@@ -86,7 +86,7 @@ abstract class Base
                     $prod['count']  = $count;
                 else
                     unset( $this->data[$i] );
-                
+
                 return true;
             }
         }
@@ -167,7 +167,7 @@ abstract class Base
         }
         return $this->data;
     }
-    
+
     /**
      * Количество позиций
      * @return int
@@ -176,7 +176,7 @@ abstract class Base
     {
         return count($this->data);
     }
-    
+
     /**
      * Сумма заказа
      * @param $name
@@ -229,7 +229,7 @@ abstract class Base
      * Сохранить
      */
     abstract public function save();
-    
+
     /**
      * Загрузить
      */

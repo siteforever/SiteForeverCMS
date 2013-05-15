@@ -1,15 +1,15 @@
 <?php
 namespace Module\System\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\System\Model\LogModel;
 
 /**
  * Контроллер журнала операций
  * @author: keltanas
  * @link http://siteforever.ru
- */ 
-class LogController extends Sfcms_Controller
+ */
+class LogController extends Controller
 {
 
     /**

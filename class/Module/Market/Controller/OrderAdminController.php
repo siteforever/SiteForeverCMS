@@ -6,9 +6,9 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 
-class OrderAdminController extends Sfcms_Controller
+class OrderAdminController extends Controller
 {
 
 }

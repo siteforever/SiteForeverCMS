@@ -3,6 +3,8 @@
  * Интерфейс контроллера
  * @author: keltanas <keltanas@gmail.com>
  */
+namespace Sfcms;
+
 use Sfcms\Component as Component;
 use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
@@ -17,17 +19,17 @@ use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use \Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Sfcms\Cache\CacheInterface;
 use Module\Page\Object\Page;
-use Module\System\Object\User;
+use Module\User\Object\User;
 
 use Sfcms\Data\Watcher;
 
 /**
  * @property Driver $tpl
  */
-abstract class Sfcms_Controller extends Component
+abstract class Controller extends Component
 {
     private static $forms = array();
 
@@ -55,7 +57,7 @@ abstract class Sfcms_Controller extends Component
     /** @var TemplatesModel */
     protected $templates;
 
-    /** @var Sfcms\Cache\CacheInterface */
+    /** @var CacheInterface */
     protected static $cache = null;
 
     public function __construct()
@@ -275,11 +277,11 @@ abstract class Sfcms_Controller extends Component
      * @param $count
      * @param $perpage
      * @param $link
-     * @return Pager
+     * @return \Pager
      */
     public function paging( $count, $perpage, $link )
     {
-        return new Pager( $count, $perpage, $link );
+        return new \Pager( $count, $perpage, $link );
     }
 
     /**

@@ -27,7 +27,7 @@ use Module\System\Model\TemplatesModel;
 use Module\Page\Model\PageModel;
 
 use Sfcms\Data\Object;
-use Module\System\Object\User;
+use Module\User\Object\User;
 use Sfcms_Basket_Factory;
 use Sfcms_Cache;
 

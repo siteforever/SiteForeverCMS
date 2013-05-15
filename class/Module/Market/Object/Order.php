@@ -5,6 +5,16 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+namespace Module\Market\Object;
+
+use Sfcms;
+use Sfcms\Data\Object;
+use Sfcms\Data\Field;
+use Sfcms\Data\Collection;
+use Module\User\Object\User;
+use Module\Market\Object\OrderStatus;
+use Module\Market\Object\Payment;
+use Module\Market\Object\Delivery;
 
 /**
  * @property $id
@@ -27,17 +37,6 @@
  * @property Delivery $Delivery
  * @property Collection $Positions
  */
-namespace Module\Market\Object;
-
-use Sfcms;
-use Sfcms\Data\Object;
-use Sfcms\Data\Field;
-use Sfcms\Data\Collection;
-use Module\System\Object\User;
-use Module\Market\Object\OrderStatus;
-use Module\Market\Object\Payment;
-use Module\Market\Object\Delivery;
-
 class Order extends Object
 {
 

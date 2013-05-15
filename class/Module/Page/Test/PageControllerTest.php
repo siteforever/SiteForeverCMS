@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
@@ -14,7 +14,7 @@ class PageControllerTest extends \PHPUnit_Extensions_SeleniumTestCase
     protected function setUp()
     {
         $this->setBrowser('*firefox');
-        $this->setBrowserUrl('http://cms.sf/');
+        $this->setBrowserUrl('http://test.cms.sf/');
     }
 
 
@@ -25,7 +25,7 @@ class PageControllerTest extends \PHPUnit_Extensions_SeleniumTestCase
      */
     public function testAdminActions()
     {
-        $this->open("http://cms.sf/admin");
+        $this->open("/admin");
         $this->type("login_login", "admin");
         $this->type("login_password", "admin");
         $this->click("id=login_submit");

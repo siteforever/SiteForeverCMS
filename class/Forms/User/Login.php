@@ -8,14 +8,14 @@
 namespace Forms\User;
 
 use Sfcms\Form\Form;
- 
+
 class Login extends Form
 {
     public function __construct()
     {
         return parent::__construct(array(
             'name'      => 'login',
-            'action'    => \App::$router->createLink('users/login'),
+            'action'    => \App::$router->createLink('user/login'),
             'fields'    => array(
                 'login'     => array('type'=>'text',    'label'=>'Логин',   'required'),
                 'password'  => array('type'=>'password','label'=>'Пароль',  'required'),

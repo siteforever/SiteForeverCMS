@@ -5,12 +5,12 @@ namespace Module\Catalog\Controller;
  * @author: keltanas
  * @link  http://siteforever.ru
  */
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
 use Forms\Prodtype\Edit as  FormEdit;
 use Module\Catalog\Model\FieldModel;
 
-class ProdtypeController extends Sfcms_Controller
+class ProdtypeController extends Controller
 {
     public function access()
     {

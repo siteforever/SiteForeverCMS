@@ -8,13 +8,13 @@ namespace Module\Catalog\Controller;
 
 use App;
 use Sfcms;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Module\Catalog\Model\GalleryModel;
 use Module\Catalog\Object\Catalog;
 use Module\Catalog\Object\Gallery;
 
-class GalleryController extends Sfcms_Controller
+class GalleryController extends Controller
 {
     public function access()
     {

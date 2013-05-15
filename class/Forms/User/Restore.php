@@ -16,7 +16,7 @@ class Restore extends Form
     {
         parent::__construct( array(
             'name' => 'restore',
-            'action' => \Sfcms::html()->url('users/restore'),
+            'action' => \Sfcms::html()->url('user/restore'),
             'fields' => array(
                 'email' => array(
                     'type' => 'text',

@@ -6,12 +6,12 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Module\Market\Model\ManufacturerModel;
 use Module\Market\Object\Manufacturer;
 
-class ManufacturerController extends Sfcms_Controller
+class ManufacturerController extends Controller
 {
     /**
      * @return array

@@ -8,10 +8,10 @@
 namespace Module\Feedback\Controller;
 
 use Sfcms;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Forms_Feedback_Default;
 
-class FeedbackController extends Sfcms_Controller
+class FeedbackController extends Controller
 {
     public function indexAction()
     {

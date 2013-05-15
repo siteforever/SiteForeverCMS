@@ -1,6 +1,5 @@
 <?php
-
-//require_once 'Controller/Users.php';
+use Module\User\Controller\UserController;
 
 /**
  * Test class for Controller_Users.
@@ -9,7 +8,7 @@
 class Controller_UsersTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Controller_Users
+     * @var UserController
      */
     protected $controller;
 
@@ -25,7 +24,7 @@ class Controller_UsersTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->app = App::getInstance();
-        $this->controller = new Controller_Users( $this->app );
+        $this->controller = new UserController( $this->app );
     }
 
     /**

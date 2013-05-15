@@ -6,11 +6,11 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Module\Market\Model\MaterialModel;
 
-class MaterialController extends Sfcms_Controller
+class MaterialController extends Controller
 {
     public function access()
     {

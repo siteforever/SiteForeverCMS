@@ -7,11 +7,12 @@
 namespace Module\Page\Controller;
 
 use DOMDocument;
+use Sfcms\Controller;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Symfony\Component\HttpFoundation\Response;
 
-class SitemapController extends \Sfcms_Controller
+class SitemapController extends Controller
 {
     public function indexAction()
     {

@@ -6,7 +6,7 @@
 namespace Module\Catalog\Controller;
 
 use App;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
 use Module\Catalog\Object\Catalog;
 use Module\Catalog\Object\Property;
@@ -23,7 +23,7 @@ use Sfcms_Filter_Collection;
 use Forms_Catalog_Edit;
 use Symfony\Component\HttpFoundation\Response;
 
-class CatalogController extends Sfcms_Controller
+class CatalogController extends Controller
 {
     public function defaults()
     {

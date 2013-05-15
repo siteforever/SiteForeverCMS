@@ -7,14 +7,14 @@
  */
 namespace Module\News\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Module\News\Model\NewsModel;
 use Module\News\Object\News;
 use Sfcms\Db\Criteria;
 use DOMDocument;
 
-class RssController extends Sfcms_Controller
+class RssController extends Controller
 {
     public function indexAction()
     {

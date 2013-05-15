@@ -6,9 +6,9 @@
  */
 namespace Module\System\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 
-class ModuleController extends Sfcms_Controller
+class ModuleController extends Controller
 {
     public function access()
     {

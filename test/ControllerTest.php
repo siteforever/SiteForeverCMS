@@ -4,7 +4,9 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-class TestController extends Sfcms_Controller
+use Sfcms\Controller;
+
+class TestController extends Controller
 {
     function indexAction()
     {
@@ -16,7 +18,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 {
     protected $obj;
     /**
-     * @var Application_Abstract
+     * @var Sfcms\Kernel\
      */
     protected $app;
 

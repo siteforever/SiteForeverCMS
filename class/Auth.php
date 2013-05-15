@@ -1,7 +1,7 @@
 <?php
 use Sfcms\Kernel\KernelBase as Service;
-use Module\System\Model\UserModel;
-use Module\System\Object\User;
+use Module\User\Model\UserModel;
+use Module\User\Object\User;
 
 // группы пользователей
 define('USER_GUEST', '0'); // гость
@@ -229,7 +229,7 @@ abstract class Auth
             $tpl->sitename = $config->get('sitename');
             $tpl->siteurl  = $config->get('siteurl');
 
-            $msg = $tpl->fetch('users.mail.register');
+            $msg = $tpl->fetch('user.mail.register');
 
             //print $msg;
 

@@ -11,8 +11,8 @@ class Forms_User_Edit extends Form
     public function __construct()
     {
         return  parent::__construct(array(
-            'name'      => 'users',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('users','save'),
+            'name'      => 'user',
+            'action'    => App::getInstance()->getRouter()->createServiceLink('user','save'),
             'fields'    => array(
                 'id'        => array('type'=>'hidden', 'value'=>'0'),
                 'login'     => array('type'=>'text', 'label'=>'Логин', 'required'),

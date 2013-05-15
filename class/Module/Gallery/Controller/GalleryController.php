@@ -8,7 +8,7 @@
 namespace Module\Gallery\Controller;
 
 use Sfcms;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Exception;
 use Sfcms\Form\Form;
@@ -19,7 +19,7 @@ use Module\Gallery\Model\GalleryModel;
 use Module\Gallery\Model\CategoryModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class GalleryController extends Sfcms_Controller
+class GalleryController extends Controller
 {
     public function defaults()
     {

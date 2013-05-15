@@ -4,10 +4,10 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use SimpleXMLIterator;
 
-class XMLPriceController extends Sfcms_Controller
+class XMLPriceController extends Controller
 {
     function indexAction()
     {

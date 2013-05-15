@@ -8,14 +8,14 @@
 namespace Module\Market\Controller;
 
 use Sfcms;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Form\Form;
 use Forms_Basket_Address;
 use Module\Market\Object\Delivery;
 use Module\Market\Model\OrderModel;
 use Module\Catalog\Model\CatalogModel;
 
-class BasketController extends Sfcms_Controller
+class BasketController extends Controller
 {
     public function indexAction( $address )
     {

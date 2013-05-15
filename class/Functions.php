@@ -19,6 +19,7 @@ function printVar( $var )
  */
 function sendmail( $from, $to, $subject, $message )
 {
+
     $header = "Content-type: text/plain; charset=\"UTF-8\"\n";
     $header .= "From: {$from}\n";
     $header .= "Subject: $subject\n";

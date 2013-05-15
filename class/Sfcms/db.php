@@ -153,15 +153,26 @@ class db
      */
     private function init($dbc = array())
     {
-        $dsn    = "mysql:dbname={$dbc['database']};host={$dbc['host']}";
+        $dsn    = "mysql:host={$dbc['host']}";
 
         try {
-            $this->resource = new PDO( $dsn, $dbc[ 'login' ], $dbc[ 'password' ] );
-        } catch ( Exception $e ) {
-            die( $e->getMessage() );
+            $this->resource = new PDO($dsn, $dbc['login'], $dbc['password']);
+        } catch (Exception $e) {
+            die($e->getMessage());
         }
 
-        $this->resource->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+        if (!$this->resource) {
+            throw new dbException('Invalid connect to database');
+        }
+
+        while (!$use = $this->resource->query("USE `{$dbc['database']}`;")) {
+            $create = $this->resource->query("CREATE DATABASE `{$dbc['database']}`;");
+            if (!$create) {
+                throw new dbException("Can not create database `{$dbc['database']}`");
+            }
+        }
+
+        $this->resource->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         /**
          * проверка версии сервера не ниже 5.x.x
@@ -176,11 +187,7 @@ class db
             }
         }
 
-        if ( !$this->resource ) {
-            throw new dbException( 'Invalid connect to database' );
-        }
         $this->resource->query("SET NAMES 'utf8'");
-        //$this->resource->query("SET CHARACTER SET 'utf8'");
     }
 
     /**

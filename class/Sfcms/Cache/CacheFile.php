@@ -41,7 +41,7 @@ class CacheFile implements CacheInterface
     {
         $cache_dir = ROOT . '/runtime/cache';
         if (!is_dir($cache_dir)) {
-            mkdir($cache_dir, 0777, true);
+            @mkdir($cache_dir, 0777, true);
         }
         return $cache_dir . '/' . md5($key) . '.cache';
     }

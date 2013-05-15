@@ -107,7 +107,7 @@ class App extends KernelBase
         } catch ( Sfcms_Http_Exception $e ) {
             $response = new Response($e->getMessage(), $e->getCode()?:500);
             if (403 == $e->getCode()) {
-                $response->headers->set('Location', $this->getRouter()->createServiceLink('users','login'));
+                $response->headers->set('Location', $this->getRouter()->createServiceLink('user','login'));
                 return $response;
             }
         } catch ( Exception $e ) {

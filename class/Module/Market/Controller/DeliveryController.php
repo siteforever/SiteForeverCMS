@@ -7,12 +7,12 @@
 
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Market\Object\Delivery;
 use Sfcms\Request;
 use Forms_Delivery_Edit;
 
-class DeliveryController extends Sfcms_Controller
+class DeliveryController extends Controller
 {
     public function access()
     {

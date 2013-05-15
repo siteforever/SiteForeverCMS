@@ -8,9 +8,9 @@
 namespace Module\Install\Controller;
 
 use Sfcms;
-use Sfcms_Controller;
+use Sfcms\Controller;
 
-class InstallController extends Sfcms_Controller
+class InstallController extends Controller
 {
 
 }

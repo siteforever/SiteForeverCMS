@@ -8,6 +8,7 @@
 
 namespace Sfcms\Controller;
 
+use Sfcms\Controller;
 use Sfcms\Component;
 use ReflectionClass;
 use RuntimeException;
@@ -96,11 +97,11 @@ class Resolver extends Component
         }
 
         // возможность использовать кэш
-        $cache = $this->app()->getCacheManager();
-        if ( $cache->isAvaible() && $cache->isCached() ) {
-            $this->log('Result from cache');
-            return $cache->getCache();
-        }
+//        $cache = $this->app()->getCacheManager();
+//        if ( $cache->isAvaible() && $cache->isCached() ) {
+//            $this->log('Result from cache');
+//            return $cache->getCache();
+//        }
 
         $this->log( $command, 'Command' );
 
@@ -119,7 +120,7 @@ class Resolver extends Component
 
         $ref = new ReflectionClass($command['controller']);
 
-        /** @var \Sfcms_Controller $controller */
+        /** @var Controller $controller */
         $controller = $ref->newInstance();
 
         // Защита системных действий

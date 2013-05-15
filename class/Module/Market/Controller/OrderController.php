@@ -6,14 +6,14 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Market\Model\OrderModel;
 use Module\Market\Object\Order;
 use Module\Market\Object\OrderPosition;
 use Sfcms\Request;
 use Sfcms\Robokassa;
 
-class OrderController extends Sfcms_Controller
+class OrderController extends Controller
 {
     public function access()
     {
@@ -37,7 +37,7 @@ class OrderController extends Sfcms_Controller
 
         $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',t('Home'))
-            ->addPiece('users/cabinet',t('user','User cabiner'))
+            ->addPiece('user/cabinet',t('user','User cabiner'))
             ->addPiece(null,$this->request->getTitle());
 
 
@@ -61,7 +61,7 @@ class OrderController extends Sfcms_Controller
         if ( $item ) {
             /** @var $orderObj Order */
             $orderObj = $order->find( $item );
-            
+
             if ( $orderObj ) {
                 if ( $this->user->get('id') != $orderObj['user_id'] ) {
                     return t('order','Order is not yours');

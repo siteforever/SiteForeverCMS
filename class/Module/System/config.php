@@ -14,7 +14,6 @@ return array(
         'log'       => array('class'=>'Module\\System\\Controller\\LogController'),
         'routes'    => array(),
         'system'    => array(),
-        'users'     => array(),
         'setting'   => array(),
     ),
     'models'      => array(
@@ -24,7 +23,6 @@ return array(
         'Settings'  => 'Module\\System\\Model\\SettingsModel',
         'Session'   => 'Module\\System\\Model\\SessionModel',
         'Templates' => 'Module\\System\\Model\\TemplatesModel',
-        'User'      => 'Module\\System\\Model\\UserModel',
         'Log'       => 'Module\\System\\Model\\LogModel',
     ),
 );

@@ -7,7 +7,7 @@
  */
 namespace Module\News\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Sfcms\Form\Form;
 use Module\News\Model\NewsModel;
@@ -17,7 +17,7 @@ use Module\News\Object\Category;
 use Sfcms_Http_Exception;
 use Exception;
 
-class NewsController extends Sfcms_Controller
+class NewsController extends Controller
 {
     /**
      * @return array

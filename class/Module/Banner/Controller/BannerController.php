@@ -4,7 +4,7 @@
  */
 namespace Module\Banner\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Request;
 use Module\Banner\Model\BannerModel;
 use Module\Banner\Object\Banner;
@@ -12,7 +12,7 @@ use Module\Banner\Model\CategoryModel;
 use Sfcms\Exception;
 use Symfony\Component\HttpFoundation\Response;
 
-class BannerController extends Sfcms_Controller
+class BannerController extends Controller
 {
     /**
      * Уровень доступа к действиям

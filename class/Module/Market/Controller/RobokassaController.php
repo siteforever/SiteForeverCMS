@@ -6,11 +6,11 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Sfcms\Robokassa;
 use Module\Market\Object\Order;
 
-class RobokassaController extends Sfcms_Controller
+class RobokassaController extends Controller
 {
     public function init()
     {

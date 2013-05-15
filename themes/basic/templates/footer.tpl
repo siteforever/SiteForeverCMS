@@ -10,7 +10,7 @@
                 &nbsp; {*menu parent=1*}
             </div>
             <div class="span4">
-                <a {href url="users/login"}>Кабинет</a>
+                <a {href url="user/login"}>Кабинет</a>
             </div>
         </div>
     </div>

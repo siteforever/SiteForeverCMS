@@ -1,7 +1,7 @@
 <?php
 
 use Sfcms\Basket\Base as Basket;
-use Module\System\Object\User;
+use Module\User\Object\User;
 
 /**
  * @author Nikolay Ermin
@@ -11,7 +11,7 @@ use Module\System\Object\User;
 class Sfcms_Basket_Factory
 {
     static private $created = false;
-    
+
     /**
      * Создаст корзину
      * @param User $user

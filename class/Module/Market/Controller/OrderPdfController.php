@@ -6,11 +6,11 @@
  */
 namespace Module\Market\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Market\Object\Order;
 use numeric;
 
-class OrderPdfController extends Sfcms_Controller
+class OrderPdfController extends Controller
 {
     public function indexAction()
     {
@@ -362,5 +362,5 @@ class OrderPdfController extends Sfcms_Controller
         $pdf->Output();
         die();
     }
-    
+
 }

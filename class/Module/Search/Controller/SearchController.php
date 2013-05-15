@@ -6,9 +6,9 @@
 
 namespace Module\Search\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 
-class SearchController extends Sfcms_Controller
+class SearchController extends Controller
 {
     private $_selected = null;
 

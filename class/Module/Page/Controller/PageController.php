@@ -5,7 +5,7 @@
  */
 namespace Module\Page\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms\Form\Form;
@@ -14,7 +14,7 @@ use Sfcms\Request;
 
 use Exception;
 
-class PageController extends Sfcms_Controller
+class PageController extends Controller
 {
     public function access()
     {

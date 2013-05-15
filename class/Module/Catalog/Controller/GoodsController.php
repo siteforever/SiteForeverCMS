@@ -8,12 +8,12 @@ namespace Module\Catalog\Controller;
 
 use App;
 use Sfcms\Request;
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
 use Sfcms\JqGrid\Provider;
 use Sfcms\Yandex\Yml;
 
-class GoodsController extends Sfcms_Controller
+class GoodsController extends Controller
 {
     public function init()
     {

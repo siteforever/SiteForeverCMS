@@ -33,7 +33,7 @@ class Module extends SfModule
         return array(
             array(
                 'name'  => 'Пользователи',
-                'url'   => 'users/admin',
+                'url'   => 'user/admin',
             ),
             array(
                 'name'  => 'Журнал',
@@ -81,7 +81,7 @@ class Module extends SfModule
             //    ),
             array(
                 'name'  => 'Выход',
-                'url'   => 'users/logout',
+                'url'   => 'user/logout',
             ),
         );
     }

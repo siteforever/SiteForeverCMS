@@ -8,7 +8,7 @@ return array_merge(include_once 'base.php', array(
         'profiler'   => true,
     ),
 
-    'cache' => false,
+//    'cache' => false,
 
     'logger'    => 'auto',
 //    'logger'    => 'html',

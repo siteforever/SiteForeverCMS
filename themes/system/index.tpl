@@ -15,11 +15,11 @@
                     {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>*}
                 </ul>
                 <ul class="nav pull-right">
-                    <li>{a href="users/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>
+                    <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>
                     {*<li class="dropdown">*}
                         {*{a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}*}
                         {*<ul class="dropdown-menu">*}
-                            {*<li>{a href="users/logout"}{t}Exit{/t}{/a}</li>*}
+                            {*<li>{a href="user/logout"}{t}Exit{/t}{/a}</li>*}
                         {*</ul>*}
                         {*<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>*}
                     {*</li>*}

@@ -5,11 +5,11 @@
  */
 namespace Module\Guestbook\Controller;
 
-use Sfcms_Controller;
+use Sfcms\Controller;
 use Forms_Guestbook_Form;
 use Forms_Guestbook_Edit;
 
-class GuestbookController extends Sfcms_Controller
+class GuestbookController extends Controller
 {
     public function init()
     {

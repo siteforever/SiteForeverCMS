@@ -34,8 +34,8 @@ return array(
         'password'  => 'siteforever',
         'host'      => 'localhost',
         'database'  => 'siteforever',
-        'debug'     => true,
-        'migration' => true,
+        'debug'     => false,
+        'migration' => false,
     ),
 
     // тема
