@@ -8,7 +8,7 @@
 
 use Sfcms\Form\Form;
 
-class form_FormTest extends PHPUnit_Framework_TestCase
+class form_FormTest extends \Sfcms\Test\TestCase
 {
     /**
      * @var Form
@@ -19,7 +19,7 @@ class form_FormTest extends PHPUnit_Framework_TestCase
     {
         $this->form = new Form( array(
                 'name'  => 'test',
-           ), App::getInstance()->getRequest() );
+        ), $this->request);
     }
 
 

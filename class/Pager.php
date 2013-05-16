@@ -1,11 +1,11 @@
 <?php
 /**
- * 
+ *
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
- 
+
 class Pager implements ArrayAccess
 {
 
@@ -31,16 +31,13 @@ class Pager implements ArrayAccess
             return;
         }
 
-        $p      = array();
-
-        $page   = App::getInstance()->getRequest()->get('page');
-        $page   = $page ? $page : 1;
-
-        $link   = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
+        $p    = array();
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+        $link = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
-            $pred   = Sfcms::html()->url($link,array('page'=>$page-1));
-            $p[]    = Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page'=>$page-1) : array());
+            $pred = Sfcms::html()->url($link, array('page' => $page - 1));
+            $p[]  = Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page' => $page - 1) : array());
         }
 
         $radius = 2;

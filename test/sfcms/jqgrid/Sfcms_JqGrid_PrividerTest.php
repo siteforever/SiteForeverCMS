@@ -11,18 +11,20 @@ class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
      */
     private $model;
 
-    private $criteria;
+    /** @var \Sfcms\Request */
+    private $request;
 
     protected function setUp()
     {
         $this->model = Model::getModel('Catalog');
+        $this->request = \Sfcms\Request::create('/');
     }
 
 
     public function testGetJson()
     {
-        App::$request->set('rows',10);
-        $provider = new Provider( App::getInstance() );
+        $this->request->set('rows',10);
+        $provider = new Provider($this->request);
         $criteria = $this->model->createCriteria();
         $criteria->condition = 'cat = 0 AND deleted = 0 AND hidden = 0 AND protected <= 0';
 

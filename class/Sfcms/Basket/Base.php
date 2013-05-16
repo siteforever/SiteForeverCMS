@@ -4,6 +4,7 @@ namespace Sfcms\Basket;
 use App;
 use Sfcms\Data\Object;
 use Module\User\Object\User;
+use Sfcms\Request;
 use Sfcms_Basket_Exception;
 
 /**
@@ -22,12 +23,16 @@ abstract class Base
     /**
      * @var User
      */
-    protected $user = null;
+    protected $user;
 
-    public function __construct( Object $user )
+    /** @var Request */
+    protected $request;
+
+    public function __construct(Request $request, Object $user = null)
     {
         App::getInstance()->addScript('/misc/etc/basket.js');
 
+        $this->request = $request;
         $this->user = $user;
         $this->data = array();
 
@@ -44,7 +49,7 @@ abstract class Base
      *
      * @return boolean
      */
-    public function add( $id = '', $name = '', $count = 0, $price = 0.0, $details = '' )
+    public function add($id = '', $name = '', $count = 0, $price = 0.0, $details = '')
     {
         if ( ! is_array( $this->data ) ) {
             $this->data = array();
@@ -78,18 +83,20 @@ abstract class Base
      * @param  $count
      * @return boolean
      */
-    public function setCount( $name, $count )
+    public function setCount($name, $count)
     {
-        foreach ( $this->data as $i => &$prod ) {
-            if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
-                if ( $count > 0 )
-                    $prod['count']  = $count;
-                else
-                    unset( $this->data[$i] );
+        foreach ($this->data as $i => &$prod) {
+            if (@$prod['name'] == $name || @$prod['id'] == $name) {
+                if ($count > 0) {
+                    $prod['count'] = $count;
+                } else {
+                    unset($this->data[$i]);
+                }
 
                 return true;
             }
         }
+
         return false;
     }
 
@@ -139,20 +146,28 @@ abstract class Base
      * @param int $count
      * @return int|null
      */
-    public function del( $key, $count = 0 )
+    public function del($key, $count = 0)
     {
-        if ( ! is_numeric( $key ) && ! is_int( $key ) ) {
+        if (!is_numeric($key) && !is_int($key)) {
             throw new Sfcms_Basket_Exception('For delete need usage integer handler into basket');
         }
-        $old_count  = $this->data[$key]['count'];
-        $new_count  = $old_count - $count;
+        if ($count < 0) {
+            throw new Sfcms_Basket_Exception('');
+        }
+        if (!isset($this->data[$key])) {
+            return false;
+        }
+        $old_count = $this->data[$key]['count'];
+        $new_count = $old_count - $count;
 
-        if ( $count <= 0 || $new_count <= 0 ) {
+        if ($count == 0 || $new_count <= 0) {
 //            $this->data[$key]['count'] = 0;
-            unset( $this->data[$key] );
+            unset($this->data[$key]);
+
             return 0;
         }
         $this->data[$key]['count'] = $new_count;
+
         return $new_count;
     }
 

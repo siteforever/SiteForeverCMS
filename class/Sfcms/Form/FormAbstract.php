@@ -48,21 +48,18 @@ abstract class FormAbstract
 
     protected $_errors = array();
 
+
     /**
      * Создает форму согласно конфигу
-     * @param $config
+     * @param         $config
      * @param Request $request
+     * @return void
+     * @throws Exception
      */
-    public function __construct( $config, Request $request = null )
+    public function __construct($config, Request $request = null)
     {
-        if ( isset( $request )  ) {
-            $request->app()->addScript( $request->get('path.misc').'/jquery/jquery.form.js' );
-            //$request->addScript( $request->get('path.misc').'/jquery/jquery.blockUI.js' );
-            //$request->addScript( $request->get('path.misc').'/forms.js' );
-        }
-
         if ( ! isset( $config['name'] ) ) {
-            throw new Exception('Для формы нужно определить обязательный параметр name');
+            throw new Exception('Require argument "name"');
         }
 //        if ( ! isset( $config['fields'] ) ) {
 //            throw new Exception('Для формы нужно определить массив полей fields');

@@ -6,23 +6,17 @@
  */
 use Module\News\Controller\RssController;
 
-class ControllerRssTest extends PHPUnit_Framework_TestCase
+class ControllerRssTest extends \Sfcms\Test\TestCase
 {
-    protected $app = null;
-
-    protected function setUp()
-    {
-        $this->app = App::getInstance();
-    }
-
     public function testIndexAction()
     {
-        $controller = new RssController();
-        $result = $controller->indexAction();
-        $this->assertInternalType('string', $result);
+        $response = $this->runController('rss', 'index');
+//        $controller = new RssController($this->request);
+//        $result = $controller->indexAction();
+//        $this->assertInternalType('string', $result);
         $this->assertStringStartsWith(
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<rss version=\"2.0\">\n  <channel>\n    <title>SiteForeverCMS</title>",
-            $result
+            $response->getContent()
         );
     }
 

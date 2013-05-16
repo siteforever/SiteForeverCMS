@@ -75,7 +75,7 @@ class Router
     public function createLink($result = '', $params = array())
     {
         if (!$result && isset($params['controller'])) {
-            return $this->createDirectRequest($params);
+            return static::createDirectRequest($params);
         }
 
         $result = trim($result, '/');
@@ -129,7 +129,7 @@ class Router
      * @return string
      * @throws \InvalidArgumentException
      */
-    public function createServiceLink($controller, $action = 'index', $params = array())
+    public static function createServiceLink($controller, $action = 'index', $params = array())
     {
         $result    = '';
         $parstring = '';
@@ -162,7 +162,7 @@ class Router
      *
      * @return string
      */
-    private function createDirectRequest($params)
+    private static function createDirectRequest($params)
     {
         $controller = $params['controller'];
         unset($params['controller']);
@@ -173,7 +173,7 @@ class Router
             $action = 'index';
         }
 
-        return $this->createServiceLink($controller, $action, $params);
+        return static::createServiceLink($controller, $action, $params);
     }
 
     /**

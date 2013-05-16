@@ -25,13 +25,13 @@ class Sfcms_Basket_User extends Basket
         }
 
         // Если были данные в сессии, то сохранить их пользователю
-        $basket = App::getInstance()->getSession()->get('basket');
+        $basket = $this->request->getSession()->get('basket');
         if ( $basket && is_array($basket) )
         {
             array_walk($basket, function($b,$i,$self) {
                 $self->add($b['id'], $b['name'], $b['count'], $b['price'], $b['details']  );
             }, $this);
-            App::getInstance()->getSession()->set('basket',null);
+            $this->request->getSession()->set('basket',null);
         }
         $this->save();
     }

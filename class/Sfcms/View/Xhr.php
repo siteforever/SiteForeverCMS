@@ -20,6 +20,7 @@ class Xhr extends ViewAbstract
     public function view(KernelEvent $event)
     {
         $response = $event->getResponse();
+        $request  = $event->getRequest();
         $content = $event->getResult() && $event->getResult() !== $event->getResponse()
             ? $event->getResult() : $response->getContent();
 //        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -28,7 +29,7 @@ class Xhr extends ViewAbstract
 
         $response->setCharset('utf-8');
 
-        $types = $this->getRequest()->getAcceptableContentTypes();
+        $types = $request->getAcceptableContentTypes();
         switch ($types[0]) {
             case 'application/json':
                 $response->headers->set('Content-type', 'application/json');
@@ -42,8 +43,8 @@ class Xhr extends ViewAbstract
                 break;
 
             default:
-                if (count( $this->getRequest()->getFeedback())) {
-                    $result = '<div class="feedback">' . $this->getRequest()->getFeedbackString() . '</div>';
+                if (count( $request->getFeedback())) {
+                    $result = '<div class="feedback">' . $request->getFeedbackString() . '</div>';
                     $response->setContent($result . $response->getContent());
                 }
         }

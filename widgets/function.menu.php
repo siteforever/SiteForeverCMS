@@ -14,6 +14,9 @@ use Module\Page\Model\PageModel;
  */
 function smarty_function_menu($params, Smarty_Internal_Template $smarty)
 {
+    /** @var \Sfcms\Request $request */
+    $request = $smarty->tpl_vars['request']->value;
+
     $parent   = isset( $params[ 'parent' ] ) ? $params[ 'parent' ] : 0;
     $level    = isset( $params[ 'level' ] ) ? $params[ 'level' ] : 0;
     $template = isset( $params[ 'template' ] ) ? $params[ 'template' ] : 'menu';
@@ -30,7 +33,7 @@ function smarty_function_menu($params, Smarty_Internal_Template $smarty)
         array(
             'parent'    => $parent,
             'level'     => $level,
-            'currentId' => App::getInstance()->getRequest()->get( 'id' ),
+            'currentId' => $request->get( 'id' ),
             'parents'   => $model->parents,
         )
     );

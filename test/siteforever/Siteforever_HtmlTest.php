@@ -36,16 +36,10 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
             $this->html->href( null, array("controller"=>"elcatalog", "action"=>"metaProduct", "prodid"=>15) )
         );
 
-//        $request    = App::getInstance()->getRequest();
-//        $route  = $request->get('route');
-//        $request->set('route', 'catalog/id=5');
-
         $this->assertEquals(
             'href="/catalog/id=10"',
             $this->html->href( '/catalog/id=5', array( 'id'=>'10' ) )
         );
-
-//        $request->set('route', $route);
     }
 
 }

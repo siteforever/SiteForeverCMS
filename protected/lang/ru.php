@@ -24,6 +24,7 @@ return array_merge(
         'Deleted route # '                          => 'Удален маршрут № ',
 
         'Data save successfully'                    => 'Данные сохранены успешно',
+        'Save successfully'                         => 'Сохранено успешно',
         'Data not saved'                            => 'Данные не сохранены',
         'Delete successfully'                       => 'Удалено успешно',
         'delete success'                            => 'удален успешно',

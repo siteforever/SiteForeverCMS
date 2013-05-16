@@ -31,6 +31,7 @@ class Captcha extends Field
      */
     protected function checkValue( $value )
     {
+        // todo Надо внедрить в форму Request
         $captcha_code = App::getInstance()->getSession()->get('captcha_code');
         if (strtolower($captcha_code) == strtolower($value)) {
             return true;

@@ -6,12 +6,12 @@
 use Sfcms\Form\Form;
 use Sfcms\Data\Field\Text;
 
-class Form_Field_TextTest extends PHPUnit_Framework_TestCase
+class Form_Field_TextTest extends \Sfcms\Test\TestCase
 {
     /**
      * @var Text
      */
-    protected $object;
+    protected $field;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -19,15 +19,16 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
+        parent::setUp();
         $form   = new Form(array('name'=>'test','fields'=>array(
                 'test'  => array(
                     'type'  => 'text',
                     'label' => 'test',
                     'value' => 'hello',
                 ),
-            )), App::getInstance()->getRequest() );
+            )), $this->request );
 
-        $this->object = $form->getField('test');
+        $this->field = $form->getField('test');
     }
 
     /**
@@ -41,58 +42,58 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
 
     public function testGetId()
     {
-        $this->assertEquals('test_test', $this->object->getId());
+        $this->assertEquals('test_test', $this->field->getId());
     }
 
     public function testGetName()
     {
-        $this->assertEquals('test', $this->object->getName());
+        $this->assertEquals('test', $this->field->getName());
     }
 
     public function testGetType()
     {
-        $this->assertEquals('text', $this->object->getType());
+        $this->assertEquals('text', $this->field->getType());
     }
 
     public function testGetValue()
     {
-        $this->assertEquals('hello', $this->object->getValue());
+        $this->assertEquals('hello', $this->field->getValue());
     }
 
     public function testGetStringValue()
     {
-        $this->assertEquals('hello', $this->object->getStringValue());
+        $this->assertEquals('hello', $this->field->getStringValue());
     }
 
     public function testSetValue()
     {
-        $this->object->setValue('123print');
-        $this->assertEquals('123print', $this->object->getValue());
+        $this->field->setValue('123print');
+        $this->assertEquals('123print', $this->field->getValue());
     }
 
     public function testGetLabel()
     {
-        $this->assertEquals('test', $this->object->getLabel());
+        $this->assertEquals('test', $this->field->getLabel());
     }
 
     public function testSetLabel()
     {
-        $this->object->setLabel('label');
-        $this->assertEquals('label', $this->object->getLabel());
+        $this->field->setLabel('label');
+        $this->assertEquals('label', $this->field->getLabel());
     }
 
     public function testValidate()
     {
-        $this->assertTrue( $this->object->validate('ABC') );
+        $this->assertTrue( $this->field->validate('ABC') );
     }
 
     public function testValidateRequired()
     {
-        $this->object->setValue('');
-        $this->object->setRequired();
-        $this->assertFalse( $this->object->validate() );
-        $this->object->setRequired(false);
-        $this->assertTrue( $this->object->validate() );
+        $this->field->setValue('');
+        $this->field->setRequired();
+        $this->assertFalse( $this->field->validate() );
+        $this->field->setRequired(false);
+        $this->assertTrue( $this->field->validate() );
     }
 
     public function testHtml()
@@ -101,26 +102,26 @@ class Form_Field_TextTest extends PHPUnit_Framework_TestCase
             ."<label for='test_test' class='control-label'>test</label>"
             ."<div class='controls field-text'>"
                 ."<input id='test_test' type='text' class=\"input-xlarge\" name='test[test]' value='hello' />"
-            ."</div></div>", $this->object->html());
+            ."</div></div>", $this->field->html());
     }
 
     public function testHtmlCustom()
     {
-        $this->object->setLabel('Name');
-        $this->object->setValue('Nikolay');
-        $this->object->setRequired();
+        $this->field->setLabel('Name');
+        $this->field->setValue('Nikolay');
+        $this->field->setRequired();
 
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
                 ."<label for='test_test' class='control-label'>Name&nbsp;<b>*</b> </label>"
                 ."<div class='controls field-text'>"
                     ."<input id='test_test' type='text' class=\"input-xlarge required\" name='test[test]' value='Nikolay' />"
-                ."</div></div>", $this->object->html());
+                ."</div></div>", $this->field->html());
     }
 
     public function testHtmlHidden()
     {
-        $this->object->hide();
-        
-        $this->assertEquals("<input type='hidden' name='test[test]' id='test_test' value='hello' />", $this->object->html());
+        $this->field->hide();
+
+        $this->assertEquals("<input type='hidden' name='test[test]' id='test_test' value='hello' />", $this->field->html());
     }
 }

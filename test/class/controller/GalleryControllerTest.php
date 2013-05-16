@@ -4,17 +4,12 @@
  */
 use Module\Gallery\Controller\GalleryController;
 
-class GalleryControllerTest extends PHPUnit_Framework_TestCase
+class GalleryControllerTest extends \Sfcms\Test\TestCase
 {
     /**
      * @var GalleryController
      */
-    protected $object;
-
-    /**
-     * @var App
-     */
-    protected $app;
+    protected $controller;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -22,8 +17,8 @@ class GalleryControllerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->app  = App::getInstance();
-        $this->object = new GalleryController( $this->app );
+        parent::setUp();
+        $this->controller = new GalleryController($this->request);
     }
 
     /**

@@ -36,7 +36,7 @@ class Html
      */
     public function url( $url, $params = array() )
     {
-        return App::getInstance()->getRouter()->createLink( $url, $params );
+        return App::getInstance()->getRouter()->createLink($url, $params);
     }
 
     /**

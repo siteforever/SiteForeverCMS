@@ -38,7 +38,7 @@ class Banner extends Object
             if (preg_match('/^http/', $this->data['url'])) {
                 $url = $this->data['url'];
             } else {
-                $url = \App::$request->getSchemeAndHttpHost() . '/' . trim($this->data['url'], '/');
+                $url = '/' . trim($this->data['url'], '/');
             }
             return $url;
         }

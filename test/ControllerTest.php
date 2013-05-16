@@ -14,23 +14,9 @@ class TestController extends Controller
     }
 }
 
-class ControllerTest extends PHPUnit_Framework_TestCase
+class ControllerTest extends \Sfcms\Test\TestCase
 {
-    protected $obj;
-    /**
-     * @var Sfcms\Kernel\
-     */
-    protected $app;
-
-    protected function setUp()
-    {
-        $this->app  = App::getInstance();
-        $this->obj  = new TestController( $this->app );
-    }
-
     public function testIndexAction()
     {
-//        $this->assertTrue( $this->obj->indexAction() );
-//        $this->assertEquals( $this->app->getRequest()->getTitle(), 'Главная' );
     }
 }

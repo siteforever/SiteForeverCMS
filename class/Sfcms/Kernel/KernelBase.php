@@ -10,11 +10,7 @@ use Sfcms\Cache\CacheInterface;
 use Sfcms\Controller\Resolver;
 use Sfcms\Model;
 use Sfcms\Module;
-//use Sfcms\Session;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
-use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
-use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Sfcms\Session;
 use Sfcms\Settings;
 use Sfcms\Delivery;
 use Sfcms\Config;
@@ -31,6 +27,7 @@ use Sfcms\Data\Object;
 use Module\User\Object\User;
 use Sfcms_Basket_Factory;
 use Sfcms_Cache;
+use RuntimeException;
 
 use Sfcms\Basket\Base as Basket;
 
@@ -151,12 +148,6 @@ abstract class KernelBase
     private $_modules = array();
 
     /**
-     * Вернет менеджер Кэша
-     * @var Sfcms_Cache
-     */
-    protected $_cache = null;
-
-    /**
      * Статические скрипты и стили
      * @var \Sfcms\Assets
      */
@@ -186,12 +177,10 @@ abstract class KernelBase
 
     abstract protected function init();
 
-    abstract protected function handleRequest();
+    abstract public function handleRequest(Request $request);
 
     public function __construct($cfg_file)
     {
-//        self::autoloadRegister(array($this,'autoload'));
-
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
         } else {
@@ -276,16 +265,18 @@ abstract class KernelBase
      */
     public function getAuth()
     {
-        if ( is_null( $this->auth ) ) {
-            if ( ! $this->auth_format ) {
-                //throw new Exception('Auth type format not defined');
-                $this->setAuthFormat('Session');
-            }
-            $class_name = 'Auth_'.$this->auth_format;
-            $this->auth = new $class_name;
-        }
         return $this->auth;
     }
+
+    /**
+     * @param \Auth $auth
+     */
+    public function setAuth($auth)
+    {
+        $this->auth = $auth;
+    }
+
+
 
     /**
      * Вернет объект кэша
@@ -316,50 +307,26 @@ abstract class KernelBase
         return $this->_cache;
     }
 
-
-    /**
-     * @return Basket
-     */
-    public function getBasket()
-    {
-        if ( null === self::$basket ) {
-            self::$basket = Sfcms_Basket_Factory::createBasket($this->getAuth()->currentUser());
-        }
-        return self::$basket;
-    }
-
     /**
      * Вернет доставку
+     * @param Request $request
      * @return Delivery
      */
-    public function getDelivery()
+    public function getDelivery(Request $request)
     {
         if ( null === $this->_devivery ) {
-            $this->_devivery = new Delivery($this->getSession(), $this->getBasket());
+            $this->_devivery = new Delivery($request->getSession(), $request->getBasket());
         }
         return $this->_devivery;
     }
 
-    /**
-     * @return Request
-     */
-    public function getRequest()
-    {
-        if ( is_null( self::$request ) ) {
-            self::$request  = Request::createFromGlobals();
-            $acceptableContentTypes = self::$request->getAcceptableContentTypes();
-            $format = null;
-            if ($acceptableContentTypes) {
-                $format = self::$request->getFormat($acceptableContentTypes[0]);
-            }
-            self::$request->setRequestFormat($format);
-            self::$request->setApp($this);
-        }
-        return self::$request;
-    }
+    public function getBasket()
+    {}
 
     /**
+     * Return template driver
      * @return Driver
+     * @throws Exception
      */
     public function getTpl()
     {
@@ -429,10 +396,15 @@ abstract class KernelBase
      */
     public function getRouter()
     {
-        if ( is_null( self::$router ) ) {
-            self::$router   = new Router( $this->getRequest() );
-        }
-        return self::$router;
+        return static::$router;
+    }
+
+    /**
+     * @param \Sfcms\Router $router
+     */
+    public function setRouter($router)
+    {
+        static::$router = $router;
     }
 
     /**
@@ -489,15 +461,6 @@ abstract class KernelBase
     }
 
     /**
-     * Вернет текущего пользователя
-     * @return User
-     */
-    public function getUser()
-    {
-        return $this->getAuth()->currentUser();
-    }
-
-    /**
      * Вернет модель
      * @param string $model
      * @return Model
@@ -550,25 +513,14 @@ abstract class KernelBase
         return $this->_assets;
     }
 
+
     /**
      * @return Session
+     * @throws RuntimeException
      */
     public function getSession()
     {
-        if ( null === $this->_session ) {
-            if (defined('TEST')) {
-                $storage = new MockArraySessionStorage();
-            } else {
-                $model = $this->getModel('Session');
-                $storage = new NativeSessionStorage(
-                    array(),
-                    new PdoSessionHandler($model->getDB()->getResource(), array('db_table'=>$model->getTable()))
-                );
-            }
-            $this->_session = new Session($storage);
-            $this->_session->start();
-        }
-        return $this->_session;
+        throw new RuntimeException('Session storaged in request');
     }
 
 

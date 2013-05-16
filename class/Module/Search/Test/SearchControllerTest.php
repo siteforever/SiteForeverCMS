@@ -9,8 +9,9 @@ namespace Module\Search\Test;
 
 use Module\Search\Controller\SearchController;
 use Sfcms\Request;
+use Sfcms\Test\TestCase;
 
-class SearchControllerTest extends \PHPUnit_Framework_TestCase
+class SearchControllerTest extends TestCase
 {
     /** @var SearchController */
     public $controller;
@@ -20,8 +21,8 @@ class SearchControllerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->controller = new SearchController();
-        $this->request    = \App::getInstance()->getRequest();
+        parent::setUp();
+        $this->controller = new SearchController($this->request);
     }
 
     public function testIndexAction()

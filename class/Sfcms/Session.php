@@ -4,14 +4,34 @@
  */
 namespace Sfcms;
 
-class Session extends Component
+use Module\System\Model\SessionModel;
+use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+
+class Session
 {
-    public function start()
+    /** @var SymfonySession  */
+    private $_session = null;
+
+    public function __construct(SessionModel $model = null)
     {
-        // Проверка, что запуск произошел через HTTP
-        if ( isset( $_SERVER['REQUEST_METHOD'] ) && in_array($_SERVER['REQUEST_METHOD'],array('GET','POST','HEAD','PUT')) ) {
-            session_start();
+        if (defined('TEST') && TEST) {
+            $storage = new MockArraySessionStorage();
+        } elseif (null !== $model) {
+            $storage = new NativeSessionStorage(
+                array(),
+                new PdoSessionHandler($model->getDB()->getResource(), array('db_table'=>$model->getTable()))
+            );
+        } else {
+            $storage = new NativeSessionStorage();
         }
-        $this->data = &$_SESSION;
+        $this->_session = new SymfonySession($storage);
+    }
+
+    public function session()
+    {
+        return $this->_session;
     }
 }

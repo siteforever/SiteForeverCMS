@@ -19,7 +19,7 @@ class OrderController extends Controller
     {
         return array(
             USER_USER => array('index'),
-            USER_ADMIN => array('admin'),
+            USER_ADMIN => array('admin', 'status'),
         );
     }
 
@@ -131,7 +131,7 @@ class OrderController extends Controller
 
         $positions = $order->Positions;
 //        $delivery  = $order->Delivery;
-        $delivery  = $this->app()->getDelivery();
+        $delivery  = $this->app()->getDelivery($this->request);
         $delivery->setType( $order->delivery_id );
         $payment   = $order->Payment;
 
@@ -234,7 +234,7 @@ class OrderController extends Controller
      * @param int $new_status
      * @return mixed
      */
-    public function adminEdit( $id, $new_status )
+    public function adminEdit($id)
     {
         $model = $this->getModel('Order');
         /** @var $order Order */
@@ -242,8 +242,8 @@ class OrderController extends Controller
         $positions  = $order->Positions;
         $user       = $order->User;
 
-        if ($new_status) {
-            $order->status = $new_status;
+        if ($this->request->request->has('new_status')) {
+            $order->status = $this->request->request->getInt('new_status');
         }
 
         $this->request->setTitle("Заказ <b>№ {$order->id}</b> от ".strftime('%d.%m.%Y (%H:%M)',$order->date));
@@ -261,5 +261,23 @@ class OrderController extends Controller
         ));
 
         return $this->render('order.admin_edit');
+    }
+
+    /**
+     * @param $id
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function statusAction($id)
+    {
+        $model = $this->getModel('Order');
+        /** @var $order Order */
+        $order      = $model->find( $id );
+
+        if ($this->request->request->has('new_status')) {
+            $order->status = $this->request->request->getInt('new_status');
+            return $this->renderJson(array('status'=>$order->status, 'msg'=>t('Save successfully')));
+        }
+        return $this->renderJson(array('error'=>1, 'msg'=>t('Status not defined')));
     }
 }

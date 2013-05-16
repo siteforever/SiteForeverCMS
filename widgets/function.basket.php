@@ -13,15 +13,17 @@
 * Purpose:  Выведет данные о корзине
 * -------------------------------------------------------------
 */
-function smarty_function_basket()
+function smarty_function_basket($params, Smarty_Internal_Template $smarty)
 {
-    $basket = App::getInstance()->getBasket();
+    /** @var \Sfcms\Request $request */
+    $request = $smarty->tpl_vars['request']->value;
 
-    App::getInstance()->getTpl()->assign(array(
+    $basket = $request->getBasket();
+
+    $smarty->smarty->assign(array(
         'count'     => $basket->getCount(),
         'summa'     => $basket->getSum(),
         'number'    => $basket->count(),
     ));
-    return App::getInstance()->getTpl()->fetch('basket.widget');
-    //return App::$tpl->fetch('system:basket.widget');
+    return $smarty->smarty->fetch('basket/widget.tpl');
 }

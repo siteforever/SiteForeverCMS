@@ -4,7 +4,7 @@
  */
 namespace Sfcms\JqGrid;
 
-use App;
+use Sfcms;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
 use Sfcms\Model;
@@ -13,11 +13,12 @@ use Pager;
 use InvalidArgumentException;
 
 use Sfcms\JqGrid\Format;
+use Sfcms\Request;
 
 class Provider
 {
-    /** @var App */
-    private $app = null;
+    /** @var Request */
+    private $request = null;
 
     /** @var Model */
     private $model = null;
@@ -34,9 +35,9 @@ class Provider
     /** @var string */
     private $url = null;
 
-    public function __construct( App $app )
+    public function __construct(Request $request)
     {
-        $this->app = $app;
+        $this->request = $request;
     }
 
     /**
@@ -77,7 +78,7 @@ class Provider
         if ( $this->criteria->condition && $searchCond = $this->createSearchCondition() ) {
             $this->criteria->condition .= " AND {$searchCond}";
         }
-        $this->app->getLogger()->log($this->criteria->condition, 'condition');
+//        $this->request->getLogger()->log($this->criteria->condition, 'condition');
         return $this->criteria;
     }
 
@@ -138,7 +139,7 @@ class Provider
      */
     public function getPerpage()
     {
-        return $this->app->getRequest()->get('rows', FILTER_VALIDATE_INT, 10);
+        return $this->request->get('rows', FILTER_VALIDATE_INT, 10);
     }
 
     /**
@@ -146,8 +147,8 @@ class Provider
      */
     public function getOrder()
     {
-        $sidx = $this->app->getRequest()->get('sidx');
-        $sord = $this->app->getRequest()->get('sord');
+        $sidx = $this->request->get('sidx');
+        $sord = $this->request->get('sord');
         if ( $sidx && $sord ) {
             return $sidx . ' ' . $sord;
         }
@@ -167,11 +168,11 @@ class Provider
 
         $controller = isset($params['controller'])
             ? $params['controller']
-            : $this->app->getRequest()->getController();
+            : $this->request->getController();
         $action     = isset($params['action']) ? $params['action'] : 'grid';
 
         $config = array(
-            'url' => $this->app->getRouter()->createServiceLink($controller, $action),
+            'url' => Sfcms::html()->url($controller . '/' . $action),
             'datatype'   => "json",
             'colNames'   => array_map(function ($v) {
                 if (is_array($v) && isset($v['title'])) {
@@ -221,7 +222,7 @@ class Provider
             'sortorder' => "desc",
             'multiselect' => isset( $params['multiselect'] ) ? $params['multiselect'] : false,
         );
-        $this->app->getLogger()->log($config,'$config');
+        $this->request->getLogger()->log($config,'$config');
         return $config;
     }
 
@@ -304,9 +305,9 @@ class Provider
     {
         $result = array();
 
-        $searchField  = $this->app->getRequest()->get( 'searchField' );
-        $searchOper   = $this->app->getRequest()->get( 'searchOper' );
-        $searchString = $this->app->getRequest()->get( 'searchString' );
+        $searchField  = $this->request->get( 'searchField' );
+        $searchOper   = $this->request->get( 'searchOper' );
+        $searchString = $this->request->get( 'searchString' );
 
         $operations = array(
             'eq'    => "`:field` = ':value' ",
@@ -329,10 +330,9 @@ class Provider
             $result[] = str_replace(array(':field', ':value'), array($searchField, $searchString), $operations[$searchOper]);
         }
 
-        $request = $this->app->getRequest();
+        $request = $this->request;
 
         $fields = $this->getFields();
-        $this->app->getLogger()->log($fields, 'getFields');
 
         $result += array_filter( array_map(function($id) use ($request, $fields, $operations) {
             $field = $fields[$id];

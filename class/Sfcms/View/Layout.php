@@ -6,6 +6,7 @@
 namespace Sfcms\View;
 
 use Sfcms\Kernel\KernelEvent;
+use Sfcms\Request;
 
 class Layout extends ViewAbstract
 {
@@ -18,7 +19,7 @@ class Layout extends ViewAbstract
 
     public $path;
 
-    protected final function init()
+    protected final function init(Request $request)
     {
         $this->anti_cache = substr( md5(mktime(null,0,0)), 0, 8 );
 
@@ -35,12 +36,12 @@ class Layout extends ViewAbstract
         /** Данные шаблона */
         $this->getTpl()->assign( array(
             'path'     => $this->path,
-            'resource' => $this->getRequest()->get('resource'),
-            'template' => $this->getRequest()->getTemplate(),
+            'resource' => $request->get('resource'),
+            'template' => $request->getTemplate(),
             'config'   => $this->_app->getConfig(),
-            'feedback' => $this->getRequest()->getFeedbackString(),
-            'host'     => $this->getRequest()->getHost(),
-            'request'  => $this->getRequest(),
+            'feedback' => $request->getFeedbackString(),
+            'host'     => $request->getHost(),
+            'request'  => $request,
         ) );
     }
 
@@ -53,12 +54,12 @@ class Layout extends ViewAbstract
     {
         $event->getResponse()->setCharset('utf-8');
         $event->getResponse()->headers->set('Content-type', 'text/html');
-        $this->init();
+        $this->init($event->getRequest());
 
-        $this->selectLayout()->view($event);
+        $this->selectLayout($event->getRequest())->view($event);
 
-        $head = '<head>' . PHP_EOL . $this->getHead();
-        $scripts = $this->getScripts() . PHP_EOL . '</body>';
+        $head = '<head>' . PHP_EOL . $this->getHead($event->getRequest());
+        $scripts = $this->getScripts($event->getRequest()) . PHP_EOL . '</body>';
 
         $content = $event->getResponse()->getContent();
         $content = str_replace(
@@ -78,11 +79,11 @@ class Layout extends ViewAbstract
 
     /**
      * Вернет список тэгов для head
+     * @param Request $request
      * @return string
      */
-    private function getHead()
+    private function getHead(Request $request)
     {
-        $request = $this->getRequest();
         $config = $this->_app->getConfig();
 
         $return = array();
@@ -129,12 +130,12 @@ class Layout extends ViewAbstract
 
     /**
      * Вернет список скриптов, для вставки в конец body
+     * @param Request $request
      * @return string
      */
-    private function getScripts()
+    private function getScripts(Request $request)
     {
         $return = array();
-        $request = $this->getRequest();
         $config = $this->_app->getConfig();
 
         $rjsConfig = array(
@@ -219,16 +220,17 @@ class Layout extends ViewAbstract
 
     /**
      * Выбор лэйаута
+     * @param Request $request
      * @return Layout
      */
-    protected function selectLayout()
+    protected function selectLayout(Request $request)
     {
-        if ('system:' == $this->getRequest()->get('resource')) {
+        if ('system:' == $request->attributes->get('resource')) {
             $layout = new Layout\Admin($this->_app);
-            $this->getRequest()->set('admin', true);
+            $request->attributes->set('admin', true);
         } else {
             $layout = new Layout\Page($this->_app);
-            $this->getRequest()->set('admin', false);
+            $request->attributes->set('admin', false);
         }
         return $layout;
     }

@@ -8,6 +8,7 @@ namespace Module\Gallery\Model;
 use Sfcms\Data\Collection;
 use Sfcms\Model;
 use Forms_Gallery_Image;
+use Sfcms\Request;
 
 class GalleryModel extends Model
 {
@@ -63,9 +64,9 @@ class GalleryModel extends Model
      * Пересортировка изображений
      * @return int
      */
-    public function reposition()
+    public function reposition(Request $request)
     {
-        $positions = $this->request->get('positions');
+        $positions = $request->get('positions');
         $new_pos = array();
         foreach ( $positions as $pos => $id ) {
             $new_pos[] = array('id'=>$id, 'pos'=>$pos);

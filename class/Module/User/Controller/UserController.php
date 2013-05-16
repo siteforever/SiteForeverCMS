@@ -4,12 +4,14 @@
  */
 namespace Module\User\Controller;
 
+use Doctrine\Tests\Common\Annotations\Fixtures\Annotation\Secure;
 use Module\User\Object\User;
 use Sfcms\Controller;
 use Forms\User\Restore as FormRestore;
 use Module\User\Model\UserModel;
 use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
+use Symfony\Component\Security\Core\Util\SecureRandom;
 
 class UserController extends Controller
 {
@@ -43,24 +45,36 @@ class UserController extends Controller
      */
     public function indexAction( $confirm, $userid )
     {
-        $auth   = $this->app()->getAuth();
         // подтверждение регистрации
-        if ( $confirm && $userid ) {
+        if ($confirm && $userid) {
             $this->request->setTitle('Подтверждение регистрации');
-            $this->getTpl()->getBreadcrumbs()
-                ->addPiece('index',t('Home'))
-                ->addPiece('user',t('user','Sign in site'))
-                ->addPiece(null,$this->request->getTitle());
-            $auth->confirm();
-            if ( $auth->getError() ) {
-                return array('error' => 1, 'msg' => $auth->getMessage());
+            $this->getTpl()->getBreadcrumbs()->addPiece('index', t('Home'))->addPiece(
+                    'user',
+                    t('user', 'Sign in site')
+                )->addPiece(null, $this->request->getTitle());
+
+            /** @var User $user */
+            $user = $this->getModel('User')->find( array(
+                    'cond'      => 'id = :id AND confirm = :confirm',
+                    'params'    => array(':id'=>$userid, ':confirm'=>$confirm),
+                ));
+
+            if ($user) {
+                $user->perm = USER_USER;
+                $user->last = time();
+                $user->active();
+                $user->confirm = md5(microtime() . $user->solt);
+
+                return array('error'=>false, 'success' => 1, 'message'=>t('Регистрация успешно подтверждена'));
+            } else {
+                return array('error'=>true, 'message'=>'Ваш аккаунт не подвержден, обратитесь к '
+                . '<a href="mailto:'.$this->config->get('admin').'">администрации сайта</a>'
+                );
             }
-            return array('success' => 1, 'msg' => $auth->getMessage());
         }
 
         return $this->loginAction();
     }
-
 
     /**
      * @return array
@@ -212,6 +226,10 @@ class UserController extends Controller
      */
     public function logoutAction()
     {
+        $this->app()->getAuth()->setId(0);
+//        setcookie('sxd', null, null, '/runtime/sxd/');
+//        $this->app()->getSession()->sxd_auth = 0; // Авторизация Sypex Dumper
+//        $this->app()->getSession()->sxd_conf = null;
         $this->app()->getAuth()->logout();
         return $this->redirect('user/login');
     }
@@ -242,11 +260,11 @@ class UserController extends Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                if ( $auth->login( $form->login, $form->password ) ) {
+                $result = $this->login($form->login, $form->password);
+                if (!$result['error']) {
                     return $this->redirect($this->request->server->get('HTTP_REFERER'));
                 } else {
-                    $this->getTpl()->assign('error',1);
-                    $this->getTpl()->assign('msg',$auth->getMessage());
+                    $this->getTpl()->assign($result);
                 }
             }
         }
@@ -255,6 +273,57 @@ class UserController extends Controller
 
         return $this->tpl->fetch('user.login');
     }
+
+    /**
+     * Логин
+     * @param string $login
+     * @param string $password
+     */
+    private function login( $login, $password )
+    {
+        if ( $password == '' ) {
+            return array('error'=>1, 'message'=>t('user','Empty password'));
+        }
+
+        /** @var User $user */
+        $user = $this->getModel('User')->find(array(
+            'cond' => 'login = ?',
+            'params'=> array($login),
+        ));
+
+        if ( $user ) {
+            //print_r( $user->getAttributes() );
+            if ( $user->perm < USER_USER ) {
+                return array('error' => 1, 'message' => t('user','Not enough permissions'));
+            }
+
+            if ( $user->status == 0 ) {
+                return array('error'=>1, 'message'=>t('user','Your account has been disabled'));
+            }
+
+            $password = $this->app()->getAuth()->generatePasswordHash( $password, $user->solt );
+
+            //print $user->password.' == '.$password;
+
+            if ( $password != $user->password ) {
+                return array('error' => 1, 'message'=>t('user','Your password is not suitable'));
+            }
+
+            $this->app()->getAuth()->currentUser($user);
+
+//            if ( $user->perm == USER_ADMIN ) {
+                // Авторизация Sypex Dumper
+//                $this->app()->getSession()->sxd_auth    = 1;
+//                $this->app()->getSession()->sxd_conf    = $this->app()->getConfig()->get('db');
+//            }
+
+            return array('error' => 0, 'message'=>t('user','Authorization was successful'));
+        }
+
+        return array('error' => 1, 'message'=>t('user','Your login is not registered'));
+    }
+
+
 
     /**
      * Редактирование профиля пользователя
@@ -321,11 +390,7 @@ class UserController extends Controller
             if ( $form->validate() ) {
                 $user   = $model->createObject();
                 $user->attributes = $form->getData();
-                $auth   = $this->app()->getAuth();
-                $auth->register( $user );
-                if ( $auth->getError() ) {
-                    $this->request->addFeedback($auth->getMessage());
-                } else {
+                if ($this->register( $user )) {
                     return $this->tpl->fetch('user.register_successfull');
                 }
             } else {
@@ -334,6 +399,88 @@ class UserController extends Controller
         }
         return $form->html();
     }
+
+
+    /**
+     * Регистрация
+     * @param User $obj
+     */
+    public function register( User $obj )
+    {
+        if ( strlen( $obj['login'] ) < 5 ) {
+            $this->request->addFeedback('Логин должен быть не короче 5 символов');
+            return false;
+        }
+
+        if ( strlen( $obj['password'] ) < 6 ) {
+            $this->request->addFeedback( 'Пароль должен быть не короче 6 символов' );
+            return false;
+        }
+
+        $generator = new SecureRandom();
+
+        $obj['solt']    = $generator->nextBytes(8);
+        $obj['password']= $this->app()->getAuth()->generatePasswordHash( $obj['password'], $obj['solt'] );
+        $obj['perm']    = USER_GUEST;
+        $obj['status']  = 0;
+        $obj['confirm'] = md5(microtime().$obj['solt']);
+
+        //$data['login']  = $data['login'];
+        $obj['date']   = time();
+        $obj['last']   = time();
+
+        $user   = $this->model->find(array(
+                'cond'     => 'login = :login',
+                'params'   => array(':login'=>$obj['login']),
+            ));
+
+        if ( $user ) {
+            $this->request->addFeedback( 'Пользователь с таким логином уже существует' );
+            return false;
+        }
+
+        $user   = $this->model->find(array(
+                'cond'     => 'email = :email',
+                'params'   => array(':email'=>$obj['email']),
+            ));
+
+        if ( $user ) {
+            $this->request->addFeedback( 'Пользователь с таким адресом уже существует' );
+            return false;
+        }
+
+        //printVar($obj->getAttributes());
+
+        //return;
+
+        //$this->setData( $data );
+        // Надо сохранить, чтобы знать id
+        if ( $this->model->save( $obj ) ) {
+            $tpl    = $this->app()->getTpl();
+            $config = $this->app()->getConfig();
+
+            $tpl->data = $obj;
+            $tpl->sitename = $config->get('sitename');
+            $tpl->siteurl  = $config->get('siteurl');
+
+            $msg = $tpl->fetch('user.mail.register');
+
+            //print $msg;
+
+            sendmail(
+                $config->get('sitename').' <'.$config->get('admin').'>',
+                $obj->email,
+                'Подтверждение регистрации',
+                $msg
+            );
+
+            $this->request->addFeedback("Регистрация прошла успешно. ".
+                "На Ваш Email отправлена ссылка для подтверждения регистрации.");
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * Сюда приходит пользователь по ссылке восстановления пароля

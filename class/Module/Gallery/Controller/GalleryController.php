@@ -190,7 +190,7 @@ class GalleryController extends Controller
         }
 
         if ($this->request->get('positions')) {
-            return $model->reposition();
+            return $model->reposition($this->request);
         }
 
         $cat_list = $category->findAll('deleted != 1');

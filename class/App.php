@@ -34,9 +34,10 @@ class App extends KernelBase
     {
         self::$start_time = microtime( true );
         $this->init();
-        $response = $this->handleRequest();
+        $request  = Request::createFromGlobals();
+        $response = $this->handleRequest($request);
         $this->flushDebug();
-        $response->prepare($this->getRequest());
+        $response->prepare($request);
         $response->send();
 //        print round(microtime(1) - self::$start_time, 3);
     }
@@ -53,22 +54,12 @@ class App extends KernelBase
 
     /**
      * Инициализация
-     * @static
      * @return void
      */
     public function init()
     {
         // Language
         $this->getConfig()->setDefault('language', 'en');
-        if (!$this->getRequest()->get('lang')) {
-            $this->getRequest()->set('lang', $this->getConfig('language'));
-        } else {
-            $this->getConfig()->set('language', $this->getRequest()->get('lang'));
-        }
-        i18n::getInstance()->setLanguage(
-            $this->getConfig()->get('language')
-        );
-        $this->getRequest()->setLocale($this->getConfig()->get('language'));
 
         // TIME_ZONE
         date_default_timezone_set($this->getConfig('timezone') ? : 'Europe/Moscow');
@@ -88,15 +79,38 @@ class App extends KernelBase
 
     /**
      * Обработка запросов
-     * @static
+     * @param Request $request
+     *
      * @return Response
      */
-    protected function handleRequest()
+    public function handleRequest(Request $request)
     {
+        $acceptableContentTypes = $request->getAcceptableContentTypes();
+        $format = null;
+        if ($acceptableContentTypes) {
+            $format = $request->getFormat($acceptableContentTypes[0]);
+        }
+        $request->setRequestFormat($format);
+        $request->setDefaultLocale($this->getConfig('language'));
+        i18n::getInstance()->setLanguage($request->getLocale());
+
         // запуск сессии
-        $this->getSession();
+        if (!$request->getSession()) {
+            $sessionHelper = new \Sfcms\Session($this->getModel('Session'));
+            $request->setSession($sessionHelper->session());
+            $request->getSession()->start();
+        }
         // маршрутизатор
-        $this->getRouter()->routing();
+        $router = new \Sfcms\Router($request);
+        $this->setRouter($router);
+        $router->routing();
+
+        if ( ! $this->auth_format ) {
+            //throw new Exception('Auth type format not defined');
+            $this->setAuthFormat('Session');
+        }
+        $authClassName = 'Auth_'.$this->auth_format;
+        $this->setAuth(new $authClassName($request));
 
         self::$init_time = microtime( 1 ) - self::$start_time;
         self::$controller_time = microtime( 1 );
@@ -105,7 +119,7 @@ class App extends KernelBase
         /** @var Response $response */
         $response = null;
         try {
-            $result = $this->getResolver()->dispatch($this->getRequest());
+            $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
             $this->getLogger()->log($e->getMessage());
             $response = new Response($e->getMessage(), $e->getStatusCode()?:500);
@@ -125,7 +139,7 @@ class App extends KernelBase
 
         self::$controller_time = microtime( 1 ) - self::$controller_time;
 
-        $event = new KernelEvent($response, $this->getRequest(), $result);
+        $event = new KernelEvent($response, $request, $result);
         $this->getEventDispatcher()->dispatch('kernel.response', $event);
 
         // Выполнение операций по обработке объектов
@@ -148,7 +162,8 @@ class App extends KernelBase
     {
         $result = $event->getResult();
         $response = $event->getResponse();
-        $format = $this->getRequest()->getRequestFormat();
+        $request = $event->getRequest();
+        $format = $request->getRequestFormat();
         if (is_array($result) && 'json' == $format) {
             // Если надо вернуть JSON из массива
             $result = json_encode($result);
@@ -157,7 +172,7 @@ class App extends KernelBase
         if (is_array($result) && ('html' == $format || null === $format)) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign($result);
-            $template = $this->getRequest()->getController() . '.' . $this->getRequest()->getAction();
+            $template = $request->getController() . '.' . $request->getAction();
             $result   = $this->getTpl()->fetch($template);
         }
         // Просто установить итоговую строку как контент
@@ -175,7 +190,7 @@ class App extends KernelBase
      */
     public function prepareReload(KernelEvent $event)
     {
-        if ( $reload = $this->getRequest()->get('reload') ) {
+        if ( $reload = $event->getRequest()->get('reload') ) {
             $event->getResponse()->setContent($event->getResponse()->getContent() . $reload);
         }
         return $event;
@@ -189,7 +204,7 @@ class App extends KernelBase
      */
     public function invokeLayout(KernelEvent $event)
     {
-        if( $this->getRequest()->getAjax() ) {
+        if( $event->getRequest()->getAjax() ) {
             $Layout = new Xhr($this);
         } else {
             $Layout = new Layout($this);

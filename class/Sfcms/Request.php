@@ -3,11 +3,11 @@ namespace Sfcms;
 
 use App;
 use Sfcms\Assets;
-use Sfcms_Http_Exception as Exception;
 use Sfcms\Kernel\KernelBase as Service;
 use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
+use Sfcms\Basket\Base as Basket;
 
 /**
  * Объект запроса
@@ -30,49 +30,8 @@ class Request extends SymfonyRequest
     private $_keywords = '';
     private $_description = '';
 
-    /** @var App */
-    private $_app;
+    protected $basket;
 
-    /**
-     * @param \App $app
-     */
-    public function setApp($app)
-    {
-        $this->_app = $app;
-    }
-
-    /**
-     * @return \App
-     */
-    public function app()
-    {
-        return $this->_app;
-    }
-
-    /**
-     * Созание запроса
-     */
-//    public function __construct()
-//    {
-//        $this->request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-//        $this->request->setLocale($this->app()->getConfig('language'));
-//        $this->set('resource', 'theme:');
-//
-//        if (in_array($this->request->getMimeType(static::TYPE_JSON), $this->request->getAcceptableContentTypes())) {
-//            $this->request->setRequestFormat(static::TYPE_JSON, $this->request->getMimeType(static::TYPE_JSON));
-//        }
-//        if (in_array($this->request->getMimeType(static::TYPE_XML), $this->request->getAcceptableContentTypes())) {
-//            $this->request->setRequestFormat(static::TYPE_XML, $this->request->getMimeType(static::TYPE_XML));
-//        }
-//
-//        $this->_assets = new Assets();
-//
-//        if ($this->request->query->has('route')) {
-//            $this->request->query->set('route', preg_replace('/\?.*/', '', $this->request->query->get('route')));
-//        }
-//
-
-//    }
     public function __construct(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
     {
         parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
@@ -93,6 +52,17 @@ class Request extends SymfonyRequest
         }
     }
 
+
+    /**
+     * @return Basket
+     */
+    public function getBasket()
+    {
+        if ( null === $this->basket ) {
+            $this->basket = \Sfcms_Basket_Factory::createBasket($this);
+        }
+        return $this->basket;
+    }
 
 
     /**

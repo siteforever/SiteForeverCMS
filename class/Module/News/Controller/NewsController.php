@@ -186,6 +186,7 @@ class NewsController extends Controller
         $model      = $this->getModel('News');
         /** @var $form Form */
         $form   = $model->getForm();
+        $form->cat_id = $cat;
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {

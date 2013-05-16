@@ -8,13 +8,13 @@ namespace Sfcms;
 use App;
 use Sfcms\Basket\Base as Basket;
 use Module\Market\Object\Delivery as DeliveryObject;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Session as SymfonySession;
 
 class Delivery
 {
     protected $id;
 
-    /** @var Session */
+    /** @var SymfonySession */
     protected $session;
 
     /** @var Basket */
@@ -25,10 +25,10 @@ class Delivery
 
 
     /**
-     * @param Session $session
+     * @param SymfonySession $session
      * @param Basket  $basket
      */
-    public function __construct(Session $session, Basket $basket)
+    public function __construct(SymfonySession $session, Basket $basket)
     {
         $this->basket  = $basket;
         $this->session = $session;

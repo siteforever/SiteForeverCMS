@@ -67,8 +67,8 @@ class GoodsController extends Controller
 
         return array(
             'provider'      => $provider,
-            'category'      => $this->app()->getSession()->get('category') ?: 0,
-            'type'          => $this->app()->getSession()->get('type') ?: -1,
+            'category'      => $this->request->getSession()->get('category', 0),
+            'type'          => $this->request->getSession()->get('type', -1),
         );
     }
 

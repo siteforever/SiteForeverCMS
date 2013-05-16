@@ -47,11 +47,6 @@ abstract class Model extends Component
     protected $db;
 
     /**
-     * @var Request
-     */
-    protected $request;
-
-    /**
      * @var User
      */
     protected $user;
@@ -108,7 +103,6 @@ abstract class Model extends Component
      */
     final private function __construct()
     {
-        $this->request = $this->app()->getRequest();
         $this->config  = $this->app()->getConfig();
 
         // база данных

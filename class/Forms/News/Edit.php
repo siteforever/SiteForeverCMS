@@ -8,6 +8,14 @@
 
 use Sfcms\Model;
 
+/**
+ * Class Forms_News_Edit
+ *
+ * @property $id
+ * @property $cat_id
+ * @property $author_id
+ * ...
+ */
 class Forms_News_Edit extends \Sfcms\Form\Form
 {
 
@@ -30,7 +38,7 @@ class Forms_News_Edit extends \Sfcms\Form\Form
                 'id'        => array('type'=>'int', 'value'=>'0', 'hidden',),
                 'cat_id'    => array(
                     'type'      =>  'select',
-                    'value'     =>  $app->getRequest()->get('cat'),
+                    'value'     =>  '0',
                     'variants'  =>  $cats,
                     'label'     =>  'Категория',
                     //'hidden',

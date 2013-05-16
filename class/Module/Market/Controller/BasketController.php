@@ -20,6 +20,7 @@ class BasketController extends Controller
     public function indexAction( $address )
     {
         $form = new Forms_Basket_Address();
+        $form->delivery_id = $this->request->getSession()->get('delivery');
 
         // Ajax validate
         if ( $this->request->isAjax() && $form->getPost() ) {
@@ -54,7 +55,7 @@ class BasketController extends Controller
         $deliveries = $deliveryModel->findAll('active = ?',array(1),'pos');
         $form->getField('delivery_id')->setVariants( $deliveries->column('name') );
 
-        $delivery = $this->app()->getDelivery();
+        $delivery = $this->app()->getDelivery($this->request);
         $form->getField('delivery_id')->setValue( $delivery->getType() );
 
         // Заполним методы оплаты
@@ -89,7 +90,7 @@ class BasketController extends Controller
                                 }, $this->getBasket()->getAll()),
             'all_count'     => $this->getBasket()->getCount(),
             'all_summa'     => $this->getBasket()->getSum(),
-            'delivery'      => $this->app()->getDelivery(),
+            'delivery'      => $delivery,
             'form'          => $form,
             'host'          => urlencode($this->config->get('siteurl').$this->router->createLink('basket') ),
         );
@@ -192,8 +193,8 @@ class BasketController extends Controller
                 if ( $this->getBasket()->getAll() ) {
                     // создать заказ
 
-                    $delivery = $this->app()->getDelivery();
-                    $this->app()->getSession()->set('delivery',$delivery->getType());
+                    $delivery = $this->app()->getDelivery($this->request);
+                    $this->request->getSession()->set('delivery',$delivery->getType());
 
                     /** @var $orderModel OrderModel */
                     $orderModel    = $this->getModel('Order');
@@ -203,7 +204,7 @@ class BasketController extends Controller
                         $this->getBasket()->clear();
                         $this->getBasket()->save();
 
-                        $this->app()->getSession()->set('order_id',$order->id);
+                        $this->request->getSession()->set('order_id',$order->id);
 
                         $paymentModel = $this->getModel('Payment');
                         $payment = $paymentModel->find( $form['payment_id'] );

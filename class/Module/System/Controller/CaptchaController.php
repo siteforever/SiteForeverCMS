@@ -45,7 +45,7 @@ class CaptchaController extends Controller
 
         $text   = $this->app()->getAuth()->generateString( $l, '/[ABCEFGHIKMNOP]/' );
 
-        $this->app()->getSession()->set('captcha_code', $text);
+        $this->request->getSession()->set('captcha_code', $text);
 
         $step   = round( ( $w * 0.8 ) / $l );
         $halfstep   = round( $step / 2 );

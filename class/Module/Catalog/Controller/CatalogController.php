@@ -127,12 +127,12 @@ class CatalogController extends Controller
         // Примеряем способ сортировки к списку из конфига
         if ($orderList && is_array($orderList)) {
             if (!($set = $this->request->get('order'))) {
-                $set = $this->app()->getSession()->get('Sort') ? : false;
+                $set = $this->request->getSession()->get('Sort', false);
             }
             if ($set && $this->config->get('catalog.order_list.' . $set)) {
                 $order = $set;
                 $this->request->set('order', $order);
-                $this->app()->getSession()->set('Sort', $order);
+                $this->request->getSession()->set('Sort', $order);
             }
         }
 
@@ -557,7 +557,7 @@ class CatalogController extends Controller
             $parentId = $add;
 //            $this->app()->getSession()->set('catalogCategory', $add);
         } else {
-            $parentId = $this->app()->getSession()->get('catalogCategory', 0);
+            $parentId = $this->request->getSession()->get('catalogCategory', 0);
         }
 
         $form = $catalogFinder->getForm();
@@ -700,8 +700,10 @@ class CatalogController extends Controller
          */
         $catalogFinder = $this->getModel('Catalog');
         // перемещение
-        if( $this->request->query->get( 'move_list' ) ) {
-            return array('msg' => $catalogFinder->moveList());
+        if( $this->request->query->has('move_list') ) {
+            $list   = $this->request->query->get('move_list');
+            $target = $this->request->query->get('target');
+            return array('msg' => $catalogFinder->moveList($list, $target));
         }
         return array('msg' => 'Fail');
     }

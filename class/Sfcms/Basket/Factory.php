@@ -14,26 +14,23 @@ class Sfcms_Basket_Factory
 
     /**
      * Создаст корзину
-     * @param User $user
+     * @param \Sfcms\Request $request
      * @return Basket
      * @throws Exception
      */
-    static function createBasket( User $user )
+    static function createBasket( \Sfcms\Request $request )
     {
-        if ( self::$created ) {
-            throw new Exception('Корзина может быть создана только один раз');
-        }
-        self::$created = true;
+        $user = \App::getInstance()->getAuth()->currentUser();
 
         if ( ! $user instanceof User ) {
             throw new Exception('Not valid User object');
         }
 
         if ( $user && $user->getPermission() != USER_GUEST ) {
-            $basket = new Sfcms_Basket_User( $user );
+            $basket = new Sfcms_Basket_User($request, $user );
         }
         else {
-            $basket = new Sfcms_Basket_Session( $user );
+            $basket = new Sfcms_Basket_Session($request, $user );
         }
         return $basket;
     }

@@ -20,8 +20,7 @@ class Forms_Basket_Address extends \Sfcms\Form\Form
                     'type'      =>'radio',
                     'required',
                     'label'     =>'Доставка',
-                    'value'     => filter_input( App::getInstance()->getSession()->get('delivery'),
-                                                 FILTER_SANITIZE_NUMBER_INT ) ?: '0',
+                    'value'     => '0',
                     'variants'  => array(),
                 ),
                 'payment_id' => array(

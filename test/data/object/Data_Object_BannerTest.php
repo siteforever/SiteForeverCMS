@@ -32,7 +32,7 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('http://reklama.com/test',$banner->url);
 
         $banner->url = '/test';
-        $this->assertEquals('http://example.com/test',$banner->url);
+        $this->assertEquals('/test',$banner->url);
     }
 
 

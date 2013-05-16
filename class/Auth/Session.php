@@ -14,7 +14,7 @@ class Auth_Session extends Auth
      */
     public function getId()
     {
-        return $this->app()->getSession()->get('user_id');
+        return $this->request->getSession()->get('user_id');
     }
 
     /**
@@ -24,6 +24,6 @@ class Auth_Session extends Auth
      */
     public function setId($id)
     {
-        $this->app()->getSession()->set('user_id', $id);
+        $this->request->getSession()->set('user_id', $id);
     }
 }

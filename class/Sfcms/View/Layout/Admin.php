@@ -16,7 +16,8 @@ class Admin extends Layout
      */
     public function view(KernelEvent $event)
     {
-        $this->init();
+        $request = $event->getRequest();
+        $this->init($request);
         // подключение админских стилей и скриптов
         $this->attachJUI();
         $this->_app->addStyle( $this->getMisc() . '/admin/admin.css' );
@@ -51,7 +52,7 @@ class Admin extends Layout
 
         $this->getTpl()->assign('response', $event->getResponse());
         $event->getResponse()->setContent($this->getTpl()->fetch(
-            $this->getRequest()->get('resource') . $this->getRequest()->getTemplate()
+            $request->get('resource') . $request->getTemplate()
         ));
         return $event;
     }

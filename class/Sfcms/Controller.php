@@ -60,10 +60,10 @@ abstract class Controller extends Component
     /** @var CacheInterface */
     protected static $cache = null;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
+        $this->request  = $request;
         $this->config   = $this->app()->getConfig();
-        $this->request  = $this->app()->getRequest();
         $this->router   = $this->app()->getRouter();
         $this->user     = $this->app()->getAuth()->currentUser();
         $this->params   = $this->request->get('params');
@@ -75,7 +75,6 @@ abstract class Controller extends Component
         if ($defaults) {
             $this->config->setDefault($defaults[0], $defaults[1]);
         }
-
 
         $pageId     = $this->request->get('pageid', 0);
         $controller = $this->request->getController();
@@ -102,7 +101,6 @@ abstract class Controller extends Component
         $this->page = $pageObj;
 
         if ($this->app()->isDebug()) {
-            //            $this->log( $this->request, 'Request' );
             if ($this->page) {
                 $this->log($this->page->getAttributes(), 'Page');
             }
@@ -110,7 +108,7 @@ abstract class Controller extends Component
 
         $this->tpl->assign(
             array(
-                'request'   => $this->request,
+                'request'   => $request,
                 'page'      => $this->page,
                 'auth'      => $this->app()->getAuth(),
                 'config'    => $this->config,
@@ -137,7 +135,7 @@ abstract class Controller extends Component
      */
     public function getBasket()
     {
-        return $this->app()->getBasket();
+        return $this->request->getBasket();
     }
 
     /**
@@ -195,15 +193,16 @@ abstract class Controller extends Component
      */
     public function getModel($model='')
     {
-        if ( '' === $model  ) {
-            if ( preg_match('@^Controller_(\w+)@',get_class( $this ), $m ) ) {
+        if ('' === $model) {
+            if (preg_match('@^Controller_(\w+)@', get_class($this), $m)) {
                 $model = $m[1];
-            } elseif ( preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class( $this ), $m) ) {
-                $model = '\\Module\\'.$m[1].'\\Model\\'.$m[2];
+            } elseif (preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class($this), $m)) {
+                $model = '\\Module\\' . $m[1] . '\\Model\\' . $m[2];
             } else {
-                throw new Exception(sprintf('Model not defined in class %s',get_class($this)));
+                throw new Exception(sprintf('Model not defined in class %s', get_class($this)));
             }
         }
+
         return Model::getModel($model);
     }
 

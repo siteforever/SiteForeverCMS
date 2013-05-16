@@ -7,7 +7,8 @@
 namespace Sfcms\Kernel;
 
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpFoundation\Request;
+//use Symfony\Component\HttpFoundation\Request;
+use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class KernelEvent extends Event

@@ -466,97 +466,6 @@ class CatalogModel extends Model
     }
 
     /**
-     * Определяет id активной категории
-     * @return boolean|int|mixed
-     */
-    private function getActiveCategory()
-    {
-        $result     = null;
-        $id         = $this->request->get( 'id' );
-        $cat        = $this->request->get( 'cat' );
-        $controller = $this->request->get( 'controller' );
-
-        if( null !== $cat ) {
-            $result = $cat;
-        } elseif( strpos( $controller, 'catalog' ) && null !== $id ) {
-            $result = $id;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Вернет меню для раздела каталога
-     * @param     $url
-     * @param     $parent
-     * @param int $levelback
-     *
-     * @return string
-     */
-    public function getMenu( $url, $parent, $levelback = 0 )
-    {
-        $curId = $this->getActiveCategory();
-
-        $path = $this->createActivePath( $curId );
-        //        printVar($path);
-
-        if( count( $this->parents ) == 0 ) {
-            $this->createTree();
-        }
-
-        //        printVar($levelback);
-        if( $levelback <= 0 ) {
-            return '';
-        }
-
-        if( ! isset( $this->parents[ $parent ] ) ) {
-            return '';
-        }
-
-        $build_list = array();
-        foreach( $this->parents[ $parent ] as $branch ) {
-            if( $branch[ 'hidden' ] ) {
-                continue;
-            }
-            $build_list[ ] = $branch;
-        }
-
-        $start   = microtime( 1 );
-
-        $html    = array( '<ul>' );
-        $counter = 1;
-        foreach( $build_list as $branch )
-        {
-            $active = in_array( $branch[ 'id' ], $path ) || $branch[ 'id' ] == $curId
-                ? ' active'
-                : '';
-
-            $last  = count( $build_list ) == $counter ? ' last' : '';
-            $first = 1 == $counter ++ ? ' first' : '';
-
-            $html[ ] = "<li class='cat-{$branch['id']}{$active}{$first}{$last}' "
-                       . ( $branch[ 'icon' ]
-                    ? "style='background:url(/" . $branch[ 'icon' ] . ") no-repeat 6px 4px;'"
-                    : "" ) . ">";
-
-            $html[ ] = "<a href='" . $this->app()->getRouter()->createLink(
-                $url, array( 'id'=> $branch[ 'id' ] )
-            ) . "'"
-                       . ( $active
-                    ? " class='active'"
-                    : '' )
-                       . ">{$branch['name']}</a>";
-
-            if( $active ) {
-                $html[ ] = $this->getMenu( $url, $branch[ 'id' ], $levelback - 1 );
-            }
-            $html[ ] = '</li>';
-        }
-        $html[ ] = '</ul>';
-        return implode( "\n", $html );
-    }
-
-    /**
      * Выдаст HTML для выбора раздела в select
      *
      * @param $parent
@@ -613,38 +522,15 @@ class CatalogModel extends Model
     }
 
     /**
-     * Пересортирует разделы
-     * @return string
-     */
-    public function resort()
-    {
-        $sort = $this->request->get( 'sort' );
-        if( $sort && is_array( $sort ) ) {
-            $data = array();
-            foreach( $sort as $pos => $item_id ) {
-                $data[ ] = array(
-                    'id' => $item_id,
-                    'pos'=> $pos
-                );
-            }
-            $this->db->insertUpdateMulti( $this->getTable(), $data );
-        } else {
-            return t( 'Error in sorting params' );
-        }
-        return '';
-    }
-
-    /**
      * Переместить товары в нужный раздел
+     * @param $list
+     * @param $target
      * @return string
      */
-    public function moveList()
+    public function moveList($list, $target)
     {
         /** @var Catalog $item */
-        $list   = $this->request->get('move_list');
-        $target = $this->request->get('target');
         // TODO Не происходит пересчета порядка позиций
-
         if ($target !== "" && is_numeric($target) && $list && is_array($list)) {
             foreach ($list as $item_id) {
                 $item         = $this->find($item_id);

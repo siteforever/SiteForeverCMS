@@ -103,7 +103,7 @@ class Resolver extends Component
         // если запрос является системным
         if ($this->app()->getRouter()->isSystem()) {
             if ($this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
-                $this->setSystemPage();
+                $this->setSystemPage($request);
             } else {
                 throw new HttpException(403, t('Access denied'));
             }
@@ -116,19 +116,19 @@ class Resolver extends Component
         $ref = new ReflectionClass($command['controller']);
 
         /** @var Controller $controller */
-        $controller = $ref->newInstance();
+        $controller = $ref->newInstance($request);
 
         // Защита системных действий
         $access = $controller->access();
 
-        $this->acl( $access, $command );
+        $this->acl($request, $access, $command);
 
         try {
             $method = $ref->getMethod($command['action']);
         } catch( \ReflectionException $e ) {
             throw new HttpException(404, $e->getMessage());
         }
-        $arguments = $this->prepareArguments($method);
+        $arguments = $this->prepareArguments($method, $request);
         $result = $method->invokeArgs($controller, $arguments);
 
         return $result;
@@ -141,14 +141,14 @@ class Resolver extends Component
      * @param \ReflectionMethod $method
      * @return array
      */
-    protected function prepareArguments( \ReflectionMethod $method )
+    protected function prepareArguments(\ReflectionMethod $method, Request $request)
     {
         $arguments    = array();
         $methodParams = $method->getParameters();
         $docComment   = $method->getDocComment();
         preg_match_all( '/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match );
         foreach( $methodParams as $param ) {
-            if ( $val = $this->app()->getRequest()->get($param->name) ) {
+            if ( $val = $request->get($param->name) ) {
                 // Фильтруем входные параметры
                 $arguments[ $param->name ] = $val;
                 if ( ( $key = array_search($param->name, $match[2] ) ) !== false ) {
@@ -168,7 +168,7 @@ class Resolver extends Component
                     }
                 }
             } else {
-                $arguments[ $param->name ] = $param->isOptional() ? $param->getDefaultValue() : null;
+                $arguments[$param->name] = $param->isOptional() ? $param->getDefaultValue() : null;
             }
         }
         return $arguments;
@@ -182,7 +182,7 @@ class Resolver extends Component
      * Массив содержит в качестве ключей - группы пользователей, а в качестве значений - список методов
      * которые разрешены для этой группы
      */
-    protected function acl( array $access = null, array $command = array() )
+    protected function acl(Request $request, array $access = null, array $command = array())
     {
         if ( $access && is_array($access) ) {
             foreach( $access as $perm => $ruleMethods ) {
@@ -200,9 +200,9 @@ class Resolver extends Component
                     return $method;
                 }, $ruleMethods );
                 if ( in_array( $command['action'], $ruleMethods ) ) {
-                    if ( $this->app()->getUser()->hasPermission( $perm ) ) {
+                    if ( $this->app()->getAuth()->currentUser()->hasPermission( $perm ) ) {
                         if ( $perm == USER_ADMIN ) {
-                            $this->setSystemPage();
+                            $this->setSystemPage($request);
                         }
                     } else {
                         throw new Sfcms_Http_Exception(t('Access denied'), 403);
@@ -215,10 +215,10 @@ class Resolver extends Component
     /**
      * Переводит систему на работу с админкой
      */
-    private function setSystemPage()
+    private function setSystemPage(Request $request)
     {
-        $this->app()->getRequest()->setTemplate('index');
-        $this->app()->getRequest()->set('resource', 'system:');
-        $this->app()->getRequest()->set('modules', $this->app()->adminMenuModules());
+        $request->setTemplate('index');
+        $request->set('resource', 'system:');
+        $request->set('modules', $this->app()->adminMenuModules());
     }
 }

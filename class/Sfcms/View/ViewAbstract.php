@@ -12,20 +12,10 @@ use Sfcms\Kernel\KernelEvent;
 
 abstract class ViewAbstract
 {
-    /** @var Application */
-    protected $_app = null;
 
     public function __construct( Application $app )
     {
         $this->_app = $app;
-    }
-
-    /**
-     * @return Request
-     */
-    protected function getRequest()
-    {
-        return $this->_app->getRequest();
     }
 
     /**

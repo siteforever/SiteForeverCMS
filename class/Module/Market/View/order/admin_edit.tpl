@@ -6,12 +6,13 @@
     <input type="hidden" name="id" value="{$order->id}">
     <label for="new_status" class="control-label">Статус:&nbsp;</label>
     <div class="input-append">
-        <select name="new_status" id="new_status">
+        <select name="new_status" id="new_status" data-url="{link url="order/status" id=$order->id}">
         {foreach from=$statuses item="item" key="key"}
             <option value="{$item->id}"{if $item->id == $order.status} selected{/if}>{$item->name}</option>
         {/foreach}
         </select>
-        <input type="submit" class="btn" value={t}Save{/t}>
+        <span class="new_status_result"></span>
+        {*<input type="submit" class="btn" value={t}Save{/t}>*}
     </div>
 {/form}
 
