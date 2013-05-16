@@ -204,7 +204,7 @@ class App extends KernelBase
      */
     public function invokeLayout(KernelEvent $event)
     {
-        if( $event->getRequest()->getAjax() ) {
+        if ($event->getRequest()->getAjax()) {
             $Layout = new Xhr($this);
         } else {
             $Layout = new Layout($this);

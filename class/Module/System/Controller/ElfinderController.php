@@ -5,6 +5,8 @@
 namespace Module\System\Controller;
 
 use Sfcms\Controller;
+use elFinder;
+use Symfony\Component\HttpFoundation\Response;
 
 class ElfinderController extends Controller
 {
@@ -28,7 +30,7 @@ class ElfinderController extends Controller
     public function access()
     {
         return array(
-            'system'    => array(
+            USER_ADMIN    => array(
                 'connector','finder',
             ),
         );
@@ -114,9 +116,15 @@ class ElfinderController extends Controller
 //                )
         );
 
+        ob_start();
         $fm = new elFinder($opts);
         $fm->run();
-        return;
+        $content = ob_get_contents();
+        ob_end_clean();
+        $this->request->setAjax(true, 'json');
+        $response = new Response($content, 200);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
     }
 
     /**

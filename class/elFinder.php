@@ -356,14 +356,13 @@ class elFinder {
 			}
 
 		}
-		header("Content-Type: ".($cmd == 'upload' ? 'text/html' : 'application/json'));
-		header("Connection: close");
+		@header("Content-Type: ".($cmd == 'upload' ? 'text/html' : 'application/json'));
+		@header("Connection: close");
 		echo json_encode($this->_result);
 
 		if (!empty($this->_options['logger']) && in_array($cmd, $this->_loggedCommands)) {
 			$this->_options['logger']->log($cmd, empty($this->_result['error']), $this->_logContext, !empty($this->_result['error']) ? $this->_result['error'] : '', !empty($this->_result['errorData']) ? $this->_result['errorData'] : array());
 		}
-		exit();
 	}
 
 
