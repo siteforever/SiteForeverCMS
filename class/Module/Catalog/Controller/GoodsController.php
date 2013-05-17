@@ -63,7 +63,7 @@ class GoodsController extends Controller
     {
         /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
 
         return array(
             'provider'      => $provider,
@@ -80,7 +80,7 @@ class GoodsController extends Controller
     {
         /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return $provider->getJsonData();
     }
 

@@ -46,9 +46,9 @@ class MaterialModel extends Model
     /**
      * @return Provider
      */
-    public function getProvider()
+    public function getProvider($request)
     {
-        $provider = new Provider( $this->app() );
+        $provider = new Provider($request);
         $provider->setModel( $this );
 
         $criteria = $this->createCriteria();

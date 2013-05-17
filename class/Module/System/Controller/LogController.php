@@ -11,6 +11,12 @@ use Module\System\Model\LogModel;
  */
 class LogController extends Controller
 {
+    public function access()
+    {
+        return array(
+            USER_ADMIN => array('admin', 'grid'),
+        );
+    }
 
     /**
      * Админка с использованием jqGrid
@@ -20,10 +26,10 @@ class LogController extends Controller
         $this->request->setTitle('Просмотр журнала изменений');
         /** @var $model LogModel */
         $model = $this->getModel('Log');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
 
         return array(
-            'provider'      => $provider,
+            'provider' => $provider,
         );
     }
 
@@ -35,7 +41,7 @@ class LogController extends Controller
     {
         /** @var $model LogModel */
         $model = $this->getModel('Log');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return $provider->getJsonData();
     }
 

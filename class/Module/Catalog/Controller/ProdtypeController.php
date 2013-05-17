@@ -27,7 +27,7 @@ class ProdtypeController extends Controller
         $this->request->setTitle(t('catalog','Product types'));
         /** @var $model CatalogModel */
         $model = $this->getModel('ProductType');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return array(
             'provider' => $provider,
         );
@@ -41,7 +41,7 @@ class ProdtypeController extends Controller
     {
         /** @var $model CatalogModel */
         $model = $this->getModel('ProductType');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return $provider->getJsonData();
     }
 

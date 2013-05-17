@@ -34,7 +34,7 @@ class MaterialController extends Controller
         $this->request->setTitle(t('material','Materials'));
         /** @var $model MaterialModel */
         $model = $this->getModel('Material');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return array(
             'provider' => $provider,
         );
@@ -49,7 +49,7 @@ class MaterialController extends Controller
     {
         /** @var $model MaterialModel */
         $model = $this->getModel('Material');
-        $provider = $model->getProvider();
+        $provider = $model->getProvider($this->request);
         return $provider->getJsonData();
     }
 

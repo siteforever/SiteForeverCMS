@@ -173,7 +173,7 @@ class App extends KernelBase
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign($result);
             $template = $request->getController() . '.' . $request->getAction();
-            $result   = $this->getTpl()->fetch($template);
+            $result   = $this->getTpl()->fetch(strtolower($template));
         }
         // Просто установить итоговую строку как контент
         if (is_string($result)) {

@@ -222,7 +222,6 @@ class Provider
             'sortorder' => "desc",
             'multiselect' => isset( $params['multiselect'] ) ? $params['multiselect'] : false,
         );
-        $this->request->getLogger()->log($config,'$config');
         return $config;
     }
 
