@@ -15,4 +15,4 @@ Download: http://siteforever.ru/download
 
 For usage read [Simple install][1]
 
-[1]: http://wiki.siteforever.ru/index.php/%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B8_%D0%BD%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0
+[1]: http://wiki.siteforever.ru/wiki/Установка_и_настройка
