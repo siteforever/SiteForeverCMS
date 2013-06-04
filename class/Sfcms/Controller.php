@@ -65,7 +65,9 @@ abstract class Controller extends Component
         $this->request  = $request;
         $this->config   = $this->app()->getConfig();
         $this->router   = $this->app()->getRouter();
-        $this->user     = $this->app()->getAuth()->currentUser();
+        $this->user     = $this->app()->getAuth()
+            ? $this->app()->getAuth()->currentUser()
+            : null;
         $this->params   = $this->request->get('params');
 
         // Basket should be initialized to connect the JavaScript module

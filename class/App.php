@@ -105,12 +105,7 @@ class App extends KernelBase
         $this->setRouter($router);
         $router->routing();
 
-        if ( ! $this->auth_format ) {
-            //throw new Exception('Auth type format not defined');
-            $this->setAuthFormat('Session');
-        }
-        $authClassName = 'Auth_'.$this->auth_format;
-        $this->setAuth(new $authClassName($request));
+        $this->setAuth(new \Auth($request));
 
         self::$init_time = microtime( 1 ) - self::$start_time;
         self::$controller_time = microtime( 1 );

@@ -224,18 +224,8 @@ abstract class KernelBase
 
     public function __set($name, $value)
     {
-        $this
-            ->getLogger()->log(sprintf('%s = %s', $name, $value), 'app_set');
-    }
-
-    /**
-     * Установить формат авторизации
-     * @param string $format
-     * @return void
-     */
-    protected function setAuthFormat( $format )
-    {
-        $this->auth_format  = $format;
+//        $this
+//            ->getLogger()->log(sprintf('%s = %s', $name, $value), 'app_set');
     }
 
     /**
@@ -275,7 +265,6 @@ abstract class KernelBase
     {
         $this->auth = $auth;
     }
-
 
 
     /**

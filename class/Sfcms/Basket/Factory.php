@@ -20,18 +20,23 @@ class Sfcms_Basket_Factory
      */
     static function createBasket( \Sfcms\Request $request )
     {
-        $user = \App::getInstance()->getAuth()->currentUser();
-
-        if ( ! $user instanceof User ) {
-            throw new Exception('Not valid User object');
+        if (\App::getInstance()->getAuth()) {
+            $user = \App::getInstance()->getAuth()->currentUser();
+        } else {
+            $user = null;
         }
 
-        if ( $user && $user->getPermission() != USER_GUEST ) {
-            $basket = new Sfcms_Basket_User($request, $user );
+
+//        if (!$user instanceof User) {
+//            throw new Exception('Not valid User object');
+//        }
+
+        if ($user && $user->getPermission() != USER_GUEST) {
+            $basket = new Sfcms_Basket_User($request, $user);
+        } else {
+            $basket = new Sfcms_Basket_Session($request, $user);
         }
-        else {
-            $basket = new Sfcms_Basket_Session($request, $user );
-        }
+
         return $basket;
     }
 }

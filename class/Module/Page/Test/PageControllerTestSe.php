@@ -9,7 +9,7 @@ namespace Module\Page\Test;
 use Exception;
 
 
-class PageControllerTest extends \PHPUnit_Extensions_SeleniumTestCase
+class PageControllerTestSe extends \PHPUnit_Extensions_SeleniumTestCase
 {
     protected function setUp()
     {

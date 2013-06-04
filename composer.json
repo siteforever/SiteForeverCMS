@@ -1,6 +1,7 @@
 {
     "name" : "keltanas/site-forever-cms",
-    "keywords": [ "siteforever", "cms", "keltanas" ],
+    "description": "Simple CMS for PHP and MySQL",
+    "keywords": [ "siteforever", "cms", "smarty", "php", "keltanas" ],
     "homepage": "http://siteforever.ru",
     "license": "MIT",
     "authors" : [
@@ -38,7 +39,17 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.2.*@dev",
+        "symfony/browser-kit": "2.2.2",
+        "symfony/config": "2.2.2",
+        "symfony/console": "2.2.2",
+        "symfony/dom-crawler": "2.2.2",
+        "symfony/event-dispatcher": "2.2.2",
+        "symfony/filesystem": "2.2.2",
+        "symfony/finder": "2.2.2",
+        "symfony/http-foundation": "2.2.2",
+        "symfony/process": "2.2.2",
+        "symfony/security": "v2.2.2",
+
         "smarty/smarty": "3.1.*",
         "twitter/bootstrap": "v2.3.1",
         "firephp/firephp-core": "v0.4.0",
@@ -72,6 +83,10 @@
         ]
     },
     "extra": {
-        "sfcms-static-dir" : "static"
-    }
+        "sfcms-static-dir" : "static",
+        "branch-alias": {
+            "dev-master": "2.2-dev"
+        }
+    },
+    "minimum-stability": "dev"
 }

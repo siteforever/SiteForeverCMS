@@ -3,6 +3,16 @@
  * Объект пользователя
  * @author Ermin Nikolay <nikolay@ermin.ru>
  * @link http://ermin.ru
+ */
+namespace Module\User\Object;
+
+use Sfcms\Data\Object;
+use Sfcms\Data\Field;
+use App;
+
+/**
+ * Class User
+ * @package Module\User\Object
  *
  * @property $id
  * @property $name
@@ -11,14 +21,9 @@
  * @property $email
  * @property $phone
  * @property $basket
+ * @property $last
  * @property $address
  */
-namespace Module\User\Object;
-
-use Sfcms\Data\Object;
-use Sfcms\Data\Field;
-use App;
-
 class User extends Object
 {
     /**

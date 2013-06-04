@@ -64,7 +64,7 @@ class CatalogController extends Controller
      * @return mixed
      * @throws Sfcms_Http_Exception
      */
-    public function indexAction( $alias )
+    public function indexAction($alias)
     {
         /**
          * @var Catalog $item
@@ -136,13 +136,13 @@ class CatalogController extends Controller
             }
         }
 
-        $cache = $this->cache();
-        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
+//        $cache = $this->cache();
+//        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
 
 
-        if ($cache->isNotExpired($cacheKey)) {
-            $response = $cache->get($cacheKey);
-        } else {
+//        if ($cache->isNotExpired($cacheKey)) {
+//            $response = $cache->get($cacheKey);
+//        } else {
             /** @var $catModel CatalogModel */
             $catModel = $this->getModel('Catalog');
             $parent   = $catModel->find($item->getId());
@@ -218,8 +218,8 @@ class CatalogController extends Controller
                 'order_list'=> $this->config->get('catalog.order_list'),
                 'order_val' => $this->request->get('order'),
             ));
-            $cache->set($cacheKey, $response->getContent());
-        }
+//            $cache->set($cacheKey, $response->getContent());
+//        }
 
         return $response;
     }
@@ -615,7 +615,7 @@ class CatalogController extends Controller
         }
 
         if ($edit) {
-            $catgallery    = new GalleryController($this->app());
+            $catgallery    = new GalleryController($this->request);
             $gallery_panel = $catgallery->getPanel($edit);
             $this->tpl->assign('gallery_panel', $gallery_panel);
         }

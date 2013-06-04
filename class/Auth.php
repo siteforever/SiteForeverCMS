@@ -16,7 +16,7 @@ define('USER_ADMIN', '10'); // админ
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-abstract class Auth
+class Auth
 {
     /**
      * @var User
@@ -26,7 +26,7 @@ abstract class Auth
     /**
      * @var string
      */
-    protected   $message   = '';
+    protected $message   = '';
 
     /**
      * @var bool
@@ -47,10 +47,11 @@ abstract class Auth
         $this->model = \Sfcms\Model::getModel('User');
 
         if ($this->getId()) {
+            /** @var User $obj */
             $obj = $this->model->findByPk($this->getId());
             if ($obj) {
-                $this->user = $obj;
-                $this->user->last = time();
+                $obj->last = time();
+                $this->currentUser($obj);
                 return;
             }
         }
@@ -67,28 +68,31 @@ abstract class Auth
      */
     public function currentUser($user = null)
     {
-        if (null === $user) {
-            return $this->user;
+        if (null !== $user) {
+            $this->request->attributes->set('user', $user);
+            $this->setId($user->getId());
         }
-        $this->user = $user;
-        $this->setId($user->getId());
+        return $this->request->attributes->get('user');
     }
 
     /**
      * Id текущего пользователя
-     * @abstract
      * @return int
      */
-    abstract public function getId();
+    public function getId()
+    {
+        return $this->request->getSession()->get('user_id');
+    }
 
     /**
      * Установит id авторизованного пользователя
-     * @abstract
      * @param  $id
      * @return void
      */
-    abstract public function setId( $id );
-
+    public function setId($id)
+    {
+        $this->request->getSession()->set('user_id', $id);
+    }
 
     /**
      * Выход из системы
