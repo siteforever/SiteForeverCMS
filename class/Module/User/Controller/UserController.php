@@ -4,7 +4,6 @@
  */
 namespace Module\User\Controller;
 
-use Doctrine\Tests\Common\Annotations\Fixtures\Annotation\Secure;
 use Module\User\Object\User;
 use Sfcms\Controller;
 use Forms\User\Restore as FormRestore;
@@ -157,14 +156,14 @@ class UserController extends Controller
     /**
      * Редактирование пользователя в админке
      * @params int $id
-     * @return mixed
+     * @return array
      */
     public function adminEditAction( $id )
     {
         /**
          * @var UserModel $model
-         * @var Data_Object_User $user
-         * @var form_Form $userForm
+         * @var User $user
+         * @var Form $userForm
          */
         $model  = $this->getModel('User');
 
@@ -226,7 +225,6 @@ class UserController extends Controller
      */
     public function logoutAction()
     {
-        $this->app()->getAuth()->setId(0);
 //        setcookie('sxd', null, null, '/runtime/sxd/');
 //        $this->app()->getSession()->sxd_auth = 0; // Авторизация Sypex Dumper
 //        $this->app()->getSession()->sxd_conf = null;
@@ -417,19 +415,18 @@ class UserController extends Controller
             return false;
         }
 
-        $generator = new SecureRandom();
-
-        $obj['solt']    = $generator->nextBytes(8);
-        $obj['password']= $this->app()->getAuth()->generatePasswordHash( $obj['password'], $obj['solt'] );
+        $obj['solt']    = $this->app()->getAuth()->generateString(8);
+        $obj['password']= $this->app()->getAuth()->generatePasswordHash($obj->password, $obj->solt);
         $obj['perm']    = USER_GUEST;
         $obj['status']  = 0;
-        $obj['confirm'] = md5(microtime().$obj['solt']);
+        $obj['confirm'] = md5($obj['solt'] . md5(microtime(1) . $obj['solt']));
 
-        //$data['login']  = $data['login'];
         $obj['date']   = time();
         $obj['last']   = time();
 
-        $user   = $this->model->find(array(
+        $model = $this->getModel('User');
+
+        $user   = $model->find(array(
                 'cond'     => 'login = :login',
                 'params'   => array(':login'=>$obj['login']),
             ));
@@ -439,7 +436,7 @@ class UserController extends Controller
             return false;
         }
 
-        $user   = $this->model->find(array(
+        $user   = $model->find(array(
                 'cond'     => 'email = :email',
                 'params'   => array(':email'=>$obj['email']),
             ));
@@ -455,11 +452,11 @@ class UserController extends Controller
 
         //$this->setData( $data );
         // Надо сохранить, чтобы знать id
-        if ( $this->model->save( $obj ) ) {
-            $tpl    = $this->app()->getTpl();
-            $config = $this->app()->getConfig();
+        if ( $model->save( $obj ) ) {
+            $tpl    = $this->getTpl();
+            $config = $this->config;
 
-            $tpl->data = $obj;
+            $tpl->user = $obj;
             $tpl->sitename = $config->get('sitename');
             $tpl->siteurl  = $config->get('siteurl');
 
@@ -468,7 +465,7 @@ class UserController extends Controller
             //print $msg;
 
             sendmail(
-                $config->get('sitename').' <'.$config->get('admin').'>',
+                $config->get('admin'),
                 $obj->email,
                 'Подтверждение регистрации',
                 $msg

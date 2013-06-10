@@ -109,11 +109,13 @@ class i18n
      */
     public static function getInstance()
     {
-        if( is_null( self::$_instance ) ) {
+        if (is_null(self::$_instance)) {
             // Locale
+            // TODO Злостный костыль надо убрать
             setlocale( LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C' );
             setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
             self::$_instance = new i18n();
+            self::$_instance->setLanguage();
         }
         return self::$_instance;
     }
@@ -155,26 +157,26 @@ class i18n
      */
     protected function getCategoryTranslate( $category, $message, $params = array() )
     {
-        $category = strtolower( $category );
-        if ( $category && ! isset( $this->_dictionary[ $category ] ) ) {
-            $dictFile   = SF_PATH  . DIRECTORY_SEPARATOR . 'protected'
-                                    . DIRECTORY_SEPARATOR . 'lang'
-                                    . DIRECTORY_SEPARATOR . $this->_lang
-                                    . DIRECTORY_SEPARATOR . $category . '.php';
-            if( ! file_exists( $dictFile ) ) {
-                throw new Exception( 'Dictionary ' . $category . ' for language ' . $this->_lang
-                    . ' not found in file ' . $dictFile );
+        $category = strtolower($category);
+        if ($category && !isset($this->_dictionary[$category])) {
+            $dictFile = SF_PATH . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
+            if (file_exists($dictFile)) {
+                $this->_dictionary['cat_' . $category] = @include($dictFile);
+            } else {
+                $this->_dictionary['cat_' . $category] = array();
             }
-            $this->_dictionary[ 'cat_' . $category ] = @include( $dictFile );
+            //            throw new Exception( 'Dictionary ' . $category . ' for language ' . $this->_lang
+            //            . ' not found in file ' . $dictFile );
         }
-        if ( null !== $category && isset( $this->_dictionary[ 'cat_' . $category ][ $message ] ) ) {
-            $message = $this->_dictionary[ 'cat_' . $category ][ $message ];
-        } elseif ( isset( $this->_dictionary[ $message ] ) ) {
-            $message = $this->_dictionary[ $message ];
+        if (null !== $category && isset($this->_dictionary['cat_' . $category][$message])) {
+            $message = $this->_dictionary['cat_' . $category][$message];
+        } elseif (isset($this->_dictionary[$message])) {
+            $message = $this->_dictionary[$message];
         }
-        foreach ( $params as $key => $val ) {
-            $message = str_replace( $key, $val, $message );
+        foreach ($params as $key => $val) {
+            $message = str_replace($key, $val, $message);
         }
+
         return $message;
     }
 

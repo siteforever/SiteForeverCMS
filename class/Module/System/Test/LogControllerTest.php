@@ -15,15 +15,14 @@ class LogControllerTest extends TestCase
     {
         $this->session->set('user_id', 1);
         $response = $this->runController('Log', 'admin');
-        $crawler = new Crawler();
-        $crawler->addHtmlContent($response->getContent());
-        $this->assertEquals('Просмотр журнала изменений / SiteForeverCMS', $crawler->filter('title')->text());
-        $this->assertEquals('Просмотр журнала изменений', $crawler->filter('h2')->text());
-        $logList = $crawler->filter('#logs_list');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Просмотр журнала изменений / SiteForeverCMS', $crawler->filterXPath('//title')->text());
+        $this->assertEquals('Просмотр журнала изменений', $crawler->filterXPath('//h2')->text());
+        $logList = $crawler->filterXPath('//table[@id="logs_list"]');
         $this->assertEquals(1, $logList->count());
-        $this->assertEquals('sfcms-jqgrid', $logList->eq(0)->attr('class'));
-        $this->assertEquals('jquery/jquery.jqGrid', $logList->eq(0)->attr('data-sfcms-module'));
-        $this->assertInternalType('array', json_decode($logList->eq(0)->attr('data-sfcms-config'), true));
-        $this->assertEquals(1, $crawler->filter('#logs_pager')->count());
+        $this->assertEquals('sfcms-jqgrid', $logList->attr('class'));
+        $this->assertEquals('jquery/jquery.jqGrid', $logList->attr('data-sfcms-module'));
+        $this->assertInternalType('array', json_decode($logList->attr('data-sfcms-config'), true));
+        $this->assertEquals(1, $crawler->filterXPath('//div[@id="logs_pager"]')->count());
     }
 }

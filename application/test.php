@@ -15,8 +15,8 @@ return array_merge(require_once 'base.php', array(
 
         // база данных
     'db' => array(
-        'login'     => 'siteforever',
-        'password'  => 'siteforever',
+        'login'     => 'root',
+        'password'  => '',
         'host'      => 'localhost',
         'database'  => 'siteforever_test',
         'debug'     => true,

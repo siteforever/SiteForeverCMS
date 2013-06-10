@@ -24,11 +24,8 @@ class Forms_User_Register extends Form
                 'lname'     => array('label'=>'Фамилия'),
                 'phone'     => array('label'=>'Телефон', 'filter' => 'phone', 'notice' => '+7 900 123 45 67',),
 
-                'captcha'   => array('type'=>'captcha', 'label'=>'Проверка'),
+                'captcha'   => array('type'=>'captcha', 'label'=>'Проверочный код'),
                 'submit'    => array('type'=>'submit', 'value'=>'Регистрация'),
-            ),
-            'buttons'   => array(
-                'submit'    => array('type'=>'submit', 'value'=>'bРегистрация'),
             ),
             'validate'  => array(
                 'email'     => array('email'),

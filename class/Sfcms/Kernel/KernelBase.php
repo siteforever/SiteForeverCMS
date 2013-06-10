@@ -26,7 +26,6 @@ use Module\Page\Model\PageModel;
 use Sfcms\Data\Object;
 use Module\User\Object\User;
 use Sfcms_Basket_Factory;
-use Sfcms_Cache;
 use RuntimeException;
 
 use Sfcms\Basket\Base as Basket;
@@ -170,6 +169,9 @@ abstract class KernelBase
      * @var EventDispatcher
      */
     protected $_event_dispatcher = null;
+
+    /** @var CacheInterface */
+    protected $_cache = null;
 
 
 

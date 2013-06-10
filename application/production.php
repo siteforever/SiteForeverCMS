@@ -14,8 +14,8 @@ return array_merge(include_once 'base.php', array(
     'admin'     => 'admin@example.com',
     // база данных
     'db' => array(
-        'login'     => 'siteforever',
-        'password'  => 'siteforever',
+        'login'     => 'root',
+        'password'  => '',
         'host'      => 'localhost',
         'database'  => 'siteforever',
     ),

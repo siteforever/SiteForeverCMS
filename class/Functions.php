@@ -15,18 +15,21 @@ function printVar( $var )
  * @param string $from
  * @param string $to
  * @param string $subject
- * @param string $message
+ * @param string $msg
+ * @param string $mime_type
  */
-function sendmail( $from, $to, $subject, $message )
+function sendmail($from, $to, $subject, $msg, $mime_type = 'plain/text')
 {
+    $mailer = new \Swift_Mailer(new \Swift_SendmailTransport());
+    /** @var $message \Swift_Message */
+    $message = $mailer->createMessage();
+    $message
+        ->setSubject($subject)
+        ->setFrom($from)
+        ->setTo($to)
+        ->setBody($msg, $mime_type, 'utf-8');
 
-    $header = "Content-type: text/plain; charset=\"UTF-8\"\n";
-    $header .= "From: {$from}\n";
-    $header .= "Subject: $subject\n";
-    $header .= "X-Mailer: SiteForeverCMS\n";
-    $header .= "Content-type: text/plain; charset=\"UTF-8\"\n";
-
-    return mail( $to, $subject, $message, $header );
+    $mailer->send($message);
 }
 
 /**

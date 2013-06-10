@@ -59,9 +59,10 @@ class Module extends SfModule
     {
         $response = $event->getResponse();
         if (403 == $response->getStatusCode()) {
-            if (!$this->app->getAuth()->getId()) {
+            if (!$this->app->getAuth()->isLogged()) {
                 $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
                 $event->setResponse($response);
+                $event->stopPropagation();
             }
         }
         if (404 == $response->getStatusCode()) {

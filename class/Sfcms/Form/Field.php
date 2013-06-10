@@ -43,7 +43,7 @@ abstract class Field
      * @var string
      */
     protected   $_msg  = '';
-    
+
     /**
      * Создаем поле формы
      * @param Form $form
@@ -232,9 +232,7 @@ abstract class Field
     public function setValue( $value )
     {
         $value = trim($value);
-//        if ( $this->checkValue( $value ) ) {
         $this->_value  = $value;
-//        }
         return $this;
     }
 
@@ -340,9 +338,6 @@ abstract class Field
         $this->_error   = 0;
 
         $this->checkValid();
-//        if ( ! $this->checkValid() ) {
-//            $this->checkType();
-//        }
 
         if ( $this->_error > 0 ) {
             $this->_form->addFeedback( $this->_msg );
@@ -360,39 +355,26 @@ abstract class Field
      */
     protected function checkValid()
     {
-        if ( $this->isRequired() && $this->isEmpty() )
-        {
+        if ($this->isRequired() && $this->isEmpty()) {
             //    или если его значение пустое
-            $this->_error   = 2;
-            $this->_msg    = "&laquo;{$this->_label}&raquo; нужно заполнить";
+            $this->_error = 2;
+            $this->_msg   = "&laquo;{$this->_label}&raquo; нужно заполнить";
+
             return false;
         }
 
-        if ( ! $this->isRequired() && $this->isEmpty() ) {
+        if (!$this->isRequired() && $this->isEmpty()) {
             return true;
         }
 
-        if ( ! $this->checkValue( $this->getValue() ) ) {
-            $this->_error   = 3;
-            $this->_msg    = $this->_msg ?: "&laquo;{$this->_label}&raquo; не соответсвует формату";
+        if (!$this->checkValue($this->getValue())) {
+            $this->_error = 3;
+            $this->_msg   = $this->_msg ? : "&laquo;{$this->_label}&raquo; не соответсвует формату";
+
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Проверка типа
-     * @return boolean
-     */
-    protected function checkType()
-    {
-        if ( ! ( $this->checkValue( $this->_value ) || $this->isEmpty() ) )
-        {
-            $this->_error   = 1;
-            $this->_msg    = "&laquo;{$this->_label}&raquo; не соответствует типу";
-        }
-        return ! $this->_error;
     }
 
     /**

@@ -3,11 +3,20 @@ set_error_handler( function ( $errno, $errstr) {
     throw new Exception( $errstr, $errno );
 }, E_WARNING & E_NOTICE & E_DEPRECATED & E_USER_WARNING & E_USER_NOTICE & E_ERROR );
 
+
+// user groups
+define('USER_GUEST', '0'); // гость
+define('USER_USER',  '1'); // юзер
+define('USER_WHOLE', '2'); // оптовый покупатель
+define('USER_ADMIN', '10'); // админ
+
+
 use Sfcms\Kernel\KernelBase;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sfcms\Controller\Resolver;
 use Sfcms\Data\Watcher;
 use Sfcms\View\Layout;
@@ -70,6 +79,11 @@ class App extends KernelBase
         $installer = new Sfcms_Installer();
         $installer->installationStatic();
 
+        $this->getEventDispatcher()->addListener('kernel.response', function(KernelEvent $event){
+                if ($event->getResponse() instanceof RedirectResponse) {
+                    $event->stopPropagation();
+                }
+            });
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'));
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'));
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'invokeLayout'));

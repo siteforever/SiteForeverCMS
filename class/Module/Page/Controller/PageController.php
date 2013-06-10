@@ -161,7 +161,7 @@ class PageController extends Controller
             array(
                 'parent'    => $parent,
                 'template'  => 'inner',
-                'author'    => $this->app()->getAuth()->getId(),
+                'author'    => $this->user->id,
                 'content'   => '<p>'.t( 'Home page for the filling' ).'',
                 'date'      => time(),
                 'update'    => time(),

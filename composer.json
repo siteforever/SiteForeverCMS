@@ -39,16 +39,16 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/browser-kit": "2.2.2",
-        "symfony/config": "2.2.2",
-        "symfony/console": "2.2.2",
-        "symfony/dom-crawler": "2.2.2",
-        "symfony/event-dispatcher": "2.2.2",
-        "symfony/filesystem": "2.2.2",
-        "symfony/finder": "2.2.2",
-        "symfony/http-foundation": "2.2.2",
-        "symfony/process": "2.2.2",
-        "symfony/security": "v2.2.2",
+        "symfony/browser-kit": "2.3.*",
+        "symfony/config": "2.3.*",
+        "symfony/console": "2.3.*",
+        "symfony/dom-crawler": "2.3.*",
+        "symfony/event-dispatcher": "2.3.*",
+        "symfony/filesystem": "2.3.*",
+        "symfony/finder": "2.3.*",
+        "symfony/http-foundation": "2.3.*",
+        "symfony/process": "2.3.*",
+        "symfony/security": "2.3.*",
 
         "smarty/smarty": "3.1.*",
         "twitter/bootstrap": "v2.3.1",
@@ -82,11 +82,11 @@
             "Sfcms\\ElFinder\\ComposerHandler::installAssets"
         ]
     },
+    "minimum-stability": "stable",
     "extra": {
         "sfcms-static-dir" : "static",
         "branch-alias": {
             "dev-master": "2.2-dev"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }

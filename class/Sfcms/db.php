@@ -228,8 +228,6 @@ class db
         //$this->result = $this->resource->query( $sql );
         //$this->result->execute();
 
-        preg_match( '/^(\w+)/u', $sql, $m );
-
 //        try {
             $this->return = $this->resource->exec( $sql );
 //        } catch ( Exception $e ) {
@@ -244,23 +242,26 @@ class db
         }
 
         //$this-> = "";
-        switch ($m[1]) {
-            case 'UPDATE':
-                $this->update++;
-                break;
-            case 'INSERT':
-                $this->insert++;
-                $this->return   = $this->resource->lastInsertId();
-                break;
-            case 'DELETE':
-                $this->delete++;
-                break;
-            case 'CREATE':
-                $this->count++;
-                break;
-            default:
-                $this->count++;
+        if (preg_match( '/^(\w+)/u', $sql, $m )) {
+            switch ($m[1]) {
+                case 'UPDATE':
+                    $this->update++;
+                    break;
+                case 'INSERT':
+                    $this->insert++;
+                    $this->return   = $this->resource->lastInsertId();
+                    break;
+                case 'DELETE':
+                    $this->delete++;
+                    break;
+                case 'CREATE':
+                    $this->count++;
+                    break;
+                default:
+                    $this->count++;
+            }
         }
+
 
         $exec = round( microtime(true) - $start , 4 ).' сек.';
         $this->log( $sql . " [{$exec}]" );

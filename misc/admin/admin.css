@@ -53,10 +53,6 @@ small {
     margin-bottom: 10px;
 }
 
-div.ui-dialog {
-    z-index: 1500 !important;
-}
-
 .blockMsg div.feedback {
     margin: 0;
 }

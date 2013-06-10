@@ -97,7 +97,7 @@ class RobokassaController extends Controller
             $order->paid = time();
             $this->getTpl()->assign('order',$order);
             sendmail(
-                "{$order->fname} {$order->lname} <{$order->email}>",
+                $order->email,
                 $this->config->get('admin'),
                 'Оплачен заказ №'.$order->id,
                 $this->getTpl()->fetch('robokassa.email.result')
@@ -140,7 +140,7 @@ class RobokassaController extends Controller
 
         $this->getTpl()->assign('order',$order);
         sendmail(
-            "{$order->fname} {$order->lname} <{$order->email}>",
+            $order->email,
             $this->config->get('admin'),
             'Сбой оплаты заказ №'.$order->id,
             $this->getTpl()->fetch('robokassa.email.fail')

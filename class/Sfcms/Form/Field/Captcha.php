@@ -14,6 +14,7 @@ class Captcha extends Field
 {
     protected $_type =   'text';
     protected $_class =  'input-small';
+    protected $_required = true;
 
     public function htmlInput( $field )
     {
@@ -32,12 +33,12 @@ class Captcha extends Field
     protected function checkValue( $value )
     {
         // todo Надо внедрить в форму Request
-        $captcha_code = App::getInstance()->getSession()->get('captcha_code');
+        $captcha_code = isset($_SESSION['_sf2_attributes']['captcha_code'])
+            ? $_SESSION['_sf2_attributes']['captcha_code'] : '';
         if (strtolower($captcha_code) == strtolower($value)) {
             return true;
         }
         $this->_msg = t('Code is not valid');
-        $this->_form->addFeedback($this->_msg);
         return false;
     }
 

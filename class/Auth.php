@@ -2,12 +2,7 @@
 use Sfcms\Kernel\KernelBase as Service;
 use Module\User\Model\UserModel;
 use Module\User\Object\User;
-
-// группы пользователей
-define('USER_GUEST', '0'); // гость
-define('USER_USER',  '1'); // юзер
-define('USER_WHOLE', '2'); // оптовый покупатель
-define('USER_ADMIN', '10'); // админ
+use Symfony\Component\Security\Core\Util\SecureRandom;
 
 
 /**
@@ -18,24 +13,16 @@ define('USER_ADMIN', '10'); // админ
  */
 class Auth
 {
-    /**
-     * @var User
-     */
+    /** @var User */
     protected $user;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $message   = '';
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $error = false;
 
-    /**
-     * @var UserModel
-     */
+    /** @var UserModel */
     protected $model = null;
 
     /** @var  \Sfcms\Request */
@@ -55,10 +42,7 @@ class Auth
                 return;
             }
         }
-        $this->user =$this->model->createObject(array(
-            'login' => 'guest',
-            'perm'  => USER_GUEST,
-        ));
+        $this->currentUser($this->createDefaultUser());
     }
 
     /**
@@ -69,17 +53,17 @@ class Auth
     public function currentUser($user = null)
     {
         if (null !== $user) {
-            $this->request->attributes->set('user', $user);
+            $this->user = $user;
             $this->setId($user->getId());
         }
-        return $this->request->attributes->get('user');
+        return $this->user;
     }
 
     /**
      * Id текущего пользователя
      * @return int
      */
-    public function getId()
+    private function getId()
     {
         return $this->request->getSession()->get('user_id');
     }
@@ -89,9 +73,17 @@ class Auth
      * @param  $id
      * @return void
      */
-    public function setId($id)
+    private function setId($id)
     {
         $this->request->getSession()->set('user_id', $id);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLogged()
+    {
+        return null !== $this->getId();
     }
 
     /**
@@ -100,10 +92,19 @@ class Auth
      */
     public function logout()
     {
-        $this->user =$this->model->createObject(array(
-            'login'  => 'guest',
-            'perm'   => USER_GUEST,
-        ));
+        $this->setId(0);
+        $this->currentUser($this->createDefaultUser());
+    }
+
+    /**
+     * @return User
+     */
+    private function createDefaultUser()
+    {
+        return $this->model->createObject(array(
+                'login'  => 'guest',
+                'perm'   => USER_GUEST,
+            ));
     }
 
     /**
@@ -112,18 +113,24 @@ class Auth
      * @param string $pattern Regexp for matches with generated string
      * @return string
      */
-    public function generateString( $len, $pattern = '/[a-z0-9]/i' )
+    public function generateString($len, $pattern = null)
     {
-        $c      = $len;
-        $str    = '';
-        while ( $c > 0 ) {
+        $c   = $len;
+        if (null === $pattern) {
+            $generator = new SecureRandom();
+            return $generator->nextBytes($len);
+        }
+
+        $str = '';
+        while ($c > 0) {
             $charcode = rand(33, 122);
-            $chr = chr( $charcode );
-            if ( preg_match($pattern, $chr) ) {
+            $chr      = chr($charcode);
+            if (preg_match($pattern, $chr)) {
                 $str .= $chr;
                 $c--;
             }
         }
+
         return $str;
     }
 

@@ -28,17 +28,11 @@ abstract class FormAbstract
         $_method,
         $_action,
         $_class,
-        /**
-         * Массив объектов полей формы
-         */
+        /** Массив объектов полей формы */
         $_fields    = array(),
-        /**
-         * Массив кнопок
-         */
+        /** Массив кнопок */
         $_buttons   = array(),
-        /**
-         * Данные, полученные из _POST или _GET
-         */
+        /** Данные, полученные из _POST или _GET */
         $_data      = array();
 
     protected $_err_required  = 0;
@@ -265,10 +259,12 @@ abstract class FormAbstract
      */
     public function isSent()
     {
-        if ( isset( $_REQUEST[ $this->_name ] ) ) {
-            $this->_data = $_REQUEST[ $this->_name ];
+        if (isset($_POST[$this->_name])) {
+            $this->_data = $_POST[$this->_name];
+
             return true;
         }
+
         return false;
     }
 
@@ -354,14 +350,6 @@ abstract class FormAbstract
                 /** @var $field Field */
                 $ret = $field->validate();
                 $valid &= ($ret == 1) ? true : false;
-                switch ( $ret ) {
-                    case -1:
-                        $this->_err_untype++;
-                        break;
-                    case -2:
-                        $this->_err_required++;
-                        break;
-                }
             }
         }
         return $valid;

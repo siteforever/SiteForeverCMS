@@ -1,7 +1,7 @@
 <?php
 /**
  * Модель заказа
- * @author Nikolay Ermin 
+ * @author Nikolay Ermin
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
@@ -141,7 +141,7 @@ class OrderModel extends Model
             );
 
             sendmail(
-                $this->config->get('sitename').' <'.$this->config->get('admin').'>',
+                $this->config->get('admin'),
                 $obj->email,
                 sprintf('Заказ №%s на сайте %s',$obj->getId(),$this->config->get('sitename')),
                 $this->app()->getTpl()->fetch('order.mail.create')

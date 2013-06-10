@@ -17,7 +17,7 @@ class ElfinderControllerTest extends TestCase
         $response = $this->runController('Elfinder', 'finder');
         $crawler = new Crawler();
         $crawler->addHtmlContent($response->getContent());
-        $finder = $crawler->filter('#finder');
+        $finder = $crawler->filterXPath('//div[@id="finder"]');
         $this->assertEquals('finder', $finder->text());
     }
 

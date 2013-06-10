@@ -12,6 +12,7 @@ use Sfcms\Router;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
+use Symfony\Component\DomCrawler\Crawler;
 
 class TestCase extends PHPUnit_Framework_TestCase
 {
@@ -32,6 +33,13 @@ class TestCase extends PHPUnit_Framework_TestCase
         $this->session->start();
         $this->router  = new Router($this->request);
         \App::getInstance()->setRouter($this->router);
+    }
+
+    protected function createCrawler(Response $response)
+    {
+        $crawler = new Crawler();
+        $crawler->addHtmlContent($response->getContent());
+        return $crawler;
     }
 
     /**

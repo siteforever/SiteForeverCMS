@@ -15,6 +15,9 @@ use App;
  * @package Module\User\Object
  *
  * @property $id
+ * @property $login
+ * @property $password
+ * @property $solt
  * @property $name
  * @property $fname
  * @property $lname
