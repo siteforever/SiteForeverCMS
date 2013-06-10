@@ -25,6 +25,7 @@ while ($process->isRunning()) {
     print "running...\n";
     sleep(1);
 }
+var_dump($process->getOutput());
 //if (!$process->isSuccessful()) {
 //    die($process->getOutput());
 //}
