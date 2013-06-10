@@ -2,6 +2,8 @@ Siteforever CMS - It is opensource CMS on PHP 5.3 and MySql 5.0. Required Smarty
 
 Distributed under The MIT License
 
+[![Build Status](https://travis-ci.org/keltanas/SiteForeverCMS.png?branch=master)](https://travis-ci.org/keltanas/SiteForeverCMS)
+
 CMS SiteForever we have created in order to facilitate the programmers to develop sites at different levels of complexity, and their customers to help manage the site using a simple interface.
 
 Our task - to make the creation and management of the site as simple as possible, using rich Web. The system interface is intuitive controls SiteForever anyone with the slightest experience with personal computers.
