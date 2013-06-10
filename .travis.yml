@@ -1,9 +1,8 @@
 language: php
 php:
-  - "5.5"
   - "5.4"
   - "5.3"
-script: vendor/bin/phpunit -c test/
+script: phpunit -c test/
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
-  - composer install --prefer-source --dev
+  - composer install --prefer-source --no-dev -o
