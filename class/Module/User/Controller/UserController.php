@@ -299,7 +299,7 @@ class UserController extends Controller
                 return array('error'=>1, 'message'=>t('user','Your account has been disabled'));
             }
 
-            $password = $this->app()->getAuth()->generatePasswordHash( $password, $user->solt );
+            $password = $user->generatePasswordHash( $password, $user->solt );
 
             //print $user->password.' == '.$password;
 
@@ -415,8 +415,8 @@ class UserController extends Controller
             return false;
         }
 
-        $obj['solt']    = $this->app()->getAuth()->generateString(8);
-        $obj['password']= $this->app()->getAuth()->generatePasswordHash($obj->password, $obj->solt);
+        $obj['solt']    = $obj->generateString(8);
+        $obj['password']= $obj->generatePasswordHash($obj->password, $obj->solt);
         $obj['perm']    = USER_GUEST;
         $obj['status']  = 0;
         $obj['confirm'] = md5($obj['solt'] . md5(microtime(1) . $obj['solt']));
@@ -506,7 +506,7 @@ class UserController extends Controller
 
             if ( $user ) {
                 if ( $code == md5( $user->solt ) ) {
-                    $pass = $this->app()->getAuth()->generateString( 8 );
+                    $pass = $user->generateString( 8 );
                     $user->changePassword( $pass );
 
                     $this->tpl->assign(array(
@@ -625,7 +625,7 @@ class UserController extends Controller
         {
             if ( $form->validate() )
             {
-                $pass_hash  = $auth->generatePasswordHash(
+                $pass_hash  = $user->generatePasswordHash(
                     $form->getField('password')->getValue(), $user->get('solt')
                 );
                 //$pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );

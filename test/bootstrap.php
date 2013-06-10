@@ -11,6 +11,8 @@ defined('SF_PATH') || define('SF_PATH', realpath( dirname(__FILE__) . '/..' ));
 //корень сайта
 defined('ROOT') ||define('ROOT', SF_PATH );
 
+require_once SF_PATH . '/vendor/autoload.php';
+
 use Symfony\Component\Process\Process;
 
 //$mysqlFrom = "mysqldump -u root --add-drop-database=TRUE siteforever";
@@ -20,6 +22,7 @@ $mysqlTo = "mysql -u root siteforever_test";
 $process = new Process("$mysqlTo < dump.sql");
 $process->start();
 while ($process->isRunning()) {
+    print "running...\n";
     sleep(1);
 }
 //if (!$process->isSuccessful()) {

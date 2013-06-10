@@ -14,6 +14,6 @@ class CatalogControllerTest extends TestCase
     public function testIndexAction()
     {
         $response = $this->runRequest('/catalog/velosipedy');
-        var_dump($response->getContent());
+//        var_dump($response->getContent());
     }
 }

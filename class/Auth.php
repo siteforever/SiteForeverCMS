@@ -108,44 +108,6 @@ class Auth
     }
 
     /**
-     * Генерирует случайную строку
-     * @param string $len Length generated string
-     * @param string $pattern Regexp for matches with generated string
-     * @return string
-     */
-    public function generateString($len, $pattern = null)
-    {
-        $c   = $len;
-        if (null === $pattern) {
-            $generator = new SecureRandom();
-            return $generator->nextBytes($len);
-        }
-
-        $str = '';
-        while ($c > 0) {
-            $charcode = rand(33, 122);
-            $chr      = chr($charcode);
-            if (preg_match($pattern, $chr)) {
-                $str .= $chr;
-                $c--;
-            }
-        }
-
-        return $str;
-    }
-
-    /**
-     * Генерирует хэш пароля
-     * @param $password
-     * @param $solt
-     * @return string
-     */
-    public function generatePasswordHash( $password, $solt )
-    {
-        return md5( md5($solt) . md5($password) );
-    }
-
-    /**
      * Вернет сообщение системы
      * @return string
      */

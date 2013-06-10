@@ -9,6 +9,7 @@ namespace Module\User\Object;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 use App;
+use Symfony\Component\Security\Core\Util\SecureRandom;
 
 /**
  * Class User
@@ -36,12 +37,35 @@ class User extends Object
      */
     public function changePassword( $password )
     {
-        $solt = App::getInstance()->getAuth()->generateString( 8 );
-        $hash = App::getInstance()->getAuth()->generatePasswordHash( $password, $solt );
+        $solt = $this->generateString(8);
+        $hash = $this->generatePasswordHash($password, $solt);
         $this->set('solt', $solt);
         $this->set('password', $hash);
         return $this;
     }
+
+    /**
+     * Генерирует случайную строку
+     * @param string $len Length generated string
+     * @return string
+     */
+    public function generateString($len)
+    {
+        $generator = new SecureRandom();
+        return $generator->nextBytes($len);
+    }
+
+    /**
+     * Генерирует хэш пароля
+     * @param $password
+     * @param $solt
+     * @return string
+     */
+    public function generatePasswordHash( $password, $solt )
+    {
+        return md5( md5($solt) . md5($password) );
+    }
+
 
     /**
      * Активировать пользователя

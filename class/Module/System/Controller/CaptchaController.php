@@ -43,7 +43,7 @@ class CaptchaController extends Controller
 
         imagefill( $img, 0, 0, $this->config->get('captcha.bgcolor') );
 
-        $text   = $this->app()->getAuth()->generateString( $l, '/[ABCEFGHIKMNOP]/' );
+        $text = $this->generateString($l, '/[ABCEFGHIKMNOP]/');
 
         $this->request->getSession()->set('captcha_code', $text);
 
@@ -59,5 +59,27 @@ class CaptchaController extends Controller
                           $text{$i} );
         }
         return $img;
+    }
+
+    /**
+     * @param $len
+     * @param $pattern
+     *
+     * @return string
+     */
+    protected function generateString($len, $pattern)
+    {
+        $c   = $len;
+        $str = '';
+        while ($c > 0) {
+            $charcode = rand(33, 122);
+            $chr      = chr($charcode);
+            if (preg_match($pattern, $chr)) {
+                $str .= $chr;
+                $c--;
+            }
+        }
+
+        return $str;
     }
 }
