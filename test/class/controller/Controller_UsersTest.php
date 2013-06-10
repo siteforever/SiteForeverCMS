@@ -188,10 +188,9 @@ class Controller_UsersTest extends \Sfcms\Test\TestCase
         );
         $response = $this->runController('user', 'register');
         $crawler = $this->createCrawler($response);
-        print $response->getContent();
-//        $this->assertEquals('Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.',
-//            $crawler->filterXPath('//div[@class="alert"]')->text()
-//        );
+        $this->assertEquals('Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.',
+            $crawler->filterXPath('//div[@class="alert"]')->text()
+        );
     }
 
     /**
