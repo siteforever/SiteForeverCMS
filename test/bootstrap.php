@@ -6,7 +6,7 @@
  */
 // путь к фреймворку
 // если не указан, то в текущей директории
-defined('SF_PATH') || define('SF_PATH', realpath( dirname(__FILE__) . '/..' ));
+defined('SF_PATH') || define('SF_PATH', realpath( __DIR__ . '/..' ));
 
 //корень сайта
 defined('ROOT') ||define('ROOT', SF_PATH );
@@ -19,13 +19,14 @@ use Symfony\Component\Process\Process;
 $mysqlTo = "mysql -u root siteforever_test";
 
 //$process = new Process("$mysqlFrom | $mysqlTo");
-$process = new Process("$mysqlTo < dump.sql");
+$process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
+var_dump($process->getCommandLine());
 $process->start();
 while ($process->isRunning()) {
     print "running...\n";
     sleep(1);
 }
-var_dump($process->getOutput());
+var_dump($process->getErrorOutput());
 //if (!$process->isSuccessful()) {
 //    die($process->getOutput());
 //}
