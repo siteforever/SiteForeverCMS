@@ -76,28 +76,29 @@ class Config
     /**
      * Получить значение
      * @param $key
+     * @param $default
      * @return mixed
      */
-    public function get($key)
+    public function get($key, $default = null)
     {
         $path = explode('.', $key);
         if (count($path) == 1) {
             if (isset($this->config[$key])) {
                 return $this->config[$key];
             }
-            return null;
-        }
-        else {
-            return $this->geti($path);
+            return $default;
+        } else {
+            return $this->geti($path, $default);
         }
     }
 
     /**
      * Получить значение по алиасу
      * @param array $path
+     * @param $default
      * @return mixed|null
      */
-    protected function geti($path)
+    protected function geti($path, $default = null)
     {
         $data = $this->config;
         foreach ($path as $part) {
@@ -105,7 +106,7 @@ class Config
                 $data = $data[$part];
             }
             else {
-                return null;
+                return $default;
             }
         }
         return $data;

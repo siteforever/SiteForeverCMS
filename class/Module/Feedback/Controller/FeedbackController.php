@@ -24,7 +24,7 @@ class FeedbackController extends Controller
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
-                sendmail(
+                $this->sendmail(
                    $form->email,
                    $this->config->get('admin'),
                    'Сообщение с сайта :'.$form->title,

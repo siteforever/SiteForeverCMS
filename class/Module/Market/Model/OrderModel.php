@@ -53,14 +53,11 @@ class OrderModel extends Model
 
     /**
      * Создать заказ
-     * @param Basket $basket
      * @param Delivery $delivery
      * @return bool|Order
      */
-    public function createOrder( Basket $basket, Forms_Basket_Address $form, Sfcms\Delivery $delivery )
+    public function createOrder(Forms_Basket_Address $form, Sfcms\Delivery $delivery)
     {
-        $basketData = $basket->getAll();
-
         /** @var $obj Order */
         $obj    = $this->createObject();
         $obj->attributes = $form->getData();
@@ -84,69 +81,7 @@ class OrderModel extends Model
 
         $this->save( $obj );
 
-//        $this->log( $basketData, 'basketData' );
-
-
-        // Заполняем заказ товарами
-
-        /** @var $orderPositionModel OrderPositionModel */
-        $orderPositionModel = $this->getModel('OrderPosition');
-
         if ( $obj->getId() ) {
-            $pos_list    = array();
-            $total_count = 0;
-            $total_summa = 0;
-            foreach( $basketData as $data ) {
-                /** @var $position OrderPosition */
-                $position   = $orderPositionModel->createObject();
-                $position->attributes = array(
-                    'ord_id'    => $obj->getId(),
-//                    'name'      => $data['name'],
-                    'product_id'=> (int) $data['id'],
-                    'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
-                    'details'   => $data['details'],
-                    'currency'  => isset( $data['currency'] ) ? $data['currency'] : t('catalog','RUR'),
-                    'item'      => isset( $data['item'] ) ? $data['item'] : t('catalog', 'item'),
-                    'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
-                    'price'     => $data['price'],
-                    'count'     => $data['count'],
-                    'status'    => 1,
-                );
-                $position->save();
-
-                $pos_list[] = $position->attributes;
-            }
-            $total_count = $basket->getCount();
-            $total_summa = $basket->getSum() + $delivery->cost();
-
-            $this->app()->getTpl()->assign(array(
-                'order'     => $obj,
-                'sitename'  => $this->config->get('sitename'),
-                'ord_link'  => $this->app()->getConfig()->get('siteurl').$obj->getUrl(),
-                'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
-                'date'      => date('H:i d.m.Y'),
-                'order_n'   => $obj->getId(),
-                'positions' => $pos_list,
-                'total_summa'=> $total_summa,
-                'total_count'=> $total_count,
-                'delivery'  => $delivery,
-                'sum'       => $basket->getSum(),
-            ));
-
-            sendmail(
-                $obj->email,
-                $this->config->get('admin'),
-                sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$obj->getId()),
-                $this->app()->getTpl()->fetch('order.mail.createadmin')
-            );
-
-            sendmail(
-                $this->config->get('admin'),
-                $obj->email,
-                sprintf('Заказ №%s на сайте %s',$obj->getId(),$this->config->get('sitename')),
-                $this->app()->getTpl()->fetch('order.mail.create')
-            );
-
             return $obj;
         }
         return false;

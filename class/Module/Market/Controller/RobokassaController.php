@@ -96,7 +96,7 @@ class RobokassaController extends Controller
         if ( $robokassa->isValidResult( $SignatureValue ) ) {
             $order->paid = time();
             $this->getTpl()->assign('order',$order);
-            sendmail(
+            $this->sendmail(
                 $order->email,
                 $this->config->get('admin'),
                 'Оплачен заказ №'.$order->id,
@@ -139,7 +139,7 @@ class RobokassaController extends Controller
         $robokassa->setOutSum( $OutSum );
 
         $this->getTpl()->assign('order',$order);
-        sendmail(
+        $this->sendmail(
             $order->email,
             $this->config->get('admin'),
             'Сбой оплаты заказ №'.$order->id,

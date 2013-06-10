@@ -7,6 +7,8 @@
  */
 namespace Module\Market\Controller;
 
+use Module\Market\Model\OrderPositionModel;
+use Module\Market\Object\OrderPosition;
 use Sfcms;
 use Sfcms\Controller;
 use Sfcms\Form\Form;
@@ -177,7 +179,7 @@ class BasketController extends Controller
                 }
             }
 
-            $delivery = $this->app()->getDelivery();
+            $delivery = $this->app()->getDelivery($this->request);
             $result['delivery']['cost'] = number_format( $delivery->cost(), 2, ',', '' );
             $result['basket'] = $this->getBasket()->getAll();
             $result['basket']['sum'] = $this->getBasket()->getSum() + $delivery->cost();
@@ -198,9 +200,63 @@ class BasketController extends Controller
 
                     /** @var $orderModel OrderModel */
                     $orderModel    = $this->getModel('Order');
-                    $order = $orderModel->createOrder( $this->getBasket(), $form, $delivery );
+                    $order = $orderModel->createOrder($form, $delivery);
 
-                    if ( $order ) {
+                    if ($order) {
+                        /** @var $orderPositionModel OrderPositionModel */
+                        $orderPositionModel = $this->getModel('OrderPosition');
+                        // Заполняем заказ товарами
+
+                        $pos_list    = array();
+                        foreach ($this->getBasket()->getAll() as $data) {
+                            /** @var $position OrderPosition */
+                            $position   = $orderPositionModel->createObject();
+                            $position->attributes = array(
+                                'ord_id'    => $order->getId(),
+                                //                    'name'      => $data['name'],
+                                'product_id'=> (int) $data['id'],
+                                'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
+                                'details'   => $data['details'],
+                                'currency'  => isset( $data['currency'] ) ? $data['currency'] : t('catalog','RUR'),
+                                'item'      => isset( $data['item'] ) ? $data['item'] : t('catalog', 'item'),
+                                'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
+                                'price'     => $data['price'],
+                                'count'     => $data['count'],
+                                'status'    => 1,
+                            );
+                            $position->save();
+
+                            $pos_list[] = $position->attributes;
+                        }
+
+                        $this->app()->getTpl()->assign(array(
+                                'order'     => $order,
+                                'sitename'  => $this->config->get('sitename'),
+                                'ord_link'  => $this->app()->getConfig()->get('siteurl').$order->getUrl(),
+                                'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
+                                'date'      => date('H:i d.m.Y'),
+                                'order_n'   => $order->getId(),
+                                'positions' => $pos_list,
+                                'total_summa'=> $this->getBasket()->getSum() + $delivery->cost(),
+                                'total_count'=> $this->getBasket()->getCount(),
+                                'delivery'  => $delivery,
+                                'sum'       => $this->getBasket()->getSum(),
+                            ));
+
+                        $this->sendmail(
+                            $order->email,
+                            $this->config->get('admin'),
+                            sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$order->getId()),
+                            $this->app()->getTpl()->fetch('order.mail.createadmin')
+                        );
+
+                        $this->sendmail(
+                            $this->config->get('admin'),
+                            $order->email,
+                            sprintf('Заказ №%s на сайте %s',$order->getId(),$this->config->get('sitename')),
+                            $this->app()->getTpl()->fetch('order.mail.create')
+                        );
+
                         $this->getBasket()->clear();
                         $this->getBasket()->save();
 

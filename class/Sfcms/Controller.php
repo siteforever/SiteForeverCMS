@@ -60,6 +60,9 @@ abstract class Controller extends Component
     /** @var CacheInterface */
     protected static $cache = null;
 
+    /** @var \Swift_Mailer */
+    protected static $mailer = null;
+
     public function __construct(Request $request)
     {
         $this->request  = $request;
@@ -281,6 +284,64 @@ abstract class Controller extends Component
     {
         return i18n::getInstance();
     }
+
+    /**
+     * @return \Swift_Mailer
+     */
+    public function getMailer()
+    {
+        if (null === self::$mailer) {
+            switch ($this->config->get('mailer.transport')) {
+                case 'smtp':
+                    $transport = new \Swift_SmtpTransport(
+                        $this->config->get('mailer.host', 'localhost'),
+                        $this->config->get('mailer.port', 25),
+                        $this->config->get('mailer.security')
+                    );
+                    $transport->setUsername($this->config->get('mailer.username'));
+                    $transport->setPassword($this->config->get('mailer.password'));
+                    break;
+                case 'gmail':
+                    // http://stackoverflow.com/a/4691183/2090796
+                    $transport = new \Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl');
+                    $transport->setUsername($this->config->get('mailer.username'));
+                    $transport->setPassword($this->config->get('mailer.password'));
+                    $transport->setAuthMode('login');
+                    break;
+                case 'null':
+                    $transport = new \Swift_NullTransport();
+                    break;
+                default:
+                    $transport = new \Swift_SendmailTransport();
+            }
+            self::$mailer = new \Swift_Mailer($transport);
+        }
+        return self::$mailer;
+    }
+
+    /**
+     * Отправить сообщение
+     * @param        $from
+     * @param        $to
+     * @param        $subject
+     * @param        $msg
+     * @param string $mime_type
+     *
+     * @return int
+     */
+    public function sendmail($from, $to, $subject, $msg, $mime_type = 'plain/text')
+    {
+        /** @var $message \Swift_Message */
+        $message = $this->getMailer()->createMessage();
+        $message
+            ->setSubject($subject)
+            ->setFrom($from)
+            ->setTo($to)
+            ->setBody($msg, $mime_type, 'utf-8');
+
+        return $this->getMailer()->send($message);
+    }
+
 
     /**
      * Перенаправление на другой урл

@@ -57,14 +57,14 @@ class GuestbookController extends Controller
 
                 $model->save( $obj );
 
-                sendmail(
+                $this->sendmail(
                     $obj->email,
                     $this->config->get('admin'),
                     'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),
                     $this->getTpl()->fetch('guestbook.letter')
                 );
 
-                sendmail(
+                $this->sendmail(
                     $obj->email,
                     'keltanas@gmail.com',
                     'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),

@@ -464,7 +464,7 @@ class UserController extends Controller
 
             //print $msg;
 
-            sendmail(
+            $this->sendmail(
                 $config->get('admin'),
                 $obj->email,
                 'Подтверждение регистрации',
@@ -517,7 +517,7 @@ class UserController extends Controller
                                 $this->router->createLink("user/login")
                     ));
 
-                    sendmail(
+                    $this->sendmail(
                         $this->config->get('admin'),
                         $email,
                         t('user','New password'), $this->tpl->fetch('user.mail.recovery')
@@ -578,7 +578,7 @@ class UserController extends Controller
                                             array('email'=>$user['email'], 'code'=>md5($user['solt']),  )
                                         )
                     ));
-                    sendmail(
+                    $this->sendmail(
                         $this->config->get('admin'),
                         $form->email,
                         t('user','Password recovery'),
