@@ -20,6 +20,6 @@ define('ROOT', __DIR__);
 require_once SF_PATH.'/vendor/autoload.php';
 //require_once SF_PATH . '/class/App.php';
 
-$app = new App(preg_match('/^test/', $_SERVER['HTTP_HOST']) ? 'application/test.php' : 'application/development.php');
+$app = new App(preg_match('/^test/', $_SERVER['HTTP_HOST']) ? 'app/test.php' : 'app/development.php');
 $app->run();
 

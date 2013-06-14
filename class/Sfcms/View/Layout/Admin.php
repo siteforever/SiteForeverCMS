@@ -36,14 +36,32 @@ class Admin extends Layout
         $this->_app->addScript( $this->getMisc() . '/admin/catalog.js' );
 
         // Собираем админский скрипт из библиотек
-        // todo Разгресли эту хуйню со скриптами
-        $adminJs = array('// DO NOT MODIFY THIS FILE. IS FILE WAS GENERATED. DATE '.date('d M Y, H:i'));
-        $adminJs[] = file_get_contents( SF_PATH.$this->getMisc().'/admin/forms.js' );
-        $adminJs[] = file_get_contents( SF_PATH.$this->getMisc().'/admin/jquery/jquery.dumper.js' );
-        $adminJs[] = file_get_contents( SF_PATH.$this->getMisc().'/admin/jquery/jquery.filemanager.js' );
-        $adminJs[] = file_get_contents( SF_PATH.$this->getMisc().'/admin/jquery/jquery.realias.js' );
-        $adminJs[] = file_get_contents( SF_PATH.$this->getMisc().'/admin/admin.js' );
-        file_put_contents( ROOT.'/static/admin.js', join("\n\n", $adminJs) );
+        $targetFile = ROOT.'/static/admin.js';
+        if (! $exists = file_exists($targetFile) || \App::isDebug()) {
+            if ($exists) {
+                $lastModTarget = filemtime($targetFile);
+                $files = array(
+                    '/admin/forms.js',
+                    '/admin/jquery/jquery.dumper.js',
+                    '/admin/jquery/jquery.filemanager.js',
+                    '/admin/jquery/jquery.realias.js',
+                    '/admin/admin.js',
+                );
+                $misc = $this->getMisc();
+                $lastModSorce = array_reduce($files, function($modify, $file) use ($misc) {
+                        $l = filemtime(SF_PATH.$misc.$file);
+                        return $l > $modify ? $l : $modify;
+                    }, 0);
+            }
+            if (!$exists || $lastModSorce > $lastModTarget) {
+                // todo Разгресли эту хуйню со скриптами
+                $adminJs = array('// DO NOT MODIFY THIS FILE. IS FILE WAS GENERATED. DATE '.date('d M Y, H:i'));
+                foreach ($files as $file) {
+                    $adminJs[] = file_get_contents(SF_PATH.$misc.$file);
+                }
+                file_put_contents( $targetFile, join("\n\n", $adminJs) );
+            }
+        }
 
         $this->_app->addScript('/static/admin.js');
 
