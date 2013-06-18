@@ -69,14 +69,14 @@ class MaterialModel extends Model
                 ),
             ),
             'name'  => array(
-                'title' => t('material','Name'),
+                'title' => $this->t('material','Name'),
                 'width' => 200,
                 'format' => array(
                     'link' => array('controller'=>'material', 'action'=>'edit','id'=>':id','class'=>'edit','title'=>':name'),
                 ),
             ),
             'active' => array(
-                'title' => t('material','Active'),
+                'title' => $this->t('material','Active'),
                 'width' => 50,
                 'format' => array(
                     'bool' => array(),

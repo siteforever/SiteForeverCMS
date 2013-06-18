@@ -23,7 +23,7 @@ class GeneratorController extends Controller
 
     public function init()
     {
-        $this->request->setTitle(t('Generator'));
+        $this->request->setTitle($this->t('Generator'));
     }
 
     /**

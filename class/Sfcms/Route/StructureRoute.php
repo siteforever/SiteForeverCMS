@@ -43,7 +43,7 @@ class StructureRoute extends Route
         do {
             if (isset(self::$_aliases[$route])) {
                 if (null !== $alias) {
-                    $this->request->attributes->set('alias', $alias);
+                    $this->request->query->set('alias', $alias);
                 }
                 /*$route->setActive(1);*/
                 call_user_func(array(self::$_aliases[$route], 'setActive'), 1);

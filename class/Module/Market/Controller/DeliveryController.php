@@ -24,7 +24,7 @@ class DeliveryController extends Controller
 
     public function adminAction()
     {
-        $this->request->setTitle(t('delivery','Delivery'));
+        $this->request->setTitle($this->t('delivery','Delivery'));
         $model = $this->getModel('Delivery');
         $items = $model->findAll(array('order'=>'pos'));
         return array(
@@ -57,7 +57,7 @@ class DeliveryController extends Controller
                 }
                 $obj->attributes = $form->getData();
                 $obj->markDirty();
-                return array('error'=>0,'msg'=>t('Data save successfully'));
+                return array('error'=>0,'msg'=>$this->t('Data save successfully'));
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
             }

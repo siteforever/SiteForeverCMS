@@ -19,7 +19,7 @@ class Builder
      * @var Criteria
      */
     private $_criteria;
-    
+
     /**
      * @var string
      */
@@ -115,11 +115,12 @@ class Builder
                     sort($values);
                     $val = implode(',', $values); // Внешние апострофы добавяться в след. условии
                 } elseif (is_string($val)) {
-                    $val = filter_var(
-                        trim($val, "'"),
-                        FILTER_SANITIZE_FULL_SPECIAL_CHARS,
-                        FILTER_FLAG_NO_ENCODE_QUOTES
-                    );
+//                    $val = filter_var(
+//                        trim($val, "'"),
+//                        FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+//                        FILTER_FLAG_NO_ENCODE_QUOTES
+//                    );
+                    $val = preg_replace('/\\\'/', '\\\\\'', $val);
                     $val = "'{$val}'";
                 } elseif (is_numeric($val)) {
                 } else {

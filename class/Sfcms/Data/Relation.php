@@ -32,7 +32,7 @@ abstract class Relation
 
     public abstract function find();
 
-    public abstract function with(Collection $collection);
+    public abstract function with(Collection $collection, $rel);
 
     /**
      * @return string

@@ -10,6 +10,7 @@ use Sfcms\Data\Object as DomainObject;
 use Module\System\Model\LogModel;
 use Sfcms\Component;
 use Sfcms\Data\Collection;
+use Sfcms\Data\Object;
 use Sfcms\Data\Query\Builder as QueryBuilder;
 use Sfcms\Model\ModelEvent;
 use Sfcms\db;
@@ -75,6 +76,7 @@ abstract class Model extends Component
 
     protected static $exists_tables;
 
+    /** @var  db */
     protected static $dao;
 
     /** @var array Список моделей, доступных в системе */
@@ -562,7 +564,7 @@ abstract class Model extends Component
      * @return DomainObject
      * @throws Exception
      */
-    final public function find($crit, $params = array())
+    public function find($crit, $params = array())
     {
         $query = null;
         if (is_object($crit)) {
@@ -631,7 +633,7 @@ abstract class Model extends Component
      *
      * @return DomainObject
      */
-    public function findBy($criteria)
+    protected function findBy($criteria)
     {
         $keys = $this->getKeys();
         $findKeys = array_keys($criteria);
@@ -676,16 +678,16 @@ abstract class Model extends Component
 
         $cache_match = null;
         // ==== CACHING ====
-        if ($crit instanceof Criteria) {
-            if (preg_match('@^`(\w+)`\s(IN|=)\s\(?(.*?)\)?$@', $crit->condition, $cache_match)) {
-                if ('=' == $cache_match[2]) {
-                    $hash_key = $this->objectClass() . $cache_match[1] . $crit->params[$cache_match[3]];
-                    if (isset($this->_queries_cache[$hash_key])) {
-                        return $this->_queries_cache[$hash_key];
-                    }
-                }
-            }
-        }
+//        if ($crit instanceof Criteria) {
+//            if (preg_match('@^`(\w+)`\s(IN|=)\s\(?(.*?)\)?$@', $crit->condition, $cache_match)) {
+//                if ('=' == $cache_match[2] && isset($crit->params[$cache_match[3]])) {
+//                    $hash_key = $this->objectClass() . $cache_match[1] . $crit->params[$cache_match[3]];
+//                    if (isset($this->_queries_cache[$hash_key])) {
+//                        return $this->_queries_cache[$hash_key];
+//                    }
+//                }
+//            }
+//        }
         // ==== /CACHING ====
 
         if (is_array($crit) || (is_object($crit) && $crit instanceof Criteria)) {
@@ -708,29 +710,29 @@ abstract class Model extends Component
         if (count($raw)) {
             $collection = new Collection($raw, $this);
             // ==== CACHING ====
-            if ($cache_match && 'IN' == $cache_match[2]) {
-                $cache_values = $crit->params[$cache_match[3]];
-                if (!is_array($cache_values)) {
-                    $cache_values = array($cache_values);
-                }
-                foreach ($cache_values as $cache_value) {
-                    $hash_key = $this->objectClass() . $cache_match[1] . $cache_value;
-                    if (!isset($this->_queries_cache[$hash_key])) {
-                        $raw_filtered = array_filter(
-                            $raw,
-                            function ($data) use ($cache_match, $cache_value) {
-                                return isset($data[$cache_match[1]]) && $data[$cache_match[1]] == $cache_value;
-                            }
-                        );
-                        $this->_queries_cache[$hash_key] = new Collection($raw_filtered, $this);
-                    }
-                }
-            }
+//            if ($cache_match && 'IN' == $cache_match[2]) {
+//                $cache_values = $crit->params[$cache_match[3]];
+//                if (!is_array($cache_values)) {
+//                    $cache_values = array($cache_values);
+//                }
+//                foreach ($cache_values as $cache_value) {
+//                    $hash_key = $this->objectClass() . $cache_match[1] . $cache_value;
+//                    if (!isset($this->_queries_cache[$hash_key])) {
+//                        $raw_filtered = array_filter(
+//                            $raw,
+//                            function ($data) use ($cache_match, $cache_value) {
+//                                return isset($data[$cache_match[1]]) && $data[$cache_match[1]] == $cache_value;
+//                            }
+//                        );
+//                        $this->_queries_cache[$hash_key] = new Collection($raw_filtered, $this);
+//                    }
+//                }
+//            }
             // ==== /CACHING ====
             if (count($with)) {
                 foreach ($with as $rel) {
                     $relation = $this->getRelation($rel, $collection->getRow(0));
-                    $relation->with($collection);
+                    $relation->with($collection, $rel);
                 }
             }
         } else {
@@ -810,6 +812,12 @@ abstract class Model extends Component
      */
     public function save(DomainObject $obj, $forceInsert = false)
     {
+        if ($obj->isStateSaving()) { // Защита от замкнутого сохранения из-за событий
+            return false;
+        }
+        $state = $obj->state();
+        $obj->markSaving();
+
         $event = new Model\ModelEvent($obj, $this);
         $this->trigger('save.start', $event);
         $this->trigger(sprintf('%s.save.start', $this->eventAlias()), $event);
@@ -834,7 +842,7 @@ abstract class Model extends Component
         }
 
         $ret = false;
-        if (!$forceInsert && !in_array(null, $id, true) && $obj->isStateDirty()) {
+        if (!$forceInsert && !in_array(null, $id, true) && Object::STATE_DIRTY == $state) {
             $where = array_map(function ($key, $val) {
                 return "`{$key}` = '{$val}'";
             }, $id_keys, $id);

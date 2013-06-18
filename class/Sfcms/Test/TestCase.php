@@ -50,6 +50,7 @@ class TestCase extends PHPUnit_Framework_TestCase
      */
     protected function runController($controller, $action = 'index')
     {
+        $this->request->clearFeedback();
         $this->request->setController($controller);
         $this->request->setAction($action);
         return \App::getInstance()->handleRequest($this->request);

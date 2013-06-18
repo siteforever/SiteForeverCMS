@@ -1,10 +1,5 @@
 <?php
 return array(
-    // отладка
-    'debug' => array(
-        'profiler'   => false,
-    ),
-
     'logger'    => 'auto',
     //    'logger'    => 'html',
     //    'logger'    => 'file',
@@ -34,22 +29,14 @@ return array(
         'password'  => '',
         'host'      => 'localhost',
         'database'  => 'siteforever',
-        'debug'     => false,
         'migration' => false,
     ),
 
     // тема
     'template' => array(
-        'theme'     => 'basic',
-        // драйвер шаблонизатора
-        // это класс, поддерживающий интерфейс TPL_Driver
-        'driver'    => '\\Sfcms\\Tpl\\Smarty',
-        'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
-        'ext'       => 'tpl', // расширение шаблонов
-        'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system', // каталог шаблонов админки
-        '404'       => 'error404', // шаблон страницы 404
+        'theme'     => 'basic', // тема сайта
     ),
 
-    'modules' => require_once __DIR__ . '/modules.php',
+    'modules' => require_once __DIR__ . '/../modules.php',
 
 );

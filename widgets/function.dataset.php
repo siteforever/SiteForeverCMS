@@ -17,26 +17,26 @@
 function smarty_function_dataset($params, Smarty_Internal_Template $template)
 {
     if ( ! isset( $params['data'] ) ) {
-        return t('Param "data" not defined');
+        return \Sfcms\i18n::getInstance()->write('Param "data" not defined');
     }
     if ( ! isset( $params['cols'] ) ) {
-        return t('Param "cols" not defined');
+        return \Sfcms\i18n::getInstance()->write('Param "cols" not defined');
     }
     if ( ! isset( $params['hcols'] ) ) {
-        return t('Param "hcols" not defined');
+        return \Sfcms\i18n::getInstance()->write('Param "hcols" not defined');
     }
     $data = $params['data'];
     $cols = explode(',', $params['cols']);
     $hcols = explode(',', $params['hcols']);
 
     if ( count( $cols ) != count( $hcols ) ) {
-        return t('"cols" not corresponds to "hcols"');
+        return \Sfcms\i18n::getInstance()->write('"cols" not corresponds to "hcols"');
     }
 
     $dataset = array('<table class="dataset">');
     $dataset[] = '<tr>';
     foreach ( $hcols as $h ) {
-        $dataset[] = '<th>'.t($h).'</th>';
+        $dataset[] = '<th>'.\Sfcms\i18n::getInstance()->write($h).'</th>';
     }
     $dataset[] = '</tr>';
     foreach( $data as $d ) {

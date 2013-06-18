@@ -72,7 +72,7 @@ class Resolver extends Component
             $module = $this->app()->getModule( $moduleName );
             $controllerClass = sprintf(
                 '%s\\%sController',
-                $module->getPath(),
+                $module->getNs(),
                 str_replace( '_', '\\', $controllerClass )
             );
         }
@@ -105,7 +105,7 @@ class Resolver extends Component
             if ($this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage($request);
             } else {
-                throw new HttpException(403, t('Access denied'));
+                throw new HttpException(403, $this->t('Access denied'));
             }
         }
 
@@ -148,27 +148,29 @@ class Resolver extends Component
         $docComment   = $method->getDocComment();
         preg_match_all( '/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match );
         foreach( $methodParams as $param ) {
-            if ( $val = $request->get($param->name) ) {
+            $default = $param->isOptional() ? $param->getDefaultValue() : null;
+            if ($request->query->has($param->name)) {
                 // Фильтруем входные параметры
-                $arguments[ $param->name ] = $val;
-                if ( ( $key = array_search($param->name, $match[2] ) ) !== false ) {
-                    switch( $match[1][$key] ) {
+//                $arguments[$param->name] = $val;
+                if (false !== ($key = array_search($param->name, $match[2]))) {
+                    switch ($match[1][$key]) {
                         case 'int':
-                            $arguments[ $param->name ] = filter_var( $val, FILTER_VALIDATE_INT );
+                            $arguments[$param->name] = $request->query->getDigits($param->name, $default);
                             break;
                         case 'float':
-                            $arguments[ $param->name ] = filter_var( $val, FILTER_VALIDATE_FLOAT );
+                            $arguments[$param->name] = $request->query->filter($param->name, $default, false, FILTER_VALIDATE_FLOAT);
                             break;
                         case 'string':
-                            $arguments[ $param->name ] = filter_var( $val, FILTER_SANITIZE_STRING );
+                            $arguments[$param->name] = $request->query->filter($param->name, $default, false, FILTER_SANITIZE_STRING);
                             break;
 //                        case 'array':
-//                        default:
-//                            $arguments[ $param->name ] = $val;
+//                            $arguments[$param->name] = $request->query->get($param->name);
+                        default:
+                            $arguments[$param->name] = $request->query->get($param->name, $default);
                     }
                 }
             } else {
-                $arguments[$param->name] = $param->isOptional() ? $param->getDefaultValue() : null;
+                $arguments[$param->name] = $default;
             }
         }
         return $arguments;
@@ -205,7 +207,7 @@ class Resolver extends Component
                             $this->setSystemPage($request);
                         }
                     } else {
-                        throw new Sfcms_Http_Exception(t('Access denied'), 403);
+                        throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
                     }
                 }
             }

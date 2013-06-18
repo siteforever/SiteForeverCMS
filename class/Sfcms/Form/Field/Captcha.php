@@ -38,7 +38,7 @@ class Captcha extends Field
         if (strtolower($captcha_code) == strtolower($value)) {
             return true;
         }
-        $this->_msg = t('Code is not valid');
+        $this->_msg = $this->t('Code is not valid');
         return false;
     }
 

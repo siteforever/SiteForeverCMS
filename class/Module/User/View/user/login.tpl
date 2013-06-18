@@ -1,5 +1,5 @@
-{if isset($error)}
-<div class="alert alert-error">{$msg}</div>
+{if isset($error) && isset($message)}
+<div class="alert alert-error">{$message}</div>
 {/if}
 
 {$form->html(false)}

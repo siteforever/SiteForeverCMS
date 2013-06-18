@@ -17,7 +17,7 @@ class GoodsController extends Controller
 {
     public function init()
     {
-        $this->request->setTitle(t('Goods'));
+        $this->request->setTitle($this->t('Goods'));
     }
 
     public function access()
@@ -41,8 +41,8 @@ class GoodsController extends Controller
             return 'Запрос слишком короткий';
         }
 
-        $this->request->setTitle(t('goods','Goods search'));
-        $this->getTpl()->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null, $this->request->getTitle());
+        $this->request->setTitle($this->t('goods','Goods search'));
+        $this->getTpl()->getBreadcrumbs()->addPiece('index',$this->t('Home'))->addPiece(null, $this->request->getTitle());
 
         /** @var $modelCatalog CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');

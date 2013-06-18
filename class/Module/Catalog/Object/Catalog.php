@@ -22,6 +22,8 @@ use Sfcms\i18n;
  *
  * @property int $id
  * @property int $parent
+ * @property string $uuid
+ * @property string $parent_uuid
  * @property int $cat
  * @property int $pos
  * @property int $manufacturer
@@ -29,6 +31,8 @@ use Sfcms\i18n;
  * @property string $alias
  * @property string $url
  * @property string $name
+ * @property string $full_name
+ * @property string $unit
  * @property string $title
  * @property string $path
  * @property int $sale
@@ -113,7 +117,8 @@ class Catalog extends Object
      */
     public function getAlias()
     {
-        $alias = strtolower( $this->id . '-' . i18n::getInstance()->translit( $this->name ) ) ?: $this->id;
+        $alias = strtolower($this->id . '-' . i18n::getInstance()->translit($this->name)) ? : $this->id;
+        $alias = trim($alias, '-');
         if (empty($this->data['alias']) || $this->data['alias'] != $alias) {
             $this->data['alias'] = $alias;
             if (!$this->isStateCreate()) {
@@ -138,10 +143,10 @@ class Catalog extends Object
         $page = $modelPage->findByControllerLink('catalog', $this->cat ? $this->id : $this->parent);
 
         if ( null === $page ) {
-            throw new \RuntimeException(t('Page for catalog category not found').'; page.link='.$this->parent);
+            throw new \RuntimeException($this->t('Page for catalog category not found').'; page.link='.$this->parent);
         }
 
-        return $page->alias . ( $this->cat ? '' : '/' .  $this->alias );
+        return $page->alias . ($this->cat ? '' : '/' . $this->alias);
     }
 
     /**
@@ -234,8 +239,12 @@ class Catalog extends Object
             new Field\Int('parent'),
             new Field\Int('type_id', 11, true, 0),
             new Field\Tinyint('cat'),
+            new Field\Varchar('uuid', 36),
+            new Field\Varchar('parent_uuid', 36),
             new Field\Varchar('name', 100),
+            new Field\Varchar('full_name', 100),
             new Field\Varchar('alias', 100),
+            new Field\Varchar('unit', 20),
             new Field\Text('path'),
             new Field\Text('text'),
             new Field\Varchar('articul', 250),
@@ -283,6 +292,8 @@ class Catalog extends Object
         return array(
             'showed' => array('deleted', 'hidden', 'cat'),
             'cat',
+            'uuid',
+            'parent_uuid',
             'alias',
             'hidden',
             'deleted',

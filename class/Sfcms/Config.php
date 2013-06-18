@@ -21,7 +21,7 @@ class Config
     public function __construct($cfg_file = null)
     {
         if (is_null($cfg_file) && defined('CONFIG')) {
-            $cfg_file = 'application/' . CONFIG . '.php';
+            $cfg_file = 'app/cfg/' . CONFIG . '.php';
         }
         if (is_array($cfg_file)) {
             $this->config = $cfg_file;

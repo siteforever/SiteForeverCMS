@@ -18,7 +18,7 @@ class SystemController extends Controller
 
     public function indexAction()
     {
-        $this->request->setTitle(t('System configuration'));
+        $this->request->setTitle($this->t('System configuration'));
         $this->request->setTemplate('index');
         $modules = get_loaded_extensions();
         $msys   = array();
@@ -42,7 +42,7 @@ class SystemController extends Controller
      */
     public function assemblyAction()
     {
-        $this->request->setTitle(t('Assembly'));
+        $this->request->setTitle($this->t('Assembly'));
     }
 
 }

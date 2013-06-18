@@ -52,7 +52,7 @@ class User extends Object
     public function generateString($len)
     {
         $generator = new SecureRandom();
-        return $generator->nextBytes($len);
+        return substr(bin2hex($generator->nextBytes($len)), rand(0, $len), $len);
     }
 
     /**

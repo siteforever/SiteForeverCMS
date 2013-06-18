@@ -12,7 +12,7 @@ use Sfcms\Data\Relation;
 
 class Stat extends Relation
 {
-    public function with( Collection $collection )
+    public function with( Collection $collection , $rel)
     {
     }
 

@@ -18,7 +18,6 @@ use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\i18n;
 use Sfcms\db;
-use Sfcms\Tpl\Factory;
 use Sfcms\Tpl\Driver;
 use Module\System\Model\TemplatesModel;
 use Module\Page\Model\PageModel;
@@ -32,7 +31,8 @@ use Sfcms\Basket\Base as Basket;
 
 use Std_Logger;
 use Auth;
-
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class KernelBase
@@ -106,6 +106,12 @@ abstract class KernelBase
     protected $_controllers = null;
 
     /**
+     * Список команд для консоли
+     * @var array
+     */
+    protected $_commands = array();
+
+    /**
      * Список моделей
      * @var array
      */
@@ -173,6 +179,12 @@ abstract class KernelBase
     /** @var CacheInterface */
     protected $_cache = null;
 
+    private static $_debug = null;
+
+    protected $_is_console = false;
+
+    /** @var ContainerBuilder */
+    protected $_container = null;
 
 
     abstract public function run();
@@ -181,17 +193,23 @@ abstract class KernelBase
 
     abstract public function handleRequest(Request $request);
 
-    public function __construct($cfg_file)
+
+    public function __construct($cfg_file, $debug = false)
     {
         if ( is_null( self::$instance ) ) {
             self::$instance = $this;
         } else {
             throw new Exception('You can not create more than one instance of Application');
         }
+
+        self::$_debug = $debug;
+        if ($this->isDebug()) {
+            Debug::enable(E_ALL, true);
+        }
         // Конфигурация
         self::$config   = new Config( $cfg_file );
         // Загрузка параметров модулей
-        $this->getControllers();
+        $this->loadModulesConfigs();
     }
 
     /**
@@ -202,6 +220,22 @@ abstract class KernelBase
     public function __sleep()
     {
         return array();
+    }
+
+    /**
+     * @return ContainerBuilder
+     */
+    public function getContainer()
+    {
+        if (null === $this->_container) {
+            $this->_container = new ContainerBuilder();
+            $this->_container->register('smarty', 'Smarty');
+            $this->_container->register('tpl', '\\Sfcms\\Tpl\\Smarty')
+                ->addArgument($this->getConfig('template'))
+                ->addArgument($this->_container->get('smarty'));
+        }
+
+        return $this->_container;
     }
 
     /**
@@ -217,37 +251,10 @@ abstract class KernelBase
         return self::$instance;
     }
 
-    static public function import( $path )
-    {
-        $include_list    = array_reverse( explode( PATH_SEPARATOR, get_include_path() ) );
-        $include_list[ ] = $path;
-        set_include_path( implode( PATH_SEPARATOR, array_reverse( $include_list ) ) );
-    }
-
     public function __set($name, $value)
     {
 //        $this
 //            ->getLogger()->log(sprintf('%s = %s', $name, $value), 'app_set');
-    }
-
-    /**
-     * Зарегистрировать колбэк автозагрузки
-     * @param  $callback
-     * @return void
-     */
-    public static function autoloadRegister( $callback )
-    {
-        spl_autoload_register($callback);
-    }
-
-    /**
-     * Удалить колбэк автозагрузки
-     * @param  $callback
-     * @return void
-     */
-    public static function autoloadUnRegister( $callback )
-    {
-        spl_autoload_unregister($callback);
     }
 
     /**
@@ -311,8 +318,13 @@ abstract class KernelBase
         return $this->_devivery;
     }
 
+    /**
+     * @deprecated
+     * @use @Request
+     */
     public function getBasket()
-    {}
+    {
+    }
 
     /**
      * Return template driver
@@ -321,53 +333,14 @@ abstract class KernelBase
      */
     public function getTpl()
     {
-        if ( is_null( self::$tpl ) ) {
-            $config = $this->getConfig('template');
-
-            if ( ! $config ) {
-                throw new Exception('Config for templates not defined');
-            }
-            $theme  = $config['theme'];
-
-            self::$tpl  = Factory::create($config);
-            $themeCat = ROOT."/themes/{$theme}/templates";
-
-            self::$tpl->setTplDir(array());
-            if (is_dir($themeCat)) {
-                self::$tpl->addTplDir($themeCat);
-            } else {
-                throw new Exception('Theme "' . $theme . '" not found');
-            }
-            if (is_dir(SF_PATH."/themes/system")) {
-                self::$tpl->addTplDir(SF_PATH."/themes/system");
-            }
-            $runtime    = ROOT."/runtime";
-            $tpl_c  = $runtime."/templates_c";
-            $cache  = $runtime."/cache";
-
-            if (!is_dir($tpl_c)) {
-                @mkdir($tpl_c, 0755, true);
-            }
-            if (!is_dir($cache)) {
-                @mkdir($cache, 0755, true);
-            }
-            self::$tpl->setCplDir($tpl_c);
-            self::$tpl->setCacheDir($cache);
-
-            self::$tpl->setWidgetsDir(SF_PATH . '/widgets');
-            if (ROOT != SF_PATH) {
-                self::$tpl->setWidgetsDir(ROOT . '/widgets');
+        if (null === self::$tpl) {
+            self::$tpl  = $this->getContainer()->get('tpl');
+            /** @var Module $module */
+            foreach ($this->getModules() as $module) {
+                $module->registerViewsPath(self::$tpl);
             }
         }
         return self::$tpl;
-    }
-
-    /**
-     * @return Driver
-     */
-    public function getView()
-    {
-        return $this->getTpl();
     }
 
     /**
@@ -441,8 +414,8 @@ abstract class KernelBase
                         } else {
                             $this->_logger = Std_Logger::getInstance( new \Std_Logger_Blank() );
                         }
+                        break;
                     }
-                    break;
                 default:
                     $this->_logger = Std_Logger::getInstance();
             }
@@ -508,6 +481,7 @@ abstract class KernelBase
     /**
      * @return Session
      * @throws RuntimeException
+     * @deprecated Session storaged in request
      */
     public function getSession()
     {
@@ -518,37 +492,49 @@ abstract class KernelBase
     /**
      * Получить список файлов стилей
      * @return array
+     * @deprecated
      */
     public function getStyle()
     {
         return $this->getAssets()->getStyle();
     }
 
-
+    /**
+     * @param $style
+     * @deprecated
+     */
     public function addStyle( $style )
     {
         $this->getAssets()->addStyle( $style );
     }
 
-
+    /**
+     * @deprecated
+     */
     public function cleanStyle()
     {
         $this->getAssets()->cleanStyle();
     }
 
-
+    /**
+     * @deprecated
+     */
     public function getScript()
     {
         return $this->getAssets()->getScript();
     }
 
-
+    /**
+     * @deprecated
+     */
     public function addScript( $script )
     {
         $this->getAssets()->addScript( $script );
     }
 
-
+    /**
+     * @deprecated
+     */
     public function cleanScript()
     {
         $this->getAssets()->cleanScripts();
@@ -556,31 +542,34 @@ abstract class KernelBase
 
     /**
      * Вернет список зарегистрированных модулей
-     * @return array of Application_Module
+     * @return array of Module
      */
     public function getModules()
     {
-        // todo от этого метода зависят классы Settings и Controller_Settings, поэтому пока вернем пустой массив
         return $this->_modules;
     }
 
     /**
      * Проверит существование модуля
      */
-    public function hasModule( $name )
+    public function hasModule($name)
     {
-        // todo Реализодвать нормально, пока не используется
-        if ( null === $this->_modules ) {
-            $this->loadModulesConfigs();
+        /** @var Module $module */
+        foreach ($this->getModules() as $i => $module) {
+            if ($module->getName() == $name) {
+                return $i;
+            }
         }
-        return array_reduce($this->_modules,function( $result, $item ) use ( $name ) {
-            return $result || ( $item == $name );
-        }, false);
+        return false;
     }
 
-    public function setModule($name, Module $module)
+    public function setModule(Module $module)
     {
-        $this->_modules[$name] = $module;
+        if (!in_array($module, $this->_modules, true)) {
+            $this->_modules[] = $module;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -593,7 +582,7 @@ abstract class KernelBase
         if (!$this->_modules_config) {
             $_ = $this;
 
-            $modules = self::getConfig('modules');
+            $moduleArray = self::getConfig('modules');
 
             try {
                 array_map(
@@ -604,15 +593,12 @@ abstract class KernelBase
                         if (!isset($module['name'])) {
                             throw new Exception('Directive "name" not defined in modules config');
                         }
-                        $class = $module['path'] . '\Module';
-                        $reflection = new \ReflectionClass($class);
+                        $className = $module['path'] . '\Module';
+                        $reflection = new \ReflectionClass($className);
                         $place = dirname($reflection->getFileName());
-                        if (is_dir($place.'/View')) {
-                            $_->getTpl()->addTplDir($place.'/View');
-                        }
-                        $_->setModule($module['name'], new $class($_, $module['name'], $module['path']));
+                        $_->setModule(new $className($_, $module['name'], $module['path'], $place));
                     },
-                    $modules
+                    $moduleArray
                 );
             } catch (\Exception $e) {
                 die($e->getMessage());
@@ -623,7 +609,7 @@ abstract class KernelBase
                 function (Module $module) use ($_) {
                     $_->_modules_config[$module->getName()] = $module->config();
                 },
-                $this->_modules
+                $this->getModules()
             );
 
             // А потом инициализируем
@@ -632,7 +618,7 @@ abstract class KernelBase
                 function ($module) use ($_) {
                     return method_exists($module, 'init') ? call_user_func(array($module, 'init')) : false;
                 },
-                $this->_modules
+                $this->getModules()
             );
         }
 
@@ -646,15 +632,19 @@ abstract class KernelBase
      * @return Module
      * @throws Exception
      */
-    public function getModule( $name )
+    public function getModule($name)
     {
         if ( null === $this->_modules ) {
             $this->loadModulesConfigs();
         }
-        if ( ! isset( $this->_modules[$name] ) ) {
-            throw new Exception(sprintf('Module "%s" not defined', $name));
+        /** @var Module $module */
+        foreach ($this->getModules() as $module) {
+            if ($module->getName() == $name) {
+                return $module;
+            }
         }
-        return $this->_modules[$name];
+
+        throw new Exception(sprintf('Module "%s" not defined', $name));
     }
 
     /**
@@ -663,7 +653,7 @@ abstract class KernelBase
      */
     public function adminMenuModules()
     {
-        return array_reduce( $this->getModules(), function( $total, $module ){
+        return array_reduce( $this->getModules(), function( $total, Module $module ){
             return null === $module->admin_menu() ? $total : array_merge_recursive( $total, $module->admin_menu() );
         }, array() );
     }
@@ -738,6 +728,7 @@ abstract class KernelBase
         return $this->_event_dispatcher;
     }
 
+
     /**
      * Run under development environment
      * @static
@@ -745,10 +736,21 @@ abstract class KernelBase
      */
     static public function isDebug()
     {
-        return self::getInstance()->getConfig('debug.profiler');
+        return self::$_debug;
     }
 
 
-
+    /**
+     * @param boolean $is_console
+     * @return boolean
+     */
+    public function isConsole($is_console = null)
+    {
+        if (null === $is_console) {
+            return $this->_is_console;
+        }
+        $this->_is_console = $is_console;
+        return $is_console;
+    }
 }
 

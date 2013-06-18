@@ -63,26 +63,26 @@ class LogModel extends Model
         $provider->setFields(
             array(
                 'id'    => array(
-                    'title' => t('log','Id'),
+                    'title' => $this->t('log','Id'),
                     'width' => 30,
                     'search' => false,
                 ),
                 'user'    => array(
-                    'title' => t('log','User'),
+                    'title' => $this->t('log','User'),
                     'search' => false,
                     'value' => 'User.login',
                 ),
                 'email'    => array(
-                    'title' => t('log','Email'),
+                    'title' => $this->t('log','Email'),
                     'search' => false,
                     'value' => 'User.email',
                 ),
                 'object'    => array(
-                    'title' => t('log','Object'),
+                    'title' => $this->t('log','Object'),
                     'search' => false,
                 ),
                 'timestamp'    => array(
-                    'title' => t('log','Time'),
+                    'title' => $this->t('log','Time'),
                     'search' => false,
                     'format' => array(
                         'timestamp' => array( 'format' => '%d-%m-%Y %H:%M' ),

@@ -3,11 +3,6 @@
  * Конфиг для системы
  */
 return array_merge(include_once 'base.php', array(
-    // отладка
-    'debug' => array(
-        'profiler'   => true,
-    ),
-
 //    'cache' => false,
 
     'logger'    => 'auto',
@@ -15,7 +10,6 @@ return array_merge(include_once 'base.php', array(
 //    'logger'    => 'file',
 
     'sitename'  => 'SiteForeverCMS',
-    'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
     'admin'     => 'admin@ermin.ru',
 
 
@@ -27,5 +21,12 @@ return array_merge(include_once 'base.php', array(
         'database'  => 'siteforever',
         'debug'     => true,
         'migration' => true,
+    ),
+    'template' => array(
+        'caching'   => false,
+        'cache' => array(
+            'livetime' => 3600,
+        ),
+        'theme'     => 'basic',
     ),
 ));

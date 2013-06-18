@@ -19,17 +19,17 @@ class Forms_Guestbook_Edit extends \Sfcms\Form\Form
 //                'date'  => array( 'type'=>'date', 'label'=>t('guestbook','Date'), ),
 //                'ip'  => array( 'type'=>'text', 'readonly', 'label'=>t('guestbook','Ip'), ),
 
-                'message'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Message'), 'class'=>'plain', ),
-                'answer'  => array( 'type'=>'textarea', 'label'=>t('guestbook','Answer'), 'class'=>'plain', ),
+                'message'  => array( 'type'=>'textarea', 'label'=>$this->t('guestbook','Message'), 'class'=>'plain', ),
+                'answer'  => array( 'type'=>'textarea', 'label'=>$this->t('guestbook','Answer'), 'class'=>'plain', ),
 
                 'hidden'     => array(
                     'type'      => 'radio',
                     'label'     => 'Скрывать',
                     'value'     => '0',
-                    'variants'  => array( t('No'), t('Yes') ),
+                    'variants'  => array( $this->t('No'), $this->t('Yes') ),
                 ),
 
-                'submit'    => array( 'type'=>'submit', 'value'=>t('guestbook','Save') ),
+                'submit'    => array( 'type'=>'submit', 'value'=>$this->t('guestbook','Save') ),
             ),
         ) );
     }

@@ -27,7 +27,9 @@
     {*</div>*}
 
     {*<form method="post" enctype="multipart/form-data" id="catalogGalleryForm" action="{link url="cataloggallery/upload"}">*}
+    {if isset($max_file_size)}
     <input type="hidden" name="MAX_FILE_SIZE" value="{$max_file_size}">
+    {/if}
     <input type="hidden" name="prod_id" value="{$cat}">
     <input type="hidden" name="sent" value="1">
     <input type="file" class="a-gallery-file" name="image[]" multiple="multiple">

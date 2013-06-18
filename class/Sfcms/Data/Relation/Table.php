@@ -17,7 +17,7 @@ class Relation_Table extends Relation
         // TODO: Implement find() method.
     }
 
-    public function with( Collection $collection )
+    public function with( Collection $collection , $rel)
     {
         // TODO: Implement with() method.
     }

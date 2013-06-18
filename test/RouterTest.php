@@ -19,9 +19,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     protected $request;
 
-    /** @var \Sfcms\Config */
-    protected $config;
-
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -30,8 +27,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->request = Request::create('/');
         $this->router  = new Router($this->request);
-        $this->config  = App::getInstance()->getConfig();
-        $this->config->set('url.rewrite', true);
+        $this->router->setRewrite(true);
     }
 
     public function testFilterEqParams()
@@ -48,8 +44,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
      */
     public function testCreateLink()
     {
-        $this->config->set('url.rewrite', false);
-
+        $this->router->setRewrite(false);
         $url    = 'example/foo';
         $params = array(
             'par1' => 'val1',
@@ -61,7 +56,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
             $this->router->createLink($url, $params)
         );
 
-        $this->config->set('url.rewrite', true);
+        $this->router->setRewrite(true);
 
         $this->assertEquals(
             "/{$url}/par1=val1/par2=val2",
@@ -135,7 +130,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testCreateServiceLinkPageNorewrite()
     {
-        $this->config->set('url.rewrite', false);
+        $this->router->setRewrite(false);
         $this->assertEquals(
             '/?route=page',
             $this->router->createServiceLink('page')
@@ -144,7 +139,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testCreateServiceLinkPage2Norewrite()
     {
-        $this->config->set('url.rewrite', false);
+        $this->router->setRewrite(false);
         $this->assertEquals(
             '/?route=page/edit',
             $this->router->createServiceLink('page', 'edit')

@@ -1,6 +1,6 @@
 {*<h2><a {href url="user/admin"}>{icon name="arrow_left" title="Пользователи"}</a> {$title}</h2>*}
 {form form=$form}
-{tabs main=t('Main') advanced=t('Advanced') company=t('Company')}
+{tabs main=$this->t('Main') advanced=$this->t('Advanced') company=$this->t('Company')}
 {tab name="main" active="1"}
     {$form->htmlFieldWrapped('id')}
     <div class="row-fluid">

@@ -19,11 +19,11 @@ class Edit extends Sfcms\Form\Form
                 'action'    => Sfcms::html()->url('material/save'),
                 'fields' => array(
                     'id'   => array( 'type'=>'hidden', ),
-                    'name' => array( 'type'=>'text', 'label' => t('Name'), 'required', ),
-                    'image' => array( 'type'=>'text', 'label' => t('Image'), 'class'=>'image',
-                        'notice'=>t('Double-click to select the image')
+                    'name' => array( 'type'=>'text', 'label' => $this->t('Name'), 'required', ),
+                    'image' => array( 'type'=>'text', 'label' => $this->t('Image'), 'class'=>'image',
+                        'notice'=>$this->t('Double-click to select the image')
                     ),
-                    'active' => array('type'=>'radio', 'label'=>t('material','Active'), 'value'=>'1','variants'=>array( '1'=>t('Yes'), '0'=>t('No') )),
+                    'active' => array('type'=>'radio', 'label'=>$this->t('material','Active'), 'value'=>'1','variants'=>array( '1'=>$this->t('Yes'), '0'=>$this->t('No') )),
 
 //                    'submit'    => array( 'type'=>'submit', 'value'=>t('Save') ),
                 ),

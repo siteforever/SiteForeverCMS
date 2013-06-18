@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+set_time_limit(0);
+
+// путь к фреймворку
+// если не указан, то в текущей директории
+define('SF_PATH', __DIR__);
+
+//корень сайта
+define('ROOT', __DIR__);
+
+require_once 'vendor/autoload.php';
+
+use Sfcms\Console;
+use Symfony\Component\Console\Input\ArgvInput;
+
+$app = new \App('app/cfg/console.php', true);
+$app->isConsole(true);
+
+$console = new Console($app);
+$input = new ArgvInput();
+$console->run($input);
+

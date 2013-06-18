@@ -26,7 +26,7 @@ class Forms_Basket_Address extends \Sfcms\Form\Form
                 'payment_id' => array(
                     'type'      => 'radio',
                     'required',
-                    'label'     => t('Payment'),
+                    'label'     => $this->t('Payment'),
                     'value'     => 1,
                     'variants'  => array(),
                 ),

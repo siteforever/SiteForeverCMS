@@ -22,7 +22,7 @@ class Smarty_Resource_System extends Smarty_Resource_Custom
     {
         // выполняем обращение для получения шаблона
         // и занесения полученного результата в в $tpl_source
-        $path = App::$config->get('template.admin');
+        $path = realpath(__DIR__.'/../themes/system');
 
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$name ) ) {
             $source = file_get_contents( $path.DIRECTORY_SEPARATOR.$name );

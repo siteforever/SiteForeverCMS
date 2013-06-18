@@ -51,19 +51,19 @@ class Module extends SfModule
                 'name'  => 'Каталог',
                 'sub'   => array(
                     array(
-                        'name'  => t('Goods'),
+                        'name'  => $this->t('Goods'),
                         'url'   => 'goods/admin'
                     ),
                     array(
-                        'name'  => t('catalog','Product types'),
+                        'name'  => $this->t('catalog','Product types'),
                         'url'   => 'prodtype/admin'
                     ),
                     array(
-                        'name'  => t('material','Materials'),
+                        'name'  => $this->t('material','Materials'),
                         'url'   => 'material/admin'
                     ),
                     array(
-                        'name'  => t('Manufacturers'),
+                        'name'  => $this->t('Manufacturers'),
                         'url'   => 'manufacturers/admin'
                     ),
                     array(

@@ -69,7 +69,7 @@ class ManufacturerController extends Controller
 
     public function adminAction()
     {
-        $this->request->setTitle( t( 'Manufacturers' ) );
+        $this->request->setTitle( $this->t( 'Manufacturers' ) );
 
         $this->app()->addScript( '/misc/admin/manufacturers.js' );
 
@@ -90,7 +90,7 @@ class ManufacturerController extends Controller
      */
     public function editAction($id)
     {
-        $this->request->setTitle( t( 'Manufacturers' ) );
+        $this->request->setTitle( $this->t( 'Manufacturers' ) );
 
         /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
@@ -107,7 +107,7 @@ class ManufacturerController extends Controller
 
     public function saveAction()
     {
-        $this->request->setTitle( t( 'Manufacturers' ) );
+        $this->request->setTitle( $this->t( 'Manufacturers' ) );
 
         /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
@@ -117,12 +117,12 @@ class ManufacturerController extends Controller
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $obj->save();
-                return array( 'error'=> 0, 'msg'=> t( 'Data save successfully' ) );
+                return array( 'error'=> 0, 'msg'=> $this->t( 'Data save successfully' ) );
             } else {
                 return array( 'error'=> 1, 'msg'=> $form->getFeedbackString() );
             }
         }
-        return t( 'Form not posted' );
+        return $this->t( 'Form not posted' );
     }
 
 
@@ -133,13 +133,13 @@ class ManufacturerController extends Controller
      */
     public function deleteAction($id)
     {
-        $this->request->setTitle( t( 'Manufacturers' ) );
+        $this->request->setTitle( $this->t( 'Manufacturers' ) );
         /** @var $model ManufacturerModel */
         $model = $this->getModel( 'Manufacturers' );
         /** @var $obj ManufacturerModel */
         $obj  = $model->find( $id );
         $name = $obj->name;
         $model->delete( $id );
-        return $name . ' ' . t( 'delete success' );
+        return $name . ' ' . $this->t( 'delete success' );
     }
 }

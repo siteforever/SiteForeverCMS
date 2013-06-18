@@ -1,12 +1,15 @@
 <?php
 /**
- *
+ * Pagination component
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
+namespace Sfcms;
 
-class Pager implements ArrayAccess
+use Sfcms\Request;
+
+class Pager implements \ArrayAccess
 {
 
     public  $page   = 1;
@@ -21,8 +24,35 @@ class Pager implements ArrayAccess
     public  $html   = '';
     public  $limit  = '';
 
-    function __construct( $count, $perpage, $link = '' )
+    /** @var Request */
+    private $request = null;
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest($request)
     {
+        $this->request = $request;
+    }
+
+    /**
+     * @return Request
+     * @throws \RuntimeException
+     */
+    public function getRequest()
+    {
+        if (null === $this->request) {
+            throw new \RuntimeException('Request not defined');
+        }
+        return $this->request;
+    }
+
+    function __construct($count, $perpage, $link = '', $request = null)
+    {
+        if (null !== $request) {
+            $this->setRequest($request);
+        }
+
         $perpage    = $perpage ? $perpage : 10;
 
         $pages  = ceil( $count / $perpage );
@@ -32,12 +62,12 @@ class Pager implements ArrayAccess
         }
 
         $p    = array();
-        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 1;
+        $page = $this->getRequest()->query->getInt('page', 1);
         $link = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
-            $pred = Sfcms::html()->url($link, array('page' => $page - 1));
-            $p[]  = Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page' => $page - 1) : array());
+            $pred = \Sfcms::html()->url($link, array('page' => $page - 1));
+            $p[]  = \Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page' => $page - 1) : array());
         }
 
         $radius = 2;
@@ -52,7 +82,7 @@ class Pager implements ArrayAccess
         }
 
         if ( $page - $radius > 1 ) {
-            $p[]    = Sfcms::html()->link('1', $link);
+            $p[]    = \Sfcms::html()->link('1', $link);
             if ( $page - $radius - 1 > 1 ) {
                 $p[]    = '...';
             }
@@ -62,7 +92,7 @@ class Pager implements ArrayAccess
             if ( $i == $page ) {
                 $p[]    = $page;
             } else {
-                $p[]    = Sfcms::html()->link($i, $link, array('page'=>$i));
+                $p[]    = \Sfcms::html()->link($i, $link, array('page'=>$i));
             }
         }
 
@@ -70,12 +100,12 @@ class Pager implements ArrayAccess
             if ( $page + $radius + 1 < $pages ) {
                 $p[]    = '...';
             }
-            $p[]    = Sfcms::html()->link($pages, $link, array('page'=>$pages));
+            $p[]    = \Sfcms::html()->link($pages, $link, array('page'=>$pages));
         }
 
         if ( $page < $pages ) {
-            $next   = Sfcms::html()->url($link,array('page'=>$page+1));
-            $p[]    = Sfcms::html()->link('след &gt;', $link, array('page'=>$page+1));
+            $next   = \Sfcms::html()->url($link,array('page'=>$page+1));
+            $p[]    = \Sfcms::html()->link('след &gt;', $link, array('page'=>$page+1));
         }
 
         $this->html     = count($p) > 1 ? 'Страницы: '.join(' - ',$p) : '';

@@ -39,7 +39,7 @@ class SearchControllerTest extends TestCase
         $response = $this->controller->indexAction();
         $this->arrayHasKey('search', $response);
         $this->assertInstanceOf('Sfcms\Data\Collection', $response['result']);
-        $this->assertEquals(18, $response['paging']->count);
+        $this->assertEquals(17, $response['paging']->count);
         $this->assertEquals('/search/query=страница/page=2', $response['paging']->next);
     }
 

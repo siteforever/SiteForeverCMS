@@ -11,13 +11,13 @@ class Forms_Guestbook_Form extends \Sfcms\Form\Form
             'name'  => 'guestbook',
             'method' => 'post',
             'fields'=> array(
-                'name'  => array('type'=>'text', 'label'=>t('guestbook','Name'), 'required'),
-                'email'  => array('type'=>'text', 'label'=>t('guestbook','Email'), 'required',
+                'name'  => array('type'=>'text', 'label'=>$this->t('guestbook','Name'), 'required'),
+                'email'  => array('type'=>'text', 'label'=>$this->t('guestbook','Email'), 'required',
                     'filter'    => 'email',
                 ),
-                'message'  => array('type'=>'textarea', 'label'=>t('guestbook','Message'), 'required'),
-                'captcha' => array('type'=>'captcha', 'label'=>t('guestbook','Captcha')),
-                'submit'    => array('type'=>'submit', 'value'=>t('guestbook','Send')),
+                'message'  => array('type'=>'textarea', 'label'=>$this->t('guestbook','Message'), 'required'),
+                'captcha' => array('type'=>'captcha', 'label'=>$this->t('guestbook','Captcha')),
+                'submit'    => array('type'=>'submit', 'value'=>$this->t('guestbook','Send')),
             ),
         ) );
     }

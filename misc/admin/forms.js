@@ -6,7 +6,6 @@
  */
 
 (function($){
-
     $(document).ready(function () {
         // output uri
         $('#structure_uri,#structure_alias').bind('keypress', function (event) {

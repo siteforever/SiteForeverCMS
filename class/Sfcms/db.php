@@ -315,8 +315,8 @@ class db
     public function prepare( $sql, array $params )
     {
 //        try {
-            $this->result   = $this->resource->prepare( $sql );
-            $this->result->execute( $params );
+        $this->result = $this->resource->prepare($sql);
+        $this->result->execute($params);
 //        } catch ( PDOException $e ) {
 //            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
 //            die( 'ERROR: '.$sql.' : '.print_r($params,1) );

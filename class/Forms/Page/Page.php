@@ -24,7 +24,7 @@ class Forms_Page_Page extends \Sfcms\Form\Form
                     ),
                     'parent' => array(
                         'type' => 'select',
-                        'label' => t('page', 'Parent'),
+                        'label' => $this->t('page', 'Parent'),
                         'variants' => Model::getModel('Page')->getSelectOptions(),
                         'value' => '0',
                     ),
@@ -175,7 +175,7 @@ class Forms_Page_Page extends \Sfcms\Form\Form
      */
     protected function getTemplatesList()
     {
-        $templates = array('index'=>t('Main'), 'inner'=>t('Inner'));
+        $templates = array('index'=>$this->t('Main'), 'inner'=>$this->t('Inner'));
 
         $theme = App::getInstance()->getConfig('template.theme');
 
@@ -190,7 +190,7 @@ class Forms_Page_Page extends \Sfcms\Form\Form
                 $templates = array();
                 /** @var $tpl SimpleXMLElement */
                 foreach ( $themeXML->templates->template as $tpl ) {
-                    $templates[ (string) $tpl['value'] ] = t( (string) $tpl );
+                    $templates[ (string) $tpl['value'] ] = $this->t( (string) $tpl );
                 }
             }
         }

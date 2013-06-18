@@ -153,6 +153,9 @@ class Html
         }
 
         $alt    = isset( $params['alt'] ) ? $params['alt'] : basename( $name );
+        if (!$name) {
+            return 'no image';
+        }
         $path   = pathinfo( $name );
         $path[ 'thumb' ] = '/thumbs' . $path[ 'dirname' ] . '/' . $path[ 'filename' ]
             . '-' . $width . 'x' . $height . '-'. $color . '-' . $method . '.' . $path[ 'extension' ];

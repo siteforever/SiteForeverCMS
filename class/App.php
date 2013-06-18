@@ -1,9 +1,4 @@
 <?php
-set_error_handler( function ( $errno, $errstr) {
-    throw new Exception( $errstr, $errno );
-}, E_WARNING & E_NOTICE & E_DEPRECATED & E_USER_WARNING & E_USER_NOTICE & E_ERROR );
-
-
 // user groups
 define('USER_GUEST', '0'); // гость
 define('USER_USER',  '1'); // юзер
@@ -41,14 +36,14 @@ class App extends KernelBase
      */
     public function run()
     {
-        self::$start_time = microtime( true );
+        static::$start_time = microtime( true );
         $this->init();
         $request  = Request::createFromGlobals();
         $response = $this->handleRequest($request);
         $this->flushDebug();
         $response->prepare($request);
         $response->send();
-//        print round(microtime(1) - self::$start_time, 3);
+//        print round(microtime(1) - static::$start_time, 3);
     }
 
     /**
@@ -116,13 +111,14 @@ class App extends KernelBase
         }
         // маршрутизатор
         $router = new \Sfcms\Router($request);
+        $router->setRewrite($this->getConfig('url.rewrite'));
         $this->setRouter($router);
         $router->routing();
 
         $this->setAuth(new \Auth($request));
 
-        self::$init_time = microtime( 1 ) - self::$start_time;
-        self::$controller_time = microtime( 1 );
+        static::$init_time = microtime( 1 ) - static::$start_time;
+        static::$controller_time = microtime( 1 );
 
         $result = null;
         /** @var Response $response */
@@ -146,7 +142,7 @@ class App extends KernelBase
             $response = new Response();
         }
 
-        self::$controller_time = microtime( 1 ) - self::$controller_time;
+        static::$controller_time = microtime( 1 ) - static::$controller_time;
 
         $event = new KernelEvent($response, $request, $result);
         $this->getEventDispatcher()->dispatch('kernel.response', $event);
@@ -154,7 +150,10 @@ class App extends KernelBase
         // Выполнение операций по обработке объектов
         try {
             Watcher::instance()->performOperations();
-        } catch ( ModelException $e ) {
+        } catch (ModelException $e) {
+            $response->setStatusCode(500);
+            $response->setContent($e->getMessage());
+        } catch (PDOException $e) {
             $response->setStatusCode(500);
             $response->setContent($e->getMessage());
         }
@@ -237,7 +236,7 @@ class App extends KernelBase
         // todo Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
 
-        if ( App::isDebug() ) {
+        if ( self::isDebug() ) {
             if ( $this->getConfig()->get( 'db.debug' ) ) {
                 Model::getDB()->saveLog();
                 $this->getLogger()->log(
@@ -245,11 +244,11 @@ class App extends KernelBase
                         . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
                 );
             }
-            $this->getLogger()->log( "Init time: " . round( self::$init_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Controller time: " . round( self::$controller_time, 3 ) . " sec.", 'app' );
-            $exec_time = microtime( true ) - self::$start_time;
+            $this->getLogger()->log( "Init time: " . round( static::$init_time, 3 ) . " sec.", 'app' );
+            $this->getLogger()->log( "Controller time: " . round( static::$controller_time, 3 ) . " sec.", 'app' );
+            $exec_time = microtime( true ) - static::$start_time;
             $this->getLogger()->log(
-                "Other time: " . round( $exec_time - self::$init_time - self::$controller_time, 3 ) . " sec.", 'app'
+                "Other time: " . round( $exec_time - static::$init_time - static::$controller_time, 3 ) . " sec.", 'app'
             );
             $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
             $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage(true) / 1024, 3 ) . " kb.", 'app' );

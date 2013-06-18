@@ -33,11 +33,11 @@ class OrderController extends Controller
     public function indexAction( $cancel, $item )
     {
         $this->request->set('template', 'inner');
-        $this->request->setTitle(t('order','My orders'));
+        $this->request->setTitle($this->t('order','My orders'));
 
         $this->getTpl()->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece('user/cabinet',t('user','User cabiner'))
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece('user/cabinet',$this->t('user','User cabiner'))
             ->addPiece(null,$this->request->getTitle());
 
 
@@ -64,7 +64,7 @@ class OrderController extends Controller
 
             if ( $orderObj ) {
                 if ( $this->user->get('id') != $orderObj['user_id'] ) {
-                    return t('order','Order is not yours');
+                    return $this->t('order','Order is not yours');
                 }
 
                 $positions = $orderObj->Positions;
@@ -105,7 +105,7 @@ class OrderController extends Controller
         }
 
         $this->request->set('template', 'inner');
-        $this->request->setTitle(t('order','Checkout'));
+        $this->request->setTitle($this->t('order','Checkout'));
 
 //        if ( ! $order_id = $this->app()->getSession()->get('order_id') ) {
 //            return t('order','Order not defined');
@@ -125,9 +125,9 @@ class OrderController extends Controller
         }
 
         $this->getTpl()->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece('basket',t('basket','Basket'))
-            ->addPiece(null, t('order','Checkout'));
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece('basket',$this->t('basket','Basket'))
+            ->addPiece(null, $this->t('order','Checkout'));
 
         $positions = $order->Positions;
 //        $delivery  = $order->Delivery;
@@ -276,8 +276,8 @@ class OrderController extends Controller
 
         if ($this->request->request->has('new_status')) {
             $order->status = $this->request->request->getInt('new_status');
-            return $this->renderJson(array('status'=>$order->status, 'msg'=>t('Save successfully')));
+            return $this->renderJson(array('status'=>$order->status, 'msg'=>$this->t('Save successfully')));
         }
-        return $this->renderJson(array('error'=>1, 'msg'=>t('Status not defined')));
+        return $this->renderJson(array('error'=>1, 'msg'=>$this->t('Status not defined')));
     }
 }

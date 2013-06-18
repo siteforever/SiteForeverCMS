@@ -176,10 +176,11 @@ class Request extends SymfonyRequest
     {
 //        $this->request->headers->set('Accept', $this->request->getMimeType($type));
         $this->setRequestFormat($type, $this->getMimeType($type));
+        $this->headers->set('Accept', $this->getMimeType($type));
         if ($ajax) {
             $this->headers->set('X-Requested-With', 'XMLHttpRequest');
         } else {
-            $this->headers->set('X-Requested-With', null);
+            $this->headers->remove('X-Requested-With');
         }
     }
 
@@ -307,6 +308,11 @@ class Request extends SymfonyRequest
         }
 
         return $ret;
+    }
+
+    public function clearFeedback()
+    {
+        $this->_feedback = array();
     }
 
     /**

@@ -20,7 +20,7 @@ class Restore extends Form
             'fields' => array(
                 'email' => array(
                     'type' => 'text',
-                    'label' => t('Email'),
+                    'label' => $this->t('Email'),
                     'filter' => 'email',
                     'required',
                 ),

@@ -56,10 +56,10 @@ class UserModel extends Model
     public function getGroups()
     {
         return array(
-            USER_GUEST  => t('user', 'Guest'),
-            USER_USER   => t('user', 'User'),
-            USER_WHOLE  => t('user', 'Whole user'),
-            USER_ADMIN  => t('user', 'Admin'),
+            USER_GUEST  => $this->t('user', 'Guest'),
+            USER_USER   => $this->t('user', 'User'),
+            USER_WHOLE  => $this->t('user', 'Whole user'),
+            USER_ADMIN  => $this->t('user', 'Admin'),
         );
     }
 

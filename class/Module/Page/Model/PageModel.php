@@ -64,8 +64,8 @@ class PageModel extends Model
         /** @var $page Page */
         $page = $this->createObject();
         $page->parent   = 0;
-        $page->name     = t('Home');
-        $page->title    = t('Home');
+        $page->name     = $this->t('Home');
+        $page->title    = $page->name;
         $page->template = 'index';
         $page->alias    = 'index';
         $page->date     = time();
@@ -75,7 +75,7 @@ class PageModel extends Model
         $page->action   = 'index';
         $page->content  = $this->app()->getTpl()->fetch('page.model.default');
         $page->author   = 1;
-        $page->markNew();
+        $page->save();
     }
 
     /**
@@ -97,8 +97,11 @@ class PageModel extends Model
      */
     public function addToAll( Page $obj )
     {
-        $this->all->add( $obj );
-        $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+        $this->getAll()->add( $obj );
+        if ($obj->parent) {
+            $parents =& $this->getParents();
+            $parents[$obj->parent][$obj->id] = $obj;
+        }
     }
 
     /**
@@ -158,7 +161,7 @@ class PageModel extends Model
         $find = false;
         /** @var $page Page */
         foreach( $this->getAll() as $page ) {
-            if ( $page->alias == $alias ) {
+            if ($page->alias == $alias && !$page->deleted) {
                 $find = $page->id;
                 break;
             }
@@ -178,7 +181,7 @@ class PageModel extends Model
 
         $pageId = $this->checkAlias( $obj->alias );
         if ( false !== $pageId && $obj->getId() != $pageId ) {
-            throw new Exception( t( 'The page with this address already exists' ) );
+            throw new Exception( $this->t( 'The page with this address already exists' ) );
         }
 
         $obj->path = $obj->createPath();
@@ -301,25 +304,30 @@ class PageModel extends Model
         return ++$max;
     }
 
+    public function getParents()
+    {
+        if (!$this->parents) {
+            $this->createParentsIndex();
+        }
+        return $this->parents;
+    }
+
 
     /**
      * Создает список $this->parents по данным из $this->all
      *
      * @return array
      */
-    public function createParentsIndex()
+    private function createParentsIndex()
     {
-        if (!$this->parents) {
-            $this->parents = array();
-            // создаем массив, индексируемый по родителям
-            /** @var Page $obj */
-            if ( count($this->parents) == 0 ) {
-                foreach ( $this->getAll() as $obj ) {
-                    $this->parents[ $obj->parent ][ $obj->id ] = $obj;
-                }
+        $this->parents = array();
+        // создаем массив, индексируемый по родителям
+        /** @var Page $obj */
+        if ( count($this->parents) == 0 ) {
+            foreach ( $this->getAll() as $obj ) {
+                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
             }
         }
-        return $this->parents;
     }
 
     /**
@@ -330,17 +338,18 @@ class PageModel extends Model
      */
     public function getSelectOptions( $parent = 0, $level = 0 )
     {
-        $return = array('0' => t('No parent'));
-        if ( ! $this->parents ) {
+        $return = array('0' => $this->t('No parent'));
+        if (!$this->parents) {
             $this->createParentsIndex();
         }
         /** @var $obj Page */
-        foreach( $this->parents[ $parent ] as $obj ) {
-            $return[ $obj->id ] = str_repeat('&nbsp;', $level * 4) . $obj->name;
-            if ( isset( $this->parents[$obj->id] ) ) {
-                $return += $this->getSelectOptions( $obj->id, $level + 1 );
+        foreach ($this->parents[$parent] as $obj) {
+            $return[$obj->id] = str_repeat('&nbsp;', $level * 4) . $obj->name;
+            if (isset($this->parents[$obj->id])) {
+                $return += $this->getSelectOptions($obj->id, $level + 1);
             }
         }
+
         return $return;
     }
 

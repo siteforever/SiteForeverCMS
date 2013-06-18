@@ -13,6 +13,7 @@ use Sfcms_Http_Exception;
 use Sfcms\Request;
 
 use Exception;
+use Symfony\Component\HttpFoundation\Response;
 
 class PageController extends Controller
 {
@@ -46,11 +47,11 @@ class PageController extends Controller
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         if (!$this->user->hasPermission($this->page['protected'])) {
-            throw new Sfcms_Http_Exception(t('Access denied'), 403);
+            throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
         }
 
         if ($this->page && $this->request->attributes->has('alias')) {
-            throw new Sfcms_Http_Exception(t('Page not found'), 404);
+            throw new Sfcms_Http_Exception($this->t('Page not found'), 404);
         }
 
         // создаем замыкание страниц (если одна страница указывает на другую)
@@ -58,7 +59,7 @@ class PageController extends Controller
             $page = $pageModel->find($this->page['link']);
 
             if (!$this->user->hasPermission($page['protected'])) {
-                throw new Sfcms_Http_Exception(t('Access denied'), 403);
+                throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
             }
             if (!$page['link']) {
                 return $this->redirect($page['alias']);
@@ -79,7 +80,7 @@ class PageController extends Controller
 
     public function protectedAction()
     {
-        $this->request->setTitle(t('Access denied'));
+        $this->request->setTitle($this->t('Access denied'));
     }
 
     /**
@@ -90,7 +91,7 @@ class PageController extends Controller
     {
         // используем шаблон админки
         $this->request->set('template', 'index');
-        $this->request->setTitle(t('Site structure'));
+        $this->request->setTitle($this->t('Site structure'));
 
         $this->app()->addScript('/misc/admin/page.js');
 
@@ -101,9 +102,8 @@ class PageController extends Controller
             return $this->render('get_link_add', array('id' => $get_link_add));
         }
 
-        $model->createParentsIndex();
         return array(
-            'data' => $model->parents,
+            'data' => $model->getParents(),
         );
     }
 
@@ -120,7 +120,7 @@ class PageController extends Controller
         $modules = $model->getAvaibleModules();
 
         if( null === $id ) {
-            return t('Unknown error');
+            return $this->t('Unknown error');
         }
 
         $parent = $model->find( $id );
@@ -162,7 +162,7 @@ class PageController extends Controller
                 'parent'    => $parent,
                 'template'  => 'inner',
                 'author'    => $this->user->id,
-                'content'   => '<p>'.t( 'Home page for the filling' ).'',
+                'content'   => '<p>'.$this->t( 'Home page for the filling' ).'',
                 'date'      => time(),
                 'update'    => time(),
                 'pos'       => $model->getNextPos( $parent ),
@@ -183,7 +183,7 @@ class PageController extends Controller
         $form->getField('name')->setValue($name);
         $form->getField('controller')->setValue($module);
 
-        $this->request->setTitle( t('Create page') );
+        $this->request->setTitle( $this->t('Create page') );
         $this->tpl->assign('form', $form);
         return $this->tpl->fetch('page.edit');
     }
@@ -207,7 +207,7 @@ class PageController extends Controller
                 return array( 'form' => $form );
             }
         }
-        return t( 'Data not valid' );
+        return $this->t( 'Data not valid' );
     }
 
 
@@ -218,7 +218,7 @@ class PageController extends Controller
     public function saveAction()
     {
         /** @var PageModel $model */
-        $model = $this->getModel( 'Page' );
+        $model = $this->getModel('Page');
 
         $form = $model->getForm();
 
@@ -235,29 +235,31 @@ class PageController extends Controller
                     $obj->update = time();
                     $obj->markNew();
                 }
-                return array('error'=>0,'msg'=>t( 'Data save successfully' ));
+                return array('error'=>0,'msg'=>$this->t( 'Data save successfully' ));
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
         }
-        return array( 'error' => 1, 'msg' => t('Unknown error') );
+        return array( 'error' => 1, 'msg' => $this->t('Unknown error') );
     }
 
 
     /**
      * Удаление страницы
      * @param int $id
-     * return array|mixed
+     *
+     * @return Response
      */
-    public function deleteAction( $id )
+    public function deleteAction($id)
     {
-        $page = $this->getModel( 'Page' )->find( $id );
-        $page->set('deleted', 1);
+        $page = $this->getModel('Page')->find($id);
+        $page->deleted = 1;
 
-        if ( ! $this->request->isAjax() ) {
-            $this->reload('page/admin');
+        if (!$this->request->isAjax()) {
+            return $this->reload('page/admin');
         }
-        return array('error'=>0,'msg'=>'ok','id'=>$id);
+
+        return $this->renderJson(array('error' => 0, 'msg' => 'ok', 'id' => $id));
     }
 
     /**
@@ -270,7 +272,7 @@ class PageController extends Controller
         if ($sort) {
             return $this->getModel('Page')->resort($sort);
         }
-        return t('Unknown error');
+        return $this->t('Unknown error');
     }
 
 

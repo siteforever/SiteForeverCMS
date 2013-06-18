@@ -80,7 +80,7 @@ class Category extends Object
                 )
             );
             if (null === $this->_page) {
-                throw new Exception( t( 'Page not found for gallery' ) );
+                throw new Exception( $this->t( 'Page not found for gallery' ) );
             }
         }
         return $this->_page;

@@ -2,7 +2,7 @@
 /**
  * Форма категорий баннеров
  */
- 
+
 class Forms_Banners_CategoryBanner extends \Sfcms\Form\Form
 {
     function __construct()
@@ -16,7 +16,7 @@ class Forms_Banners_CategoryBanner extends \Sfcms\Form\Form
                 'name'              => array(
                     'type' => 'text',
                     'class'=> 'elcatalog-meta',
-                    'label'=> t('Name'),
+                    'label'=> $this->t('Name'),
                     'required',
                 ),
 

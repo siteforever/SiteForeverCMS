@@ -30,7 +30,7 @@ class UserController extends Controller
     {
         return array(
             USER_ADMIN  => array('admin','adminEdit','save'),
-            USER_USER   => array('edit', 'cabinet'),
+            USER_USER   => array('edit', 'cabinet', 'password'),
         );
     }
 
@@ -47,9 +47,9 @@ class UserController extends Controller
         // подтверждение регистрации
         if ($confirm && $userid) {
             $this->request->setTitle('Подтверждение регистрации');
-            $this->getTpl()->getBreadcrumbs()->addPiece('index', t('Home'))->addPiece(
+            $this->getTpl()->getBreadcrumbs()->addPiece('index', $this->t('Home'))->addPiece(
                     'user',
-                    t('user', 'Sign in site')
+                $this->t('user', 'Sign in site')
                 )->addPiece(null, $this->request->getTitle());
 
             /** @var User $user */
@@ -64,7 +64,7 @@ class UserController extends Controller
                 $user->active();
                 $user->confirm = md5(microtime() . $user->solt);
 
-                return array('error'=>false, 'success' => 1, 'message'=>t('Регистрация успешно подтверждена'));
+                return array('error'=>false, 'success' => 1, 'message'=>$this->t('Регистрация успешно подтверждена'));
             } else {
                 return array('error'=>true, 'message'=>'Ваш аккаунт не подвержден, обратитесь к '
                 . '<a href="mailto:'.$this->config->get('admin').'">администрации сайта</a>'
@@ -84,14 +84,14 @@ class UserController extends Controller
         $auth   = $this->app()->getAuth();
         $user   = $auth->currentUser();
 
-        $this->tpl->getBreadcrumbs()->addPiece('index',t('Home'))->addPiece(null,t('user','User cabiner'));
+        $this->tpl->getBreadcrumbs()->addPiece('index',$this->t('Home'))->addPiece(null,$this->t('user','User cabiner'));
 
         if ( $user->getId() ) {
             // отображаем кабинет
-            $this->request->setTitle(t('user','User cabiner'));
+            $this->request->setTitle($this->t('user','User cabiner'));
             return array( 'user' => $user );
         }
-        throw new Sfcms_Http_Exception(t('Access denied'), 403);
+        throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
     }
 
 
@@ -104,7 +104,7 @@ class UserController extends Controller
         $this->request->set('template', 'index' );
 
         // используем шаблон админки
-        $this->request->setTitle(t('user','Users'));
+        $this->request->setTitle($this->t('user','Users'));
 
         $model  = $this->getModel('User');
 
@@ -114,7 +114,7 @@ class UserController extends Controller
             foreach( $users as $key => $user ) {
                 if ( isset( $user['delete'] ) ) {
                     $model->delete($key);
-                    $this->request->addFeedback(t('user','Deleted user #').$key);
+                    $this->request->addFeedback($this->t('user','Deleted user #').$key);
                     continue;
                 }
             }
@@ -133,7 +133,7 @@ class UserController extends Controller
                                         ' OR lname LIKE :search OR name LIKE :search ';
                 $criteria['params'][':search']  = '%'.$search.'%';
             } else {
-                $this->request->addFeedback(t('user','Too short query'));
+                $this->request->addFeedback($this->t('user','Too short query'));
             }
         }
 
@@ -176,7 +176,7 @@ class UserController extends Controller
         }
 
         $this->request->set('template', 'index');
-        $this->request->setTitle((!$id ? t('user','Add user') : t('user','Edit user') ));
+        $this->request->setTitle((!$id ? $this->t('user','Add user') : $this->t('user','Edit user') ));
 
         return array(
             'form' => $userForm,
@@ -195,11 +195,8 @@ class UserController extends Controller
          * @var Form $userForm
          */
         $model  = $this->getModel('User');
-
         $userForm = $model->getEditForm();
-
         if ( $userForm->getPost() ) {
-
             if ( $userForm->validate() ) {
                 $User = ($user_id = $userForm['id']) ? $model->find( $user_id ) : $model->createObject();
                 $password = $User->password;
@@ -212,12 +209,12 @@ class UserController extends Controller
                     $User->password = $password;
                     $User->solt     = $solt;
                 }
-                return array('error'=>0,'msg'=>t('Data save successfully'));
+                return array('error'=>0,'msg'=>$this->t('Data save successfully'));
             } else {
                 return array('error'=>1,'msg'=>$userForm->getFeedbackString());
             }
         }
-        return t('Data not sent');
+        return $this->t('Data not sent');
     }
 
     /**
@@ -225,9 +222,6 @@ class UserController extends Controller
      */
     public function logoutAction()
     {
-//        setcookie('sxd', null, null, '/runtime/sxd/');
-//        $this->app()->getSession()->sxd_auth = 0; // Авторизация Sypex Dumper
-//        $this->app()->getSession()->sxd_conf = null;
         $this->app()->getAuth()->logout();
         return $this->redirect('user/login');
     }
@@ -238,14 +232,14 @@ class UserController extends Controller
      */
     public function loginAction()
     {
-        $this->request->setTitle(t('Personal page'));
+        $this->request->setTitle($this->t('Personal page'));
         /** @var UserModel $model */
         $model  = $this->getModel('User');
         $auth   = $this->app()->getAuth();
 
         $this->getTpl()->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece(null, t('user','Sign in site'));
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece(null, $this->t('user','Sign in site'));
 
         $user   = $auth->currentUser();
 
@@ -266,7 +260,7 @@ class UserController extends Controller
                 }
             }
         }
-        $this->request->setTitle(t('user','Sign in site'));
+        $this->request->setTitle($this->t('user','Sign in site'));
         $this->tpl->assign('form', $form );
 
         return $this->tpl->fetch('user.login');
@@ -280,7 +274,7 @@ class UserController extends Controller
     private function login( $login, $password )
     {
         if ( $password == '' ) {
-            return array('error'=>1, 'message'=>t('user','Empty password'));
+            return array('error'=>1, 'message'=>$this->t('user','Empty password'));
         }
 
         /** @var User $user */
@@ -290,21 +284,17 @@ class UserController extends Controller
         ));
 
         if ( $user ) {
-            //print_r( $user->getAttributes() );
-            if ( $user->perm < USER_USER ) {
-                return array('error' => 1, 'message' => t('user','Not enough permissions'));
-            }
-
             if ( $user->status == 0 ) {
-                return array('error'=>1, 'message'=>t('user','Your account has been disabled'));
+                return array('error'=>1, 'message'=>$this->t('user','Your account has been disabled'));
+            }
+            if ( $user->perm < USER_USER ) {
+                return array('error' => 1, 'message' => $this->t('user','Not enough permissions'));
             }
 
-            $password = $user->generatePasswordHash( $password, $user->solt );
-
-            //print $user->password.' == '.$password;
+            $password = $user->generatePasswordHash($password, $user->solt);
 
             if ( $password != $user->password ) {
-                return array('error' => 1, 'message'=>t('user','Your password is not suitable'));
+                return array('error' => 1, 'message'=>$this->t('user','Your password is not suitable'));
             }
 
             $this->app()->getAuth()->currentUser($user);
@@ -315,10 +305,10 @@ class UserController extends Controller
 //                $this->app()->getSession()->sxd_conf    = $this->app()->getConfig()->get('db');
 //            }
 
-            return array('error' => 0, 'message'=>t('user','Authorization was successful'));
+            return array('error' => 0, 'message'=>$this->t('user','Authorization was successful'));
         }
 
-        return array('error' => 1, 'message'=>t('user','Your login is not registered'));
+        return array('error' => 1, 'message'=>$this->t('user','Your login is not registered'));
     }
 
 
@@ -332,11 +322,11 @@ class UserController extends Controller
         /** @var UserModel $model */
         $model  = $this->getModel('user');
         //$this->request->set('tpldata.page.name', 'Edit Profile');
-        $this->request->setTitle(t('user','Edit profile'));
+        $this->request->setTitle($this->t('user','Edit profile'));
         $this->tpl->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece('user/cabinet',t('user','User cabiner'))
-            ->addPiece(null,t('user','Edit profile'));
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece('user/cabinet',$this->t('user','User cabiner'))
+            ->addPiece(null,$this->t('user','Edit profile'));
 
         $form = $model->getProfileForm();
 
@@ -349,9 +339,9 @@ class UserController extends Controller
                 if ( $user ) {
                     $user->attributes =  $form->getData();
                     if ( $model->save( $user ) ) {
-                        return t('Data save successfully');
+                        return $this->t('Data save successfully');
                     } else {
-                        return t('Data not saved');
+                        return $this->t('Data not saved');
                     }
                 }
             } else {
@@ -370,11 +360,11 @@ class UserController extends Controller
      */
     public function registerAction()
     {
-        $this->request->setTitle(t('user','Join'));
+        $this->request->setTitle($this->t('user','Join'));
 
         $this->tpl->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece('user/login',t('user','Sign in site'))
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece('user/login',$this->t('user','Sign in site'))
             ->addPiece(null,$this->request->getTitle());
 
         /**
@@ -424,7 +414,7 @@ class UserController extends Controller
         $obj['date']   = time();
         $obj['last']   = time();
 
-        $model = $this->getModel('User');
+        $model = $obj->getModel();
 
         $user   = $model->find(array(
                 'cond'     => 'login = :login',
@@ -483,19 +473,20 @@ class UserController extends Controller
      * Сюда приходит пользователь по ссылке восстановления пароля
      * @param string $email
      * @param string $code
+     *
+     * @return array
      */
-    public function recoveryAction( $email, $code )
+    public function recoveryAction($email, $code)
     {
         $this->request->setTemplate('inner');
-        $this->request->setTitle(t('user','Password recovery'));
+        $this->request->setTitle($this->t('user','Password recovery'));
 
         $this->tpl->getBreadcrumbs()
-            ->addPiece('index',t('Main'))
-            ->addPiece('user/login',t('user','Sign in site'))
+            ->addPiece('index',$this->t('Main'))
+            ->addPiece('user/login',$this->t('user','Sign in site'))
             ->addPiece(null,$this->request->getTitle());
 
         if ( $email && $code ) {
-
             $model = $this->getModel('User');
             // проверка, подходят ли email и code
             /** @var $user User */
@@ -520,17 +511,17 @@ class UserController extends Controller
                     $this->sendmail(
                         $this->config->get('admin'),
                         $email,
-                        t('user','New password'), $this->tpl->fetch('user.mail.recovery')
+                        $this->t('user','New password'), $this->tpl->fetch('user.mail.recovery')
                     );
-                    return array('error' => 0, 'msg' => t('user','A new password has been sent to your e-mail'));
+                    return array('error' => 0, 'msg' => $this->t('user','A new password has been sent to your e-mail'));
                 } else {
-                    return array('error' => 1, 'msg' => t('user','Incorrect recovery code'));
+                    return array('error' => 1, 'msg' => $this->t('user','Incorrect recovery code'));
                 }
             } else {
-                return array('error' => 1, 'msg' => t('user','Your email is not found'));
+                return array('error' => 1, 'msg' => $this->t('user','Your email is not found'));
             }
         }
-        return array('error'=>1,'msg' => t('user','Not specified recovery options'));
+        return array('error'=>1,'msg' => $this->t('user','Not specified recovery options'));
     }
 
     /**
@@ -546,11 +537,11 @@ class UserController extends Controller
         // @TODO Перевести под новую модель
 
         $this->request->setTemplate('inner');
-        $this->request->setTitle(t('user','Password recovery'));
+        $this->request->setTitle($this->t('user','Password recovery'));
 
         $this->tpl->getBreadcrumbs()
-            ->addPiece('index',t('Main'))
-            ->addPiece('user/login',t('user','Sign in site'))
+            ->addPiece('index',$this->t('Main'))
+            ->addPiece('user/login',$this->t('user','Sign in site'))
             ->addPiece(null,$this->request->getTitle());
 
         // 1. Если нет параметров, форма ввода email
@@ -581,12 +572,12 @@ class UserController extends Controller
                     $this->sendmail(
                         $this->config->get('admin'),
                         $form->email,
-                        t('user','Password recovery'),
+                        $this->t('user','Password recovery'),
                         $this->tpl->fetch('user.mail.restore')
                     );
-                    return array('success'=>1,'msg'=>t('user','Recovery link sent to your e-mail'));
+                    return array('success'=>1,'msg'=>$this->t('user','Recovery link sent to your e-mail'));
                 } else {
-                    $this->request->addFeedback(t('user','The user with the mailbox is not registered'));
+                    $this->request->addFeedback($this->t('user','The user with the mailbox is not registered'));
                 }
             }
             $this->request->addFeedback( $form->getFeedbackString() );
@@ -605,11 +596,11 @@ class UserController extends Controller
          * @var UserModel $model
          */
         // @TODO Перевести под новую модель
-        $this->request->setTitle(t('user','Change password'));
+        $this->request->setTitle($this->t('user','Change password'));
 
         $this->tpl->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
-            ->addPiece('user/cabinet',t('user','User cabiner'))
+            ->addPiece('index',$this->t('Home'))
+            ->addPiece('user/cabinet',$this->t('user','User cabiner'))
             ->addPiece(null, $this->request->getTitle());
 
 
@@ -636,15 +627,15 @@ class UserController extends Controller
 
                     if ( strcmp( $form->getField('password1')->getValue(), $form->getField('password2')->getValue() ) === 0 ) {
                         $user->changePassword( $form->getField('password1')->getValue() );
-                        $this->request->addFeedback(t('user','Password successfully updated'));
+                        $this->request->addFeedback($this->t('user','Password successfully updated'));
                         return $this->tpl->fetch('user.password_success');
                     }
                     else {
-                        $this->request->addFeedback(t('user','You must enter a new password 2 times'));
+                        $this->request->addFeedback($this->t('user','You must enter a new password 2 times'));
                     }
 
                 } else {
-                    $this->request->addFeedback(t('user','Password is not correct'));
+                    $this->request->addFeedback($this->t('user','Password is not correct'));
                 }
 
             } else {

@@ -64,6 +64,14 @@ class Collection implements \Iterator
     }
 
     /**
+     * @return Model
+     */
+    public function getModel()
+    {
+        return $this->_mapper;
+    }
+
+    /**
      * Добавить элемент в коллекцию
      * @param Object $obj
      *

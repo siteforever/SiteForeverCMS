@@ -38,6 +38,7 @@ abstract class Object extends Table
     const STATE_NEW    = 20;
     const STATE_DIRTY  = 30;
     const STATE_DELETE = 40;
+    const STATE_SAVING = 50;
 
     protected $state;
 
@@ -85,7 +86,7 @@ abstract class Object extends Table
      */
     public function get($key)
     {
-        if (isset($this->relation[$key])) {
+        if (isset($this->relation[$key]) && !isset($this->data[$key])) {
             return $this->model->findByRelation($key, $this);
         }
 
@@ -101,6 +102,11 @@ abstract class Object extends Table
      */
     public function set($key, $value)
     {
+        if (isset($this->relation[$key])) {
+            $this->data[$key] = $value;
+            return $this;
+        }
+
         $pk = static::pkAsArray();
         if (in_array($key, $pk) && $this->$key && $this->$key != $value) {
             throw new \UnexpectedValueException('Changing pk is not allowed');
@@ -256,6 +262,11 @@ abstract class Object extends Table
         $this->model->delete($this->getId());
     }
 
+    public function markSaving()
+    {
+        $this->state = self::STATE_SAVING;
+    }
+
     /**
      * Как новый
      * @return Object
@@ -352,5 +363,10 @@ abstract class Object extends Table
     public function isStateCreate()
     {
         return $this->isState(self::STATE_CREATE);
+    }
+
+    public function isStateSaving()
+    {
+        return $this->isState(self::STATE_SAVING);
     }
 }

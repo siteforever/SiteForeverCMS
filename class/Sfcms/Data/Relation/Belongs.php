@@ -11,7 +11,7 @@ use Sfcms\Data\Relation;
 
 class Belongs extends Relation
 {
-    public function with( Collection $collection )
+    public function with( Collection $collection , $rel)
     {
         $keys = array();
         foreach ( $collection as $obj ) {

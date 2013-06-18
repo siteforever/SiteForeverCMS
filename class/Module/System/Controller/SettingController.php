@@ -16,7 +16,7 @@ class SettingController extends Controller
      */
     public function adminAction()
     {
-        $this->request->setTitle(t('Settings'));
+        $this->request->setTitle($this->t('Settings'));
 
         return array(
             'modules'   => $this->app()->getModules(),
@@ -50,7 +50,7 @@ class SettingController extends Controller
             }
         }
 
-        return t('Settings saved');
+        return $this->t('Settings saved');
     }
 
     /**

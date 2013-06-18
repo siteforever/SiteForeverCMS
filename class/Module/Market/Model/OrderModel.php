@@ -67,7 +67,7 @@ class OrderModel extends Model
             $form->zip,
             $form->country,
             $form->city,
-            null === $metro ? false : t('subway') . ' ' . $metro->name,
+            null === $metro ? false : $this->t('subway') . ' ' . $metro->name,
             $form->address,
         )));
         $obj->status    = 1;

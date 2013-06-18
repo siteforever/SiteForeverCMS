@@ -31,7 +31,7 @@ class MaterialController extends Controller
 
     public function adminAction()
     {
-        $this->request->setTitle(t('material','Materials'));
+        $this->request->setTitle($this->t('material','Materials'));
         /** @var $model MaterialModel */
         $model = $this->getModel('Material');
         $provider = $model->getProvider($this->request);
@@ -60,7 +60,7 @@ class MaterialController extends Controller
      */
     public function editAction($id)
     {
-        $this->request->setTitle( t('material','Materials') );
+        $this->request->setTitle( $this->t('material','Materials') );
 
         /** @var $model MaterialModel */
         $model = $this->getModel( 'Material' );
@@ -76,7 +76,7 @@ class MaterialController extends Controller
 
     public function saveAction()
     {
-        $this->request->setTitle( t( 'Materials' ) );
+        $this->request->setTitle( $this->t( 'Materials' ) );
 
         /** @var $model MaterialModel */
         $model = $this->getModel( 'Material' );
@@ -86,12 +86,12 @@ class MaterialController extends Controller
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $obj->save();
-                return array( 'error'=> 0, 'msg'=> t( 'Data save successfully' ) );
+                return array( 'error'=> 0, 'msg'=> $this->t( 'Data save successfully' ) );
             } else {
                 return array( 'error'=> 1, 'msg'=> $form->getFeedbackString() );
             }
         }
-        return t( 'Form not posted' );
+        return $this->t( 'Form not posted' );
     }
 
 

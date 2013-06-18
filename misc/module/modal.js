@@ -76,7 +76,7 @@ define('module/modal',[
             $alert("Сохранение", $('.modal-body', this.domnode));
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
-                success: $.proxy(function( response ){
+                success: $.proxy(function (response) {
                     if ( ! response.error ) {
                         this.msgSuccess( response.msg, 1500).done(function(){
                             window.location.reload();
@@ -84,7 +84,10 @@ define('module/modal',[
                     } else {
                         this.msgError( response.msg );
                     }
-                },this)
+                },this),
+                'error': $.proxy(function (response){
+                    alert(response);
+                }, this)
             });
         }
 
@@ -145,19 +148,25 @@ define('module/modal',[
             return deferred.promise();
         }
 
-        , show : function() {
+        , show : function(callback) {
             var deferred = new $.Deferred();
             this.domnode.modal('show');
             $('.modal-body', this.domnode).scrollTop(0);
-            $(this.domnode).on("shown", function(){
+            this.domnode.on("shown", function(){
                 deferred.resolve();
+                callback && callback();
             });
             return deferred.promise();
         }
 
-        , hide : function() {
+        , hide : function(callback) {
+            var deferred = new $.Deferred();
             this.domnode.modal('hide');
-            return this;
+            this.domnode.on('hidden', function(){
+                deferred.resolve();
+                callback && callback();
+            });
+            return deferred.promise();
         }
     };
 

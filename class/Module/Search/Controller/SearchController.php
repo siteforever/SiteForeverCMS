@@ -28,8 +28,8 @@ class SearchController extends Controller
 
     public function indexAction()
     {
-        $this->request->setTitle(t('Search'));
-        $this->tpl->getBreadcrumbs()->addPiece('index',t('Main'))->addPiece(null,$this->request->getTitle());
+        $this->request->setTitle($this->t('Search'));
+        $this->tpl->getBreadcrumbs()->addPiece('index',$this->t('Main'))->addPiece(null,$this->request->getTitle());
 
         $query = $this->request->query->get('query');
         if (!$query) {
@@ -39,7 +39,7 @@ class SearchController extends Controller
         $this->tpl->assign('query', $search);
 
         if ( strlen( $search ) <= 3 ) {
-            return array('error' => t('page', 'Search phrase is too short'));
+            return array('error' => $this->t('page', 'Search phrase is too short'));
         }
 
         $search = $this->filterFulltext( $search );

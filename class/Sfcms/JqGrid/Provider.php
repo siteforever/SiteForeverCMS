@@ -233,7 +233,7 @@ class Provider
     {
         $criteria = $this->getCriteria();
         $count  = $this->getModel()->count( $criteria );
-        $pager  = new Pager( $count, $this->getPerpage() );
+        $pager = new Sfcms\Pager($count, $this->getPerpage(), '', $this->request);
 
         $criteria->limit = $pager->limit;
         $criteria->order = $this->getOrder();

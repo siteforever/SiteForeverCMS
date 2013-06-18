@@ -8,7 +8,7 @@ namespace Sfcms;
 
 use Sfcms\Route;
 use Sfcms\Request;
-use App;
+use Sfcms\Router\InterfaceLogger;
 
 class Router
 {
@@ -19,6 +19,8 @@ class Router
     /** @var Request */
     private $request;
 
+    private static $rewrite = false;
+
     /** @var int Was system request */
     private $system = 0;
 
@@ -28,6 +30,9 @@ class Router
 
     /** @var array Routes handlers */
     private $_routes = array();
+
+    /** @var InterfaceLogger */
+    private $logger = null;
 
     /**
      * Создаем маршрутизатор
@@ -62,6 +67,38 @@ class Router
     public function isAlias()
     {
         return $this->_isAlias;
+    }
+
+    /**
+     * @param boolean $rewrite
+     */
+    public function setRewrite($rewrite)
+    {
+        self::$rewrite = $rewrite;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRewrite()
+    {
+        return self::$rewrite;
+    }
+
+    /**
+     * @param InterfaceLogger $logger
+     */
+    public function setLogger(InterfaceLogger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return InterfaceLogger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     /**
@@ -110,7 +147,7 @@ class Router
             $par    = array();
         }
 
-        if (App::getInstance()->getConfig()->get('url.rewrite')) {
+        if ($this->getRewrite()) {
             $result = $prefix . $result . (count($par) ? '/' . join('/', $par) : '');
         } else {
             $result = $prefix . '?route=' . $result . (count($par) ? '&' . join('&', $par) : '');
@@ -145,7 +182,7 @@ class Router
             $result .= '/' . $action . $parstring;
         }
 
-        if (!App::getInstance()->getConfig()->get('url.rewrite')) {
+        if (!self::$rewrite) {
             $result = '/?route=' . trim($result, '/');
         }
 
@@ -238,7 +275,9 @@ class Router
                 break;
             }
         }
-        App::getInstance()->getLogger()->log(round(microtime(1) - $start, 3) . ' sec', 'Routing');
+        if (null !== $this->getLogger()) {
+            $this->getLogger()->log(round(microtime(1) - $start, 3) . ' sec', 'Routing');
+        }
         if (!$routed) {
             $this->activateError();
         }

@@ -38,14 +38,14 @@ class TypeModel extends Model
                 'width' => 50,
             ),
             'name'  => array(
-                'title' => t('catalog','Name'),
+                'title' => $this->t('catalog','Name'),
                 'width' => 200,
                 'format' => array(
-                    'link' => array('class'=>'edit', 'controller'=>'prodtype', 'action'=>'edit','id'=>':id','title'=>t('Edit').' :name'),
+                    'link' => array('class'=>'edit', 'controller'=>'prodtype', 'action'=>'edit','id'=>':id','title'=>$this->t('Edit').' :name'),
                 ),
             ),
             'delete' => array(
-                'title' => t('Delete'),
+                'title' => $this->t('Delete'),
                 'width' => 50,
                 'value' => 'delete',
                 'format' => array(

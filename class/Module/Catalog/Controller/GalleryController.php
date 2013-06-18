@@ -67,7 +67,7 @@ class GalleryController extends Controller
             $this->tpl->cat = $id;
             return $this->getPanel( $id );
         }
-        return t('Not found parametr ID');
+        return $this->t('Not found parametr ID');
     }
 
     /**
@@ -118,10 +118,10 @@ class GalleryController extends Controller
             if ( $cat_id ) {
                 return $this->getPanel($cat_id);
             } else {
-                return t('Category not defined');
+                return $this->t('Category not defined');
             }
         }
-        return t('Image not found');
+        return $this->t('Image not found');
     }
 
     /**
@@ -202,7 +202,7 @@ class GalleryController extends Controller
 
                             if ( !is_dir( ROOT . $dest ) ) {
                                 if ( @mkdir( ROOT . $dest, 0777, true ) ) {
-                                    $this->request->addFeedback( t('catalog','Created directory ') . ROOT . $dest );
+                                    $this->request->addFeedback( $this->t('catalog','Created directory ') . ROOT . $dest );
                                 }
                             }
 

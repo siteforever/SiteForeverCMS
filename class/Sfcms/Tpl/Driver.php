@@ -15,25 +15,29 @@ abstract class Driver extends Component
     protected $engine = null;
 
     protected $_breacrumbs  = null;
-    
+
     public function __call( $fname, $args )
     {
-        throw new Exception(t("Interface TPL_Driver does not support the method {$fname}"));
+        throw new Exception($this->t("Interface TPL_Driver does not support the method {$fname}"));
     }
-    
-    abstract public function assign( $params, $value = null );
-    
-    abstract public function display( $tpl, $cache_id = null );
 
-    abstract public function fetch( $tpl, $cache_id = null );
-    
-    abstract public function setTplDir( $dir );
+    abstract public function assign($params, $value = null);
+
+    abstract public function display($tpl, $cache_id = null);
+
+    abstract public function fetch($tpl, $cache_id = null);
+
+    abstract public function setTplDir($dir);
 
     abstract public function getTplDir();
 
     abstract public function addTplDir($dir);
 
-    abstract public function setCplDir( $dir );
+    abstract public function setCplDir($dir);
+
+    abstract public function setCacheDir($cache);
+
+    abstract public function setWidgetsDir($dir);
 
     public function render($tpl, $params)
     {
@@ -48,7 +52,7 @@ abstract class Driver extends Component
 
     public function get( $key )
     {
-        throw new Exception(t('Driver properties write only'));
+        throw new Exception($this->t('Driver properties write only'));
     }
 
     /**

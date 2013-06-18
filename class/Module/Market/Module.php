@@ -37,11 +37,11 @@ class Module extends SfModule
                 'name'  => 'Интернет магазин',
                 'sub'   => array(
                     array(
-                        'name'  => t('Payment'),
+                        'name'  => $this->t('Payment'),
                         'url'   => 'payment/admin'
                     ),
                     array(
-                        'name'  => t('delivery','Delivery'),
+                        'name'  => $this->t('delivery','Delivery'),
                         'url'   => 'delivery/admin'
                     ),
                     array(

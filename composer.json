@@ -56,7 +56,11 @@
         "ccampbell/chromephp": "4.0.0",
         "tonytomov/jqGrid" : "4.4",
         "helios-ag/fm-elfinder": "2.*@dev",
-        "swiftmailer/swiftmailer": "v5.0.0"
+        "swiftmailer/swiftmailer": "v5.0.0",
+        "kriswallsmith/assetic": "v1.1.1",
+        "symfony/stopwatch": "master-dev",
+        "symfony/debug": " 2.3.*@dev",
+        "symfony/dependency-injection": " 2.3.*@dev"
     },
     "repositories":[
         {

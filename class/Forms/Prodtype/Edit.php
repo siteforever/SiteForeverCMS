@@ -21,7 +21,7 @@ class Edit extends Form
                 ),
                 'name' => array(
                     'type' => 'text',
-                    'label' => t('Name'),
+                    'label' => $this->t('Name'),
                     'required',
                 ),
             ),

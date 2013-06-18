@@ -254,11 +254,11 @@ abstract class Controller extends Component
      * @param $count
      * @param $perpage
      * @param $link
-     * @return \Pager
+     * @return Pager
      */
-    public function paging( $count, $perpage, $link )
+    public function paging($count, $perpage, $link)
     {
-        return new \Pager( $count, $perpage, $link );
+        return new Pager($count, $perpage, $link, $this->request);
     }
 
     /**
@@ -275,14 +275,6 @@ abstract class Controller extends Component
     public function getPage()
     {
         return $this->page;
-    }
-
-    /**
-     * @return i18n
-     */
-    public function i18n()
-    {
-        return i18n::getInstance();
     }
 
     /**
@@ -381,10 +373,10 @@ abstract class Controller extends Component
      *
      * @return Response
      */
-    protected function render($tpl, $params=array())
+    protected function render($tpl, $params=array(), $cache_id = null)
     {
         $this->getTpl()->assign($params);
-        return new Response($this->getTpl()->fetch($tpl));
+        return new Response($this->getTpl()->fetch($tpl, $cache_id));
     }
 
     /**

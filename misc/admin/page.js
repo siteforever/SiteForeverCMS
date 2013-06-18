@@ -41,18 +41,27 @@ define([
             '#structureWrapper a.edit' : {
                 "click" : function( event, node ) {
                     $alert("Loading...", $('.modal-body', this.domnode));
-                    $.post( $(node).attr('href') ).then( $.proxy(function( response ){
-                        this.editModal.title(i18n('page','Edit page')).body(response).show().done($alert.close);
-                    }, this ));
+                    $.post($(node).attr('href')).then($.proxy(function (response) {
+                        this.editModal.title(i18n('page', 'Edit page')).body(response);
+                        this.editModal.show().done(function(){
+                            $alert.close(1000);
+                        });
+                    }, this));
                     return false;
                 }
             },
 
             '#structureWrapper a.add' : {
                 "click" : function( event, node ) {
-                    $.post( $(node).attr('href') ).then( $.proxy(function( response ){
-                        this.createModal.title( $(node).attr('title') ).body( response ).show();
-                    }, this));
+                    $alert("Loading...", $('.modal-body', this.domnode));
+                    $.post($(node).attr('href')).then($.proxy(function (response) {
+                        this.createModal.title($(node).attr('title')).body(response);
+                        this.createModal.show().done(function(){
+                            $alert.close(1000);
+                        });
+                    }, this), function(response){
+                        alert(response);
+                    });
                     return false;
                 }
             },
@@ -62,7 +71,7 @@ define([
              * Warning before remove
              */
             'a.do_delete' : {
-                "click" : function ( event, node ) {
+                "click": function (event, node) {
                     try {
                         if (confirm(i18n('The data will be lost. Do you really want to delete?'))) {
                             $.post( $(node).attr('href'), function ( result ) {
@@ -90,15 +99,15 @@ define([
              * Edit page dialog
              * @type {Modal}
              */
-            this.editModal = new Modal( 'pageEdit' );
-            this.editModal.onSave( this.editSave );
+            this.editModal = new Modal('pageEdit');
+            this.editModal.onSave(this.editSave);
 
             /**
              * Create page dialog
              * @type {Modal}
              */
-            this.createModal = new Modal( 'pageCreate' );
-            this.createModal.onSave( this.createSave, [this.editModal]);
+            this.createModal = new Modal('pageCreate');
+            this.createModal.onSave(this.createSave, [this.editModal]);
         },
 
         /**
@@ -141,8 +150,8 @@ define([
         "editSave" : function(){
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
-                success: $.proxy( function( response ){
-                    if ( ! response.error ) {
+                success: $.proxy(function (response) {
+                    if (!response.error) {
                         this.msgSuccess( response.msg, 1500).done(function(){
                             $.get('/page/admin' ).then(function( response ){
                                 $('#structureWrapper').find('.b-main-structure').empty()
@@ -153,7 +162,11 @@ define([
                     } else {
                         this.msgError( response.msg );
                     }
-                },this )
+                }, this),
+                'error': $.proxy(function (response){
+                    console.log(arguments);
+                    alert(response.responseText);
+                }, this)
             });
         }
     };

@@ -12,7 +12,7 @@
 
 function smarty_function_breadcrumbs( $params, Smarty_Internal_Template $template )
 {
-    $breadcrumbs    = App::getInstance()->getView()->getBreadcrumbs();
+    $breadcrumbs    = App::getInstance()->getTpl()->getBreadcrumbs();
     if ( isset( $params['separator'] ) ) {
         $breadcrumbs->setSeparator($params['separator']);
     }

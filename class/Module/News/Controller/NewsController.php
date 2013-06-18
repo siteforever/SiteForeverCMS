@@ -59,7 +59,7 @@ class NewsController extends Controller
         }
 
         if ( ! $news ) {
-            throw new Sfcms_Http_Exception(t('news','Article not found'), 404);
+            throw new Sfcms_Http_Exception($this->t('news','Article not found'), 404);
         }
 
         // работаем над хлебными крошками
@@ -71,7 +71,7 @@ class NewsController extends Controller
         $this->request->setTitle( $news->title );
 
         if ( ! $this->user->hasPermission( $news['protected'] ) ) {
-            throw new Sfcms_Http_Exception( t('Access denied'), 403 );
+            throw new Sfcms_Http_Exception( $this->t('Access denied'), 403 );
         }
         return $this->tpl->fetch('news.item');
     }
@@ -128,7 +128,7 @@ class NewsController extends Controller
      */
     public function adminAction()
     {
-        $this->request->setTitle(t('news','News'));
+        $this->request->setTitle($this->t('news','News'));
         $this->app()->addScript('/misc/admin/news.js');
 
         /** @var NewsModel $model */
@@ -149,7 +149,7 @@ class NewsController extends Controller
     public function listAction($id)
     {
         /**/
-        $this->request->setTitle(t('news','News'));
+        $this->request->setTitle($this->t('news','News'));
         $this->app()->addScript('/misc/admin/news.js');
 
         $model      = $this->getModel('News');
@@ -181,7 +181,7 @@ class NewsController extends Controller
      */
     public function editAction($id, $cat)
     {
-        $this->request->setTitle(t('news','News edit'));
+        $this->request->setTitle($this->t('news','News edit'));
         /** @var $model NewsModel */
         $model      = $this->getModel('News');
         /** @var $form Form */
@@ -192,7 +192,7 @@ class NewsController extends Controller
             if ( $form->validate() ) {
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
-                return array('error'=>0, 'msg'=>t('Data save successfully'));
+                return array('error'=>0, 'msg'=>$this->t('Data save successfully'));
             }
             return array('error'=>1, 'msg'=>$this->request->getFeedbackString());
         }
@@ -225,7 +225,7 @@ class NewsController extends Controller
      */
     public function cateditAction($id)
     {
-        $this->request->setTitle(t('news','News category'));
+        $this->request->setTitle($this->t('news','News category'));
         /** @var $newsModel NewsModel */
         $newsModel      = $this->getModel( 'News' );
         /** @var $categoryModel CategoryModel */
@@ -244,7 +244,7 @@ class NewsController extends Controller
                     $obj->markNew();
                 }
 //                $this->reload('news/admin', array(), 2000);
-                return array( 'error'=>0, 'msg'=>t('Data save successfully') );
+                return array( 'error'=>0, 'msg'=>$this->t('Data save successfully') );
             } else {
                 return array( 'error'=>1, 'msg'=>$form->getFeedbackString()) ;
             }
@@ -260,7 +260,7 @@ class NewsController extends Controller
                 'form'  => $form,
             ));
         }
-        return t('Unknown error');
+        return $this->t('Unknown error');
     }
 
     /**
@@ -271,7 +271,7 @@ class NewsController extends Controller
     public function catdeleteAction($id)
     {
         /**/
-        $this->request->setTitle(t('news','News category'));
+        $this->request->setTitle($this->t('news','News category'));
         $model      = $this->getModel('News');
         /**/
         $category   = $this->getModel('NewsCategory');
@@ -297,7 +297,7 @@ class NewsController extends Controller
         }
 
 //        $this->reload('news/admin');
-        return array('error'=>0,'msg'=> t('news','News category was deleted') );
+        return array('error'=>0,'msg'=> $this->t('news','News category was deleted') );
     }
 
     /**
@@ -306,13 +306,13 @@ class NewsController extends Controller
      */
     public function deleteAction($id)
     {
-        $this->request->setTitle(t('News'));
+        $this->request->setTitle($this->t('News'));
         $model      = $this->getModel('News');
         /** @var $obj News */
         $obj    = $model->find($id);
 //        $catId = $obj->cat_id;
         $obj->deleted = 1;
 //        $this->reload('news/list', array('id'=>$catId));
-        return array('error'=>0,'msg'=>t('news','News was delete'));
+        return array('error'=>0,'msg'=>$this->t('news','News was delete'));
     }
 }

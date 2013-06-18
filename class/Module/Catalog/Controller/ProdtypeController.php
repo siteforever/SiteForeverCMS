@@ -24,7 +24,7 @@ class ProdtypeController extends Controller
      */
     public function adminAction()
     {
-        $this->request->setTitle(t('catalog','Product types'));
+        $this->request->setTitle($this->t('catalog','Product types'));
         /** @var $model CatalogModel */
         $model = $this->getModel('ProductType');
         $provider = $model->getProvider($this->request);
@@ -60,10 +60,10 @@ class ProdtypeController extends Controller
             'form'=>$form,
             'fields'=>$obj->Fields,
             'types' => array(
-                'string'    => t('catalog','String'),
-                'text'      => t('catalog','Text'),
-                'int'       => t('catalog','Int'),
-                'datetime'  => t('catalog','Datetime'),
+                'string'    => $this->t('catalog','String'),
+                'text'      => $this->t('catalog','Text'),
+                'int'       => $this->t('catalog','Int'),
+                'datetime'  => $this->t('catalog','Datetime'),
             )
         );
     }
@@ -110,7 +110,7 @@ class ProdtypeController extends Controller
                     }, array_keys( $_POST['field']['id'] ) ) );
                 }
 
-                return array('error'=>0,'msg'=>t('Data save successfully')) + ( isset( $fields ) ? array('fields'=>$fields) : array() );
+                return array('error'=>0,'msg'=>$this->t('Data save successfully')) + ( isset( $fields ) ? array('fields'=>$fields) : array() );
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString(),'errors'=>$form->getFeedback());
             }

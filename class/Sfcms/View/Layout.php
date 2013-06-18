@@ -201,7 +201,7 @@ class Layout extends ViewAbstract
                     . "</script>";
             } else {
                 $return[] = "<script type='text/javascript' "
-                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
+                    . "src='/misc/require-jquery.js' data-main='../static/admin'>"
                     . "</script>";
             }
 

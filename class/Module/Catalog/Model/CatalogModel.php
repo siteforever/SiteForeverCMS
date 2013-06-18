@@ -5,6 +5,7 @@
  */
 namespace Module\Catalog\Model;
 
+use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms;
 use Sfcms\JqGrid\Provider;
@@ -77,16 +78,16 @@ class CatalogModel extends Model
 
         /** @var $category Catalog */
         $category = null;
-        if ( $page->link ) {
-            $category = $this->find( $page->link );
+        if ($page->link) {
+            $category = $this->find($page->link);
         }
-        if ( ! $category ) {
+        if (!$category) {
             $category = $this->createObject();
         }
 
         // Надо скрыть или показать все товары в данной категории, если изменился уровень видимости категории
-        if ( $category->id
-            && ( $category->hidden != $page->hidden || $category->protected != $page->protected || $category->deleted != $page->deleted ) )
+        if ($category->id
+            && !($category->hidden == $page->hidden && $category->protected == $page->protected && $category->deleted == $page->deleted))
         {
             array_map(function( $product ) use ( $page ) {
                     /** @var $product Catalog */
@@ -105,17 +106,18 @@ class CatalogModel extends Model
 
         $category->cat = 1;
 
-        if ( $page->parent && ! $category->parent ) {
+        if ($page->parent && !$category->parent) {
             /** @var $parentPage Page */
             $parentPage = $pageModel->find($page->parent);
-            if ( $parentPage->controller == $page->controller && $parentPage->link ) {
+            if ($parentPage->controller == $page->controller && $parentPage->link) {
                 $category->parent = $parentPage->link;
+                $category->parent_uuid = $category->Category->uuid;
             } else {
                 $category->parent = 0;
             }
         }
+        $category->Page = $page;
         $category->save();
-        $page->link = $category->id;
     }
 
     /**
@@ -134,6 +136,88 @@ class CatalogModel extends Model
         $catObj->pos = $obj->pos;
         $catObj->markDirty();
     }
+
+
+    /**
+     * Вызывается перед сохранением каталога
+     * @param \Sfcms\Model\ModelEvent $event
+     */
+    public function onCatalogSaveStart( Model\ModelEvent $event )
+    {
+        $obj = $event->getObject();
+        // If object will update
+        /** @var $obj Catalog */
+        if( $obj->getId() ) {
+            $obj->path = $this->createSerializedPath( $obj->getId() );
+        }
+
+        if (!$obj->uuid) {
+            $obj->uuid = Sfcms\UUID::v5(md5(__DIR__), bin2hex(uniqid()));
+        }
+        if ($obj->parent) {
+            $obj->parent_uuid = $obj->Category->uuid;
+        }
+
+        if ( $obj->cat ) {
+            // @todo Надо сделать слежение за изменением иерархии
+            $objPage = $obj->Page;
+            if ( $objPage ) {
+                $objPage->name = $obj->name;
+                $objPage->hidden = $obj->hidden;
+                $objPage->protected = $obj->protected;
+                $objPage->save();
+            }
+        }
+    }
+
+    /**
+     * @param \Sfcms\Model\ModelEvent $event
+     */
+    public function onCatalogSaveSuccess( Model\ModelEvent $event )
+    {
+        /** @var $obj Catalog */
+        $obj = $event->getObject();
+
+        // If object was just created
+        if (!$obj->path) {
+            $obj->path = $this->createSerializedPath($obj->getId());
+            $this->save($obj);
+        }
+        $objPage = $obj->Page;
+        if (null !== $objPage && !$objPage->link) {
+            $objPage->link = $obj->id;
+            $objPage->save();
+        }
+
+        if ($obj->cat) {
+            // @todo Надо сделать слежение за изменением иерархии
+            if (null === $objPage) {
+                $objPage = $this->getModel('Page')->createObject();
+                $objPage->name = $obj->name;
+                $objPage->title = $obj->name;
+                $objPage->pos = $obj->pos;
+                $objPage->author = 1;
+                $objPage->template = 'inner';
+                $objPage->link = $obj->id;
+                $objPage->controller = 'catalog';
+                $objPage->action = 'index';
+                $objPage->date = time();
+                $objPage->update = $objPage->date;
+                $objPage->hidden = $obj->hidden;
+                $objPage->protected = $obj->protected;
+                if ($obj->parent) {
+                    $parentPage = $obj->Category->Page;
+                    if ($parentPage) {
+                        $objPage->parent = $parentPage->id;
+                        $objPage->alias = $parentPage->alias . '/' . $objPage->alias;
+                    }
+                }
+                $objPage->save();
+            }
+        }
+    }
+
+
 
     /**
      * Вернет прямых потомков для раздела
@@ -177,6 +261,7 @@ class CatalogModel extends Model
      * Искать все в список по фильтру по артикулу
      * @param string $filter
      *
+     * @deprecated
      * @return array
      */
     public function findAllFiltered( $filter )
@@ -193,6 +278,7 @@ class CatalogModel extends Model
      * @param int    $parent
      * @param string $limit
      *
+     * @deprecated
      * @return array
      */
     public function findAllByParent( $parent, $limit = 'LIMIT 100' )
@@ -215,6 +301,7 @@ class CatalogModel extends Model
      * @param        $parent
      * @param string $limit
      *
+     * @deprecated
      * @return array
      */
     public function findCatsByParent( $parent, $limit = '' )
@@ -253,6 +340,7 @@ class CatalogModel extends Model
     /**
      * Поиск товаров по ключевой фразе
      * @param $query
+     * @deprecated
      * @return Collection
      */
     public function findGoodsByQuery( $query )
@@ -296,45 +384,6 @@ class CatalogModel extends Model
         );
         return $count;
     }
-
-    /**
-     * @param \Sfcms\Model\ModelEvent $event
-     */
-    public function onCatalogSaveStart( Model\ModelEvent $event )
-    {
-        $obj = $event->getObject();
-        // If object will update
-        /** @var $obj Catalog */
-        if( $obj->getId() ) {
-            $obj->path = $this->createSerializedPath( $obj->getId() );
-        }
-
-        if ( $obj->cat ) {
-            // @todo Надо сделать слежение за изменением иерархии
-            $objPage = $obj->Page;
-            if ( $objPage ) {
-                $objPage->name = $obj->name;
-                $objPage->hidden = $obj->hidden;
-                $objPage->protected = $obj->protected;
-            }
-        }
-    }
-
-    /**
-     * @param \Sfcms\Model\ModelEvent $event
-     */
-    public function onCatalogSaveSuccess( Model\ModelEvent $event )
-    {
-        /** @var $obj Catalog */
-        $obj = $event->getObject();
-
-        // If object was just created
-        if ( ! $obj->path ) {
-            $obj->path = $this->createSerializedPath( $obj->getId() );
-            $this->save( $obj );
-        }
-    }
-
 
     /**
      * Найдет путь для страницы
@@ -626,18 +675,18 @@ class CatalogModel extends Model
                 ),
             ),
             'name'  => array(
-                'title' => t('catalog','Name'),
+                'title' => $this->t('catalog','Name'),
                 'width' => 200,
                 'format' => array(
-                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'trade','edit'=>':id','title'=>t('Edit').' :name'),
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'trade','edit'=>':id','title'=>$this->t('Edit').' :name'),
                 ),
                 'search' => true,
             ),
             'parent'  => array(
-                'title' => t('catalog','Category'),
+                'title' => $this->t('catalog','Category'),
                 'value' => 'Category.title',
                 'format' => array(
-                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'category','edit'=>':parent','title'=>t('Edit').' :name'),
+                    'link' => array('class'=>'edit', 'controller'=>'catalog', 'action'=>'category','edit'=>':parent','title'=>$this->t('Edit').' :name'),
                 ),
                 'search' => array(
                     'value' => array_map(function($name,$id){
@@ -648,7 +697,7 @@ class CatalogModel extends Model
             ),
             'type_id' => array(
                 'value' => 'Type.name',
-                'title' => t('catalog','Type'),
+                'title' => $this->t('catalog','Type'),
                 'search' => array(
                     'value' => array_merge(array("0:Все типы"),array_map(function($type){
                         return $type->id . ':' . $type->name;
@@ -658,7 +707,7 @@ class CatalogModel extends Model
             ),
             'manufacturer' => array(
                 'value'=>'Manufacturer.name',
-                'title' => t('catalog','Manufacturer'),
+                'title' => $this->t('catalog','Manufacturer'),
                 'search' => array(
                     'value' => array_merge(array("0:Все производители"),array_map(function($manuf){
                         return $manuf->id . ':' . $manuf->name;
@@ -667,37 +716,37 @@ class CatalogModel extends Model
                 ),
             ),
             'articul'   => array(
-                'title' => t('catalog','Articul'),
+                'title' => $this->t('catalog','Articul'),
                 'search' => true,
             ),
             'price1' => array(
                 'value'=>'price',
-                'title'=> t('catalog','Price'),
+                'title'=> $this->t('catalog','Price'),
                 'search' => true,
             ),
             'hidden' => array(
-                'title' => t('catalog','Hidden'),
+                'title' => $this->t('catalog','Hidden'),
                 'width' => 50,
                 'format' => array(
                     'bool' => array('yes'=>Sfcms::html()->icon('lightbulb_off'),'no'=>Sfcms::html()->icon('lightbulb')),
                 ),
             ),
             'protected' => array(
-                'title' => t('catalog','Protected'),
+                'title' => $this->t('catalog','Protected'),
                 'width' => 50,
                 'format' => array(
                     'bool' => array('yes'=>Sfcms::html()->icon('lock'),'no'=>Sfcms::html()->icon('lock_break')),
                 ),
             ),
             'novelty' => array(
-                'title' => t('catalog','Novelty'),
+                'title' => $this->t('catalog','Novelty'),
                 'width' => 50,
                 'format' => array(
                     'bool' => array('yes'=>Sfcms::html()->icon('new')),
                 ),
             ),
             'top' => array(
-                'title' => t('catalog','To main'),
+                'title' => $this->t('catalog','To main'),
                 'width' => 50,
                 'format' => array(
                     'bool' => array(),

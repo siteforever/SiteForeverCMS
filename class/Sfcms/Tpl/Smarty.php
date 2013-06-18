@@ -13,11 +13,9 @@ class Smarty extends Driver
 
     private $config = array();
 
-    public function __construct($config)
+    public function __construct($config, \Smarty $engine)
     {
         $this->config = array_merge(array(
-                'admin'     => SF_PATH.DIRECTORY_SEPARATOR.'themes'.DIRECTORY_SEPARATOR.'system',
-                'widgets'   => SF_PATH.DIRECTORY_SEPARATOR.'widgets',
                 'ext'       => 'tpl',
                 'compile_check' => true,
                 'caching'   => false,
@@ -26,24 +24,51 @@ class Smarty extends Driver
                 ),
             ), $config);
 
-        // класс шаблонизатора
-        $this->engine = new \Smarty(); // link (used php5)
-        $this->engine->cache_lifetime = $this->config['cache']['livetime'];
-        $this->ext    = $this->config['ext'];
 
         if (!isset($this->config['theme'])) {
             throw new Exception('Theme name in "template.theme" not defined');
         }
 
-//        $this->engine->addTemplateDir(array(
-//            'themes'.DIRECTORY_SEPARATOR.$this->config['theme'].DIRECTORY_SEPARATOR.'templates',
-//            $this->config['admin'],
-//        ));
+        // класс шаблонизатора
+        $this->engine = $engine;
+        $this->engine->cache_lifetime = $this->config['cache']['livetime'];
+        $this->ext    = $this->config['ext'];
+
+        $theme  = $config['theme'];
+        $themeCat = ROOT."/themes/{$theme}/templates";
+
+        $this->setTplDir(array());
+        if (is_dir($themeCat)) {
+            $this->addTplDir($themeCat);
+        } else {
+            throw new Exception('Theme "' . $theme . '" not found');
+        }
+        if (is_dir(SF_PATH."/themes/system")) {
+            $this->addTplDir(SF_PATH."/themes/system");
+        }
+        $runtime    = ROOT."/runtime";
+        $tpl_c  = $runtime."/templates_c";
+        $cache  = $runtime."/cache";
+
+        if (!is_dir($tpl_c)) {
+            @mkdir($tpl_c, 0755, true);
+        }
+        if (!is_dir($cache)) {
+            @mkdir($cache, 0755, true);
+        }
+
+        $this->setCplDir($tpl_c);
+        $this->setCacheDir($cache);
+        $this->setWidgetsDir(SF_PATH . '/widgets');
+        if (ROOT != SF_PATH) {
+            $this->setWidgetsDir(ROOT . '/widgets');
+        }
 
         $this->engine->compile_check = $this->config['compile_check'];
-        $this->engine->caching = $this->config['caching'];
+        $this->engine->caching = false;
+//        $this->engine->caching = $this->config['caching'];
     }
-    
+
     public function assign( $params, $value = null )
     {
         $this->engine->assign( $params, $value );
@@ -54,34 +79,36 @@ class Smarty extends Driver
      * @param bool $state
      * @return void
      */
-    public function caching( $state = false )
+    public function caching($state = false)
     {
         $this->engine->caching = $state;
     }
 
+    public function isCached($template, $cache_id = null)
+    {
+        $template = $this->convertTplName($template);
+        return $this->engine->isCached($template, $cache_id);
+    }
+
     /**
-     * Конвертирование шаблонов
-     * @param $tpl
+     * Конвертирование имен шаблонов
+     * @param $name
      *
      * @return string
      * @throws Exception
      */
-    public function convertTplName( $tpl )
+    public function convertTplName( $name )
     {
         // Если у шаблона не указан ресурс, то выбираем между темой и системой
-        if (0 === strpos($tpl, 'theme:')) {
-            $tpl = str_replace('theme:', '', $tpl);
-//            if ( $this->theme_exists( $tpl ) ) {
-//                $tpl    = 'theme:'.$tpl;
-//            } elseif ( $this->system_exists( $tpl ) ) {
-//                $tpl    = 'system:'.$tpl;
-//            } else {
-//                throw new Exception('Шаблон '.$tpl.' не найден');
-//            }
+        $name = preg_replace('/\.'.$this->ext.'$/', '', $name);
+        $name = str_replace('.', '/', $name).'.'.$this->ext;
+
+        if (0 === strpos($name, 'theme:')) {
+            $name = str_replace('theme:', '', $name);
         }
-        return $tpl;
+        return $name;
     }
-    
+
     /**
      * Отобразить шаблон
      * @param string $tpl
@@ -90,8 +117,6 @@ class Smarty extends Driver
     public function display( $tpl, $cache_id = null )
     {
         $start  = microtime(1);
-        $tpl = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
-        $tpl = str_replace('.', '/', $tpl).'.'.$this->ext;
         $tpl = $this->convertTplName($tpl);
 
         $this->engine->display( $tpl, $cache_id );
@@ -108,8 +133,6 @@ class Smarty extends Driver
     public function fetch( $tpl, $cache_id = null )
     {
         $start  = microtime(1);
-        $tpl    = preg_replace('/\.'.$this->ext.'$/', '', $tpl);
-        $tpl    = str_replace('.', '/', $tpl).'.'.$this->ext;
         $tpl    = $this->convertTplName($tpl);
 
         $result = $this->engine->fetch( $tpl, $cache_id );
@@ -146,7 +169,7 @@ class Smarty extends Driver
         }
         return false;
     }
-    
+
     /**
      * Проверяет, кэшированный ли шаблон
      * @param  $tpl_file
@@ -182,7 +205,7 @@ class Smarty extends Driver
     {
         return $this->engine->getTemplateDir();
     }
-    
+
     /**
      * Установить каталог скомпилированных шаблонов
      * @param $dir
@@ -201,7 +224,7 @@ class Smarty extends Driver
     {
         $this->engine->setCacheDir($dir);
     }
-    
+
     /**
      * Установить каталог плагинов
      * @param $dir

@@ -21,7 +21,7 @@ class PaymentController extends Controller
 
     public function adminAction()
     {
-        $this->request->setTitle(t('Payment'));
+        $this->request->setTitle($this->t('Payment'));
         $model = $this->getModel('Payment');
         $list = $model->findAll();
         return array(
@@ -42,7 +42,7 @@ class PaymentController extends Controller
             if ( $form->validate() ) {
                 $payObj = $form->id ? $model->find($form->id) : $model->createObject();
                 $payObj->attributes = $form->getData();
-                return array('error'=>0,'msg'=>t('Data save successfully'));
+                return array('error'=>0,'msg'=>$this->t('Data save successfully'));
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString(),'errors'=>$form->getErrors());
             }

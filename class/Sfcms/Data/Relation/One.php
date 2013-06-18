@@ -12,25 +12,31 @@ use Sfcms\Data\Relation;
 
 class One extends Relation
 {
-    public function with( Collection $collection )
+    public function with(Collection $collection, $rel)
     {
-        $keys = array_map(function( $obj ){
-            /** @var $obj Object */
-            return $obj->getId();
-        }, iterator_to_array( $collection ));
-        if ( count( $keys ) ) {
+        $keys = array_map(
+            function ($obj) {
+                /** @var $obj Object */
+                return $obj->getId();
+            },
+            iterator_to_array($collection)
+        );
+        if (count($keys)) {
             try {
-                $cond = $this->prepareCond( $keys );
-            } catch ( Exception $e ) {
+                $cond = $this->prepareCond($keys);
+            } catch (Exception $e) {
                 return;
             }
             if (isset($this->relation['with'])) {
                 $this->model->with($this->relation['with']);
             }
             // Загружаем объекты в Object Watcher
-            $objects = $this->model->findAll( $cond );
-            /** @var $o Object */
-            foreach ( $objects as $o );
+            $objects = $this->model->findAll($cond);
+
+            foreach ($objects as $obj) {
+                $item = $collection->getById($obj->{$this->key});
+                $item->$rel = $obj;
+            }
         }
     }
 

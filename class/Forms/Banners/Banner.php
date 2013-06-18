@@ -2,7 +2,7 @@
 /**
  * Форма для редактирования баннера
  */
- 
+
 class Forms_Banners_Banner extends \Sfcms\Form\Form
 {
 
@@ -19,7 +19,7 @@ class Forms_Banners_Banner extends \Sfcms\Form\Form
                             'label'     => 'Категория',
                             'variants'  => $parents,
                         ),
-                'name'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>t('Name'),),
+                'name'              => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>$this->t('Name'),),
                 'url'               => array('type'=>'text',  'class'=>'elcatalog-meta',  'label'=>'Url',),
                 'target'            => array(
                             'type'  => 'select',
@@ -31,7 +31,7 @@ class Forms_Banners_Banner extends \Sfcms\Form\Form
 //                                '_top'      =>'Отменяет фреймы и загружает в текущее окно',
                             ),
                 ),
-                'content'           => array('type'=>'textarea', 'label'=>t('page','Content')),
+                'content'           => array('type'=>'textarea', 'label'=>$this->t('page','Content')),
 
 //                'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),

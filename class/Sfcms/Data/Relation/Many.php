@@ -14,10 +14,10 @@ class Many extends Relation
 {
     static protected $_cache = array();
 
-    public function with(Collection $collection)
+    public function with(Collection $collection, $rel)
     {
         /** @var $obj Object */
-        $keys = array_map(function($obj) {
+        $keys = array_map(function($obj) use ($rel) {
             return $obj->getId();
         }, iterator_to_array($collection));
 
@@ -31,8 +31,19 @@ class Many extends Relation
                 $this->model->with($this->relation['with']);
             }
             $objects = $this->model->findAll($cond);
+            $cache = array();
             foreach ($objects as $obj) {
-                $this->addCache($obj->{$this->key}, $obj);
+                if (!isset($cache[$obj->{$this->key}])) {
+                    $cache[$obj->{$this->key}] = new Collection();
+                }
+                $cache[$obj->{$this->key}]->add($obj);
+            }
+            foreach ($collection as $item) {
+                if (isset($cache[$item->id])) {
+                    $item->$rel = $cache[$item->id];
+                } else {
+                    $item->$rel = new Collection();
+                }
             }
         }
     }

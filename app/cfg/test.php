@@ -1,19 +1,15 @@
 <?php
 /**
- * Конфиг для системы
+ * Конфиг для тестов
  */
 
 return array_merge(require_once 'base.php', array(
-    // отладка
-    'debug' => array(
-        'profiler'   => true,
-    ),
     'cache' => false,
     'logger'    => 'file',
     'language'  => 'ru',
     'siteurl'   => 'localhost',
 
-        // база данных
+    // база данных
     'db' => array(
         'login'     => 'root',
         'password'  => '',

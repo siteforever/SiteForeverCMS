@@ -84,7 +84,7 @@ class CatalogController extends Controller
         }
 
         if (null === $item) {
-            throw new Sfcms_Http_Exception(t('Catalogue part not found with id ') . $catId, 404);
+            throw new Sfcms_Http_Exception($this->t('Catalogue part not found with id ') . $catId, 404);
         }
 
         if ( 0 == $item->cat ) {
@@ -110,17 +110,15 @@ class CatalogController extends Controller
     /**
      * Открывается категория
      * @param Catalog $item
+     * @return Response
      */
     protected function viewCategory(Catalog $item)
     {
         $level = $this->config->get('catalog.level');
         $pageNum = $this->request->query->getDigits('page', 1);
 
-        $filter = $this->request->get('filter', array());
-
-        $manufacturerId = isset($filter['manufacturer']) && $filter['manufacturer'] ? $filter['manufacturer'] : false;
-        $materialId     = isset($filter['material']) && $filter['material'] ? $filter['material'] : false;
-
+        $manufacturerId = $this->request->get('filter[manufacturer]', false, true);
+        $materialId     = $this->request->get('filter[material]', false, true);
 
         $order = $this->config->get('catalog.order_default');
         $orderList = $this->config->get('catalog.order_list');
@@ -136,13 +134,11 @@ class CatalogController extends Controller
             }
         }
 
-//        $cache = $this->cache();
-//        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
-
-
-//        if ($cache->isNotExpired($cacheKey)) {
-//            $response = $cache->get($cacheKey);
-//        } else {
+        $this->getTpl()->caching($this->config->get('template.caching'));
+        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
+        if ($this->getTpl()->isCached('catalog.viewcategory', $cacheKey)) {
+            $response = $response = $this->render('catalog.viewcategory', array(), $cacheKey);
+        } else {
             /** @var $catModel CatalogModel */
             $catModel = $this->getModel('Catalog');
             $parent   = $catModel->find($item->getId());
@@ -170,8 +166,8 @@ class CatalogController extends Controller
                 $criteria->condition .= ' AND `material` IN (?) ';
                 $criteria->params[] = $materialId;
             }
-            //            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
-            //            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
+//            . ( count( $categoriesId ) ? ' AND `parent` IN ('.implode(',',$categoriesId ) . ')' : '' )
+//            . ( $manufId ? ' AND `manufacturer` = '.$manufId.' ' : '' );
 
             // количество товаров
             $count = $catModel->count($criteria);
@@ -208,8 +204,6 @@ class CatalogController extends Controller
             $response = $this->render('catalog.viewcategory', array(
                 'parent'    => $parent,
                 'properties'=> $properties,
-                'manufacturers' => $this->getModel('Manufacturers')->findAllByCatalogCategories($categoriesId),
-                'materials' => $this->getModel('Material')->findAllByCatalogCategories($categoriesId),
                 'category'  => $item,
                 'list'      => $list,
                 'cats'      => $cats,
@@ -217,9 +211,9 @@ class CatalogController extends Controller
                 'user'      => $this->user,
                 'order_list'=> $this->config->get('catalog.order_list'),
                 'order_val' => $this->request->get('order'),
-            ));
-//            $cache->set($cacheKey, $response->getContent());
-//        }
+            ), $cacheKey);
+        }
+        $this->getTpl()->caching(false);
 
         return $response;
     }
@@ -389,9 +383,9 @@ class CatalogController extends Controller
 
                 if ($object->getId() && $object->getId() == $object->parent) {
                     // раздел не может быть замкнут на себя
-                    return array('error' => 1, t('The section can not be in myself'));
+                    return array('error' => 1, $this->t('The section can not be in myself'));
                 }
-                return $this->renderJson(array('error' => 0, 'msg' => t('Data save successfully')));
+                return $this->renderJson(array('error' => 0, 'msg' => $this->t('Data save successfully')));
             } else {
                 return $this->renderJson(
                     array('error' => 1, 'msg' => $form->getFeedbackString(), 'errors' => $form->getErrors())
@@ -410,14 +404,14 @@ class CatalogController extends Controller
     public function adminBreadcrumbs( $path )
     {
         $bc = array(
-            Sfcms::html()->link(t('catalog','Catalog'),'catalog/admin')
+            Sfcms::html()->link($this->t('catalog','Catalog'),'catalog/admin')
         ); // breadcrumbs
         if( $arrPath = @unserialize( $path ) ) {
             if( $arrPath && is_array( $arrPath ) ) {
                 foreach( $arrPath as $val ) {
                     $bc[ ] = Sfcms::html()->link($val['name'],'catalog/admin',array('part'=>$val['id']))
                            . Sfcms::html()->link(
-                                Sfcms::html()->icon('pencil', t('Edit')),
+                                Sfcms::html()->icon('pencil', $this->t('Edit')),
                                 'catalog/category',
                                 array('edit'=>$val['id']),
                                 'edit'
@@ -425,7 +419,7 @@ class CatalogController extends Controller
                 }
             }
         }
-        return '<ul class="breadcrumb"><li>'.t('catalog','Path').': '
+        return '<ul class="breadcrumb"><li>'.$this->t('catalog','Path').': '
                 . join( '<span class="divider">&gt;</span></li><li>', $bc ) . '</li></ul>';
     }
 
@@ -628,7 +622,7 @@ class CatalogController extends Controller
             $fields = $item->Type->Fields;
         }
 
-        $this->request->setTitle(t('Catalog'));
+        $this->request->setTitle($this->t('Catalog'));
 
         return array(
             //            'breadcrumbs' => $this->adminBreadcrumbsById( $parentId ),
@@ -682,7 +676,7 @@ class CatalogController extends Controller
             }
         }
 
-        $this->request->setTitle( t('catalog','Catalog') );
+        $this->request->setTitle( $this->t('catalog','Catalog') );
         return array(
             'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
             'form'        => $form,

@@ -16,18 +16,18 @@ class SitemapController extends Controller
 {
     public function indexAction()
     {
-        $this->request->setTitle(t('Sitemap'));
+        $this->request->setTitle($this->t('Sitemap'));
         $this->request->setTemplate('inner');
 
         $bc = $this->tpl->getBreadcrumbs();
-        $bc->addPiece('index', t('Home'));
+        $bc->addPiece('index', $this->t('Home'));
         $bc->addPiece(null, $this->request->getTitle());
 
         /** @var $modelPage PageModel */
         $modelPage = $this->getModel('Page');
 
         return $this->render('sitemap.index', array(
-                'data' => $modelPage->createParentsIndex(), 'parent' => 1, 'level' => 5
+                'data' => $modelPage->getParents(), 'parent' => 1, 'level' => 5
             ));
     }
 

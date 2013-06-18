@@ -69,7 +69,7 @@ class GalleryController extends Controller
             $image = $model->find( 'alias = ?', array( $alias ) );
 
             if( null === $image ) {
-                return t( 'Image not found' );
+                return $this->t( 'Image not found' );
             }
 
             $crit = array(
@@ -178,7 +178,7 @@ class GalleryController extends Controller
          * @var CategoryModel $category
          */
 
-        $this->request->setTitle(t('Images gallery'));
+        $this->request->setTitle($this->t('Images gallery'));
         $model    = $this->getModel('Gallery');
         $category = $this->getModel('GalleryCategory');
 
@@ -232,7 +232,7 @@ class GalleryController extends Controller
             } else {
                 return array(
                     'error' => 1,
-                    'msg' =>  t( 'Switch error' ),
+                    'msg' =>  $this->t( 'Switch error' ),
                 );
             }
         }
@@ -254,13 +254,13 @@ class GalleryController extends Controller
             if( $image->save() ) {
                 return array(
                     'error' => 0,
-                    'msg' => t('Image was deleted'),
+                    'msg' => $this->t('Image was deleted'),
                     'id' => $id,
                 );
             }
-            return array('error' => 1, 'msg' => t( 'Can not delete' ));
+            return array('error' => 1, 'msg' => $this->t( 'Can not delete' ));
         }
-        return t('Image not was deleted');
+        return $this->t('Image not was deleted');
     }
 
     /**
@@ -283,7 +283,7 @@ class GalleryController extends Controller
                 $obj->attributes = $form->getData();
                 $model->save( $obj );
 //                $this->reload( 'gallery/admin', array(), 1000 );
-                return array('error'=>0,'msg'=>t( 'Data save successfully' ),'name'=>$obj->name,'id'=>$obj->id);
+                return array('error'=>0,'msg'=>$this->t( 'Data save successfully' ),'name'=>$obj->name,'id'=>$obj->id);
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
             }
@@ -375,7 +375,7 @@ class GalleryController extends Controller
                 $obj->attributes = $form->getData();
                 $obj->save();
                 return array('error' => 0,
-                             'msg' => t( 'Data save successfully' ),
+                             'msg' => $this->t( 'Data save successfully' ),
                              'name'=>$obj->name,
                              'id' => $obj->id,
                 );
@@ -449,7 +449,7 @@ class GalleryController extends Controller
                 /** @var $file UploadedFile */
                 if ($file->isValid()) {
                     if (!in_array($file->getClientMimeType(), $this->config->get('gallery.mime'))) {
-                        $this->request->addFeedback(t('Mime type not access in').' '.$file->getClientOriginalName());
+                        $this->request->addFeedback($this->t('Mime type not access in').' '.$file->getClientOriginalName());
                         continue;
                     }
                     /** @var $image Gallery */
@@ -466,27 +466,27 @@ class GalleryController extends Controller
                 } else {
                     switch($file->getError()){
                         case UPLOAD_ERR_FORM_SIZE:
-                            $this->request->addFeedback( t('Form size error') );
+                            $this->request->addFeedback( $this->t('Form size error') );
                             break;
                         case UPLOAD_ERR_EXTENSION:
-                            $this->request->addFeedback( t('Extension error') );
+                            $this->request->addFeedback( $this->t('Extension error') );
                             break;
                         case UPLOAD_ERR_PARTIAL:
-                            $this->request->addFeedback( t('Partial error') );
+                            $this->request->addFeedback( $this->t('Partial error') );
                             break;
                         case UPLOAD_ERR_NO_FILE:
-                            $this->request->addFeedback( t('No file') );
+                            $this->request->addFeedback( $this->t('No file') );
                             break;
                         default:
-                            $this->request->addFeedback( t('Unknown error') );
+                            $this->request->addFeedback( $this->t('Unknown error') );
                     }
                 }
             }
         }
         if ($upload_ok) {
-            $this->request->addFeedback(t('Images are loaded'));
+            $this->request->addFeedback($this->t('Images are loaded'));
         } else {
-            $this->request->addFeedback(t('Image not loaded'));
+            $this->request->addFeedback($this->t('Image not loaded'));
         }
         return;
     }

@@ -45,11 +45,11 @@ class BasketController extends Controller
 
 //        $catalogModel    = $this->getModel('Catalog');
 
-        $this->request->setTitle(t('basket','Basket'));
+        $this->request->setTitle($this->t('basket','Basket'));
         $this->request->set('template', 'inner');
 
         $this->getTpl()->getBreadcrumbs()
-            ->addPiece('index',t('Home'))
+            ->addPiece('index',$this->t('Home'))
             ->addPiece(null,$this->request->getTitle());
 
         // Заполним методы доставки
@@ -217,8 +217,8 @@ class BasketController extends Controller
                                 'product_id'=> (int) $data['id'],
                                 'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
                                 'details'   => $data['details'],
-                                'currency'  => isset( $data['currency'] ) ? $data['currency'] : t('catalog','RUR'),
-                                'item'      => isset( $data['item'] ) ? $data['item'] : t('catalog', 'item'),
+                                'currency'  => isset( $data['currency'] ) ? $data['currency'] : $this->t('catalog','RUR'),
+                                'item'      => isset( $data['item'] ) ? $data['item'] : $this->t('catalog', 'item'),
                                 'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
                                 'price'     => $data['price'],
                                 'count'     => $data['count'],

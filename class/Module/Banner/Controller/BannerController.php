@@ -51,7 +51,7 @@ class BannerController extends Controller
     public function adminAction()
     {
         $this->app()->addScript('/misc/admin/banner.js');
-        $this->request->setTitle(t('Banners category list'));
+        $this->request->setTitle($this->t('Banners category list'));
         $category = $this->getModel('CategoryBanner');
         $cat_list = $category->findAll();
 
@@ -95,7 +95,7 @@ class BannerController extends Controller
                 $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
 
-                return $this->renderJson(array('error' => 0, 'msg' => t('Data save successfully')));
+                return $this->renderJson(array('error' => 0, 'msg' => $this->t('Data save successfully')));
             } else {
                 return $this->renderJson(array('error' => 1, 'msg' => $form->getFeedbackString()));
             }
@@ -146,7 +146,7 @@ class BannerController extends Controller
         $banner = $model->find($id);
         if ($banner) {
             $banner->deleted = 1;
-            return $this->renderJson(array('id'=>$id, 'error'=>0, 'msg'=>t('Delete successfully')));
+            return $this->renderJson(array('id'=>$id, 'error'=>0, 'msg'=>$this->t('Delete successfully')));
         }
         throw new Exception('Category not found');
     }
@@ -243,7 +243,7 @@ class BannerController extends Controller
                 $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
 
-                return $this->renderJson(array('error' => 0, 'msg' => t('Data save successfully')));
+                return $this->renderJson(array('error' => 0, 'msg' => $this->t('Data save successfully')));
             } else {
                 return $this->renderJson(array('error' => 1, 'msg' => $form->getFeedbackString()));
             }

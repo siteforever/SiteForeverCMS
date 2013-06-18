@@ -31,5 +31,5 @@ var_dump($process->getErrorOutput());
 //    die($process->getOutput());
 //}
 
-$app    = new App('application/test.php');
+$app    = new App('app/cfg/test.php', true);
 $app->init();

@@ -6,7 +6,7 @@
         {if $request->getFeedback()}{alert type='error' msg=$request->getFeedbackString()}{/if}
 
         {if isset($form)}
-            {alert type='info' msg=t('user','To recover your password enter your Email address')}
+            {alert type='info' msg=$this->t('user','To recover your password enter your Email address')}
             {$form->html()}
         {/if}
     </div>

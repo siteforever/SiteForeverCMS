@@ -24,17 +24,12 @@ function smarty_function_menu($params, Smarty_Internal_Template $smarty)
 
     /** @var $model PageModel */
     $model  = Model::getModel('Page');
-
-    if ( ! count( $model->parents ) ) {
-        $model->createParentsIndex();
-    }
-
     $smarty->assign(
         array(
             'parent'    => $parent,
             'level'     => $level,
             'currentId' => $request->get( 'id' ),
-            'parents'   => $model->parents,
+            'parents'   => $model->getParents(),
         )
     );
 

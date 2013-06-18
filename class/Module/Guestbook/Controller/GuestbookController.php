@@ -15,7 +15,7 @@ class GuestbookController extends Controller
     public function init()
     {
         parent::init();
-        $this->request->setTitle( t('guestbook','Guestbook module') );
+        $this->request->setTitle( $this->t('guestbook','Guestbook module') );
     }
 
     public function access()
@@ -31,10 +31,10 @@ class GuestbookController extends Controller
     public function indexAction()
     {
         if ( null === $this->page ) {
-            return t('Can not be used without page');
+            return $this->t('Can not be used without page');
         }
         if ($this->request->attributes->has('alias')) {
-            throw new HttpException(404, t('Page not found'));
+            throw new HttpException(404, $this->t('Page not found'));
         }
         $this->request->setTitle( $this->page->title );
 
@@ -132,7 +132,7 @@ class GuestbookController extends Controller
      */
     public function editAction()
     {
-        $this->request->getTitle( t('Edit') );
+        $this->request->getTitle( $this->t('Edit') );
 
         $id = $this->request->get('id');
 
@@ -149,7 +149,7 @@ class GuestbookController extends Controller
             if ( $form->validate() ) {
                 $message->setAttributes( $form->getData() );
                 $message->markDirty();
-                return array( 'error'=>0, 'msg'=>t('Data save successfully'));
+                return array( 'error'=>0, 'msg'=>$this->t('Data save successfully'));
             } else {
                 return array( 'error'=>1, 'msg'=>$form->getFeedbackString());
             }

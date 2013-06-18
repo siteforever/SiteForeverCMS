@@ -17,7 +17,7 @@ class FeedbackController extends Controller
     {
         $this->request->setTitle('Обратная связь');
         $this->request->setTemplate('inner');
-        $this->getTpl()->getBreadcrumbs()->addPiece('index', t('Home'))->addPiece(null, $this->request->getTitle());
+        $this->getTpl()->getBreadcrumbs()->addPiece('index', $this->t('Home'))->addPiece(null, $this->request->getTitle());
 
         /** @var $form Forms_Feedback_Default */
         $form = $this->getForm( 'Feedback_Default' );

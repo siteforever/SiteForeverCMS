@@ -56,7 +56,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
         ));
 
         $sql    = "SELECT `id`,`value` FROM `test` ".
-                "WHERE `param1` = 'foo1' AND `param2` = 'fo&#39;o2' AND `par3` = 'fo&#34;o3' AND `par4` = 'foo4' ".
+                "WHERE `param1` = 'foo1' AND `param2` = 'fo\\'o2' AND `par3` = 'fo\"o3' AND `par4` = 'foo4' ".
                 "ORDER BY `pos` DESC LIMIT 1, 2";
 
         $this->assertEquals( $sql, $criteria->getSQL() );

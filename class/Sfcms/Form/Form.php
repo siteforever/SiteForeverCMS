@@ -2,6 +2,7 @@
 namespace Sfcms\Form;
 
 use Sfcms\Form\Render;
+use Sfcms\i18n;
 
 /**
  * Класс формы
@@ -9,6 +10,27 @@ use Sfcms\Form\Render;
  */
 class Form extends Render implements \ArrayAccess
 {
+
+    /**
+     * @return i18n
+     */
+    public function i18n()
+    {
+        return i18n::getInstance();
+    }
+
+    /**
+     * Напечатать переведенный текст
+     * @param string $cat
+     * @param string $text
+     * @param array $params
+     * @return mixed
+     */
+    public function t($cat, $text = '', $params = array())
+    {
+        return call_user_func_array(array($this->i18n(),'write'), func_get_args());
+    }
+
     /**
      * Offset to unset
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php

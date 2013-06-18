@@ -99,7 +99,7 @@ class Page extends Object
                 break;
         }
         if ( $linkUrl ) {
-            $link = Sfcms::html()->link( Sfcms::html()->icon( 'link', t('Go to the module') ), $linkUrl );
+            $link = Sfcms::html()->link( Sfcms::html()->icon( 'link', $this->t('Go to the module') ), $linkUrl );
         }
 //        $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
         return $link;
