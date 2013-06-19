@@ -60,6 +60,7 @@ class AssetsCommand extends Command
             $collection->add(new FileAsset($misc . $file));
         }
         file_put_contents($targetFile, $collection->dump());
+        $output->writeln('<info>Admin js created.</info>');
 //        }
     }
 

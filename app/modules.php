@@ -11,5 +11,6 @@ return array(
     array('name'=>'Market',     'path'=>'Module\Market'),
     array('name'=>'Search',     'path'=>'Module\Search'),
     array('name'=>'System',     'path'=>'Module\System'),
+    array('name'=>'Generator',  'path'=>'Module\Generator'),
     array('name'=>'Foo',        'path'=>'Acme\Module\Foo'),
 );

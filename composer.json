@@ -78,19 +78,18 @@
     ],
     "scripts": {
         "post-install-cmd": [
+            "Sfcms\\Assetic\\ComposerHandler::installAdmin",
             "Sfcms\\JqGrid\\ComposerHandler::installAssets",
             "Sfcms\\ElFinder\\ComposerHandler::installAssets"
         ],
         "post-update-cmd": [
+            "Sfcms\\Assetic\\ComposerHandler::installAdmin",
             "Sfcms\\JqGrid\\ComposerHandler::installAssets",
             "Sfcms\\ElFinder\\ComposerHandler::installAssets"
         ]
     },
     "minimum-stability": "stable",
     "extra": {
-        "sfcms-static-dir" : "static",
-        "branch-alias": {
-            "dev-master": "2.2-dev"
-        }
+        "sfcms-static-dir" : "static"
     }
 }
