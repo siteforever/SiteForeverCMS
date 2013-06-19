@@ -90,6 +90,9 @@
     },
     "minimum-stability": "stable",
     "extra": {
-        "sfcms-static-dir" : "static"
+        "sfcms-static-dir" : "static",
+        "branch-alias": {
+            "dev-master": "0.5-dev"
+        }
     }
 }
