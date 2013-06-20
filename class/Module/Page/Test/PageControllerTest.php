@@ -6,9 +6,9 @@
 
 namespace Module\Page\Test;
 
-use Sfcms\Test\TestCase;
+use Sfcms\Test\WebCase;
 
-class PageControllerTest extends TestCase
+class PageControllerTest extends WebCase
 {
     public function testDeleteAction()
     {

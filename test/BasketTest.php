@@ -7,7 +7,7 @@ use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
-class BasketTest extends \Sfcms\Test\TestCase
+class BasketTest extends \Sfcms\Test\WebCase
 {
     /**
      * @var Sfcms\Basket\Base

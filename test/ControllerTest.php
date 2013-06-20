@@ -14,7 +14,7 @@ class TestController extends Controller
     }
 }
 
-class ControllerTest extends \Sfcms\Test\TestCase
+class ControllerTest extends \Sfcms\Test\WebCase
 {
     public function testIndexAction()
     {

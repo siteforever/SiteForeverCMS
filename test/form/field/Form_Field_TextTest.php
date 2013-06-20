@@ -6,7 +6,7 @@
 use Sfcms\Form\Form;
 use Sfcms\Data\Field\Text;
 
-class Form_Field_TextTest extends \Sfcms\Test\TestCase
+class Form_Field_TextTest extends \Sfcms\Test\WebCase
 {
     /**
      * @var Text

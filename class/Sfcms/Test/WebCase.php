@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\DomCrawler\Crawler;
 
-class TestCase extends PHPUnit_Framework_TestCase
+class WebCase extends PHPUnit_Framework_TestCase
 {
     /** @var Request */
     protected $request;
@@ -78,7 +78,23 @@ class TestCase extends PHPUnit_Framework_TestCase
         return \App::getInstance()->handleRequest($this->request);
     }
 
+    /**
+     * Click by link and get response
+     * @param Crawler $crawlerLink
+     *
+     * @return null|Response
+     */
+    protected function click(Crawler $crawlerLink)
+    {
+        return $this->runRequest($crawlerLink->attr('href'));
+    }
 
+    /**
+     * Following to redirect header
+     * @param RedirectResponse $response
+     *
+     * @return Response
+     */
     protected function followRedirect(RedirectResponse $response)
     {
         $this->assertTrue($response->isRedirection());

@@ -6,10 +6,10 @@
 
 namespace Module\System\Test;
 
-use Sfcms\Test\TestCase;
+use Sfcms\Test\WebCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class LogControllerTest extends TestCase
+class LogControllerTest extends WebCase
 {
     public function testAdminAction()
     {

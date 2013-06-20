@@ -11,7 +11,7 @@ define([
     "module/alert",
     "siteforever",
     "jquery/jquery.form"
-],function($, Modal, i18n){
+],function($, Modal, i18n, $alert){
     return {
         "behavior" : {
             'a.do_delete' : {
@@ -55,6 +55,28 @@ define([
 
         "init" : function() {
             this.newsEdit = new Modal('newsEdit');
+            this.newsEdit.onSave(function(){
+                $alert("Сохранение", $('.modal-body', this.domnode));
+                $('form', this.domnode).ajaxSubmit({
+                    dataType:"json",
+                    success: $.proxy(function (response) {
+                        if (!response.error) {
+                            $.get(window.location.href, function(response){
+                                var $workspace = $('#workspace');
+                                $workspace.find('table').remove();
+                                $workspace.find('p').remove();
+                                $workspace.append(response);
+                            });
+                            this.msgSuccess(response.msg, 1500);
+                        } else {
+                            this.msgError(response.msg);
+                        }
+                    },this),
+                    'error': $.proxy(function (response){
+                        alert(response);
+                    }, this)
+                });
+            });
         }
     };
 });

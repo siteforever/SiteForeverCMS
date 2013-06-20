@@ -6,8 +6,9 @@
 define([
     "jquery",
     "module/modal",
-    "i18n"
-],function($,Modal,i18n){
+    "i18n",
+    "module/alert"
+],function($,Modal,i18n,$alert){
     return {
         "behavior" : {
             "a.sfcms_guestbook_edit" : {
@@ -24,6 +25,28 @@ define([
 
             this.EditModal = new Modal('EditModal');
             this.EditModal.title(i18n('guestbook', "Edit message"));
+            this.EditModal.onSave(function(){
+                $alert("Сохранение", $('.modal-body', this.domnode));
+                $('form', this.domnode).ajaxSubmit({
+                    dataType:"json",
+                    success: $.proxy(function (response) {
+                        if (!response.error) {
+                            $.get(window.location.href, function(response){
+                                var $workspace = $('#workspace');
+                                $workspace.find('table').remove();
+                                $workspace.find('p').remove();
+                                $workspace.append(response);
+                            });
+                            this.msgSuccess(response.msg, 1500);
+                        } else {
+                            this.msgError(response.msg);
+                        }
+                    },this),
+                    'error': $.proxy(function (response){
+                        alert(response);
+                    }, this)
+                });
+            });
 
         }
     }

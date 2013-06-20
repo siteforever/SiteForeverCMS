@@ -4,7 +4,7 @@
  */
 use Module\Gallery\Controller\GalleryController;
 
-class GalleryControllerTest extends \Sfcms\Test\TestCase
+class GalleryControllerTest extends \Sfcms\Test\WebCase
 {
     /**
      * @var GalleryController

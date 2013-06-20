@@ -9,9 +9,9 @@ namespace Module\Search\Test;
 
 use Module\Search\Controller\SearchController;
 use Sfcms\Request;
-use Sfcms\Test\TestCase;
+use Sfcms\Test\WebCase;
 
-class SearchControllerTest extends TestCase
+class SearchControllerTest extends WebCase
 {
     /** @var SearchController */
     public $controller;

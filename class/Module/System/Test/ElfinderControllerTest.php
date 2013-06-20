@@ -6,10 +6,10 @@
 
 namespace Module\System\Test;
 
-use Sfcms\Test\TestCase;
+use Sfcms\Test\WebCase;
 use Symfony\Component\DomCrawler\Crawler;
 
-class ElfinderControllerTest extends TestCase
+class ElfinderControllerTest extends WebCase
 {
     public function testFinderAction()
     {

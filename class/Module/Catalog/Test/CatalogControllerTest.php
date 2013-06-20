@@ -6,9 +6,9 @@
 
 namespace Module\Catalog\Test;
 
-use Sfcms\Test\TestCase;
+use Sfcms\Test\WebCase;
 
-class CatalogControllerTest extends TestCase
+class CatalogControllerTest extends WebCase
 {
 
     public function testIndexAction()

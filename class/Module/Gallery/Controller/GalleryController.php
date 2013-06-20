@@ -231,17 +231,17 @@ class GalleryController extends Controller
                 } elseif( $switch_result == 2 ) {
                     $switch_icon = Sfcms::html()->icon( 'lightbulb', 'Выкл' );
                 }
-                return array(
+                return $this->renderJson(array(
                     'id'    => $id,
                     'img'   => $switch_icon,
                     'error' => 0,
                     'msg'   => '',
-                );
+                ));
             } else {
-                return array(
+                return $this->renderJson(array(
                     'error' => 1,
                     'msg' =>  $this->t( 'Switch error' ),
-                );
+                ));
             }
         }
 

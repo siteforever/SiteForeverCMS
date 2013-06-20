@@ -13,13 +13,13 @@ use Sfcms\Model;
 use Sfcms\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Sfcms\Controller\Resolver;
 use Sfcms\Data\Watcher;
 use Sfcms\View\Layout;
 use Sfcms\View\Xhr;
 use Sfcms\i18n;
 use Sfcms\Model\Exception as ModelException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Класс приложение
@@ -209,7 +209,7 @@ class App extends KernelBase
      */
     public function invokeLayout(KernelEvent $event)
     {
-        if ($event->getRequest()->getAjax()) {
+        if ($event->getResponse() instanceof JsonResponse || $event->getRequest()->getAjax()) {
             $Layout = new Xhr($this);
         } else {
             $Layout = new Layout($this);
@@ -223,7 +223,6 @@ class App extends KernelBase
             $event->getResponse()->headers->set('X-Powered-By', 'SiteForeverCMS');
         }
     }
-
 
     /**
      * Flushing debug info

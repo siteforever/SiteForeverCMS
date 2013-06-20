@@ -11,7 +11,7 @@ class Forms_Guestbook_Edit extends \Sfcms\Form\Form
             'name'  => 'guestbook_edit',
             'action' => App::getInstance()->getRouter()->createServiceLink('guestbook','edit'),
             'fields'=> array(
-                'id'    => array( 'type'=>'hidden' ),
+                'id'    => array( 'type'=>'hidden', 'required' ),
 //                'name'  => array( 'type'=>'text', 'label'=>t('guestbook','Name'), ),
 //                'email'  => array( 'type'=>'text', 'label'=>t('guestbook','Email'), ),
 //                'site'  => array( 'type'=>'text', 'label'=>t('guestbook','Site'), ),

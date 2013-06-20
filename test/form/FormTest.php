@@ -8,7 +8,7 @@
 
 use Sfcms\Form\Form;
 
-class form_FormTest extends \Sfcms\Test\TestCase
+class form_FormTest extends \Sfcms\Test\WebCase
 {
     /**
      * @var Form

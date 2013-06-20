@@ -6,7 +6,7 @@
  */
 use Module\News\Controller\RssController;
 
-class ControllerRssTest extends \Sfcms\Test\TestCase
+class ControllerRssTest extends \Sfcms\Test\WebCase
 {
     public function testIndexAction()
     {

@@ -132,29 +132,36 @@ class GuestbookController extends Controller
     public function editAction()
     {
         $this->request->getTitle( $this->t('Edit') );
-
-        $id = $this->request->get('id');
-
         $model  = $this->getModel('Guestbook');
 
-        if ( $id ) {
-            $message = $model->find( $id );
+        $form = new Forms_Guestbook_Edit();
+        if ($form->getPost()) {
+            if ($form->validate()) {
+                $id = $form->id;
+                if (!$id) {
+                    return $this->renderJson(array('error'=>1, 'msg'=>$this->t('Id not defined')));
+                }
+                $message = $model->findByPk($id);
+                if (!$message) {
+                    return $this->renderJson(array('error'=>1, 'msg'=>$this->t('Message not found')));
+                }
+                $message->setAttributes($form->getData());
+                $message->markDirty();
+
+                return $this->renderJson(array('error' => 0, 'msg' => $this->t('Data save successfully')));
+            } else {
+                return $this->renderJson(array('error' => 1, 'msg' => $form->getFeedbackString()));
+            }
+        }
+
+        $id = $this->request->query->getDigits('id', null);
+        if ($id) {
+            $message = $model->find($id);
         } else {
             $message = $model->createObject();
         }
 
-        $form   = new Forms_Guestbook_Edit();
-        if ( $form->getPost() ) {
-            if ( $form->validate() ) {
-                $message->setAttributes( $form->getData() );
-                $message->markDirty();
-                return array( 'error'=>0, 'msg'=>$this->t('Data save successfully'));
-            } else {
-                return array( 'error'=>1, 'msg'=>$form->getFeedbackString());
-            }
-        }
-
-        $form->setData( $message );
+        $form->setData($message);
 
         return array(
             'msg'   => $message,
