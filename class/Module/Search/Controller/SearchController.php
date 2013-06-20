@@ -38,7 +38,7 @@ class SearchController extends Controller
         $search = urldecode($query);
         $this->tpl->assign('query', $search);
 
-        if ( strlen( $search ) <= 3 ) {
+        if (mb_strlen($search, 'utf-8') <= 3) {
             return array('error' => $this->t('page', 'Search phrase is too short'));
         }
 

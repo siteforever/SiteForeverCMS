@@ -16,17 +16,10 @@ function smarty_function_login($params, $smarty)
 {
     $app    = App::getInstance();
     $tpl    = $app->getTpl();
-    $user   = $app->getAuth()->currentUser();
 
-    $tpl->assign('form', \Sfcms\Model::getModel('User')->getLoginForm() );
-    $tpl->assign('user', $user->getAttributes() );
-    if ( $user->perm == USER_GUEST )
-    {
-        $tpl->assign('auth', '1');
-    }
-    else {
-        $tpl->assign('auth', '0');
-    }
+    $tpl->assign('form', \Sfcms\Model::getModel('User')->getLoginForm());
+    $tpl->assign('user', $app->getAuth()->currentUser());
+    $tpl->assign('auth', (bool)$app->getAuth()->getId());
 
-    return $tpl->fetch('users.head_login');
+    return $tpl->fetch('user.head_login');
 }

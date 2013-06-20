@@ -16,28 +16,12 @@ class UsersControllerTest extends TestCase
     protected $request;
 
     /**
-     * Sets up the fixture, for example, opens a network connection.
-     * This method is called before a test is executed.
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-    }
-
-    /**
-     * Tears down the fixture, for example, closes a network connection.
-     * This method is called after a test is executed.
-     */
-    protected function tearDown()
-    {
-    }
-
-    /**
      * Инициализвция
      */
     public function testInit()
     {
-        new UserController($this->request);
+        $controller = new UserController($this->request);
+        $controller->init();
         $this->assertEquals('inner', $this->request->getTemplate());
     }
 
@@ -60,16 +44,11 @@ class UsersControllerTest extends TestCase
     public function testIndexAction()
     {
         $response = $this->runController('user', 'index');
+        $this->assertEquals(302, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
-        $form = $crawler->filterXPath('//form');
-        $this->assertEquals(1, $form->count());
-        $this->assertEquals('form_login', $form->attr('id'));
-        $this->assertEquals('form_login', $form->attr('name'));
-        $this->assertEquals('form-horizontal', $form->attr('class'));
-        $this->assertEquals('/user/login', $form->attr('action'));
-        $this->assertEquals('post', $form->attr('method'));
-        $this->assertEquals('multipart/form-data', $form->attr('enctype'));
+        $this->assertEquals('Redirecting to /user/login', $crawler->filterXPath('//title')->text());
     }
+
 
     /**
      * Действие админа
@@ -77,6 +56,7 @@ class UsersControllerTest extends TestCase
     public function testAdminAction()
     {
         $response = $this->runController('user', 'index');
+        $response = $this->followRedirect($response);
         $crawler = $this->createCrawler($response);
         $form = $crawler->filterXPath('//form');
         $this->assertEquals(1, $form->count());
@@ -90,6 +70,7 @@ class UsersControllerTest extends TestCase
     {
         $response = $this->runController('user', 'adminEdit');
         $this->assertEquals(302, $response->getStatusCode());
+        $this->assertTrue($response->isRedirection());
         $crawler = $this->createCrawler($response);
         $this->assertEquals(1, $crawler->filterXPath('//title')->count());
         $this->assertEquals('Redirecting to /user/login', $crawler->filterXPath('//title')->text());
@@ -195,8 +176,10 @@ class UsersControllerTest extends TestCase
         $this->assertEquals(0, $crawler->filterXPath('//div[@class="alert"]')->count());
     }
 
+
     /**
      * Вход
+     * @ depends testRegisterAction()
      */
     public function testLoginAction()
     {
@@ -218,7 +201,6 @@ class UsersControllerTest extends TestCase
 
         $this->assertEquals('Ваша учетная запись отключена', $crawler->filterXPath('//div[@class="alert alert-error"]')->text());
     }
-
 
 
     /**

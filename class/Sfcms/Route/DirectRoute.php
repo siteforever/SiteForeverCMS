@@ -18,20 +18,21 @@ class DirectRoute extends Route
 
     private $app;
 
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->app = App::getInstance();
         if ( null === self::$controllers ) {
             self::$controllers = $this->app->getControllers();
         }
-        parent::__construct($request);
     }
 
     /**
-     * @param $route
-     * @return mixed
+     * @param Request $request
+     * @param         $route
+     *
+     * @return array|bool|mixed
      */
-    public function route( $route )
+    public function route(Request $request, $route)
     {
         $routePieces = explode( '/', $route );
 
@@ -42,7 +43,6 @@ class DirectRoute extends Route
             }
 
             $resolver = $this->app->getResolver();
-            $request  = $this->request;
             $request->setController($routePieces[0]);
             $request->setAction($routePieces[1]);
             $command = $resolver->resolveController($request);

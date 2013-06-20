@@ -33,6 +33,14 @@ class ManufacturerController extends Controller
         );
     }
 
+    public function init()
+    {
+        if ($this->page){
+            $this->request->setTitle($this->page->title);
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
+    }
+
 
     /**
      * Index Action
@@ -45,11 +53,12 @@ class ManufacturerController extends Controller
         if ( $id ) {
             /** @var $item Manufacturer */
             $item = $model->find( $id );
-            $this->request->setTitle( $item->name );
+            $this->request->setTitle($item->name);
             $this->getTpl()->getBreadcrumbs()
-                ->addPiece( null, $this->request->getTitle() );
-            $this->tpl->assign( 'item', $item );
-            return $this->tpl->fetch( 'manufacturers/view' );
+                ->addPiece(null, $this->request->getTitle());
+            $this->tpl->assign('item', $item);
+
+            return $this->tpl->fetch('manufacturers/view');
         }
 
         $count  = $model->count();
@@ -58,9 +67,8 @@ class ManufacturerController extends Controller
             $this->config->get( 'catalog.onPage' ),
             $this->getPage()->getUrl()
         );
+        $items = $model->findAll(array('limit' => $paging->limit));
 
-
-        $items = $model->findAll( array( 'limit'=> $paging->limit ) );
         return array(
             'items' => $items,
         );

@@ -19,28 +19,27 @@ class SearchControllerTest extends TestCase
     /** @var Request */
     public $request;
 
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->controller = new SearchController($this->request);
-    }
-
     public function testIndexAction()
     {
+        \App::getInstance()->getTpl()->assign('error');
         $this->request->query->set('query', null);
-        $response = $this->controller->indexAction();
-        $this->assertNull($response['query']);
+        $response = $this->runController('search');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Поиск', $crawler->filterXPath('//h1')->text());
+        $this->assertEquals(1, $crawler->filterXPath('//form')->count());
 
+        \App::getInstance()->getTpl()->assign('error');
         $this->request->query->set('query', 'ab');
-        $response = $this->controller->indexAction();
-        $this->assertEquals($response['error'], 'Поисковая фраза слишком короткая');
+        $response = $this->runController('search');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Поисковая фраза слишком короткая', $crawler->filterXPath('//div[@class="alert alert-error"]')->text());
 
+        \App::getInstance()->getTpl()->assign('error');
         $this->request->query->set('query', 'страница');
-        $response = $this->controller->indexAction();
-        $this->arrayHasKey('search', $response);
-        $this->assertInstanceOf('Sfcms\Data\Collection', $response['result']);
-        $this->assertEquals(17, $response['paging']->count);
-        $this->assertEquals('/search/query=страница/page=2', $response['paging']->next);
+        $response = $this->runController('search');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals(10, $crawler->filterXPath('//h4')->count());
+        $this->assertEquals(2, $crawler->filterXPath('//div[@class="paging"]/a')->count());
     }
 
 }

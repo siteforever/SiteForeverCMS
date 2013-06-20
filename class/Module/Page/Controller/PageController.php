@@ -38,6 +38,15 @@ class PageController extends Controller
         );
     }
 
+    public function init()
+    {
+        if ($this->page){
+            $this->request->setTitle($this->page->title);
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
+    }
+
+
     /**
      * @return mixed
      * @throws Sfcms_Http_Exception
@@ -46,7 +55,7 @@ class PageController extends Controller
     {
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
-        if (!$this->user->hasPermission($this->page['protected'])) {
+        if (!$this->auth->hasPermission($this->page['protected'])) {
             throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
         }
 
@@ -169,7 +178,7 @@ class PageController extends Controller
             )
         );
 
-        $alias = $this->i18n()->translit( trim( $name, ' /' ) );
+        $alias = $this->i18n->translit( trim( $name, ' /' ) );
         if ( $parentObj && $parentObj->alias && 'index' != $parentObj->alias ) {
             $alias = trim( $parentObj->alias, ' /' ).'/'.$alias;
         }

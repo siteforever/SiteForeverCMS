@@ -6,17 +6,12 @@
  */
 namespace Sfcms\Route;
 
+use Sfcms\Request;
 use Sfcms\Route;
 
 class DefaultRoute extends Route
 {
-    /**
-     *
-     * @param $route
-     *
-     * @return mixed
-     */
-    public function route($route)
+    public function route(Request $request, $route)
     {
         $routePieces = explode('/', $route);
 

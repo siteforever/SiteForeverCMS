@@ -8,6 +8,7 @@
 namespace Sfcms\Route;
 use App;
 use Module\Page\Object\Page;
+use Sfcms\Request;
 use Sfcms\Route;
 use Sfcms\Module;
 use Sfcms\Model;
@@ -32,10 +33,12 @@ class StructureRoute extends Route
     }
 
     /**
-     * @param $route
-     * @return mixed
+     * @param Request $request
+     * @param         $route
+     *
+     * @return array|bool|mixed
      */
-    public function route($route)
+    public function route(Request $request, $route)
     {
         $alias = null;
         $this->callAliases();
@@ -43,11 +46,11 @@ class StructureRoute extends Route
         do {
             if (isset(self::$_aliases[$route])) {
                 if (null !== $alias) {
-                    $this->request->query->set('alias', $alias);
+                    $request->query->set('alias', $alias);
                 }
                 /*$route->setActive(1);*/
                 call_user_func(array(self::$_aliases[$route], 'setActive'), 1);
-                $this->request->query->set('route', $route);
+                $request->query->set('route', $route);
                 return $this->getPageState(self::$_aliases[$route]);
             }
             $arRoute = explode('/', $route);

@@ -5,10 +5,8 @@
  */
 namespace Sfcms;
 
-use Sfcms\Component as Component;
 use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
-use Module\System\Model\TemplatesModel;
 use Sfcms\Config;
 use Sfcms\Request;
 use Sfcms\Router;
@@ -17,6 +15,7 @@ use Sfcms\Exception;
 use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
+use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,14 +26,18 @@ use Module\User\Object\User;
 use Sfcms\Data\Watcher;
 
 /**
+ * @property \App $app
  * @property Driver $tpl
+ * @property \Auth $auth
+ * @property Router $router
+ * @property Config $config
+ * @property CacheInterface $cache
+ * @property User $user
+ * @property i18n $i18n
  */
-abstract class Controller extends Component
+abstract class Controller extends ContainerAware
 {
     private static $forms = array();
-
-    /** @var Driver */
-    private $_tpl = null;
 
     /** @var array */
     protected $params;
@@ -42,44 +45,21 @@ abstract class Controller extends Component
     /** @var array|Page */
     protected $page;
 
-    /** @var Config $config */
-    protected $config;
-
     /** @var Request */
     protected $request;
 
-    /** @var Router */
-    protected $router;
-
-    /** @var User */
-    protected $user;
-
-    /** @var TemplatesModel */
-    protected $templates;
-
-    /** @var CacheInterface */
-    protected static $cache = null;
-
     /** @var \Swift_Mailer */
-    protected static $mailer = null;
+//    protected static $mailer = null;
 
     public function __construct(Request $request)
     {
         $this->request  = $request;
-        $this->config   = $this->app()->getConfig();
-        $this->router   = $this->app()->getRouter();
-        $this->user     = $this->app()->getAuth()
-            ? $this->app()->getAuth()->currentUser()
-            : null;
         $this->params   = $this->request->get('params');
 
-        // Basket should be initialized to connect the JavaScript module
-        $this->getBasket();
-
-        $defaults = $this->defaults();
-        if ($defaults) {
-            $this->config->setDefault($defaults[0], $defaults[1]);
-        }
+//        $defaults = $this->defaults();
+//        if ($defaults) {
+//            $this->config->setDefault($defaults[0], $defaults[1]);
+//        }
 
         $pageId     = $this->request->get('pageid', 0);
         $controller = $this->request->getController();
@@ -100,27 +80,38 @@ abstract class Controller extends Component
             $this->request->setTitle($pageObj->get('title'));
             $this->request->setDescription($pageObj->get('description'));
             $this->request->setKeywords($pageObj->get('keywords'));
-            $this->tpl->getBreadcrumbs()->fromSerialize($pageObj->get('path'));
         }
 
         $this->page = $pageObj;
 
-        if ($this->app()->isDebug()) {
-            if ($this->page) {
-                $this->log($this->page->getAttributes(), 'Page');
-            }
+//        if ($this->app()->isDebug()) {
+//            if ($this->page) {
+//                $this->log($this->page->getAttributes(), 'Page');
+//            }
+//        }
+    }
+
+    /**
+     * @param $service
+     *
+     * @return object
+     */
+    public function get($service)
+    {
+        if ('user' == $service) {
+            return $this->auth->currentUser();
         }
+        return $this->container->get($service);
+    }
 
-        $this->tpl->assign(
-            array(
-                'request'   => $request,
-                'page'      => $this->page,
-                'auth'      => $this->app()->getAuth(),
-                'config'    => $this->config,
-            )
-        );
-
-        $this->init();
+    /**
+     * @param $service
+     *
+     * @return object
+     */
+    public function __get($service)
+    {
+        return $this->get($service);
     }
 
     /**
@@ -128,11 +119,7 @@ abstract class Controller extends Component
      */
     public function getTpl()
     {
-        if ( null === $this->_tpl ) {
-            $this->_tpl = $this->app()->getTpl();
-            $this->_tpl->assign('this', $this);
-        }
-        return $this->_tpl;
+        return $this->get('tpl');
     }
 
     /**
@@ -228,7 +215,7 @@ abstract class Controller extends Component
                 throw new Exception('Form class ' . $className . ' not found');
             }
         }
-        return self::$forms[ $name ];
+        return self::$forms[$name];
     }
 
     /**
@@ -282,33 +269,7 @@ abstract class Controller extends Component
      */
     public function getMailer()
     {
-        if (null === self::$mailer) {
-            switch ($this->config->get('mailer.transport')) {
-                case 'smtp':
-                    $transport = new \Swift_SmtpTransport(
-                        $this->config->get('mailer.host', 'localhost'),
-                        $this->config->get('mailer.port', 25),
-                        $this->config->get('mailer.security')
-                    );
-                    $transport->setUsername($this->config->get('mailer.username'));
-                    $transport->setPassword($this->config->get('mailer.password'));
-                    break;
-                case 'gmail':
-                    // http://stackoverflow.com/a/4691183/2090796
-                    $transport = new \Swift_SmtpTransport('smtp.gmail.com', 465, 'ssl');
-                    $transport->setUsername($this->config->get('mailer.username'));
-                    $transport->setPassword($this->config->get('mailer.password'));
-                    $transport->setAuthMode('login');
-                    break;
-                case 'null':
-                    $transport = new \Swift_NullTransport();
-                    break;
-                default:
-                    $transport = new \Swift_SendmailTransport();
-            }
-            self::$mailer = new \Swift_Mailer($transport);
-        }
-        return self::$mailer;
+        return $this->get('mailer');
     }
 
     /**
@@ -344,7 +305,7 @@ abstract class Controller extends Component
     protected function redirect( $url = '', $params = array() )
     {
         if (! preg_match( '@^http@', $url )) {
-            $url = $this->app()->getRouter()->createLink($url, $params);
+            $url = $this->router->createLink($url, $params);
         }
         return new RedirectResponse($url);
     }
@@ -361,7 +322,7 @@ abstract class Controller extends Component
     {
         Watcher::instance()->performOperations();
         return $this->render('error.reload', array(
-            'url' => $this->app()->getRouter()->createLink( $url, $params ),
+            'url' => $this->router->createLink( $url, $params ),
             'timeout' => $timeout,
         ));
     }
@@ -370,13 +331,23 @@ abstract class Controller extends Component
      * Rendering params to template
      * @param string $tpl
      * @param array $params
+     * @param string $cache_id
      *
      * @return Response
      */
     protected function render($tpl, $params=array(), $cache_id = null)
     {
-        $this->getTpl()->assign($params);
-        return new Response($this->getTpl()->fetch($tpl, $cache_id));
+        $this->tpl->assign($params);
+        $this->tpl->assign(
+            array(
+                'request'   => $this->request,
+                'page'      => $this->page,
+                'auth'      => $this->auth,
+                'config'    => $this->config,
+            )
+        );
+
+        return new Response($this->tpl->fetch($tpl, $cache_id));
     }
 
     /**
@@ -393,5 +364,27 @@ abstract class Controller extends Component
             $response->setCallback($handle);
         }
         return $response;
+    }
+
+
+    /**
+     * Напечатать переведенный текст
+     * @param string $cat
+     * @param string $text
+     * @param array $params
+     * @return mixed
+     */
+    public function t($cat, $text = '', $params = array())
+    {
+        return call_user_func_array(array($this->i18n,'write'), func_get_args());
+    }
+
+    /**
+     * @deprecated
+     * @return \App
+     */
+    public function app()
+    {
+        return $this->app;
     }
 }

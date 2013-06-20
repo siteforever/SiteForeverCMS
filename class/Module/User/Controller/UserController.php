@@ -42,7 +42,7 @@ class UserController extends Controller
      *
      * @return mixed
      */
-    public function indexAction( $confirm, $userid )
+    public function indexAction($confirm, $userid)
     {
         // подтверждение регистрации
         if ($confirm && $userid) {
@@ -72,8 +72,9 @@ class UserController extends Controller
             }
         }
 
-        return $this->loginAction();
+        return $this->redirect('user/login');
     }
+
 
     /**
      * @return array
@@ -81,15 +82,12 @@ class UserController extends Controller
      */
     public function cabinetAction()
     {
-        $auth   = $this->app()->getAuth();
-        $user   = $auth->currentUser();
-
         $this->tpl->getBreadcrumbs()->addPiece('index',$this->t('Home'))->addPiece(null,$this->t('user','User cabiner'));
 
-        if ( $user->getId() ) {
+        if ( $this->auth->getId() ) {
             // отображаем кабинет
             $this->request->setTitle($this->t('user','User cabiner'));
-            return array( 'user' => $user );
+            return array( 'user' => $this->auth->currentUser());
         }
         throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
     }
@@ -110,7 +108,7 @@ class UserController extends Controller
 
         $users = $this->request->get('users');
 
-        if ( $users ) {
+        if ($users) {
             foreach( $users as $key => $user ) {
                 if ( isset( $user['delete'] ) ) {
                     $model->delete($key);
@@ -158,7 +156,7 @@ class UserController extends Controller
      * @params int $id
      * @return array
      */
-    public function adminEditAction( $id )
+    public function adminEditAction($id)
     {
         /**
          * @var UserModel $model
@@ -235,15 +233,12 @@ class UserController extends Controller
         $this->request->setTitle($this->t('Personal page'));
         /** @var UserModel $model */
         $model  = $this->getModel('User');
-        $auth   = $this->app()->getAuth();
 
         $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',$this->t('Home'))
             ->addPiece(null, $this->t('user','Sign in site'));
 
-        $user   = $auth->currentUser();
-
-        if ( $user->getId() ) {
+        if ( $this->auth->getId() ) {
             return $this->redirect('user/cabinet');
         }
 
@@ -297,7 +292,7 @@ class UserController extends Controller
                 return array('error' => 1, 'message'=>$this->t('user','Your password is not suitable'));
             }
 
-            $this->app()->getAuth()->currentUser($user);
+            $this->auth->setId($user->id);
 
 //            if ( $user->perm == USER_ADMIN ) {
                 // Авторизация Sypex Dumper
@@ -330,7 +325,7 @@ class UserController extends Controller
 
         $form = $model->getProfileForm();
 
-        $form->setData( $this->app()->getAuth()->currentUser()->getAttributes() );
+        $form->setData( $this->auth->currentUser()->getAttributes() );
 
         // сохранение профиля
         if ( $form->getPost() ) {
@@ -605,11 +600,10 @@ class UserController extends Controller
 
 
         $model  = $this->getModel('User');
-        $auth   = $this->app()->getAuth();
-        $user   = $auth->currentUser();
 
         $form = $model->getPasswordForm();
 
+        $user = $this->auth->currentUser();
         //printVar($this->user->getData());
 
         if ( $form->getPost() )

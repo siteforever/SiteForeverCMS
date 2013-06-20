@@ -6,16 +6,18 @@
  */
 namespace Sfcms\Route;
 
+use Sfcms\Request;
 use Sfcms\Route;
 
 class XmlRoute extends Route
 {
     /**
-     * @param $route
+     * @param Request $request
+     * @param         $route
      *
-     * @return mixed
+     * @return array|bool|mixed
      */
-    public function route($route)
+    public function route(Request $request, $route)
     {
         $xml_routes_file = realpath(__DIR__.'/../../../protected/routes.xml');
         if (file_exists($xml_routes_file)) {

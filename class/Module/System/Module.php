@@ -10,6 +10,8 @@ namespace Module\System;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Module extends SfModule
@@ -41,6 +43,39 @@ class Module extends SfModule
             ),
         );
     }
+
+    public function registerService(ContainerBuilder $container)
+    {
+        // Mail transport defintion
+        switch ($container->getParameter('mailer.transport')) {
+            case 'smtp':
+                $container->register('mailer.transport', 'Swift_SmtpTransport')
+                    ->addArgument('%mailer.host%')
+                    ->addArgument('%mailer.port%')
+                    ->addArgument('%mailer.security%')
+                    ->addMethodCall('setUsername', array('%mailer.username%'))
+                    ->addMethodCall('setPassword', array('%mailer.password%'))
+                ;
+                break;
+            case 'gmail':
+                http://stackoverflow.com/a/4691183/2090796
+                $container->register('mailer.transport', 'Swift_SmtpTransport')
+                    ->addArgument('smtp.gmail.com')
+                    ->addArgument(465)
+                    ->addArgument('ssl')
+                    ->addMethodCall('setUsername', array('%mailer.username%'))
+                    ->addMethodCall('setPassword', array('%mailer.password%'))
+                    ->addMethodCall('setAuthMode', array('%login%'))
+                ;
+                break;
+            case 'null':
+                $container->register('mailer.transport', 'Swift_NullTransport');
+                break;
+            default:
+                $container->register('mailer.transport', 'Swift_SendmailTransport');
+        }
+    }
+
 
     public function init()
     {

@@ -26,7 +26,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->request = Request::create('/');
-        $this->router  = new Router($this->request);
+        $this->router  = new Router();
+        $this->router->setRequest($this->request);
         $this->router->setRewrite(true);
     }
 

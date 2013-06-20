@@ -7,17 +7,15 @@ namespace Sfcms\Kernel;
 
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
+use Sfcms\Config;
 use Sfcms\Controller\Resolver;
 use Sfcms\Model;
 use Sfcms\Module;
 use Sfcms\Session;
-use Sfcms\Settings;
 use Sfcms\Delivery;
-use Sfcms\Config;
 use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\i18n;
-use Sfcms\db;
 use Sfcms\Tpl\Driver;
 use Module\System\Model\TemplatesModel;
 use Module\Page\Model\PageModel;
@@ -33,39 +31,13 @@ use Std_Logger;
 use Auth;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Config\FileLocator;
 
 abstract class KernelBase
 {
     static protected $instance = null;
-
-    /**
-     * @var Config
-     */
-    static $config;
-    /**
-     * @var Driver
-     */
-    static $tpl;
-
-    /**
-     * Модель для работы с шаблонами из базы
-     * Центролизовать необходимо для работы из виджета
-     * @var TemplatesModel
-     */
-    static $templates;
-    /**
-     * @var Router
-     */
-    static $router;
-    /**
-     * @var db
-     */
-    static $db = null;
-    /**
-     * @var Request
-     */
-    static $request;
 
     /**
      * @var PageModel
@@ -78,38 +50,10 @@ abstract class KernelBase
     static $basket;
 
     /**
-     * @var Object
-     */
-    static $user;
-
-    /**
-     * @var Auth
-     */
-    protected $auth;
-
-    /**
-     * Указывает на класс авторизации
-     * @var string
-     */
-    protected $auth_format;
-
-    /**
-     * Класс настроек
-     * @var Settings
-     */
-    protected $_settings;
-
-    /**
      * Список контроллеров и их конфиги
      * @var array
      */
     protected $_controllers = null;
-
-    /**
-     * Список команд для консоли
-     * @var array
-     */
-    protected $_commands = array();
 
     /**
      * Список моделей
@@ -158,26 +102,14 @@ abstract class KernelBase
      */
     protected  $_assets = null;
 
+
     /** @param Resolver */
     protected $_resolver;
-
-    /**
-     * @var Session
-     */
-    protected $_session = null;
 
     /**
      * @var Delivery;
      */
     protected $_devivery = null;
-
-    /**
-     * @var EventDispatcher
-     */
-    protected $_event_dispatcher = null;
-
-    /** @var CacheInterface */
-    protected $_cache = null;
 
     private static $_debug = null;
 
@@ -206,8 +138,15 @@ abstract class KernelBase
         if ($this->isDebug()) {
             Debug::enable(E_ALL, true);
         }
+
+        $this->_container = new ContainerBuilder();
+        $this->getContainer()->set('app', $this);
+        $loader = new YamlFileLoader($this->getContainer(), new FileLocator(array(ROOT . '/app', SF_PATH . '/app')));
+        $loader->load('services.yml');
         // Конфигурация
-        self::$config   = new Config( $cfg_file );
+        $config = new Config($cfg_file, $this->_container);
+        $this->_container->set('config', $config);
+
         // Загрузка параметров модулей
         $this->loadModulesConfigs();
     }
@@ -227,14 +166,6 @@ abstract class KernelBase
      */
     public function getContainer()
     {
-        if (null === $this->_container) {
-            $this->_container = new ContainerBuilder();
-            $this->_container->register('smarty', 'Smarty');
-            $this->_container->register('tpl', '\\Sfcms\\Tpl\\Smarty')
-                ->addArgument($this->getConfig('template'))
-                ->addArgument($this->_container->get('smarty'));
-        }
-
         return $this->_container;
     }
 
@@ -251,12 +182,6 @@ abstract class KernelBase
         return self::$instance;
     }
 
-    public function __set($name, $value)
-    {
-//        $this
-//            ->getLogger()->log(sprintf('%s = %s', $name, $value), 'app_set');
-    }
-
     /**
      * Получить объект авторизации
      * @throws Exception
@@ -264,17 +189,8 @@ abstract class KernelBase
      */
     public function getAuth()
     {
-        return $this->auth;
+        return $this->getContainer()->get('auth');
     }
-
-    /**
-     * @param \Auth $auth
-     */
-    public function setAuth($auth)
-    {
-        $this->auth = $auth;
-    }
-
 
     /**
      * Вернет объект кэша
@@ -284,25 +200,7 @@ abstract class KernelBase
      */
     public function getCacheManager()
     {
-        if ( null === $this->_cache ) {
-            if ($config = $this->getConfig('cache')) {
-                switch ($config['type']) {
-                    case 'file':
-                        $this->_cache = new \Sfcms\Cache\CacheFile($config['livecycle']);
-                        break;
-                    case 'apc':
-                        if (!function_exists('apc_cache_info')) {
-                            throw new Exception('Module APC is not active');
-                        }
-                        $this->_cache = new \Sfcms\Cache\CacheApc($config['livecycle']);
-                        break;
-                }
-            }
-            if (null === $this->_cache) {
-                $this->_cache = new \Sfcms\Cache\CacheBlank(0);
-            }
-        }
-        return $this->_cache;
+        $this->getContainer()->get('cache');
     }
 
     /**
@@ -319,40 +217,24 @@ abstract class KernelBase
     }
 
     /**
-     * @deprecated
-     * @use @Request
-     */
-    public function getBasket()
-    {
-    }
-
-    /**
      * Return template driver
      * @return Driver
      * @throws Exception
      */
     public function getTpl()
     {
-        if (null === self::$tpl) {
-            self::$tpl  = $this->getContainer()->get('tpl');
-            /** @var Module $module */
-            foreach ($this->getModules() as $module) {
-                $module->registerViewsPath(self::$tpl);
-            }
-        }
-        return self::$tpl;
+        return $this->getContainer()->get('tpl');
     }
 
     /**
      * @param $param
-     * @return Config|string|mixed
+     * @return Config|mixed
      */
     public function getConfig( $param = null )
     {
-        if ( null === $param ) {
-            return self::$config;
-        }
-        return self::$config->get( $param );
+        return (null === $param)
+            ? $this->getContainer()->get('config')
+            : $this->getConfig()->get($param);
     }
 
     /**
@@ -360,15 +242,7 @@ abstract class KernelBase
      */
     public function getRouter()
     {
-        return static::$router;
-    }
-
-    /**
-     * @param \Sfcms\Router $router
-     */
-    public function setRouter($router)
-    {
-        static::$router = $router;
+        return $this->getContainer()->get('router');
     }
 
     /**
@@ -435,27 +309,11 @@ abstract class KernelBase
     }
 
     /**
-     * Настройки сайта
-     * @return Settings
-     */
-    public function getSettings()
-    {
-        if (  is_null( $this->_settings ) ) {
-            $this->_settings    = new Settings();
-        }
-        return $this->_settings;
-    }
-
-
-    /**
      * @return Resolver
      */
     public function getResolver()
     {
-        if( null === $this->_resolver ) {
-            $this->_resolver = new Resolver();
-        }
-        return $this->_resolver;
+        return $this->getContainer()->get('resolver');
     }
 
 
@@ -582,24 +440,22 @@ abstract class KernelBase
         if (!$this->_modules_config) {
             $_ = $this;
 
-            $moduleArray = self::getConfig('modules');
+            $moduleArray = $this->getConfig('modules');
+//            $moduleArray = $this->getContainer()->getParameter('modules');
 
             try {
-                array_map(
-                    function ($module) use ($_) {
-                        if (!isset($module['path'])) {
-                            throw new Exception('Directive "path" not defined in modules config');
-                        }
-                        if (!isset($module['name'])) {
-                            throw new Exception('Directive "name" not defined in modules config');
-                        }
-                        $className = $module['path'] . '\Module';
-                        $reflection = new \ReflectionClass($className);
-                        $place = dirname($reflection->getFileName());
-                        $_->setModule(new $className($_, $module['name'], $module['path'], $place));
-                    },
-                    $moduleArray
-                );
+                array_map(function ($module) use ($_) {
+                    if (!isset($module['path'])) {
+                        throw new Exception('Directive "path" not defined in modules config');
+                    }
+                    if (!isset($module['name'])) {
+                        throw new Exception('Directive "name" not defined in modules config');
+                    }
+                    $className = $module['path'] . '\Module';
+                    $reflection = new \ReflectionClass($className);
+                    $place = dirname($reflection->getFileName());
+                    $_->setModule(new $className($_, $module['name'], $module['path'], $place));
+                },$moduleArray);
             } catch (\Exception $e) {
                 die($e->getMessage());
             }
@@ -614,12 +470,13 @@ abstract class KernelBase
 
             // А потом инициализируем
             // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(
-                function ($module) use ($_) {
-                    return method_exists($module, 'init') ? call_user_func(array($module, 'init')) : false;
-                },
-                $this->getModules()
-            );
+            array_map(function ($module) use ($_) {
+                call_user_func(array($module, 'registerService'), $_->getContainer());
+                call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl'));
+                if (method_exists($module, 'init')) {
+                    call_user_func(array($module, 'init'));
+                }
+            },$this->getModules());
         }
 
         return $this->_modules_config;
@@ -722,10 +579,7 @@ abstract class KernelBase
      */
     public function getEventDispatcher()
     {
-        if ( null === $this->_event_dispatcher ) {
-            $this->_event_dispatcher = new EventDispatcher();
-        }
-        return $this->_event_dispatcher;
+        return $this->getContainer()->get('EventDispatcher');
     }
 
 

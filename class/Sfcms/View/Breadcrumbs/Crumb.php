@@ -14,7 +14,7 @@ class Crumb
     private $_alias = '';
     private $_sep   = '';
 
-    public function __construct( $name, $alias = null, $separator = '' )
+    public function __construct($name, $alias = null, $separator = '')
     {
         $this->_name    = $name;
         $this->_sep     = $separator;

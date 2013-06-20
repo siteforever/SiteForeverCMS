@@ -32,7 +32,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function i18n()
     {
-        return i18n::getInstance();
+        return $this->app()->getContainer()->get('i18n');
     }
 
     /**

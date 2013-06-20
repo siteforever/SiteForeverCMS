@@ -43,7 +43,7 @@ class Forms_News_Edit extends \Sfcms\Form\Form
                     'label'     =>  'Категория',
                     //'hidden',
                 ),
-                'author_id' => array('type'=>'text', 'value'=>$app->getAuth()->currentUser()->getId(), 'label'=>'','hidden',),
+                'author_id' => array('type'=>'text', 'value'=>$app->getAuth()->getId(), 'label'=>'','hidden',),
                 'name'      => array('type'=>'text', 'value'=>'', 'label'=>'Название',),
                 'main'      => array(
                     'type'=>'radio',

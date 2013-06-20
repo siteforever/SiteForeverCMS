@@ -9,6 +9,7 @@ namespace Sfcms\Test;
 use PHPUnit_Framework_TestCase;
 use Sfcms\Request;
 use Sfcms\Router;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
@@ -29,10 +30,12 @@ class TestCase extends PHPUnit_Framework_TestCase
     {
         $this->request = Request::create('/');
         $this->session = new Session(new MockArraySessionStorage());
+        $this->session->set('user_id', null);
         $this->request->setSession($this->session);
         $this->session->start();
-        $this->router  = new Router($this->request);
-        \App::getInstance()->setRouter($this->router);
+        \App::getInstance()->getContainer()->set('request', $this->request);
+        \App::getInstance()->getRouter()->setRequest($this->request);
+        \App::getInstance()->getAuth()->setRequest($this->request);
     }
 
     protected function createCrawler(Response $response)
@@ -70,7 +73,15 @@ class TestCase extends PHPUnit_Framework_TestCase
     protected function runRequest($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
     {
         $this->request = Request::create($uri, $method, $parameters, $cookies, $files, $server, $content);
+        $this->request->query->set('route', $uri);
         $this->request->setSession($this->session);
         return \App::getInstance()->handleRequest($this->request);
+    }
+
+
+    protected function followRedirect(RedirectResponse $response)
+    {
+        $this->assertTrue($response->isRedirection());
+        return $this->runRequest($response->getTargetUrl());
     }
 }

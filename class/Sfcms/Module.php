@@ -12,6 +12,9 @@ use Sfcms\Kernel\KernelBase;
 use Sfcms\Tpl\Driver;
 use Sfcms_Http_Exception;
 use Symfony\Component\Console\Application;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -57,6 +60,10 @@ abstract class Module extends Component
         return 'link';
     }
 
+    public function registerService(ContainerBuilder $container)
+    {
+    }
+
     public function getName()
     {
         return $this->name;
@@ -92,9 +99,6 @@ abstract class Module extends Component
                     . ( isset( $config['module'] ) ? $config['module'] : ucfirst(strtolower($controller)) )
                     . '\\Module';
         }
-        print_r( self::$controllers );
-//        die(sprintf('Contoroller %s not defined', $controller));
-//        throw new Sfcms_Http_Exception(sprintf('Contoroller %s not defined', $controller),404);
         throw new \RuntimeException(sprintf('Contoroller %s not defined', $controller),404);
     }
 

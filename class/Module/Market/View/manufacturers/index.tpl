@@ -1,4 +1,4 @@
-{$page->content}
+{$page->content|default:""}
 
 <ul>
     {foreach from=$items item="obj"}

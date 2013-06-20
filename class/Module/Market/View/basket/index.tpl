@@ -117,12 +117,11 @@
 {*
     Если страницу открыл не гость
  *}
-{*{if $auth->currentUser()->perm != $smarty.const.USER_GUEST}*}
-{*<p>&nbsp;</p>*}
-{*<p>{t cat="basket"}Quick Links{/t}:</p>*}
-
-{*<ul>*}
-    {*<li><a {href url="user/cabinet"}>{t cat="basket"}User panel{/t}</a></li>*}
-    {*<li><a {href url="order"}>{t cat="basket"}Order list{/t}</a></li>*}
-{*</ul>*}
-{*{/if}*}
+{if $auth->getPermission() > $smarty.const.USER_GUEST}
+    <p>&nbsp;</p>
+    <p>{t cat="basket"}Quick Links{/t}:</p>
+    <ul>
+        <li><a {href url="user/cabinet"}>{t cat="basket"}User panel{/t}</a></li>
+        <li><a {href url="order"}>{t cat="basket"}Order list{/t}</a></li>
+    </ul>
+{/if}

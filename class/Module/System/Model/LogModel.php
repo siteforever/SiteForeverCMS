@@ -40,7 +40,7 @@ class LogModel extends Model
                 }
                 /** @var $log Log */
                 $log = $this->createObject();
-                $log->user = $this->app()->getAuth()->currentUser()->getId() ?: 0;
+                $log->user = $this->app()->getAuth()->getId() ?: 0;
                 $log->object = get_class($obj);
                 $log->action = 'save';
                 $log->timestamp = time();

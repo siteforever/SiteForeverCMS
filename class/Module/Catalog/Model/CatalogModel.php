@@ -353,7 +353,7 @@ class CatalogModel extends Model
             false,
             PDO::FETCH_ASSOC,
             array(
-                $this->app()->getAuth()->currentUser()->getPermission(),
+                $this->app()->getAuth()->getPermission(),
                 '%'.$query.'%',
                 '%'.$query.'%'
             )

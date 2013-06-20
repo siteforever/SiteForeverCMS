@@ -9,22 +9,15 @@ namespace Sfcms;
 
 abstract class Route
 {
-    /** @var \Sfcms\Request */
-    protected $request;
-
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
-
     /**
      * @abstract
      *
+     * @param $request
      * @param $route
      *
      * @return mixed
      */
-    abstract public function route($route);
+    abstract public function route(Request $request, $route);
 
     /**
      * Из массива [ id, 10, page, 5 ] создаст параметры [ id: 10, page: 5 ]

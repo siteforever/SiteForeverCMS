@@ -30,12 +30,12 @@ class BasketController extends Controller
         }
 
         // Fill Address from current user
-        if ( $this->user->hasPermission( USER_USER ) ) {
-            $form->getField('fname')->setValue( $this->user->fname );
-            $form->getField('lname')->setValue( $this->user->lname );
-            $form->getField('email')->setValue( $this->user->email );
-            $form->getField('phone')->setValue( $this->user->phone );
-            $form->getField('address')->setValue( $this->user->address );
+        if ( $this->auth->hasPermission( USER_USER ) ) {
+            $form->getField('fname')->setValue( $this->auth->currentUser()->fname );
+            $form->getField('lname')->setValue( $this->auth->currentUser()->lname );
+            $form->getField('email')->setValue( $this->auth->currentUser()->email );
+            $form->getField('phone')->setValue( $this->auth->currentUser()->phone );
+            $form->getField('address')->setValue( $this->auth->currentUser()->address );
         }
 
         // Fill Address from Yandex
@@ -57,7 +57,7 @@ class BasketController extends Controller
         $deliveries = $deliveryModel->findAll('active = ?',array(1),'pos');
         $form->getField('delivery_id')->setVariants( $deliveries->column('name') );
 
-        $delivery = $this->app()->getDelivery($this->request);
+        $delivery = $this->app->getDelivery($this->request);
         $form->getField('delivery_id')->setValue( $delivery->getType() );
 
         // Заполним методы оплаты
@@ -95,6 +95,7 @@ class BasketController extends Controller
             'delivery'      => $delivery,
             'form'          => $form,
             'host'          => urlencode($this->config->get('siteurl').$this->router->createLink('basket') ),
+            'auth'          => $this->auth,
         );
     }
 
@@ -229,11 +230,11 @@ class BasketController extends Controller
                             $pos_list[] = $position->attributes;
                         }
 
-                        $this->app()->getTpl()->assign(array(
+                        $this->tpl->assign(array(
                                 'order'     => $order,
                                 'sitename'  => $this->config->get('sitename'),
-                                'ord_link'  => $this->app()->getConfig()->get('siteurl').$order->getUrl(),
-                                'user'      => $this->app()->getAuth()->currentUser()->getAttributes(),
+                                'ord_link'  => $this->config->get('siteurl').$order->getUrl(),
+                                'user'      => $this->auth->getId() ? $this->auth->currentUser()->getAttributes() : array(),
                                 'date'      => date('H:i d.m.Y'),
                                 'order_n'   => $order->getId(),
                                 'positions' => $pos_list,
@@ -247,14 +248,14 @@ class BasketController extends Controller
                             $order->email,
                             $this->config->get('admin'),
                             sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$order->getId()),
-                            $this->app()->getTpl()->fetch('order.mail.createadmin')
+                            $this->tpl->fetch('order.mail.createadmin')
                         );
 
                         $this->sendmail(
                             $this->config->get('admin'),
                             $order->email,
                             sprintf('Заказ №%s на сайте %s',$order->getId(),$this->config->get('sitename')),
-                            $this->app()->getTpl()->fetch('order.mail.create')
+                            $this->tpl->fetch('order.mail.create')
                         );
 
                         $this->getBasket()->clear();

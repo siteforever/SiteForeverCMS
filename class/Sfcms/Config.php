@@ -1,5 +1,8 @@
 <?php
 namespace Sfcms;
+
+use Symfony\Component\DependencyInjection\Container;
+
 /**
  * Контейнер конфигурации
  * @author Nikolay Ermin <nikolay@ermin.ru>
@@ -15,25 +18,43 @@ class Config
      * Если передана строка, то ищет файл по этой строке
      * Если передан массив, то принимает его как конфиг
      *
-     * @param string|array|null $cfg_file
+     * @param string|array $cfg
+     * @param Container $container
      * @throws Exception
      */
-    public function __construct($cfg_file = null)
+    public function __construct($cfg, Container $container = null)
     {
-        if (is_null($cfg_file) && defined('CONFIG')) {
-            $cfg_file = 'app/cfg/' . CONFIG . '.php';
-        }
-        if (is_array($cfg_file)) {
-            $this->config = $cfg_file;
+        if (is_array($cfg)) {
+            $this->config = $cfg;
             return $this;
         }
         try {
-            $this->config = @require_once $cfg_file;
+            $this->config = @require_once $cfg;
+            if (null !== $container) {
+                $this->registerParameters('', $this->config, $container);
+            }
             return $this;
         } catch (\Exception $e) {
+            throw new Exception('Configuration file "'.$cfg.'" not found');
         }
-        var_dump(get_include_path());
-        throw new Exception('Configuration file "'.$cfg_file.'" not found');
+    }
+
+    /**
+     * Registering config parameters to service container
+     * @param           $ns
+     * @param array     $config
+     * @param Container $container
+     */
+    protected function registerParameters($ns, array $config, Container $container)
+    {
+        foreach ($config as $key => $val) {
+            if (is_scalar($val)) {
+                $container->setParameter($ns . $key, $val);
+            } else {
+                $this->registerParameters($ns . $key . '.', $val, $container);
+            }
+        }
+
     }
 
     /**

@@ -1,4 +1,4 @@
-{if $auth}
+{if !$auth}
     {$form->html(false)}
     <p>
         <a {href url="user/register"}>Регистрация</a>

@@ -46,6 +46,14 @@ class GalleryController extends Controller
         );
     }
 
+    public function init()
+    {
+        if ($this->page){
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
+    }
+
+
     /**
      * Действие по-умолчанию
      * @return string|array
@@ -88,7 +96,7 @@ class GalleryController extends Controller
             /** @var $category Category */
             $category = $catModel->find( $image->category_id );
 
-            $bc = $this->getTpl()->getBreadcrumbs()->addPiece(null, $image->name);
+            $this->tpl->getBreadcrumbs()->addPiece($image->alias, $image->title);
 
             $this->request->setTitle($image->title);
             return $this->render('gallery.image', array(
@@ -137,25 +145,25 @@ class GalleryController extends Controller
          */
         $categories = null;
 
-        $pageModel = $this->getModel( 'Page' );
-        if( $this->page ) {
+        $pageModel = $this->getModel('Page');
+        if ($this->page) {
             $subPages  = $pageModel->findAll( array(
                  'condition' => ' parent = ? AND deleted != 1 ',
-                 'params'    => array( $this->page->getId() ),
-            ) );
+                 'params'    => array($this->page->getId()),
+            ));
 
             /** @var Page $obj */
             $listSubpagesIds = array();
-            foreach ( $subPages as $obj ) {
-                if ( $obj->get( 'link' ) && $obj->get( 'controller' ) == 'gallery' ) {
-                    $listSubpagesIds[ ] = $obj->get( 'link' );
+            foreach ($subPages as $obj) {
+                if ($obj->get('link') && $obj->get('controller') == 'gallery') {
+                    $listSubpagesIds[] = $obj->get('link');
                 }
             }
 
-            if ( count( $listSubpagesIds ) ) {
-                $categories = $catModel->findAll( array(
+            if (count($listSubpagesIds)) {
+                $categories = $catModel->findAll(array(
                      'condition' => ' id IN ( ' . implode( ',', $listSubpagesIds ) . ' ) ',
-                ) );
+                ));
             }
         }
 

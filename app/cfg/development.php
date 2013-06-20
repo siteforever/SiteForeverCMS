@@ -3,7 +3,10 @@
  * Конфиг для системы
  */
 return array_merge(include_once 'base.php', array(
-//    'cache' => false,
+    'cache' => array(
+        'class' => 'Sfcms\Cache\CacheBlank',
+        'livecycle' => 0,
+    ),
 
     'logger'    => 'auto',
 //    'logger'    => 'html',
@@ -24,9 +27,9 @@ return array_merge(include_once 'base.php', array(
     ),
     'template' => array(
         'caching'   => false,
-        'cache' => array(
-            'livetime' => 3600,
-        ),
+//        'cache' => array(
+//            'livetime' => 3600,
+//        ),
         'theme'     => 'basic',
     ),
 ));

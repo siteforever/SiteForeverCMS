@@ -18,7 +18,7 @@ abstract class Field
      */
     public function i18n()
     {
-        return i18n::getInstance();
+        return \App::getInstance()->getContainer()->get('i18n');
     }
 
     /**

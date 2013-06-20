@@ -15,7 +15,7 @@
 */
 function smarty_function_admin($params, Smarty_Internal_Template $template)
 {
-    if ( ! App::getInstance()->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
+    if ( ! App::getInstance()->getAuth()->hasPermission(USER_ADMIN) ) {
         return '';
     }
     return '';

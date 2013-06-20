@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
@@ -8,7 +8,7 @@
 
 use Sfcms\Html;
 use Sfcms\i18n;
- 
+
 class Sfcms
 {
     static private $instance;
@@ -46,7 +46,7 @@ class Sfcms
      */
     static function i18n()
     {
-        return i18n::getInstance();
+        return App::getInstance()->getContainer()->get('i18n');
     }
 
     /**

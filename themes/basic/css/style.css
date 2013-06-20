@@ -101,7 +101,7 @@ body {
             padding: 5px 15px;
             background: url(../images/menu_li.gif) no-repeat 0 50%;
         }
-            .b-menu ul li a.active, .b-menu ul li span {
+            .b-menu ul li.active a, .b-menu ul li span {
                 color: #000;
                 text-decoration:none;
             }
@@ -129,6 +129,10 @@ div.b-left-menu {
     }
     div.b-left-menu li li {
         padding-left: 20px;
+    }
+    div.b-left-menu li.active>a {
+        color: #000000;
+        text-decoration: none;
     }
 
 .b-left-catmenu {

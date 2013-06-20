@@ -15,7 +15,11 @@ class GuestbookController extends Controller
     public function init()
     {
         parent::init();
-        $this->request->setTitle( $this->t('guestbook','Guestbook module') );
+        $this->request->setTitle($this->t('guestbook', 'Guestbook module'));
+        if ($this->page){
+            $this->request->setTitle($this->page->title);
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
     }
 
     public function access()
@@ -36,24 +40,20 @@ class GuestbookController extends Controller
         if ($this->request->attributes->has('alias')) {
             throw new HttpException(404, $this->t('Page not found'));
         }
-        $this->request->setTitle( $this->page->title );
-
         $link   = $this->page->getId();
-
         $model  = $this->getModel('Guestbook');
-
         $form       = new Forms_Guestbook_Form();
 
         if ( $form->getPost() ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject();
 
-                $obj->set( 'name', strip_tags( $form->getField( 'name' )->getValue() ) );
-                $obj->set( 'email', strip_tags( $form->getField( 'email' )->getValue() ) );
-                $obj->set( 'message', strip_tags( $form->getField( 'message' )->getValue() ) );
-                $obj->set( 'link', $link );
-                $obj->set( 'date', time() );
-                $obj->set( 'ip', $_SERVER['REMOTE_ADDR'] );
+                $obj->set('name', strip_tags($form->getField('name')->getValue()));
+                $obj->set('email', strip_tags($form->getField('email')->getValue()));
+                $obj->set('message', strip_tags($form->getField('message')->getValue()));
+                $obj->set('link', $link);
+                $obj->set('date', time());
+                $obj->set('ip', $_SERVER['REMOTE_ADDR']);
 
                 $model->save( $obj );
 
@@ -80,7 +80,6 @@ class GuestbookController extends Controller
         );
 
         $count  = $model->count( $crit['cond'], $crit['params'] );
-
         $paging = $this->paging( $count, 10, $this->page->alias );
 
         $crit['order'] = ' date DESC ';

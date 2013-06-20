@@ -20,16 +20,16 @@ $mysqlTo = "mysql -u root siteforever_test";
 
 //$process = new Process("$mysqlFrom | $mysqlTo");
 $process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
-var_dump($process->getCommandLine());
+print $process->getCommandLine() . PHP_EOL;
 $process->start();
 while ($process->isRunning()) {
-    print "running...\n";
+    print "database restoring...\n";
     sleep(1);
 }
-var_dump($process->getErrorOutput());
-//if (!$process->isSuccessful()) {
-//    die($process->getOutput());
-//}
+if (!$process->isSuccessful()) {
+    print_r($process->getErrorOutput());
+    exit(255);
+}
 
 $app    = new App('app/cfg/test.php', true);
 $app->init();

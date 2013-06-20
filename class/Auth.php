@@ -22,50 +22,56 @@ class Auth
     /** @var bool */
     protected $error = false;
 
-    /** @var UserModel */
-    protected $model = null;
-
     /** @var  \Sfcms\Request */
     protected $request;
 
-    public function __construct(\Sfcms\Request $request)
+    /**
+     * @param \Sfcms\Request $request
+     */
+    public function setRequest($request)
     {
         $this->request = $request;
-        $this->model = \Sfcms\Model::getModel('User');
-
-        if ($this->getId()) {
-            /** @var User $obj */
-            $obj = $this->model->findByPk($this->getId());
-            if ($obj) {
-                $obj->last = time();
-                $this->currentUser($obj);
-                return;
-            }
-        }
-        $this->currentUser($this->createDefaultUser());
     }
+
+
 
     /**
      * Текущий пользователь
-     * @param User $user
-     * @return User|void
+     * @return User
      */
-    public function currentUser($user = null)
+    public function currentUser()
     {
-        if (null !== $user) {
-            $this->user = $user;
-            $this->setId($user->getId());
+        if ($this->getId()) {
+            $obj = \Sfcms\Model::getModel('User')->findByPk($this->getId());
+            if ($obj) {
+                $obj->last = time();
+                return $obj;
+            } else {
+                $this->setId(null);
+            }
         }
-        return $this->user;
+        return null;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setCurrentUser(User $user = null)
+    {
+        if (null === $user) {
+            $this->setId(null);
+        } else {
+            $this->setId($user->id);
+        }
     }
 
     /**
      * Id текущего пользователя
      * @return int
      */
-    private function getId()
+    public function getId()
     {
-        return $this->request->getSession()->get('user_id');
+        return $this->request->getSession()->get('user_id', null);
     }
 
     /**
@@ -73,9 +79,28 @@ class Auth
      * @param  $id
      * @return void
      */
-    private function setId($id)
+    public function setId($id)
     {
         $this->request->getSession()->set('user_id', $id);
+    }
+
+    /**
+     * @return int|string
+     */
+    public function getPermission()
+    {
+        return $this->getId() ? $this->currentUser()->getPermission() : USER_GUEST;
+    }
+
+    public function hasPermission($permission)
+    {
+        if (!$this->getId()) {
+            if (in_array($permission, array(USER_GUEST, USER_ANONIMUS), true)) {
+                return true;
+            }
+            return false;
+        }
+        return $this->currentUser()->hasPermission($permission);
     }
 
     /**
@@ -92,16 +117,15 @@ class Auth
      */
     public function logout()
     {
-        $this->setId(0);
-        $this->currentUser($this->createDefaultUser());
+        $this->setId(null);
     }
 
     /**
      * @return User
      */
-    private function createDefaultUser()
+    protected function createDefaultUser()
     {
-        return $this->model->createObject(array(
+        return \Sfcms\Model::getModel('User')->createObject(array(
                 'login'  => 'guest',
                 'perm'   => USER_GUEST,
             ));

@@ -29,6 +29,14 @@ class NewsController extends Controller
         );
     }
 
+    public function init()
+    {
+        if ($this->page){
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
+    }
+
+
     /**
      * @return mixed
      */
@@ -63,15 +71,14 @@ class NewsController extends Controller
         }
 
         // работаем над хлебными крошками
-        $bc = $this->getTpl()->getBreadcrumbs();
-        $bc->addPiece( null, $news->title );
+        $this->getTpl()->getBreadcrumbs()
+            ->addPiece($news->alias, $news->title);
+        $this->request->setTitle($news->title);
 
         $this->tpl->assign('news', $news);
 
-        $this->request->setTitle( $news->title );
-
-        if ( ! $this->user->hasPermission( $news['protected'] ) ) {
-            throw new Sfcms_Http_Exception( $this->t('Access denied'), 403 );
+        if (!$this->auth->hasPermission($news['protected'])) {
+            throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
         }
         return $this->tpl->fetch('news.item');
     }

@@ -22,7 +22,7 @@ class PagerTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(100,$this->pager->count);
         $this->assertEquals(
-            'Страницы: 1 - <a href="/?route=catalog/admin&page=2">2</a> - <a href="/?route=catalog/admin&page=3">3</a> - ... - <a href="/?route=catalog/admin&page=10">10</a> - <a href="/?route=catalog/admin&page=2">след &gt;</a>',
+            'Страницы: 1 - <a href="/catalog/admin/page=2">2</a> - <a href="/catalog/admin/page=3">3</a> - ... - <a href="/catalog/admin/page=10">10</a> - <a href="/catalog/admin/page=2">след &gt;</a>',
             $this->pager->html
         );
     }

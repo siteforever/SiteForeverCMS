@@ -58,6 +58,15 @@ class CatalogController extends Controller
         );
     }
 
+    public function init()
+    {
+        if ($this->page){
+            $this->request->setTitle($this->page->title);
+            $this->tpl->getBreadcrumbs()->fromSerialize($this->page->get('path'));
+        }
+    }
+
+
     /**
      * Действие по умолчанию
      * @param string $alias
@@ -208,7 +217,7 @@ class CatalogController extends Controller
                 'list'      => $list,
                 'cats'      => $cats,
                 'paging'    => $paging,
-                'user'      => $this->user,
+                'user'      => $this->auth->currentUser(),
                 'order_list'=> $this->config->get('catalog.order_list'),
                 'order_val' => $this->request->get('order'),
             ), $cacheKey);
@@ -258,7 +267,7 @@ class CatalogController extends Controller
                     'parent'     => $item->parent ? $catalog_model->find($item->parent) : null,
                     'properties' => $properties,
                     'gallery'    => $gallery,
-                    'user'       => $this->user,
+                    'user'       => $this->auth->currentUser(),
                 )
             );
 

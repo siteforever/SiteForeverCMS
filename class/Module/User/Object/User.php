@@ -98,13 +98,15 @@ class User extends Object
     /**
      * Проверит наличие прав у пользователя
      * @param int $perm
+     *
      * @return bool
      */
-    public function hasPermission( $perm )
+    public function hasPermission($perm)
     {
-        if ( $this->data['perm'] >= $perm ) {
+        if ($this->data['perm'] >= $perm) {
             return 1;
         }
+
         return 0;
     }
 

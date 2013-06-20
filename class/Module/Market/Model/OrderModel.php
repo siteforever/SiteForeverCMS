@@ -73,7 +73,7 @@ class OrderModel extends Model
         $obj->status    = 1;
         $obj->paid      = 0;
         $obj->date      = time();
-        $obj->user_id   = $this->app()->getAuth()->currentUser()->getId();
+        $obj->user_id   = $this->app()->getAuth()->getId();
         $obj->delivery  = 0;
         if ( $delivery->getType() ){
             $obj->delivery = $delivery->getType();

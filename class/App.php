@@ -1,5 +1,6 @@
 <?php
 // user groups
+define('USER_ANONIMUS', null); // аноним
 define('USER_GUEST', '0'); // гость
 define('USER_USER',  '1'); // юзер
 define('USER_WHOLE', '2'); // оптовый покупатель
@@ -94,6 +95,7 @@ class App extends KernelBase
      */
     public function handleRequest(Request $request)
     {
+        $this->getContainer()->set('request', $request);
         $acceptableContentTypes = $request->getAcceptableContentTypes();
         $format = null;
         if ($acceptableContentTypes) {
@@ -101,7 +103,7 @@ class App extends KernelBase
         }
         $request->setRequestFormat($format);
         $request->setDefaultLocale($this->getConfig('language'));
-        i18n::getInstance()->setLanguage($request->getLocale());
+        $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // запуск сессии
         if (!$request->getSession()) {
@@ -110,15 +112,10 @@ class App extends KernelBase
             $request->getSession()->start();
         }
         // маршрутизатор
-        $router = new \Sfcms\Router($request);
-        $router->setRewrite($this->getConfig('url.rewrite'));
-        $this->setRouter($router);
-        $router->routing();
+        $this->getRouter()->setRequest($request)->routing();
 
-        $this->setAuth(new \Auth($request));
-
-        static::$init_time = microtime( 1 ) - static::$start_time;
-        static::$controller_time = microtime( 1 );
+        static::$init_time = microtime(1) - static::$start_time;
+        static::$controller_time = microtime(1);
 
         $result = null;
         /** @var Response $response */

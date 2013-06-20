@@ -16,7 +16,7 @@ class Form extends Render implements \ArrayAccess
      */
     public function i18n()
     {
-        return i18n::getInstance();
+        return \App::getInstance()->getContainer()->get('i18n');
     }
 
     /**

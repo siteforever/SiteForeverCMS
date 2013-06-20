@@ -106,9 +106,9 @@ class Breadcrumbs
      * @param  $url
      * @return Breadcrumbs\Crumb
      */
-    protected function createCrumb( $name, $url )
+    protected function createCrumb($name, $url)
     {
-        return new Breadcrumbs\Crumb( $name, $url, $this->_separator );
+        return new Breadcrumbs\Crumb($name, $url, $this->_separator);
     }
 
     /**
@@ -118,8 +118,10 @@ class Breadcrumbs
     {
         $pieces = array();
         if ( $this->_pieces ) {
+            $countDown = count($this->_pieces);
             foreach ( $this->_pieces as $piece ) {
-                $crumb  = $this->createCrumb( $piece['name'], $piece['url'] );
+                $countDown--;
+                $crumb  = $this->createCrumb($piece['name'], $countDown ? $piece['url'] : null);
                 $pieces[] = (string) $crumb;
             }
         }

@@ -117,7 +117,7 @@ class Catalog extends Object
      */
     public function getAlias()
     {
-        $alias = strtolower($this->id . '-' . i18n::getInstance()->translit($this->name)) ? : $this->id;
+        $alias = mb_strtolower(($this->cat ? '' : $this->id . '-') . $this->app()->getContainer()->get('i18n')->translit($this->name)) ?: $this->id;
         $alias = trim($alias, '-');
         if (empty($this->data['alias']) || $this->data['alias'] != $alias) {
             $this->data['alias'] = $alias;

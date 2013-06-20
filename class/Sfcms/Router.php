@@ -36,18 +36,25 @@ class Router
 
     /**
      * Создаем маршрутизатор
-     * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
+    {
+        $this->addRouteHandler(new Route\DirectRoute());
+        $this->addRouteHandler(new Route\XmlRoute());
+        $this->addRouteHandler(new Route\StructureRoute());
+        $this->addRouteHandler(new Route\DefaultRoute());
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return $this
+     */
+    public function setRequest(Request $request)
     {
         $this->request = $request;
-        $route         = $this->request->get('route');
-        $this->setRoute($route);
-
-        $this->addRouteHandler(new Route\DirectRoute($request));
-        $this->addRouteHandler(new Route\XmlRoute($request));
-        $this->addRouteHandler(new Route\StructureRoute($request));
-        $this->addRouteHandler(new Route\DefaultRoute($request));
+        $this->setRoute($this->request->get('route'));
+        return $this;
     }
 
     /**
@@ -263,7 +270,7 @@ class Router
         $routed = false;
         /** @var \Sfcms\Route $route */
         foreach ($this->_routes as $route) {
-            if ($routed = $route->route($this->route)) {
+            if ($routed = $route->route($this->request, $this->route)) {
                 $this->request->setController($routed['controller']);
                 $this->request->setAction($routed['action']);
                 if (isset($routed['params']) && is_array($routed['params'])) {

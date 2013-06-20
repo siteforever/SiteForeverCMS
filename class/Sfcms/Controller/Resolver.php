@@ -9,21 +9,25 @@
 namespace Sfcms\Controller;
 
 use Sfcms\Controller;
-use Sfcms\Component;
 use ReflectionClass;
 use RuntimeException;
+use Sfcms\Kernel\KernelBase;
 use Sfcms\Request;
 use Sfcms_Http_Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Resolver extends Component
+class Resolver
 {
     /** @var array */
     protected $_controllers;
 
-    public function __construct()
+    /** @var \App */
+    protected $app;
+
+    public function __construct(KernelBase $app)
     {
-        $this->_controllers = $this->app()->getControllers();
+        $this->app = $app;
+        $this->_controllers = $app->getControllers();
     }
 
     /**
@@ -69,7 +73,7 @@ class Resolver extends Component
         }
 
         if ( $moduleName ) {
-            $module = $this->app()->getModule( $moduleName );
+            $module = $this->app->getModule( $moduleName );
             $controllerClass = sprintf(
                 '%s\\%sController',
                 $module->getNs(),
@@ -78,6 +82,18 @@ class Resolver extends Component
         }
 
         return array('controller' => $controllerClass, 'action' => $actionMethod, 'module'=>$moduleName);
+    }
+
+    /**
+     * Напечатать переведенный текст
+     * @param string $cat
+     * @param string $text
+     * @param array $params
+     * @return mixed
+     */
+    public function t($cat, $text = '', $params = array())
+    {
+        return call_user_func_array(array($this->app->getContainer()->get('i18n'),'write'), func_get_args());
     }
 
     /**
@@ -98,14 +114,14 @@ class Resolver extends Component
             }
         }
 
-        $this->log( $command, 'Command' );
+        $this->app->getLogger()->log($command, 'Command');
 
         // если запрос является системным
-        if ($this->app()->getRouter()->isSystem()) {
-            if ($this->app()->getAuth()->currentUser()->hasPermission(USER_ADMIN)) {
+        if ($this->app->getRouter()->isSystem()) {
+            if ($this->app->getAuth()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage($request);
             } else {
-                throw new HttpException(403, $this->t('Access denied'));
+                throw new HttpException(403, \Sfcms::i18n()->write('Access denied'));
             }
         }
 
@@ -117,6 +133,8 @@ class Resolver extends Component
 
         /** @var Controller $controller */
         $controller = $ref->newInstance($request);
+        $controller->setContainer($this->app->getContainer());
+        $controller->init();
 
         // Защита системных действий
         $access = $controller->access();
@@ -128,6 +146,7 @@ class Resolver extends Component
         } catch( \ReflectionException $e ) {
             throw new HttpException(404, $e->getMessage());
         }
+        $this->app->getTpl()->assign('this', $controller);
         $arguments = $this->prepareArguments($method, $request);
         $result = $method->invokeArgs($controller, $arguments);
 
@@ -202,7 +221,7 @@ class Resolver extends Component
                     return $method;
                 }, $ruleMethods );
                 if ( in_array( $command['action'], $ruleMethods ) ) {
-                    if ( $this->app()->getAuth()->currentUser()->hasPermission( $perm ) ) {
+                    if ( $this->app->getAuth()->hasPermission( $perm ) ) {
                         if ( $perm == USER_ADMIN ) {
                             $this->setSystemPage($request);
                         }
@@ -221,6 +240,6 @@ class Resolver extends Component
     {
         $request->setTemplate('index');
         $request->set('resource', 'system:');
-        $request->set('modules', $this->app()->adminMenuModules());
+        $request->set('modules', $this->app->adminMenuModules());
     }
 }

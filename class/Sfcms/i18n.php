@@ -58,8 +58,11 @@ class i18n
         ' '  => '_',
     );
 
-    protected function __construct()
+    public function __construct()
     {
+        setlocale( LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C' );
+        setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
+        return self::$_instance = $this;
     }
 
     public function setLanguage( $lang = 'en' )
@@ -82,7 +85,7 @@ class i18n
         $jsDictFile = $dest.'/'.$this->_lang.'.js';
         $jsI18nFile = SF_PATH.'/misc/module/i18n.js';
 
-        if ( App::isDebug() && file_exists( $jsDictFile ) ) {
+        if (App::isDebug() && file_exists($jsDictFile)) {
             unlink( $jsDictFile );
         }
 
@@ -100,7 +103,6 @@ class i18n
             $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = '.json_encode( $this->_dictionary ).';', $jsDict);
             file_put_contents( $jsDictFile, $jsDict );
         }
-//        App::getInstance()->addScript( '/_runtime/i18n.'.$this->_lang.'.js' );
     }
 
     /**
@@ -109,13 +111,8 @@ class i18n
      */
     public static function getInstance()
     {
-        if (is_null(self::$_instance)) {
-            // Locale
-            // TODO Злостный костыль надо убрать
-            setlocale( LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C' );
-            setlocale( LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia' );
-            self::$_instance = new i18n();
-            self::$_instance->setLanguage();
+        if (null === self::$_instance) {
+            throw new \RuntimeException('Instance not defined');
         }
         return self::$_instance;
     }

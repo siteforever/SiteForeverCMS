@@ -4,7 +4,10 @@
  */
 
 return array_merge(require_once 'base.php', array(
-    'cache' => false,
+    'cache' => array(
+        'class' => 'Sfcms\Cache\CacheBlank',
+        'livecycle' => 0,
+    ),
     'logger'    => 'file',
     'language'  => 'ru',
     'siteurl'   => 'localhost',

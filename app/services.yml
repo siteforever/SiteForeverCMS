@@ -1,0 +1,53 @@
+parameters:
+    cache:
+        livecycle: 60
+        class: Sfcms\Cache\CacheBlank
+#        class: Sfcms\Cache\CacheFile
+#        class: Sfcms\Cache\CacheApc
+
+    template:
+        theme: basic
+        cache:
+            livetime: %cache.livecycle%
+
+services:
+    smarty:
+        class: Smarty
+
+    tpl:
+        class: Sfcms\Tpl\Smarty
+        arguments: ["%template%", "@smarty"]
+
+    auth:
+        class: Auth
+        calls:
+            - [setRequest, ["@request"]]
+
+    db:
+        class: Sfcms\db
+        arguments: ["%db%"]
+
+    cache:
+        class: %cache.class%
+        arguments: ["%cache.livecycle%"]
+
+    eventDispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+
+    resolver:
+        class: Sfcms\Controller\Resolver
+        arguments: ["@app"]
+
+    i18n:
+        class: Sfcms\i18n
+        calls:
+            - [setLanguage, ["%language%"]]
+
+    router:
+        class: Sfcms\Router
+        calls:
+            - [setRewrite, ["%url.rewrite%"]]
+
+    mailer:
+        class: Swift_Mailer
+        arguments: ["@mailer.transport"]

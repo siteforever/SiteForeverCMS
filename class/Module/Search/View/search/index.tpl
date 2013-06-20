@@ -15,6 +15,7 @@
     <div class="alert alert-error">{$error}</div>
 {elseif (isset($result))}
     <hr>
+    {counter start=$paging->from print=false}
     {foreach $result as $item}
     <h4>{counter}.
         {a href=$item.alias htmlTitle=$item.title htmlData-placement="top" htmlRel="tooltip"}

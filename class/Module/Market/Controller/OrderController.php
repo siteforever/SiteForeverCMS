@@ -41,18 +41,16 @@ class OrderController extends Controller
             ->addPiece(null,$this->request->getTitle());
 
 
-        $user   = $this->app()->getAuth()->currentUser();
-
         /** @var $order OrderModel */
         $order  = $this->getModel('Order');
 
-        if ( ! $user->getId() || $user->perm == USER_GUEST ) {
+        if ( $this->auth->getPermission() == USER_GUEST ) {
             return $this->redirect("index");
         }
 
         if ( $cancel ) {
             $can_order = $order->find( $cancel );
-            if( $can_order['user_id'] == $user->getId() ) {
+            if ($this->auth->getId() == $can_order['user_id']) {
                 $can_order['status'] = -1;
             }
         }
@@ -63,7 +61,7 @@ class OrderController extends Controller
             $orderObj = $order->find( $item );
 
             if ( $orderObj ) {
-                if ( $this->user->get('id') != $orderObj['user_id'] ) {
+                if ( $this->auth->getId() != $orderObj['user_id'] ) {
                     return $this->t('order','Order is not yours');
                 }
 
@@ -82,7 +80,7 @@ class OrderController extends Controller
 
         $list   = $order->findAll(array(
             'cond'      => sprintf('user_id = ? AND status < ?'),
-            'params'    => array( $user->getId(), 100 ),
+            'params'    => array($this->auth->getId(), 100),
             'order'     => 'status, date DESC',
         ));
 
