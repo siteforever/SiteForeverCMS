@@ -48,7 +48,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
 
         $this->object->fromSerialize( $ser );
 
-        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li><a href="/about">О компании</a></li></ul>', $this->object->render() );
+        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li>О компании</li></ul>', $this->object->render() );
     }
 
     public function testRenderJson()
@@ -57,7 +57,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
 
         $this->object->fromJson( $ser );
 
-        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li><a href="/about">О компании</a></li></ul>', $this->object->render() );
+        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li>О компании</li></ul>', $this->object->render() );
     }
 
     public function testAddPiece()
@@ -65,7 +65,7 @@ class View_BreadcrumbsTest extends PHPUnit_Framework_TestCase
         $this->object->addPiece( '', 'Главная' );
         $this->object->addPiece( 'about', 'О компании' );
 
-        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li><a href="/about">О компании</a></li></ul>', $this->object->render() );
+        $this->assertEquals( '<ul class="breadcrumb"><li><a href="/">Главная</a><span class="divider">&gt;</span></li><li>О компании</li></ul>', $this->object->render() );
     }
 
 }
