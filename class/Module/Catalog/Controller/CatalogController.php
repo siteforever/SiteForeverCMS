@@ -238,7 +238,7 @@ class CatalogController extends Controller
     {
         $catalog_model = $this->getModel('Catalog');
 
-        $cache = $cache = $this->cache();
+        $cache = $this->cache();
         $cacheKey = 'product' . $item->id;
 
         if ($cache->isNotExpired($cacheKey)) {

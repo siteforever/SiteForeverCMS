@@ -225,7 +225,7 @@ abstract class Controller extends ContainerAware
      */
     public function getDB()
     {
-        return db::getInstance();
+        return $this->get('db');
     }
 
     /**
@@ -233,7 +233,7 @@ abstract class Controller extends ContainerAware
      */
     public function cache()
     {
-        return $this->app()->getCacheManager();
+        return $this->get('cache');
     }
 
     /**

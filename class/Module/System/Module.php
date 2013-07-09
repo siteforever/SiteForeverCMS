@@ -7,6 +7,9 @@
 
 namespace Module\System;
 
+use Assetic\Asset\BaseAsset;
+use Assetic\Asset\GlobAsset;
+use Assetic\AssetManager;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
@@ -31,6 +34,7 @@ class Module extends SfModule
                 'routes'    => array(),
                 'system'    => array(),
                 'setting'   => array(),
+                'static'    => array(),
             ),
             'models'      => array(
                 'Comments'  => 'Module\\System\\Model\\CommentsModel',
@@ -47,9 +51,9 @@ class Module extends SfModule
     public function registerService(ContainerBuilder $container)
     {
         // Mail transport defintion
-        switch ($container->getParameter('mailer.transport')) {
+        switch ($container->getParameter('mailer_transport')) {
             case 'smtp':
-                $container->register('mailer.transport', 'Swift_SmtpTransport')
+                $container->register('mailer_transport', 'Swift_SmtpTransport')
                     ->addArgument('%mailer.host%')
                     ->addArgument('%mailer.port%')
                     ->addArgument('%mailer.security%')
@@ -59,7 +63,7 @@ class Module extends SfModule
                 break;
             case 'gmail':
                 http://stackoverflow.com/a/4691183/2090796
-                $container->register('mailer.transport', 'Swift_SmtpTransport')
+                $container->register('mailer_transport', 'Swift_SmtpTransport')
                     ->addArgument('smtp.gmail.com')
                     ->addArgument(465)
                     ->addArgument('ssl')
@@ -69,11 +73,21 @@ class Module extends SfModule
                 ;
                 break;
             case 'null':
-                $container->register('mailer.transport', 'Swift_NullTransport');
+                $container->register('mailer_transport', 'Swift_NullTransport');
                 break;
             default:
-                $container->register('mailer.transport', 'Swift_SendmailTransport');
+                $container->register('mailer_transport', 'Swift_SendmailTransport');
         }
+
+        /** @var AssetManager $am */
+        $am = $container->get('assetManager');
+        $images = new GlobAsset(realpath(__DIR__.'/Static/images/*'));
+        /** @var BaseAsset $img */
+        foreach($images as $img) {
+            $am->set($img->getTargetPath(), $img);
+        }
+//        $am->set('images', );
+//        $am->get('images')->setTargetPath('images/');
     }
 
 

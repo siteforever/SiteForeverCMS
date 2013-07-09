@@ -3,7 +3,7 @@ namespace Sfcms;
 
 use App;
 use Sfcms\Assets;
-use Sfcms\Kernel\KernelBase as Service;
+use Sfcms\Kernel\AbstractKernel as Service;
 use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;

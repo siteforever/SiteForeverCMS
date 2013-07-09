@@ -83,7 +83,7 @@ class i18n
 
         // Prepare dictionary for JS
         $jsDictFile = $dest.'/'.$this->_lang.'.js';
-        $jsI18nFile = SF_PATH.'/misc/module/i18n.js';
+        $jsI18nFile = SF_PATH.'/misc/i18n.js';
 
         if (App::isDebug() && file_exists($jsDictFile)) {
             unlink( $jsDictFile );

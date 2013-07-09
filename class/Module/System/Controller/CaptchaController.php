@@ -21,7 +21,7 @@ class CaptchaController extends Controller
             'height'    => 25,
             'color'     => 0x000000,
             'bgcolor'   => 0xffffff,
-            'font'      => SF_PATH.'/misc/captcha/infroman.ttf',
+            'font'      => realpath(__DIR__ . '/../Static/captcha/infroman.ttf'),
             'length'    => 6,
          ));
     }
@@ -43,20 +43,28 @@ class CaptchaController extends Controller
 
         imagefill( $img, 0, 0, $this->config->get('captcha.bgcolor') );
 
-        $text = $this->generateString($l, '/[ABCEFGHIKMNOP]/');
-
-        $this->request->getSession()->set('captcha_code', $text);
+        if ($this->request->getSession()->has('captcha_code')) {
+            $text = $this->request->getSession()->get('captcha_code');
+        } else {
+            $text = $this->generateString($l, '/[ABCEFGHIKMNOP]/');
+            $this->request->getSession()->set('captcha_code', $text);
+        }
 
         $step   = round( ( $w * 0.8 ) / $l );
         $halfstep   = round( $step / 2 );
         $quartstep  = round( $step / 4 );
 
         for ( $i = 0; $i < $l; $i++ ) {
-            imagettftext( $img, $fontsize, rand(-15, 15),
-                          $i * $step + rand(-$quartstep, $quartstep) + $halfstep, rand($fontsize-2, $fontsize+2),
-                          $this->config->get('captcha.color'),
-                          $this->config->get('captcha.font'),
-                          $text{$i} );
+            imagettftext(
+                $img,
+                $fontsize,
+                rand(-15, 15),
+                $i * $step + rand(-$quartstep, $quartstep) + $halfstep,
+                rand($fontsize - 2, $fontsize + 2),
+                $this->config->get('captcha.color'),
+                $this->config->get('captcha.font'),
+                $text{$i}
+            );
         }
         return $img;
     }

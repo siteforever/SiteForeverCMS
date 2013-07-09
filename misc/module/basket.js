@@ -3,7 +3,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
-define([
+define("module/basket", [
     "jquery",
     "module/alert",
     "jquery/jquery.form"

@@ -7,7 +7,7 @@ define('USER_WHOLE', '2'); // оптовый покупатель
 define('USER_ADMIN', '10'); // админ
 
 
-use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model;
 use Sfcms\Request;
@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
  * @link   http://ermin.ru
  * @link   http://siteforever.ru
  */
-class App extends KernelBase
+class App extends AbstractKernel
 {
     /**
      * Запуск приложения

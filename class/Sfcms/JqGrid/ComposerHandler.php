@@ -1,11 +1,15 @@
 <?php
 /**
- * 
+ *
  * @author: keltanas
  */
 
 namespace Sfcms\JqGrid;
 
+use Assetic\Asset\AssetCollection;
+use Assetic\Asset\FileAsset;
+use Assetic\Asset\GlobAsset;
+use Assetic\AssetWriter;
 use ErrorException;
 use Sfcms;
 use Exception;
@@ -16,59 +20,67 @@ class ComposerHandler {
     /**
      * Этот метод нужен для композера. Он делает сборку библиотек jqGrig в удобоваримый для require-js файл
      */
-    public static function installAssets( Event $event )
+    public static function installAssets(Event $event)
     {
         /** @var $pack RootPackage */
         $pack = $event->getComposer()->getPackage();
 
         $extra = $pack->getExtra();
         $outDir = 'sfcms-static-dir';
-        if ( ! isset( $extra[ $outDir ] ) ) {
-            throw new Exception(sprintf('Param "%s" not defined',  $outDir ));
+        if (!isset($extra[$outDir])) {
+            throw new Exception(sprintf('Param "%s" not defined', $outDir));
         }
 
-        $rootDir = getenv('PWD');
+        $rootDir = getcwd();
 
         $source = $rootDir . '/vendor/tonytomov';
-        $out    = $rootDir . '/'.$extra[ $outDir ].'/admin/jquery/jqgrid';
+        $out    = $rootDir . '/' . $extra[$outDir] . '/admin/jquery/jqgrid';
 
         $modules = array(
-            'jqGrid/js/i18n/grid.locale-ru',
-            'jqGrid/js/grid.base',
-            'jqGrid/js/grid.common',
-            'jqGrid/js/grid.formedit',
-            'jqGrid/js/grid.inlinedit',
-            'jqGrid/js/grid.celledit',
-            'jqGrid/js/grid.subgrid',
-            'jqGrid/js/grid.treegrid',
-            'jqGrid/js/grid.grouping',
-            'jqGrid/js/grid.custom',
-            'jqGrid/js/grid.tbltogrid',
-            'jqGrid/js/grid.import',
-            'jqGrid/js/jquery.fmatter',
-            'jqGrid/js/JsonXml',
-            'jqGrid/js/grid.jqueryui',
-            'jqGrid/js/grid.filter',
-            //            'jquery/jquery.jqGrid',
+            new FileAsset($source . '/jqGrid/js/i18n/grid.locale-ru.js'),
+            new FileAsset($source . '/jqGrid/js/grid.base.js'),
+            new FileAsset($source . '/jqGrid/js/grid.common.js'),
+            new FileAsset($source . '/jqGrid/js/grid.formedit.js'),
+            new FileAsset($source . '/jqGrid/js/grid.inlinedit.js'),
+            new FileAsset($source . '/jqGrid/js/grid.celledit.js'),
+            new FileAsset($source . '/jqGrid/js/grid.subgrid.js'),
+            new FileAsset($source . '/jqGrid/js/grid.treegrid.js'),
+            new FileAsset($source . '/jqGrid/js/grid.grouping.js'),
+            new FileAsset($source . '/jqGrid/js/grid.custom.js'),
+            new FileAsset($source . '/jqGrid/js/grid.tbltogrid.js'),
+            new FileAsset($source . '/jqGrid/js/grid.import.js'),
+            new FileAsset($source . '/jqGrid/js/jquery.fmatter.js'),
+            new FileAsset($source . '/jqGrid/js/JsonXml.js'),
+            new FileAsset($source . '/jqGrid/js/grid.jqueryui.js'),
+            new FileAsset($source . '/jqGrid/js/grid.filter.js'),
         );
-        $assemble = array_map(function( $mod ) use ( $source ) {
-            return file_get_contents( $source . '/' . $mod . '.js' )."\n"
-                . ( 'jquery/jquery.jqGrid' != $mod ? sprintf( 'define("%s",function(){});', $mod ) . "\n" : '' );
-        },$modules);
+        $jsAsset = new AssetCollection($modules, array(), $source);
+        /** @var FileAsset $asset */
+//        foreach ($jsAsset as $asset) {
+//            var_dump($asset->getTargetPath());
+//            $writer->writeAsset($asset);
+//        }
+        $jsAsset->setTargetPath($extra[$outDir] . '/admin/jquery/jqgrid/jqgrid.js');
 
-        $content = join( "\n", $assemble );
-        $content = Sfcms::html()->jsMin( $content );
+        $writer = new AssetWriter(getcwd());
+        $writer->writeAsset($jsAsset);
 
-        try {
-            mkdir( rtrim( $out, '/' ), 0755, true );
-        } catch( ErrorException $e ) {
-            print sprintf("Catalog %s not created. %s\n", rtrim( $out, '/' ), $e->getMessage());
-        }
+        $cssAsset = new FileAsset($source . '/jqGrid/css/ui.jqgrid.css');
+        $cssAsset->setTargetPath($extra[$outDir] . '/admin/jquery/jqgrid/ui.jqgrid.css');
+        $writer->writeAsset($cssAsset);
 
-        file_put_contents($out.'/jqgrid.js', $content);
-        copy( $source.'/jqGrid/css/ui.jqgrid.css', $out.'/ui.jqgrid.css' );
+//        $i18nAsset = new GlobAsset($source . '/jqGrid/js/i18n/*.js');
+        /** @var FileAsset $asset */
+//        foreach ($i18nAsset as $asset) {
+//            $asset->setTargetPath('' . $asset->getTargetPath());
+//            var_dump($asset->getTargetPath());
+//            $writer->writeAsset($asset);
+//        }
 
-        print sprintf("Lib %s/jqgrid.js was updated\n", $out);
-        print sprintf("Css %s/ui.jqgrid.css was updated\n", $out);
+        //            'jqGrid/js/i18n/grid.locale-ru.js',
+
+
+        print sprintf("Lib %s/jqgrid.js was updated\n", $jsAsset->getTargetPath());
+        print sprintf("Css %s/ui.jqgrid.css was updated\n", $cssAsset->getTargetPath());
     }
 }

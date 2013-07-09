@@ -7,8 +7,13 @@
  * @link   http://siteforever.ru
  */
 
-$.fn.gallery = function() {
-     return $(this).each(function(){
-         $(this).fancybox({titlePosition:'inside'});
-     });
-};
+define("jquery/jquery.gallery", [
+    "jquery",
+    "fancybox"
+], function($){
+    $.fn.gallery = function() {
+        return $(this).each(function(){
+            $(this).fancybox({titlePosition:'inside'});
+        });
+    };
+});

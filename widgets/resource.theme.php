@@ -24,7 +24,7 @@ class Smarty_Resource_Theme extends Smarty_Resource_Custom
     {
         // выполняем обращение для получения шаблона
         // и занесения полученного результата в в $tpl_source
-        $theme = App::$config->get('template.theme');
+        $theme = App::getInstance()->getConfig()->get('template.theme');
         $path = 'themes'.DIRECTORY_SEPARATOR.$theme.DIRECTORY_SEPARATOR.'templates';
 
         if ( file_exists( $path.DIRECTORY_SEPARATOR.$name ) ) {

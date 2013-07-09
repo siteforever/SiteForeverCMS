@@ -28,15 +28,11 @@ class Config
             $this->config = $cfg;
             return $this;
         }
-        try {
-            $this->config = @require_once $cfg;
-            if (null !== $container) {
-                $this->registerParameters('', $this->config, $container);
-            }
-            return $this;
-        } catch (\Exception $e) {
-            throw new Exception('Configuration file "'.$cfg.'" not found');
+        $this->config = @require_once $cfg;
+        if (null !== $container) {
+            $this->registerParameters('', $this->config, $container);
         }
+        return $this;
     }
 
     /**
@@ -48,13 +44,12 @@ class Config
     protected function registerParameters($ns, array $config, Container $container)
     {
         foreach ($config as $key => $val) {
-            if (is_scalar($val)) {
-                $container->setParameter($ns . $key, $val);
-            } else {
-                $this->registerParameters($ns . $key . '.', $val, $container);
-            }
+            $container->setParameter($ns . $key, $val);
+//            if (is_scalar($val)) {
+//            } else {
+//                $this->registerParameters($ns . $key . '.', $val, $container);
+//            }
         }
-
     }
 
     /**

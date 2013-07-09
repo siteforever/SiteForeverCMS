@@ -8,7 +8,7 @@
 namespace Sfcms;
 
 use App;
-use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Tpl\Driver;
 use Sfcms_Http_Exception;
 use Symfony\Component\Console\Application;

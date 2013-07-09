@@ -7,7 +7,7 @@
 namespace Sfcms;
 
 
-use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\AbstractKernel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +16,7 @@ class Console extends Application
 {
     private $app;
 
-    public function __construct(KernelBase $app)
+    public function __construct(AbstractKernel $app)
     {
         parent::__construct('sfcms');
         $this->app = $app;

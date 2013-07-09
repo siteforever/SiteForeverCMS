@@ -69,16 +69,8 @@
 
                 {if $item.text}<div class="b-catalog-product-desc">{$item.text}</div>{/if}
 
-                <div class="b-product-basket">
-                    {$item.item}
-                    <div class="input-append">
-                        <input type="text" name="basket_prod_count" class="b-product-basket-count span1" value="1">
-                        <input type="button" class="btn basket-add" value="В корзину"
-                               data-product="{$item.name}"
-                               data-price="{$item.price}"
-                               data-id="{$item.id}">
-                    </div>
-                </div>
+                {include file="basket/add.tpl"}
+
             </div>
         </div>
     </div>

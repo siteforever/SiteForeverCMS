@@ -5,6 +5,12 @@
  */
 namespace Sfcms\View;
 
+use Assetic\Asset\AssetCollection;
+use Assetic\Asset\FileAsset;
+use Assetic\Asset\StringAsset;
+use Assetic\AssetManager;
+use Assetic\AssetWriter;
+use Assetic\Factory\AssetFactory;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Request;
 
@@ -86,9 +92,14 @@ class Layout extends ViewAbstract
     {
         $config = $this->_app->getConfig();
 
+        /** @var AssetManager $am */
+        $am = $this->_app->getContainer()->get('assetManager');
+        /** @var AssetWriter $writer */
+        $writer = $this->_app->getContainer()->get('assetWriter');
+
         $return = array();
         $return[] = '<meta http-equiv="content-type" content="text/html; charset=UTF-8">';
-//        $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
+        $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
         $return[] = '<meta name="viewport" content="width=device-width,initial-scale=1">';
         $return[] = '<meta name="generator" content="SiteForever CMS">';
         $return[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
@@ -110,8 +121,10 @@ class Layout extends ViewAbstract
 
         if ($request->get('admin')) {
             $this->_app->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
+            $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../Module/System/Static/icons.css')));
+            $am->get('admIcons')->setTargetPath('admIcons.css');
+            $this->_app->addStyle('/static/admIcons.css');
         }
-
         // Подключение стилей в заголовок
         $useLess = &$this->use_less;
         $antiCache = &$this->anti_cache;
@@ -125,6 +138,7 @@ class Layout extends ViewAbstract
             return '';
         }, $this->_app->getStyle()) );
 
+        $writer->writeManagerAssets($am);
         return join(PHP_EOL, $return);
     }
 
@@ -167,12 +181,15 @@ class Layout extends ViewAbstract
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
 
+//        if (!$this->_app->isDebug()) {
+        $rjsConfig['paths']['site'] = '../static/site';
+//        }
+
         if ( $request->get('admin') ) {
 
             $rjsConfig['paths']['app'] = 'admin';
             $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';
-            $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . (\App::isDebug() ? '' : '.min');
-//            $rjsConfig['paths']['controller'] = ;
+            $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
             $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
             $rjsConfig['shim']['backbone'] = array(
@@ -185,7 +202,7 @@ class Layout extends ViewAbstract
 
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
-                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . (\App::isDebug() ? '.full' : '.min'),
+                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . ($this->_app->isDebug() ? '.full' : '.min'),
 //                'jqgrid'  => 'admin/jquery/jqgrid',
                 'controller' => 'admin/'.$request->getController(),
             );
@@ -194,17 +211,15 @@ class Layout extends ViewAbstract
 
             $return[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
 
-
-            if ( file_exists(SF_PATH.'/_runtime/asset/require-jquery-min.js') ) {
+            if (file_exists(ROOT . '/static/require-jquery-min.js')) {
                 $return[] = "<script type='text/javascript' "
-                    . "src='/_runtime/asset/require-jquery-min.js' data-main='../_runtime/asset/admin-min'>"
+                    . "src='/static/require-jquery-min.js' data-main='../static/admin'>"
                     . "</script>";
             } else {
                 $return[] = "<script type='text/javascript' "
                     . "src='/misc/require-jquery.js' data-main='../static/admin'>"
                     . "</script>";
             }
-
         } else {
             $return[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
             $return[] = "<script type='text/javascript' src='/misc/require-jquery-min.js' data-main='site'></script>";

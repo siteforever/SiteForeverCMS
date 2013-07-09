@@ -35,7 +35,7 @@ require([
         $('span.captcha-reload').captcha();
 
         // добавить в корзину
-        $(document).on('click', 'input.basket-add', function(){
+        $(document).on('click', 'input.b-basket-add-button', function(){
             var product = $(this).data('product'),
                 properties = [];
             $( "input,select","#properties").each(function(){
@@ -44,7 +44,7 @@ require([
             basket.add(
                 $(this).data('id'),
                 product,
-                $(this).parent().find('input.b-product-basket-count').val(),
+                $(this).parent().find('input.b-basket-add-count').val(),
                 $(this).data('price'),
                 properties.join(", "),
                 script && script.basket && typeof script.basket == 'function' ? script.basket : false

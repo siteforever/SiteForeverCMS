@@ -39,6 +39,7 @@ class Captcha extends Field
             return true;
         }
         $this->_msg = $this->t('Code is not valid');
+        unset($_SESSION['_sf2_attributes']['captcha_code']);
         return false;
     }
 

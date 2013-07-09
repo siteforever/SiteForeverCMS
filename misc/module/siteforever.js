@@ -6,7 +6,7 @@
 
 define("siteforever",[
     "jquery"
-], function( $ ){
+], function($) {
 
 //    $(document).ajaxStart(function(){
 //        $('<img src="/images/progress-bar.gif" alt="progress" id="progress">')

@@ -8,6 +8,9 @@ namespace Module\Page\Command;
 
 use Assetic\Asset\AssetCollection;
 use Assetic\Asset\FileAsset;
+use Assetic\Asset\GlobAsset;
+use Assetic\Asset\StringAsset;
+use Sfcms\View\Layout;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,36 +35,29 @@ class AssetsCommand extends Command
         $misc = SF_PATH . DIRECTORY_SEPARATOR . 'misc';
         $exists = file_exists($targetFile);
 
-        $files = array(
-//            '/jquery/jquery.form.js',
-//            '/jquery/jquery.blockUI.js',
-//            '/elfinder/js/elfinder.full.js',
-//            '/elfinder/js/i18n/elfinder.ru.js',
-//            '/module/modal.js',
-//            '/admin/catalog.js',
-//            '/admin/forms.js',
-            '/bootstrap/js/bootstrap.js',
-            '/admin/jquery/jquery.dumper.js',
-            '/admin/jquery/jquery.filemanager.js',
-            '/admin/jquery/jquery.realias.js',
-            '/admin/admin.js',
-            '/admin/app.js',
-        );
-//        if ($exists) {
-//            $lastModTarget = filemtime($targetFile);
-//            $lastModSorce = array_reduce($files, function($modify, $file) use ($misc) {
-//                    $l = filemtime($misc.$file);
-//                    return $l > $modify ? $l : $modify;
-//                }, 0);
-//        }
-//        if (!$exists || $lastModSorce > $lastModTarget) {
-        $collection = new AssetCollection();
-        foreach ($files as $file) {
-            $collection->add(new FileAsset($misc . $file));
-        }
+        $collection = new AssetCollection(array(
+            new FileAsset($misc.'/bootstrap/js/bootstrap.js'),
+            new StringAsset('define("twitter");'),
+            new GlobAsset($misc.'/admin/jquery/*.js'),
+            new GlobAsset($misc.'/admin/catalog/*.js'),
+            new GlobAsset($misc.'/module/*.js'),
+//            new FileAsset($misc . '/jquery/jquery.blockUI.js'),
+//            new StringAsset('define("jquery/jquery.blockUI");'),
+            new FileAsset($misc.'/jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min.js'),
+            new StringAsset('define("jui");'),
+//            new FileAsset($misc.'/elfinder/js/elfinder.min.js'),
+//            new StringAsset('define("elfinder/js/elfinder.full.js");'),
+//            new StringAsset('define("elfinder/js/elfinder.min.js");'),
+
+            new FileAsset($misc.'/admin/admin.js'),
+            new FileAsset($misc.'/admin/app.js'),
+        ));
+
         file_put_contents($targetFile, $collection->dump());
         $output->writeln('<info>Admin js created.</info>');
-//        }
+
+        $requirejs = new FileAsset($misc . '/require-jquery-min.js');
+        file_put_contents(ROOT . '/static/require-jquery-min.js', $requirejs->dump());
     }
 
 }

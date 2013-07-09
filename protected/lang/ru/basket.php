@@ -21,4 +21,6 @@ return array(
     'User panel'  => 'Кабинет пользователя',
     'Quick Links'  => 'Быстрый переход',
     'Order list'  => 'Список заказов',
+
+    'Add to basket' => 'Добавить в корзину',
 );

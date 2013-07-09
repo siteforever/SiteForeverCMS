@@ -9,6 +9,7 @@ namespace Module\Catalog;
 
 use Sfcms\Module as SfModule;
 use Sfcms\Model;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Module extends SfModule
 {
@@ -43,6 +44,24 @@ class Module extends SfModule
         $dispatcher->addListener('plugin.page-catalog.save.start', array($model,'pluginPageSaveStart'));
         $dispatcher->addListener('plugin.page-catalog.resort', array($model,'pluginPageResort'));
     }
+
+    public function registerService(ContainerBuilder $container)
+    {
+        $container->get('config')->setDefault('catalog', array(
+            // сортировка товаров
+            'order_list' => array(
+                ''           => 'Без сортировки',
+                'name'       => 'По наименованию',
+                'price1'     => 'По цене (0->макс)',
+                'price1-d'   => 'По цене (макс->0)',
+                'articul'    => 'По артикулу',
+            ),
+            'order_default' => 'name',
+            'onPage' => '10',
+            'level'  => 0, // < 1 output all products
+        ));
+    }
+
 
     public function admin_menu()
     {

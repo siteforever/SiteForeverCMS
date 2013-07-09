@@ -11,7 +11,7 @@ namespace Sfcms\Controller;
 use Sfcms\Controller;
 use ReflectionClass;
 use RuntimeException;
-use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Request;
 use Sfcms_Http_Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -24,7 +24,7 @@ class Resolver
     /** @var \App */
     protected $app;
 
-    public function __construct(KernelBase $app)
+    public function __construct(AbstractKernel $app)
     {
         $this->app = $app;
         $this->_controllers = $app->getControllers();

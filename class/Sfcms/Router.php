@@ -77,10 +77,17 @@ class Router
     }
 
     /**
-     * @param boolean $rewrite
+     * @param boolean|array $rewrite
      */
     public function setRewrite($rewrite)
     {
+        if (is_array($rewrite)) {
+            if (isset($rewrite['rewrite'])) {
+                $rewrite = $rewrite['rewrite'];
+            } else {
+                $rewrite = false;
+            }
+        }
         self::$rewrite = $rewrite;
     }
 

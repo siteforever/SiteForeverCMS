@@ -35,7 +35,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Config\FileLocator;
 
-abstract class KernelBase
+abstract class AbstractKernel
 {
     static protected $instance = null;
 
@@ -172,7 +172,7 @@ abstract class KernelBase
     /**
      * @static
      * @throws Exception
-     * @return KernelBase
+     * @return AbstractKernel
      */
     static public function getInstance()
     {

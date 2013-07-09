@@ -5,7 +5,7 @@
  */
 namespace Sfcms\Data;
 
-use Sfcms\Kernel\KernelBase;
+use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Model;
 use Sfcms\Data\Object;
 

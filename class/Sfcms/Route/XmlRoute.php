@@ -24,7 +24,7 @@ class XmlRoute extends Route
             $xmlRoutes = new \SimpleXMLIterator(file_get_contents($xml_routes_file));
             if ($xmlRoutes) {
                 foreach ($xmlRoutes as $XMLRoute) {
-                    $regexp = '@^' . str_replace('*', '([\/\w-]*)', $XMLRoute['alias']) . '@ui';
+                    $regexp = '@^' . str_replace(array('/','*'), array('\/','([^\/]*)'), $XMLRoute['alias']) . '@ui';
                     if ($XMLRoute['active'] !== "0" && preg_match($regexp, $route, $match)) {
                         $controller = (string)$XMLRoute->controller;
                         $action     = isset($XMLRoute->action) ? (string)$XMLRoute->action : 'index';

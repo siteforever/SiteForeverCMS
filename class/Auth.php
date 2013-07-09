@@ -1,5 +1,5 @@
 <?php
-use Sfcms\Kernel\KernelBase as Service;
+use Sfcms\Kernel\AbstractKernel as Service;
 use Module\User\Model\UserModel;
 use Module\User\Object\User;
 use Symfony\Component\Security\Core\Util\SecureRandom;

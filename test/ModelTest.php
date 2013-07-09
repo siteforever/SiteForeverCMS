@@ -1,7 +1,7 @@
 <?php
 use Sfcms\Model;
 use Sfcms\db;
-use Sfcms\Kernel\KernelBase as Kernel;
+use Sfcms\Kernel\AbstractKernel as Kernel;
 use Module\System\Object\Test as TestObject;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Collection;
@@ -175,7 +175,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
 
         $this->model->delete(2);
         $this->assertNull( $this->model->find(2) );
-        
+
         $this->assertEquals($this->model->count(), 0);
 
         $pdo = $this->model->getDB()->getResource();

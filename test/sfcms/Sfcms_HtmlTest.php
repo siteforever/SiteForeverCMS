@@ -64,6 +64,6 @@ class Sfcms_HtmlTest extends PHPUnit_Framework_TestCase
     public function testIcon()
     {
         $icon = $this->html->icon('pencil', 'Edit');
-        $this->assertEquals('<img title="Edit" alt="Edit" src="/images/admin/icons/pencil.png">', $icon);
+        $this->assertEquals("<i class='sfcms-icon sfcms-icon-pencil' title='Edit'></i>", $icon);
     }
 }

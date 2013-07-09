@@ -47,7 +47,9 @@ class Html
      */
     public function icon( $name, $title = '' )
     {
-        return sprintf('<img title="%1$s" alt="%1$s" src="/images/admin/icons/%2$s.png">', $title?$title:$name, $name);
+        $name = str_replace('_', '-', $name);
+        $title = $title ?: $name;
+        return "<i class='sfcms-icon sfcms-icon-{$name}' title='{$title}'></i>";
     }
 
     /**
@@ -143,8 +145,8 @@ class Html
             $method = Sfcms_Image_Scale::METHOD_PRIORITY;
         }
 
-        if( ! $src ) {
-            $src = '/images/no-image.png';
+        if (!$src) {
+            $src = '/static/images/no-image-'.App::getInstance()->getConfig('language').'.png';
         }
         $src = $name = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$src) );
         // Подменное имя для изображения

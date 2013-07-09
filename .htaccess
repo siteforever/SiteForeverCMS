@@ -40,7 +40,7 @@ RewriteBase /
 #RewriteRule ^(.*)\.php$ / [L,R=404]
 
 # Переписываем пути, если есть подозрение, что идет обращение к странице сайта
-RewriteCond %{REQUEST_FILENAME} !(php|ico|jpg|jpeg|png|gif|css|js)$
+RewriteCond %{REQUEST_FILENAME} !(php)$
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 

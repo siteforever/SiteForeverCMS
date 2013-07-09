@@ -1,14 +1,19 @@
 parameters:
-    cache:
-        livecycle: 60
-        class: Sfcms\Cache\CacheBlank
-#        class: Sfcms\Cache\CacheFile
-#        class: Sfcms\Cache\CacheApc
+    cache_livecycle: 60
+    cache_class: Sfcms\Cache\CacheBlank
+#    cache.class: Sfcms\Cache\CacheFile
+#    cache.class: Sfcms\Cache\CacheApc
+
+    mailer_transport: sendmail
+
+    language: en
 
     template:
         theme: basic
         cache:
-            livetime: %cache.livecycle%
+            livetime: %cache_livecycle%
+
+    static_dir: .
 
 services:
     smarty:
@@ -28,8 +33,8 @@ services:
         arguments: ["%db%"]
 
     cache:
-        class: %cache.class%
-        arguments: ["%cache.livecycle%"]
+        class: %cache_class%
+        arguments: ["%cache_livecycle%"]
 
     eventDispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
@@ -46,8 +51,17 @@ services:
     router:
         class: Sfcms\Router
         calls:
-            - [setRewrite, ["%url.rewrite%"]]
+            - [setRewrite, ["%url%"]]
 
     mailer:
         class: Swift_Mailer
-        arguments: ["@mailer.transport"]
+        arguments: ["@mailer_transport"]
+
+    assetManager:
+        class: Assetic\AssetManager
+
+    assetWriter:
+        class: Assetic\AssetWriter
+        arguments: ["%static_dir%"]
+        calls:
+            - [writeManagerAssets, ["@assetManager"]]

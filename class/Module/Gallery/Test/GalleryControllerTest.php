@@ -66,9 +66,9 @@ class GalleryControllerTest extends WebCase
         $this->assertEquals(25, $json->id);
         $this->assertEquals(0, $json->error);
         $this->assertEquals('', $json->msg);
-        $this->assertEquals('<img title="Вкл" alt="Вкл" src="/images/admin/icons/lightbulb_off.png">', $json->img);
+        $this->assertEquals("<i class='sfcms-icon sfcms-icon-lightbulb-off' title='Вкл'></i>", $json->img);
         $responseSwitch = $this->click($crawler->filterXPath('//a[@class="gallery_picture_switch"]')->first());
         $json = json_decode($responseSwitch->getContent());
-        $this->assertEquals('<img title="Выкл" alt="Выкл" src="/images/admin/icons/lightbulb.png">', $json->img);
+        $this->assertEquals("<i class='sfcms-icon sfcms-icon-lightbulb' title='Выкл'></i>", $json->img);
     }
 }
