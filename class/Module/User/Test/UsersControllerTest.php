@@ -159,6 +159,8 @@ class UsersControllerTest extends WebCase
         ));
         $response = $this->runController('user', 'register');
         $crawler = $this->createCrawler($response);
+
+        var_dump($response->getContent());
         $this->assertEquals('Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.',
             $crawler->filterXPath('//div[@class="alert"]')->text()
         );
