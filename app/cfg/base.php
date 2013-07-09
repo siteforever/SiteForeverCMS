@@ -39,9 +39,7 @@ return array(
         'theme'     => 'basic', // тема сайта
     ),
 
-    'mailer' => array(
-        'transport' => 'sendmail',
-    ),
+    'mailer_transport' => 'sendmail',
 
     'modules' => require_once __DIR__ . '/../modules.php',
 

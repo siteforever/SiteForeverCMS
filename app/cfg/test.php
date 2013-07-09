@@ -22,8 +22,5 @@ return array_merge(require_once 'base.php', array(
         'migration' => true,
     ),
 
-    'mailer' => array(
-        'transport' => 'null',
-    ),
-
+    'mailer_transport' => 'null',
 ));
