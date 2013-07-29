@@ -3,7 +3,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-define([
+define("admin/elfinder", [
     "jquery",
     "wysiwyg",
     "elfinder/js/elfinder.full",

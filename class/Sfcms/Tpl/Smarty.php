@@ -59,9 +59,9 @@ class Smarty extends Driver
 
         $this->setCplDir($tpl_c);
         $this->setCacheDir($cache);
-        $this->setWidgetsDir(SF_PATH . '/widgets');
+        $this->addWidgetsDir(SF_PATH . '/widgets');
         if (ROOT != SF_PATH) {
-            $this->setWidgetsDir(ROOT . '/widgets');
+            $this->addWidgetsDir(ROOT . '/widgets');
         }
 
         $this->engine->compile_check = $this->config['compile_check'];
@@ -229,7 +229,7 @@ class Smarty extends Driver
      * Установить каталог плагинов
      * @param $dir
      */
-    public function setWidgetsDir( $dir )
+    public function addWidgetsDir( $dir )
     {
         $this->engine->addPluginsDir($dir);
     }

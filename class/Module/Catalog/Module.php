@@ -34,7 +34,24 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'Goods'          => array(),
+                'Prodtype'       => array(),
+                'Catalog'        => array(),
+                'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
+                'CatalogComment' => array( 'class' => 'Controller\Comment', ),
+            ),
+            'models' => array(
+                'Catalog'         => 'Module\Catalog\Model\CatalogModel',
+                'CatalogGallery'  => 'Module\Catalog\Model\GalleryModel',
+                'CatalogComment'  => 'Module\Catalog\Model\CommentModel',
+
+                'ProductField'    => 'Module\Catalog\Model\FieldModel',
+                'ProductProperty' => 'Module\Catalog\Model\PropertyModel',
+                'ProductType'     => 'Module\Catalog\Model\TypeModel',
+            ),
+        );
     }
 
     public function init()
@@ -84,6 +101,10 @@ class Module extends SfModule
                     array(
                         'name'  => $this->t('Manufacturers'),
                         'url'   => 'manufacturers/admin'
+                    ),
+                    array(
+                        'name'  => $this->t('Comments'),
+                        'url'   => 'catalogcomment/admin',
                     ),
                     array(
                         'name'  => 'Каталог',

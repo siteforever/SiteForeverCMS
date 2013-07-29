@@ -29,6 +29,19 @@ class Html
     }
 
     /**
+     * @param $tpl
+     * @param $params
+     *
+     * @return mixed
+     */
+    public function render($tpl, $params = array())
+    {
+        $t = App::getInstance()->getTpl();
+        $t->assign($params);
+        return $t->fetch($tpl);
+    }
+
+    /**
      * Вернет строку URL для указанных параметров
      * @param string|null $url
      * @param array $params

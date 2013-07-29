@@ -3,7 +3,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
-define([
+define("admin/manufacturers", [
     "jquery",
     "module/modal",
     "siteforever"

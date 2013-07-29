@@ -3,7 +3,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-define([
+define("admin/order", [
     "jquery",
     "siteforever"
 ],function($){

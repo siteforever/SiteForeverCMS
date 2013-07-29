@@ -312,15 +312,15 @@ class db
      * @param array $params
      * @return PDOStatement
      */
-    public function prepare( $sql, array $params )
+    public function prepare($sql, array $params)
     {
-//        try {
-        $this->result = $this->resource->prepare($sql);
-        $this->result->execute($params);
-//        } catch ( PDOException $e ) {
-//            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
-//            die( 'ERROR: '.$sql.' : '.print_r($params,1) );
-//        }
+        try {
+            $this->result = $this->resource->prepare($sql);
+            $this->result->execute($params);
+        } catch ( \PDOException $e ) {
+            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
+            return null;
+        }
 
         /*if ( count($params) ) {
             foreach( $params as $key => $val ) {

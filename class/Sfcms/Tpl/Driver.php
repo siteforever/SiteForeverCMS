@@ -37,7 +37,7 @@ abstract class Driver extends Component
 
     abstract public function setCacheDir($cache);
 
-    abstract public function setWidgetsDir($dir);
+    abstract public function addWidgetsDir($dir);
 
     public function set( $key, $value )
     {

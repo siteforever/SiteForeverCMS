@@ -3,7 +3,7 @@
  * @author keltanas
  */
 
-define([
+define("admin/guestbook", [
     "jquery",
     "module/modal",
     "i18n",

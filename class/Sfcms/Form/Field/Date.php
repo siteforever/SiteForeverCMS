@@ -46,7 +46,7 @@ class Date extends Field
      * Если значение не удовлетворяет типу поля, то оно не будет установлено,
      * а метод вернет false
      * @param $value
-     * @return Form_Field|Form_Field_Date
+     * @return Field|Field\Date
      */
     public function setValue( $value )
     {

@@ -82,21 +82,23 @@ abstract class Field
             $this->_class    = $params['class'];
         }
 
-        if ( $this->in_array_strict('readonly', $params) ) {
-            $this->_readonly = true;
-        }
-
-        if ( $this->in_array_strict('disable', $params) ) {
-            $this->disable = true;
-        }
-
-        if ( $this->in_array_strict('hidden', $params) ) {
-            $this->hide();
-        }
-
-        if ( $this->in_array_strict('required', $params) )
-        {
-            $this->setRequired();
+        foreach ($params as $i => $p) {
+            if (is_int($i)) {
+                switch ($p) {
+                    case 'readonly':
+                        $this->_readonly = true;
+                        break;
+                    case 'disable':
+                        $this->_disabled = true;
+                        break;
+                    case 'hidden':
+                        $this->hide();
+                        break;
+                    case 'required':
+                        $this->setRequired();
+                        break;
+                }
+            }
         }
 
         if ( isset($params['label']) ) {
@@ -283,14 +285,15 @@ abstract class Field
     /**
      * Проверит значение на валидность типа
      * @param $value
+     *
      * @return boolean
      */
-    protected function checkValue( $value )
+    protected function checkValue($value)
     {
-        if ( ! $this->isEmpty() && trim( $this->_filter ) ) {
-            $result = preg_match( $this->_filter, trim( $value ) );
-            return $result;
+        if (!$this->isEmpty() && trim($this->_filter)) {
+            return preg_match($this->_filter, trim($value));
         }
+
         return true;
     }
 
@@ -511,13 +514,17 @@ abstract class Field
      * @param $field
      * @return string
      */
-    public function htmlInput( $field )
+    public function htmlInput($field)
     {
-        if( is_array( $field['class'] ) && ! in_array($this->_class, $field['class']) ) {
+        if (is_array($field['class']) && !in_array($this->_class, $field['class'])) {
             $field['class'][] = $this->_class;
         }
-        $field['class'] = 'class="'.join(' ', $field['class']).'"';
-        return "<input ".join(' ', $field)." />";
+        if (is_array($field['class'])) {
+            $field['class'] = join(' ', $field['class']);
+        }
+        $field['class'] = 'class="' . $field['class'] . '"';
+
+        return "<input " . join(' ', $field) . " />";
     }
 
     /**

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="{$request->get('lang')}">
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html lang="{$request->getLocale()}">
 <head>
-{head}
 </head>
-
 <body class="body" id="admin">
 <div class="navbar navbar-inverse">
     <div class="navbar-inner">
@@ -56,8 +58,12 @@
         </div>
 
         <div class="span9" id="workspace">
+            <!--[if lt IE 9]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            <![endif]-->
+
             {*<div class="well">*}
-                {if $request->getTitle()}<h2>{$request->getTitle()}</h2>{/if}
+                {if $request->getTitle() && empty($title)}<h2>{$request->getTitle()}</h2>{/if}
 
                 {if $feedback}<div class="alert alert-block">
                     <a class="close" data-dismiss="alert" href="#">&times;</a>

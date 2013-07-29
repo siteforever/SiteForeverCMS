@@ -5,6 +5,7 @@
  */
 namespace Sfcms;
 
+use Sfcms\Form\Form;
 use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
 use Sfcms\Config;
@@ -202,10 +203,10 @@ abstract class Controller extends ContainerAware
      * Return form by name/alias
      * @param $name
      *
-     * @return mixed
+     * @return Form
      * @throws Exception
      */
-    public function getForm( $name )
+    public function getForm($name = null)
     {
         if (!isset(self::$forms[$name])) {
             $className = 'Forms_' . $name;
@@ -245,7 +246,12 @@ abstract class Controller extends ContainerAware
      */
     public function paging($count, $perpage, $link)
     {
-        return new Pager($count, $perpage, $link, $this->request);
+        if ($this->config->get('pager_template')) {
+            $pager = new Pager($count, $perpage, $link, $this->request, $this->config->get('pager_template'));
+        } else {
+            $pager = new Pager($count, $perpage, $link, $this->request);
+        }
+        return $pager;
     }
 
     /**

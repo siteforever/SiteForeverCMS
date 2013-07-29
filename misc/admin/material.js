@@ -3,7 +3,7 @@
  * @author: keltanas
  * @link http://siteforever.ru
  */
-define([
+define("admin/material", [
     "jquery",
     "module/parser",
     "module/modal",

@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  */
 
-define([
+define("admin/news", [
     "jquery",
     "module/modal",
     "i18n",

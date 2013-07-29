@@ -7,8 +7,9 @@
 namespace Sfcms\Form\Field;
 
 use Sfcms\Form\Field\Radio;
+use Sfcms\Form\Field;
 
-class Checkbox extends Radio
+class Checkbox extends Field
 {
     protected
         $_type   = 'checkbox',
@@ -22,31 +23,21 @@ class Checkbox extends Radio
      */
     public function htmlInput( $field )
     {
-        $html = array();
+        $field['type'] = 'type="hidden"';
+        $field['value'] = 'value="0"';
+        unset($field['class']);
+        $id = $field['id'];
+        unset($field['id']);
+        $result = "<input " . join(' ', $field) . " />";
 
-        if ( isset($this->_params['variants']) )
-        {
-            foreach( $this->_params['variants'] as $value => $label )
-            {
-                $field['id']     = "id='{$this->getId()}_{$value}'";
-                $field['value']  = "value='{$value}'";
-
-                $field['checked'] = '';
-                if ( $this->_value == $value || ( is_array($this->_value) && in_array( $value, $this->_value) ) ) {
-                    $field['checked'] = " checked='checked' ";
-                }
-
-                $field['name']   = "name='{$this->_form->name()}[{$this->_name}][{$value}]'";
-
-                if ( is_array( $field['class'] ) ) {
-                    $field['class'] = 'class="'.join(' ', $field['class']).'"';
-                }
-
-                $html[]  = "<input ".join(' ', $field)." /> <label for='{$this->getId()}_{$value}'>{$label}</label>";
-            }
+        $field['id'] = $id;
+        $field['value'] = 'value="1"';
+        $field['type'] = 'type="checkbox"';
+        if ($this->_value) {
+            $field['checked'] = 'checked="checked"';
         }
-        $br = in_array('br', $this->_params) ? "<br />" : "";
-        return join($br."\n", $html);
+
+        return  $result . "<input " . join(' ', $field) . " />";
     }
 
     /**

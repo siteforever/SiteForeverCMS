@@ -39,6 +39,8 @@ return array(
         'theme'     => 'basic', // тема сайта
     ),
 
+    'pager_template' => 'pager_twbt',
+
     'mailer_transport' => 'sendmail',
 
     'modules' => require_once __DIR__ . '/../modules.php',

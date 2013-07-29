@@ -74,10 +74,11 @@ class Layout extends ViewAbstract
         $content = str_replace('<head>', $head, $content);
         $content = str_replace('</body>', $scripts, $content);
 
-        $content = preg_replace( '/[ \t]+/', ' ', $content );
-        $content = preg_replace( '/\n[ \t]+/', "\n", $content );
-        $content = preg_replace( '/\n+/', "\n", $content );
-
+        if (!$this->_app->isDebug()) {
+            $content = preg_replace( '/[ \t]+/', ' ', $content );
+            $content = preg_replace( '/\n[ \t]+/', "\n", $content );
+            $content = preg_replace( '/\n+/', "\n", $content );
+        }
         $event->getResponse()->setContent($content);
 
         return $event;
@@ -124,6 +125,7 @@ class Layout extends ViewAbstract
             $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../Module/System/Static/icons.css')));
             $am->get('admIcons')->setTargetPath('admIcons.css');
             $this->_app->addStyle('/static/admIcons.css');
+            $this->_app->addStyle('/misc/bootstrap/css/bootstrap-datetimepicker.min.css');
         }
         // Подключение стилей в заголовок
         $useLess = &$this->use_less;
@@ -177,7 +179,7 @@ class Layout extends ViewAbstract
             ),
         );
 
-        if (!$this->_app->getConfig('misc.noBootstrap')) {
+        if ($request->get('admin') || !$this->_app->getConfig('misc.noBootstrap')) {
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
 
@@ -186,11 +188,13 @@ class Layout extends ViewAbstract
 //        }
 
         if ( $request->get('admin') ) {
-
             $rjsConfig['paths']['app'] = 'admin';
             $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
-            $rjsConfig['shim']['elfinder/js/i18n/elfinder.ru'] = array('elfinder/js/elfinder');
+            $rjsConfig['shim']['elfinder/js/i18n/elfinder.'.$request->getLocale()] = array('elfinder/js/elfinder');
+            if ('en' != $request->getLocale()) {
+                $rjsConfig['shim']['bootstrap/js/locales/bootstrap-datetimepicker.'.$request->getLocale()] = array('bootstrap/js/bootstrap-datetimepicker');
+            }
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
             $rjsConfig['shim']['backbone'] = array(
                 'deps' => array('underscore', 'jquery'),
@@ -203,21 +207,28 @@ class Layout extends ViewAbstract
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
                 'elfinder/js/elfinder' => 'elfinder/js/elfinder' . ($this->_app->isDebug() ? '.full' : '.min'),
-//                'jqgrid'  => 'admin/jquery/jqgrid',
-                'controller' => 'admin/'.$request->getController(),
             );
+            $controllerJs = 'admin/'.$request->getController();
+            if (file_exists(ROOT . $this->getMisc() . '/' . $controllerJs . '.js')) {
+                $rjsConfig['config']['admin/admin']['use_controller'] = true;
+                $rjsConfig['map']['*']['controller'] = $controllerJs;
+            }
 
             $rjsConfig['map']['*']['jqgrid'] = '../static/admin/jquery/jqgrid/jqgrid';
 
-            $return[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
+            $json = defined('JSON_PRETTY_PRINT') && $this->_app->isDebug()
+                ? json_encode($rjsConfig, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_NUMERIC_CHECK)
+                : json_encode($rjsConfig, JSON_NUMERIC_CHECK);
 
-            if (file_exists(ROOT . '/static/require-jquery-min.js')) {
+            $return[] = '<script type="text/javascript">var require = '.$json.';</script>';
+
+            if ($this->_app->isDebug()) {
+                $return[] = "<script type='text/javascript' "
+                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
+                    . "</script>";
+            } elseif (file_exists(ROOT . '/static/require-jquery-min.js') && file_exists(ROOT . '/static/admin.js')) {
                 $return[] = "<script type='text/javascript' "
                     . "src='/static/require-jquery-min.js' data-main='../static/admin'>"
-                    . "</script>";
-            } else {
-                $return[] = "<script type='text/javascript' "
-                    . "src='/misc/require-jquery.js' data-main='../static/admin'>"
                     . "</script>";
             }
         } else {

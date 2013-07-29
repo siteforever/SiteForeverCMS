@@ -51,6 +51,7 @@
         </div>
     </div>
 
+    {comment product=$item request=$request}
 
 </div>
 

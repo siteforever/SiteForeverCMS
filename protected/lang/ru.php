@@ -2,158 +2,174 @@
 /**
  * Dictionary for russian language
  */
-return array_merge(
-    array(
+return array(
 
-        'Home'                                      => 'Главная',
-        'Exit'                                      => 'Выход',
-        'Save & close'                              => 'Cохранить и закрыть',
-        'Close'                                     => 'Закрыть',
-        'Save changes'                              => 'Сохранить изменения',
+    'Home'                                      => 'Главная',
+    'Exit'                                      => 'Выход',
+    'Save & close'                              => 'Cохранить и закрыть',
+    'Close'                                     => 'Закрыть',
+    'Save changes'                              => 'Сохранить изменения',
 
-        'Initialisation'                            => 'Инициализация',
+    'Initialisation'                            => 'Инициализация',
 
-        'Main'                                      => 'Главная',
-        'Sitemap'                                   => 'Карта сайта',
-        'Inner'                                     => 'Внутренняя',
-        'Inner with Left'                           => 'Внутренняя с левым меню',
+    'Main'                                      => 'Главная',
+    'Sitemap'                                   => 'Карта сайта',
+    'Inner'                                     => 'Внутренняя',
+    'Inner with Left'                           => 'Внутренняя с левым меню',
 
-        'Goto site'                                 => 'Перейти на сайт',
+    'Goto site'                                 => 'Перейти на сайт',
 
-        'Routes'                                    => 'Маршруты',
-        'Deleted route # '                          => 'Удален маршрут № ',
+    'Routes'                                    => 'Маршруты',
+    'Deleted route # '                          => 'Удален маршрут № ',
 
-        'Data save successfully'                    => 'Данные сохранены успешно',
-        'Save successfully'                         => 'Сохранено успешно',
-        'Data not saved'                            => 'Данные не сохранены',
-        'Delete successfully'                       => 'Удалено успешно',
-        'delete success'                            => 'удален успешно',
+    'Data save successfully'                    => 'Данные сохранены успешно',
+    'Save successfully'                         => 'Сохранено успешно',
+    'Data not saved'                            => 'Данные не сохранены',
+    'Delete successfully'                       => 'Удалено успешно',
+    'delete success'                            => 'удален успешно',
 
-        'Dumper of database'                        => 'Дампер базы данных',
-        'Dump successfully created'                 => 'Дамп создан успешно',
-        'Successfull dumped table'                  => 'Успешно сохранена таблица',
-        'Back to dumper main page'                  => 'Вернуться к главной странице дампера',
-        'Delete dump'                               => 'Удалить дамп',
-        'Select dump file for restore'              => 'Выберите файл дампа для восстановления',
+    'Dumper of database'                        => 'Дампер базы данных',
+    'Dump successfully created'                 => 'Дамп создан успешно',
+    'Successfull dumped table'                  => 'Успешно сохранена таблица',
+    'Back to dumper main page'                  => 'Вернуться к главной странице дампера',
+    'Delete dump'                               => 'Удалить дамп',
+    'Select dump file for restore'              => 'Выберите файл дампа для восстановления',
 
-        'Select your action'                        => 'Выберите действие',
-        'Create mysql dump'                         => 'Создать дамп MySQL',
-        'Restore DB from dump'                      => 'Восстановить базу из дампа',
+    'Select your action'                        => 'Выберите действие',
+    'Create mysql dump'                         => 'Создать дамп MySQL',
+    'Restore DB from dump'                      => 'Восстановить базу из дампа',
 
-        'Images gallery'                            => 'Галерея изображений',
-        'Images are loaded'                         => 'Изображения загружены',
-        'Image not loaded'                          => 'Изображения не загружены',
+    'Images gallery'                            => 'Галерея изображений',
+    'Images are loaded'                         => 'Изображения загружены',
+    'Image not loaded'                          => 'Изображения не загружены',
 
-        'Home page for the filling'                 => 'Информационная страница для наполнения',
+    'Home page for the filling'                 => 'Информационная страница для наполнения',
 
-        // Settings
-        'Settings'                                  => 'Настройки',
-        'Settings saved'                            => 'Настройки сохранены',
-        'Couldn\'t load this tab.'                  => 'Не удалось загрузить эту вкладку.',
-
-
-        // Banner
-        'Banners category list'                     => 'Список категорий баннеров',
-        'Add category'                              => 'Добавить категорию',
-        'Edit category'                             => 'Изменить категорию',
-        'There are no sections'                     => 'Пока нет разделов',
+    // Settings
+    'Settings'                                  => 'Настройки',
+    'Settings saved'                            => 'Настройки сохранены',
+    'Couldn\'t load this tab.'                  => 'Не удалось загрузить эту вкладку.',
 
 
-        // Manufacturer
-        'Manufacturers'                             => 'Производители',
-        'Manufacturer'                              => 'Производитель',
-        'Create manufacturer'                       => 'Создать производителя',
-        'Edit manufacturer'                         => 'Изменить производителя',
+    // Banner
+    'Banners category list'                     => 'Список категорий баннеров',
+    'Add category'                              => 'Добавить категорию',
+    'Edit category'                             => 'Изменить категорию',
+    'There are no sections'                     => 'Пока нет разделов',
 
-        'Payment'                                   => 'Оплата',
 
-        // Goods
-        'Goods'                                     => 'Товары',
-        'Price'                                     => 'Цена',
-        'Category'                                  => 'Категория',
-        'Articul'                                   => 'Артикул',
+    // Manufacturer
+    'Manufacturers'                             => 'Производители',
+    'Manufacturer'                              => 'Производитель',
+    'Create manufacturer'                       => 'Создать производителя',
+    'Edit manufacturer'                         => 'Изменить производителя',
 
-        'edit'                                      => 'изменить',
-        'delete'                                    => 'удалить',
-        'list'                                      => 'список',
+    'Payment'                                   => 'Оплата',
 
-        'Edit'                                      => 'Изменить',
-        'Delete'                                    => 'Удалить',
-        'Want to delete?'                           => 'Желаете удалить?',
-        'Save'                                      => 'Сохранить',
-        'Saving'                                    => 'Сохранение',
-        'Create'                                    => 'Создать',
-        'Cancel'                                    => 'Отмена',
-        'Name'                                      => 'Наименование',
-        'Email'                                     => 'Эл. почта',
-        'Site'                                      => 'Сайт',
-        'Phone'                                     => 'Телефон',
-        'Desc'                                      => 'Описание',
-        'Module'                                    => 'Модуль',
-        'Active'                                    => 'Активный',
-        'Advanced'                                  => 'Расширенный',
-        'Company'                                   => 'Компания',
+    // Goods
+    'Goods'                                     => 'Товары',
+    'Price'                                     => 'Цена',
+    'Category'                                  => 'Категория',
+    'Articul'                                   => 'Артикул',
 
-        'Action'                                    => 'Действие',
+    'edit'                                      => 'изменить',
+    'delete'                                    => 'удалить',
+    'list'                                      => 'список',
 
-        '#'                                         => '№',
-        'Count'                                     => 'Кол-во',
-        'Sum'                                       => 'Сумма',
-        'Details'                                   => 'Детали',
+    'Edit'                                      => 'Изменить',
+    'Delete'                                    => 'Удалить',
+    'Want to delete?'                           => 'Желаете удалить?',
+    'Save'                                      => 'Сохранить',
+    'Saving'                                    => 'Сохранение',
+    'Create'                                    => 'Создать',
+    'Cancel'                                    => 'Отмена',
+    'Name'                                      => 'Наименование',
+    'Email'                                     => 'Эл. почта',
+    'Site'                                      => 'Сайт',
+    'Phone'                                     => 'Телефон',
+    'Desc'                                      => 'Описание',
+    'Module'                                    => 'Модуль',
+    'Active'                                    => 'Активный',
+    'Advanced'                                  => 'Расширенный',
+    'Company'                                   => 'Компания',
 
-        'Unknown error'                             => 'Неизвестная ошибка',
+    'Action'                                    => 'Действие',
 
-        'Access denied'                             => 'Доступ запрещен',
+    '#'                                         => '№',
+    'Count'                                     => 'Кол-во',
+    'Sum'                                       => 'Сумма',
+    'Details'                                   => 'Детали',
 
-        'Site managment'                            => 'Управление сайтом',
-        'Site structure'                            => 'Структура сайта',
-        'Control panel'                             => 'Панель управления',
+    'Unknown error'                             => 'Неизвестная ошибка',
 
-        'Could not start the controller'            => 'Не удалось запустить контроллер',
-        'Unable to find controller'                 => 'Не найден контроллер',
-        'Error 404'                                 => 'Ошибка 404',
-        'Page not found'                            => 'Страница не найдена',
+    'Access denied'                             => 'Доступ запрещен',
 
-        'Memory'                                    => 'Память',
-        'Generation'                                => 'Генерация',
-        'Working on'                                => 'Работает на',
+    'Site managment'                            => 'Управление сайтом',
+    'Site structure'                            => 'Структура сайта',
+    'Control panel'                             => 'Панель управления',
 
-        'Basic'                                     => 'Основа',
-        'Description'                               => 'Описание',
-        'Address'                                   => 'Адрес',
+    'Could not start the controller'            => 'Не удалось запустить контроллер',
+    'Unable to find controller'                 => 'Не найден контроллер',
+    'Error 404'                                 => 'Ошибка 404',
+    'Page not found'                            => 'Страница не найдена',
 
-        'Form not posted'                           => 'Форма не отправлена',
+    'Memory'                                    => 'Память',
+    'Generation'                                => 'Генерация',
+    'Working on'                                => 'Работает на',
 
-        'Double-click to select the image'          => 'Двойной клик для выбора изображения',
+    'Basic'                                     => 'Основа',
+    'Description'                               => 'Описание',
+    'Address'                                   => 'Адрес',
 
-        'Search' => 'Поиск',
+    'Form not posted'                           => 'Форма не отправлена',
 
-        'Restore' => 'Восстановить',
-        'Request' => 'Запрос',
-        'Send request' => 'Отправить запрос',
+    'Double-click to select the image'          => 'Двойной клик для выбора изображения',
 
-        'Image'                                     => 'Изображение',
-        'Picture'                                   => 'Картинка',
-        'Icon'                                      => 'Иконка',
-        'Thumb'                                     => 'Миниатюра',
-        'Thumbnail'                                 => 'Миниатюра',
+    'Search' => 'Поиск',
 
-        'Nothing was found'                         => 'Ничего не найдено',
+    'Restore' => 'Восстановить',
+    'Request' => 'Запрос',
+    'Send request' => 'Отправить запрос',
 
-        'The data will be lost. Do you really want to delete?'
-            => 'Данные будут потеряны. Действительно хотите удалить?',
+    'Image'                                     => 'Изображение',
+    'Picture'                                   => 'Картинка',
+    'Icon'                                      => 'Иконка',
+    'Thumb'                                     => 'Миниатюра',
+    'Thumbnail'                                 => 'Миниатюра',
 
-        'Go to the module' => 'Перейти к модулю',
+    'Nothing was found'                         => 'Ничего не найдено',
 
-        'On' => 'Вкл',
-        'Off' => 'Выкл',
+    'The data will be lost. Do you really want to delete?'
+        => 'Данные будут потеряны. Действительно хотите удалить?',
 
-        'Yes' => 'Да',
-        'No'  => 'Нет',
+    'Go to the module' => 'Перейти к модулю',
 
-        'Page :name' => 'Страница :name',
+    'On' => 'Вкл',
+    'Off' => 'Выкл',
 
-        'subway'    => 'метро',
+    'Yes' => 'Да',
+    'No'  => 'Нет',
 
-        'Code is not valid' => 'Код не верный',
-    ) );
+    'Page :name' => 'Страница :name',
+
+    'subway'    => 'метро',
+
+    'Code is not valid' => 'Код не верный',
+
+    'Refresh' => 'Обновить',
+
+    // paging
+    'next &gt;' => 'след. &gt;',
+    '&lt; pred' => '&lt; пред.',
+    'Pages' => 'Страницы',
+    'from' => 'от',
+    'to' => 'до',
+
+    'Hidden' => 'Скрытое',
+    'hidden' => 'скрытое',
+    'Created At' => 'Создано',
+    'Updated At' => 'Обновлено',
+    'createdAt' => 'создано',
+    'updatedAt' => 'обновлено',
+    'Subject' => 'Тема',
+);

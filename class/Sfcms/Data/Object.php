@@ -8,6 +8,7 @@
 namespace Sfcms\Data;
 
 use Sfcms\Component;
+use Sfcms\Data\Field\Datetime;
 use Sfcms\Model;
 
 abstract class Object extends Table
@@ -115,6 +116,12 @@ abstract class Object extends Table
         if ('attributes' != $key) {
             $oldValue = $this->$key;
         }
+
+        $field = $this->field($key);
+        if ($field && $field instanceof Datetime && !$value instanceof \DateTime) {
+            $value = new \DateTime($value);
+        }
+
         parent::set($key, $value);
         if ('attributes' != $key && $oldValue != $value) {
             $this->changed[$key] = true;

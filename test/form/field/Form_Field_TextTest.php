@@ -91,9 +91,9 @@ class Form_Field_TextTest extends \Sfcms\Test\WebCase
     {
         $this->field->setValue('');
         $this->field->setRequired();
-        $this->assertFalse( $this->field->validate() );
+        $this->assertFalse($this->field->validate());
         $this->field->setRequired(false);
-        $this->assertTrue( $this->field->validate() );
+        $this->assertTrue($this->field->validate());
     }
 
     public function testHtml()

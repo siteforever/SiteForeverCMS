@@ -45,6 +45,7 @@ use Sfcms\i18n;
  * @property int $deleted
  * @property Catalog Category
  * @property Collection Goods
+ * @property Collection Comments
  * @property Manufacturer Manufacturer
  * @property Gallery Gallery
  * @property Page Page
@@ -56,6 +57,12 @@ class Catalog extends Object
 //    protected $_gallery = null;
 
     protected $_image   = null;
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
 
     /**
      * Вернет path для текущего объекта

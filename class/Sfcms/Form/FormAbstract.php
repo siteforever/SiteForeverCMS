@@ -63,27 +63,25 @@ abstract class FormAbstract
         $this->_action = isset( $config[ 'action' ] ) ? $config[ 'action' ] : '';
         $this->_class  = isset( $config[ 'class' ] ) ? $config[ 'class' ] : 'form-horizontal';
 
-        if ( isset( $config['fields'] ) ) {
-            foreach ( $config[ 'fields' ] as $fname => $field )
-            {
+        if (isset($config['fields'])) {
+            foreach ($config['fields'] as $fname => $field) {
                 // Обработка HTML
-                if ( is_string( $field ) ) {
-                    $this->_fields[ ] = $field;
+                if (is_string($field)) {
+                    $this->_fields[] = $field;
                     continue;
                 }
 
                 try {
-                    $obj_field = $this->createField( $fname, $field );
-                } catch ( Exception $e ) {
-                    $this->addFeedback('Field "'.$fname.'" has undefined type');
+                    $obj_field = $this->createField($fname, $field);
+                } catch (Exception $e) {
+                    $this->addFeedback('Field "' . $fname . '" has undefined type');
                     continue;
                 }
 
-                if ( isset($field['type']) && in_array( $field[ 'type' ], array( 'submit', 'reset', 'button' ) ) ) {
-                    $this->addButton( $obj_field );
-                }
-                else {
-                    $this->addField( $obj_field );
+                if (isset($field['type']) && in_array($field['type'], array('submit', 'reset', 'button'))) {
+                    $this->addButton($obj_field);
+                } else {
+                    $this->addField($obj_field);
                 }
             }
         }
@@ -137,31 +135,31 @@ abstract class FormAbstract
      * @param $field
      * @return Field
      */
-    public function createField( $name, $field )
+    public function createField($name, $field)
     {
         $hidden = false;
 
-        $field[ 'type' ] = isset( $field[ 'type' ] ) ? $field[ 'type' ] : 'text';
+        $field['type'] = isset($field['type']) ? $field['type'] : 'text';
 
         // тип hidden преобразовать в скрытый text
-        if ( $field[ 'type' ] == 'hidden' /*|| in_array( 'hidden', $field )*/ ) {
-            $hidden            = true;
-            $field[ 'type' ]   = 'text';
-            $field[ 'hidden' ] = 1;
+        if ($field['type'] == 'hidden' /*|| in_array( 'hidden', $field )*/) {
+            $hidden          = true;
+            $field['type']   = 'text';
+            $field['hidden'] = 1;
         }
 
         // физический класс обработки поля
-        $field_class = '\\Sfcms\\Form\\Field\\' . ucfirst( strtolower( $field[ 'type' ] ) );
+        $field_class = '\\Sfcms\\Form\\Field\\' . ucfirst(strtolower($field['type']));
 
         // экземпляр поля
-        if ( !class_exists( $field_class ) ) {
-            throw new  Exception( 'Class not found ' . $field_class );
+        if (!class_exists($field_class)) {
+            throw new Exception('Class not found ' . $field_class);
         }
 
         /** @var Field $obj_field */
-        $obj_field = new $field_class( $this, $name, $field );
+        $obj_field = new $field_class($this, $name, $field);
 
-        if ( $hidden ) {
+        if ($hidden) {
             $obj_field->hide();
         }
 
@@ -326,12 +324,14 @@ abstract class FormAbstract
             throw new Exception( 'Форма не содержит полей' );
         }
 
-        foreach( $this->_fields as $field ) {
-            /** @var $field Field */
-            if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) ) {
-                if ( isset($data[ $field->getName() ]) ) {
-                    $value = $data[ $field->getName() ];
-                    $field->setValue( $value );
+        if ($data) {
+            foreach( $this->_fields as $field ) {
+                /** @var $field Field */
+                if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) ) {
+                    if ( isset($data[ $field->getName() ]) ) {
+                        $value = $data[ $field->getName() ];
+                        $field->setValue( $value );
+                    }
                 }
             }
         }

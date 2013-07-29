@@ -60,4 +60,15 @@ return array(
     'String' => 'Строка',
     'Int' => 'Целое',
     'Datetime' => 'Дата-Время',
+
+    'Comments' => 'Комментарии',
+    'So far no one has left a comment' => 'Пока никто не оставил комментарий',
+    'You name' => 'Ваше имя',
+    'Captcha' => 'Код защиты',
+    'Subject' => 'Тема',
+    'Content' => 'Содержание',
+    'Message' => 'Сообщение',
+    'Send'  => 'Отправить',
+    'CreatedAt' => 'Создано',
+    'UpdatedAt' => 'Обновлено',
 );

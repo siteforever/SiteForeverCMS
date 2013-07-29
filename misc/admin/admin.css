@@ -25,6 +25,9 @@ input.cke_dialog_ui_input_text {
     margin: 0 !important;
     font-size: 12px;
 }
+a, button, input {
+    outline: none !important;
+}
 a.btn {
     line-height: 18px;
 }
@@ -41,8 +44,9 @@ small {
     position: fixed;
 }
     #loading-application div {
-        position: relative;
+        position: absolute;
         top: 50%;
+        width: 100%;
         margin-top: -0.5em;
         text-align: center;
         font-size: 30px;
@@ -93,7 +97,7 @@ table.dataset {
     }
     table.dataset th {
         font-weight: bold;
-        background: #7bb1e9 url("/images/admin/table.gif") repeat-x 0 0;
+        background: linear-gradient(top, #7bb1e9 , #5b66c9);;
         color: #fff;
         text-align: left;
     }
@@ -328,4 +332,30 @@ fieldset legend {
 #searchcntfbox_products_list select {
     width: 120px;
     margin-bottom: 0;
+}
+
+
+
+div.sfcms-admin-dataset th a.order-asc:after {
+    content: "↓";
+    color: #000;
+}
+div.sfcms-admin-dataset th a.order-desc:after {
+    content: "↑";
+    color: #000;
+}
+div.sfcms-admin-dataset th input {
+    margin: 0;
+}
+div.sfcms-admin-dataset .pagination {
+    margin: 0;
+}
+.pagination.pagination-mini a, .pagination.pagination-mini span {
+    line-height: 25px;
+    height: 25px;
+}
+
+
+div.modal div.modal-header {
+    cursor: pointer;
 }

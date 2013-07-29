@@ -128,6 +128,9 @@ abstract class Module extends Component
         if (is_dir($this->getPath().'/View')) {
             $tpl->addTplDir($this->getPath().'/View');
         }
+        if (is_dir($this->getPath().'/Widget')) {
+            $tpl->addWidgetsDir($this->getPath().'/Widget');
+        }
     }
 
     /**

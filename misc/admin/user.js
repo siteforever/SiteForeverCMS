@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  */
 
-define([
+define("admin/user", [
     "jquery",
     "module/modal",
     "siteforever"

@@ -6,6 +6,8 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Module\Catalog\Form\CommentForm;
+use Module\Catalog\Object\Comment;
 use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
 use Module\Catalog\Object\Catalog;
@@ -25,26 +27,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CatalogController extends Controller
 {
-    public function defaults()
-    {
-        return array(
-            'catalog',
-            array(
-                // сортировка товаров
-                'order_list' => array(
-                    ''           => 'Без сортировки',
-                    'name'       => 'По наименованию',
-                    'price1'     => 'По цене (0->макс)',
-                    'price1-d'   => 'По цене (макс->0)',
-                    'articul'    => 'По артикулу',
-                ),
-                'order_default' => 'name',
-                'onPage' => '10',
-                'level'  => 0, // < 1 output all products
-            )
-        );
-    }
-
     /**
      * Правила, определяющие доступ к приложениям
      * @return array
@@ -52,7 +34,7 @@ class CatalogController extends Controller
     public function access()
     {
         return array(
-            'system'    => array(
+            USER_ADMIN => array(
                 'admin', 'delete', 'save', 'hidden', 'price', 'move', 'saveorder', 'category', 'trade', 'goods'
             ),
         );
@@ -242,7 +224,7 @@ class CatalogController extends Controller
         $cacheKey = 'product' . $item->id;
 
         if ($cache->isNotExpired($cacheKey)) {
-            $content = $cache->get($cacheKey);
+            $response = new Response($cache->get($cacheKey));
         } else {
             $properties = array();
 
@@ -260,24 +242,20 @@ class CatalogController extends Controller
                 )
             );
 
-            $this->tpl->assign(
-                array(
+            $response = $this->render('catalog.viewproduct', array(
                     'item'       => $item,
                     'inBasket'   => $this->getBasket()->getCount($item->id),
                     'parent'     => $item->parent ? $catalog_model->find($item->parent) : null,
                     'properties' => $properties,
                     'gallery'    => $gallery,
                     'user'       => $this->auth->currentUser(),
-                )
-            );
-
-            $content = $this->tpl->fetch('catalog.viewproduct');
-            $cache->set($cacheKey, $content);
+                ));
+            $cache->set($cacheKey, $response->getContent());
         }
 
         $this->request->setTitle($item->name);
 
-        return $content;
+        return $response;
     }
 
     /**
@@ -619,6 +597,7 @@ class CatalogController extends Controller
 
         if ($edit) {
             $catgallery    = new GalleryController($this->request);
+            $catgallery->setContainer($this->container);
             $gallery_panel = $catgallery->getPanel($edit);
             $this->tpl->assign('gallery_panel', $gallery_panel);
         }

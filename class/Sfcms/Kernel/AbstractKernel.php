@@ -148,7 +148,7 @@ abstract class AbstractKernel
         $this->_container->set('config', $config);
 
         // Загрузка параметров модулей
-        $this->loadModulesConfigs();
+        $this->loadModules();
     }
 
     /**
@@ -435,13 +435,12 @@ abstract class AbstractKernel
      * @return array
      * @throws Exception
      */
-    protected function loadModulesConfigs()
+    protected function loadModules()
     {
         if (!$this->_modules_config) {
             $_ = $this;
 
             $moduleArray = $this->getConfig('modules');
-//            $moduleArray = $this->getContainer()->getParameter('modules');
 
             try {
                 array_map(function ($module) use ($_) {
@@ -457,7 +456,7 @@ abstract class AbstractKernel
                     $_->setModule(new $className($_, $module['name'], $module['path'], $place));
                 },$moduleArray);
             } catch (\Exception $e) {
-                die($e->getMessage());
+                throw $e;
             }
 
             // Сперва загрузим все конфиги
@@ -492,7 +491,7 @@ abstract class AbstractKernel
     public function getModule($name)
     {
         if ( null === $this->_modules ) {
-            $this->loadModulesConfigs();
+            $this->loadModules();
         }
         /** @var Module $module */
         foreach ($this->getModules() as $module) {
@@ -521,7 +520,7 @@ abstract class AbstractKernel
     public function getModels()
     {
         if ( null === $this->_models ) {
-            $this->loadModulesConfigs();
+            $this->loadModules();
             $this->_models = array_change_key_case(
                 array_filter(
                     array_reduce(
@@ -550,7 +549,7 @@ abstract class AbstractKernel
     public function getControllers()
     {
         if ( null === $this->_controllers ) {
-            $this->loadModulesConfigs();
+            $this->loadModules();
 
             $this->_controllers = array();
             foreach ( $this->_modules_config as $module => $config ) {

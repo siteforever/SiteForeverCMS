@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  */
 
-define([
+define("admin/system", [
     "jquery",
     "jquery/jquery.gallery"
 ], function($){

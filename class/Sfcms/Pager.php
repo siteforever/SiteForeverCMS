@@ -27,6 +27,11 @@ class Pager implements \ArrayAccess
     /** @var Request */
     private $request = null;
 
+    private $strNext = 'next &gt;';
+    private $strPred = '&lt; pred';
+
+    private $template = 'pager';
+
     /**
      * @param Request $request
      */
@@ -47,10 +52,13 @@ class Pager implements \ArrayAccess
         return $this->request;
     }
 
-    function __construct($count, $perpage, $link = '', $request = null)
+    function __construct($count, $perpage, $link = '', $request = null, $template = null)
     {
         if (null !== $request) {
             $this->setRequest($request);
+        }
+        if (null !== $template) {
+            $this->template = $template;
         }
 
         $perpage    = $perpage ? $perpage : 10;
@@ -67,7 +75,11 @@ class Pager implements \ArrayAccess
 
         if ( $page > 1 ) {
             $pred = \Sfcms::html()->url($link, array('page' => $page - 1));
-            $p[]  = \Sfcms::html()->link('&lt; пред', $link, $page > 2 ? array('page' => $page - 1) : array());
+            $p[]  = \Sfcms::html()->link(
+                \Sfcms::i18n()->write($this->strPred),
+                $link,
+                $page > 2 ? array('page' => $page - 1) : array()
+            );
         }
 
         $radius = 2;
@@ -105,10 +117,9 @@ class Pager implements \ArrayAccess
 
         if ( $page < $pages ) {
             $next   = \Sfcms::html()->url($link,array('page'=>$page+1));
-            $p[]    = \Sfcms::html()->link('след &gt;', $link, array('page'=>$page+1));
+            $p[]    = \Sfcms::html()->link(\Sfcms::i18n()->write($this->strNext), $link, array('page'=>$page+1));
         }
 
-        $this->html     = count($p) > 1 ? 'Страницы: '.join(' - ',$p) : '';
         $this->from     = ($page - 1) * $perpage;
         $this->to       = $this->from + $perpage;
         $this->offset   = $this->from;
@@ -121,6 +132,7 @@ class Pager implements \ArrayAccess
         $this->page     = $page;
         $this->pages    = $pages;
         $this->count    = $count;
+        $this->html     = \Sfcms::html()->render($this->template, array('pager'=>$this, 'p' => $p));
     }
 
     /**

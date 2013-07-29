@@ -21,6 +21,6 @@ return array_merge(require_once 'base.php', array(
         'debug'     => true,
         'migration' => true,
     ),
-
+    'pager_template' => 'pager',
     'mailer_transport' => 'null',
 ));

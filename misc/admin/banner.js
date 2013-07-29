@@ -3,7 +3,7 @@
  * @author keltanas@gmail.com
  */
 
-define([
+define("admin/banner", [
     "jquery",
     "module/modal",
     "i18n",

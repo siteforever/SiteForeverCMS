@@ -4,7 +4,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-define([
+define("admin/catalog", [
     "jquery",
     "module/modal",
     "i18n",

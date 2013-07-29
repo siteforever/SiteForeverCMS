@@ -676,20 +676,6 @@ abstract class Model extends Component
         $with       = $this->with;
         $this->with = array();
 
-        $cache_match = null;
-        // ==== CACHING ====
-//        if ($crit instanceof Criteria) {
-//            if (preg_match('@^`(\w+)`\s(IN|=)\s\(?(.*?)\)?$@', $crit->condition, $cache_match)) {
-//                if ('=' == $cache_match[2] && isset($crit->params[$cache_match[3]])) {
-//                    $hash_key = $this->objectClass() . $cache_match[1] . $crit->params[$cache_match[3]];
-//                    if (isset($this->_queries_cache[$hash_key])) {
-//                        return $this->_queries_cache[$hash_key];
-//                    }
-//                }
-//            }
-//        }
-        // ==== /CACHING ====
-
         if (is_array($crit) || (is_object($crit) && $crit instanceof Criteria)) {
             $query = new QueryBuilder($this, $crit);
         } elseif (is_string($crit) && is_array($params) && '' != $crit) {
@@ -709,26 +695,7 @@ abstract class Model extends Component
 
         if (count($raw)) {
             $collection = new Collection($raw, $this);
-            // ==== CACHING ====
-//            if ($cache_match && 'IN' == $cache_match[2]) {
-//                $cache_values = $crit->params[$cache_match[3]];
-//                if (!is_array($cache_values)) {
-//                    $cache_values = array($cache_values);
-//                }
-//                foreach ($cache_values as $cache_value) {
-//                    $hash_key = $this->objectClass() . $cache_match[1] . $cache_value;
-//                    if (!isset($this->_queries_cache[$hash_key])) {
-//                        $raw_filtered = array_filter(
-//                            $raw,
-//                            function ($data) use ($cache_match, $cache_value) {
-//                                return isset($data[$cache_match[1]]) && $data[$cache_match[1]] == $cache_value;
-//                            }
-//                        );
-//                        $this->_queries_cache[$hash_key] = new Collection($raw_filtered, $this);
-//                    }
-//                }
-//            }
-            // ==== /CACHING ====
+
             if (count($with)) {
                 foreach ($with as $rel) {
                     $relation = $this->getRelation($rel, $collection->getRow(0));
@@ -829,11 +796,12 @@ abstract class Model extends Component
         /** @var Field $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
-//            if (!isset($id[$field->getName()]) && null !== $val) {
             if (!$obj->isStateDirty() || ($obj->isStateDirty() && $obj->isChanged($field->getName()))) {
+                if ($val instanceof \DateTime) {
+                    $val = $val->format('Y-m-d H:i:s');
+                }
                 $save_data[$field->getName()] = $val;
             }
-//            }
         }
 
         // Nothing to save
