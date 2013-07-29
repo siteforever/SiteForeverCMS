@@ -31,9 +31,6 @@ a, button, input {
 a.btn {
     line-height: 18px;
 }
-/*@-moz-document url-prefix() {*/
-  /*input.btn {padding:6px 14px 5px;}*/
-/*}*/
 
 small {
     font-size: 80% !important;
@@ -118,14 +115,6 @@ table.dataset {
     width:50px;
 }
 
-
-input.image {
-    background-image: url("/images/admin/icons/picture.png");
-    background-position: 99% 50%;
-    background-repeat: no-repeat;
-}
-
-
 /* Основная структура */
     div.b-main-structure li {
         /*display: block;*/
@@ -180,13 +169,6 @@ input.image {
             div.b-main-structure li span.active span.tools {
                 visibility: visible;
             }
-        div.b-main-structure li span.open {
-            background-image: url(/images/admin/icons/folder_explore.png);
-        }
-        div.b-main-structure li span.page {
-            background-image: url(/images/admin/icons/page.png);
-        }
-
 
 #form_guestbook_edit textarea {
     height: 100px;

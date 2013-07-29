@@ -13,6 +13,7 @@ use Module\News\Model\NewsModel;
 use Module\News\Object\News;
 use Sfcms\Db\Criteria;
 use DOMDocument;
+use Symfony\Component\HttpFoundation\Response;
 
 class RssController extends Controller
 {
@@ -73,6 +74,6 @@ class RssController extends Controller
 //        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
         //$xml_string = htmlspecialchars_decode( $xml_string );
         $dom->formatOutput = true;
-        return $dom->saveXML();
+        return new Response($dom->saveXML(), 200, array('content-type'=>'text/xml'));
     }
 }
