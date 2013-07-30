@@ -52,15 +52,14 @@
         "symfony/dependency-injection": "2.3.*",
         "symfony/yaml": "2.3.*",
         "smarty/smarty": "3.1.*",
-        "twitter/bootstrap": "v2.3.1",
         "firephp/firephp-core": "v0.4.0",
         "ccampbell/chromephp": "4.0.0",
-        "tonytomov/jqGrid" : "4.4",
         "swiftmailer/swiftmailer": "v5.0.0",
         "kriswallsmith/assetic": "v1.1.1",
         "symfony/stopwatch": "2.3.*",
         "symfony/debug": " 2.3.*",
-        "helios-ag/fm-elfinder": "v2.0"
+        "helios-ag/fm-elfinder": "v2.0",
+        "tonytomov/jqGrid" : "4.4"
     },
     "repositories":[
         {
