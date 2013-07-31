@@ -17,12 +17,9 @@ use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\i18n;
 use Sfcms\Tpl\Driver;
-use Module\System\Model\TemplatesModel;
 use Module\Page\Model\PageModel;
 
 use Sfcms\Data\Object;
-use Module\User\Object\User;
-use Sfcms_Basket_Factory;
 use RuntimeException;
 
 use Sfcms\Basket\Base as Basket;

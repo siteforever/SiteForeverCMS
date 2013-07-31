@@ -28,7 +28,7 @@ class Module extends SfModule
         return array(
             'controllers' => array(
                 'captcha'   => array(),
-                'elfinder'  => array(),
+//                'elfinder'  => array(),
                 'generator' => array(),
                 'log'       => array(),
                 'routes'    => array(),

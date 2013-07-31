@@ -4,12 +4,12 @@ set_time_limit(0);
 
 // путь к фреймворку
 // если не указан, то в текущей директории
-define('SF_PATH', __DIR__);
+define('SF_PATH', realpath(__DIR__.'/..'));
 
 //корень сайта
-define('ROOT', __DIR__);
+define('ROOT', realpath(__DIR__.'/..'));
 
-require_once 'vendor/autoload.php';
+require_once ROOT . '/vendor/autoload.php';
 
 use Sfcms\Console;
 use Symfony\Component\Console\Input\ArgvInput;

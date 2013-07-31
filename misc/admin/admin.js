@@ -19,6 +19,8 @@ define("admin/admin", [
     "admin/jquery/jquery.dumper"
 ],function(require, $, Backbone, i18n, module, behavior, $alert){
 
+    window.lang = document.getElementsByTagName('html')[0].lang;
+
     Backbone.emulateHTTP = true;
     var dispatcher = {};
     _.extend(dispatcher, Backbone.Events);
@@ -29,7 +31,6 @@ define("admin/admin", [
         windows: [],
 
         initialize: function() {
-
         },
 
         create: function(opt) {
@@ -77,22 +78,7 @@ define("admin/admin", [
                 dataGrid.loadData();
             });
         }
-    });
 
-    $(document).ready(function(){
-
-        $('a.filemanager').filemanager();
         $('a.dumper').dumper();
-
-
-        /**
-         * Placeholder while initialisation
-         */
-        $('#loading-application').each(function(){
-            $(this).fadeOut(200, function(){
-                $(this).remove();
-            });
-        });
-
     });
 });

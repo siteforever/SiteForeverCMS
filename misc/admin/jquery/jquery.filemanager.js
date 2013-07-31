@@ -1,69 +1,89 @@
 /**
- * Plugins for activation elFinder file manager
+ * Integration elFinder file manager
+ * It is no longer a jquery module
+ *
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  * @file   admin/jquery/jquery.filemanager.js
  */
 define("admin/jquery/jquery.filemanager",[
     "jquery",
-    "require",
     "jui",
-    "elfinder/js/elfinder",
-    "elfinder/js/i18n/elfinder.ru"
-//    "elfinder-2.0-rc1/js/elfinder.min",
-//    "elfinder-2.0-rc1/js/i18n/elfinder.ru"
-], function($, require){
+    "elfinder"
+], function($){
 
-    $.fn.filemanager = function () {
-        return $(this).each(function(){
-            $(this).click(function () {
-                if ($("#filemanager_dialog").length == 0) {
-                    $('body').append("<div id='filemanager_dialog'></div>");
+    /** cache for jquery elFinder node */
+    var $filemanager = $("#filemanager_dialog"),
+
+        /** begin settings for elFinder */
+        filemanager = {
+            url: "/?route=elfinder/connector",
+            lang: window.lang,
+            resizable: false,
+            debug: false
+        },
+
+        /**
+         * Settings for ui.dialog
+         * @type {Object}
+         */
+        dialog  = {
+            width: $(window).width() - 50,
+            height: $(window).height() - 50,
+            modal:true,
+            resizable:false,
+            close: function() {
+                $(this).elfinder('destroy').dialog('destroy');
+            },
+            open: function(getFileCallback, event) {
+                var opt = $.extend({
+                    width: $(event.target).width(),
+                    height: $(event.target).height()
+                }, filemanager);
+                if (getFileCallback && typeof getFileCallback == 'function') {
+                    opt.getFileCallback = getFileCallback;
                 }
-                $("#filemanager_dialog").elfinder({
-                    "url":"/?controller=elfinder&action=connector",
-                    "lang":"ru",
-                    "dialog":$.fn.filemanager.dialog
-                });
-                return false;
-            });
-        });
-    };
-
-    /**
-     * Настройка диалогового окна
-     * @type {Object}
-     */
-    $.fn.filemanager.dialog = {
-        width:650,
-        height:465,
-        title:"Файлы",
-        modal:true,
-        resizable:false
-    };
-
-    /**
-     * Файловый менеджер открывается на инпуте
-     * @return {Boolean}
-     */
-    $.fn.filemanager.input = function () {
-
-        var input = this;
-
-        if ($("#filemanager_dialog").length == 0) {
-            $('body').append("<div id='filemanager_dialog'></div>");
-        }
-
-        $("#filemanager_dialog").elfinder({
-            "url":"/?controller=elfinder&action=connector",
-            "lang":"ru",
-            "dialog":$.fn.filemanager.dialog,
-            "closeOnEditorCallback":true,
-            "editorCallback":function (url) {
-                $(input).val(url);
+                $(event.target).elfinder(opt);
             }
+        };
+
+    /**
+     * Creating node for file manager if not exists
+     */
+    if (!$filemanager.length) {
+        $filemanager = $("<div id='filemanager_dialog'></div>")
+            .appendTo('body')
+            .css({"padding": 0, "overflow": "hidden"});
+    }
+
+    /**
+     * File manager open by a.filemanager
+     */
+    $(document).on('click', 'a.filemanager', function(){
+        var opt = $.extend({}, dialog, {
+            open: $.proxy(dialog.open, this, undefined),
+            title: $(this).text()
         });
+        $filemanager.dialog(opt);
         return false;
-    };
+    });
+
+    /**
+     * File manager open by input.image
+     */
+    $(document).on('dblclick', 'input.image', function () {
+        var node = this;
+        var opt = $.extend({}, dialog, {
+            open: $.proxy(dialog.open, this, function(file){
+                $(node).val(file.url);
+                $filemanager.dialog('close');
+            }),
+            title: $(node).parent().siblings("label").text()
+        });
+        $filemanager.dialog(opt);
+        return false;
+    });
+
+    return filemanager;
 });
 

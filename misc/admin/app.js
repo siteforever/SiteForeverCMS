@@ -4,6 +4,13 @@
  * @link   http://siteforever.ru
  */
 
-require(["admin/admin"], function($){
-    window.lang = document.getElementsByTagName('html')[0].lang;
+require(["jquery", "admin/admin"], function($){
+    /**
+     * Placeholder while initialisation
+     */
+    $('#loading-application').each(function(){
+        $(this).fadeOut(200, function(){
+            $(this).remove();
+        });
+    });
 });

@@ -104,7 +104,7 @@ class Pager implements \ArrayAccess
             if ( $i == $page ) {
                 $p[]    = $page;
             } else {
-                $p[]    = \Sfcms::html()->link($i, $link, array('page'=>$i));
+                $p[]    = \Sfcms::html()->link($i, $link, 1==$i ? array() : array('page'=>$i));
             }
         }
 

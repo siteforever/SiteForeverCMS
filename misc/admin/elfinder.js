@@ -1,21 +1,23 @@
 /**
- * ElFinder
+ * ElFinder controller
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
 define("admin/elfinder", [
     "jquery",
     "wysiwyg",
-    "elfinder/js/elfinder.full",
-    "elfinder/js/i18n/elfinder.ru"
+    "elfinder"
 ],function( $, wysiwyg ){
     return {
         "init" : function() {
-            console.log( wysiwyg );
-            var langCode = 'ru';
-            $('#finder').each(function(){
-                $(this).elfinder(wysiwyg.elfinder);
+            var langCode = window.lang;
+            $(window).resize(function(){
+                $('#elfinder').elfinder({
+                    width: $(this).width() - 2,
+                    height: $(this).height() - 2
+                });
             });
+            return $('#elfinder').elfinder(wysiwyg.elfinder).elfinder('instance');
         }
     };
 });

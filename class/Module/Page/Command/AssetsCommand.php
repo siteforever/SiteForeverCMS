@@ -1,9 +1,4 @@
 <?php
-/**
- *
- * @author: Nikolay Ermin <keltanas@gmail.com>
- */
-
 namespace Module\Page\Command;
 
 use Assetic\Asset\AssetCollection;
@@ -17,7 +12,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-
+/**
+ * Command for composing static files
+ * @author: Nikolay Ermin <keltanas@gmail.com>
+ */
 class AssetsCommand extends Command
 {
 

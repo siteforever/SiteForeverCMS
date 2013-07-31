@@ -7,48 +7,53 @@
 CKEDITOR_BASEPATH = '/misc/ckeditor/';
 
 define('admin/editor/ckeditor',[
+    "module",
     "jquery",
+    "admin/jquery/jquery.filemanager",
     "ckeditor/ckeditor",
     "ckeditor/adapters/jquery"
-],function($){
+],function(module, $, filemanager){
+
+    function getUrlParam(paramName) {
+        var reParam = new RegExp('(?:[\?&]|&amp;)' + paramName + '=([^&]+)', 'i') ;
+        var match = window.location.search.match(reParam) ;
+
+        return (match && match.length > 1) ? match[1] : '' ;
+    }
+
+    var funcNum = getUrlParam('CKEditorFuncNum'),
+        finderUrl = '/?route=elfinder/finder',
+        finderWidth = 800,
+        finderHeight = 600;
+
     return {
         "name" : "ckeditor",
         "init" : function() {
             $('textarea').not('.plain').each(function(){
-                if ( ! CKEDITOR.instances[ $(this).attr('id') ] ) {
+                if (!CKEDITOR.instances[ $(this).attr('id') ]) {
                     $(this).ckeditor({
-                        filebrowserBrowseUrl:'/?route=elfinder/finder',
-                        filebrowserImageBrowseUrl:'/?route=elfinder/finder',
-                        filebrowserWindowWidth:'530',
-                        filebrowserWindowHeight:'500',
-                        filebrowserImageWindowWidth:'530',
-                        filebrowserImageWindowHeight:'500',
-//                        contentsCss: '/themes/basic/css/style.css',
+                        filebrowserBrowseUrl:finderUrl,
+                        filebrowserImageBrowseUrl:finderUrl,
+                        filebrowserWindowWidth:finderWidth,
+                        filebrowserWindowHeight:finderHeight,
+                        filebrowserImageWindowWidth:finderWidth,
+                        filebrowserImageWindowHeight:finderHeight,
+                        contentsCss: module.config().style,
                         height: 200
                     });
                 }
             });
-
-            var self = this;
-            $('#finder').each(function(){
-                $(this).elfinder(self.elfinder);
-            });
-
             return 'ckeditor';
         },
 
-        "elfinder" : {
-            url : '/?route=elfinder/connector',
-            lang : 'ru',
-            editorCallback : function(url) {
-                var funcNum = window.location.search.replace(/^.*CKEditorFuncNum=(\d+).*$/, "$1");
-                var langCode = window.location.search.replace(/^.*langCode=([a-z]{2}).*$/, "$1");
-                if ( funcNum ) {
-                    window.opener.CKEDITOR.tools.callFunction(funcNum, url);
-                    window.close();
-                }
+        "elfinder" : $.extend({}, filemanager, {
+            width: $(window).width() - 2,
+            height: $(window).height() - 2,
+            getFileCallback : function(file) {
+                window.opener.CKEDITOR.tools.callFunction(funcNum, file.url);
+                window.close();
             }
-        },
+        }),
 
         "destroy" : function() {
             $('textarea').not('.plain').each(function(){
@@ -56,7 +61,6 @@ define('admin/editor/ckeditor',[
                     var ed = $(this).ckeditorGet();
                     if ( ed ) ed.destroy();
                 } catch (e) {
-                    //console.error(e);
                 }
             });
         }

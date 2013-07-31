@@ -12,6 +12,7 @@ class Admin extends Layout
 {
     /**
      * @param KernelEvent $event
+     *
      * @return KernelEvent
      */
     public function view(KernelEvent $event)
@@ -20,21 +21,24 @@ class Admin extends Layout
         $this->init($request);
         // подключение админских стилей и скриптов
         $this->attachJUI();
-        $this->_app->addStyle( $this->getMisc() . '/admin/admin.css' );
+        $this->_app->addStyle($this->getMisc() . '/admin/admin.css');
         // jQuery
 
-//        $this->attachWysiwyg();
+        //        $this->attachWysiwyg();
 
-        $this->_app->addStyle( $this->getMisc() . '/elfinder/css/elfinder.css' );
+        $this->_app->addStyle('/static/admin/jquery/elfinder/elfinder.css');
 
         $this->_app->addScript('/static/admin.js');
 
-        $this->_app->addStyle( $this->getMisc() . '/bootstrap/css/bootstrap.css' );
+        $this->_app->addStyle($this->getMisc() . '/bootstrap/css/bootstrap.css');
 
         $this->getTpl()->assign('response', $event->getResponse());
-        $event->getResponse()->setContent($this->getTpl()->fetch(
-            $request->get('resource') . $request->getTemplate()
-        ));
+        $event->getResponse()->setContent(
+            $this->getTpl()->fetch(
+                $request->get('resource') . $request->getTemplate()
+            )
+        );
+
         return $event;
     }
 }

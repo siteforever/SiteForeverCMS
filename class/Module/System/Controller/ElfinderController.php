@@ -17,9 +17,9 @@ class ElfinderController extends Controller
     {
         $this->request->setTitle($this->t('ElFinder'));
 
-        $this->app()->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
-        $this->app()->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
-        $this->app()->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
+        $this->app->addStyle( $this->request->get('path.misc') . '/elfinder/css/elfinder.css' );
+        $this->app->addScript( $this->request->get('path.misc') . '/elfinder/js/elfinder.full.js' );
+        $this->app->addScript( $this->request->get('path.misc') . '/elfinder/js/i18n/elfinder.ru.js' );
     }
 
 

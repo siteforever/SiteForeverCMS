@@ -1,24 +1,11 @@
-<!DOCTYPE public>
-<html>
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="{$request->getLocale()}"> <![endif]-->
+<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" lang="{$request->getLocale()}"> <![endif]-->
+<!--[if IE 8]> <html class="no-js lt-ie9" lang="{$request->getLocale()}"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="{$request->getLocale()}"> <!--<![endif]-->
 <head>
-    <title>ElFinder 2</title>
 </head>
-<body>
-
-<script type="text/javascript" src="/misc/require-jquery.js"></script>
-<script type="text/javascript">
-    require.config({
-        baseUrl: '/static',
-        paths : {
-            "misc" : "../misc",
-            "jui" : "misc/"
-        },
-        deps: [
-            "jquery",
-            "jui"
-        ],
-
-    });
-</script>
+<body style="overflow: hidden;">
+<div id="elfinder"></div>
 </body>
 </html>

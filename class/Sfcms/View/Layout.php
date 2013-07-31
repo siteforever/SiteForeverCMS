@@ -64,15 +64,15 @@ class Layout extends ViewAbstract
 
         $this->selectLayout($event->getRequest())->view($event);
 
-        $head = '<head>' . PHP_EOL . $this->getHead($event->getRequest());
-        $scripts = $this->getScripts($event->getRequest()) . PHP_EOL . '</body>';
+        $head = $this->getHead($event->getRequest());
+        $scripts = $this->getScripts($event->getRequest());
 
         $content = $event->getResponse()->getContent();
-        $content = str_replace(
-            '<html>', sprintf('<html lang="%s">', $this->_app->getConfig('language')), $content
-        );
-        $content = str_replace('<head>', $head, $content);
-        $content = str_replace('</body>', $scripts, $content);
+//        $content = str_replace(
+//            '<html>', sprintf('<html lang="%s">', $this->_app->getConfig('language')), $content
+//        );
+        $content = str_replace('<head>', '<head>' . PHP_EOL . $head . $scripts, $content);
+//        $content = str_replace('</body>', $scripts . PHP_EOL . '</body>', $content);
 
         if (!$this->_app->isDebug()) {
             $content = preg_replace( '/[ \t]+/', ' ', $content );
@@ -157,9 +157,6 @@ class Layout extends ViewAbstract
         $rjsConfig = array(
             'baseUrl'=> '/misc',
             'config' => array(
-                '*' => array(
-                    'lang' => $this->_app->getConfig('language'),
-                ),
             ),
             'shim' => array(
                 'jui'   => array('jquery'),
@@ -188,10 +185,13 @@ class Layout extends ViewAbstract
 //        }
 
         if ( $request->get('admin') ) {
+            $rjsConfig['config']['admin/editor/ckeditor'] = array(
+                'style' => $this->path['css'] . '/style.css',
+            );
+
             $rjsConfig['paths']['app'] = 'admin';
             $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
-            $rjsConfig['shim']['elfinder/js/i18n/elfinder.'.$request->getLocale()] = array('elfinder/js/elfinder');
             if ('en' != $request->getLocale()) {
                 $rjsConfig['shim']['bootstrap/js/locales/bootstrap-datetimepicker.'.$request->getLocale()] = array('bootstrap/js/bootstrap-datetimepicker');
             }
@@ -204,9 +204,14 @@ class Layout extends ViewAbstract
                 'exports' => '_',
             );
 
+            $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
+//            $rjsConfig['shim']['elfinder'] = array(
+//                'exports' => 'ElFinder',
+//            );
+
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
-                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . ($this->_app->isDebug() ? '.full' : '.min'),
+//                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . ($this->_app->isDebug() ? '.full' : '.min'),
             );
             $controllerJs = 'admin/'.$request->getController();
             if (file_exists(ROOT . $this->getMisc() . '/' . $controllerJs . '.js')) {

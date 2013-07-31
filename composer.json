@@ -52,6 +52,7 @@
         "symfony/dependency-injection": "2.3.*",
         "symfony/yaml": "2.3.*",
         "smarty/smarty": "3.1.*",
+        "monolog/monolog": "1.6.*",
         "firephp/firephp-core": "v0.4.0",
         "ccampbell/chromephp": "4.0.0",
         "swiftmailer/swiftmailer": "v5.0.0",
@@ -77,14 +78,10 @@
     ],
     "scripts": {
         "post-install-cmd": [
-            "Sfcms\\Assetic\\ComposerHandler::installAdmin",
-            "Sfcms\\JqGrid\\ComposerHandler::installAssets",
-            "Sfcms\\ElFinder\\ComposerHandler::installAssets"
+            "Sfcms\\ComposerHandler::execute"
         ],
         "post-update-cmd": [
-            "Sfcms\\Assetic\\ComposerHandler::installAdmin",
-            "Sfcms\\JqGrid\\ComposerHandler::installAssets",
-            "Sfcms\\ElFinder\\ComposerHandler::installAssets"
+            "Sfcms\\ComposerHandler::execute"
         ]
     },
     "minimum-stability": "stable",

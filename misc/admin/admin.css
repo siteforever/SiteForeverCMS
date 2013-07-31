@@ -338,6 +338,27 @@ div.sfcms-admin-dataset .pagination {
 }
 
 
+div.modal {
+    z-index: 950;
+}
 div.modal div.modal-header {
     cursor: pointer;
+}
+.modal-backdrop {
+    z-index: 940;
+}
+
+div.elfinder-resize-control input[type="text"] {
+    border: 1px solid #AAAAAA;
+    text-align: right;
+    width: 50px;
+}
+
+.elfinder-navbar .ui-state-hover {
+    color: #000;
+}
+
+.elfinder-navbar .elfinder-navbar-wrapper {
+    cursor: pointer;
+    font-size: 10px;
 }

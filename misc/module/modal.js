@@ -25,7 +25,6 @@ define('module/modal',[
         this.domnode = $('#'+id);
         this.domnode.on('shown', function(){
             $('.datepicker').datepicker( window.datepicker );
-            $(document).on('dblclick','input.image',$.fn.filemanager.input);
             wysiwyg.init();
         });
         this.domnode.on('hidden', function(){
