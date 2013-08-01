@@ -17,6 +17,7 @@ use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,6 +35,7 @@ use Sfcms\Data\Watcher;
  * @property Config $config
  * @property CacheInterface $cache
  * @property User $user
+ * @property Filesystem $filesystem
  * @property i18n $i18n
  */
 abstract class Controller extends ContainerAware

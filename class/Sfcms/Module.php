@@ -9,8 +9,7 @@ namespace Sfcms;
 
 use App;
 use Sfcms\Kernel\AbstractKernel;
-use Sfcms\Tpl\Driver;
-use Sfcms_Http_Exception;
+use Sfcms\Tpl\Directory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -123,7 +122,7 @@ abstract class Module extends Component
         );
     }
 
-    public function registerViewsPath(Driver $tpl)
+    public function registerViewsPath(Directory $tpl)
     {
         if (is_dir($this->getPath().'/View')) {
             $tpl->addTplDir($this->getPath().'/View');

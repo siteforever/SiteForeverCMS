@@ -18,24 +18,18 @@ class Page extends Layout
     {
         $request = $event->getRequest();
         $this->init($request);
-//        $this->_app->addStyle( $this->getMisc() . '/reset.css' );
-//        $this->_app->addStyle( $this->getMisc() . '/siteforever.css' );
 
-//        if( file_exists( SF_PATH . DS . trim( $this->getCss(), '/' ) . '/style.css' ) ) {
-            $this->_app->addStyle( $this->getCss() . '/style.css' );
-//        }
-        if( file_exists( trim( $this->getCss(), '/' ) . '/print.css' ) ) {
-            $this->_app->addStyle( $this->getCss() . '/print.css' );
+        if (!$this->_app->getConfig('misc.noBootstrap')) {
+            $this->_app->getAssets()->addStyle('/misc/bootstrap/css/bootstrap.css');
         }
-        if( file_exists( trim( $this->getJs() . '/script.js', '/' ) ) ) {
-            $this->_app->addScript( $this->getJs() . '/script.js' );
+
+        $this->_app->getAssets()->addStyle($this->getCss() . '/style.css');
+        if (file_exists(trim($this->getCss(), '/') . '/print.css')) {
+            $this->_app->getAssets()->addStyle($this->getCss() . '/print.css');
         }
-//        if ( $this->_app->getAuth()->currentUser()->hasPermission(USER_ADMIN) ) {
-//            $this->attachJUI();
-//            $this->_app->addStyle( $this->getMisc() . '/admin/admin.css' );
-//            $this->attachWysiwyg();
-//            $this->_app->addScript( $this->getMisc() . '/admin/panel.js' );
-//        }
+        if (file_exists(trim($this->getJs() . '/script.js', '/'))) {
+            $this->_app->getAssets()->addScript($this->getJs() . '/script.js');
+        }
 
         $this->getTpl()->assign('response', $event->getResponse());
         $event->getResponse()->setContent($this->getTpl()->fetch(

@@ -285,7 +285,7 @@ class CatalogModel extends Model
      */
     public function findAllByParent( $parent, $limit = 'LIMIT 100' )
     {
-        $list = $this->db->fetchAll(
+        $list = $this->getDB()->fetchAll(
             "SELECT cat.*, COUNT(child.id) child_count "
             . "FROM {$this->getTable()} cat "
             . "   LEFT JOIN {$this->getTable()} child ON child.parent = cat.id AND child.deleted = 0 "
@@ -308,7 +308,7 @@ class CatalogModel extends Model
      */
     public function findCatsByParent( $parent, $limit = '' )
     {
-        $list = $this->db->fetchAll(
+        $list = $this->getDB()->fetchAll(
             "SELECT cat.*, COUNT(sub.id) sub_count "
             . "FROM {$this->getTable()} cat  "
             . "    LEFT JOIN {$this->getTable()} sub ON sub.parent = cat.id "

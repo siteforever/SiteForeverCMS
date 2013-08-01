@@ -148,6 +148,7 @@ define("admin/page", [
          * OnSave handler for edit dialog
          */
         "editSave" : function(){
+            $alert('Saving', 0, $('form', this.domnode));
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
                 success: $.proxy(function (response) {

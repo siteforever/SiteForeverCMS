@@ -21,15 +21,15 @@ class StaticController extends Controller
      */
     public function assetAction()
     {
-        $response = new Response();
         $this->request->setAjax(true, 'js');
 
         $file = $this->request->getRequestUri();
         $re = '/.*?([^\/]+)\.([^\/]+)$/ie';
         $method = preg_replace($re, '"\1".ucfirst("\2")', $file);
-        $response->setContent($this->$method()->dump());
-        if (!$this->app->isDebug()) {
-            file_put_contents($this->config->get('static_dir') . '/' . basename($file), $response->getContent());
+        /** @var Response $response */
+        $response = $this->$method();
+        if (!($this->app->isDebug() || $this->filesystem->exists($this->config->get('static_dir') . basename($file)))) {
+            $this->filesystem->dumpFile($this->config->get('static_dir') . basename($file), $response->getContent());
         }
         return $response;
     }
@@ -37,40 +37,30 @@ class StaticController extends Controller
     protected function siteJs()
     {
         $assetCollection = new AssetCollection(array(
-            new FileAsset(ROOT . '/misc/site.js'),
-            new FileAsset(ROOT . '/misc/jquery/fancybox/jquery.fancybox-1.3.1.js'),
+            new FileAsset(SF_PATH . '/misc/site.js'),
+            new FileAsset(SF_PATH . '/misc/jquery/fancybox/jquery.fancybox-1.3.1.js'),
             new StringAsset('define("fancybox");'),
-            new FileAsset(ROOT . '/misc/module/siteforever.js'),
+            new FileAsset(SF_PATH . '/misc/module/siteforever.js'),
             new FileAsset(ROOT . '/static/i18n/'.$this->request->getLocale() . '.js'),
-            new FileAsset(ROOT . '/misc/jquery/jquery.blockUI.js'),
+            new FileAsset(SF_PATH . '/misc/jquery/jquery.blockUI.js'),
             new StringAsset('define("jquery/jquery.blockUI");'),
-            new FileAsset(ROOT . '/misc/jquery/jquery.form.js'),
+            new FileAsset(SF_PATH . '/misc/jquery/jquery.form.js'),
             new StringAsset('define("jquery/jquery.form");'),
-            new FileAsset(ROOT . '/misc/jquery/jquery.gallery.js'),
-            new FileAsset(ROOT . '/misc/jquery/jquery.captcha.js'),
-            new FileAsset(ROOT . '/misc/module/console.js'),
-            new FileAsset(ROOT . '/misc/module/basket.js'),
-            new FileAsset(ROOT . '/misc/module/behavior.js'),
-            new FileAsset(ROOT . '/misc/module/catalog.js'),
-            new FileAsset(ROOT . '/misc/module/form.js'),
-            new FileAsset(ROOT . '/misc/module/alert.js'),
+            new FileAsset(SF_PATH . '/misc/jquery/jquery.gallery.js'),
+            new FileAsset(SF_PATH . '/misc/jquery/jquery.captcha.js'),
+            new FileAsset(SF_PATH . '/misc/module/console.js'),
+            new FileAsset(SF_PATH . '/misc/module/basket.js'),
+            new FileAsset(SF_PATH . '/misc/module/behavior.js'),
+            new FileAsset(SF_PATH . '/misc/module/catalog.js'),
+            new FileAsset(SF_PATH . '/misc/module/form.js'),
+            new FileAsset(SF_PATH . '/misc/module/alert.js'),
         ));
+
         if (!$this->config->get('misc.noBootstrap')) {
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }
-        return $assetCollection;
-    }
-
-    protected function siteCss()
-    {
-        $assetCollection = new AssetCollection(array(
-            new FileAsset(ROOT  .'/misc/jquery/fancybox/jquery.fancybox-1.3.1.css'),
-        ));
-        if (!$this->config->get('misc.noBootstrap')) {
-            $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/css/bootstrap.css'));
-        }
-        return $assetCollection;
+        return new Response($assetCollection->dump(), 200, array('content-type'=>'text/css'));
     }
 
     protected function adminJs()
@@ -103,15 +93,6 @@ class StaticController extends Controller
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }
-        return $assetCollection;
-    }
-
-    protected function adminCss()
-    {
-        $assetCollection = new AssetCollection(array(
-            new FileAsset(ROOT  .'/misc/jquery/fancybox/jquery.fancybox-1.3.1.css'),
-            new FileAsset(ROOT . '/misc/bootstrap/css/bootstrap.css'),
-        ));
-        return $assetCollection;
+        return new Response($assetCollection->dump(), 200, array('content-type'=>'application/javascript'));;
     }
 }

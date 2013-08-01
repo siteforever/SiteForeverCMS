@@ -13,6 +13,7 @@ use Sfcms\Request;
 use Module\Catalog\Model\GalleryModel;
 use Module\Catalog\Object\Catalog;
 use Module\Catalog\Object\Gallery;
+use Symfony\Component\Filesystem\Filesystem;
 
 class GalleryController extends Controller
 {
@@ -22,21 +23,6 @@ class GalleryController extends Controller
             'system'    => array(
                 'admin', 'delete', 'markdefault', 'upload', 'panel','watermark',
             ),
-        );
-    }
-
-    public function defaults()
-    {
-        $ds = DIRECTORY_SEPARATOR;
-        return array(
-            'catalog',
-            array(
-                'gallery_dir'            =>
-                $ds . 'files' . $ds . 'catalog' . $ds . 'gallery',
-                'gallery_max_file_size'  => 1000000,
-                // 1 - добавление полей
-                // 2 - обрезание лишнего
-            )
         );
     }
 
@@ -144,6 +130,7 @@ class GalleryController extends Controller
         }
         $this->tpl->gallery = $images;
         $this->tpl->cat     = $id;
+        $this->tpl->request = $this->request;
         return $this->tpl->fetch('cataloggallery.panel');
     }
 
@@ -152,107 +139,84 @@ class GalleryController extends Controller
      */
     public function uploadAction()
     {
-        $this->request->setAjax( true, Request::TYPE_ANY );
+        $this->request->setAjax(true, Request::TYPE_ANY);
 
-        $max_file_size = $this->config->get( 'catalog.gallery_max_file_size' );
+        $max_file_size = $this->config->get('catalog.gallery_max_file_size');
 
-        $prodId   = $this->request->get( 'prod_id' );
-        $formSent = $this->request->get( 'sent' );
+        $prodId   = $this->request->get('prod_id');
+        $formSent = $this->request->get('sent');
 
-        if ( ! $formSent ) {
+        if (!$formSent) {
             return array(
-                'prod_id' => $prodId,
+                'prod_id'       => $prodId,
                 'max_file_size' => $max_file_size,
             );
         }
 
         /** @var $trade Catalog */
-        $trade = $this->getModel('Catalog')->find( $prodId );
+        $trade = $this->getModel('Catalog')->find($prodId);
 
         $images = $trade->Gallery;
-
-        $createMain = true;  // Делать ли первую картинку главной
-        if ( $images && $images->count() ) {
-            $createMain = false;
-        }
+        $createMain = !($images && $images->count()); // Делать ли первую картинку главной
 
         /**
          * @var GalleryModel $galleryModel
          */
-        $galleryModel = $this->getModel( 'CatalogGallery' );
+        $galleryModel = $this->getModel('CatalogGallery');
+        $filesystem = new Filesystem();
+        if (isset($_FILES['image']) && is_array($_FILES['image'])) {
+            $images = $_FILES['image'];
+            foreach ($images['error'] as $i => $err) {
+                if (UPLOAD_ERR_OK == $err) {
+                    /** @var $objImage Gallery */
+                    $objImage = $galleryModel->createObject();
 
-        $uploadOk = 0;
+                    if ($images['size'][$i] <= $max_file_size && in_array($images['type'][$i],array('image/jpeg', 'image/gif', 'image/png'))) {
+                        $dest = $this->config->get('catalog.gallery_dir') . '/' . substr('00' . $prodId, -2, 2);
 
-        if ( isset( $_FILES[ 'image' ] ) && is_array( $_FILES[ 'image' ] ) ) {
-            $images = $_FILES[ 'image' ];
-            //printVar($images);
-            foreach ( $images[ 'error' ] as $i => $err ) {
-                switch ( $err ) {
-                    case UPLOAD_ERR_OK:
-                        /** @var $objImage Gallery */
-                        $objImage = $galleryModel->createObject();
-
-                        if ( $images[ 'size' ][ $i ] <= $max_file_size
-                            && in_array( $images[ 'type' ][ $i ], array( 'image/jpeg', 'image/gif', 'image/png' ) )
-                        ) {
-                            $uploadOk = 1;
-
-                            $dest = $this->config->get( 'catalog.gallery_dir' )
-                                . '/' . substr( '000000' . $prodId, -6, 6 );
-
-                            if ( !is_dir( ROOT . $dest ) ) {
-                                if ( @mkdir( ROOT . $dest, 0777, true ) ) {
-                                    $this->request->addFeedback( $this->t('catalog','Created directory ') . ROOT . $dest );
-                                }
-                            }
-
-                            $src = $images[ 'tmp_name' ][ $i ];
-
-                            $objImage->cat_id = $prodId;
-                            $objImage->hidden = 0;
-                            $objImage->main   = 0;
-                            $objImage->pos    = 100;
-                            $objImage->save();
-                            $g_id = $objImage->getId();
-
-                            // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
-                            $pathParts = pathinfo( strtolower( $images[ 'name' ][ $i ] ) );
-                            // Это чистое изображение, но имя зашифровано
-                            $tmb = $dest . '/' . $g_id . '-' . substr( md5( mktime(1) . $trade->alias ), 0, 6 ) . '.' . $pathParts['extension'];
-                            // Имя не зашифровано, но с водяным знаком
-                            $img = $dest . '/' . $g_id . '-' . $trade->alias . '.' . $pathParts['extension'];
-
-                            if ( move_uploaded_file( $src, ROOT . $tmb ) ) {
-                                Sfcms::watermark( ROOT . $tmb, ROOT . $img );
-                                $objImage->image = str_replace( array('/','\\'), '/', $img );
-                                $objImage->thumb = str_replace( array('/','\\'), '/', $tmb );
-                            }
-                            if ( $createMain ) {
-                                $objImage->main = 1;
-                                $createMain = false;
-                            }
-
-                            $objImage->save();
+                        if (!$filesystem->exists(ROOT . $dest)) {
+                            $filesystem->mkdir(ROOT . $dest);
                         }
-                        break;
-                    case UPLOAD_ERR_NO_FILE:
-                        break;
-                    default:
-                        $this->request->addFeedback( "При загрузке изображения $i произошла ошибка" );
-                }
 
+                        $src = $images['tmp_name'][$i];
+
+                        $objImage->cat_id = $prodId;
+                        $objImage->hidden = 0;
+                        $objImage->main   = 0;
+                        $objImage->pos    = 100;
+                        $objImage->save();
+                        $g_id = $objImage->getId();
+
+                        // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
+                        $pathParts = pathinfo(strtolower($images['name'][$i]));
+                        // Это чистое изображение, но имя зашифровано
+                        $tmb = $dest . '/' . $g_id . '-' . substr(
+                                md5(mktime(1) . $trade->alias),
+                                0,
+                                6
+                            ) . '.' . $pathParts['extension'];
+                        // Имя не зашифровано, но с водяным знаком
+                        $img = $dest . '/' . $g_id . '-' . $trade->alias . '.' . $pathParts['extension'];
+
+                        if (move_uploaded_file($src, ROOT . $tmb)) {
+                            Sfcms::watermark(ROOT . $tmb, ROOT . $img);
+                            $objImage->image = str_replace(array('/', '\\'), '/', $img);
+                            $objImage->thumb = str_replace(array('/', '\\'), '/', $tmb);
+                        }
+                        if ($createMain) {
+                            $objImage->main = 1;
+                            $createMain     = false;
+                        }
+
+                        $objImage->save();
+                    }
+                } else {
+                    $this->request->addFeedback("При загрузке изображения $i произошла ошибка");
+                }
             }
         }
 
-//        if ( $formSent ) {
-//            if ( $uploadOk ) {
-//                return t('Изображения загружены');
-//            }
-//            return t('Изображения не загружены');
-//        }
-//
-//        return 'Undefined Error';
-        return $this->getPanel( $prodId );
+        return $this->getPanel($prodId);
     }
 
     /**

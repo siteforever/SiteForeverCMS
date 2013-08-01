@@ -2,8 +2,8 @@
 /**
  * Хэлперы HTML
  * @author Nikolay Ermin (nikolay@ermin.ru)
- * @link http://ermin.ru
- * @link http://siteforever.ru
+ * @link   http://ermin.ru
+ * @link   http://siteforever.ru
  */
 
 namespace Sfcms;
@@ -21,9 +21,10 @@ class Html
      * Позволяет создать только 1 экземпляр
      * @throws Exception
      */
-    public function __construct() {
-        self::$counter ++;
-        if ( self::$counter > 1 ) {
+    public function __construct()
+    {
+        self::$counter++;
+        if (self::$counter > 1) {
             throw new Exception('HTML class singleton');
         }
     }
@@ -38,88 +39,105 @@ class Html
     {
         $t = App::getInstance()->getTpl();
         $t->assign($params);
+
         return $t->fetch($tpl);
     }
 
     /**
      * Вернет строку URL для указанных параметров
+     *
      * @param string|null $url
-     * @param array $params
+     * @param array       $params
+     *
      * @return string
      */
-    public function url( $url, $params = array() )
+    public function url($url, $params = array())
     {
         return App::getInstance()->getRouter()->createLink($url, $params);
     }
 
     /**
      * Вернет HTML код для иконки
-     * @param $name
+     *
+     * @param        $name
      * @param string $title
+     *
      * @return string
      */
-    public function icon( $name, $title = '' )
+    public function icon($name, $title = '')
     {
-        $name = str_replace('_', '-', $name);
-        $title = $title ?: $name;
+        $name  = str_replace('_', '-', $name);
+        $title = $title ? : $name;
+
         return "<i class='sfcms-icon sfcms-icon-{$name}' title='{$title}'></i>";
     }
 
     /**
      * Содаст HTML ссылку
-     * @param  $text
-     * @param  $url
+     *
+     * @param       $text
+     * @param       $url
      * @param array $params
+     *
      * @return string
      */
-    public function link( $text, $url = "#", $params = array(), $class = "" )
+    public function link($text, $url = "#", $params = array(), $class = "")
     {
         $attributes = array();
-        if ( $class ) {
+        if ($class) {
             $params['class'] = $class;
         }
-        if ( isset( $params['nofollow'] )) {
-            if ( $params['nofollow'] ) {
-                $attributes[ ] = 'rel="nofollow"';
+        if (isset($params['nofollow'])) {
+            if ($params['nofollow']) {
+                $attributes[] = 'rel="nofollow"';
             }
-            unset( $params['rel'], $params['nofollow']);
+            unset($params['rel'], $params['nofollow']);
         }
         $attributes = array_merge(
             $attributes,
-            $this->makeAttributes( $params, array('class','title','rel') )
+            $this->makeAttributes($params, array('class', 'title', 'rel'))
         );
 
-        if ( isset( $params['controller'] ) && '#' == $url ) {
+        if (isset($params['controller']) && '#' == $url) {
             $url = null;
         }
-        $attributes[] = $this->href( $url, $params );
+        $attributes[] = $this->href($url, $params);
+
         return sprintf('<a %s>%s</a>', trim(implode(' ', $attributes)), $text);
     }
 
     /**
      * Make attributes list by params list and pass attributes list
+     *
      * @param array $params
      * @param array $passKeys
+     *
      * @return array
      */
-    protected function makeAttributes( &$params, $passKeys = array() )
+    protected function makeAttributes(&$params, $passKeys = array())
     {
-        $attributes = array_filter( array_map(function($key) use (&$params) {
-            return isset( $params[$key] ) ? sprintf('%s="%s"', $key, $params[$key]) : false;
-        },$passKeys) );
+        $attributes = array_filter(
+            array_map(
+                function ($key) use (&$params) {
+                    return isset($params[$key]) ? sprintf('%s="%s"', $key, $params[$key]) : false;
+                },
+                $passKeys
+            )
+        );
 
-        $params = array_diff_key( $params, array_flip($passKeys) );
+        $params = array_diff_key($params, array_flip($passKeys));
 
-        foreach ( $params as $key => $val ) {
-            switch ( substr( $key, 0, 4 ) ) {
+        foreach ($params as $key => $val) {
+            switch (substr($key, 0, 4)) {
                 case 'html':
-                    unset( $params[$key] ); // чистит регистрозависимые ключи вида htmlTarget
-                    $key = strtolower( substr( $key, 4 ) );
+                    unset($params[$key]); // чистит регистрозависимые ключи вида htmlTarget
+                    $key = strtolower(substr($key, 4));
                 case 'data':
-                    unset( $params[$key] ); // чистит ключи, относящиеся только к data: data-id
-                    $attributes[] = sprintf('%s="%s"', $key ,$val);
+                    unset($params[$key]); // чистит ключи, относящиеся только к data: data-id
+                    $attributes[] = sprintf('%s="%s"', $key, $val);
             }
         }
+
         return $attributes;
     }
 
@@ -127,11 +145,12 @@ class Html
      * Создаст ссылку
      * @param string $url
      * @param array  $params
+     *
      * @return string
      */
-    public function href( $url = '', $params = array() )
+    public function href($url = '', $params = array())
     {
-        return sprintf('href="%s"', $this->url( $url, $params ));
+        return sprintf('href="%s"', $this->url($url, $params));
     }
 
     /**
@@ -140,83 +159,65 @@ class Html
      * $method: 1 - Add field, 2 - Crop
      *
      * @param $params
+     *
      * @return string
      */
-    public function thumb( $params )
+    public function thumb($params)
     {
-        $src    = isset( $params[ 'src' ] ) ?  $params[ 'src' ] : null;
-        $class  = isset( $params[ 'class' ] ) ? $params[ 'class' ] : '';
-        $width  = isset( $params[ 'width' ] ) ? $params[ 'width' ] : 'auto';
-        $height = isset( $params[ 'height' ] ) ? $params[ 'height' ] : 'auto';
-        $method = isset( $params[ 'method' ] ) ? $params[ 'method' ] : 1;
-        $color  = isset( $params[ 'color' ] ) ? $params[ 'color' ] : 'FFFFFF';
+        $src    = isset($params['src']) ? $params['src'] : null;
+        $class  = isset($params['class']) ? $params['class'] : '';
+        $width  = isset($params['width']) ? $params['width'] : 'auto';
+        $height = isset($params['height']) ? $params['height'] : 'auto';
+        $method = isset($params['method']) ? $params['method'] : 1;
+        $color  = isset($params['color']) ? $params['color'] : 'FFFFFF';
 
-        if ( 'auto' == $width && 'auto' == $height ) {
+        if ('auto' == $width && 'auto' == $height) {
             return 'You need to specify the width or height';
         }
-        if ( 'auto' == $width || 'auto' == $height ) {
+        if ('auto' == $width || 'auto' == $height) {
             $method = Sfcms_Image_Scale::METHOD_PRIORITY;
         }
 
         if (!$src) {
-            $src = '/static/images/no-image-'.App::getInstance()->getConfig('language').'.png';
+            $src = '/static/images/no-image-' . App::getInstance()->getConfig('language') . '.png';
         }
-        $src = $name = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$src) );
+        $src = $name = urldecode(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $src));
         // Подменное имя для изображения
-        if ( isset( $params['name'] ) ) {
-            $name = urldecode( str_replace(array('/','\\'),DIRECTORY_SEPARATOR,$params['name']) );
+        if (isset($params['name'])) {
+            $name = urldecode(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $params['name']));
         }
 
-        $alt    = isset( $params['alt'] ) ? $params['alt'] : basename( $name );
-        if (!$name) {
-            return 'no image';
-        }
-        $path   = pathinfo( $name );
-        $path[ 'thumb' ] = '/thumbs' . $path[ 'dirname' ] . '/' . $path[ 'filename' ]
-            . '-' . $width . 'x' . $height . '-'. $color . '-' . $method . '.' . $path[ 'extension' ];
+        $alt = isset($params['alt']) ? $params['alt'] : basename($name);
+        $path          = pathinfo($name);
+        $path['thumb'] = '/thumbs' . $path['dirname'] . '/' . $path['filename'] . '-' . $width . 'x' . $height . '-' . $color . '-' . $method . '.' . $path['extension'];
 
         // @todo Может негативно сказаться на производительности. Подумать, как сделать иначе
-        if ( ! is_dir( dirname( ROOT . $path['thumb'] ) ) ) {
-            @mkdir( dirname( ROOT . $path['thumb'] ), 0775, true );
-        } elseif ( ! is_writable( dirname( ROOT . $path['thumb'] ) ) ) {
-            throw new \RuntimeException(sprintf( 'Directory `%s` is not writable', dirname( ROOT . $path['thumb'] ) ) );
+        if (!is_dir(dirname(ROOT . $path['thumb']))) {
+            @mkdir(dirname(ROOT . $path['thumb']), 0775, true);
+        } elseif (!is_writable(dirname(ROOT . $path['thumb']))) {
+            throw new \RuntimeException(sprintf('Directory `%s` is not writable', dirname(ROOT . $path['thumb'])));
         }
 
-        if ( ! file_exists( ROOT . $path[ 'thumb' ] ) ) {
+        if (!file_exists(ROOT . $path['thumb'])) {
             try {
-                $img   = new Sfcms_Image( ROOT . $src );
-                $thumb = $img->createThumb( $width, $height, $method, $color );
-            } catch ( Sfcms_Image_Exception $e ) {
+                $img   = new Sfcms_Image(ROOT . $src);
+                $thumb = $img->createThumb($width, $height, $method, $color);
+            } catch (Sfcms_Image_Exception $e) {
                 return $e->getMessage();
             }
-            $thumb->saveToFile( ROOT . $path[ 'thumb' ] );
+            $thumb->saveToFile(ROOT . $path['thumb']);
         }
-        if ( ! empty( $thumb ) ) {
+
+        if (!empty($thumb)) {
             $sizes = "width=\"{$thumb->getWidth()}\" height=\"{$thumb->getHeight()}\"";
         } else {
-            list( , , ,$sizes) = getimagesize( ROOT . $path['thumb'] );
+            list(, , , $sizes) = getimagesize(ROOT . $path['thumb']);
         }
 
-        return '<img '.$sizes.' alt="'.$alt.'" src="'
-            . str_replace( array('/','\\'), '/' ,$path['thumb'] ).'"'
-            . ($class ? ' class="'.$class.'"' : '').'>';
-    }
-
-
-    /**
-     * Минифицирует JavaScript текст
-     * @param $content
-     * @return mixed
-     */
-    public function jsMin( $content )
-    {
-        $content = preg_replace('@[;\n\t ]//[^\n]*?$@ims',"\n",$content);
-        $content = preg_replace('@\/\*[\s\*].*?\*\/@ims','',$content);
-        $content = preg_replace('@\n\/\*.*?\*\/@ims','',$content);
-        $content = preg_replace('@\n[\t ]+@ims',"\n",$content);
-        $content = preg_replace('@;\n;+@ims',';',$content);
-//        $content = preg_replace('@\)(\s+?if)@ims',");$1",$content);
-//        $content = preg_replace('@\n+@ims','',$content);
-        return $content;
+        return '<img ' . $sizes . ' alt="' . $alt . '" src="' . str_replace(
+            array('/', '\\'),
+            '/',
+            $path['thumb']
+        ) . '"' . ($class ? ' class="' . $class . '"' : '') . '>';
     }
 }

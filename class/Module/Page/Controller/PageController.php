@@ -288,12 +288,16 @@ class PageController extends Controller
     /**
      * Меняет св-во hidden у страницы
      */
-    public function hiddenAction( $id )
+    public function hiddenAction()
     {
-        $page = $this->getModel( 'Page' )->find( $id );
-        $page->hidden = intval( ! $page->hidden );
-        $page->save();
-        return array( 'page' => $page );
+        $id = $this->request->query->getInt('id');
+        if ($id) {
+            $page = $this->getModel('Page')->find($id);
+            $page->hidden = intval(!$page->hidden);
+            return array('page' => $page);
+        } else {
+            return array('error' => 1);
+        }
     }
 
 

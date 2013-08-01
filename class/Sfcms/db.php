@@ -17,7 +17,7 @@ class dbException extends Exception {};
  * @author  Ermin Nikolay
  * @link    http://ermin.ru
  */
-class db
+final class db
 {
     // @TODO Убрать зависимости от системы.
     // @TODO Перевести на PDO (Переведено. Стадия тестирования)
@@ -141,11 +141,6 @@ class db
     }
 
     /**
-     * Создает соединение с базой
-     */
-    private function __construct() {}
-
-    /**
      * Принимает класс содержащий конфигурацию
      * @param array $dbc
      *
@@ -190,17 +185,26 @@ class db
         $this->resource->query("SET NAMES 'utf8'");
     }
 
+
+    /**
+     * Создает соединение с базой
+     */
+    public function __construct($config = array()) {
+        $this->init($config);
+        self::$instance = $this;
+    }
+
+
     /**
      * Вернет ссылку на объект базы данных
      * @param array $config
      *
      * @return null|db
      */
-    static function getInstance( $config = array() )
+    static function getInstance($config = array())
     {
-        if ( is_null( self::$instance ) ) {
-            self::$instance = new db();
-            self::$instance->init($config);
+        if (null === self::$instance) {
+            self::$instance = new db($config);
         }
         return self::$instance;
     }

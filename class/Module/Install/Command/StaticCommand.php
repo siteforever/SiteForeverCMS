@@ -36,14 +36,23 @@ class StaticCommand extends Command
 
         $staticDir = ROOT . '/' . trim($input->getArgument('dir'), '\\/ '.PHP_EOL);
 
+        $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
 
         $this->installJqGrid($staticDir, $input, $output);
         $this->installElFinder($staticDir, $input, $output);
 
-        $output->writeln('<info>Command Install</info>');
-
         $filesistem = new Filesystem();
+
+        if (!$filesistem->exists($staticDir . '/images')) {
+            $filesistem->mirror(
+                SF_PATH . '/class/Module/System/Static/images',
+                $staticDir . '/images',
+                null,
+                array('override'=>true)
+            );
+        }
+
         if (ROOT != SF_PATH && !$filesistem->exists(ROOT . '/misc')) {
             $filesistem->symlink(SF_PATH . '/misc', ROOT . '/misc');
             $output->writeln('<info>Create symlink for "misc"</info>');
@@ -53,7 +62,7 @@ class StaticCommand extends Command
             $output->writeln('<info>Create "files" dir</info>');
         }
         if (!$filesistem->exists(ROOT . '/runtime')) {
-            $filesistem->mkdir(array(ROOT . '/runtime/cache',ROOT . '/runtime/templates_c',));
+            $filesistem->mkdir(array(ROOT . '/runtime/cache', ROOT . '/runtime/templates_c', ROOT . '/runtime/logs',));
             $output->writeln('<info>Create "runtime" dir</info>');
         }
 

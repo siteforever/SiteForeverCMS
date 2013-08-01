@@ -19,9 +19,18 @@ services:
     smarty:
         class: Smarty
 
+    tpl_directory:
+        class: Sfcms\Tpl\Directory
+
     tpl:
         class: Sfcms\Tpl\Smarty
-        arguments: ["%template%", "@smarty"]
+        arguments: ["%template%", "@smarty", "@tpl_directory"]
+
+    assets:
+        class: Sfcms\Assets
+
+    filesystem:
+        class: Symfony\Component\Filesystem\Filesystem
 
     auth:
         class: Auth

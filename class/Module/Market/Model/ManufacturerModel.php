@@ -30,7 +30,7 @@ class ManufacturerModel extends Model
                 . 'INNER JOIN `%s` c ON '
                     . 'c.manufacturer = m.id AND c.deleted = 0 AND c.hidden = 0 AND c.cat = 0 AND c.parent IN ('.join(',',$catIds).')'
                 . ' GROUP BY m.id', $manufTable, $catalogTable );
-        $manufList  = $this->db->fetchAll( $sql );
+        $manufList  = $this->getDB()->fetchAll( $sql );
         $collection = $this->createCollection( $manufList );
 //        $this->log( $collection );
         return $collection;

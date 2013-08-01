@@ -28,7 +28,7 @@ class GalleryModel extends Model
      */
     public function getNextPosition( $category_id )
     {
-        return $this->db->fetchOne(
+        return $this->getDB()->fetchOne(
              "SELECT MAX(pos)+1 "
             ."FROM `{$this->getTable()}` "
             ."WHERE category_id = ? "
@@ -76,7 +76,7 @@ class GalleryModel extends Model
         $catObj     = $catModel->find( $imgObj->get('category_id') );
         $catObj->set('thumb', $imgObj->get('thumb'));
         $catObj->save();
-        return $this->db->insertUpdateMulti($this->getTable(), $new_pos);
+        return $this->getDB()->insertUpdateMulti($this->getTable(), $new_pos);
     }
 
     /**

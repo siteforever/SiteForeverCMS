@@ -12,7 +12,7 @@ class Forms_User_Register extends Form
     {
         return parent::__construct(array(
             'name'      => 'register',
-            'class'     => 'standart',
+            'class'     => 'form-horizontal',
             'fields'    => array(
                 'email'     => array('type'=>'text',    'label'=>'Email', 'required',
                                      'filter' => 'email', 'autocomplete'=>'off'),

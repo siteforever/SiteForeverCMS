@@ -31,7 +31,7 @@ class MaterialModel extends Model
             . 'INNER JOIN `%s` c ON '
             . 'c.material = m.id AND c.deleted = 0 AND c.hidden = 0 AND c.cat = 0 AND c.parent IN ('.join(',',$catIds).')'
             . ' GROUP BY m.id', $materialTable, $catalogTable );
-        $materialList  = $this->db->fetchAll( $sql );
+        $materialList  = $this->getDB()->fetchAll( $sql );
         $collection = $this->createCollection( $materialList );
 //        $this->log( $collection );
         return $collection;

@@ -292,7 +292,7 @@ class PageModel extends Model
      */
     public function getNextPos( $parent_id )
     {
-        $max = $this->db->fetchOne(
+        $max = $this->getDB()->fetchOne(
             "SELECT MAX(pos) "
                 . "FROM {$this->table} "
                 . "WHERE parent = ? AND deleted = 0",

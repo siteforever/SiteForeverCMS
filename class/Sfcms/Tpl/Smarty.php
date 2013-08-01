@@ -13,17 +13,16 @@ class Smarty extends Driver
 
     private $config = array();
 
-    public function __construct($config, \Smarty $engine)
+    public function __construct($config, \Smarty $engine, Directory $directory)
     {
-        $this->config = array_merge(array(
+        $this->config = array(
                 'ext'       => 'tpl',
                 'compile_check' => true,
                 'caching'   => false,
                 'cache'     => array(
                     'livetime' => 84600,
                 ),
-            ), $config);
-
+            ) + $config;
 
         if (!isset($this->config['theme'])) {
             throw new Exception('Theme name in "template.theme" not defined');
@@ -50,13 +49,6 @@ class Smarty extends Driver
         $tpl_c  = $runtime."/templates_c";
         $cache  = $runtime."/cache";
 
-        if (!is_dir($tpl_c)) {
-            @mkdir($tpl_c, 0755, true);
-        }
-        if (!is_dir($cache)) {
-            @mkdir($cache, 0755, true);
-        }
-
         $this->setCplDir($tpl_c);
         $this->setCacheDir($cache);
         $this->addWidgetsDir(SF_PATH . '/widgets');
@@ -67,6 +59,9 @@ class Smarty extends Driver
         $this->engine->compile_check = $this->config['compile_check'];
         $this->engine->caching = false;
 //        $this->engine->caching = $this->config['caching'];
+
+        $this->addTplDir($directory->getTplAll());
+        $this->addWidgetsDir($directory->getWidgetsAll());
     }
 
     public function assign( $params, $value = null )

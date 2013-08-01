@@ -16,6 +16,7 @@ use Sfcms\Delivery;
 use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\i18n;
+use Sfcms\Tpl\Directory;
 use Sfcms\Tpl\Driver;
 use Module\Page\Model\PageModel;
 
@@ -146,7 +147,6 @@ abstract class AbstractKernel
         // Конфигурация
         $config = new Config($locator->locate($cfg_file), $this->_container);
         $this->_container->set('config', $config);
-//        var_dump($this->_container->getParameterBag()->all());
 
         // Загрузка параметров модулей
         $this->loadModules();
@@ -318,22 +318,12 @@ abstract class AbstractKernel
     }
 
 
+    /**
+     * @return Assets
+     */
     public function getAssets()
     {
-        if ( null === $this->_assets ) {
-            $this->_assets  = new Assets();
-//            $this->addStyle( '/misc/jquery/lightbox/css/jquery.lightbox-0.5.css' );
-            $this->_assets->addStyle('/misc/jquery/fancybox/jquery.fancybox-1.3.1.css');
-            if (!$this->getConfig('misc.noBootstrap')) {
-                $this->_assets->addStyle('/misc/bootstrap/css/bootstrap.css');
-            }
-
-//            $this->_assets->addScript( $misc . '/jquery/jquery-1.7.2'.(App::isDebug()?'':'.min').'.js' );
-//            $this->addScript( $misc . '/jquery/lightbox/jquery.lightbox-0.5.js' );
-//            $this->_assets->addScript( $misc . '/jquery/fancybox/jquery.fancybox-1.3.1.js' );
-//            $this->_assets->addScript( $misc . '/siteforever.js' );
-        }
-        return $this->_assets;
+        return $this->getContainer()->get('assets');
     }
 
 
@@ -364,7 +354,7 @@ abstract class AbstractKernel
      */
     public function addStyle( $style )
     {
-        $this->getAssets()->addStyle( $style );
+        $this->getAssets()->addStyle($style);
     }
 
     /**
@@ -468,11 +458,14 @@ abstract class AbstractKernel
                 $this->getModules()
             );
 
+
+            $tplDirectory = $this->getContainer()->get('tpl_directory');
+
             // А потом инициализируем
             // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(function ($module) use ($_) {
+            array_map(function ($module) use ($_, $tplDirectory) {
                 call_user_func(array($module, 'registerService'), $_->getContainer());
-                call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl'));
+                call_user_func(array($module, 'registerViewsPath'), $tplDirectory);
                 if (method_exists($module, 'init')) {
                     call_user_func(array($module, 'init'));
                 }

@@ -76,9 +76,6 @@ abstract class Model extends Component
 
     protected static $exists_tables;
 
-    /** @var  db */
-    protected static $dao;
-
     /** @var array Список моделей, доступных в системе */
     protected static $models = null;
 
@@ -87,11 +84,6 @@ abstract class Model extends Component
      * @var array
      */
     protected $with = array();
-
-    /**
-     * @var PDO
-     */
-    protected $pdo = null;
 
     /**
      * Кеш запросов для текущей модели
@@ -106,15 +98,6 @@ abstract class Model extends Component
     final private function __construct()
     {
         $this->config  = $this->app()->getConfig();
-
-        // база данных
-        // определяется только в моделях
-        if (is_null(static::$dao)) {
-            static::$dao = db::getInstance($this->config->get('db'));
-            static::$dao->setLoggerClass($this->app()->getLogger());
-        }
-        $this->db  = static::$dao;
-        $this->pdo = $this->db->getResource();
 
         if (method_exists($this, 'onSaveStart')) {
             $this->on('save.start', array($this, 'onSaveStart'));
@@ -131,7 +114,7 @@ abstract class Model extends Component
      */
     static public function getDB()
     {
-        return static::$dao;
+        return App::getInstance()->getContainer()->get('db');
     }
 
     /**
@@ -172,7 +155,7 @@ abstract class Model extends Component
     {
         if (!isset(self::$exists_tables)) {
             self::$exists_tables = array();
-            $tables = $this->db->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
+            $tables = $this->getDB()->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
             foreach ($tables as $t) {
                 self::$exists_tables[] = $t[0];
             }
@@ -607,7 +590,7 @@ abstract class Model extends Component
         }
 
         $sql  = $query->getSQL();
-        $data = $this->db->fetch($sql, db::F_ASSOC, $crit->params);
+        $data = $this->getDB()->fetch($sql, db::F_ASSOC, $crit->params);
 
         if ($data) {
             $obj = $this->createObject($data);
@@ -691,7 +674,7 @@ abstract class Model extends Component
             throw new Exception('Not valid criteria');
         }
 
-        $raw = $this->db->fetchAll($query->getSQL());
+        $raw = $this->getDB()->fetchAll($query->getSQL());
 
         if (count($raw)) {
             $collection = new Collection($raw, $this);
@@ -814,7 +797,7 @@ abstract class Model extends Component
             $where = array_map(function ($key, $val) {
                 return "`{$key}` = '{$val}'";
             }, $id_keys, $id);
-            $ret = $this->db->update($this->getTable(), $save_data, join(' AND ', $where));
+            $ret = $this->getDB()->update($this->getTable(), $save_data, join(' AND ', $where));
         } else {
             if (count($id) == 1) {
                 /** @var $field Field */
@@ -823,7 +806,7 @@ abstract class Model extends Component
                     return false;
                 }
             }
-            $ret = $this->db->insert($this->getTable(), $save_data);
+            $ret = $this->getDB()->insert($this->getTable(), $save_data);
             if ($ret && 1 == count($id)) {
                 $obj->setId($ret);
             }
@@ -922,7 +905,7 @@ abstract class Model extends Component
 
         $sql = $criteria->getSQL();
 
-        $count = $this->db->fetchOne($sql);
+        $count = $this->getDB()->fetchOne($sql);
 
         if ($count) {
             return $count;
@@ -937,7 +920,7 @@ abstract class Model extends Component
      */
     public function transaction()
     {
-        $pdo = $this->db->getResource();
+        $pdo = $this->getDB()->getResource();
         $pdo->beginTransaction();
     }
 
@@ -947,7 +930,7 @@ abstract class Model extends Component
      */
     public function commit()
     {
-        $pdo = $this->db->getResource();
+        $pdo = $this->getDB()->getResource();
         $pdo->commit();
     }
 
@@ -957,7 +940,7 @@ abstract class Model extends Component
      */
     public function rollBack()
     {
-        $pdo = $this->db->getResource();
+        $pdo = $this->getDB()->getResource();
         $pdo->rollBack();
     }
 

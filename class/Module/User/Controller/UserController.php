@@ -577,7 +577,7 @@ class UserController extends Controller
             }
             $this->request->addFeedback( $form->getFeedbackString() );
         }
-        return array('form'=>$form);
+        return $this->render('user.restore', array('form'=>$form));
     }
 
     /**

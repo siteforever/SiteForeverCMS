@@ -11,7 +11,6 @@ require([
     , "jquery/jquery.gallery"
     , "jquery/jquery.captcha"
     , "siteforever"
-    , "twitter"
 ],function(
     $
   , basket

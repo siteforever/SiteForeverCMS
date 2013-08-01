@@ -125,10 +125,14 @@ class App extends AbstractKernel
         } catch (HttpException $e) {
             $this->getLogger()->log($e->getMessage());
             $response = new Response($e->getMessage(), $e->getStatusCode()?:500);
-        } catch ( Exception $e ) {
-            $this->getLogger()->log($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine());
-            $this->getLogger()->log($e->getTraceAsString());
-            return new Response($e->getMessage() . (static::isDebug() ? '<pre>' . $e->getTraceAsString() : ''), 500);
+        } catch (Exception $e) {
+            if ($this->isDebug()) {
+                throw $e;
+            } else {
+                $this->getLogger()->log($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine());
+                $this->getLogger()->log($e->getTraceAsString());
+                return new Response('Site error', 500);
+            }
         }
 
         if (! $response && is_string($result)) {

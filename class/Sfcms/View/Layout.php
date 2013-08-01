@@ -33,9 +33,11 @@ class Layout extends ViewAbstract
         $theme = $this->_app->getConfig('template.theme');
 
         $this->path = array(
+            'theme'  => '/themes/' . $theme,
             'css'    => '/themes/' . $theme . '/css',
             'js'     => '/themes/' . $theme . '/js',
             'images' => '/themes/' . $theme . '/images',
+            'img'    => '/themes/' . $theme . '/img',
             'misc'   => '/misc',
         );
 
@@ -64,15 +66,11 @@ class Layout extends ViewAbstract
 
         $this->selectLayout($event->getRequest())->view($event);
 
-        $head = $this->getHead($event->getRequest());
-        $scripts = $this->getScripts($event->getRequest());
-
         $content = $event->getResponse()->getContent();
-//        $content = str_replace(
-//            '<html>', sprintf('<html lang="%s">', $this->_app->getConfig('language')), $content
-//        );
-        $content = str_replace('<head>', '<head>' . PHP_EOL . $head . $scripts, $content);
-//        $content = str_replace('</body>', $scripts . PHP_EOL . '</body>', $content);
+
+        $content = str_replace('<head>', '<head>' . PHP_EOL . $this->getHead($event->getRequest()), $content);
+        $content = str_replace('</head>', $this->getStyles($event->getRequest()) . PHP_EOL . '</head>', $content);
+        $content = str_replace('</body>', $this->getScripts($event->getRequest()) . PHP_EOL . '</body>', $content);
 
         if (!$this->_app->isDebug()) {
             $content = preg_replace( '/[ \t]+/', ' ', $content );
@@ -93,17 +91,12 @@ class Layout extends ViewAbstract
     {
         $config = $this->_app->getConfig();
 
-        /** @var AssetManager $am */
-        $am = $this->_app->getContainer()->get('assetManager');
-        /** @var AssetWriter $writer */
-        $writer = $this->_app->getContainer()->get('assetWriter');
-
         $return = array();
         $return[] = '<meta http-equiv="content-type" content="text/html; charset=UTF-8">';
         $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
         $return[] = '<meta name="viewport" content="width=device-width,initial-scale=1">';
         $return[] = '<meta name="generator" content="SiteForever CMS">';
-        $return[] = "<title>".strip_tags( $request->getTitle() ).' / '.$config->get('sitename')."</title>";
+        $return[] = "<title>" . strip_tags($request->getTitle()) . ' / ' . $config->get('sitename') . "</title>";
 
         if ( $request->getKeywords() ) {
             $return[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\">";
@@ -120,13 +113,20 @@ class Layout extends ViewAbstract
             $return[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\">";
         }
 
-        if ($request->get('admin')) {
-            $this->_app->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
-            $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../Module/System/Static/icons.css')));
-            $am->get('admIcons')->setTargetPath('admIcons.css');
-            $this->_app->addStyle('/static/admIcons.css');
-            $this->_app->addStyle('/misc/bootstrap/css/bootstrap-datetimepicker.min.css');
-        }
+        return join(PHP_EOL, $return);
+    }
+
+    public function getStyles(Request $request)
+    {
+        /** @var AssetManager $am */
+        $am = $this->_app->getContainer()->get('assetManager');
+        /** @var AssetWriter $writer */
+        $writer = $this->_app->getContainer()->get('assetWriter');
+
+        $return = array();
+
+        $this->_app->getAssets()->addStyle('/misc/jquery/fancybox/jquery.fancybox-1.3.1.css');
+
         // Подключение стилей в заголовок
         $useLess = &$this->use_less;
         $antiCache = &$this->anti_cache;
@@ -138,9 +138,10 @@ class Layout extends ViewAbstract
                 return "<link type=\"text/css\" rel=\"stylesheet/less\" href=\"{$style}?{$antiCache}\">";
             }
             return '';
-        }, $this->_app->getStyle()) );
+        }, $this->_app->getAssets()->getStyle()) );
 
         $writer->writeManagerAssets($am);
+
         return join(PHP_EOL, $return);
     }
 
@@ -205,13 +206,9 @@ class Layout extends ViewAbstract
             );
 
             $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
-//            $rjsConfig['shim']['elfinder'] = array(
-//                'exports' => 'ElFinder',
-//            );
 
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
-//                'elfinder/js/elfinder' => 'elfinder/js/elfinder' . ($this->_app->isDebug() ? '.full' : '.min'),
             );
             $controllerJs = 'admin/'.$request->getController();
             if (file_exists(ROOT . $this->getMisc() . '/' . $controllerJs . '.js')) {
