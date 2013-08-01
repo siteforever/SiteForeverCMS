@@ -2,8 +2,8 @@
 /**
  * Конфиг для консоли
  */
-
-return array_merge(require_once 'base.php', array(
+$base = include_once('base.php');
+return array(
     'language'  => 'ru',
     'siteurl'   => 'localhost',
-));
+) + $base;

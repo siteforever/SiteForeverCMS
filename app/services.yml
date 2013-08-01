@@ -13,7 +13,7 @@ parameters:
         cache:
             livetime: %cache_livecycle%
 
-    static_dir: .
+    static_dir: static
 
 services:
     smarty:

@@ -28,6 +28,7 @@ use Std_Logger;
 use Auth;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Config\FileLocator;
@@ -138,11 +139,14 @@ abstract class AbstractKernel
 
         $this->_container = new ContainerBuilder();
         $this->getContainer()->set('app', $this);
-        $loader = new YamlFileLoader($this->getContainer(), new FileLocator(array(ROOT . '/app', SF_PATH . '/app')));
-        $loader->load('services.yml');
+        $locator = new FileLocator(array(ROOT, SF_PATH));
+        $loader = new YamlFileLoader($this->getContainer(), $locator);
+        $loader->load('app/services.yml');
+
         // Конфигурация
-        $config = new Config($cfg_file, $this->_container);
+        $config = new Config($locator->locate($cfg_file), $this->_container);
         $this->_container->set('config', $config);
+//        var_dump($this->_container->getParameterBag()->all());
 
         // Загрузка параметров модулей
         $this->loadModules();

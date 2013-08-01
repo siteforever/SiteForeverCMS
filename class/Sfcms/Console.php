@@ -6,7 +6,6 @@
 
 namespace Sfcms;
 
-
 use Sfcms\Kernel\AbstractKernel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,4 +37,8 @@ class Console extends Application
         }
     }
 
+    public function getKernel()
+    {
+        return $this->app;
+    }
 }

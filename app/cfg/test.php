@@ -2,8 +2,8 @@
 /**
  * Конфиг для тестов
  */
-
-return array_merge(require_once 'base.php', array(
+$base = include_once('base.php');
+return array(
     'cache' => array(
         'class' => 'Sfcms\Cache\CacheBlank',
         'livecycle' => 0,
@@ -23,4 +23,4 @@ return array_merge(require_once 'base.php', array(
     ),
     'pager_template' => 'pager',
     'mailer_transport' => 'null',
-));
+) + $base;

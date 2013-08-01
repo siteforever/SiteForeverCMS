@@ -2,7 +2,8 @@
 /**
  * Конфиг для системы
  */
-return array_merge(include_once 'base.php', array(
+$base = include_once('base.php');
+return array(
     'cache' => array(
         'class' => 'Sfcms\Cache\CacheBlank',
         'livecycle' => 0,
@@ -26,10 +27,10 @@ return array_merge(include_once 'base.php', array(
         'migration' => true,
     ),
     'template' => array(
-        'caching'   => false,
+        'caching'   => true,
 //        'cache' => array(
 //            'livetime' => 3600,
 //        ),
         'theme'     => 'basic',
     ),
-));
+) + $base;

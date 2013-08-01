@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -17,6 +18,9 @@ use Symfony\Component\Filesystem\Filesystem;
  */
 class StaticCommand extends Command
 {
+    /** @var ContainerBuilder */
+    protected $container;
+
     protected function configure()
     {
         $this->setName('install:static')
@@ -27,6 +31,9 @@ class StaticCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var ContainerBuilder */
+        $this->container = $this->getApplication()->getKernel()->getContainer();
+
         $staticDir = ROOT . '/' . trim($input->getArgument('dir'), '\\/ '.PHP_EOL);
 
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
@@ -36,9 +43,33 @@ class StaticCommand extends Command
 
         $output->writeln('<info>Command Install</info>');
 
-        file_put_contents(ROOT . '/vendor/.htaccess', "deny from all");
-    }
+        $filesistem = new Filesystem();
+        if (ROOT != SF_PATH && !$filesistem->exists(ROOT . '/misc')) {
+            $filesistem->symlink(SF_PATH . '/misc', ROOT . '/misc');
+            $output->writeln('<info>Create symlink for "misc"</info>');
+        }
+        if (!$filesistem->exists(ROOT . '/files')) {
+            $filesistem->mkdir(ROOT . '/files', 0777);
+            $output->writeln('<info>Create "files" dir</info>');
+        }
+        if (!$filesistem->exists(ROOT . '/runtime')) {
+            $filesistem->mkdir(array(ROOT . '/runtime/cache',ROOT . '/runtime/templates_c',));
+            $output->writeln('<info>Create "runtime" dir</info>');
+        }
 
+        if (!$filesistem->exists(ROOT . '/vendor/.htaccess')) {
+            $filesistem->dumpFile(ROOT . '/vendor/.htaccess', "deny from all", 0644);
+            $output->writeln('<info>Create "vendor/.htaccess" file</info>');
+        }
+
+        $template = $this->container->getParameter('template');
+        $themePath = ROOT . '/themes/' . $template['theme'];
+        if (!$filesistem->exists($themePath)) {
+            $filesistem->mkdir($themePath);
+            $filesistem->mirror(SF_PATH.'/themes/basic', $themePath);
+            $output->writeln(sprintf('Create theme dir "%s"', $themePath));
+        }
+    }
 
 
     protected function installJqGrid($staticDir, InputInterface $input, OutputInterface $output)

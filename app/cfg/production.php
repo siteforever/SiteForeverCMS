@@ -4,7 +4,8 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-return array_merge(include_once 'base.php', array(
+$base = include_once('base.php');
+return array(
     // отладка
     'debug' => array(
         'profiler'   => false,
@@ -23,4 +24,4 @@ return array_merge(include_once 'base.php', array(
     'users' => array(
         'userdir' => DIRECTORY_SEPARATOR.'files',
     ),
-));
+) + $base;

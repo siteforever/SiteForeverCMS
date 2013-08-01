@@ -24,11 +24,10 @@ class Config
      */
     public function __construct($cfg, Container $container = null)
     {
-        if (is_array($cfg)) {
-            $this->config = $cfg;
-            return $this;
+        if (!is_string($cfg)) {
+            throw new \InvalidArgumentException('$cfg may be only the path');
         }
-        $this->config = @require_once $cfg;
+        $this->config = @include($cfg);
         if (null !== $container) {
             $this->registerParameters('', $this->config, $container);
         }
@@ -63,8 +62,7 @@ class Config
         $path = explode('.', $key);
         if (count($path) == 1) {
             $this->config[$key] = $val;
-        }
-        else {
+        } else {
             $this->seti($path, $val);
         }
     }
@@ -81,9 +79,8 @@ class Config
     {
         $config = $this->get($key);
         if ($config && is_array($config) && is_array($default)) {
-            $config = array_merge($default, $config);
-        }
-        elseif (is_null($config)) {
+            $config = $config + $default;
+        } elseif (is_null($config)) {
             $config = $default;
         }
         $this->set($key, $config);
@@ -120,8 +117,7 @@ class Config
         foreach ($path as $part) {
             if (isset($data[$part])) {
                 $data = $data[$part];
-            }
-            else {
+            } else {
                 return $default;
             }
         }
