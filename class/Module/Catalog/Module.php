@@ -77,11 +77,12 @@ class Module extends SfModule
             'onPage' => '10',
             'level'  => 0, // < 1 output all products
             'gallery_dir' => '/files/catalog/gallery',
-            'gallery_max_file_size'  => 1000000,
                 // 1 - добавление полей
                 // 2 - обрезание лишнего
 
         ));
+
+
     }
 
     public function admin_menu()

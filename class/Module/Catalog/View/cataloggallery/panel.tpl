@@ -1,6 +1,6 @@
 <div class="a-gallery" data-url="{link controller="cataloggallery" action="index" id=$cat}">
 
-    {if $request->getFeedback()}{$request->getFeedbackString()}{/if}
+    {if $request->getFeedback()}<div class="alert alert-error">{$request->getFeedbackString()}</div>{/if}
 
     <ul class="row-fluid">
         {foreach from=$gallery item="item"}

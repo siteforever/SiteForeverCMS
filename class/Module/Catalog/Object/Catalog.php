@@ -164,7 +164,7 @@ class Catalog extends Object
     {
         if (null === $this->_image) {
             $gallery = $this->Gallery;
-            var_dump($gallery);
+//            var_dump($gallery);
             if (null === $gallery) {
                 return null;
             }

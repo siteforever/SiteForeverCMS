@@ -14,6 +14,9 @@ use Module\Catalog\Model\GalleryModel;
 use Module\Catalog\Object\Catalog;
 use Module\Catalog\Object\Gallery;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class GalleryController extends Controller
 {
@@ -141,7 +144,6 @@ class GalleryController extends Controller
     {
         $this->request->setAjax(true, Request::TYPE_ANY);
 
-        $max_file_size = $this->config->get('catalog.gallery_max_file_size');
 
         $prodId   = $this->request->get('prod_id');
         $formSent = $this->request->get('sent');
@@ -149,7 +151,6 @@ class GalleryController extends Controller
         if (!$formSent) {
             return array(
                 'prod_id'       => $prodId,
-                'max_file_size' => $max_file_size,
             );
         }
 
@@ -164,56 +165,54 @@ class GalleryController extends Controller
          */
         $galleryModel = $this->getModel('CatalogGallery');
         $filesystem = new Filesystem();
-        if (isset($_FILES['image']) && is_array($_FILES['image'])) {
-            $images = $_FILES['image'];
-            foreach ($images['error'] as $i => $err) {
-                if (UPLOAD_ERR_OK == $err) {
-                    /** @var $objImage Gallery */
-                    $objImage = $galleryModel->createObject();
 
-                    if ($images['size'][$i] <= $max_file_size && in_array($images['type'][$i],array('image/jpeg', 'image/gif', 'image/png'))) {
-                        $dest = $this->config->get('catalog.gallery_dir') . '/' . substr('00' . $prodId, -2, 2);
+        $dest = $this->config->get('catalog.gallery_dir') . '/'
+            . substr(md5($prodId), 0, 2) . '/' . substr('000000' . $prodId, -6, 6) . '/';
 
-                        if (!$filesystem->exists(ROOT . $dest)) {
-                            $filesystem->mkdir(ROOT . $dest);
-                        }
+        /** @var UploadedFile $file */
+        foreach ($this->request->files->get('image') as $i => $file) {
 
-                        $src = $images['tmp_name'][$i];
-
-                        $objImage->cat_id = $prodId;
-                        $objImage->hidden = 0;
-                        $objImage->main   = 0;
-                        $objImage->pos    = 100;
-                        $objImage->save();
-                        $g_id = $objImage->getId();
-
-                        // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
-                        $pathParts = pathinfo(strtolower($images['name'][$i]));
-                        // Это чистое изображение, но имя зашифровано
-                        $tmb = $dest . '/' . $g_id . '-' . substr(
-                                md5(mktime(1) . $trade->alias),
-                                0,
-                                6
-                            ) . '.' . $pathParts['extension'];
-                        // Имя не зашифровано, но с водяным знаком
-                        $img = $dest . '/' . $g_id . '-' . $trade->alias . '.' . $pathParts['extension'];
-
-                        if (move_uploaded_file($src, ROOT . $tmb)) {
-                            Sfcms::watermark(ROOT . $tmb, ROOT . $img);
-                            $objImage->image = str_replace(array('/', '\\'), '/', $img);
-                            $objImage->thumb = str_replace(array('/', '\\'), '/', $tmb);
-                        }
-                        if ($createMain) {
-                            $objImage->main = 1;
-                            $createMain     = false;
-                        }
-
-                        $objImage->save();
-                    }
-                } else {
-                    $this->request->addFeedback("При загрузке изображения $i произошла ошибка");
-                }
+            if (!in_array($file->getClientMimeType(), array('image/jpeg', 'image/gif', 'image/png'))) {
+                $this->request->addFeedback(sprintf('Unsupported image type "%s"', $file->getClientMimeType()));
+                continue;
             }
+
+            /** @var $objImage Gallery */
+            $objImage = $galleryModel->createObject();
+            $objImage->trade  = $trade;
+            $objImage->cat_id = $prodId;
+            $objImage->hidden = 0;
+            $objImage->pos    = 100;
+            $objImage->main   = 0;
+            $objImage->save();
+            $g_id = $objImage->getId();
+
+            // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
+            // Это чистое изображение, но имя зашифровано
+            $tmb = strtolower(substr(md5(microtime(1) . $trade->alias), 0, 6) . '.' . $file->getClientOriginalExtension());
+            // Имя не зашифровано, но с водяным знаком
+            $img = strtolower($g_id . '-' . $trade->alias . '.' . $file->getClientOriginalExtension());
+
+            try {
+                /** @var File $target */
+                $target = $file->move(ROOT . $dest, $tmb);
+            } catch (FileException $e) {
+                $this->request->addFeedback($e->getMessage());
+                $objImage->delete();
+                continue;
+            }
+
+            if ($createMain) {
+                $objImage->main = 1;
+                $createMain = false;
+            }
+            $objImage->thumb = $dest . $tmb;
+            $objImage->image = $dest . $img;
+            if (!Sfcms::watermark($target->getRealPath(), ROOT . $objImage->image)) {
+                $filesystem->rename($target->getRealPath(), ROOT . $objImage->image, true);
+                $objImage->thumb = $objImage->image;
+            }
+            $objImage->save();
         }
 
         return $this->getPanel($prodId);
