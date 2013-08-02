@@ -1,3 +1,5 @@
+<h1>{$request->getTitle()}</h1>
+
 {if $error}
 <div class="alert alert-error">
     {$msg}

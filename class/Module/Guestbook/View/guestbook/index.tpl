@@ -1,3 +1,5 @@
+<h1>{$request->getTitle()}</h1>
+
 {foreach from=$messages item="msg"}
 <div class="well">
     <p class="guestbook_title">

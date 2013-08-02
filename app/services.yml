@@ -15,7 +15,48 @@ parameters:
 
     static_dir: static
 
+    db:
+        login: ~
+        password: ~
+        dsn: "mysql:host=localhost;dbname=siteforever"
+        migrtion: false
+        debug: false
+        options:
+            1002: "SET NAMES utf8"
+
+    pdo_session:
+        db_table: "session"
+
+    session_storage: "@session.storage.pdo"
+
 services:
+    pdo:
+        class: Sfcms\PDO
+        arguments:
+            params: "%db%"
+        calls:
+            - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
+
+
+    session:
+        class: Symfony\Component\HttpFoundation\Session\Session
+        arguments: ["%session_storage%"]
+
+    session.storage.mock:
+        class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
+
+    session.storage.pdo:
+        class: "Symfony\Component\HttpFoundation\Session\Storage\\NativeSessionStorage"
+        arguments: [[], "@session.handler.pdo"]
+
+    session.handler.pdo:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        arguments: ["@pdo", "%pdo_session%"]
+
+    db:
+        class: Sfcms\db
+        arguments: ["@pdo"]
+
     smarty:
         class: Smarty
 
@@ -36,10 +77,6 @@ services:
         class: Auth
         calls:
             - [setRequest, ["@request"]]
-
-    db:
-        class: Sfcms\db
-        arguments: ["%db%"]
 
     cache:
         class: %cache_class%

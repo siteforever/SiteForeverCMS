@@ -1,13 +1,11 @@
 <?php
 namespace Sfcms;
 
-use App;
-use Sfcms\Assets;
 use Sfcms\Kernel\AbstractKernel as Service;
-use SimpleXMLElement;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Sfcms\Basket\Base as Basket;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
  * Объект запроса
@@ -52,6 +50,18 @@ class Request extends SymfonyRequest
         }
     }
 
+    /**
+     * @return SessionInterface
+     */
+    public function getSession()
+    {
+        if (null === $this->session) {
+            // Spike for very lazy session
+            $this->session = \App::getInstance()->getContainer()->get('session');
+            $this->session->start();
+        }
+        return $this->session;
+    }
 
     /**
      * @return Basket

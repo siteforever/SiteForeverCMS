@@ -5,3 +5,5 @@
     $app = new App('app/cfg/development.php', true);
     ```
 
+* Config for `db` must have `dsn` option
+Default dsn: `mysql:host=localhost;dbname=siteforever`

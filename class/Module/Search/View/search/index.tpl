@@ -1,3 +1,5 @@
+<h1>{$request->getTitle()}</h1>
+
 {if $query}
 <div>{"You searched for"|lang:"page"}: <b>&laquo;{$query}&raquo;</b></div>
 <hr>

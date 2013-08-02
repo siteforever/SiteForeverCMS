@@ -50,6 +50,7 @@ class CatalogModel extends Model
     {
         return array(
             'Gallery'      => array(self::HAS_MANY, 'CatalogGallery', 'cat_id', 'order' => 'pos'),
+            'Image'        => array(self::HAS_ONE,  'CatalogGallery', 'cat_id', 'where' => 'main = 1'),
             'Comments'     => array(self::HAS_MANY, 'CatalogComment', 'product_id',
                                     'order'=>'createdAt DESC', 'where' => array('deleted'=>0)),
             'Category'     => array(self::BELONGS, 'Catalog', 'parent'),

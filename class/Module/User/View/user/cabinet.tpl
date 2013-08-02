@@ -1,3 +1,5 @@
+<h1>{$request->getTitle()}</h1>
+
 <ul>
     <li>{t cat="user"}You are logged in as:{/t} {$user.login}</li>
     {*<li>Email: {$user.email}</li>*}

@@ -16,11 +16,14 @@ return array(
     'db' => array(
         'login'     => 'root',
         'password'  => '',
-        'host'      => 'localhost',
-        'database'  => 'siteforever_test',
+        'dsn'       => 'mysql:host=localhost;dbname=siteforever_test',
         'debug'     => true,
         'migration' => true,
+        'options'   => array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ),
     ),
     'pager_template' => 'pager',
     'mailer_transport' => 'null',
+    'session_storage' => '@session.storage.mock',
 ) + $base;

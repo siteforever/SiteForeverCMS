@@ -14,7 +14,9 @@
  * @example {thumb src="/files/catalog/0001/trade.jpg" width="200"}
  *
  */
-function smarty_function_thumb( $params )
+function smarty_function_thumb($params)
 {
-    return Sfcms::html()->thumb( $params );
+    //    var_dump($params);
+    //    return "";
+    return Sfcms::html()->thumb($params);
 }

@@ -9,7 +9,7 @@
 <div class="contaiter">
 
     {*<div class="b-body-wrapper">*}
-    
+
         {include file="header.tpl"}
 
         <div class="row">
@@ -25,8 +25,6 @@
             <div class="span8 b-content">
                 {breadcrumbs}
 
-                <h1>{$request->getTitle()}</h1>
-
                 {if $request->getFeedback()}
                     <div class="alert">{$request->getFeedbackString()}</div>
                 {/if}
@@ -35,7 +33,7 @@
             </div>
         </div>
     {*</div>*}
-    
+
     {*<div class="b-body-footer"></div>*}
 </div>
 

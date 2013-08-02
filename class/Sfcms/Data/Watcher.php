@@ -243,6 +243,10 @@ class Watcher
      */
     public function performOperations()
     {
+        if (!($this->dirty || $this->new || $this->delete)) {
+            return true;
+        }
+
         $pdo = Model::getDB()->getResource();
         $pdo->beginTransaction();
 

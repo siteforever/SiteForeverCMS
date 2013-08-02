@@ -1,8 +1,6 @@
 <?php
 namespace Sfcms;
 
-use PDO;
-use PDOStatement;
 use Std_Logger;
 use ErrorException;
 use SimpleXMLElement;
@@ -20,11 +18,11 @@ class dbException extends Exception {};
 final class db
 {
     // @TODO Убрать зависимости от системы.
-    // @TODO Перевести на PDO (Переведено. Стадия тестирования)
+    // @TODO Перевести на \PDO (Переведено. Стадия тестирования)
 
-    const   F_ASSOC = PDO::FETCH_ASSOC;
-    const   F_OBJ   = PDO::FETCH_CLASS;
-    const   F_ARRAY = PDO::FETCH_NUM;
+    const   F_ASSOC = \PDO::FETCH_ASSOC;
+    const   F_OBJ   = \PDO::FETCH_CLASS;
+    const   F_ARRAY = \PDO::FETCH_NUM;
     const   F_XML   = 'sf_db_xml';
 
     static  $server = null;
@@ -37,12 +35,12 @@ final class db
     private $log       = array(); // array
 
     /**
-     * @var PDOStatement
+     * @var \PDOStatement
      */
     private $result    = null;
 
     /**
-     * @var PDO
+     * @var \PDO
      */
     private $resource  = null;
 
@@ -142,49 +140,34 @@ final class db
 
     /**
      * Принимает класс содержащий конфигурацию
-     * @param array $dbc
+     * @param array|\PDO $dbc
      *
      * @throws dbException
      */
-    private function init($dbc = array())
+    private function init($dbc = null)
     {
-        $dsn    = "mysql:host={$dbc['host']}";
-
-        try {
-            $this->resource = new PDO($dsn, $dbc['login'], $dbc['password']);
-        } catch (Exception $e) {
-            die($e->getMessage());
+        if ($dbc instanceof \PDO) {
+            $this->resource = $dbc;
         }
 
-        if (!$this->resource) {
-            throw new dbException('Invalid connect to database');
-        }
-
-        while (!$use = $this->resource->query("USE `{$dbc['database']}`;")) {
-            $create = $this->resource->query("CREATE DATABASE `{$dbc['database']}`;");
-            if (!$create) {
-                throw new dbException("Can not create database `{$dbc['database']}`");
+        if (is_array($dbc)) {
+            if (isset($dbc['dsn'])) {
+                $dsn = $dbc['dsn'];
+            } else {
+                $dsn = "mysql:host={$dbc['host']};dbname={$dbc['database']}";
             }
-        }
+            $dbc['options'] = isset($dbc['options']) ? $dbc['options'] : array(
+                \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+            );
 
-        $this->resource->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        /**
-         * проверка версии сервера не ниже 5.x.x
-         */
-        $this->result   = $this->resource->query('SELECT VERSION()');
-        $this->result->execute();
-        $version    = $this->result->fetchColumn();
-
-        if ( preg_match( '/(\d+?)\.(\d+?)\.(\d+?)/', $version, $ver_part ) ) {
-            if ( $ver_part[1] < 5 ) {
-                throw new dbException('Invalid version MySQL '.$version.', 5.x.x only');
+            $this->resource = new \PDO($dsn, $dbc['login'], $dbc['password']);
+            if (!$this->resource) {
+                throw new dbException('Invalid connect to database');
             }
+            $this->resource->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->resource->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, \PDO::ERRMODE_EXCEPTION);
         }
-
-        $this->resource->query("SET NAMES 'utf8'");
     }
-
 
     /**
      * Создает соединение с базой
@@ -210,8 +193,8 @@ final class db
     }
 
     /**
-     * Ресурс PDO
-     * @return PDO
+     * Ресурс \PDO
+     * @return \PDO
      */
     function getResource()
     {
@@ -269,7 +252,7 @@ final class db
 
         $exec = round( microtime(true) - $start , 4 ).' сек.';
         $this->log( $sql . " [{$exec}]" );
-        $this->time += $exec;
+        $this->time .= $exec;
 
         $error = $this->resource->errorInfo();
         $this->errno = 0;
@@ -314,7 +297,7 @@ final class db
      * Подготовит SQL запрос
      * @param string $sql
      * @param array $params
-     * @return PDOStatement
+     * @return \PDOStatement
      */
     public function prepare($sql, array $params)
     {
@@ -711,7 +694,7 @@ final class db
             throw new ErrorException('Result Fields Query not valid');
         }
 
-        foreach ( $this->result->fetchAll(PDO::FETCH_OBJ) as $field  ) {
+        foreach ( $this->result->fetchAll(\PDO::FETCH_OBJ) as $field  ) {
             $xmlFields->appendChild( $xmlField = $xml->createElement('field',$field->Default) );
             $xmlField->setAttribute('name',$field->Field);
             $xmlField->setAttribute('type',$field->Type);
@@ -724,7 +707,7 @@ final class db
             throw new ErrorException('Result Keys Query not valid');
         }
 
-        foreach ( $this->result->fetchAll( PDO::FETCH_OBJ ) as $key ) {
+        foreach ( $this->result->fetchAll( \PDO::FETCH_OBJ ) as $key ) {
             $xmlKeys->appendChild( $xmlKey = $xml->createElement('key') );
             $xmlKey->setAttribute( 'column', $key->Column_name );
             $xmlKey->setAttribute( 'key', $key->Key_name );

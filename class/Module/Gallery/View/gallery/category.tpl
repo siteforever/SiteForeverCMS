@@ -1,3 +1,5 @@
+<h1>{$page.title}</h1>
+
 {$page.content}
 
 <div id="siteforever_gallery_{$category.id}">

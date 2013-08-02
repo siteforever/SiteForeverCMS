@@ -27,11 +27,14 @@ return array(
 
     // база данных
     'db' => array(
+        'dsn'       => 'mysql:host=localhost;dbname=siteforever',
         'login'     => 'root',
         'password'  => '',
-        'host'      => 'localhost',
-        'database'  => 'siteforever',
+        'options'   => array(
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
+        ),
         'migration' => false,
+        'debug'     => false,
     ),
 
     // тема

@@ -1,3 +1,5 @@
+<h1>{$request->getTitle()}</h1>
+
 {if isset($error) && isset($message)}
 <div class="alert alert-error">{$message}</div>
 {/if}

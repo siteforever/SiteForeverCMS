@@ -115,7 +115,7 @@ class Catalog extends Object
      */
     public function getTitle()
     {
-        return empty( $this->data['title'] ) ? $this->name : $this->data['title'];
+        return empty($this->data['title']) ? $this->name : $this->data['title'];
     }
 
     /**
@@ -162,18 +162,20 @@ class Catalog extends Object
      */
     public function getMainImage()
     {
-        if ( null === $this->_image ) {
-            $gallery    = $this->Gallery;
-            if ( null === $gallery ) {
+        if (null === $this->_image) {
+            $gallery = $this->Gallery;
+            var_dump($gallery);
+            if (null === $gallery) {
                 return null;
             }
-            foreach ( $gallery as $image ) {
-                if ( $image->main == 1 ) {
-                    $this->_image   = $image;
+            foreach ($gallery as $image) {
+                if ($image->main == 1) {
+                    $this->_image = $image;
                     break;
                 }
             }
         }
+
         return $this->_image;
     }
 
@@ -183,10 +185,12 @@ class Catalog extends Object
      */
     public function getImage()
     {
-        $image  = $this->getMainImage();
-        if ( $image )
+        $image = $this->getMainImage();
+        if ($image) {
             return $image->image;
-        return '';
+        }
+
+        return null;
     }
 
     /**
@@ -195,10 +199,12 @@ class Catalog extends Object
      */
     public function getThumb()
     {
-        $image  = $this->getMainImage();
-        if ( $image )
+        $image = $this->getMainImage();
+        if ($image) {
             return $image->thumb;
-        return '';
+        }
+
+        return null;
     }
 
     /**

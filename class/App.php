@@ -63,9 +63,6 @@ class App extends AbstractKernel
      */
     public function init()
     {
-        // Language
-        $this->getConfig()->setDefault('language', 'en');
-
         // TIME_ZONE
         date_default_timezone_set($this->getConfig('timezone') ? : 'Europe/Moscow');
 
@@ -75,7 +72,8 @@ class App extends AbstractKernel
         $installer = new Sfcms_Installer();
         $installer->installationStatic();
 
-        $this->getEventDispatcher()->addListener('kernel.response', function(KernelEvent $event){
+        $this->getEventDispatcher()
+            ->addListener('kernel.response', function(KernelEvent $event){
                 if ($event->getResponse() instanceof RedirectResponse) {
                     $event->stopPropagation();
                 }
@@ -88,10 +86,11 @@ class App extends AbstractKernel
 
 
     /**
-     * Обработка запросов
+     * Handle request
      * @param Request $request
      *
      * @return Response
+     * @throws Exception
      */
     public function handleRequest(Request $request)
     {
@@ -105,13 +104,7 @@ class App extends AbstractKernel
         $request->setDefaultLocale($this->getConfig('language'));
         $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
-        // запуск сессии
-        if (!$request->getSession()) {
-            $sessionHelper = new \Sfcms\Session($this->getModel('Session'));
-            $request->setSession($sessionHelper->session());
-            $request->getSession()->start();
-        }
-        // маршрутизатор
+        // define router
         $this->getRouter()->setRequest($request)->routing();
 
         static::$init_time = microtime(1) - static::$start_time;
@@ -175,13 +168,20 @@ class App extends AbstractKernel
         $format = $request->getRequestFormat();
         if (is_array($result) && 'json' == $format) {
             // Если надо вернуть JSON из массива
-            $result = json_encode($result);
+            $result = defined('JSON_UNESCAPED_UNICODE')
+                ? json_encode($result, JSON_UNESCAPED_UNICODE)
+                : json_encode($result);
         }
         // Имеет больший приоритет, чем данные в Request-Request->content
         if (is_array($result) && ('html' == $format || null === $format)) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign($result);
             $template = $request->getController() . '.' . $request->getAction();
+            $this->getTpl()->assign(array(
+                    'request'   => $request,
+                    'auth'      => $this->getAuth(),
+                    'config'    => $this->getConfig(),
+                ));
             $result   = $this->getTpl()->fetch(strtolower($template));
         }
         // Просто установить итоговую строку как контент
@@ -235,23 +235,26 @@ class App extends AbstractKernel
     {
         // todo Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
-
-        if ( self::isDebug() ) {
-            if ( $this->getConfig()->get( 'db.debug' ) ) {
-                Model::getDB()->saveLog();
-                $this->getLogger()->log(
-                    "Total SQL: " . count( Model::getDB()->getLog() )
-                        . "; time: " . round( Model::getDB()->time, 3 ) . " sec.", 'app'
-                );
-            }
-            $this->getLogger()->log( "Init time: " . round( static::$init_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Controller time: " . round( static::$controller_time, 3 ) . " sec.", 'app' );
-            $exec_time = microtime( true ) - static::$start_time;
+        if (self::isDebug()) {
+//            if ($this->getConfig()->get('db.debug')) {
+//                Model::getDB()->saveLog();
+//                $this->getLogger()->log(
+//                    "Total SQL: " . count(Model::getDB()->getLog()) . "; time: " . round(
+//                        Model::getDB()->time,
+//                        3
+//                    ) . " sec.",
+//                    'app'
+//                );
+//            }
+            $this->getLogger()->log("Init time: " . round(static::$init_time, 3) . " sec.", 'app');
+            $this->getLogger()->log("Controller time: " . round(static::$controller_time, 3) . " sec.", 'app');
+            $exec_time = microtime(true) - static::$start_time;
             $this->getLogger()->log(
-                "Other time: " . round( $exec_time - static::$init_time - static::$controller_time, 3 ) . " sec.", 'app'
+                "Other time: " . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec.",
+                'app'
             );
-            $this->getLogger()->log( "Execution time: " . round( $exec_time, 3 ) . " sec.", 'app' );
-            $this->getLogger()->log( "Required memory: " . round( memory_get_peak_usage(true) / 1024, 3 ) . " kb.", 'app' );
+            $this->getLogger()->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
+            $this->getLogger()->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.", 'app');
         }
     }
 }

@@ -33,13 +33,13 @@ class SearchController extends Controller
 
         $query = $this->request->query->get('query');
         if (!$query) {
-            return array('query' => $query);
+            return $this->render('search.index', array('query' => $query));
         }
         $search = urldecode($query);
         $this->tpl->assign('query', $search);
 
         if (mb_strlen($search, 'utf-8') <= 3) {
-            return array('error' => $this->t('page', 'Search phrase is too short'));
+            return $this->render('search.index', array('error' => $this->t('page', 'Search phrase is too short')));
         }
 
         $search = $this->filterFulltext( $search );
@@ -55,11 +55,12 @@ class SearchController extends Controller
         $crit->limit = $paging->limit;
         $result = $modelPage->findAll($crit);
 
-        return array(
+        return $this->render('search.index', array(
             'search' => $search,
             'result' => $result,
             'paging' => $paging,
-        );
+            'request' => $this->request,
+        ));
     }
 
 

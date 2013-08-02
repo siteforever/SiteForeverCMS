@@ -84,7 +84,7 @@ class PageController extends Controller
             }
         }
 
-        return $this->page->content;
+        return $this->render('page.index', array('content' => $this->page->content));
     }
 
     public function protectedAction()

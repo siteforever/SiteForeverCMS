@@ -1,4 +1,3 @@
-{*<h3>{t cat="gallery"}Gallery{/t}: {$category.name} <a {href controller="gallery" action="editcat" id=$category.id}>{icon name="pencil" title="Править"}</a></h3>*}
 <ul class="breadcrumb">
     <li>{a controller="gallery" action="admin"}{t cat="gallery"}Gallery{/t}{/a}<span class="divider">/</span></li>
     <li>{$category.name}</li>
@@ -15,7 +14,7 @@
             <div style="width: 200px; height: 200px; background: #999;">
                 {thumb src=$img.image width=200 height=200 alt=$img.name}
             </div>
-            
+
             <div class="gallery_float_layer">
                 <div class="gallery_control">
 {*                    <a {href editimg=$img.id} class="gallery_picture_edit">*}

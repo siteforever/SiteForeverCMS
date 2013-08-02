@@ -1,3 +1,5 @@
+<h1>{$image.title}</h1>
+
 <style type="text/css">
     .sf_gallery_panel {
         margin-bottom: 10px;
