@@ -8,8 +8,6 @@ return array(
     'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
     'admin'     => 'admin@ermin.ru',
 
-    'static_dir' => realpath(__DIR__ . '/../../static'),
-
     'url'       => array(
         'rewrite'   => true,
     ),

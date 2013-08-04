@@ -130,7 +130,7 @@ class Router
         }
 
         $result = trim($result, '/');
-        if ('' === $result) {
+        if ('' === $result && $this->request) {
             $result = $this->request->get('route');
         }
 

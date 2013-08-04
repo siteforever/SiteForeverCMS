@@ -86,13 +86,6 @@ abstract class Model extends Component
     protected $with = array();
 
     /**
-     * Кеш запросов для текущей модели
-     * Кешируются запросы вида field = value или field IN (values)
-     * @var array
-     */
-    private $_queries_cache = array();
-
-    /**
      * Создание модели
      */
     final private function __construct()
@@ -114,7 +107,11 @@ abstract class Model extends Component
      */
     static public function getDB()
     {
-        return App::getInstance()->getContainer()->get('db');
+        try {
+            return App::getInstance()->getContainer()->get('db');
+        } catch (\PDOException $e) {
+            static::app()->getLogger()->addAlert($e->getMessage());
+        }
     }
 
     /**
@@ -453,7 +450,7 @@ abstract class Model extends Component
         }
 
         $exec = round(microtime(true) - $start, 4);
-        $this->log("SHOW COLUMNS FROM `$table`" . " [$exec сек]", 'SQL');
+        $this->log("SHOW COLUMNS FROM `$table`" . " [$exec сек]");
 
         return $fields;
     }

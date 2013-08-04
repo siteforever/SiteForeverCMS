@@ -9,9 +9,10 @@ use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Config;
 use Sfcms\Controller\Resolver;
+use Sfcms\Logger;
+use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Module;
-use Sfcms\Session;
 use Sfcms\Delivery;
 use Sfcms\Request;
 use Sfcms\Router;
@@ -25,7 +26,6 @@ use RuntimeException;
 
 use Sfcms\Basket\Base as Basket;
 
-use Std_Logger;
 use Auth;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -85,11 +85,6 @@ abstract class AbstractKernel
     static $init_time   = 0;
 
     /**
-     * @var Std_Logger
-     */
-    private $_logger = null;
-
-    /**
      * Список установленных в систему модулей
      * @var array
      */
@@ -140,6 +135,7 @@ abstract class AbstractKernel
 
         $this->_container = new ContainerBuilder();
         $this->getContainer()->set('app', $this);
+        $this->getContainer()->setParameter('root', ROOT);
         $locator = new FileLocator(array(ROOT, SF_PATH));
         $loader = new YamlFileLoader($this->getContainer(), $locator);
         $loader->load('app/services.yml');
@@ -247,56 +243,11 @@ abstract class AbstractKernel
     }
 
     /**
-     * @return Std_Logger
+     * @return LoggerInterface
      */
     public function getLogger()
     {
-        if ( null !== $this->_logger ) {
-            return $this->_logger;
-        }
-
-        if ( ! static::isDebug() ) {
-            $this->_logger = Std_Logger::getInstance( new \Std_Logger_Blank() );
-            return $this->_logger;
-        }
-
-        if ( $typeLogger = $this->getConfig('logger') ) {
-            switch ( $typeLogger ) {
-                case 'file':
-                    $this->_logger = Std_Logger::getInstance( new \Std_Logger_File() );
-                    break;
-                case 'blank':
-                    $this->_logger = Std_Logger::getInstance( new \Std_Logger_Blank() );
-                    break;
-                case 'chrome':
-                    $this->_logger = Std_Logger::getInstance( new \Std_Logger_Chrome() );
-                    break;
-                case 'firephp':
-                    $this->_logger = Std_Logger::getInstance( new \Std_Logger_Firephp() );
-                    break;
-                case 'plain':
-                    $this->_logger = Std_Logger::getInstance( new \Std_Logger_Plain() );
-                    break;
-                case 'auto':
-                    if ( isset( $_SERVER[ 'HTTP_HOST' ] ) && isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
-                        if ( false !== stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'chrome' ) ) {
-                            $this->_logger = Std_Logger::getInstance( new \Std_Logger_Chrome() );
-                        } elseif ( !(
-                                false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firefox' )
-                             || false === stripos( $_SERVER[ 'HTTP_USER_AGENT' ], 'firephp' )
-                        ) ) {
-                            $this->_logger = Std_Logger::getInstance( new \Std_Logger_Firephp() );
-                        } else {
-                            $this->_logger = Std_Logger::getInstance( new \Std_Logger_Blank() );
-                        }
-                        break;
-                    }
-                default:
-                    $this->_logger = Std_Logger::getInstance();
-            }
-        }
-
-        return $this->_logger;
+        return $this->getContainer()->get('logger');
     }
 
     /**

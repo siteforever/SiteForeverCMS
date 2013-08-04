@@ -114,7 +114,7 @@ class Resolver
             }
         }
 
-        $this->app->getLogger()->log($command, 'Command');
+        $this->app->getLogger()->info('Run command', $command);
 
         // если запрос является системным
         if ($this->app->getRouter()->isSystem()) {

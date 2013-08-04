@@ -6,6 +6,9 @@ define('USER_USER',  '1'); // юзер
 define('USER_WHOLE', '2'); // оптовый покупатель
 define('USER_ADMIN', '10'); // админ
 
+if (!defined('SF_PATH')) {
+    define('SF_PATH', realpath(__DIR__ . '/..'));
+}
 
 use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Kernel\KernelEvent;
@@ -116,14 +119,13 @@ class App extends AbstractKernel
         try {
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
-            $this->getLogger()->log($e->getMessage());
+            $this->getLogger()->error($e->getMessage());
             $response = new Response($e->getMessage(), $e->getStatusCode()?:500);
         } catch (Exception $e) {
+            $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
             if ($this->isDebug()) {
                 throw $e;
             } else {
-                $this->getLogger()->log($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine());
-                $this->getLogger()->log($e->getTraceAsString());
                 return new Response('Site error', 500);
             }
         }
@@ -236,25 +238,14 @@ class App extends AbstractKernel
         // todo Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
         // Fatal error: Exception thrown without a stack frame in Unknown on line 0
         if (self::isDebug()) {
-//            if ($this->getConfig()->get('db.debug')) {
-//                Model::getDB()->saveLog();
-//                $this->getLogger()->log(
-//                    "Total SQL: " . count(Model::getDB()->getLog()) . "; time: " . round(
-//                        Model::getDB()->time,
-//                        3
-//                    ) . " sec.",
-//                    'app'
-//                );
-//            }
-            $this->getLogger()->log("Init time: " . round(static::$init_time, 3) . " sec.", 'app');
-            $this->getLogger()->log("Controller time: " . round(static::$controller_time, 3) . " sec.", 'app');
+            $this->getLogger()->log("Init time: " . round(static::$init_time, 3) . " sec.");
+            $this->getLogger()->log("Controller time: " . round(static::$controller_time, 3) . " sec.");
             $exec_time = microtime(true) - static::$start_time;
             $this->getLogger()->log(
-                "Other time: " . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec.",
-                'app'
+                "Other time: " . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec."
             );
             $this->getLogger()->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
-            $this->getLogger()->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.", 'app');
+            $this->getLogger()->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
         }
     }
 }

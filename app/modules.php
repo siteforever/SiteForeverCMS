@@ -18,4 +18,5 @@ return array(
     array('name' => 'Install', 'path' => 'Module\Install'),
     array('name' => 'Foo', 'path' => 'Acme\Module\Foo'),
     array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
+    array('name' => 'Monolog', 'path' => 'Module\Monolog'),
 );

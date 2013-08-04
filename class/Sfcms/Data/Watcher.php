@@ -247,8 +247,7 @@ class Watcher
             return true;
         }
 
-        $pdo = Model::getDB()->getResource();
-        $pdo->beginTransaction();
+        Model::getDB()->beginTransaction();
 
         try {
             if (is_array($this->dirty)) {
@@ -272,11 +271,11 @@ class Watcher
             $this->dirty  = array();
             $this->new    = array();
             $this->delete = array();
+            Model::getDB()->commit();
         } catch (\PDOException $e) {
-            $pdo->rollBack();
+            Model::getDB()->rollBack();
             throw $e;
         }
-        $pdo->commit();
 
         return true;
     }

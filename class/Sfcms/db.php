@@ -1,8 +1,8 @@
 <?php
 namespace Sfcms;
 
-use Std_Logger;
 use ErrorException;
+use Sfcms\LoggerInterface;
 use SimpleXMLElement;
 
 /**
@@ -31,8 +31,6 @@ final class db
     static  $base   = null;
 
     private $data;
-    private $aData;
-    private $log       = array(); // array
 
     /**
      * @var \PDOStatement
@@ -56,7 +54,7 @@ final class db
 
     /**
      * Класс-логер
-     * @var Logger
+     * @var LoggerInterface
      */
     private $logger;
 
@@ -87,54 +85,23 @@ final class db
 
     /**
      * Устанавливает класс логгер
-     * @param Std_Logger $logger
+     * @param LoggerInterface $logger
      * @return void
      */
-    function setLoggerClass( Std_Logger $logger )
+    function setLoggerClass(LoggerInterface $logger )
     {
         $this->logger   = $logger;
     }
 
     /**
-     * Сохраняет лог
-     */
-    function saveLog()
-    {
-        if ( null !== $this->logger ) {
-            foreach ( $this->log as $l ) {
-                $this->logger->log( $l, 'sql' );
-            }
-        }
-    }
-
-    /**
      * Логирует запросы
-     * @param $msg
-     */
-    protected function log( $msg )
-    {
-        $this->log[] = $msg;
-    }
-
-    /**
-     * Вернет лог SQL-запросов
      *
-     * @return array
+     * @param string $msg
      */
-    function getLog()
+    protected function log($msg)
     {
-        return $this->log;
-    }
-
-    /**
-     * Распечатает лог SQL-запросов
-     *
-     * @return void
-     */
-    function printLog()
-    {
-        foreach ( $this->log as $i => $l ) {
-            print "<p>#{$i} ".nl2br($l)."</p>";
+        if (null !== $this->logger) {
+            $this->logger->log($msg);
         }
     }
 
@@ -199,6 +166,24 @@ final class db
     function getResource()
     {
         return $this->resource;
+    }
+
+    public function beginTransaction()
+    {
+        $this->log(__FUNCTION__);
+        $this->resource->beginTransaction();
+    }
+
+    public function rollBack()
+    {
+        $this->log(__FUNCTION__);
+        $this->resource->rollBack();
+    }
+
+    public function commit()
+    {
+        $this->log(__FUNCTION__);
+        $this->resource->commit();
     }
 
     /**
@@ -305,16 +290,11 @@ final class db
             $this->result = $this->resource->prepare($sql);
             $this->result->execute($params);
         } catch ( \PDOException $e ) {
-            $this->log('ERROR: '.$sql.' : '.print_r($params,1));
+            $this->logger->error($sql, $params);
+            $this->logger->error($e->getMessage(), array($e->getTrace()));
             return null;
         }
 
-        /*if ( count($params) ) {
-            foreach( $params as $key => $val ) {
-                //$sql = preg_replace( '|'.$key.'|ux', $val, $sql );
-                $sql = str_replace( $key, $val, $sql );
-            }
-        }*/
         return $this->result;
     }
 
@@ -326,7 +306,7 @@ final class db
      * @param array $params
      * @return array
      */
-    function fetch( $sql, $extract = db::F_ASSOC, array $params = array() )
+    public function fetch( $sql, $extract = db::F_ASSOC, array $params = array() )
     {
         $start  = microtime(1);
 
@@ -352,7 +332,7 @@ final class db
             }
 
             $exec = round(microtime(1)-$start, 4);
-            $this->log( $sql." [$exec сек.]" );
+            $this->log( $sql." [$exec sec]" );
             $this->time += $exec;
 
             return $data;
@@ -427,7 +407,7 @@ final class db
                 }
             }
             $exec = round(microtime(1)-$start, 4);
-            $this->log( $sql." [$exec сек.]" );
+            $this->log( $sql." [$exec sec]" );
             $this->time += $exec;
             return $all_data;
         }
@@ -471,7 +451,7 @@ final class db
 
             $exec = round(microtime(1) - $start, 4);
             $this->time+= $exec;
-            $this->log( $sql." [$exec сек]" );
+            $this->log( $sql." [$exec sec]" );
             return $this->data[0];
         } else {
             return false;
@@ -497,7 +477,7 @@ final class db
         $count = $this->fetchOne($sql);
         $exec = round(microtime(1) - $start, 4);
         $this->time+= $exec;
-        $this->log( $sql." [$exec сек]" );
+        $this->log( $sql." [$exec sec]" );
         return $count;
     }
 
@@ -716,7 +696,7 @@ final class db
 
         $exec = round(microtime(true)-$start, 4);
         $this->time += $exec;
-        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec сек]" );
+        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec sec]" );
         $xml->formatOutput = true;
         $path = ROOT.'/_runtime/model';
         if ( ! file_exists( $path ) ) {
