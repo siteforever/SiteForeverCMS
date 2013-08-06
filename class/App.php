@@ -108,7 +108,7 @@ class App extends AbstractKernel
         $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // define router
-        $this->getRouter()->setRequest($request)->routing();
+        $this->getRouter()->setRequest($request)->setLogger($this->getLogger())->routing();
 
         static::$init_time = microtime(1) - static::$start_time;
         static::$controller_time = microtime(1);
@@ -215,12 +215,15 @@ class App extends AbstractKernel
      */
     public function invokeLayout(KernelEvent $event)
     {
+        $start = microtime(1);
         if ($event->getResponse() instanceof JsonResponse || $event->getRequest()->getAjax()) {
             $Layout = new Xhr($this);
         } else {
             $Layout = new Layout($this);
         }
-        return $Layout->view($event);
+        $result = $Layout->view($event);
+        $this->getLogger()->info('Invoke layout: ' . round(microtime(1) - $start, 3) . ' sec');
+        return $result;
     }
 
     public function createSignature(Sfcms\Kernel\KernelEvent $event)

@@ -56,7 +56,7 @@ class Resolver
 
         // Если не удалось определить контроллер, как известный, то инициировать ош. 404
         if (!isset($this->_controllers[$controller])) {
-            throw new HttpException(404, 'Controller not found');
+            throw new HttpException(404, sprintf('Controller "%s" not found', $controller));
         }
 
         if (!is_array($this->_controllers[$controller])) {
@@ -117,7 +117,7 @@ class Resolver
         $this->app->getLogger()->info('Run command', $command);
 
         // если запрос является системным
-        if ($this->app->getRouter()->isSystem()) {
+        if ($request->get('_system')) {
             if ($this->app->getAuth()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage($request);
             } else {
@@ -165,27 +165,34 @@ class Resolver
         $arguments    = array();
         $methodParams = $method->getParameters();
         $docComment   = $method->getDocComment();
-        preg_match_all( '/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match );
-        foreach( $methodParams as $param ) {
+        preg_match_all('/@param (int|float|string|array) \$([\w_-]+)/', $docComment, $match);
+        foreach ($methodParams as $param) {
             $default = $param->isOptional() ? $param->getDefaultValue() : null;
-            if ($request->query->has($param->name)) {
+            if ($request->query->has($param->name) || $request->attributes->has($param->name)) {
                 // Фильтруем входные параметры
 //                $arguments[$param->name] = $val;
                 if (false !== ($key = array_search($param->name, $match[2]))) {
                     switch ($match[1][$key]) {
                         case 'int':
-                            $arguments[$param->name] = $request->query->getDigits($param->name, $default);
+                            $arguments[$param->name] =
+                                $request->attributes->getDigits($param->name,
+                                    $request->query->getDigits($param->name, $default)
+                                );
                             break;
                         case 'float':
-                            $arguments[$param->name] = $request->query->filter($param->name, $default, false, FILTER_VALIDATE_FLOAT);
+                            $arguments[$param->name] =
+                                $request->attributes->filter($param->name,
+                                    $request->query->filter($param->name, $default, false, FILTER_VALIDATE_FLOAT),
+                                    false, FILTER_VALIDATE_FLOAT);
                             break;
                         case 'string':
-                            $arguments[$param->name] = $request->query->filter($param->name, $default, false, FILTER_SANITIZE_STRING);
+                            $arguments[$param->name] =
+                                $request->attributes->filter($param->name,
+                                $request->query->filter($param->name, $default, false, FILTER_SANITIZE_STRING),
+                                false, FILTER_SANITIZE_STRING);
                             break;
-//                        case 'array':
-//                            $arguments[$param->name] = $request->query->get($param->name);
                         default:
-                            $arguments[$param->name] = $request->query->get($param->name, $default);
+                            $arguments[$param->name] = $request->get($param->name, $default);
                     }
                 }
             } else {

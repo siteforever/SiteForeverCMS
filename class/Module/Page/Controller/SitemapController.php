@@ -33,6 +33,8 @@ class SitemapController extends Controller
 
     public function xmlAction()
     {
+        $this->request->setAjax(true);
+
         $dom = new DOMDocument('1.0','UTF-8');
         $dom->appendChild( $urlset = $dom->createElement('urlset') );
         $urlset->setAttributeNS('','xmlns','http://www.sitemaps.org/schemas/sitemap/0.9');
@@ -52,6 +54,7 @@ class SitemapController extends Controller
                 $alias = 'index' == $page->alias ? '' : $page->alias;
                 $url->appendChild($url->ownerDocument->createElement('loc', $host . '/' . $alias));
                 $url->appendChild($url->ownerDocument->createElement('lastmod', strftime('%Y-%m-%d', $page->update)));
+                return $page;
             },
             iterator_to_array($pages)
         );

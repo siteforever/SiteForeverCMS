@@ -79,7 +79,7 @@ class ManufacturerController extends Controller
     {
         $this->request->setTitle( $this->t( 'Manufacturers' ) );
 
-        $this->app()->addScript( '/misc/admin/manufacturers.js' );
+        $this->app->addScript( '/misc/admin/manufacturers.js' );
 
         /** @var $model ManufacturerModel */
         $model  = $this->getModel( 'Manufacturers' );

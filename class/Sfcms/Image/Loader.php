@@ -51,7 +51,7 @@ class Sfcms_Image_Loader
         $ret = false;
         if( preg_match( '/.*\.([^.]+)$/', $filename, $match ) ) {
 
-            App::getInstance()->getLogger()->log($match,'match');
+            App::cms()->getLogger()->log($match,'match');
 
             $ext = strtolower( $match[ 1 ] );
 

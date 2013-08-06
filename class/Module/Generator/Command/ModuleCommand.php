@@ -49,7 +49,7 @@ class ModuleCommand extends Command
         mkdir($modulePath.'/Object', 0755, true);
         mkdir($modulePath.'/Test', 0755, true);
         mkdir($modulePath.'/View', 0755, true);
-        $tpl = \App::getInstance()->getTpl();
+        $tpl = \App::cms()->getTpl();
         $tpl->assign(array(
                 'name' => $name,
                 'ns' => $ns,

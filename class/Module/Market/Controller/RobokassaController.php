@@ -26,7 +26,7 @@ class RobokassaController extends Controller
      * @param string $SignatureValue
      * @return string
      */
-    public function successAction( $InvId, $OutSum, $SignatureValue )
+    public function successAction($InvId, $OutSum, $SignatureValue)
     {
         if ( ! $InvId || ! $OutSum || ! $SignatureValue ) {
             return 'Params not defined';
@@ -67,7 +67,7 @@ class RobokassaController extends Controller
      * @param string $SignatureValue
      * @return string
      */
-    public function resultAction( $OutSum, $InvId, $SignatureValue )
+    public function resultAction($OutSum, $InvId, $SignatureValue)
     {
         if ( ! $InvId || ! $OutSum || ! $SignatureValue ) {
             return 'Params not defined';

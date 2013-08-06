@@ -14,7 +14,7 @@ class Forms_News_Category extends \Sfcms\Form\Form
     {
         parent::__construct(array(
              'name'      => 'news_category',
-             'action'    => App::getInstance()->getRouter()->createServiceLink('news', 'catedit'),
+             'action'    => App::cms()->getRouter()->createServiceLink('news', 'catedit'),
              'fields'    => array(
                      'id'        => array('type'=>'int', 'value'=>'0', 'hidden'),
                      'name'      => array('type'=>'text', 'label'=>'Наименование', 'required',),

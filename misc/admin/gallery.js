@@ -118,7 +118,7 @@ define("admin/gallery", [
                     $(this).find('li').each(function(){
                         positions.push($(this).attr('rel'));
                     });
-                    $.post('/?route=gallery/admin', { positions: positions });
+                    $.post('/index.php/gallery/admin', { positions: positions });
                 }
             }).disableSelection();
 
@@ -141,7 +141,7 @@ define("admin/gallery", [
                 old = $( this ).attr( 'data-old' ),
                 id = $( this).parent().attr( 'rel' );
             if ( id && val != old ) {
-                $.post( '/?route=gallery/admin', { editimage: id, name: val } );
+                $.post( '/index.php/gallery/admin', { editimage: id, name: val } );
             }
             $( this ).parent().find( 'span' ).text( val ).show().next().show().next().val( val );
             $( this ).remove();

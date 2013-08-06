@@ -15,7 +15,7 @@ class Forms_Page_Page extends \Sfcms\Form\Form
         parent::__construct(
             array(
                 'name'      => 'structure',
-                'action'    => App::getInstance()->getRouter()->createServiceLink( 'page', 'save' ),
+                'action'    => App::cms()->getRouter()->createServiceLink( 'page', 'save' ),
                 'fields'    => array(
                     'id'         => array(
                         'type' => 'hidden',
@@ -177,12 +177,12 @@ class Forms_Page_Page extends \Sfcms\Form\Form
     {
         $templates = array('index'=>$this->t('Main'), 'inner'=>$this->t('Inner'));
 
-        $theme = App::getInstance()->getConfig('template.theme');
+        $theme = App::cms()->getConfig('template.theme');
 
         $themePath = ROOT . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $theme;
         $themeXMLFile = $themePath . DIRECTORY_SEPARATOR . 'theme.xml';
 
-        $logger = App::getInstance()->getLogger();
+        $logger = App::cms()->getLogger();
 
         if ( file_exists( $themeXMLFile ) ) {
             $themeXML = new SimpleXMLElement( file_get_contents( $themeXMLFile ) );

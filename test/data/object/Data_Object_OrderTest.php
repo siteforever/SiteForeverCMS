@@ -43,7 +43,7 @@ class Data_Object_OrderTest extends PHPUnit_Framework_TestCase
     {
         $code = md5($this->obj->id.':'.$this->obj->date.':'.$this->obj->email);
         $this->assertEquals(
-            '/order/view/id=100500/code='.$code,
+            '/order/view?id=100500&code='.$code,
             $this->obj->getUrl()
         );
     }

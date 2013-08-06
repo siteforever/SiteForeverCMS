@@ -66,7 +66,7 @@ class GalleryModel extends Model
      */
     public function reposition(Request $request)
     {
-        $positions = $request->get('positions');
+        $positions = $request->request->get('positions');
         $new_pos = array();
         foreach ( $positions as $pos => $id ) {
             $new_pos[] = array('id'=>$id, 'pos'=>$pos);

@@ -43,7 +43,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testControllerAndAction()
     {
         $this->assertEquals(
-            '<a href="/page/edit/id/123">Правка</a>',
+            '<a href="/page/edit?id=123">Правка</a>',
             smarty_block_a(array('controller'=>'page','action'=>'edit','id'=>'123'),'Правка')
         );
     }
@@ -51,7 +51,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testController()
     {
         $this->assertEquals(
-            '<a href="/page/index/id/123">Правка</a>',
+            '<a href="/page/index?id=123">Правка</a>',
             smarty_block_a(array('controller'=>'page','id'=>'123'),'Правка')
         );
     }
@@ -59,7 +59,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testControllerAndClass()
     {
         $this->assertEquals(
-            '<a class="hello" href="/page/index/id/123">Правка</a>',
+            '<a class="hello" href="/page/index?id=123">Правка</a>',
             smarty_block_a(array('controller'=>'page','id'=>'123', 'class'=>'hello'),'Правка')
         );
     }
@@ -67,7 +67,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testHrefAndController()
     {
         $this->assertEquals(
-            '<a href="/about/contacts/controller=page/id=123">Правка</a>',
+            '<a href="/about/contacts?controller=page&id=123">Правка</a>',
             smarty_block_a(array('href'=>'/about/contacts','controller'=>'page','id'=>'123'),'Правка')
         );
     }
@@ -75,7 +75,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testHrefAndControllerAndClass()
     {
         $this->assertEquals(
-            '<a class="hello" href="/about/contacts/controller=page/action=edit/id=123">Правка</a>',
+            '<a class="hello" href="/about/contacts?controller=page&action=edit&id=123">Правка</a>',
             smarty_block_a(array('href'=>'/about/contacts','controller'=>'page','action'=>'edit','id'=>'123', 'class'=>'hello'),'Правка')
         );
     }
@@ -83,7 +83,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testHtmlAttr()
     {
         $this->assertEquals(
-            '<a name="edit" target="_blank" href="/page/index/id/10">Edit</a>',
+            '<a name="edit" target="_blank" href="/page/index?id=10">Edit</a>',
             smarty_block_a(array('controller'=>'page','id'=>10,'htmlName'=>'edit','htmlTarget'=>'_blank'),'Edit')
         );
     }
@@ -91,7 +91,7 @@ class Widgets_blockaTest extends PHPUnit_Framework_TestCase
     public function testFreeAttr()
     {
         $this->assertEquals(
-            '<a class="active" title="Good page" rel="page/10" href="/page/index/id/10">Edit</a>',
+            '<a class="active" title="Good page" rel="page/10" href="/page/index?id=10">Edit</a>',
             smarty_block_a(array('controller'=>'page','id'=>10,'class'=>'active','rel'=>'page/10','title'=>'Good page'),'Edit')
         );
     }

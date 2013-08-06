@@ -48,7 +48,7 @@ function smarty_function_lastnews( $params, $smarty )
 
     $list = $model->findAll( join( " AND ", $where ), $param, $sort, $params[ 'limit' ] );
 
-    $tpl    = App::getInstance()->getTpl();
+    $tpl    = App::cms()->getTpl();
 
     if ( isset( $params['template'] ) ) {
         $tpl->assign('list', $list);

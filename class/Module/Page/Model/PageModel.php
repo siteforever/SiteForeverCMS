@@ -13,6 +13,8 @@ use Sfcms\Model;
 use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 /**
  * Class PageModel
@@ -44,6 +46,10 @@ class PageModel extends Model
 
     /** @var array ControllerLink Cache */
     private $_controller_link = array();
+
+    /** @var bool Filled router custom routes */
+    protected static $routerFilled = false;
+
 
     public function init()
     {
@@ -102,6 +108,53 @@ class PageModel extends Model
             $parents =& $this->getParents();
             $parents[$obj->parent][$obj->id] = $obj;
         }
+    }
+
+    /**
+     * Filling route table from database
+     *
+     * @param Router $router
+     *
+     * @return Router
+     */
+    public function fillRoutes(Router $router)
+    {
+        if (static::$routerFilled) {
+            return $router;
+        }
+        $start = microtime(1);
+        /** @var array $page */
+        foreach ($this->getAll() as $page) {
+            $default = array(
+                '_controller' => $page['controller'],
+                '_action' => $page['action'],
+                '_id' => $page['id'],
+                '_template' => $page['template'],
+                '_system' => $page['system'],
+                'alias' => $page['null']
+            );
+            $router->getRouteCollection()->add($page['alias'],
+                new Route('/' . $page['alias'], $default));
+        }
+        foreach ($this->getAll() as $page) {
+            if (!in_array($page['controller'], array('news', 'catalog', 'gallery'))) {
+                continue;
+            }
+            $default = array(
+                '_controller' => $page['controller'],
+                '_action' => $page['action'],
+                '_id' => $page['id'],
+                '_template' => $page['template'],
+                '_system' => $page['system'],
+                'alias' => $page['null']
+            );
+            $router->getRouteCollection()->add($page['alias'].'_alias_',
+                new Route('/' . $page['alias'] . '/{alias}', $default)
+            );
+        }
+        $this->log('Loading aliases: ' . round(microtime(1) - $start, 3) . ' sec');
+        static::$routerFilled = true;
+        return $router;
     }
 
     /**
@@ -320,14 +373,16 @@ class PageModel extends Model
      */
     private function createParentsIndex()
     {
+        $start = microtime(1);
         $this->parents = array();
         // создаем массив, индексируемый по родителям
-        /** @var Page $obj */
-        if ( count($this->parents) == 0 ) {
-            foreach ( $this->getAll() as $obj ) {
-                $this->parents[ $obj->parent ][ $obj->id ] = $obj;
+        /** @var array $data */
+        if (count($this->parents) == 0) {
+            foreach ($this->getAll() as $data) {
+                $this->parents[$data['parent']][$data['id']] = $data;
             }
         }
+        $this->log(__FUNCTION__ . ' (' . round(microtime(1) - $start, 3) . ' sec)');
     }
 
     /**

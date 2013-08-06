@@ -49,6 +49,7 @@ class Property extends Object
 
     public function setValue($value)
     {
+        // todo избавиться от этого метода
         $field = $this->get('Field');
         $this->set('value_' . $field->type, $value);
         return $this;

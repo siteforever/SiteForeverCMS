@@ -30,8 +30,8 @@ function smarty_function_banner($params)
     $banner->count_show++;
 //    $banner->save();
 
-    App::getInstance()->getTpl()->assign(array(
+    App::cms()->getTpl()->assign(array(
         'banner'    => $banner,
     ));
-    return App::getInstance()->getTpl()->fetch('banner.index');
+    return App::cms()->getTpl()->fetch('banner.index');
 }

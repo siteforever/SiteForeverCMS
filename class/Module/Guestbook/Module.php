@@ -8,6 +8,8 @@
 namespace Module\Guestbook;
 
 use Sfcms\Module as SfModule;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
@@ -29,6 +31,25 @@ class Module extends SfModule
     {
         return include_once __DIR__ . '/config.php';
     }
+
+    public function registerRoutes(Router $router)
+    {
+        $routes = $router->getRouteCollection();
+        $routes->add('guestbook',
+            new Route('/guestbook',
+                array('_controller'=>'guestbook', '_action'=>'index')
+            ));
+        $routes->add('guestbook/admin',
+            new Route('/guestbook/admin',
+                array('_controller'=>'guestbook', '_action'=>'admin')
+            ));
+        $routes->add('guestbook/edit',
+            new Route('/guestbook/edit',
+                array('_controller'=>'guestbook', '_action'=>'edit')
+            ));
+
+    }
+
 
     public function admin_menu()
     {

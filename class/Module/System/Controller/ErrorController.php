@@ -21,7 +21,10 @@ class ErrorController extends Controller
     public function error404Action()
     {
         $this->request->setTemplate('inner');
-        $this->request->setTitle( Sfcms::i18n()->write('Page not found') );
-        return new Response($this->tpl->fetch('error/404.tpl'), 404) ;
+        $this->request->setTitle($this->t('Page not found'));
+        $this->tpl->getBreadcrumbs()->addPiece('/', $this->t('Home'))->addPiece(null, $this->request->getTitle());
+        $response = $this->render('error/404');
+        $response->setStatusCode(404);
+        return $response;
     }
 }

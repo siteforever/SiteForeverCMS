@@ -3,6 +3,7 @@ parameters:
     cache_class: Sfcms\Cache\CacheBlank
 #    cache.class: Sfcms\Cache\CacheFile
 #    cache.class: Sfcms\Cache\CacheApc
+    cache_dir: "%root%/runtime/cache"
 
     mailer_transport: sendmail
 

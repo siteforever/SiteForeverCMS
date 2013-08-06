@@ -11,7 +11,7 @@ use Sfcms\i18n;
  */
 function t( $cat, $text = '', $params = array() )
 {
-    return call_user_func_array(array(App::getInstance()->getContainer()->get('i18n'), 'write'), func_get_args());
+    return call_user_func_array(array(App::cms()->getContainer()->get('i18n'), 'write'), func_get_args());
 }
 
 

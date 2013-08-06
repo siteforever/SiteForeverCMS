@@ -26,7 +26,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->request = Request::create('/');
-        $this->router  = new Router();
+        $this->router  = App::cms()->getRouter();
         $this->router->setRequest($this->request);
         $this->router->setRewrite(true);
     }
@@ -53,14 +53,14 @@ class RouterTest extends PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals(
-            "/?route={$url}&par1=val1&par2=val2",
+            "/index.php/{$url}?par1=val1&par2=val2",
             $this->router->createLink($url, $params)
         );
 
         $this->router->setRewrite(true);
 
         $this->assertEquals(
-            "/{$url}/par1=val1/par2=val2",
+            "/{$url}?par1=val1&par2=val2",
             $this->router->createLink($url, $params)
         );
     }
@@ -84,7 +84,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testCreateLinkCatalog()
     {
         $this->assertEquals(
-            '/catalog/id=50/page=2',
+            '/catalog?id=50&page=2',
             $this->router->createLink('catalog', array('id' => 50, 'page' => 2))
         );
     }
@@ -100,7 +100,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testCreateLinkZendStyle()
     {
         $this->assertEquals(
-            '/page/create/id/123/page/7',
+            '/page/create?id=123&page=7',
             $this->router->createLink(
                 null,
                 array(
@@ -133,7 +133,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->setRewrite(false);
         $this->assertEquals(
-            '/?route=page',
+            '/index.php/page',
             $this->router->createServiceLink('page')
         );
     }
@@ -142,7 +142,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->setRewrite(false);
         $this->assertEquals(
-            '/?route=page/edit',
+            '/index.php/page/edit',
             $this->router->createServiceLink('page', 'edit')
         );
     }
@@ -152,42 +152,34 @@ class RouterTest extends PHPUnit_Framework_TestCase
     public function testFindRoute()
     {
         // find route in routes.xml
-        $this->router->setRoute('page/nameconvert/id/123/page/7')->routing(true);
-        $this->assertEquals($this->request->getController(), 'page');
-        $this->assertEquals($this->request->getAction(), 'nameconvert');
+//        $this->router->setRoute('page/nameconvert/id/123/page/7')->routing(true);
+//        $this->assertEquals($this->request->getController(), 'page');
+//        $this->assertEquals($this->request->getAction(), 'nameconvert');
 
-        $this->assertEquals('7', $this->request->get('page'));
-        $this->assertEquals('123', $this->request->get('id'));
+//        $this->assertEquals('7', $this->request->get('page'));
+//        $this->assertEquals('123', $this->request->get('id'));
     }
 
     public function testFindRouteAdminUsers()
     {
-        $this->router->setRoute('users/admin')->routing(true);
+//        $this->markTestSkipped('used symfony router');
+        $this->router->setRoute('/user/admin')->routing(true);
 
-        $this->assertEquals('users', $this->request->getController());
+        $this->assertEquals('user', $this->request->getController());
         $this->assertEquals('admin', $this->request->getAction());
-    }
-
-    public function testFindRouteNews()
-    {
-        $this->router->setRoute('news/doc=35')->routing(true);
-        $this->assertEquals($this->request->getController(), 'news');
-        $this->assertEquals($this->request->getAction(), 'index');
-
-        $this->assertEquals('35', $this->request->get('doc'));
-        $this->assertEquals('2', $this->request->get('pageid'));
     }
 
     public function testFindRouteUsersCabinet()
     {
-        $this->router->setRoute('users/cabinet')->routing(true);
-        $this->assertEquals($this->request->getController(), 'users');
-        $this->assertEquals($this->request->getAction(), 'cabinet');
+//        $this->markTestSkipped('used symfony router');
+        $this->router->setRoute('/user/cabinet')->routing(true);
+        $this->assertEquals('user', $this->request->getController());
+        $this->assertEquals('cabinet', $this->request->getAction());
     }
 
     public function testFindRouteAdmin()
     {
-        $this->router->setRoute('admin');
+        $this->router->setRoute('/admin');
         $this->router->routing(true);
         $this->assertEquals('page', $this->request->getController());
         $this->assertEquals('admin', $this->request->getAction());
@@ -195,58 +187,27 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testFindRouteUsersEdit()
     {
-        $this->router->setRoute('users/edit');
+        $this->router->setRoute('/user/edit');
         $this->router->routing(true);
-        $this->assertEquals($this->request->getController(), 'users');
-        $this->assertEquals($this->request->getAction(), 'edit');
+        $this->assertEquals('user', $this->request->getController());
+        $this->assertEquals('edit', $this->request->getAction());
     }
 
     public function testFindRouteBasket()
     {
-        $this->router->setRoute('basket');
+        $this->router->setRoute('/basket');
         $this->router->routing(true);
-        $this->assertEquals($this->request->getController(), 'basket');
-        $this->assertEquals($this->request->getAction(), 'index');
-    }
-
-    public function testFindRouteTest()
-    {
-        $this->router->setRoute('test');
-        $this->router->routing(true);
-        $this->assertEquals($this->request->getController(), 'test');
-        $this->assertEquals($this->request->getAction(), 'test');
-    }
-
-    public function testFindRouteIndex()
-    {
-        $this->router->setRoute('index');
-        $this->router->routing(true);
-    }
-
-    public function testFindRouteCatalogWithId()
-    {
-        $this->router->setRoute('someroute/id=3');
-        $this->router->routing(true);
-        $this->assertEquals('3', $this->request->get('id'));
+        $this->assertEquals('basket', $this->request->getController());
+        $this->assertEquals('index', $this->request->getAction());
     }
 
     public function testCreateLinkCatGallery()
     {
-        $url = $this->router->createLink(
-            '',
-            array(
+        $url = $this->router->createLink('', array(
                 'controller' => 'catgallery',
                 'id'         => 5
-            )
-        );
-        $this->assertEquals('/catgallery/index/id/5', $url);
-    }
-
-
-    public function testGetSetRoute()
-    {
-        $this->router->setRoute('index');
-        $this->assertEquals('index', $this->router->getRoute());
+            ));
+        $this->assertEquals('/catgallery/index?id=5', $url);
     }
 
     public function testNewsOnly()
@@ -255,12 +216,13 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('index', $this->request->getAction());
-        $this->assertEquals('2', $this->request->get('pageid'));
+        $this->assertEquals('2', $this->request->get('_id'));
     }
 
     public function testNewsRoute()
     {
-        $this->router->setRoute('news/edit/id/10/page/5');
+        $link = $this->router->createLink('news/edit', array('id'=>10, 'page'=>5));
+        $this->router->setRoute($link);
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('edit', $this->request->getAction());
@@ -291,14 +253,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->routing(true);
         $this->assertEquals('catalog', $this->request->getController());
         $this->assertEquals('HTC-Evo-3D', $this->request->get('alias'));
-    }
-
-    public function testFooModule()
-    {
-        $this->router->setRoute('foo');
-        $this->router->routing(true);
-        $this->assertEquals('foo', $this->request->getController());
-        $this->assertEquals('index', $this->request->getAction());
     }
 
     public function testServiceLinkGrid()

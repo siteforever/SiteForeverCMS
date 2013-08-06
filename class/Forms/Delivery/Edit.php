@@ -11,7 +11,7 @@ class Forms_Delivery_Edit extends \Sfcms\Form\Form
     {
         parent::__construct( array(
             'name' => 'DeliveryEdit',
-            'action' => App::getInstance()->getRouter()->createServiceLink('delivery','edit'),
+            'action' => App::cms()->getRouter()->createServiceLink('delivery','edit'),
             'fields' => array(
                 'id' => array('type'=>'int','hidden'),
                 'name' => array('type'=>'text','label'=>$this->t('delivery','Name')),

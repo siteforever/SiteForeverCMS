@@ -57,7 +57,7 @@ class Request extends SymfonyRequest
     {
         if (null === $this->session) {
             // Spike for very lazy session
-            $this->session = \App::getInstance()->getContainer()->get('session');
+            $this->session = \App::cms()->getContainer()->get('session');
             $this->session->start();
         }
         return $this->session;

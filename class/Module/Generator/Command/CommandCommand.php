@@ -53,7 +53,7 @@ class CommandCommand extends Command
             mkdir(dirname($commandFile), 0755, true);
             $output->writeln(sprintf("<info>Created directory '%s'</info>", dirname($commandFile)));
         }
-        $tpl = \App::getInstance()->getTpl();
+        $tpl = \App::cms()->getTpl();
         $tpl->assign(array(
                 'commandName' => $commandName,
                 'moduleName' => $moduleName,

@@ -2,7 +2,7 @@
 /**
  * Тест контроллера корзины
  */
- 
+
 class BasketControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
@@ -21,7 +21,7 @@ class BasketControllerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->app  = App::getInstance();
+        $this->app  = App::cms();
 //        $this->object = new Controller_Basket( $this->app );
     }
 

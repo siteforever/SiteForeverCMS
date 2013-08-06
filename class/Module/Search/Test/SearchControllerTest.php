@@ -21,20 +21,20 @@ class SearchControllerTest extends WebCase
 
     public function testIndexAction()
     {
-        \App::getInstance()->getTpl()->assign('error');
+        \App::cms()->getTpl()->assign('error');
         $this->request->query->set('query', null);
         $response = $this->runController('search');
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Поиск', $crawler->filterXPath('//h1')->text());
         $this->assertEquals(1, $crawler->filterXPath('//form')->count());
 
-        \App::getInstance()->getTpl()->assign('error');
+        \App::cms()->getTpl()->assign('error');
         $this->request->query->set('query', 'ab');
         $response = $this->runController('search');
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Поисковая фраза слишком короткая', $crawler->filterXPath('//div[@class="alert alert-error"]')->text());
 
-        \App::getInstance()->getTpl()->assign('error');
+        \App::cms()->getTpl()->assign('error');
         $this->request->query->set('query', 'страница');
         $response = $this->runController('search');
         $crawler = $this->createCrawler($response);

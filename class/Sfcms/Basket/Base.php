@@ -30,7 +30,7 @@ abstract class Base
 
     public function __construct(Request $request, Object $user = null)
     {
-        App::getInstance()->addScript('/misc/etc/basket.js');
+        App::cms()->addScript('/misc/etc/basket.js');
 
         $this->request = $request;
         $this->user = $user;

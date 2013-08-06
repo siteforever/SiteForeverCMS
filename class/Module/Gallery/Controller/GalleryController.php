@@ -175,11 +175,9 @@ class GalleryController extends Controller
 
     /**
      * Администрирование
-     * @param int $editimage
-     * @param string $name
      * @return mixed
      */
-    public function adminAction($editimage, $name)
+    public function adminAction()
     {
         /**
          * @var GalleryModel $model
@@ -190,14 +188,14 @@ class GalleryController extends Controller
         $model    = $this->getModel('Gallery');
         $category = $this->getModel('GalleryCategory');
 
-        if ($editimage) {
-            $image       = $model->find($editimage);
-            $image->name = $name;
+        if ($this->request->request->has('editimage')) {
+            $image       = $model->find($this->request->request->getInt('editimage'));
+            $image->name = $this->request->request->get('name');
 
             return 'ok';
         }
 
-        if ($this->request->get('positions')) {
+        if ($this->request->request->has('positions')) {
             return $model->reposition($this->request);
         }
 
@@ -338,26 +336,25 @@ class GalleryController extends Controller
      */
     public function listAction($id)
     {
-        $this->app()->addScript( '/misc/admin/gallery.js' );
         /** @var CategoryModel $category */
-        $category = $this->getModel( 'GalleryCategory' );
+        $category = $this->getModel('GalleryCategory');
 
-        $cat = $category->find( $id );
+        $cat = $category->find($id);
 
         /** @var GalleryModel $model */
-        $model = $this->getModel( 'Gallery' );
+        $model = $this->getModel('Gallery');
 
-        if( isset( $_FILES[ 'image' ] ) ) {
-            $this->upload( $cat );
+        if ($this->request->files->has('image')) {
+            $this->upload($cat);
         }
 
-        $images = $model->findAll( array(
+        $images = $model->findAll(array(
             'cond'  => 'category_id = :cat_id AND deleted = 0',
             'params'=> array( ':cat_id'=> $id ),
             'order' => 'pos',
-        ) );
+        ));
 
-        $this->request->setTitle( $cat->name );
+        $this->request->setTitle($cat->name);
         return array(
             'images'   => $images,
             'category' => $cat->getAttributes(),
@@ -377,27 +374,30 @@ class GalleryController extends Controller
         $form = $this->getForm('Gallery_Image');
 
         /** @var Gallery $obj */
-        if( $form->getPost() ) {
-            if( $form->validate() ) {
-                $obj = $form->id ? $model->find( $form->id ) : $model->createObject();
+        if ($form->getPost()) {
+            if ($form->validate()) {
+                $obj = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
                 $obj->save();
-                return array('error' => 0,
-                             'msg' => $this->t( 'Data save successfully' ),
-                             'name'=>$obj->name,
-                             'id' => $obj->id,
+
+                return array(
+                    'error' => 0,
+                    'msg'   => $this->t('Data save successfully'),
+                    'name'  => $obj->name,
+                    'id'    => $obj->id,
                 );
             } else {
                 return array('error' => 1, 'msg' => $form->getFeedbackString());
             }
         }
-        $editimg = $this->request->get( 'id' );
-        if( ! isset( $obj ) ) {
-            $obj = $model->find( $editimg );
+        $editimg = $this->request->get('id');
+        if (!isset($obj)) {
+            $obj = $model->find($editimg);
         }
-        $atr            = $obj->getAttributes();
-        $atr[ 'alias' ] = $obj->getAlias();
-        $form->setData( $atr );
+        $atr          = $obj->getAttributes();
+        $atr['alias'] = $obj->getAlias();
+        $form->setData($atr);
+        $obj->markClean();
 
         return array('form'=>$form);
     }

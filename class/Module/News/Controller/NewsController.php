@@ -186,7 +186,7 @@ class NewsController extends Controller
      * @param int $cat
      * @return mixed
      */
-    public function editAction($id, $cat)
+    public function editAction($id = null, $cat = null)
     {
         $this->request->setTitle($this->t('news','News edit'));
         /** @var $model NewsModel */

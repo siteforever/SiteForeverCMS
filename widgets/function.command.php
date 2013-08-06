@@ -11,10 +11,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
+
 function smarty_function_command( $params )
 {
-    $app    = App::getInstance();
+    $app    = App::cms();
 
     if ( ! isset( $params['controller'] ) && ! isset( $params['name'] ) ) {
         throw new Exception();

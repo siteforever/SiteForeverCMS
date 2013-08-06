@@ -37,9 +37,6 @@ class GuestbookController extends Controller
         if ( null === $this->page ) {
             return $this->t('Can not be used without page');
         }
-        if ($this->request->attributes->has('alias')) {
-            throw new HttpException(404, $this->t('Page not found'));
-        }
         $link   = $this->page->getId();
         $model  = $this->getModel('Guestbook');
         $form       = new Forms_Guestbook_Form();

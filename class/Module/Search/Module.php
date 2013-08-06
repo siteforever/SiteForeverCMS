@@ -7,6 +7,8 @@ namespace Module\Search;
 
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
@@ -25,6 +27,24 @@ class Module extends SfModule
             ),
         );
     }
+
+    public function registerRoutes(Router $router)
+    {
+        $routes = $router->getRouteCollection();
+        $routes->add('search',
+            new Route('/search',
+                array('_controller'=>'search', '_action'=>'index')
+            ));
+        $routes->add('search/admin',
+            new Route('/search/admin',
+                array('_controller'=>'search', '_action'=>'admin')
+            ));
+        $routes->add('search/indexing',
+            new Route('/search/indexing',
+                array('_controller'=>'search', '_action'=>'indexing')
+            ));
+    }
+
 
     public function init()
     {

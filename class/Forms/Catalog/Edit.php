@@ -37,7 +37,7 @@ class Forms_Catalog_Edit extends \Sfcms\Form\Form
             'name'  => 'catalog',
             'title' => 'Раздел каталога',
             'class' => 'form-horizontal',
-            'action'=> App::getInstance()->getRouter()->createServiceLink('catalog','save'),
+            'action'=> App::cms()->getRouter()->createServiceLink('catalog','save'),
             'fields'=> array(
 
                 'id'        => array('type'=>'hidden', 'value'=>'0'),

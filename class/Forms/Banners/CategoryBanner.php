@@ -9,7 +9,7 @@ class Forms_Banners_CategoryBanner extends \Sfcms\Form\Form
     {
         parent::__construct(array(
             'name'      => 'CategoryBanner',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('banner', 'savecat'),
+            'action'    => App::cms()->getRouter()->createServiceLink('banner', 'savecat'),
             'title'     => 'Настройка категорий баннеров',
             'fields'    => array(
                 'id'                => array('type'=>'int', 'hidden'),

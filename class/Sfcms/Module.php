@@ -13,9 +13,9 @@ use Sfcms\Tpl\Directory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Routing\Router;
 
 abstract class Module extends Component
 {
@@ -90,7 +90,7 @@ abstract class Module extends Component
     public static function getModuleClass( $controller )
     {
         if ( null === self::$controllers ) {
-            self::$controllers = App::getInstance()->getControllers();
+            self::$controllers = App::cms()->getControllers();
         }
         if ( isset( self::$controllers[ $controller ] ) ) {
             $config = self::$controllers[ $controller ];
@@ -122,6 +122,10 @@ abstract class Module extends Component
         );
     }
 
+    /**
+     * Register directories View and Widget in current module, if exist
+     * @param Directory $tpl
+     */
     public function registerViewsPath(Directory $tpl)
     {
         if (is_dir($this->getPath().'/View')) {
@@ -130,6 +134,14 @@ abstract class Module extends Component
         if (is_dir($this->getPath().'/Widget')) {
             $tpl->addWidgetsDir($this->getPath().'/Widget');
         }
+    }
+
+    /**
+     * Registering custom routes of module in router component
+     * @param Router $router
+     */
+    public function registerRoutes(Router $router)
+    {
     }
 
     /**

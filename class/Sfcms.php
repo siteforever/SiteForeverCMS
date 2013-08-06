@@ -46,7 +46,7 @@ class Sfcms
      */
     static function i18n()
     {
-        return App::getInstance()->getContainer()->get('i18n');
+        return App::cms()->getContainer()->get('i18n');
     }
 
     /**
@@ -55,7 +55,7 @@ class Sfcms
      */
     static function log( $message, $label = '' )
     {
-        App::getInstance()->getLogger()->log( $message, $label );
+        App::cms()->getLogger()->log( $message, $label );
     }
 
     /**

@@ -146,6 +146,7 @@ class UserController extends Controller
 
         $this->tpl->assign('users', $users);
         $this->tpl->assign('paging', $paging);
+        $this->tpl->assign('request', $this->request);
         $this->tpl->assign('groups', $this->config->get('users.groups'));
 
         return $this->tpl->fetch('user.admin');
@@ -153,7 +154,7 @@ class UserController extends Controller
 
     /**
      * Редактирование пользователя в админке
-     * @params int $id
+     * @param int $id
      * @return array
      */
     public function adminEditAction($id)
@@ -220,7 +221,7 @@ class UserController extends Controller
      */
     public function logoutAction()
     {
-        $this->app()->getAuth()->logout();
+        $this->app->getAuth()->logout();
         return $this->redirect('user/login');
     }
 
@@ -238,19 +239,20 @@ class UserController extends Controller
             ->addPiece('index',$this->t('Home'))
             ->addPiece(null, $this->t('user','Sign in site'));
 
-        if ( $this->auth->getId() ) {
+        if ($this->auth->getId()) {
             return $this->redirect('user/cabinet');
         }
 
         // вход в систему
         $form = $model->getLoginForm();
 
-        if ( $form->getPost() ) {
-            if ( $form->validate() ) {
+        if ($form->getPost()) {
+            if ($form->validate()) {
                 $result = $this->login($form->login, $form->password);
                 if (!$result['error']) {
                     return $this->redirect($this->request->server->get('HTTP_REFERER'));
                 } else {
+
                     $this->getTpl()->assign($result);
                 }
             }
@@ -258,7 +260,7 @@ class UserController extends Controller
         $this->request->setTitle($this->t('user','Sign in site'));
         $this->tpl->assign('form', $form );
 
-        return $this->tpl->fetch('user.login');
+        return $this->render('user.login');
     }
 
     /**
@@ -278,20 +280,21 @@ class UserController extends Controller
             'params'=> array($login),
         ));
 
-        if ( $user ) {
-            if ( $user->status == 0 ) {
-                return array('error'=>1, 'message'=>$this->t('user','Your account has been disabled'));
+        if ($user) {
+            if ($user->status == 0) {
+                return array('error' => 1, 'message' => $this->t('user', 'Your account has been disabled'));
             }
-            if ( $user->perm < USER_USER ) {
-                return array('error' => 1, 'message' => $this->t('user','Not enough permissions'));
+            if ($user->perm < USER_USER) {
+                return array('error' => 1, 'message' => $this->t('user', 'Not enough permissions'));
             }
 
             $password = $user->generatePasswordHash($password, $user->solt);
 
-            if ( $password != $user->password ) {
-                return array('error' => 1, 'message'=>$this->t('user','Your password is not suitable'));
+            if ($password != $user->password) {
+                return array('error' => 1, 'message' => $this->t('user', 'Your password is not suitable'));
             }
 
+            $user->last = time();
             $this->auth->setId($user->id);
 
 //            if ( $user->perm == USER_ADMIN ) {

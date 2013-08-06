@@ -44,7 +44,6 @@ class Auth
         if ($this->getId()) {
             $obj = \Sfcms\Model::getModel('User')->findByPk($this->getId());
             if ($obj) {
-                $obj->last = time();
                 return $obj;
             } else {
                 $this->setId(null);

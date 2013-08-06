@@ -33,9 +33,9 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->session->set('user_id', null);
         $this->request->setSession($this->session);
         $this->session->start();
-        \App::getInstance()->getContainer()->set('request', $this->request);
-        \App::getInstance()->getRouter()->setRequest($this->request);
-        \App::getInstance()->getAuth()->setRequest($this->request);
+        \App::cms()->getContainer()->set('request', $this->request);
+        \App::cms()->getRouter()->setRequest($this->request);
+        \App::cms()->getAuth()->setRequest($this->request);
     }
 
     protected function createCrawler(Response $response)
@@ -56,7 +56,7 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->request->clearFeedback();
         $this->request->setController($controller);
         $this->request->setAction($action);
-        return \App::getInstance()->handleRequest($this->request);
+        return \App::cms()->handleRequest($this->request);
     }
 
     /**
@@ -75,7 +75,7 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->request = Request::create($uri, $method, $parameters, $cookies, $files, $server, $content);
         $this->request->query->set('route', $uri);
         $this->request->setSession($this->session);
-        return \App::getInstance()->handleRequest($this->request);
+        return \App::cms()->handleRequest($this->request);
     }
 
     /**

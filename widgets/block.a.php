@@ -4,17 +4,19 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link http://ermin.ru
  */
- 
+
 function smarty_block_a( $params, $content )
 {
-    if ( isset($params['href']) ) {
-        $href   = $params['href'];
-        unset( $params['href'] );
-        unset( $params['url'] );
-    } elseif ( isset( $params['url'] ) ) {
-        $href   = $params['url'];
+    if (isset($params['href'])) {
+        $href = $params['href'];
+        unset($params['href']);
+        unset($params['url']);
+    } elseif (isset($params['url'])) {
+        $href = $params['url'];
+        unset($params['href']);
+        unset($params['url']);
     } else {
-        $href    = '#';
+        $href = '#';
     }
 
     $class = '';

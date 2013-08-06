@@ -46,6 +46,7 @@ class News extends Object
 
     public function onSetName()
     {
+        // todo как-то переписать этот метод
         $this->data['alias'] = null;
         $this->getAlias();
     }

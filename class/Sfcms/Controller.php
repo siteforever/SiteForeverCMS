@@ -64,7 +64,7 @@ abstract class Controller extends ContainerAware
 //            $this->config->setDefault($defaults[0], $defaults[1]);
 //        }
 
-        $pageId     = $this->request->get('pageid', 0);
+        $pageId     = $this->request->get('_id', 0);
         $controller = $this->request->getController();
         $action     = $this->request->getAction();
 

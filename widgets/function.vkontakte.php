@@ -18,7 +18,7 @@ function smarty_function_vkontakte( $params )
     $type   = isset( $params['type'] ) ? $params['type'] : 'full';
     $verb   = isset( $params['verb'] ) && $params['verb'] ? ', verb: 1' : '';
     $height = isset( $params['height'] ) ? ', height:' . $params['height'] : '';
-    $api_id = App::getInstance()->getConfig()->get('social.vk.id');
+    $api_id = App::cms()->getConfig()->get('social.vk.id');
 
 //    App::getInstance()->getRequest()->addScript('http://userapi.com/js/api/openapi.js?47');
     $return = array(

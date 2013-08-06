@@ -40,7 +40,7 @@ class Sfcms_HtmlTest extends PHPUnit_Framework_TestCase
             'data-id'    => 12,
             'nofollow'   => true,
         ));
-        $this->assertEquals('<a rel="nofollow" class="test" target="_blank" data-id="12" href="/page/edit/id/12">Page edit</a>', $link);
+        $this->assertEquals('<a rel="nofollow" class="test" target="_blank" data-id="12" href="/page/edit?id=12">Page edit</a>', $link);
 
         $link = $this->html->link('test', '#', array(
             'controller' => 'page',

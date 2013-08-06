@@ -9,12 +9,12 @@ use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Config;
 use Sfcms\Controller\Resolver;
-use Sfcms\Logger;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Module;
 use Sfcms\Delivery;
 use Sfcms\Request;
+use Symfony\Component\Routing\Router as SfRouter;
 use Sfcms\Router;
 use Sfcms\i18n;
 use Sfcms\Tpl\Directory;
@@ -29,8 +29,8 @@ use Sfcms\Basket\Base as Basket;
 use Auth;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Routing\Loader\YamlFileLoader as YamlUrlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Config\FileLocator;
 
@@ -144,9 +144,71 @@ abstract class AbstractKernel
         $config = new Config($locator->locate($cfg_file), $this->_container);
         $this->_container->set('config', $config);
 
+        $router = new SfRouter(
+            new YamlUrlFileLoader($locator),
+            'app/routes.yml',
+            array(/*'cache_dir' => $this->getContainer()->getParameter('cache_dir'),*/
+                  'debug' => $debug)
+        );
+        $this->getContainer()->set('sf_router', $router);
+
         // Загрузка параметров модулей
         $this->loadModules();
     }
+
+
+    /**
+     * Загружает конфиги модулей
+     * @return array
+     * @throws Exception
+     */
+    protected function loadModules()
+    {
+        if (!$this->_modules_config) {
+            $_ = $this;
+
+            $moduleArray = $this->getConfig('modules');
+
+            try {
+                array_map(function ($module) use ($_) {
+                    if (!isset($module['path'])) {
+                        throw new Exception('Directive "path" not defined in modules config');
+                    }
+                    if (!isset($module['name'])) {
+                        throw new Exception('Directive "name" not defined in modules config');
+                    }
+                    $className = $module['path'] . '\Module';
+                    $reflection = new \ReflectionClass($className);
+                    $place = dirname($reflection->getFileName());
+                    $_->setModule(new $className($_, $module['name'], $module['path'], $place));
+                }, $moduleArray);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+
+            // Сперва загрузим все конфиги
+            array_map(
+                function (Module $module) use ($_) {
+                    $_->_modules_config[$module->getName()] = $module->config();
+                },
+                $this->getModules()
+            );
+
+            // А потом инициализируем
+            // Т.к. для инициализации могут потребоваться зависимые модули
+            array_map(function ($module) use ($_) {
+                call_user_func(array($module, 'registerService'), $_->getContainer());
+                call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl_directory'));
+                call_user_func(array($module, 'registerRoutes'), $_->getContainer()->get('sf_router'));
+                if (method_exists($module, 'init')) {
+                    call_user_func(array($module, 'init'));
+                }
+            },$this->getModules());
+        }
+
+        return $this->_modules_config;
+    }
+
 
     /**
      * Защита от ошибок сериализации.
@@ -171,7 +233,7 @@ abstract class AbstractKernel
      * @throws Exception
      * @return AbstractKernel
      */
-    static public function getInstance()
+    static public function cms()
     {
         if ( null === self::$instance ) {
             throw new Exception('Application NOT instanced');
@@ -240,6 +302,7 @@ abstract class AbstractKernel
     public function getRouter()
     {
         return $this->getContainer()->get('router');
+//        return $this->getContainer()->get('sf_router');
     }
 
     /**
@@ -255,9 +318,9 @@ abstract class AbstractKernel
      * @param string $model
      * @return Model
      */
-    public function getModel( $model )
+    public function getModel($model)
     {
-        return Model::getModel( $model );
+        return Model::getModel($model);
     }
 
     /**
@@ -371,61 +434,6 @@ abstract class AbstractKernel
         }
         return false;
     }
-
-    /**
-     * Загружает конфиги модулей
-     * @return array
-     * @throws Exception
-     */
-    protected function loadModules()
-    {
-        if (!$this->_modules_config) {
-            $_ = $this;
-
-            $moduleArray = $this->getConfig('modules');
-
-            try {
-                array_map(function ($module) use ($_) {
-                    if (!isset($module['path'])) {
-                        throw new Exception('Directive "path" not defined in modules config');
-                    }
-                    if (!isset($module['name'])) {
-                        throw new Exception('Directive "name" not defined in modules config');
-                    }
-                    $className = $module['path'] . '\Module';
-                    $reflection = new \ReflectionClass($className);
-                    $place = dirname($reflection->getFileName());
-                    $_->setModule(new $className($_, $module['name'], $module['path'], $place));
-                },$moduleArray);
-            } catch (\Exception $e) {
-                throw $e;
-            }
-
-            // Сперва загрузим все конфиги
-            array_map(
-                function (Module $module) use ($_) {
-                    $_->_modules_config[$module->getName()] = $module->config();
-                },
-                $this->getModules()
-            );
-
-
-            $tplDirectory = $this->getContainer()->get('tpl_directory');
-
-            // А потом инициализируем
-            // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(function ($module) use ($_, $tplDirectory) {
-                call_user_func(array($module, 'registerService'), $_->getContainer());
-                call_user_func(array($module, 'registerViewsPath'), $tplDirectory);
-                if (method_exists($module, 'init')) {
-                    call_user_func(array($module, 'init'));
-                }
-            },$this->getModules());
-        }
-
-        return $this->_modules_config;
-    }
-
 
     /**
      * @param $name

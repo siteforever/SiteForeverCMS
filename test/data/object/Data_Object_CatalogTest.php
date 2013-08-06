@@ -18,7 +18,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         Watcher::instance()->clear();
-        $this->model    =  app::getInstance()->getModel('Catalog');
+        $this->model    =  app::cms()->getModel('Catalog');
     }
 
 

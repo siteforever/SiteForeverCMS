@@ -44,5 +44,5 @@ RewriteCond %{REQUEST_FILENAME} !(php)$
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 
-RewriteRule ([^\?]*)$ ?route=$1 [L]
-
+#RewriteRule ([^\?]*)$ ?route=$1 [L]
+RewriteRule ([^\?]*)$ /index.php/$1 [L]

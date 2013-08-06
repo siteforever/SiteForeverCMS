@@ -20,7 +20,7 @@ class DirectRoute extends Route
 
     public function __construct()
     {
-        $this->app = App::getInstance();
+        $this->app = App::cms();
         if ( null === self::$controllers ) {
             self::$controllers = $this->app->getControllers();
         }

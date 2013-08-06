@@ -18,7 +18,7 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->html = Sfcms::html();
-        App::getInstance()->getConfig()->set('url.rewrite', true);
+        App::cms()->getConfig()->set('url.rewrite', true);
     }
 
     /**
@@ -32,13 +32,13 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
     public function testHref()
     {
         $this->assertEquals(
-            'href="/elcatalog/metaproduct/prodid/15"',
+            'href="/elcatalog/metaproduct?prodid=15"',
             $this->html->href( null, array("controller"=>"elcatalog", "action"=>"metaProduct", "prodid"=>15) )
         );
 
         $this->assertEquals(
-            'href="/catalog/id=10"',
-            $this->html->href( '/catalog/id=5', array( 'id'=>'10' ) )
+            'href="/catalog?id=10"',
+            $this->html->href( '/catalog', array( 'id'=>'10' ) )
         );
     }
 

@@ -22,7 +22,7 @@ define('admin/editor/ckeditor',[
     }
 
     var funcNum = getUrlParam('CKEditorFuncNum'),
-        finderUrl = '/?route=elfinder/finder',
+        finderUrl = '/index.php/elfinder/finder',
         finderWidth = 800,
         finderHeight = 600;
 

@@ -10,6 +10,8 @@ namespace Module\Catalog;
 use Sfcms\Module as SfModule;
 use Sfcms\Model;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
@@ -53,6 +55,112 @@ class Module extends SfModule
             ),
         );
     }
+
+    public function registerRoutes(Router $router)
+    {
+        $routes = $router->getRouteCollection();
+        $routes->add('catalog/delete',
+            new Route('/catalog/delete',
+                array('_controller'=>'catalog', '_action'=>'delete')
+            ));
+        $routes->add('catalog/save',
+            new Route('/catalog/save',
+                array('_controller'=>'catalog', '_action'=>'save')
+            ));
+        $routes->add('catalog/admin',
+            new Route('/catalog/admin',
+                array('_controller'=>'catalog', '_action'=>'admin')
+            ));
+        $routes->add('catalog/trade',
+            new Route('/catalog/trade',
+                array('_controller'=>'catalog', '_action'=>'trade')
+            ));
+        $routes->add('catalog/category',
+            new Route('/catalog/category',
+                array('_controller'=>'catalog', '_action'=>'category')
+            ));
+        $routes->add('catalog/move',
+            new Route('/catalog/move',
+                array('_controller'=>'catalog', '_action'=>'move')
+            ));
+        $routes->add('catalog/saveorder',
+            new Route('/catalog/saveorder',
+                array('_controller'=>'catalog', '_action'=>'saveorder')
+            ));
+        $routes->add('catalog/hidden',
+            new Route('/catalog/hidden',
+                array('_controller'=>'catalog', '_action'=>'hidden')
+            ));
+
+        $routes->add('catalogcomment/admin',
+            new Route('/catalogcomment/admin',
+                array('_controller'=>'catalogcomment', '_action'=>'admin')
+            ));
+        $routes->add('catalogcomment/edit',
+            new Route('/catalogcomment/edit',
+                array('_controller'=>'catalogcomment', '_action'=>'edit')
+            ));
+
+        $routes->add('cataloggallery/delete',
+            new Route('/cataloggallery/delete/id/{id}',
+                array('_controller'=>'cataloggallery', '_action'=>'delete')
+            ));
+        $routes->add('cataloggallery/markdefault',
+            new Route('/cataloggallery/markdefault',
+                array('_controller'=>'cataloggallery', '_action'=>'markdefault')
+            ));
+        $routes->add('cataloggallery/upload',
+            new Route('/cataloggallery/upload',
+                array('_controller'=>'cataloggallery', '_action'=>'upload')
+            ));
+        $routes->add('cataloggallery/watermark',
+            new Route('/cataloggallery/watermark',
+                array('_controller'=>'cataloggallery', '_action'=>'watermark')
+            ));
+
+        $routes->add('goods',
+            new Route('/goods/search',
+                array('_controller'=>'goods', '_action'=>'search')
+            ));
+        $routes->add('goods/admin',
+            new Route('/goods/admin',
+                array('_controller'=>'goods', '_action'=>'admin')
+            ));
+        $routes->add('goods/grid',
+            new Route('/goods/grid',
+                array('_controller'=>'goods', '_action'=>'grid')
+            ));
+        $routes->add('goods/edit',
+            new Route('/goods/edit/id/{id}',
+                array('_controller'=>'goods', '_action'=>'edit')
+            ));
+        $routes->add('goods/yml',
+            new Route('/goods/yml',
+                array('_controller'=>'goods', '_action'=>'yml')
+            ));
+
+        $routes->add('prodtype/admin',
+            new Route('/prodtype/admin',
+                array('_controller'=>'prodtype', '_action'=>'admin')
+            ));
+        $routes->add('prodtype/grid',
+            new Route('/prodtype/grid',
+                array('_controller'=>'prodtype', '_action'=>'grid')
+            ));
+        $routes->add('prodtype/edit',
+            new Route('/prodtype/edit/id/{id}',
+                array('_controller'=>'prodtype', '_action'=>'edit')
+            ));
+        $routes->add('prodtype/save',
+            new Route('/prodtype/save',
+                array('_controller'=>'prodtype', '_action'=>'save')
+            ));
+        $routes->add('prodtype/deletefield',
+            new Route('/prodtype/deletefield/id/{id}',
+                array('_controller'=>'prodtype', '_action'=>'deletefield')
+            ));
+    }
+
 
     public function init()
     {

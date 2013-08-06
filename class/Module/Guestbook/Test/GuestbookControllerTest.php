@@ -37,7 +37,7 @@ class GuestbookControllerTest extends WebCase
     public function testEditAction()
     {
         $this->session->set('user_id', 1);
-        $response = $this->runRequest('/guestbook/edit/id/7');
+        $response = $this->runRequest('/guestbook/edit?id=7');
         $crawler = $this->createCrawler($response);
         $form = $crawler->filterXPath('//form')->first();
         $this->assertEquals('form_guestbook_edit', $form->attr('id'));

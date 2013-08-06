@@ -14,6 +14,7 @@ use Sfcms\Request;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PageController extends Controller
 {
@@ -56,11 +57,11 @@ class PageController extends Controller
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         if (!$this->auth->hasPermission($this->page['protected'])) {
-            throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
+            throw new HttpException(403, $this->t('Access denied'));
         }
 
-        if ($this->page && $this->request->attributes->has('alias')) {
-            throw new Sfcms_Http_Exception($this->t('Page not found'), 404);
+        if ($this->page && $this->request->get('alias')) {
+            throw new HttpException(404, $this->t('Page not found'));
         }
 
         // создаем замыкание страниц (если одна страница указывает на другую)
@@ -68,7 +69,7 @@ class PageController extends Controller
             $page = $pageModel->find($this->page['link']);
 
             if (!$this->user->hasPermission($page['protected'])) {
-                throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
+                throw new HttpException(403, $this->t('Access denied'));
             }
             if (!$page['link']) {
                 return $this->redirect($page['alias']);
@@ -102,7 +103,7 @@ class PageController extends Controller
         $this->request->set('template', 'index');
         $this->request->setTitle($this->t('Site structure'));
 
-        $this->app()->addScript('/misc/admin/page.js');
+        $this->app->addScript('/misc/admin/page.js');
 
         /** @var PageModel $model */
         $model = $this->getModel('Page');
@@ -125,14 +126,14 @@ class PageController extends Controller
     public function createAction($id)
     {
         /** @var $model PageModel */
-        $model = $this->getModel( 'Page' );
+        $model = $this->getModel('Page');
         $modules = $model->getAvaibleModules();
 
-        if( null === $id ) {
+        if (null === $id) {
             return $this->t('Unknown error');
         }
 
-        $parent = $model->find( $id );
+        $parent = $model->find($id);
         return array(
             'parent' => $parent,
             'modules' => $modules,
@@ -202,21 +203,23 @@ class PageController extends Controller
      * @param int $edit идентификатор раздела, который надо редактировать
      * @return mixed
      */
-    public function editAction( $edit )
+    public function editAction($edit)
     {
         /** @var PageModel $model */
-        $model = $this->getModel( 'Page' );
+        $model = $this->getModel('Page');
         $form  = $model->getForm();
 
-        if ( $edit ) {
+        if ($edit) {
             // данные страницы
-            $page = $model->find( $edit );
+            $page = $model->find($edit);
             if ($page) {
-                $form->setData( $page->getAttributes() );
-                return array( 'form' => $form );
+                $form->setData($page->getAttributes());
+
+                return array('form' => $form);
             }
         }
-        return $this->t( 'Data not valid' );
+
+        return $this->t('Data not valid');
     }
 
 
@@ -287,10 +290,13 @@ class PageController extends Controller
 
     /**
      * Меняет св-во hidden у страницы
+     *
+     * @param int $id
+     *
+     * @return array
      */
-    public function hiddenAction()
+    public function hiddenAction($id)
     {
-        $id = $this->request->query->getInt('id');
         if ($id) {
             $page = $this->getModel('Page')->find($id);
             $page->hidden = intval(!$page->hidden);

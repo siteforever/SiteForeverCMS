@@ -122,8 +122,9 @@ class Page extends Object
      * Делаем активной страницу и всех ее родителей
      * @param int $active
      */
-    public function setActive( $active = 1 )
+    public function setActive($active = 1)
     {
+        // todo переписать этот метод
         $this->data['active'] = $active;
         if ($this->parent && $parent = $this->getModel()->find($this->parent)) {
             $parent->setActive($active);

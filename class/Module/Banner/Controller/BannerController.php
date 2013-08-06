@@ -50,7 +50,6 @@ class BannerController extends Controller
      */
     public function adminAction()
     {
-        $this->app()->addScript('/misc/admin/banner.js');
         $this->request->setTitle($this->t('Banners category list'));
         $category = $this->getModel('CategoryBanner');
         $cat_list = $category->findAll();
@@ -191,12 +190,12 @@ class BannerController extends Controller
     }
 
     /**
-     * @param int $id
      * @return bool|int
      * @throws \Sfcms_Http_Exception
      */
-    public function editAction($id)
+    public function editAction()
     {
+        $id = $this->request->get('id');
         /** @var BannerModel $model */
         $model = $this->getModel('Banner');
         $form  = $model->getForm();
@@ -216,7 +215,7 @@ class BannerController extends Controller
                 'form' => $form
             );
         }
-        if (!$cat_id = $this->request->query->getDigits('cat')) {
+        if (!$cat_id = $this->request->get('cat')) {
             return 'error';
         }
         $cat = $this->getModel('CategoryBanner')->find($cat_id);

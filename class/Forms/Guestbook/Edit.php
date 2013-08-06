@@ -9,7 +9,7 @@ class Forms_Guestbook_Edit extends \Sfcms\Form\Form
     {
         parent::__construct( array(
             'name'  => 'guestbook_edit',
-            'action' => App::getInstance()->getRouter()->createServiceLink('guestbook','edit'),
+            'action' => App::cms()->getRouter()->createServiceLink('guestbook','edit'),
             'fields'=> array(
                 'id'    => array( 'type'=>'hidden', 'required' ),
 //                'name'  => array( 'type'=>'text', 'label'=>t('guestbook','Name'), ),

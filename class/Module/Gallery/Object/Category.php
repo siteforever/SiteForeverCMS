@@ -50,7 +50,7 @@ class Category extends Object
             $strpage = $this->getPage();
         }
         catch ( Exception $e ) {
-            return App::getInstance()->getRouter()->createServiceLink(
+            return App::cms()->getRouter()->createServiceLink(
                 'gallery', 'index', array( 'id'=> $this->getId() )
             );
         }

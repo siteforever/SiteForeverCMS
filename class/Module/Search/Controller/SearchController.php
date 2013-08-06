@@ -22,7 +22,7 @@ class SearchController extends Controller
     public function access()
     {
         return array(
-            'system' => array('admin','indexing'),
+            USER_ADMIN => array('admin','indexing'),
         );
     }
 

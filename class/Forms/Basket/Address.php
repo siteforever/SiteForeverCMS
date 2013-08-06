@@ -14,7 +14,7 @@ class Forms_Basket_Address extends \Sfcms\Form\Form
         return parent::__construct(array(
             'name'      => 'basket_address',
             'class'     => 'form-horizontal ajax-validate',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('basket','index'),
+            'action'    => App::cms()->getRouter()->createServiceLink('basket','index'),
             'fields'    => array(
                 'delivery_id'  => array(
                     'type'      =>'radio',

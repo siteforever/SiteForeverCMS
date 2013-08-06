@@ -37,7 +37,7 @@ class Html
      */
     public function render($tpl, $params = array())
     {
-        $t = App::getInstance()->getTpl();
+        $t = App::cms()->getTpl();
         $t->assign($params);
 
         return $t->fetch($tpl);
@@ -53,7 +53,7 @@ class Html
      */
     public function url($url, $params = array())
     {
-        return App::getInstance()->getRouter()->createLink($url, $params);
+        return App::cms()->getRouter()->createLink($url, $params);
     }
 
     /**
@@ -86,6 +86,10 @@ class Html
         $attributes = array();
         if ($class) {
             $params['class'] = $class;
+        }
+        if (isset($params['url']) && "#" == $url) {
+            $url = $params['url'];
+            unset($params['url']);
         }
         if (isset($params['nofollow'])) {
             if ($params['nofollow']) {
@@ -179,7 +183,7 @@ class Html
         }
 
         if (!$src) {
-            $src = '/static/images/no-image-' . App::getInstance()->getConfig('language') . '.png';
+            $src = '/static/images/no-image-' . App::cms()->getConfig('language') . '.png';
         }
         $src = $name = urldecode(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $src));
         // Подменное имя для изображения

@@ -17,7 +17,7 @@ define("admin/jquery/jquery.filemanager",[
 
         /** begin settings for elFinder */
         filemanager = {
-            url: "/?route=elfinder/connector",
+            url: "/index.php/elfinder/connector",
             lang: window.lang,
             resizable: false,
             debug: false

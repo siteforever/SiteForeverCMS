@@ -24,7 +24,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function app()
     {
-        return App::getInstance();
+        return App::cms();
     }
 
     /**

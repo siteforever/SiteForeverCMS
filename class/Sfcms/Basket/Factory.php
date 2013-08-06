@@ -20,7 +20,7 @@ class Sfcms_Basket_Factory
      */
     static function createBasket( \Sfcms\Request $request )
     {
-        $auth = \App::getInstance()->getAuth();
+        $auth = \App::cms()->getAuth();
 
 //        if (!$user instanceof User) {
 //            throw new Exception('Not valid User object');

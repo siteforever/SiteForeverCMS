@@ -7,7 +7,7 @@
 
 function smarty_block_form($params, $content, $smarty)
 {
-    $app = App::getInstance();
+    $app = App::cms();
 
     if (null !== $content) { // Закрытие
         if (isset($params['form'])) {

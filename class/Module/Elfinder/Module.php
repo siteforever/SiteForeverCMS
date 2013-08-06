@@ -7,6 +7,8 @@
 namespace Module\Elfinder;
 
 use Sfcms\Module as SfModule;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
@@ -29,6 +31,24 @@ class Module extends SfModule
 //            ),
         );
     }
+
+    public function registerRoutes(Router $router)
+    {
+        $routes = $router->getRouteCollection();
+        $routes->add('elfinder',
+            new Route('/elfinder',
+                array('_controller'=>'elfinder', '_action'=>'elfinder')
+            ));
+        $routes->add('elfinder/elfinder',
+            new Route('/elfinder/elfinder',
+                array('_controller'=>'elfinder', '_action'=>'elfinder')
+            ));
+        $routes->add('elfinder/connector',
+            new Route('/elfinder/connector',
+                array('_controller'=>'elfinder', '_action'=>'connector')
+            ));
+    }
+
 
     public function admin_menu()
     {

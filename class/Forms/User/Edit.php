@@ -12,7 +12,7 @@ class Forms_User_Edit extends Form
     {
         return  parent::__construct(array(
             'name'      => 'user',
-            'action'    => App::getInstance()->getRouter()->createServiceLink('user','save'),
+            'action'    => App::cms()->getRouter()->createServiceLink('user','save'),
             'fields'    => array(
                 'id'        => array('type'=>'hidden', 'value'=>'0'),
                 'login'     => array('type'=>'text', 'label'=>'Логин', 'required'),

@@ -235,8 +235,8 @@ final class db
         }
 
 
-        $exec = round( microtime(true) - $start , 4 ).' сек.';
-        $this->log( $sql . " [{$exec}]" );
+        $exec = round(microtime(true) - $start, 4) . ' sec';
+        $this->log( $sql . " ({$exec})" );
         $this->time .= $exec;
 
         $error = $this->resource->errorInfo();
@@ -332,7 +332,7 @@ final class db
             }
 
             $exec = round(microtime(1)-$start, 4);
-            $this->log( $sql." [$exec sec]" );
+            $this->log( $sql." ($exec sec)" );
             $this->time += $exec;
 
             return $data;
@@ -407,7 +407,7 @@ final class db
                 }
             }
             $exec = round(microtime(1)-$start, 4);
-            $this->log( $sql." [$exec sec]" );
+            $this->log( $sql." ($exec sec)" );
             $this->time += $exec;
             return $all_data;
         }
@@ -451,7 +451,7 @@ final class db
 
             $exec = round(microtime(1) - $start, 4);
             $this->time+= $exec;
-            $this->log( $sql." [$exec sec]" );
+            $this->log( $sql." ($exec sec)" );
             return $this->data[0];
         } else {
             return false;
@@ -477,7 +477,7 @@ final class db
         $count = $this->fetchOne($sql);
         $exec = round(microtime(1) - $start, 4);
         $this->time+= $exec;
-        $this->log( $sql." [$exec sec]" );
+        $this->log( $sql." ($exec sec)" );
         return $count;
     }
 
@@ -696,7 +696,7 @@ final class db
 
         $exec = round(microtime(true)-$start, 4);
         $this->time += $exec;
-        $this->log( "SHOW COLUMNS FROM `$table`"." [$exec sec]" );
+        $this->log( "SHOW COLUMNS FROM `$table`"." ($exec sec)" );
         $xml->formatOutput = true;
         $path = ROOT.'/_runtime/model';
         if ( ! file_exists( $path ) ) {

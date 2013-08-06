@@ -25,13 +25,13 @@ define("module/basket", [
                 $(this.class_name).replaceWith( response.widget );
             };
 
-            return $.post('/?route=basket/add', {
+            return $.post('/index.php/basket/add', {
                     basket_prod_id:     id,
                     basket_prod_name:   product,
                     basket_prod_count:  parseInt( count, 10 ),
                     basket_prod_price:  parseFloat( price ),
                     basket_prod_details :details
-                }, $.proxy( callback, this ),
+                }, $.proxy(callback, this),
                 "json"
             );
         },

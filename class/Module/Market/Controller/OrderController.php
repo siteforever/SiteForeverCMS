@@ -25,13 +25,13 @@ class OrderController extends Controller
 
     /**
      * Список заказов зарегистрированного пользователя
-     * @param int $cancel
-     * @param int $item
      * @return mixed
      * @throws \Sfcms_Http_Exception
      */
-    public function indexAction( $cancel, $item )
+    public function indexAction()
     {
+        $cancel = $this->request->get('cancel');
+        $item   = $this->request->get('item');
         $this->request->set('template', 'inner');
         $this->request->setTitle($this->t('order','My orders'));
 
@@ -96,7 +96,7 @@ class OrderController extends Controller
      * @param $code
      * @return mixed
      */
-    public function viewAction( $id, $code )
+    public function viewAction($id, $code)
     {
         if ( ! ( $id && $code ) ) {
             throw new \Sfcms_Http_Exception('Order not defined',404);
@@ -161,13 +161,14 @@ class OrderController extends Controller
 
     /**
      * Действия админки
-     * @param int $id
-     * @param int $number
-     * @param string $user
      * @return mixed
      */
-    public function adminAction( $id, $number, $user )
+    public function adminAction()
     {
+        $id = $this->request->get('id');
+        $number = $this->request->get('number');
+        $user = $this->request->get('user');
+
         if ( $id ) {
             return $this->adminEdit( $id );
         }

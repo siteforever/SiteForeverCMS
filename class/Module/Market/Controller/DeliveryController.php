@@ -69,10 +69,10 @@ class DeliveryController extends Controller
 
     /**
      * Пересортировака порядка доставки
-     * @param array $sort
      */
-    public function sortableAction( $sort )
+    public function sortableAction()
     {
+        $sort = $this->request->get('sort');
         $model  = $this->getModel('Delivery');
         $items  = $model->findAll( sprintf('id IN (%s)', join(',', $sort)) );
         $sort   = array_flip( $sort );
@@ -91,7 +91,7 @@ class DeliveryController extends Controller
     public function selectAction($type)
     {
         try {
-            $delivery = $this->app()->getDelivery();
+            $delivery = $this->app->getDelivery($this->request);
             $delivery->setType( $type );
             $basketSum = $this->getBasket()->getSum();
             return array(

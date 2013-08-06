@@ -54,7 +54,7 @@ abstract class Object extends Table
         $this->model    = $model;
         $this->table    = $model->getTable();
         $this->relation = $this->model->relation();
-        $this->setAttributes($data);
+        $this->data = $data;
     }
 
     /**

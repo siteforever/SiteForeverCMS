@@ -16,6 +16,8 @@ use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
@@ -28,13 +30,13 @@ class Module extends SfModule
         return array(
             'controllers' => array(
                 'captcha'   => array(),
-//                'elfinder'  => array(),
                 'generator' => array(),
+                'error'     => array(),
                 'log'       => array(),
                 'routes'    => array(),
-                'system'    => array(),
                 'setting'   => array(),
                 'static'    => array(),
+                'system'    => array(),
             ),
             'models'      => array(
                 'Comments'  => 'Module\\System\\Model\\CommentsModel',
@@ -46,6 +48,62 @@ class Module extends SfModule
                 'Log'       => 'Module\\System\\Model\\LogModel',
             ),
         );
+    }
+
+    public function registerRoutes(Router $router)
+    {
+        $routes = $router->getRouteCollection();
+        $routes->add('admin',
+            new Route('/admin',
+                array('_controller'=>'page', '_action'=>'admin')
+            ));
+
+        $routes->add('captcha',
+            new Route('/captcha',
+                array('_controller'=>'captcha', '_action'=>'index')
+            ));
+
+        $routes->add('generator',
+            new Route('/generator',
+                array('_controller'=>'generator', '_action'=>'index')
+            ));
+        $routes->add('generator/generate',
+            new Route('/generator/generate',
+                array('_controller'=>'generator', '_action'=>'generate')
+            ));
+
+        $routes->add('log/admin',
+            new Route('/log/admin',
+                array('_controller'=>'log', '_action'=>'admin')
+            ));
+        $routes->add('log/grid',
+            new Route('/log/grid',
+                array('_controller'=>'log', '_action'=>'grid')
+            ));
+
+        $routes->add('setting/admin',
+            new Route('/log/setting',
+                array('_controller'=>'setting', '_action'=>'admin')
+            ));
+        $routes->add('setting/save',
+            new Route('/setting/save',
+                array('_controller'=>'setting', '_action'=>'save')
+            ));
+
+        $routes->add('static',
+            new Route('/static/{alias}',
+                array('_controller'=>'static', '_action'=>'asset')
+            ));
+
+        $routes->add('system',
+            new Route('/system',
+                array('_controller'=>'system', '_action'=>'index')
+            ));
+        $routes->add('system/assembly',
+            new Route('/system/assembly',
+                array('_controller'=>'system', '_action'=>'assembly')
+            ));
+
     }
 
     public function registerService(ContainerBuilder $container)
@@ -99,6 +157,7 @@ class Module extends SfModule
         $dispatcher->addListener('kernel.response', array($this, 'onKernelResponseImage'));
         $dispatcher->addListener('kernel.response', array($this, 'onKernelResponse'));
     }
+
 
     /**
      * Handling the response

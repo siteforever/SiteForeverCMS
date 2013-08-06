@@ -16,7 +16,7 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         Watcher::instance()->clear();
-        $this->model    =  app::getInstance()->getModel('Banner');
+        $this->model    =  app::cms()->getModel('Banner');
         $_SERVER['HTTP_HOST'] = 'example.com';
     }
 
@@ -48,7 +48,7 @@ class Data_Object_BannerTest extends PHPUnit_Framework_TestCase
         $banner->id = 10;
 
         $this->assertEquals(
-            '<a target="_blank" href="/banner/redirectbanner/id=10"><img src="http://example.org/images/image.png"></a>',
+            '<a target="_blank" href="/banner/redirectbanner?id=10"><img src="http://example.org/images/image.png"></a>',
             $banner->block
         );
 

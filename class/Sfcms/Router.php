@@ -8,7 +8,7 @@ namespace Sfcms;
 
 use Sfcms\Route;
 use Sfcms\Request;
-use Sfcms\Router\InterfaceLogger;
+use Sfcms\LoggerInterface;
 
 class Router
 {
@@ -31,18 +31,23 @@ class Router
     /** @var array Routes handlers */
     private $_routes = array();
 
-    /** @var InterfaceLogger */
+    /** @var LoggerInterface */
     private $logger = null;
+
+    /** @var  bool */
+    protected static $debug;
 
     /**
      * Создаем маршрутизатор
      */
-    public function __construct()
+    public function __construct($debug = true)
     {
-        $this->addRouteHandler(new Route\DirectRoute());
-        $this->addRouteHandler(new Route\XmlRoute());
+        static::$debug = $debug;
+//        $this->addRouteHandler(new Route\DirectRoute());
+//        $this->addRouteHandler(new Route\XmlRoute());
+        $this->addRouteHandler(new Route\YmlRoute());
         $this->addRouteHandler(new Route\StructureRoute());
-        $this->addRouteHandler(new Route\DefaultRoute());
+//        $this->addRouteHandler(new Route\DefaultRoute());
     }
 
     /**
@@ -53,7 +58,11 @@ class Router
     public function setRequest(Request $request)
     {
         $this->request = $request;
-        $this->setRoute($this->request->get('route'));
+        if ($this->request->get('route')) {
+            $this->setRoute($this->request->get('route'));
+        } else {
+            $this->setRoute(str_replace($this->request->getScriptName(), '',  $this->request->getRequestUri()));
+        }
         return $this;
     }
 
@@ -100,15 +109,19 @@ class Router
     }
 
     /**
-     * @param InterfaceLogger $logger
+     * @param LoggerInterface $logger
+     *
+     * @return $this
      */
-    public function setLogger(InterfaceLogger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+
+        return $this;
     }
 
     /**
-     * @return InterfaceLogger
+     * @return LoggerInterface
      */
     public function getLogger()
     {
@@ -156,15 +169,16 @@ class Router
         }
 
         $prefix = '/';
-        if (preg_match('@^(http:\/\/|#)@i', $result)) {
+        if (preg_match('@^(https?:\/\/|#)@i', $result)) {
             $prefix = '';
             $par    = array();
         }
 
         if ($this->getRewrite()) {
-            $result = $prefix . $result . (count($par) ? '/' . join('/', $par) : '');
+            $result = $prefix . $result . (count($par) ? '?' . join('&', $par) : '');
         } else {
-            $result = $prefix . '?route=' . $result . (count($par) ? '&' . join('&', $par) : '');
+//            $result = $prefix . '?route=' . $result . (count($par) ? '&' . join('&', $par) : '');
+            $result = $prefix . 'index.php/' . $result . (count($par) ? '?' . join('&', $par) : '');
         }
 
         $result = preg_match('/\.[a-z0-9]{2,4}$/i', $result) ? $result : strtolower($result);
@@ -183,24 +197,24 @@ class Router
     public static function createServiceLink($controller, $action = 'index', $params = array())
     {
         $result    = '';
-        $parstring = '';
         if (null === $controller) {
             throw new \InvalidArgumentException('$controller must not be null');
         }
+        $vars = array();
         foreach ($params as $key => $param) {
-            $parstring .= '/' . $key . '/' . $param;
+            $vars[] = $key . '=' . $param;
         }
 
         $result .= '/' . $controller;
-        if ('index' != $action || '' != $parstring) {
-            $result .= '/' . $action . $parstring;
+        if ('index' != $action || $vars) {
+            $result .= '/' . $action . ($vars ? '?' . join('&', $vars) : '');
         }
 
         if (!self::$rewrite) {
-            $result = '/?route=' . trim($result, '/');
+            $result = '/index.php/' . trim($result, '/?');
         }
 
-        if ('index' == $action && 'index' == $controller && '' == $parstring) {
+        if ('index' == $action && 'index' == $controller && !$vars) {
             $result = '/';
         }
 
@@ -264,7 +278,7 @@ class Router
         // Если контроллер указан явно, то не производить маршрутизацию
         if (!$greedy && $this->request->getController()) {
             if (!$this->request->getAction()) {
-                $this->request->set('_action', 'index');
+                $this->request->setAction('index');
             }
 
             return true;
@@ -278,19 +292,21 @@ class Router
         /** @var \Sfcms\Route $route */
         foreach ($this->_routes as $route) {
             if ($routed = $route->route($this->request, $this->route)) {
-                $this->request->setController($routed['controller']);
-                $this->request->setAction($routed['action']);
-                if (isset($routed['params']) && is_array($routed['params'])) {
-                    $this->_params = array_merge($routed['params'], $this->_params);
-                }
-                foreach ($this->_params as $key => $val) {
-                    $this->request->query->set($key, $val);
+                if (is_array($routed)) {
+                    $this->request->setController($routed['controller']);
+                    $this->request->setAction($routed['action']);
+                    if (isset($routed['params']) && is_array($routed['params'])) {
+                        $this->_params = array_merge($routed['params'], $this->_params);
+                    }
+                    foreach ($this->_params as $key => $val) {
+                        $this->request->query->set($key, $val);
+                    }
                 }
                 break;
             }
         }
         if (null !== $this->getLogger()) {
-            $this->getLogger()->log(round(microtime(1) - $start, 3) . ' sec', 'Routing');
+            $this->getLogger()->info('Routing (' . round(microtime(1) - $start, 3) . ' sec)');
         }
         if (!$routed) {
             $this->activateError();
@@ -305,8 +321,8 @@ class Router
      */
     public function activateError($error = '404')
     {
-        $this->request->setController('page');
-        $this->request->setAction('error404');
+        $this->request->setController('error');
+        $this->request->setAction('error' . $error);
         $this->system = 0;
     }
 
@@ -327,11 +343,15 @@ class Router
     public function setRoute($route, array $params = array())
     {
         $route = is_array($route) ? reset($route) : $route;
-        $this->route = trim($route, '/');
+        $this->route = rtrim(parse_url($route, PHP_URL_PATH), '/');
+        $query = parse_url($route, PHP_URL_QUERY);
+        if ($query) {
+            parse_str($query, $params);
+            foreach ($params as $key => $val) {
+                $this->request->query->set($key, $val);
+            }
+        }
         $this->request->query->set('route', $this->route);
-//        $this->request->setController('page');
-//        $this->request->setAction('index');
-//        $this->request->setModule('page');
         $this->_params = $params;
         $this->id      = null;
 

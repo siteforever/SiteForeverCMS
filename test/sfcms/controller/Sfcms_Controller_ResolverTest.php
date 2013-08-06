@@ -14,7 +14,7 @@ class Sfcms_Controller_ResolverTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->resolver = new \Sfcms\Controller\Resolver(App::getInstance());
+        $this->resolver = new \Sfcms\Controller\Resolver(App::cms());
         $this->request = \Sfcms\Request::create('/');
     }
 

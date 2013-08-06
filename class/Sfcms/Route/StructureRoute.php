@@ -13,70 +13,45 @@ use Sfcms\Route;
 use Sfcms\Module;
 use Sfcms\Model;
 use Module\Page\Model\PageModel;
-
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Router;
 class StructureRoute extends Route
 {
-    protected static $_aliases = null;
-
     /**
-     * Заполняет таблицу алиасов, если она отсутствует
+     * @return PageModel
      */
-    protected function callAliases()
+    protected function getPageModel()
     {
-        if (null === self::$_aliases) {
-            /** @var $model PageModel */
-            $model = Model::getModel('Page');
-            foreach ($model->getAll() as $page) {
-                self::$_aliases[$page->alias] = $page;
-            }
-        }
+        return Model::getModel('Page');
     }
 
     /**
-     * @param Request $request
-     * @param         $route
+     * Do routing
+     * @param $request
+     * @param $route
      *
-     * @return array|bool|mixed
+     * @return bool
      */
     public function route(Request $request, $route)
     {
-        $alias = null;
-        $this->callAliases();
-        /** @var $page Page */
-        do {
-            if (isset(self::$_aliases[$route])) {
-                if (null !== $alias) {
-                    $request->query->set('alias', $alias);
-                }
-                /*$route->setActive(1);*/
-                call_user_func(array(self::$_aliases[$route], 'setActive'), 1);
-                $request->query->set('route', $route);
-                return $this->getPageState(self::$_aliases[$route]);
+        $router = $this->getRouter($request);
+        $this->getPageModel()->fillRoutes($router);
+
+        try {
+            $match = $router->match('/' . $route);
+            $match['_route'] = str_replace('_alias_', '', $match['_route']);
+            foreach ($match as $param => $value) {
+                $request->set($param, $value);
             }
-            $arRoute = explode('/', $route);
-            $alias   = array_pop($arRoute);
-            $route   = implode('/', $arRoute);
-        } while ($route);
+            App::cms()->getLogger()->info('Match route', $match);
+            /** @var Page $page */
+            $page = $this->getPageModel()->findByPk($match['_id']);
+            $page->setActive(1);
+        } catch (ResourceNotFoundException $e) {
+            return false;
+        }
 
-        return false;
+        return true;
     }
-
-    /**
-     * @param Page $page
-     *
-     * @return array
-     */
-    private function getPageState(Page $page)
-    {
-        return array(
-            'controller' => $page->controller,
-            'action'     => $page->action,
-            'params'     => array(
-                'template' => $page->template,
-                'pageid'   => $page->id,
-                'system'   => $page->system,
-            ),
-        );
-    }
-
 }

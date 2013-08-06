@@ -19,23 +19,29 @@ use Module\Catalog\Model\CatalogModel;
 
 class BasketController extends Controller
 {
-    public function indexAction( $address )
+    public function indexAction()
     {
+        $address = $this->request->get('address');
         $form = new Forms_Basket_Address();
         $form->delivery_id = $this->request->getSession()->get('delivery');
 
         // Ajax validate
-        if ( $this->request->isAjax() && $form->getPost() ) {
-            return $this->ajaxValidate( $form );
+        if ( // $this->request->isAjax() &&
+            $form->getPost()
+        ) {
+            $result = $this->formValidate( $form );
+            if ($this->request->isXmlHttpRequest()) {
+                return $result;
+            }
         }
 
         // Fill Address from current user
         if ( $this->auth->hasPermission( USER_USER ) ) {
-            $form->getField('fname')->setValue( $this->auth->currentUser()->fname );
-            $form->getField('lname')->setValue( $this->auth->currentUser()->lname );
-            $form->getField('email')->setValue( $this->auth->currentUser()->email );
-            $form->getField('phone')->setValue( $this->auth->currentUser()->phone );
-            $form->getField('address')->setValue( $this->auth->currentUser()->address );
+            $form->getField('fname')->setValue($this->auth->currentUser()->fname);
+            $form->getField('lname')->setValue($this->auth->currentUser()->lname);
+            $form->getField('email')->setValue($this->auth->currentUser()->email);
+            $form->getField('phone')->setValue($this->auth->currentUser()->phone);
+            $form->getField('address')->setValue($this->auth->currentUser()->address);
         }
 
         // Fill Address from Yandex
@@ -156,13 +162,13 @@ class BasketController extends Controller
      * @param Form $form
      * @return array
      */
-    private function ajaxValidate( Form $form )
+    private function formValidate(Form $form)
     {
         $result = array('error'=>0);
 
-        if ( $this->request->get('recalculate') ) {
+        if ( $this->request->request->get('recalculate') ) {
             // обновляем количества
-            $basket_counts = $this->request->get('basket_counts');
+            $basket_counts = $this->request->request->get('basket_counts');
 
             if ( $basket_counts && is_array( $basket_counts ) ) {
                 /** @var $basket Sfcms\Basket\Base */
@@ -172,7 +178,7 @@ class BasketController extends Controller
             }
 
             // Удалить запись
-            $basket_del = $this->request->get('basket_del');
+            $basket_del = $this->request->request->get('basket_del');
             if ( $basket_del && is_array( $basket_del ) ) {
                 foreach( $basket_del as $key => $prod_del ) {
                     $this->getBasket()->del( $key );
@@ -180,7 +186,7 @@ class BasketController extends Controller
                 }
             }
 
-            $delivery = $this->app()->getDelivery($this->request);
+            $delivery = $this->app->getDelivery($this->request);
             $result['delivery']['cost'] = number_format( $delivery->cost(), 2, ',', '' );
             $result['basket'] = $this->getBasket()->getAll();
             $result['basket']['sum'] = $this->getBasket()->getSum() + $delivery->cost();
@@ -190,13 +196,13 @@ class BasketController extends Controller
             $this->getBasket()->save();
         }
 
-        if ( $this->request->get('do_order') ) {
+        if ( $this->request->request->get('do_order') ) {
             if ( $form->validate() ) {
                 // Создание заказа
                 if ( $this->getBasket()->getAll() ) {
                     // создать заказ
 
-                    $delivery = $this->app()->getDelivery($this->request);
+                    $delivery = $this->app->getDelivery($this->request);
                     $this->request->getSession()->set('delivery',$delivery->getType());
 
                     /** @var $orderModel OrderModel */
@@ -214,7 +220,7 @@ class BasketController extends Controller
                             $position   = $orderPositionModel->createObject();
                             $position->attributes = array(
                                 'ord_id'    => $order->getId(),
-                                //                    'name'      => $data['name'],
+                                //'name'      => $data['name'],
                                 'product_id'=> (int) $data['id'],
                                 'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
                                 'details'   => $data['details'],

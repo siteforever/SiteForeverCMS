@@ -7,6 +7,9 @@
 
 namespace Sfcms;
 
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Routing\Router as SfRouter;
+
 abstract class Route
 {
     /**
@@ -42,4 +45,22 @@ abstract class Route
 
         return $result;
     }
+
+    /**
+     * @param Request $request
+     *
+     * @return SfRouter
+     */
+    protected function getRouter(Request $request)
+    {
+        /** @var SfRouter $router */
+        $router = \App::cms()->getContainer()->get('sf_router');
+        if (!$router->getContext()) {
+            $context = new RequestContext();
+            $context->fromRequest($request);
+            $router->setContext($context);
+        }
+        return $router;
+    }
+
 }

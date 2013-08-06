@@ -108,7 +108,7 @@ abstract class Model extends Component
     static public function getDB()
     {
         try {
-            return App::getInstance()->getContainer()->get('db');
+            return App::cms()->getContainer()->get('db');
         } catch (\PDOException $e) {
             static::app()->getLogger()->addAlert($e->getMessage());
         }
@@ -262,7 +262,7 @@ abstract class Model extends Component
             // Если указан псевдоним
             // Псевдонимом считается класс, не имеющий символов \ и _
             if (null === self::$models) {
-                self::$models = App::getInstance()->getModels();
+                self::$models = App::cms()->getModels();
             }
             $modelKey = strtolower($class_name);
             if (isset(self::$models[$modelKey])) {
@@ -449,8 +449,8 @@ abstract class Model extends Component
             $fields[] = $field->Field;
         }
 
-        $exec = round(microtime(true) - $start, 4);
-        $this->log("SHOW COLUMNS FROM `$table`" . " [$exec сек]");
+        $exec = round(microtime(true) - $start, 3);
+        $this->log("SHOW COLUMNS FROM `$table`" . " ($exec sec)");
 
         return $fields;
     }
@@ -776,7 +776,10 @@ abstract class Model extends Component
         /** @var Field $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
-            if (!$obj->isStateDirty() || ($obj->isStateDirty() && $obj->isChanged($field->getName()))) {
+//            if (!$obj->isStateDirty() || ($obj->isStateDirty() && $obj->isChanged($field->getName()))) {
+            if ($state !== DomainObject::STATE_DIRTY
+                || ($state === DomainObject::STATE_DIRTY && $obj->isChanged($field->getName()))
+            ) {
                 if ($val instanceof \DateTime) {
                     $val = $val->format('Y-m-d H:i:s');
                 }

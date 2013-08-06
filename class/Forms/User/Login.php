@@ -15,7 +15,7 @@ class Login extends Form
     {
         return parent::__construct(array(
             'name'      => 'login',
-            'action'    => \App::getInstance()->getRouter()->createLink('user/login'),
+            'action'    => \App::cms()->getRouter()->createLink('user/login'),
             'fields'    => array(
                 'login'     => array('type'=>'text',    'label'=>'Логин',   'required'),
                 'password'  => array('type'=>'password','label'=>'Пароль',  'required'),
