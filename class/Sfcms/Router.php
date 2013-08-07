@@ -283,9 +283,7 @@ class Router
 
             return true;
         }
-        if ($this->route) {
-            $this->route = $this->filterEqParams($this->route);
-        } else {
+        if (!trim($this->route, '?&/ ')) {
             $this->route = 'index';
         }
         $routed = false;

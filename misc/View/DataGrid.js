@@ -130,9 +130,8 @@ define("View/DataGrid", [
         loadData: function(){
             this.loading = true;
             this.$el.block({message: 'Loading...'});
-            this.collection.url = this.baseUrl;
+            this.collection.url = this.baseUrl + '?page=' + this.page;
 
-            this.collection.url += '&page=' + this.page;
             if (this.order) {
                 this.collection.url += '&o=' + this.order + '&dir=' + this.dir;
             }

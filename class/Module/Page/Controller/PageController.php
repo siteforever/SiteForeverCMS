@@ -282,7 +282,7 @@ class PageController extends Controller
     {
         $sort = $this->request->get('sort');
         if ($sort) {
-            return $this->getModel('Page')->resort($sort);
+            return $this->getModel('Page')->resort($sort) ? 'done' : 'fail';
         }
         return $this->t('Unknown error');
     }

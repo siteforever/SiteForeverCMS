@@ -29,7 +29,7 @@
                 {if $user.perm == 1}{icon name="user_green" title="Пользователь"}{/if}
                 {if $user.perm == 2}{icon name="user_orange" title="Опытный"}{/if}
                 {if $user.perm == 10}{icon name="user_red" title="Админ"}{/if}
-                {a controller="user" action="adminEdit" id=$user.id class="edit" title=$this->t('Edit')}{$user.login}{/a}
+                {a controller="user" action="admin" id=$user.id class="edit" title=$this->t('Edit')}{$user.login}{/a}
             </td>
             <td>{$user.email}</td>
             <td>{$user.lname}</td>

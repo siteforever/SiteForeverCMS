@@ -31,15 +31,6 @@ class RouterTest extends PHPUnit_Framework_TestCase
         $this->router->setRewrite(true);
     }
 
-    public function testFilterEqParams()
-    {
-        $this->assertEquals(
-            'news/view',
-            $this->router->filterEqParams('news/view/doc=35/page=10')
-        );
-    }
-
-
     /**
      * @todo Implement testCreateLink().
      */
@@ -212,7 +203,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testNewsOnly()
     {
-        $this->router->setRoute('news');
+        $this->router->setRoute('/news');
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('index', $this->request->getAction());
@@ -232,7 +223,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testNewsRouteByAlias()
     {
-        $this->router->setRoute('news/2-novostj-2');
+        $this->router->setRoute('/news/2-novostj-2');
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('2-novostj-2', $this->request->get('alias'));
@@ -241,7 +232,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testNewsRouteByAlias2()
     {
-        $this->router->setRoute('blog/4-moya-pervaya-statjya');
+        $this->router->setRoute('/blog/4-moya-pervaya-statjya');
         $this->router->routing(true);
         $this->assertEquals('news', $this->request->getController());
         $this->assertEquals('4-moya-pervaya-statjya', $this->request->get('alias'));
@@ -249,7 +240,7 @@ class RouterTest extends PHPUnit_Framework_TestCase
 
     public function testCatalogRoute()
     {
-        $this->router->setRoute('catalog/HTC-Evo-3D');
+        $this->router->setRoute('/catalog/HTC-Evo-3D');
         $this->router->routing(true);
         $this->assertEquals('catalog', $this->request->getController());
         $this->assertEquals('HTC-Evo-3D', $this->request->get('alias'));

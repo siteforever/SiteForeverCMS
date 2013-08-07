@@ -65,6 +65,7 @@ class RoutesCommand extends Command
                 .'<comment>%s</comment>',
                 'Name', 'Method', 'Controller', 'Route'));
 
+        ksort($routes);
         foreach ($routes as $i => $route) {
             $output->writeln(sprintf(
                 '% -'.$maxNameLength.'s   '

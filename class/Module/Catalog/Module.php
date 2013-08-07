@@ -100,9 +100,13 @@ class Module extends SfModule
             new Route('/catalogcomment/edit',
                 array('_controller'=>'catalogcomment', '_action'=>'edit')
             ));
+        $routes->add('catalogcomment/list',
+            new Route('/catalogcomment/list',
+                array('_controller'=>'catalogcomment', '_action'=>'list')
+            ));
 
         $routes->add('cataloggallery/delete',
-            new Route('/cataloggallery/delete/id/{id}',
+            new Route('/cataloggallery/delete',
                 array('_controller'=>'cataloggallery', '_action'=>'delete')
             ));
         $routes->add('cataloggallery/markdefault',
@@ -131,7 +135,7 @@ class Module extends SfModule
                 array('_controller'=>'goods', '_action'=>'grid')
             ));
         $routes->add('goods/edit',
-            new Route('/goods/edit/id/{id}',
+            new Route('/goods/edit',
                 array('_controller'=>'goods', '_action'=>'edit')
             ));
         $routes->add('goods/yml',
@@ -148,7 +152,7 @@ class Module extends SfModule
                 array('_controller'=>'prodtype', '_action'=>'grid')
             ));
         $routes->add('prodtype/edit',
-            new Route('/prodtype/edit/id/{id}',
+            new Route('/prodtype/edit',
                 array('_controller'=>'prodtype', '_action'=>'edit')
             ));
         $routes->add('prodtype/save',
@@ -156,7 +160,7 @@ class Module extends SfModule
                 array('_controller'=>'prodtype', '_action'=>'save')
             ));
         $routes->add('prodtype/deletefield',
-            new Route('/prodtype/deletefield/id/{id}',
+            new Route('/prodtype/deletefield',
                 array('_controller'=>'prodtype', '_action'=>'deletefield')
             ));
     }

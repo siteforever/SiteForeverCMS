@@ -28,6 +28,19 @@ class Module extends SfModule
         );
     }
 
+    public function admin_menu()
+    {
+        return array(
+//            array(
+//                'name' => 'Поиск',
+//                'url'  => 'search/admin',
+//            ),
+        );
+    }
+
+
+
+
     public function registerRoutes(Router $router)
     {
         $routes = $router->getRouteCollection();
@@ -35,10 +48,10 @@ class Module extends SfModule
             new Route('/search',
                 array('_controller'=>'search', '_action'=>'index')
             ));
-        $routes->add('search/admin',
-            new Route('/search/admin',
-                array('_controller'=>'search', '_action'=>'admin')
-            ));
+//        $routes->add('search/admin',
+//            new Route('/search/admin',
+//                array('_controller'=>'search', '_action'=>'admin')
+//            ));
         $routes->add('search/indexing',
             new Route('/search/indexing',
                 array('_controller'=>'search', '_action'=>'indexing')

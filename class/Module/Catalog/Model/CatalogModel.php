@@ -75,6 +75,7 @@ class CatalogModel extends Model
      */
     public function pluginPageSaveStart( Model\ModelEvent $event )
     {
+        $this->log('triggered: ' . __METHOD__);
         /** @var $page Page */
         $page       = $event->getObject();
         $pageModel  = $event->getModel();
@@ -92,12 +93,12 @@ class CatalogModel extends Model
         if ($category->id
             && !($category->hidden == $page->hidden && $category->protected == $page->protected && $category->deleted == $page->deleted))
         {
-            array_map(function( $product ) use ( $page ) {
-                    /** @var $product Catalog */
-                    $product->hidden = $page->hidden;
-                    $product->protected = $page->protected;
-                    $product->deleted = $page->deleted;
-                },iterator_to_array($category->Goods));
+            array_map(function($product) use ($page) {
+                /** @var $product Catalog */
+                $product->hidden = $page->hidden;
+                $product->protected = $page->protected;
+                $product->deleted = $page->deleted;
+            },iterator_to_array($category->Goods));
         }
 
         /** @var $category Catalog */
@@ -109,7 +110,7 @@ class CatalogModel extends Model
 
         $category->cat = 1;
 
-        if ($page->parent && !$category->parent) {
+        if ($page->parent) {
             /** @var $parentPage Page */
             $parentPage = $pageModel->find($page->parent);
             if ($parentPage->controller == $page->controller && $parentPage->link) {
@@ -120,7 +121,6 @@ class CatalogModel extends Model
             }
         }
         $category->Page = $page;
-        $category->save();
     }
 
     /**

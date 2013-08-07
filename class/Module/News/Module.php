@@ -48,31 +48,23 @@ class Module extends SfModule
                 array('_controller'=>'news', '_action'=>'admin')
             ));
         $routes->add('news/list',
-            new Route('/news/list/id/{id}',
+            new Route('/news/list',
                 array('_controller'=>'news', '_action'=>'list')
-            ));
-        $routes->add('news/edit/cat',
-            new Route('/news/edit/cat/{cat}',
-                array('_controller'=>'news', '_action'=>'edit')
             ));
         $routes->add('news/edit',
             new Route('/news/edit',
                 array('_controller'=>'news', '_action'=>'edit')
             ));
-        $routes->add('news/edit/id',
-            new Route('/news/edit/id/{id}',
-                array('_controller'=>'news', '_action'=>'edit')
-            ));
         $routes->add('news/delete',
-            new Route('/news/delete/id/{id}',
+            new Route('/news/delete',
                 array('_controller'=>'news', '_action'=>'delete')
             ));
         $routes->add('news/catedit',
-            new Route('/news/catedit/id/{id}',
+            new Route('/news/catedit',
                 array('_controller'=>'news', '_action'=>'catedit')
             ));
         $routes->add('news/catdelete',
-            new Route('/news/catdelete/id/{id}',
+            new Route('/news/catdelete',
                 array('_controller'=>'news', '_action'=>'catdelete')
             ));
     }

@@ -43,10 +43,6 @@ class Module extends SfModule
             new Route('/user/admin',
                 array('_controller'=>'user', '_action'=>'admin')
             ));
-        $routes->add('user/adminEdit',
-            new Route('/user/adminedit/id/{id}',
-                array('_controller'=>'user', '_action'=>'adminedit')
-            ));
         $routes->add('user/save',
             new Route('/user/save',
                 array('_controller'=>'user', '_action'=>'save')
@@ -67,7 +63,7 @@ class Module extends SfModule
             new Route('/user/register',
                 array('_controller'=>'user', '_action'=>'register')
             ));
-        $routes->add('user/recovery/{email}/{code}',
+        $routes->add('user/recovery',
             new Route('/user/recovery',
                 array('_controller'=>'user', '_action'=>'recovery')
             ));

@@ -165,12 +165,12 @@ class PageModel extends Model
     public function resort( array $sort )
     {
         if ( 0 == count($sort) ) {
-            return 'fail';
+            return false;
         }
         $pages  = $this->findAll('id IN ('.join(',',$sort).')');
         $sort   = array_flip($sort);
 
-        foreach ( $pages as $pageObj ) {
+        foreach ($pages as $pageObj) {
             /** @var $pageObj Page */
             $pageObj->pos = $sort[$pageObj->id];
             $this->trigger(
@@ -179,7 +179,7 @@ class PageModel extends Model
             );
         }
 
-        return 'done';
+        return true;
     }
 
 
@@ -229,12 +229,14 @@ class PageModel extends Model
      */
     public function onPageSaveStart( Model\ModelEvent $event )
     {
+        $this->log('triggered: ' . __METHOD__);
         /** @var $obj Page  */
         $obj = $event->getObject();
 
-        $pageId = $this->checkAlias( $obj->alias );
+        // todo Переделать на использование роутера
+        $pageId = $this->checkAlias($obj->alias);
         if ( false !== $pageId && $obj->getId() != $pageId ) {
-            throw new Exception( $this->t( 'The page with this address already exists' ) );
+            throw new Exception($this->t('The page with this address already exists'));
         }
 
         $obj->path = $obj->createPath();

@@ -46,15 +46,15 @@ class Module extends SfModule
                 array('_controller'=>'page', '_action'=>'admin')
             ));
         $routes->add('page/create',
-            new Route('/page/create/id/{id}',
+            new Route('/page/create',
                 array('_controller'=>'page', '_action'=>'create')
             ));
         $routes->add('page/add',
-            new Route('/page/add/{parent}',
+            new Route('/page/add',
                 array('_controller'=>'page', '_action'=>'parent')
             ));
         $routes->add('page/edit',
-            new Route('/page/edit/edit/{edit}',
+            new Route('/page/edit',
                 array('_controller'=>'page', '_action'=>'edit')
             ));
         $routes->add('page/save',
@@ -62,7 +62,7 @@ class Module extends SfModule
                 array('_controller'=>'page', '_action'=>'save')
             ));
         $routes->add('page/delete',
-            new Route('/page/delete/id/{id}',
+            new Route('/page/delete',
                 array('_controller'=>'page', '_action'=>'delete')
             ));
         $routes->add('page/resort',
@@ -70,7 +70,7 @@ class Module extends SfModule
                 array('_controller'=>'page', '_action'=>'resort')
             ));
         $routes->add('page/hidden',
-            new Route('/page/hidden/id/{id}',
+            new Route('/page/hidden',
                 array('_controller'=>'page', '_action'=>'hidden')
             ));
         $routes->add('page/realias',

@@ -104,6 +104,10 @@ class UserController extends Controller
         // используем шаблон админки
         $this->request->setTitle($this->t('user','Users'));
 
+        if ($id = $this->request->get('id')) {
+            return $this->adminEdit((int) $id);
+        }
+
         $model  = $this->getModel('User');
 
         $users = $this->request->get('users');
@@ -137,7 +141,7 @@ class UserController extends Controller
 
         $count  = $model->count( $criteria['cond'], $criteria['params'] );
 
-        $paging = $this->paging($count, 25, '/admin/user/page%page%');
+        $paging = $this->paging($count, 25, 'user/admin');
 
         $criteria['limit']  = $paging['offset'].', '.$paging['perpage'];
         $criteria['order']  = 'login';
@@ -157,7 +161,7 @@ class UserController extends Controller
      * @param int $id
      * @return array
      */
-    public function adminEditAction($id)
+    public function adminEdit($id)
     {
         /**
          * @var UserModel $model
@@ -177,9 +181,9 @@ class UserController extends Controller
         $this->request->set('template', 'index');
         $this->request->setTitle((!$id ? $this->t('user','Add user') : $this->t('user','Edit user') ));
 
-        return array(
+        return $this->render('user.adminedit', array(
             'form' => $userForm,
-        );
+        ));
     }
 
 

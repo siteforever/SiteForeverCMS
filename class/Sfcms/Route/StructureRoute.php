@@ -39,7 +39,7 @@ class StructureRoute extends Route
         $this->getPageModel()->fillRoutes($router);
 
         try {
-            $match = $router->match('/' . $route);
+            $match = $router->match($route);
             $match['_route'] = str_replace('_alias_', '', $match['_route']);
             foreach ($match as $param => $value) {
                 $request->set($param, $value);

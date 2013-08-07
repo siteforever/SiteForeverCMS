@@ -138,14 +138,12 @@ class Module extends SfModule
         }
 
         /** @var AssetManager $am */
-        $am = $container->get('assetManager');
-        $images = new GlobAsset(realpath(__DIR__.'/Static/images/*'));
-        /** @var BaseAsset $img */
-        foreach($images as $img) {
-            $am->set($img->getTargetPath(), $img);
-        }
-//        $am->set('images', );
-//        $am->get('images')->setTargetPath('images/');
+//        $am = $container->get('assetManager');
+//        $images = new GlobAsset(realpath(__DIR__.'/Static/images/*'));
+//        /** @var BaseAsset $img */
+//        foreach($images as $img) {
+//            $am->set($img->getTargetPath(), $img);
+//        }
     }
 
 
@@ -212,17 +210,13 @@ class Module extends SfModule
                         'url'   => 'elfinder/finder',
                         'class' => 'filemanager',
                     ),
+                ),
+            ),
             //            array(
             //                'name'  => 'Архивация базы',
             //                'url'   => '/_runtime/sxd',
             //                'class' => 'dumper',
             //            ),
-                    array(
-                        'name'  => 'Поиск',
-                        'url'   => 'search/admin',
-                    ),
-                )
-            ),
             //    array(
             //        'name' => 'Система',
             //        'sub' => array(

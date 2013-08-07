@@ -252,19 +252,19 @@ class Watcher
         try {
             if (is_array($this->dirty)) {
                 /** @var Object $obj */
-                foreach ($this->dirty as $obj) {
+                while (list(, $obj) = each($this->dirty)) {
                     $obj->save();
                 }
             }
             if (is_array($this->new)) {
                 /** @var Object $obj */
-                foreach ($this->new as $obj) {
+                while (list(, $obj) = each($this->new)) {
                     $obj->save(true);
                 }
             }
             if (is_array($this->delete)) {
                 /** @var Object $obj */
-                foreach ($this->delete as $obj) {
+                while (list(, $obj) = each($this->delete)) {
                     $obj->delete();
                 }
             }

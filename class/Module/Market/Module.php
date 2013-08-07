@@ -49,7 +49,7 @@ class Module extends SfModule
                 array('_controller'=>'delivery', '_action'=>'admin')
             ));
         $routes->add('delivery/edit',
-            new Route('/delivery/edit/id/{id}',
+            new Route('/delivery/edit',
                 array('_controller'=>'delivery', '_action'=>'edit')
             ));
         $routes->add('delivery/sortable',
@@ -57,7 +57,7 @@ class Module extends SfModule
                 array('_controller'=>'delivery', '_action'=>'sortable')
             ));
         $routes->add('delivery/select',
-            new Route('/delivery/select/type/{type}',
+            new Route('/delivery/select',
                 array('_controller'=>'delivery', '_action'=>'select')
             ));
 
@@ -70,7 +70,7 @@ class Module extends SfModule
                 array('_controller'=>'Manufacturers', '_action'=>'admin')
             ));
         $routes->add('manufacturers/edit',
-            new Route('/manufacturers/edit/id/{id}',
+            new Route('/manufacturers/edit',
                 array('_controller'=>'Manufacturers', '_action'=>'edit')
             ));
         $routes->add('manufacturers/save',
@@ -78,7 +78,7 @@ class Module extends SfModule
                 array('_controller'=>'Manufacturers', '_action'=>'save')
             ));
         $routes->add('manufacturers/delete',
-            new Route('/manufacturers/delete/id/{id}',
+            new Route('/manufacturers/delete',
                 array('_controller'=>'Manufacturers', '_action'=>'delete')
             ));
 
@@ -95,7 +95,7 @@ class Module extends SfModule
                 array('_controller'=>'material', '_action'=>'grid')
             ));
         $routes->add('material/edit',
-            new Route('/material/edit/id/{id}',
+            new Route('/material/edit',
                 array('_controller'=>'material', '_action'=>'edit')
             ));
         $routes->add('material/save',
@@ -108,7 +108,7 @@ class Module extends SfModule
                 array('_controller'=>'order', '_action'=>'index')
             ));
         $routes->add('order/view',
-            new Route('/order/view/id={id}/code={code}',
+            new Route('/order/view',
                 array('_controller'=>'order', '_action'=>'view')
             ));
         $routes->add('order/admin',
@@ -116,7 +116,7 @@ class Module extends SfModule
                 array('_controller'=>'order', '_action'=>'admin')
             ));
         $routes->add('order/status',
-            new Route('/order/status/id/{id}',
+            new Route('/order/status',
                 array('_controller'=>'order', '_action'=>'status')
             ));
 
@@ -125,11 +125,11 @@ class Module extends SfModule
                 array('_controller'=>'payment', '_action'=>'admin')
             ));
         $routes->add('payment/edit',
-            new Route('/payment/edit/id/{id}',
+            new Route('/payment/edit',
                 array('_controller'=>'payment', '_action'=>'edit')
             ));
         $routes->add('payment/delete',
-            new Route('/payment/delete/id/{id}',
+            new Route('/payment/delete',
                 array('_controller'=>'payment', '_action'=>'delete')
             ));
 
