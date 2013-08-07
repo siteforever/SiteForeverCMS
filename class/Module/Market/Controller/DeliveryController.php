@@ -48,7 +48,7 @@ class DeliveryController extends Controller
             $form->setData( $obj->attributes );
         }
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 if ( $id = $form->getField('id')->getValue() ) {
                     $obj = $model->find( $id );

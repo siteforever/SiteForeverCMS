@@ -24,50 +24,46 @@ abstract class FormAbstract
     const DEBUG = false;
 
     protected
-        $_name,
-        $_method,
-        $_action,
-        $_class,
+        $name,
+        $method,
+        $action,
+        $class,
         /** Массив объектов полей формы */
-        $_fields    = array(),
+        $fields    = array(),
         /** Массив кнопок */
-        $_buttons   = array(),
+        $buttons   = array(),
         /** Данные, полученные из _POST или _GET */
-        $_data      = array();
+        $data      = array();
 
-    protected $_err_required  = 0;
-    protected $_err_untype    = 0;
+    protected $err_required  = 0;
+    protected $err_untype    = 0;
 
-    protected $_feedback      = array();
+    protected $feedback      = array();
 
-    protected $_errors = array();
+    protected $errors = array();
 
 
     /**
      * Создает форму согласно конфигу
      * @param         $config
-     * @param Request $request
-     * @return void
+     *
      * @throws Exception
      */
-    public function __construct($config, Request $request = null)
+    public function __construct($config)
     {
         if ( ! isset( $config['name'] ) ) {
             throw new Exception('Require argument "name"');
         }
-//        if ( ! isset( $config['fields'] ) ) {
-//            throw new Exception('Для формы нужно определить массив полей fields');
-//        }
-        $this->_name   = $config[ 'name' ];
-        $this->_method = isset( $config[ 'method' ] ) ? $config[ 'method' ] : 'post';
-        $this->_action = isset( $config[ 'action' ] ) ? $config[ 'action' ] : '';
-        $this->_class  = isset( $config[ 'class' ] ) ? $config[ 'class' ] : 'form-horizontal';
+        $this->name   = $config['name'];
+        $this->method = isset($config['method']) ? $config['method'] : 'post';
+        $this->action = isset($config['action']) ? $config['action'] : '';
+        $this->class  = isset($config['class']) ? $config['class'] : 'form-horizontal';
 
         if (isset($config['fields'])) {
             foreach ($config['fields'] as $fname => $field) {
                 // Обработка HTML
                 if (is_string($field)) {
-                    $this->_fields[] = $field;
+                    $this->fields[] = $field;
                     continue;
                 }
 
@@ -94,7 +90,7 @@ abstract class FormAbstract
      */
     public function addError( $field, $msg )
     {
-        $this->_errors[ $field ] = $msg;
+        $this->errors[ $field ] = $msg;
     }
 
 
@@ -106,17 +102,17 @@ abstract class FormAbstract
     public function addField( Field $field, $after = '' )
     {
         if ( ! $after ) {
-            $this->_fields[ $field->getId() ]   = $field;
+            $this->fields[ $field->getId() ]   = $field;
             return;
         }
 
-        $fields = $this->_fields;
-        $this->_fields  = array();
+        $fields = $this->fields;
+        $this->fields  = array();
 
         foreach ( $fields as $key => $field ) {
-            $this->_fields[ $key ]  = $field;
+            $this->fields[ $key ]  = $field;
             if ( $key == $after ) {
-                $this->_fields[ $field->getId() ]   = $field;
+                $this->fields[ $field->getId() ]   = $field;
             }
         }
         return;
@@ -126,7 +122,7 @@ abstract class FormAbstract
      * @param Field $field
      */
     public function addButton( Field $field ) {
-        $this->_buttons[ $field->getId() ]  = $field;
+        $this->buttons[ $field->getId() ]  = $field;
     }
 
     /**
@@ -171,7 +167,7 @@ abstract class FormAbstract
      */
     public function clear()
     {
-        foreach( $this->_fields as $field ) {
+        foreach( $this->fields as $field ) {
             /** @var $field Field */
             if ( is_object( $field ) )
                 $field->clear();
@@ -212,40 +208,39 @@ abstract class FormAbstract
      */
     public function getField( $key )
     {
-        $id = $this->_name.'_'.$key;
-        if ( isset( $this->_fields[$id] ) )
+        $id = $this->name.'_'.$key;
+        if ( isset( $this->fields[$id] ) )
         {
-            return $this->_fields[$id];
+            return $this->fields[$id];
         }
         throw new Exception("Field '{$key}' not found");
     }
 
     /**
      * Дернет из запроса значения полей
+     * @param Request $request
+     *
      * @return bool
      */
-    public function getPost()
+    public function getPost(Request $request)
     {
-        if ( $this->isSent() )
-        {
-            $data = $this->_data;
+        if ($this->isSent($request)) {
+            $data = $this->data;
 
             /**
              * @var $field Field
              */
-            foreach ( $this->_fields as $field )
-            {
-                if ( is_object( $field ) ) {
-                    if ( isset( $data[ $field->getName() ] ) )
-                    {
-                        $field->setValue( $data[ $field->getName() ] );
+            foreach ($this->fields as $field) {
+                if (is_object($field)) {
+                    if (isset($data[$field->getName()])) {
+                        $field->setValue($data[$field->getName()]);
                     }
-                    if ( $field->getType() == 'file' ) {
+                    if ($field->getType() == 'file') {
                         $field->setValue('');
                     }
                 }
             }
-            //reg::set('ajax', true);
+
             return true;
         }
         return false;
@@ -253,12 +248,14 @@ abstract class FormAbstract
 
     /**
      * Отправлена ли форма?
+     * @param Request $request
+     *
      * @return bool
      */
-    public function isSent()
+    public function isSent(Request $request)
     {
-        if (isset($_POST[$this->_name])) {
-            $this->_data = $_POST[$this->_name];
+        if ($request->request->has($this->name)) {
+            $this->data = $request->request->get($this->name);
 
             return true;
         }
@@ -274,9 +271,9 @@ abstract class FormAbstract
     public function name( $name = '' )
     {
         if ( $name ) {
-            $this->_name = $name;
+            $this->name = $name;
         } else {
-            return $this->_name;
+            return $this->name;
         }
     }
 
@@ -289,7 +286,7 @@ abstract class FormAbstract
     public function getData( $toString = false )
     {
         $data = array();
-        foreach( $this->_fields as $field ) {
+        foreach( $this->fields as $field ) {
             /** @var $field Field */
             if ( is_object( $field ) ) {
                 if ( ! in_array( $field->getType(), array('submit', 'separator', 'captcha') ) )
@@ -320,12 +317,12 @@ abstract class FormAbstract
      */
     public function setData( $data )
     {
-        if ( count($this->_fields) == 0 ) {
+        if ( count($this->fields) == 0 ) {
             throw new Exception( 'Форма не содержит полей' );
         }
 
         if ($data) {
-            foreach( $this->_fields as $field ) {
+            foreach( $this->fields as $field ) {
                 /** @var $field Field */
                 if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) ) {
                     if ( isset($data[ $field->getName() ]) ) {
@@ -345,7 +342,7 @@ abstract class FormAbstract
     public function validate()
     {
         $valid = true;
-        foreach( $this->_fields as $field ) {
+        foreach( $this->fields as $field ) {
             if( is_object( $field ) ) {
                 /** @var $field Field */
                 $ret = $field->validate();
@@ -362,7 +359,7 @@ abstract class FormAbstract
      */
     public function getJsonErrors()
     {
-        return json_encode( $this->_errors );
+        return json_encode( $this->errors );
     }
 
     /**
@@ -371,7 +368,7 @@ abstract class FormAbstract
      */
     public function getErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
 
 
@@ -382,7 +379,7 @@ abstract class FormAbstract
      */
     public function addFeedback( $msg )
     {
-        array_push( $this->_feedback, $msg );
+        array_push( $this->feedback, $msg );
     }
 
     /**
@@ -391,7 +388,7 @@ abstract class FormAbstract
      */
     public function getFeedback()
     {
-        return $this->_feedback;
+        return $this->feedback;
     }
 
     /**
@@ -401,7 +398,7 @@ abstract class FormAbstract
      */
     public function getFeedbackString( $sep = "<br />\n" )
     {
-        return join( $sep, $this->_feedback );
+        return join( $sep, $this->feedback );
     }
 
 
@@ -416,41 +413,41 @@ abstract class FormAbstract
 
     public function setAction( $action )
     {
-        $this->_action = $action;
+        $this->action = $action;
     }
 
     public function getAction()
     {
-        return $this->_action;
+        return $this->action;
     }
 
     public function setClass( $class )
     {
-        $this->_class = $class;
+        $this->class = $class;
     }
 
     public function getClass()
     {
-        return $this->_class;
+        return $this->class;
     }
 
     public function setName( $name )
     {
-        $this->_name = $name;
+        $this->name = $name;
     }
 
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     public function setMethod( $method )
     {
-        $this->_method = $method;
+        $this->method = $method;
     }
 
     public function getMethod()
     {
-        return $this->_method;
+        return $this->method;
     }
 }

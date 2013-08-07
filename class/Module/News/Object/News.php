@@ -1,12 +1,21 @@
 <?php
 /**
- * Объект Новостей
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
 
+namespace Module\News\Object;
+
+use Module\Page\Object\Page;
+use Sfcms;
+use Module\Page\Model\PageModel;
+use Sfcms\Data\Object;
+use Sfcms\Data\Field;
+
 /**
+ * Объект Новостей
+ *
  * @property $id
  * @property $cat_id
  * @property $author_id
@@ -23,39 +32,14 @@
  * @property $protected
  * @property $deleted
  */
-namespace Module\News\Object;
-
-use Module\Page\Object\Page;
-use Sfcms;
-use Module\Page\Model\PageModel;
-use Sfcms\Data\Object;
-use Sfcms\Data\Field;
-
 class News extends Object
 {
-    public function getAlias()
-    {
-        if (empty($this->data['alias']) || '0' == $this->data['alias']{0}) {
-            $this->data['alias'] = $this->name
-                ? strtolower($this->id . '-' . Sfcms::i18n()->translit($this->name))
-                : $this->id;
-            $this->changed['alias'] = true;
-        }
-        return $this->data['alias'];
-    }
-
-    public function onSetName()
-    {
-        // todo как-то переписать этот метод
-        $this->data['alias'] = null;
-        $this->getAlias();
-    }
-
     public function getTitle()
     {
-        if ( ! empty( $this->data['title'] ) ) {
+        if (!empty($this->data['title'])) {
             return $this->data['title'];
         }
+
         return $this->data['name'];
     }
 
@@ -64,11 +48,11 @@ class News extends Object
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         /** @var $page Page */
-        $page = $pageModel->findByControllerLink( 'news', $this->cat_id );
+        $page = $pageModel->findByControllerLink('news', $this->cat_id);
         if ( null !== $page ) {
-            return  $page->alias . '/' . $this->getAlias();
+            return  $page->alias . '/' . $this->alias;
         } else {
-            return $this->getAlias();
+            return $this->alias;
         }
     }
 

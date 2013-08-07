@@ -268,8 +268,8 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function offsetUnset($offset)
     {
-        if ( isset ( $this->data[ $offset ] ) ) {
-            $this->data[ $offset ] = null;
+        if (isset ($this->data[$offset])) {
+            $this->data[$offset] = null;
             $this->markDirty(); // TODO WTF!!!
         }
     }

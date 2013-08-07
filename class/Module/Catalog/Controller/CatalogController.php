@@ -334,7 +334,7 @@ class CatalogController extends Controller
         $form          = $catalogFinder->getForm();
 
         // Если форма отправлена
-        if ($form->getPost()) {
+        if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 /** @var $object Catalog */
                 $object = $form->id
@@ -364,7 +364,7 @@ class CatalogController extends Controller
                             $property->markNew();
                         }
                         $property->pos = $f->pos;
-                        $property->setValue($postField[$f->id]);
+                        $property->set('value_' . $f->type,  $postField[$f->id]);
                     }
                 }
 

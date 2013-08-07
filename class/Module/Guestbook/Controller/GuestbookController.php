@@ -41,7 +41,7 @@ class GuestbookController extends Controller
         $model  = $this->getModel('Guestbook');
         $form       = new Forms_Guestbook_Form();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject();
 
@@ -132,7 +132,7 @@ class GuestbookController extends Controller
         $model  = $this->getModel('Guestbook');
 
         $form = new Forms_Guestbook_Edit();
-        if ($form->getPost()) {
+        if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 $id = $form->id;
                 if (!$id) {

@@ -94,8 +94,9 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
         $page->name = 'Электроника';
         $page->controller = 'catalog';
         $page->link = 100600;
+        $page->save();
 
-        $modelPage->addToAll( $page );
+        $modelPage->addToAll($page);
 
         $category = $this->model->createObject(array(
             'id'    => 100600,
@@ -111,6 +112,9 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
             'name'  => 'Samsung GT-P3110',
         ));
 
+        $category->save();
+        $product->save();
+
         $this->assertEquals('elektronika', $category->url);
         $this->assertEquals('elektronika/100601-samsung-gt-p3110', $product->url);
     }
@@ -118,6 +122,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
 
     public function testGetPrice()
     {
+        /** @var Catalog $product */
         $product = $this->model->createObject(array(
             'id'    => 100601,
             'parent'=> 100600,

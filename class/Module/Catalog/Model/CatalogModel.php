@@ -39,13 +39,6 @@ class CatalogModel extends Model
      */
     protected $form = null;
 
-
-    public function init()
-    {
-        $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this,'onCatalogSaveStart'));
-        $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this,'onCatalogSaveSuccess'));
-    }
-
     public function relation()
     {
         return array(
@@ -145,7 +138,7 @@ class CatalogModel extends Model
      * Вызывается перед сохранением каталога
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onCatalogSaveStart( Model\ModelEvent $event )
+    public function onSaveStart( Model\ModelEvent $event )
     {
         $obj = $event->getObject();
         // If object will update
@@ -176,7 +169,7 @@ class CatalogModel extends Model
     /**
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onCatalogSaveSuccess( Model\ModelEvent $event )
+    public function onSaveSuccess( Model\ModelEvent $event )
     {
         /** @var $obj Catalog */
         $obj = $event->getObject();
@@ -184,12 +177,10 @@ class CatalogModel extends Model
         // If object was just created
         if (!$obj->path) {
             $obj->path = $this->createSerializedPath($obj->getId());
-            $this->save($obj);
         }
         $objPage = $obj->Page;
         if (null !== $objPage && !$objPage->link) {
             $objPage->link = $obj->id;
-            $objPage->save();
         }
 
         if ($obj->cat) {
@@ -215,7 +206,6 @@ class CatalogModel extends Model
                         $objPage->alias = $parentPage->alias . '/' . $objPage->alias;
                     }
                 }
-                $objPage->save();
             }
         }
     }

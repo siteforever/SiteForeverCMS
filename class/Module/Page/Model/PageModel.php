@@ -50,13 +50,6 @@ class PageModel extends Model
     /** @var bool Filled router custom routes */
     protected static $routerFilled = false;
 
-
-    public function init()
-    {
-        $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this,'onPageSaveStart'));
-//        $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this,'onPageSaveSuccess'));
-    }
-
     public function relation()
     {
         return array(
@@ -227,7 +220,7 @@ class PageModel extends Model
      *
      * @throws \Sfcms\Model\Exception
      */
-    public function onPageSaveStart( Model\ModelEvent $event )
+    public function onSaveStart(Model\ModelEvent $event)
     {
         $this->log('triggered: ' . __METHOD__);
         /** @var $obj Page  */
@@ -239,12 +232,32 @@ class PageModel extends Model
             throw new Exception($this->t('The page with this address already exists'));
         }
 
-        $obj->path = $obj->createPath();
+        $obj->alias = strtolower(\Sfcms::i18n()->translit(trim($obj->name, '/ ')));
+        $obj->path = serialize(array_reverse($this->createPath($obj)));
 
         // Настраиваем связь с модулями
         // @todo Должно определяться по имени модели, но в странице не указана связанная модель, а только контроллер
         $this->trigger(sprintf('plugin.page-%s.save.start', $obj->controller), $event);
-//        $this->callPlugins( "{$obj->controller}:onSaveStart", $obj);
+    }
+
+    /**
+     * Creating path cache for breadcrumbs
+     * @param Page $obj
+     *
+     * @return array
+     */
+    protected function createPath(Page $obj)
+    {
+        $path   = array();
+        while (null !== $obj) {
+            $path[] = array(
+                'id'    => $obj->id,
+                'name'  => $obj->name,
+                'url'   => $obj->alias,
+            );
+            $obj = $obj->parent ? $this->find($obj->parent) : null;
+        }
+        return $path;
     }
 
     /**

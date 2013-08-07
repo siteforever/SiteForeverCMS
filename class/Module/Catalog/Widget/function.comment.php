@@ -24,7 +24,7 @@ function smarty_function_comment($params, Smarty_Internal_Template $smarty)
 
     $form = new CommentForm();
 
-    if ($form->getPost()) {
+    if ($form->getPost($this->request)) {
         if ($form->validate()) {
             $comment = $commentModel->createObject($form->getData());
             $comment->ip = $smarty->tpl_vars['request']->value->getClientIp();

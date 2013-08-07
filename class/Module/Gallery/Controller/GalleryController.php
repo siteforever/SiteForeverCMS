@@ -283,7 +283,7 @@ class GalleryController extends Controller
         $model = $this->getModel( 'GalleryCategory' );
         $form  = $model->getForm();
 
-        if( $form->getPost() ) {
+        if( $form->getPost($this->request) ) {
             if( $form->validate() ) {
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
@@ -374,7 +374,7 @@ class GalleryController extends Controller
         $form = $this->getForm('Gallery_Image');
 
         /** @var Gallery $obj */
-        if ($form->getPost()) {
+        if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 $obj = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
@@ -394,8 +394,7 @@ class GalleryController extends Controller
         if (!isset($obj)) {
             $obj = $model->find($editimg);
         }
-        $atr          = $obj->getAttributes();
-        $atr['alias'] = $obj->getAlias();
+        $atr = $obj->getAttributes();
         $form->setData($atr);
         $obj->markClean();
 

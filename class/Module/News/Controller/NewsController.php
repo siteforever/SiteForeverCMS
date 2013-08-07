@@ -195,7 +195,7 @@ class NewsController extends Controller
         $form   = $model->getForm();
         $form->cat_id = $cat;
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
@@ -240,7 +240,7 @@ class NewsController extends Controller
 
         $form   = $categoryModel->getForm();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $data   = $form->getData();
                 if ( $form->id ) {

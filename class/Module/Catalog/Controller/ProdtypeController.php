@@ -76,7 +76,7 @@ class ProdtypeController extends Controller
     {
         $model = $this->getModel('Producttype');
         $form = new FormEdit();
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $obj = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->setAttributes( $form->getData() );

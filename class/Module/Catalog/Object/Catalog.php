@@ -70,13 +70,13 @@ class Catalog extends Object
      */
     public function path()
     {
-        if ( $this->get('path') && $path = @unserialize($this->get('path')) ) {
-            if ( is_array( $path ) ) {
+        if ($this->get('path') && $path = @unserialize($this->get('path'))) {
+            if (is_array($path)) {
                 return $this->get('path');
             }
         }
         /** @var $model CatalogModel */
-        $model = $this->getModel('Catalog');
+        $model = $this->getModel();
         $path = $model->createSerializedPath( $this->getId() );
         return $path;
     }

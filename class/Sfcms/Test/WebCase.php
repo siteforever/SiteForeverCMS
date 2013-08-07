@@ -28,6 +28,9 @@ class WebCase extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        $_POST = array();
+        $_GET = array();
+        $_FILES = array();
         $this->request = Request::create('/');
         $this->session = new Session(new MockArraySessionStorage());
         $this->session->set('user_id', null);
@@ -56,6 +59,8 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->request->clearFeedback();
         $this->request->setController($controller);
         $this->request->setAction($action);
+        $_GET && $this->request->query->replace($_GET);
+        $_POST && $this->request->request->replace($_POST);
         return \App::cms()->handleRequest($this->request);
     }
 

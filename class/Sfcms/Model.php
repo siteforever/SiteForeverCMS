@@ -93,10 +93,10 @@ abstract class Model extends Component
         $this->config  = $this->app()->getConfig();
 
         if (method_exists($this, 'onSaveStart')) {
-            $this->on('save.start', array($this, 'onSaveStart'));
+            $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
         }
         if (method_exists($this, 'onSaveSuccess')) {
-            $this->on('save.success', array($this, 'onSaveSuccess'));
+            $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this, 'onSaveSuccess'));
         }
         $this->init();
     }

@@ -15,12 +15,12 @@ class Render extends FormAbstract
     public function htmlStart()
     {
         $property = array();
-        $property['action'] = $this->_action;
-        $property['class'] = $this->_class;
+        $property['action'] = $this->action;
+        $property['class'] = $this->class;
         $property['enctype'] = 'multipart/form-data';
-        $property['id'] = 'form_'.$this->_name;
-        $property['method'] = $this->_method;
-        $property['name'] = 'form_'.$this->_name;
+        $property['id'] = 'form_'.$this->name;
+        $property['method'] = $this->method;
+        $property['name'] = 'form_'.$this->name;
 
         $html = array('<form');
         foreach ( $property as $key => $prop ) {
@@ -62,16 +62,16 @@ class Render extends FormAbstract
 
         $html[]   = $this->htmlStart();
 
-        foreach ( $this->_fields as $field ) {
+        foreach ( $this->fields as $field ) {
             /** @var $field Field */
             if ( is_object( $field ) ) {
                 $html[ ] = $field->html();
             }
         }
 
-        if ( $buttons && is_array( $this->_buttons ) ) {
+        if ( $buttons && is_array( $this->buttons ) ) {
             //$html[] = '<hr />';
-            foreach ( $this->_buttons as $button ) {
+            foreach ( $this->buttons as $button ) {
                 /** @var $button Field */
                 $html[]  = $button->html();
             }

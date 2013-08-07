@@ -18,14 +18,6 @@ class Object_NewsTest extends PHPUnit_Framework_TestCase
         $this->obj   = $this->model->createObject(array('id'=>1));
     }
 
-    public function testGetAlias()
-    {
-        $this->assertNotNull($this->obj, 'Object not found');
-        $this->obj->name = 'Привет Мир!';
-        $this->obj->alias = '';
-        $this->assertEquals('1-privet-mir', $this->obj->getAlias());
-    }
-
     public function testGetTitle()
     {
         $obj   = $this->model->createObject(

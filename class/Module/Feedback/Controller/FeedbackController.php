@@ -22,7 +22,7 @@ class FeedbackController extends Controller
         /** @var $form Forms_Feedback_Default */
         $form = $this->getForm( 'Feedback_Default' );
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $this->sendmail(
                    $form->email,

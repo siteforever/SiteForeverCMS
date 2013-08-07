@@ -217,7 +217,7 @@ abstract class AdminController extends Controller
 
         $form = $this->getForm();
         if ($this->request->isMethod('PUT') || $this->request->isMethod('POST')) {
-            if ($form->getPost()) {
+            if ($form->getPost($this->request)) {
                 if ($form->validate()) {
                     if ($form->id) {
                         $entry = $this->getModel()->find($form->id);

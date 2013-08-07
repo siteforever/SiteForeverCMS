@@ -18,7 +18,6 @@ class dbException extends Exception {};
 final class db
 {
     // @TODO Убрать зависимости от системы.
-    // @TODO Перевести на \PDO (Переведено. Стадия тестирования)
 
     const   F_ASSOC = \PDO::FETCH_ASSOC;
     const   F_OBJ   = \PDO::FETCH_CLASS;

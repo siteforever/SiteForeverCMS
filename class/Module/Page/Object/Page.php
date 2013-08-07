@@ -39,38 +39,10 @@ use Sfcms\Data\Field;
  * @property int $protected INT(1) NOT NULL DEFAULT 0
  * @property int $system INT(1) NOT NULL DEFAULT 0
  * @property int $deleted INT(1) NOT NULL DEFAULT 0
+ * @property bool $active
  */
 class Page extends Object
 {
-    /**
-     * Вернет выделенный контент
-     * @param array $words
-     * @return array|Object|mixed|null
-     */
-    public function getHlContent( array $words )
-    {
-        $result = $this->content;
-        foreach ( $words as $word ) {
-            if ( strlen( $word ) > 3 ) {
-                $result = str_ireplace( $word, '<b class="highlight">'.$word.'</b>', $result );
-            }
-        }
-        return $result;
-    }
-
-
-    /**
-     * @return string
-     */
-    public function getAlias()
-    {
-        if ( empty( $this->data['alias'] ) ) {
-            $this->data['alias'] = trim( Sfcms::i18n()->translit(strtolower($this->data['name'])), '/ ' );
-        }
-        return $this->data['alias'];
-    }
-
-
     /**
      * @return string
      */
@@ -101,7 +73,6 @@ class Page extends Object
         if ( $linkUrl ) {
             $link = Sfcms::html()->link( Sfcms::html()->icon( 'link', $this->t('Go to the module') ), $linkUrl );
         }
-//        $link = "<a href='{$linkUrl}'>" . icon( 'link', 'Перейти к модулю' ) . '</a>';
         return $link;
     }
 
@@ -124,31 +95,11 @@ class Page extends Object
      */
     public function setActive($active = 1)
     {
-        // todo переписать этот метод
         $this->data['active'] = $active;
+        /** @var self $parent */
         if ($this->parent && $parent = $this->getModel()->find($this->parent)) {
             $parent->setActive($active);
         }
-    }
-
-    /**
-     * Создаст serialize путь для конвертации в breadcrumbs
-     * @return string
-     */
-    public function createPath()
-    {
-        $path   = array();
-        $obj    = $this;
-        while ( null !== $obj ) {
-            $path[] = array(
-                'id'    => $obj->getId(),
-                'name'  => $obj->get('name'),
-                'url'   => $obj->getAlias(),
-            );
-            $obj = $obj->parent ? $this->getModel()->find( $obj->parent ) : null;
-        }
-        $path   = array_reverse($path);
-        return serialize($path);
     }
 
     /**
@@ -172,7 +123,6 @@ class Page extends Object
             new Field\Varchar('name', 80, true, ''),
             new Field\Varchar('template', 50, true, 'inner'),
             new Field\Varchar('alias', 250, true, ''),
-//            new Field\Int('alias_id', 11, true, '0'),
             new Field\Text('path'),
             new Field\Int('date', 11, true, '0'),
             new Field\Int('update', 11, true, '0'),

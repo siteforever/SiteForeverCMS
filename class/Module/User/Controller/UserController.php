@@ -199,7 +199,7 @@ class UserController extends Controller
          */
         $model  = $this->getModel('User');
         $userForm = $model->getEditForm();
-        if ( $userForm->getPost() ) {
+        if ( $userForm->getPost($this->request) ) {
             if ( $userForm->validate() ) {
                 $User = ($user_id = $userForm['id']) ? $model->find( $user_id ) : $model->createObject();
                 $password = $User->password;
@@ -250,7 +250,7 @@ class UserController extends Controller
         // вход в систему
         $form = $model->getLoginForm();
 
-        if ($form->getPost()) {
+        if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 $result = $this->login($form->login, $form->password);
                 if (!$result['error']) {
@@ -335,7 +335,7 @@ class UserController extends Controller
         $form->setData( $this->auth->currentUser()->getAttributes() );
 
         // сохранение профиля
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $user   = $model->find( $form->getField('id')->getValue() );
                 if ( $user ) {
@@ -376,7 +376,7 @@ class UserController extends Controller
 
         $form = $model->getRegisterForm();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $user   = $model->createObject();
                 $user->attributes = $form->getData();
@@ -553,7 +553,7 @@ class UserController extends Controller
 
         $form = new FormRestore();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $user  = $model->find(array(
                     'cond'  => 'email = :email',
@@ -613,7 +613,7 @@ class UserController extends Controller
         $user = $this->auth->currentUser();
         //printVar($this->user->getData());
 
-        if ( $form->getPost() )
+        if ( $form->getPost($this->request) )
         {
             if ( $form->validate() )
             {

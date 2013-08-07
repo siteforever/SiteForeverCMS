@@ -85,18 +85,6 @@ class Resolver
     }
 
     /**
-     * Напечатать переведенный текст
-     * @param string $cat
-     * @param string $text
-     * @param array $params
-     * @return mixed
-     */
-    public function t($cat, $text = '', $params = array())
-    {
-        return call_user_func_array(array($this->app->getContainer()->get('i18n'),'write'), func_get_args());
-    }
-
-    /**
      * Запуск контроллера
      * @param Request $request
      * @param array $command
@@ -121,7 +109,7 @@ class Resolver
             if ($this->app->getAuth()->hasPermission(USER_ADMIN)) {
                 $this->setSystemPage($request);
             } else {
-                throw new HttpException(403, \Sfcms::i18n()->write('Access denied'));
+                throw new HttpException(403, 'Access denied');
             }
         }
 
@@ -147,6 +135,7 @@ class Resolver
             throw new HttpException(404, $e->getMessage());
         }
         $this->app->getTpl()->assign('this', $controller);
+        $this->app->getTpl()->assign('request', $request);
         $arguments = $this->prepareArguments($method, $request);
         $result = $method->invokeArgs($controller, $arguments);
 
@@ -233,7 +222,7 @@ class Resolver
                             $this->setSystemPage($request);
                         }
                     } else {
-                        throw new Sfcms_Http_Exception($this->t('Access denied'), 403);
+                        throw new Sfcms_Http_Exception('Access denied', 403);
                     }
                 }
             }

@@ -1,4 +1,4 @@
-<div class="pagination1 pagination-small1">
+<div class="pagination pagination-small">
 <ul>
     {foreach $p as $item}
         {if is_numeric($item)}

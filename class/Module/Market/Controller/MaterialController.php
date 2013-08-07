@@ -82,7 +82,7 @@ class MaterialController extends Controller
         $model = $this->getModel( 'Material' );
         $form  = $model->getForm();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $obj->save();

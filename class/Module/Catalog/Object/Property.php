@@ -38,27 +38,19 @@ class Property extends Object
     public function getName()
     {
         $field = $this->get('Field');
-        return $field->name;
+        return $field ? $field->name : null;
     }
 
     public function getValue()
     {
         $field = $this->get('Field');
-        return $this->data['value_'.$field->type];
-    }
-
-    public function setValue($value)
-    {
-        // todo избавиться от этого метода
-        $field = $this->get('Field');
-        $this->set('value_' . $field->type, $value);
-        return $this;
+        return $field ? $this->data['value_'.$field->type] : null;
     }
 
     public function getUnit()
     {
         $field = $this->get('Field');
-        return $field->unit;
+        return $field ? $field->unit : '';
     }
 
     /**

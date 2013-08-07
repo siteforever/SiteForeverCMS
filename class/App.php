@@ -124,7 +124,7 @@ class App extends AbstractKernel
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
             $this->getLogger()->error($e->getMessage());
-            $response = new Response($e->getMessage(), $e->getStatusCode()?:500);
+            $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
         } catch (Exception $e) {
             $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
             if ($this->isDebug()) {
@@ -151,9 +151,11 @@ class App extends AbstractKernel
         try {
             Watcher::instance()->performOperations();
         } catch (ModelException $e) {
+            $this->getLogger()->error($e->getMessage(), $e->getTrace());
             $response->setStatusCode(500);
             $response->setContent($e->getMessage());
         } catch (PDOException $e) {
+            $this->getLogger()->error($e->getMessage(), $e->getTrace());
             $response->setStatusCode(500);
             $response->setContent($e->getMessage());
         }
@@ -242,17 +244,16 @@ class App extends AbstractKernel
      */
     protected function flushDebug()
     {
-        // todo Вывод в консоль FirePHP вызывает исключение, если не включена буферизация вывода
-        // Fatal error: Exception thrown without a stack frame in Unknown on line 0
         if (self::isDebug()) {
-            $this->getLogger()->log("Init time: " . round(static::$init_time, 3) . " sec.");
-            $this->getLogger()->log("Controller time: " . round(static::$controller_time, 3) . " sec.");
+            $logger = $this->getLogger();
+            $logger->log("Init time: " . round(static::$init_time, 3) . " sec.");
+            $logger->log("Controller time: " . round(static::$controller_time, 3) . " sec.");
             $exec_time = microtime(true) - static::$start_time;
-            $this->getLogger()->log(
+            $logger->log(
                 "Other time: " . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec."
             );
-            $this->getLogger()->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
-            $this->getLogger()->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
+            $logger->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
+            $logger->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
         }
     }
 }

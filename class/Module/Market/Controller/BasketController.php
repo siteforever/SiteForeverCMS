@@ -27,7 +27,7 @@ class BasketController extends Controller
 
         // Ajax validate
         if ( // $this->request->isAjax() &&
-            $form->getPost()
+            $form->getPost($this->request)
         ) {
             $result = $this->formValidate( $form );
             if ($this->request->isXmlHttpRequest()) {

@@ -234,7 +234,7 @@ class PageController extends Controller
 
         $form = $model->getForm();
 
-        if ($form->getPost()) {
+        if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 /** @var $obj Page */
                 if ( $id = $form->getField('id')->getValue() ) {

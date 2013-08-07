@@ -43,7 +43,7 @@ class UsersControllerTest extends WebCase
      */
     public function testIndexAction()
     {
-        $response = $this->runController('user', 'index');
+        $response = $this->runRequest('/user');
         $this->assertEquals(302, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Redirecting to /user/login', $crawler->filterXPath('//title')->text());

@@ -38,7 +38,7 @@ class PaymentController extends Controller
         $model = $this->getModel('Payment');
         $form = new FormEdit();
 
-        if ( $form->getPost() ) {
+        if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
                 $payObj = $form->id ? $model->find($form->id) : $model->createObject();
                 $payObj->attributes = $form->getData();

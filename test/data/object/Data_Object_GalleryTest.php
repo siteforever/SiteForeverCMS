@@ -37,6 +37,7 @@ class GalleryTest extends PHPUnit_Framework_TestCase
 
     public function testGetAlias()
     {
+        $this->gallery->save();
         $this->assertEquals(
             'portfolio/panasonik',
             $this->gallery->url

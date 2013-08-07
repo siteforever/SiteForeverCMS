@@ -61,24 +61,11 @@ class Gallery extends Object
     /**
      * @return string
      */
-    public function getAlias()
-    {
-        $alias = $this->get('name') ? Sfcms::i18n()->translit( $this->get('name') ) : $this->getId();
-        if ( empty( $this->data['alias'] ) || $this->data['alias'] != $alias ) {
-            $this->data['alias'] = $alias;
-            $this->markDirty();
-        }
-        return $this->data['alias'];
-    }
-
-    /**
-     * @return string
-     */
     public function getUrl()
     {
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
-        $page = $pageModel->findByControllerLink( 'gallery', $this->category_id );
+        $page = $pageModel->findByControllerLink('gallery', $this->category_id);
         if ( null !== $page ) {
             return $page->alias . '/' . $this->alias;
         } else {
