@@ -108,9 +108,9 @@ class Layout extends ViewAbstract
         $return[] = "<link title=\"\" type=\"application/rss+xml\" rel=\"alternate\" href=\"http://{$_SERVER['HTTP_HOST']}/rss\">";
 
         if (file_exists(ROOT . DS . 'favicon.png')) {
-            $return[] = "<link rel=\"icon\" type=\"image/png\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.png\">";
+            $return[] = "<link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">";
         } elseif (file_exists(ROOT . DS . 'favicon.ico')) {
-            $return[] = "<link rel=\"icon\" type=\"image/ico\" href=\"http://{$_SERVER['HTTP_HOST']}/favicon.ico\">";
+            $return[] = "<link rel=\"shortcut icon\" href=\"/favicon.ico\" type=\"image/x-icon\">";
         }
 
         return join(PHP_EOL, $return);

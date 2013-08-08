@@ -60,7 +60,27 @@ class StaticController extends Controller
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }
-        return new Response($assetCollection->dump(), 200, array('content-type'=>'text/css'));
+
+        $dump = $assetCollection->dump();
+        $etag = md5($dump);
+        $expr = 60 * 60 * 24 * 7;
+        $statusCode = 200;
+
+        $headers = array(
+            'content-type'=>'text/css',
+            'etag' => $etag,
+            'last-modified' => gmdate("D, d M Y H:i:s", $assetCollection->getLastModified()) . " GMT",
+        );
+        if ($ifModifiedSince = $this->request->headers->get('if-modified-since')) {
+            $ifModifiedSince = preg_replace("/;.*$/", "", $ifModifiedSince);
+            $this->app->getLogger()->info(sprintf('last-modified: %s', $headers['last-modified']));
+            $this->app->getLogger()->info(sprintf('if-modified-since: %s', $ifModifiedSince));
+            if ($ifModifiedSince == $headers['last-modified']) {
+                $headers['cache-control'] = sprintf('max-age: %s, must-revalidate', $expr);
+                $statusCode = 304;
+            }
+        }
+        return new Response($dump, $statusCode, $headers);
     }
 
     protected function adminJs()

@@ -232,7 +232,7 @@ class PageModel extends Model
             throw new Exception($this->t('The page with this address already exists'));
         }
 
-        $obj->alias = strtolower(\Sfcms::i18n()->translit(trim($obj->name, '/ ')));
+        $obj->alias = $obj->alias ? $obj->alias : strtolower(\Sfcms::i18n()->translit(trim($obj->name, '/ ')));
         $obj->path = serialize(array_reverse($this->createPath($obj)));
 
         // Настраиваем связь с модулями

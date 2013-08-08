@@ -59,7 +59,7 @@ class Router
     {
         $this->request = $request;
         if ($this->request->get('route')) {
-            $this->setRoute($this->request->get('route'));
+            $this->setRoute('/' . trim($this->request->get('route'), '/'));
         } else {
             $this->setRoute(str_replace($this->request->getScriptName(), '',  $this->request->getRequestUri()));
         }
@@ -284,7 +284,7 @@ class Router
             return true;
         }
         if (!trim($this->route, '?&/ ')) {
-            $this->route = 'index';
+            $this->route = '/';
         }
         $routed = false;
         /** @var \Sfcms\Route $route */
