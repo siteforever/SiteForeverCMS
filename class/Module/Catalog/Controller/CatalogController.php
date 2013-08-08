@@ -126,7 +126,7 @@ class CatalogController extends Controller
         }
 
         $this->getTpl()->caching($this->config->get('template.caching'));
-        $cacheKey = sprintf('catalog%s%s%s%s%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
+        $cacheKey = sprintf('catalog%d%d%d%d%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
         if ($this->getTpl()->isCached('catalog.viewcategory', $cacheKey)) {
             $response = $response = $this->render('catalog.viewcategory', array(), $cacheKey);
         } else {
@@ -169,7 +169,7 @@ class CatalogController extends Controller
             $paging = $this->paging(
                 $count,
                 $this->config->get('catalog.onPage'),
-                $this->router->createLink( $parent->url )
+                $this->router->createLink($parent->url, array('order'=>$order))
             );
 
             $criteria->limit = $paging->limit;

@@ -141,6 +141,11 @@ class Router
         if (!$result && isset($params['controller'])) {
             return static::createDirectRequest($params);
         }
+        $query = parse_url($result, PHP_URL_QUERY);
+        $result = parse_url($result, PHP_URL_PATH);
+        $paramsQuery = array();
+        parse_str($query, $paramsQuery);
+        $params = array_merge($params, $paramsQuery);
 
         $result = trim($result, '/');
         if ('' === $result && $this->request) {
