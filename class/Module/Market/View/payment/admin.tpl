@@ -14,7 +14,7 @@
         <td>{a controller="payment" action="edit" id=$item.id class="edit"}{$item.name}{/a}</td>
         <td>{$item.desc}</td>
         <td>{$item.module}</td>
-        <td>{if $item.active}{icon name="accept" title=t('Yes')}{else}&nbsp;{/if}</td>
+        <td>{if $item.active}{icon name="accept" title=$this->t('Yes')}{else}&nbsp;{/if}</td>
         <td>{a controller="payment" action="delete" id=$item.id class="do_delete"}{t}Delete{/t}{/a}</td>
     </tr>
     {/foreach}

@@ -15,11 +15,11 @@
                 {thumb src=$cat.image width=57 height=57}{/a}
         </td>
         <td class="middle">
-            <p><big>{a controller="gallery" action="list" id=$cat.id rel=$cat.id}{$cat.name}{/a}</big></p>
-            <small>{a controller="gallery" action="editcat" id=$cat.id class="editCat" title=t('Edit')}
-                {icon name="pencil" title=t('Edit')} {t}Edit{/t}{/a}
-            {a controller="gallery" action="delcat" id=$cat.id class="do_delete" title=t('Edit')}
-                {icon name="delete" title=t('Delete')} {t}Delete{/t}{/a}</small>
+            <p>{a controller="gallery" action="list" id=$cat.id rel=$cat.id}{$cat.name}{/a}</p>
+            <small>{a controller="gallery" action="editcat" id=$cat.id class="editCat" title=$this->t('Edit')}
+                {icon name="pencil" title=$this->t('Edit')} {t}Edit{/t}{/a}
+            {a controller="gallery" action="delcat" id=$cat.id class="do_delete" title=$this->t('Edit')}
+                {icon name="delete" title=$this->t('Delete')} {t}Delete{/t}{/a}</small>
         </td>
     </tr>
     {foreachelse}

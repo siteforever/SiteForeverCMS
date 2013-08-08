@@ -7,10 +7,10 @@
         <li class="a-gallery-item" data-id="{$item->id}" {if $item.main == 1}style="border-color: red;"{/if}>
             <div class="a-gallery-item-panel">
                 {a controller="cataloggallery" action="markdefault" id=$item.id class="main_gallery_image"}
-                    {if $item.main}{icon name="star" title=t('catalog','Default')}
-                        {else}{icon name="bullet_star" title=t('catalog','Default')}{/if}{/a}
+                    {if $item.main}{icon name="star" title=$this->t('catalog','Default')}
+                        {else}{icon name="bullet_star" title=$this->t('catalog','Default')}{/if}{/a}
                 {a controller="cataloggallery" action="delete" id=$item.id class="del_gallery_image"}
-                    {icon name="delete" title=t('catalog','Delete')}{/a}
+                    {icon name="delete" title=$this->t('catalog','Delete')}{/a}
             </div>
             {thumb width=100 height=100 src=$item.thumb alt=$item.id}
         </li>
@@ -21,7 +21,7 @@
 
     <div class="clear"></div>
     {*<div class="a-gallery-item-add">*}
-        {*{icon name="image_add" title=t('catalog','Add image')}*}
+        {*{icon name="image_add" title=$this->t('catalog','Add image')}*}
         {*{a controller="cataloggallery" action="upload" prod_id=$cat class="gallery-item-add"}*}
             {*{t cat="catalog"}Add image{/t}{/a}*}
     {*</div>*}

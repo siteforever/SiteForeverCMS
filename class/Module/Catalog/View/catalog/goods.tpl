@@ -24,9 +24,9 @@
         <td>{$item->articul}</td>
         <td>{$item->price1} ({$item->price2})</td>
         <td>
-            {a href="catalog/trade" edit=$item->id class="edit"}{icon name="pencil" title=t("Edit")}{/a}
-            {a href="catalog/delete" id=$item->id class="do_delete" title=t('Want to delete?')}
-                {icon name="delete" title=t("Delete")}{/a}
+            {a href="catalog/trade" edit=$item->id class="edit"}{icon name="pencil" title=$this->t("Edit")}{/a}
+            {a href="catalog/delete" id=$item->id class="do_delete" title=$this->t('Want to delete?')}
+                {icon name="delete" title=$this->t("Delete")}{/a}
         </td>
     </tr>
     {/foreach}

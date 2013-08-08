@@ -37,7 +37,7 @@
             {$order.date|date_format:"%x (%H:%M)"}</a></td>
         <td><a href="mailto:{$order->email}" class="filterEmail" title="Фильтровать">{$order->email}</a></td>
         <td>{if $order->Status}{$order->Status->name}{/if}</td>
-        <td>{if $order.paid}{icon name="money" title=t('Yes')}{else}&mdash;{/if}</td>
+        <td>{if $order.paid}{icon name="money" title=$this->t('Yes')}{else}&mdash;{/if}</td>
         <td>{$order->Positions->count()}</td>
         <td>{if $order->Positions}{$order->Positions->sum('sum')}{/if}</td>
     </tr>

@@ -19,17 +19,17 @@
     <td>
         <small>
             {if $item.hidden}
-                {icon name="lightbulb_off" title=t('Off')} {t}Off{/t}
+                {icon name="lightbulb_off" title=$this->t('Off')} {t}Off{/t}
             {else}
-                {icon name="lightbulb" title=t('On')} {t}On{/t}
+                {icon name="lightbulb" title=$this->t('On')} {t}On{/t}
             {/if}
             {if $item.protected}
-                {icon name="lock" title=t('Closed')} {t}Closed{/t}
+                {icon name="lock" title=$this->t('Closed')} {t}Closed{/t}
             {/if}
-            {a controller="news" action="catedit" id=$item.id class="catEdit" title=t("news","Cat edit")}
-                {icon name="pencil" title=t("Edit")} {t}Edit{/t}{/a}
-            {a controller="news" action="catdelete" id=$item.id class="do_delete" title=t("Delete")}
-                {icon name="delete" title=t("Delete")} {t}Delete{/t}{/a}
+            {a controller="news" action="catedit" id=$item.id class="catEdit" title=$this->t("news","Cat edit")}
+                {icon name="pencil" title=$this->t("Edit")} {t}Edit{/t}{/a}
+            {a controller="news" action="catdelete" id=$item.id class="do_delete" title=$this->t("Delete")}
+                {icon name="delete" title=$this->t("Delete")} {t}Delete{/t}{/a}
         </small>
     </td>
 </tr>
@@ -41,6 +41,6 @@
 </table>
 <p></p>
 
-{*{modal id="newsCatEdit" title=t('news','News category edit')}*}
+{*{modal id="newsCatEdit" title=$this->t('news','News category edit')}*}
 {*<p><a class="button" {href controller="news" action="catedit" id="0"}>*}
     {*{icon name="add"} Создать новый раздел</a></p>*}

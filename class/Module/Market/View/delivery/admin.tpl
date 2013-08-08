@@ -15,7 +15,7 @@
         <td>{a controller="delivery" action="edit" id=$item.id class="edit"}{$item.name}{/a}</td>
         <td>{$item.cost}</td>
         <td>{if $item.active}{icon name="lightbulb" title=t('On')}
-            {else}{icon name="lightbulb_off" title=t('Off')}{/if}</td>
+            {else}{icon name="lightbulb_off" title=$this->t('Off')}{/if}</td>
         <td>{a controller="delivery" action="delete" id=$item.id class="do_delete"}{t}Delete{/t}{/a}</td>
     </tr>
     {/foreach}

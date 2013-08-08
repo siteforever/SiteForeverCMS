@@ -1,4 +1,4 @@
-{$request->setTitle(t('Page not found'))}
+{$request->setTitle($this->t('Page not found'))}
 <h1>{$request->getTitle()}</h1>
 <p>Страница, которую вы читаете, не существует.</p>
 <p>Этот шаблон можно найти в Module/System/View/error/404.tpl</p>

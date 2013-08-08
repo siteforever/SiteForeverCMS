@@ -6,4 +6,5 @@ php:
 script: phpunit -c test/
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
-  - composer install --prefer-source --no-dev -o
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar install --prefer-source --no-dev -o

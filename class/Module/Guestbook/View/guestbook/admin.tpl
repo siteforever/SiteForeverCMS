@@ -17,11 +17,11 @@
         <td>{$item->name}</td>
         <td><a href="mailto:{$item->email}">{$item->email}</a></td>
         <td>{a controller="guestbook" action="edit" id=$item->id htmlTarget="_blank" class="sfcms_guestbook_edit"}
-            {$item->message|truncate:50}{icon name="pencil" title=t('Edit')}{/a}
+            {$item->message|truncate:50}{icon name="pencil" title=$this->t('Edit')}{/a}
         </td>
         <td>{a controller="guestbook" action="admin" link=$item->link}
             {$item->Category->name}{/a}</td>
-        <td>{if $item->answer}{icon name="accept" title=t('guestbook','Answer')}{/if}</td>
+        <td>{if $item->answer}{icon name="accept" title=$this->t('guestbook','Answer')}{/if}</td>
         <td>{$item->date|date_format:"%d.%m.%Y (%H:%M)"}</td>
         <td>{$item->ip}</td>
     </tr>

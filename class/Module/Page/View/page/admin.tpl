@@ -24,17 +24,17 @@
     <li data-parent="{$branch->parent}" data-id="{$branch->id}" data-pos="{$branch->pos}">
         <span id="item{$branch->id}">
             {selectIcon branch=$branch}
-            {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
+            {a class="edit" title=$this->t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
             <small>{$branch->alias}</small>
             <span class="tools">
                 {*{$branch->linkEdit}*}
                 <small>
-                    {a class="edit" title=t('page','Edit page') controller="page" action="edit" edit=$branch->id}
-                        {icon name="pencil" title=t('page','Edit page')} {t}Edit{/t}{/a}
-                    {a class="add" id=$branch->id title=t('page','Create page') controller="page" action="create"}
-                        {icon name="add" title=t('page','Create page')} {t}Create{/t}{/a}
-                    {a class="do_delete" title=t('Delete') controller="page" action="delete" id=$branch->id}
-                        {icon name="delete" title=t('Delete')} {t}Delete{/t}{/a}
+                    {a class="edit" title=$this->t('page','Edit page') controller="page" action="edit" edit=$branch->id}
+                        {icon name="pencil" title=$this->t('page','Edit page')} {t}Edit{/t}{/a}
+                    {a class="add" id=$branch->id title=$this->t('page','Create page') controller="page" action="create"}
+                        {icon name="add" title=$this->t('page','Create page')} {t}Create{/t}{/a}
+                    {a class="do_delete" title=$this->t('Delete') controller="page" action="delete" id=$branch->id}
+                        {icon name="delete" title=$this->t('Delete')} {t}Delete{/t}{/a}
                 </small>
             </span>
             <span class="order">
@@ -63,8 +63,8 @@
     {/a}
 
 
-    {*{modal id="pageEdit" title=t('Edit page')}*}
-    {*{modal id="pageCreate" title=t('Create page')}*}
+    {*{modal id="pageEdit" title=$this->t('Edit page')}*}
+    {*{modal id="pageCreate" title=$this->t('Create page')}*}
 
 
 </div>

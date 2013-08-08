@@ -23,10 +23,8 @@
             "" : ["class/","lib/"],
             "Sfcms" : "class/",
             "Module" : ["class/"],
-            "Std" : "class/",
             "Forms" : ["class/"]
-        },
-        "files" : ["class/Functions.php"]
+        }
     },
     "include-path": ["./", "lib/","class/"],
     "require-dev": {

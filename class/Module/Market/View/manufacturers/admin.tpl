@@ -10,12 +10,12 @@
         <tr>
             <td>{if $m.image}{thumb src=$m.image width=57 height=57 alt=$m.name}{else}&mdash;{/if}</td>
             <td>
-                <p><big>{$m.name}</big></p>
+                <h3>{$m.name}</h3>
                 <small>
-                    {a url="manufacturers/edit" id=$m.id title=t('Edit manufacturer') class="edit"}
+                    {a url="manufacturers/edit" id=$m.id title=$this->t('Edit manufacturer') class="edit"}
                         {icon name="pencil" title=t("edit")} {t}Edit{/t}{/a}
-                    {a url="manufacturers/delete" id=$m.id title=t('Want to delete?') class="do_delete"}
-                        {icon name="delete" title=t("delete")} {t}Delete{/t}{/a}
+                    {a url="manufacturers/delete" id=$m.id title=$this->t('Want to delete?') class="do_delete"}
+                        {icon name="delete" title=$this->t("delete")} {t}Delete{/t}{/a}
                 </small>
             </td>
         </tr>
@@ -29,6 +29,6 @@
 
 <p>{$paging->html}</p>
 
-{a href="manufacturers/edit" class="btn edit" title=t('Create manufacturer')}{t}Create manufacturer{/t}{/a}
+{a href="manufacturers/edit" class="btn edit" title=$this->t('Create manufacturer')}{t}Create manufacturer{/t}{/a}
 
 {modal id="ManufEdit"}
