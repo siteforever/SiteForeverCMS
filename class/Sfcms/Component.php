@@ -22,7 +22,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
     /**
      * @return App
      */
-    public function app()
+    public static function app()
     {
         return App::cms();
     }

@@ -111,8 +111,8 @@ abstract class Model extends Component
             return App::cms()->getContainer()->get('db');
         } catch (\PDOException $e) {
             static::app()->getLogger()->alert($e->getMessage());
+            die($e->getMessage());
         }
-        return null;
     }
 
     /**
