@@ -753,12 +753,13 @@ abstract class Model extends Component
 
     /**
      * Сохраняет данные модели в базе
-     * @param DomainObject $obj
-     * @param bool   $forceInsert
+     * @param DomainObject $obj object for saving
+     * @param bool $forceInsert Force inserted data in table
+     * @param bool $silent Not triggered save events
      *
      * @return bool|int
      */
-    public function save(DomainObject $obj, $forceInsert = false)
+    public function save(DomainObject $obj, $forceInsert = false, $silent = false)
     {
         if ($obj->isStateSaving()) { // Защита от замкнутого сохранения из-за событий
             return false;
@@ -767,8 +768,10 @@ abstract class Model extends Component
         $obj->markSaving();
 
         $event = new Model\ModelEvent($obj, $this);
-        $this->trigger('save.start', $event);
-        $this->trigger(sprintf('%s.save.start', $this->eventAlias()), $event);
+        if (!$silent) {
+            $this->trigger('save.start', $event);
+            $this->trigger(sprintf('%s.save.start', $this->eventAlias()), $event);
+        }
 
         $fields = call_user_func(array($this->objectClass(), 'fields'));
         $id = $obj->pkValues();
@@ -814,8 +817,10 @@ abstract class Model extends Component
             $this->addToMap($obj);
         }
         if (false !== $ret) {
-            $this->trigger('save.success', $event);
-            $this->trigger(sprintf('%s.save.success', $this->eventAlias()), $event);
+            if (!$silent) {
+                $this->trigger('save.success', $event);
+                $this->trigger(sprintf('%s.save.success', $this->eventAlias()), $event);
+            }
             $obj->markClean();
         }
 

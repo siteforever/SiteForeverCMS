@@ -4,7 +4,7 @@
         {if is_numeric($item)}
         <li class="active"><span>{$item}</span></li>
         {else}
-        <li>{$item}</li>
+        <li><span>{$item}</span></li>
         {/if}
     {/foreach}
 </ul>

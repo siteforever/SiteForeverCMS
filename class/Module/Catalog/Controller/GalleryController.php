@@ -172,47 +172,54 @@ class GalleryController extends Controller
         /** @var UploadedFile $file */
         foreach ($this->request->files->get('image') as $i => $file) {
 
-            if (!in_array($file->getClientMimeType(), array('image/jpeg', 'image/gif', 'image/png'))) {
-                $this->request->addFeedback(sprintf('Unsupported image type "%s"', $file->getClientMimeType()));
-                continue;
-            }
-
-            /** @var $objImage Gallery */
-            $objImage = $galleryModel->createObject();
-            $objImage->trade  = $trade;
-            $objImage->cat_id = $prodId;
-            $objImage->hidden = 0;
-            $objImage->pos    = 100;
-            $objImage->main   = 0;
-            $objImage->save();
-            $g_id = $objImage->getId();
-
-            // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
-            // Это чистое изображение, но имя зашифровано
-            $tmb = strtolower(substr(md5(microtime(1) . $trade->alias), 0, 6) . '.' . $file->getClientOriginalExtension());
-            // Имя не зашифровано, но с водяным знаком
-            $img = strtolower($g_id . '-' . $trade->alias . '.' . $file->getClientOriginalExtension());
-
             try {
-                /** @var File $target */
-                $target = $file->move(ROOT . $dest, $tmb);
-            } catch (FileException $e) {
+                $trade->uploadImage($this->config->get('catalog.gallery_dir') , $file);
+            } catch (\RuntimeException $e) {
                 $this->request->addFeedback($e->getMessage());
-                $objImage->delete();
                 continue;
             }
 
-            if ($createMain) {
-                $objImage->main = 1;
-                $createMain = false;
-            }
-            $objImage->thumb = $dest . $tmb;
-            $objImage->image = $dest . $img;
-            if (!Sfcms::watermark($target->getRealPath(), ROOT . $objImage->image)) {
-                $filesystem->rename($target->getRealPath(), ROOT . $objImage->image, true);
-                $objImage->thumb = $objImage->image;
-            }
-            $objImage->save();
+//            if (!in_array($file->getClientMimeType(), array('image/jpeg', 'image/gif', 'image/png'))) {
+//                $this->request->addFeedback(sprintf('Unsupported image type "%s"', $file->getClientMimeType()));
+//                continue;
+//            }
+//
+//            /** @var $objImage Gallery */
+//            $objImage = $galleryModel->createObject();
+//            $objImage->trade  = $trade;
+//            $objImage->cat_id = $prodId;
+//            $objImage->hidden = 0;
+//            $objImage->pos    = 100;
+//            $objImage->main   = 0;
+//            $objImage->save();
+//            $g_id = $objImage->getId();
+//
+//            // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
+//            // Это чистое изображение, но имя зашифровано
+//            $tmb = strtolower(substr(md5(microtime(1) . $trade->alias), 0, 6) . '.' . $file->getClientOriginalExtension());
+//            // Имя не зашифровано, но с водяным знаком
+//            $img = strtolower($g_id . '-' . $trade->alias . '.' . $file->getClientOriginalExtension());
+//
+//            try {
+//                /** @var File $target */
+//                $target = $file->move(ROOT . $dest, $tmb);
+//            } catch (FileException $e) {
+//                $this->request->addFeedback($e->getMessage());
+//                $objImage->delete();
+//                continue;
+//            }
+//
+//            if ($createMain) {
+//                $objImage->main = 1;
+//                $createMain = false;
+//            }
+//            $objImage->thumb = $dest . $tmb;
+//            $objImage->image = $dest . $img;
+//            if (!Sfcms::watermark($target->getRealPath(), ROOT . $objImage->image)) {
+//                $filesystem->rename($target->getRealPath(), ROOT . $objImage->image, true);
+//                $objImage->thumb = $objImage->image;
+//            }
+//            $objImage->save();
         }
 
         return $this->getPanel($prodId);

@@ -143,8 +143,8 @@ class CatalogModel extends Model
         $obj = $event->getObject();
         // If object will update
         /** @var $obj Catalog */
-        if( $obj->getId() ) {
-            $obj->path = $this->createSerializedPath( $obj->getId() );
+        if ($obj->getId()) {
+            $obj->path = $this->createSerializedPath($obj->getId());
         }
 
         if (!$obj->uuid) {
@@ -161,7 +161,6 @@ class CatalogModel extends Model
                 $objPage->name = $obj->name;
                 $objPage->hidden = $obj->hidden;
                 $objPage->protected = $obj->protected;
-                $objPage->save();
             }
         }
     }
@@ -187,6 +186,7 @@ class CatalogModel extends Model
             // @todo Надо сделать слежение за изменением иерархии
             if (null === $objPage) {
                 $objPage = $this->getModel('Page')->createObject();
+                $objPage->markNew();
                 $objPage->name = $obj->name;
                 $objPage->title = $obj->name;
                 $objPage->pos = $obj->pos;
@@ -195,15 +195,13 @@ class CatalogModel extends Model
                 $objPage->link = $obj->id;
                 $objPage->controller = 'catalog';
                 $objPage->action = 'index';
-                $objPage->date = time();
-                $objPage->update = $objPage->date;
+                $objPage->date = $objPage->update = time();
                 $objPage->hidden = $obj->hidden;
                 $objPage->protected = $obj->protected;
                 if ($obj->parent) {
                     $parentPage = $obj->Category->Page;
                     if ($parentPage) {
                         $objPage->parent = $parentPage->id;
-                        $objPage->alias = $parentPage->alias . '/' . $objPage->alias;
                     }
                 }
             }

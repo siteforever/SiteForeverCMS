@@ -252,13 +252,14 @@ abstract class Object extends Table
 
     /**
      * Сохранение
-     * @param bool $forceInsert
+     * @param bool $forceInsert Force inserted data in table
+     * @param bool $silent Not triggered save events
      *
      * @return int
      */
-    public function save($forceInsert = false)
+    public function save($forceInsert = false, $silent = false)
     {
-        return $this->model->save($this, $forceInsert);
+        return $this->model->save($this, $forceInsert, $silent);
     }
 
     /**

@@ -8,6 +8,7 @@
 namespace Module\Catalog\Object;
 
 use Module\Catalog\Model\CatalogModel;
+use Module\Catalog\Model\GalleryModel;
 use Module\Market\Object\Manufacturer;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
@@ -15,6 +16,10 @@ use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 use Sfcms\i18n;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Class Catalog
@@ -191,6 +196,74 @@ class Catalog extends Object
         }
 
         return null;
+    }
+
+
+    /**
+     * @param      $destDir
+     * @param File|UploadedFile $file
+     * @param Gallery $objImage
+     * @param string $uuid
+     *
+     * @throws \RuntimeException
+     */
+    public function uploadImage($destDir, File $file, Gallery $objImage = null, $uuid = null)
+    {
+        if ($file instanceof UploadedFile
+            && !in_array($file->getClientMimeType(), array('image/jpeg', 'image/gif', 'image/png'))
+        ) {
+            throw new \RuntimeException(sprintf('Unsupported image type "%s"', $file->getClientMimeType()));
+        }
+
+        /** @var Collection $images */
+        $images = $this->Gallery;
+        $createMain = !($images && $images->count()); // Делать ли первую картинку главной
+        /** @var GalleryModel $galleryModel */
+        $galleryModel = $this->getModel('CatalogGallery');
+
+        if (null === $objImage) {
+            $objImage = $galleryModel->createObject();
+            $objImage->hidden = 0;
+            $objImage->uuid   = $uuid ?: \Sfcms\UUID::v5(md5(__DIR__), bin2hex(uniqid()));;
+            $objImage->pos    = $images->count();
+            $objImage->save(true, true);
+            $objImage->main   = (int)$createMain;
+            $objImage->trade  = $this;
+            $objImage->cat_id = $this->id;
+        }
+        $gId = $objImage->getId();
+
+        $filesystem = new Filesystem();
+
+        $dest = $destDir . '/'
+            . substr(md5($this->id), 0, 2) . '/'
+            . substr('000000' . $this->id, -6, 6) . '/';
+
+        // Для thumb храним нормальное изображение в хэше, а для image накладываем watermark
+
+        $ext = $file instanceof UploadedFile ? $file->getClientOriginalExtension() : $file->getExtension();
+
+        // Имя не зашифровано, но с водяным знаком
+        $img = strtolower($gId . '-' . $this->alias . '.' . $ext);
+        // Это чистое изображение, но имя зашифровано
+        $tmb = strtolower(substr(md5(microtime(1) . $this->alias), 0, 6) . '.' . $ext);
+
+        try {
+            /** @var File $target */
+            $target = $file->move(ROOT . $dest, $tmb);
+        } catch (FileException $e) {
+            $objImage->delete();
+            throw new \RuntimeException($e->getMessage());
+        }
+
+        $objImage->thumb = $dest . $tmb;
+        $objImage->image = $dest . $img;
+        if (!\Sfcms::watermark($target->getRealPath(), ROOT . $objImage->image)) {
+            $filesystem->rename($target->getRealPath(), ROOT . $objImage->image, true);
+            $objImage->thumb = $objImage->image;
+        }
+        $objImage->save();
+        $images->add($objImage);
     }
 
     /**

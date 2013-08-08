@@ -39,6 +39,7 @@ class Gallery extends Object
         return array(
             new Field\Int('id', 11, true, null, true),
             new Field\Int('cat_id'),
+            new Field\Varchar('uuid', 36),
             new Field\Varchar('image', 250),
             new Field\Varchar('thumb', 250),
             new Field\Tinyint('hidden'),
