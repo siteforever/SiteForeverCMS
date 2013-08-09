@@ -55,10 +55,13 @@ class Sfcms_HtmlTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('<a href="/page/admin">test</a>', $link);
 
         $link = $this->html->link('test', 'http://example.com', array('val'=>'test'));
-        $this->assertEquals('<a href="http://example.com">test</a>', $link);
+        $this->assertEquals('<a href="http://example.com?val=test">test</a>', $link);
+
+        $link = $this->html->link('test', 'http://example.com?hello=world', array('val'=>'test'));
+        $this->assertEquals('<a href="http://example.com?val=test&hello=world">test</a>', $link);
 
         $link = $this->html->link('test', '#anchor', array('val'=>'test'));
-        $this->assertEquals('<a href="#anchor">test</a>', $link);
+        $this->assertEquals('<a href="?val=test#anchor">test</a>', $link);
     }
 
     public function testIcon()

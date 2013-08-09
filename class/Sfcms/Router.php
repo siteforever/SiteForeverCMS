@@ -141,11 +141,14 @@ class Router
         if (!$result && isset($params['controller'])) {
             return static::createDirectRequest($params);
         }
+        $anchor = parse_url($result, PHP_URL_FRAGMENT);
         $query = parse_url($result, PHP_URL_QUERY);
-        $result = parse_url($result, PHP_URL_PATH);
-        $paramsQuery = array();
-        parse_str($query, $paramsQuery);
-        $params = array_merge($params, $paramsQuery);
+        if ($query) {
+            $result = str_replace('?' . $query, '', $result);
+            $paramsQuery = array();
+            parse_str($query, $paramsQuery);
+            $params = array_merge($params, $paramsQuery);
+        }
 
         $result = trim($result, '/');
         if ('' === $result && $this->request) {
@@ -176,17 +179,22 @@ class Router
         $prefix = '/';
         if (preg_match('@^(https?:\/\/|#)@i', $result)) {
             $prefix = '';
-            $par    = array();
         }
 
+        if ($anchor) {
+            $result = str_replace('#' . $anchor, '', $result);
+        }
         if ($this->getRewrite()) {
             $result = $prefix . $result . (count($par) ? '?' . join('&', $par) : '');
         } else {
-//            $result = $prefix . '?route=' . $result . (count($par) ? '&' . join('&', $par) : '');
             $result = $prefix . 'index.php/' . $result . (count($par) ? '?' . join('&', $par) : '');
         }
 
         $result = preg_match('/\.[a-z0-9]{2,4}$/i', $result) ? $result : strtolower($result);
+
+        if ($anchor) {
+            $result .= '#' . $anchor;
+        }
 
         return $result;
     }

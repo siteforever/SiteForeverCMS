@@ -169,20 +169,20 @@ class CatalogController extends Controller
             $paging = $this->paging(
                 $count,
                 $this->config->get('catalog.onPage'),
-                $this->router->createLink($parent->url, array('order'=>$order))
+                $this->router->createLink($parent->url),
+                $cacheKey
             );
 
             $criteria->limit = $paging->limit;
-
 
             $list = $catModel->with('Gallery', 'Manufacturer', 'Material', 'Properties')->findAll($criteria);
 
             // Оптимизированный список свойств
             $properties = array();
             /** @var Catalog $catItem */
-            foreach( $list as $catItem ) {
-                for( $i = 0; $i <= 9; $i ++ ) {
-                    $properties[ $catItem->getId() ][ $parent[ 'p' . $i ] ] = $catItem[ 'p' . $i ];
+            foreach ($list as $catItem) {
+                for ($i = 0; $i <= 9; $i++) {
+                    $properties[$catItem->getId()][$parent['p' . $i]] = $catItem['p' . $i];
                 }
             }
 

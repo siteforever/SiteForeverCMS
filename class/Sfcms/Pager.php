@@ -52,7 +52,7 @@ class Pager implements \ArrayAccess
         return $this->request;
     }
 
-    function __construct($count, $perpage, $link = '', $request = null, $template = null)
+    function __construct($count, $perpage, $link = '', $request = null, $template = null, $cacheId = null)
     {
         if (null !== $request) {
             $this->setRequest($request);
@@ -132,7 +132,10 @@ class Pager implements \ArrayAccess
         $this->page     = $page;
         $this->pages    = $pages;
         $this->count    = $count;
-        $this->html     = \Sfcms::html()->render($this->template, array('pager'=>$this, 'p' => $p));
+        $t = \App::cms()->getTpl();
+        $t->assign(array('pager'=>$this, 'p' => $p));
+
+        $this->html = $t->fetch($this->template, $cacheId);
     }
 
     /**

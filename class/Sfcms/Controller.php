@@ -246,12 +246,12 @@ abstract class Controller extends ContainerAware
      * @param $link
      * @return Pager
      */
-    public function paging($count, $perpage, $link)
+    public function paging($count, $perpage, $link, $cacheId = null)
     {
         if ($this->config->get('pager_template')) {
-            $pager = new Pager($count, $perpage, $link, $this->request, $this->config->get('pager_template'));
+            $pager = new Pager($count, $perpage, $link, $this->request, $this->config->get('pager_template'), $cacheId);
         } else {
-            $pager = new Pager($count, $perpage, $link, $this->request);
+            $pager = new Pager($count, $perpage, $link, $this->request, null, $cacheId);
         }
         return $pager;
     }
