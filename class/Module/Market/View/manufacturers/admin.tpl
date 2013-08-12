@@ -13,7 +13,7 @@
                 <h3>{$m.name}</h3>
                 <small>
                     {a url="manufacturers/edit" id=$m.id title=$this->t('Edit manufacturer') class="edit"}
-                        {icon name="pencil" title=t("edit")} {t}Edit{/t}{/a}
+                        {icon name="pencil" title=$this->t("edit")} {t}Edit{/t}{/a}
                     {a url="manufacturers/delete" id=$m.id title=$this->t('Want to delete?') class="do_delete"}
                         {icon name="delete" title=$this->t("delete")} {t}Delete{/t}{/a}
                 </small>

@@ -43,6 +43,15 @@ class Module extends SfModule
             new Route('/basket/add',
                 array('_controller'=>'basket', '_action'=>'add')
             ));
+        $routes->add('basket/delete',
+            new Route('/basket/delete/{key}/{count}',
+                array('_controller'=>'basket', '_action'=>'delete')
+            ));
+        $routes->add('basket/count',
+            new Route('/basket/count',
+                array('_controller'=>'basket', '_action'=>'count'),
+                array('method'=>'POST')
+            ));
 
         $routes->add('delivery/admin',
             new Route('/delivery/admin',

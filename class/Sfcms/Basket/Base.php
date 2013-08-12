@@ -51,18 +51,18 @@ abstract class Base
      */
     public function add($id = '', $name = '', $count = 0, $price = 0.0, $details = '')
     {
-        if ( ! is_array( $this->data ) ) {
+        if (!is_array($this->data)) {
             $this->data = array();
         }
 
-        if ( ! $id )
+        if (null === $id) {
             $id = $name;
+        }
 
-        foreach ( $this->data as &$prod ) {
-            if ( ( @$prod['name'] == $name || @$prod['id'] == $id ) && $prod['details'] == $details ) {
+        foreach ($this->data as &$prod) {
+            if ((@$prod['name'] == $name || @$prod['id'] == $id) && $prod['details'] == $details) {
                 $prod['count'] += $count;
-                $prod['price']  = $price;
-//                $prod['details'] = $details;
+                $prod['price'] = $price;
                 return true;
             }
         }
@@ -74,7 +74,8 @@ abstract class Base
             'price' => $price,
             'details'=>$details,
         );
-        return count($this->data)-1;
+
+        return count($this->data) - 1;
     }
 
     /**
@@ -83,10 +84,10 @@ abstract class Base
      * @param  $count
      * @return boolean
      */
-    public function setCount($name, $count)
+    public function setCount($id, $count)
     {
         foreach ($this->data as $i => &$prod) {
-            if (@$prod['name'] == $name || @$prod['id'] == $name) {
+            if (@$prod['name'] == $id || @$prod['id'] == $id) {
                 if ($count > 0) {
                     $prod['count'] = $count;
                 } else {
@@ -102,26 +103,45 @@ abstract class Base
 
     /**
      * Количество данного товара в корзине
-     * @param string $id
+     *
+     * @param string|int $id
+     *
+     * @return int
+     * @throws Sfcms_Basket_Exception
      */
-    public function getCount( $name = '' )
+    public function getCount($id = null)
     {
-        if ( ! is_array( $this->data ) ) {
+        if (!is_array($this->data)) {
             throw new Sfcms_Basket_Exception('Basket data corrupted');
         }
         $result = 0;
-        if ( $name ) {
-            foreach ( $this->data as $prod ) {
-                if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
+        if ($id) {
+            foreach ($this->data as $prod) {
+                if (@$prod['name'] == $id || @$prod['id'] == $id) {
                     $result += $prod['count'];
                 }
             }
+
             return $result;
         }
-        foreach( $this->data as $prod ) {
+        foreach ($this->data as $prod) {
             $result += $prod['count'];
         }
+
         return $result;
+    }
+
+    /**
+     * @param $key
+     *
+     * @return null|array
+     */
+    public function getByKey($key)
+    {
+        if (isset($this->data[$key])) {
+            return $this->data[$key];
+        }
+        return null;
     }
 
 
@@ -194,26 +214,31 @@ abstract class Base
 
     /**
      * Сумма заказа
-     * @param $name
+     *
+     * @param $id
+     *
      * @return float
+     * throws Sfcms_Basket_Exception
      */
-    public function getSum( $name = '' )
+    public function getSum($id = null)
     {
-        if ( ! is_array( $this->data ) ) {
+        if (!is_array($this->data)) {
             throw new Sfcms_Basket_Exception('Basket data corrupted');
         }
         $result = 0.0;
-        if ( $name ) {
-            foreach ( $this->data as $prod ) {
-                if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
+        if (null !== $id) {
+            foreach ($this->data as $prod) {
+                if (@$prod['name'] == $id || @$prod['id'] == $id) {
                     $result += $prod['count'] * @$prod['price'];
                 }
             }
+
             return $result;
         }
-        foreach( $this->data as $prod ) {
+        foreach ($this->data as $prod) {
             $result += $prod['count'] * @$prod['price'];
         }
+
         return $result;
     }
 

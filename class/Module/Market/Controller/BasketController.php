@@ -16,6 +16,7 @@ use Forms_Basket_Address;
 use Module\Market\Object\Delivery;
 use Module\Market\Model\OrderModel;
 use Module\Catalog\Model\CatalogModel;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BasketController extends Controller
 {
@@ -107,7 +108,7 @@ class BasketController extends Controller
 
 
     /**
-     * Добавит в корзину товар
+     * Additional product to basket
      *
      * @param $_REQUEST['basket_prod_id']
      * @param $_REQUEST['basket_prod_name']
@@ -123,7 +124,7 @@ class BasketController extends Controller
 
         $basket_prod_name = $post->get('basket_prod_name');
         $basket_prod_id   = $post->get('basket_prod_id');
-        if ( $basket_prod_id || $basket_prod_name ) {
+        if (null !== $basket_prod_id || null !== $basket_prod_name) {
             $basket_prod_count      = $post->get('basket_prod_count');
             $basket_prod_price      = $post->get('basket_prod_price');
             $basket_prod_details    = $post->get('basket_prod_details');
@@ -148,14 +149,74 @@ class BasketController extends Controller
 
         return array(
             'id'     => $basket_prod_id,
-            'count'  => $this->getBasket()->getCount( $basket_prod_id ),
+            'count'  => $this->getBasket()->getCount($basket_prod_id),
             'widget' => $this->getTpl()->fetch('basket.widget'),
             'msg'    => $basket_prod_name . '<br>'
                       . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
         );
-
     }
 
+    /**
+     * Deletion product from basket
+     *
+     * @return array
+     */
+    public function deleteAction()
+    {
+        $key   = $this->request->get('key');
+        $count = $this->request->get('count', 0);
+
+        if (null !== $key) {
+            $item = $this->getBasket()->getByKey($key);
+            if (!$item) {
+                throw new NotFoundHttpException(sprintf('Item with key %d not found', $key));
+            }
+            $this->getBasket()->del($key, $count);
+            $this->getBasket()->save();
+        }
+
+
+        $this->app->getLogger()->info(sprintf('id: %d, count: %d', $key, $count));
+
+        $this->getTpl()->assign(array(
+                'count'     => $this->getBasket()->getCount(),
+                'summa'     => $this->getBasket()->getSum(),
+                'number'    => $this->getBasket()->count(),
+                'path'      => $this->request->get('path'),
+            ));
+
+        return array(
+            'id'     => $item ? $item['id'] : 0,
+            'count'  => $this->getBasket()->getCount($item['id']),
+            'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
+            'widget' => $this->getTpl()->fetch('basket.widget'),
+        );
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function countAction()
+    {
+        $id = $this->request->get('id');
+        $count = $this->request->get('count');
+
+        $this->getBasket()->setCount($id, $count);
+
+        $this->getTpl()->assign(array(
+            'count'     => $this->getBasket()->getCount(),
+            'summa'     => $this->getBasket()->getSum(),
+            'number'    => $this->getBasket()->count(),
+            'path'      => $this->request->get('path'),
+        ));
+
+        return $this->renderJson(array(
+            'id' => $id,
+            'count' => $this->getBasket()->getCount($id),
+            'sum'   => number_format($this->getBasket()->getSum(), 2, ',', ''),
+            'widget' => $this->getTpl()->fetch('basket.widget'),
+        ));
+    }
 
     /**
      * Ajax validate

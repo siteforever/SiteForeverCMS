@@ -12,17 +12,18 @@ define("module/basket", [
         "class_name" : '.basket-widget',
 
         /**
-         * Добавит товар в корзину
-         * @param id
-         * @param product
-         * @param count
-         * @param price
+         * Additional product to basket
+         * @param id Position product in basket
+         * @param product string Product name
+         * @param count Count for operation
+         * @param price Product Price
          * @param details
+         * @param callback Function was called for rejected ajax deferred
          */
-        "add": function (id, product, count, price, details, callback) {
-            callback = callback && typeof callback == 'function' ? callback : function( response ){
+        "add": function (/*int*/id, /*string*/product, /*int*/count, /*string*/price, details, callback) {
+            callback = callback && typeof callback == 'function' ? callback : function (response) {
                 alert( response.msg, 2000 );
-                $(this.class_name).replaceWith( response.widget );
+                $(this.class_name).replaceWith(response.widget);
             };
 
             return $.post('/index.php/basket/add', {
@@ -31,6 +32,27 @@ define("module/basket", [
                     basket_prod_count:  parseInt( count, 10 ),
                     basket_prod_price:  parseFloat( price ),
                     basket_prod_details :details
+                }, $.proxy(callback, this),
+                "json"
+            );
+        },
+
+        /**
+         * Deletion product from basket
+         * @param id Position product in basket
+         * @param count Count for operation
+         * @param callback Function was called for rejected ajax deferred
+         * @returns {*}
+         */
+        "del": function (/*int*/id, /*int*/count, callback) {
+            callback = callback && typeof callback == 'function' ? callback : function (response) {
+                alert( response.msg, 2000 );
+                $(this.class_name).replaceWith(response.widget);
+            };
+
+            return $.post('/index.php/basket/delete', {
+                    basket_prod_id:     id,
+                    basket_prod_count: parseInt(count, 10)
                 }, $.proxy(callback, this),
                 "json"
             );

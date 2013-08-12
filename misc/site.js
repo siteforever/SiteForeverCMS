@@ -34,7 +34,8 @@ require([
         $('span.captcha-reload').captcha();
 
         // добавить в корзину
-        $(document).on('click', 'input.b-basket-add-button', function(){
+        $(document).on('click', '.b-basket-add-button', function(e){
+            e.stopPropagation();
             var product = $(this).data('product'),
                 properties = [];
             $( "input,select","#properties").each(function(){
@@ -43,11 +44,12 @@ require([
             basket.add(
                 $(this).data('id'),
                 product,
-                $(this).parent().find('input.b-basket-add-count').val(),
+                $(this).siblings('input.b-basket-add-count').val(),
                 $(this).data('price'),
                 properties.join(", "),
                 script && script.basket && typeof script.basket == 'function' ? script.basket : false
             );
+            return false;
         });
 
 

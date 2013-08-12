@@ -226,10 +226,10 @@ class Catalog extends Object
             $objImage->hidden = 0;
             $objImage->uuid   = $uuid ?: \Sfcms\UUID::v5(md5(__DIR__), bin2hex(uniqid()));;
             $objImage->pos    = $images->count();
-            $objImage->save(true, true);
             $objImage->main   = (int)$createMain;
             $objImage->trade  = $this;
             $objImage->cat_id = $this->id;
+            $objImage->save(false, true);
         }
         $gId = $objImage->getId();
 
@@ -250,7 +250,11 @@ class Catalog extends Object
 
         try {
             /** @var File $target */
-            $target = $file->move(ROOT . $dest, $tmb);
+            if ($file instanceof UploadedFile) {
+                $target = $file->move(ROOT . $dest, $tmb);
+            } else {
+                $filesystem->copy($file->getRealPath(), ROOT . $dest . $tmb, true);
+            }
         } catch (FileException $e) {
             $objImage->delete();
             throw new \RuntimeException($e->getMessage());
@@ -340,6 +344,7 @@ class Catalog extends Object
             new Field\Int('manufacturer'),
             new Field\Int('pos'),
             new Field\Int('gender'),
+            new Field\Int('qty', 11, true, 0),
             new Field\Varchar('p0', 250),
             new Field\Varchar('p1', 250),
             new Field\Varchar('p2', 250),

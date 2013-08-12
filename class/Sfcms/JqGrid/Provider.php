@@ -304,9 +304,9 @@ class Provider
     {
         $result = array();
 
-        $searchField  = $this->request->get( 'searchField' );
-        $searchOper   = $this->request->get( 'searchOper' );
-        $searchString = $this->request->get( 'searchString' );
+        $searchField  = $this->request->get('searchField');
+        $searchOper   = $this->request->get('searchOper');
+        $searchString = $this->request->get('searchString');
 
         $operations = array(
             'eq'    => "`:field` = ':value' ",
@@ -338,11 +338,11 @@ class Provider
             if ( empty( $field['search'] ) ) {
                 return false;
             }
-            $sopt = 'bw';
+            $sopt = 'in';//'bw';
             if ( isset( $field['search']['sopt'] ) ) {
                 $sopt = $field['search']['sopt'];
             }
-            $val = $request->get($id);
+            $val = urldecode($request->get($id));
             return $val
                 ? str_replace(array(':field',':value'),array($id, $val),$operations[$sopt])
                 : false;

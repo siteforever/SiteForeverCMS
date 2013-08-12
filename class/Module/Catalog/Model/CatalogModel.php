@@ -327,14 +327,29 @@ class CatalogModel extends Model
     }
 
 
+    /**
+     * Товары, отсортированные по novelty
+     * @param int $limit
+     * @return array|Collection
+     */
+    public function findProductsSortNovelty( $limit = 4 )
+    {
+        return $this->with('Gallery')
+            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND absent != 1',array(),'novelty DESC', $limit);
+    }
+
+
 
     /**
      * Поиск товаров по ключевой фразе
+     *
      * @param $query
-     * @deprecated
+     *
+     * @use GoodsController::searchAction
+     *
      * @return Collection
      */
-    public function findGoodsByQuery( $query )
+    public function findGoodsByQuery($query, $limit = 10)
     {
         $list = $this->getDB()->fetchAll(
             "SELECT * FROM {$this->getTable()} "
@@ -349,7 +364,8 @@ class CatalogModel extends Model
                 '%'.$query.'%'
             )
         );
-        return new Collection( $list, $this );
+
+        return new Collection($list, $this);
     }
 
     /**

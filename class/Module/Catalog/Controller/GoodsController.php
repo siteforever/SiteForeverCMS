@@ -47,12 +47,24 @@ class GoodsController extends Controller
         /** @var $modelCatalog CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');
 
-        $goods  = $modelCatalog->findGoodsByQuery( $query );
+        $crit = $modelCatalog->createCriteria();
+        $crit->condition = '`deleted`=0 AND `hidden`=0 AND `protected`=0 AND `cat`=0 AND `absent`!=1 AND '
+            .'( `name` LIKE ? OR `text` LIKE ? )';
+        $crit->params = array("%$query%", "%$query%", );
 
-        return array(
+        $count = $modelCatalog->count($crit);
+        $paging = $this->paging($count, 10, 'goods/search?q='.urlencode($query));
+
+        $crit->limit = $paging->limit;
+        $crit->from = $paging->from;
+        $crit->order = '`top` DESC';
+        $goods = $modelCatalog->findAll($crit);
+
+        return $this->render('goods.search', array(
             'query' => $query,
             'goods' => $goods,
-        );
+            'paging' => $paging,
+        ));
     }
 
 
