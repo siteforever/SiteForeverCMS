@@ -11,13 +11,8 @@ class ControllerRssTest extends \Sfcms\Test\WebCase
     public function testIndexAction()
     {
         $response = $this->runController('rss', 'index');
-//        $controller = new RssController($this->request);
-//        $result = $controller->indexAction();
-//        $this->assertInternalType('string', $result);
-        $this->assertStringStartsWith(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<rss version=\"2.0\">\n  <channel>\n    <title>SiteForeverCMS</title>",
-            $response->getContent()
-        );
+        $crawler = new \Symfony\Component\DomCrawler\Crawler();
+        $crawler->addHtmlContent($response->getContent());
+        $this->assertEquals('SiteForeverCMS', $crawler->filter('rss>channel>title')->text());
     }
-
 }

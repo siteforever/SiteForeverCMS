@@ -31,6 +31,11 @@ class Config
         if (null !== $container) {
             $this->registerParameters('', $this->config, $container);
         }
+        if ($container) {
+            foreach($container->getParameterBag()->all() as $key => $parameter) {
+                $this->set($key, $parameter);
+            }
+        }
         return $this;
     }
 

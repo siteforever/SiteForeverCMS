@@ -38,8 +38,7 @@ class SearchControllerTest extends WebCase
         $this->request->query->set('query', 'страница');
         $response = $this->runController('search');
         $crawler = $this->createCrawler($response);
-        $this->assertEquals(10, $crawler->filterXPath('//h4')->count());
-        $this->assertEquals(2, $crawler->filterXPath('//div[@class="paging"]/a')->count());
+        $this->assertEquals(10, $crawler->filter('h4')->count());
+        $this->assertEquals(2, $crawler->filter('div.paging a')->count());
     }
-
 }

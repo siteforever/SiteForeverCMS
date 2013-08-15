@@ -1,0 +1,32 @@
+parameters:
+    sitename: "SiteForever CMS"
+
+    url:
+        rewrite: true
+
+    admin: "admin@ermin.ru"
+
+    cache:
+        class: "Sfcms\Cache\CacheBlank"
+        livecycle: 600
+
+    db:
+        dsn: "mysql:host=localhost;dbname=siteforever"
+        login: root
+        password: ~
+        options:
+            1002: "SET NAMES utf8"
+        migration: false
+        debug: false
+
+    editor: ckeditor
+    # editor: tinymce
+    # editor: elrte
+
+    language: en
+
+    logging_handlers: ["@rotating_handler", "@fire_handler"]
+
+    mailer_transport: sendmail
+    pager_template: pager_twbt
+

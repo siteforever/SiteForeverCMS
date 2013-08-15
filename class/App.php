@@ -124,17 +124,27 @@ class App extends AbstractKernel
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
             $this->getLogger()->error($e->getMessage());
-            $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
+            switch ($request->getContentType()) {
+                case 'json':
+                    $response = new JsonResponse(array('error'=>1, 'msg'=>$e->getMessage()), $e->getStatusCode() ?: 500);
+                    break;
+                default:
+                    $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
+            }
         } catch (Exception $e) {
             $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
             if ($this->isDebug()) {
                 throw $e;
             } else {
+                switch ($request->getContentType()) {
+                    case 'json':
+                        return new JsonResponse(array('error'=>1, 'msg'=>'Site error'), 500);
+                }
                 return new Response('Site error', 500);
             }
         }
 
-        if (! $response && is_string($result)) {
+        if (!$response && is_string($result)) {
             $response = new Response($result);
         } elseif ($result instanceof Response) {
             $response = $result;
@@ -142,7 +152,7 @@ class App extends AbstractKernel
             $response = new Response();
         }
 
-        static::$controller_time = microtime( 1 ) - static::$controller_time;
+        static::$controller_time = microtime(1) - static::$controller_time;
 
         $event = new KernelEvent($response, $request, $result);
         $this->getEventDispatcher()->dispatch('kernel.response', $event);
@@ -170,8 +180,8 @@ class App extends AbstractKernel
      */
     public function prepareResult(KernelEvent $event)
     {
-        $result = $event->getResult();
         $response = $event->getResponse();
+        $result = $event->getResult();
         $request = $event->getRequest();
         $format = $request->getRequestFormat();
         if (is_array($result) && 'json' == $format) {

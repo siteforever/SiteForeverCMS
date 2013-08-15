@@ -27,9 +27,7 @@ class BasketController extends Controller
         $form->delivery_id = $this->request->getSession()->get('delivery');
 
         // Ajax validate
-        if ( // $this->request->isAjax() &&
-            $form->getPost($this->request)
-        ) {
+        if ($form->getPost($this->request)) {
             $result = $this->formValidate( $form );
             if ($this->request->isXmlHttpRequest()) {
                 return $result;
@@ -38,19 +36,13 @@ class BasketController extends Controller
 
         // Fill Address from current user
         if ( $this->auth->hasPermission( USER_USER ) ) {
-            $form->getField('fname')->setValue($this->auth->currentUser()->fname);
-            $form->getField('lname')->setValue($this->auth->currentUser()->lname);
-            $form->getField('email')->setValue($this->auth->currentUser()->email);
-            $form->getField('phone')->setValue($this->auth->currentUser()->phone);
-            $form->getField('address')->setValue($this->auth->currentUser()->address);
+            $form->setData($this->auth->currentUser()->attributes);
         }
 
         // Fill Address from Yandex
-        if ( $address ) {
-            $form->setData( $this->fromYandexAddress( $address ) );
+        if ($address) {
+            $form->setData($this->fromYandexAddress($address));
         }
-
-//        $catalogModel    = $this->getModel('Catalog');
 
         $this->request->setTitle($this->t('basket','Basket'));
         $this->request->set('template', 'inner');
@@ -61,41 +53,41 @@ class BasketController extends Controller
 
         // Заполним методы доставки
         $deliveryModel = $this->getModel('Delivery');
-        $deliveries = $deliveryModel->findAll('active = ?',array(1),'pos');
-        $form->getField('delivery_id')->setVariants( $deliveries->column('name') );
+        $deliveries    = $deliveryModel->findAll('active = ?', array(1), 'pos');
+        $form->getField('delivery_id')->setVariants($deliveries->column('name'));
 
         $delivery = $this->app->getDelivery($this->request);
-        $form->getField('delivery_id')->setValue( $delivery->getType() );
+        $form->getField('delivery_id')->setValue($delivery->getType());
 
         // Заполним методы оплаты
         $paymentModel = $this->getModel('Payment');
         $payments = $paymentModel->findAll('active = ?', array(1));
-        $form->getField('payment_id')->setVariants( $payments->column('name') );
-        $form->getField('payment_id')->setValue( $payments->rewind() ? $payments->rewind()->getId() : 0 );
+        $form->getField('payment_id')->setVariants($payments->column('name'));
+        $form->getField('payment_id')->setValue($payments->rewind() ? $payments->rewind()->getId() : 0);
 
-        $metroModel = $this->getModel('Metro');
-        $metro      = $metroModel->findAll('city_id = ?',array(2),'name');
-        $form->getField('metro')->setVariants( $metro->column('name') );
+        if ($form->getField('metro')) {
+            $metroModel = $this->getModel('Metro');
+            $metro      = $metroModel->findAll('city_id = ?', array(2), 'name');
+            $form->getField('metro')->setVariants($metro->column('name'));
+        }
 
         // Список ID продуктов
-        $productIds = array_filter( array_map(function($b){
-            return isset( $b['id'] ) ? $b['id'] : false;
-        },$this->getBasket()->getAll()) );
+        $productIds = array_filter(array_map(function ($b) {
+            return isset($b['id']) ? $b['id'] : false;
+        }, $this->getBasket()->getAll()));
 
         // Получаем товары из каталога
         /** @var $catalogModel CatalogModel */
-        $catalogModel   = $this->getModel('Catalog');
-        $products       = count($productIds)
+        $catalogModel = $this->getModel('Catalog');
+        $products     = count($productIds)
             ? $catalogModel->findAll('id IN (?)', array($productIds))
             : $catalogModel->createCollection();
 
-//        $this->log( $productIds, 'basket' );
-//        $this->log( $this->getBasket()->getAll(), 'basket' );
-
         return array(
             'products'      => $products,
-            'all_product'   => array_map(function( $prod ) use ($products) {
-                                    return array_merge( $prod, array('obj'=>$products->getById($prod['id'])) );
+            'all_product'   => array_map(function($prod) use ($products) {
+                                    $prod['obj'] = $products->getById($prod['id']);
+                                    return $prod;
                                 }, $this->getBasket()->getAll()),
             'all_count'     => $this->getBasket()->getCount(),
             'all_summa'     => $this->getBasket()->getSum(),
@@ -147,34 +139,36 @@ class BasketController extends Controller
             'path'      => $this->request->get('path'),
         ));
 
-        return array(
-            'id'     => $basket_prod_id,
-            'count'  => $this->getBasket()->getCount($basket_prod_id),
+        return $this->renderJson(array(
+            'count'  => $this->getBasket()->getCount(),
+            'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
             'widget' => $this->getTpl()->fetch('basket.widget'),
             'msg'    => $basket_prod_name . '<br>'
                       . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
-        );
+        ));
     }
 
     /**
      * Deletion product from basket
      *
      * @return array
+     * @throws NotFoundHttpException
      */
     public function deleteAction()
     {
         $key   = $this->request->get('key');
         $count = $this->request->get('count', 0);
 
-        if (null !== $key) {
-            $item = $this->getBasket()->getByKey($key);
-            if (!$item) {
-                throw new NotFoundHttpException(sprintf('Item with key %d not found', $key));
-            }
-            $this->getBasket()->del($key, $count);
-            $this->getBasket()->save();
+        if (null === $key) {
+            throw new \InvalidArgumentException('Parameter "key" not defined');
         }
 
+        $item = $this->getBasket()->getByKey($key);
+        if (!$item) {
+            throw new NotFoundHttpException(sprintf('Item with key %d not found', $key));
+        }
+        $this->getBasket()->del($key, $count);
+        $this->getBasket()->save();
 
         $this->app->getLogger()->info(sprintf('id: %d, count: %d', $key, $count));
 
@@ -185,12 +179,11 @@ class BasketController extends Controller
                 'path'      => $this->request->get('path'),
             ));
 
-        return array(
-            'id'     => $item ? $item['id'] : 0,
-            'count'  => $this->getBasket()->getCount($item['id']),
+        return $this->renderJson(array(
+            'count'  => $this->getBasket()->getCount(),
             'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
             'widget' => $this->getTpl()->fetch('basket.widget'),
-        );
+        ));
     }
 
     /**
@@ -201,9 +194,14 @@ class BasketController extends Controller
         $id = $this->request->get('id');
         $count = $this->request->get('count');
 
-        $this->getBasket()->setCount($id, $count);
+        if (!$this->getBasket()->setCount($id, $count)) {
+            return $this->renderJson(array(
+                'id' => $id,
+                'error' => 'This product not found',
+            ));
+        }
 
-        $this->getTpl()->assign(array(
+        $this->tpl->assign(array(
             'count'     => $this->getBasket()->getCount(),
             'summa'     => $this->getBasket()->getSum(),
             'number'    => $this->getBasket()->count(),
@@ -211,9 +209,8 @@ class BasketController extends Controller
         ));
 
         return $this->renderJson(array(
-            'id' => $id,
-            'count' => $this->getBasket()->getCount($id),
-            'sum'   => number_format($this->getBasket()->getSum(), 2, ',', ''),
+            'count'  => $this->getBasket()->getCount(),
+            'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
             'widget' => $this->getTpl()->fetch('basket.widget'),
         ));
     }
@@ -363,16 +360,21 @@ class BasketController extends Controller
             'zip'       => $yaAddress->zip,
         );
 
-        if ( $yaAddress->firstname )
+        if ($yaAddress->firstname) {
             $return['fname'] = $yaAddress->firstname;
-        if ( $yaAddress->lastname )
+        }
+        if ($yaAddress->lastname) {
             $return['lname'] = $yaAddress->lastname;
-        if ( $yaAddress->email )
+        }
+        if ($yaAddress->email) {
             $return['email'] = $yaAddress->email;
-        if ( $yaAddress->phone )
+        }
+        if ($yaAddress->phone) {
             $return['phone'] = $yaAddress->phone;
-        if ( $yaAddress->comment )
+        }
+        if ($yaAddress->comment) {
             $return['comment'] = $yaAddress->comment;
+        }
 
         return $return;
 

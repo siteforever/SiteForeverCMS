@@ -15,6 +15,7 @@ use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
@@ -164,14 +165,14 @@ class Module extends SfModule
     public function onKernelResponse(KernelEvent $event)
     {
         $response = $event->getResponse();
-        if (403 == $response->getStatusCode()) {
+        if (!$response instanceof JsonResponse && 403 == $response->getStatusCode()) {
             if (!$this->app->getAuth()->isLogged()) {
                 $response = new RedirectResponse($this->app->getRouter()->createLink('user/login'));
                 $event->setResponse($response);
                 $event->stopPropagation();
             }
         }
-        if (404 == $response->getStatusCode()) {
+        if (!$response instanceof JsonResponse && 404 == $response->getStatusCode()) {
             $this->app->getTpl()->assign('request', $event->getRequest());
             $response->setContent($this->app->getTpl()->fetch('error.404'));
         }

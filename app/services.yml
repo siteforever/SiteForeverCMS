@@ -39,10 +39,13 @@ parameters:
             fire_handler:
                 type: firephp
 
+    logging_handlers: ["@rotating_handler", "@fire_handler"]
+
 services:
     cms_channel:
         class: Monolog\Logger
-        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
+        arguments: ["cms", %logging_handlers%]
+#        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
 
     logger:
         class: Module\Monolog\Logger\Logger
@@ -50,7 +53,8 @@ services:
 
     db_channel:
         class: Monolog\Logger
-        arguments: ["db", ["@rotating_handler", "@fire_handler"]]
+        arguments: ["db", %logging_handlers%]
+#        arguments: ["db", ["@rotating_handler", "@fire_handler"]]
 
     db_logger:
         class: Module\Monolog\Logger\Logger

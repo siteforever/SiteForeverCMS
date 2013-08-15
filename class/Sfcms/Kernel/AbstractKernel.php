@@ -136,11 +136,13 @@ abstract class AbstractKernel
         $this->_container = new ContainerBuilder();
         $this->getContainer()->set('app', $this);
         $this->getContainer()->setParameter('root', ROOT);
+        $this->getContainer()->setParameter('sf_path', SF_PATH);
         $locator = new FileLocator(array(ROOT, SF_PATH));
         $loader = new YamlFileLoader($this->getContainer(), $locator);
-        $loader->load('app/services.yml');
+        $loader->load('app/config.yml');
 
         // Конфигурация
+        $locator = new FileLocator(array(ROOT, SF_PATH));
         $config = new Config($locator->locate($cfg_file), $this->_container);
         $this->_container->set('config', $config);
 

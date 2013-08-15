@@ -22,6 +22,7 @@ class BasketTest extends \Sfcms\Test\WebCase
     {
         parent::setUp();
         $this->basket = new Sfcms_Basket_Session($this->request);
+        $this->basket->clear();
     }
 
     /**
@@ -30,6 +31,7 @@ class BasketTest extends \Sfcms\Test\WebCase
      */
     protected function tearDown()
     {
+        parent::tearDown();
     }
 
     /**
@@ -38,20 +40,22 @@ class BasketTest extends \Sfcms\Test\WebCase
     {
         $this->basket->add(null, 'product', 7, 5.55, 'some info');
 
-        $products   = $this->basket->getAll();
+        $this->assertEquals(1, $this->basket->count());
+        $this->assertEquals(38.85, $this->basket->getSum());
+        $this->assertEquals(7, $this->basket->getCount());
 
-        $found  = false;
-        foreach ($products as $product) {
-            if ($product['name'] == 'product') {
-                $found = true;
-                $this->assertEquals(7, $product['count'], 'Count not equal');
-                $this->assertEquals(5.55, $product['price'], 'Price not equal');
-                $this->assertEquals($product['details'], 'some info', 'Details not equal');
-            }
-        }
+        $this->basket->clear();
+        $this->basket->add(7, null, 4, 15000, null);
+        $this->basket->add(10, null, 2, 18000, null);
 
-        $this->assertTrue($found, 'Product not found');
-        $this->assertEquals(1, count($this->basket->getAll()), 'Product not added');
+        $this->assertEquals(6, $this->basket->getCount());
+        $this->assertEquals(96000, $this->basket->getSum());
+
+        $this->basket->setCount(10, 4);
+        $this->basket->setCount(7, 3);
+        $this->assertEquals(2, $this->basket->count());
+        $this->assertEquals(7, $this->basket->getCount());
+        $this->assertEquals(117000, $this->basket->getSum());
     }
 
     /**
@@ -59,16 +63,9 @@ class BasketTest extends \Sfcms\Test\WebCase
     public function testSetCount()
     {
         $this->basket->add(null, 'product', 1, 100);
-
         $this->assertTrue($this->basket->setCount('product', 10));
-        $products   = $this->basket->getAll();
-
-        foreach ( $products as $product ) {
-            if ( $product['name'] == 'product' ) {
-                $this->assertEquals( $product['count'], 10 );
-                break;
-            }
-        }
+        $this->assertEquals(1000, $this->basket->getSum());
+        $this->assertEquals(1000, $this->basket->getSum('product'));
     }
 
     /**
@@ -88,7 +85,8 @@ class BasketTest extends \Sfcms\Test\WebCase
     public function testGetPrice()
     {
         $this->basket->add(null, 'product', 10, 5.55);
-        $this->basket->add(null, 'prod2', 5, 7.66, 'test prod');
+//        $this->basket->add(null, 'prod2', 5, 7.66, 'test prod');
+        $this->basket->add(null, 'prod2', 5, 7.66, null);
         $this->assertEquals(5.55, $this->basket->getPrice('product'));
         $this->assertEquals(7.66, $this->basket->getPrice('prod2'));
     }
@@ -108,7 +106,8 @@ class BasketTest extends \Sfcms\Test\WebCase
     public function testGetSum()
     {
         $this->basket->add(null, 'product', 15, 5.55);
-        $this->basket->add(null, 'prod2', 5, 7.66, 'test prod');
+        $this->basket->add(null, 'prod2', 5, 7.66, null);
+//        $this->basket->add(null, 'prod2', 5, 7.66, 'test prod');
         $this->assertEquals(83.25, $this->basket->getSum('product'));
         $this->assertEquals(38.3, $this->basket->getSum('prod2'));
         $this->assertEquals(121.55, $this->basket->getSum());

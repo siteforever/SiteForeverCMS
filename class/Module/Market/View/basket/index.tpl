@@ -1,22 +1,19 @@
 {*{form action="basket" method="post" class="form-horizontal ajax-validate"}*}
+{var_dump($this->getBasket()->getAll())}
 
 {if $all_count == 0}
-
 <p>В корзине нет товаров</p>
-
 {else}
-
 {form form=$form}
-
     <table class="table">
     <thead>
         <tr>
             <th>{t cat="basket"}#{/t}</th>
             <th>{t cat="basket"}Name{/t}</th>
             <th>{t cat="basket"}Details{/t}</th>
-            <th width="100">{t cat="basket"}Price{/t}</th>
-            <th width="100">{t cat="basket"}Count{/t}</th>
-            <th width="100">{t cat="basket"}Sum{/t}</th>
+            <th class="span1">{t cat="basket"}Price{/t}</th>
+            <th class="span1">{t cat="basket"}Count{/t}</th>
+            <th class="span1">{t cat="basket"}Sum{/t}</th>
             <th>{t cat="basket"}Delete{/t}</th>
         </tr>
     </thead>
@@ -24,7 +21,7 @@
         {foreach from=$all_product key="key" item="item"}
         <tr data-key="{$key}">
             <td>{counter}.</td>
-            <td>{a href=$products->getById($item.id)->url}{$item.name}{/a}</td>
+            <td>{a href=$item.obj.url}{$item.obj.name}{/a}</td>
             <td>{$item.details|nl2br}</td>
             <td class="right basket-price">{$item.price|number_format}</td>
             <td class="right span2 basket-count">
@@ -43,6 +40,8 @@
             <td colspan="7"><em>{t cat="basket"}No products{/t}</em></td>
         </tr>
         {/foreach}
+    </tbody>
+    <tfoot>
         <tr id="deliveryRow">
             <td>&nbsp;</td>
             <td>{t cat="delivery"}Delivery{/t}</td>
@@ -52,8 +51,6 @@
             <td class="right basket-sum">{if $delivery}{$delivery->cost()|number_format}{/if}</td>
             <td>&nbsp;</td>
         </tr>
-    </tbody>
-    <tfoot>
         <tr id="totalRow">
             <td></td>
             <td><b>{t cat="basket"}In total{/t}:</b></td>
@@ -67,7 +64,6 @@
         </tr>
     </tfoot>
     </table>
-
 
     <hr>
 
@@ -109,9 +105,7 @@
             </div>
         </div>
     </div>
-
 {/form}
-
 {/if}
 
 {*

@@ -7,3 +7,4 @@
 /static/
 /composer.phar
 /composer.lock
+/app/parameters.yml

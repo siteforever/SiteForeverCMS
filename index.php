@@ -13,7 +13,7 @@ require_once 'vendor/autoload.php';
 
 $app = new App(
     isset($_SERVER['HTTP_HOST']) && preg_match('/^test/', $_SERVER['HTTP_HOST'])
-    ? 'app/cfg/test.php' : 'app/cfg/development.php',
+    ? 'app/cfg/test.php' : 'app/cfg/base.php',
     true
 );
 $app->run();

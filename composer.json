@@ -43,6 +43,7 @@
         "symfony/config": "2.3.*",
         "symfony/console": "2.3.*",
         "symfony/dom-crawler": "2.3.*",
+        "symfony/css-selector": "2.3.*",
         "symfony/event-dispatcher": "2.3.*",
         "symfony/filesystem": "2.3.*",
         "symfony/finder": "2.3.*",
@@ -53,6 +54,7 @@
         "symfony/routing": "2.3.*",
         "symfony/yaml": "2.3.*",
         "smarty/smarty": "3.1.*",
+        "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "1.6.*",
         "swiftmailer/swiftmailer": "v5.0.0",
         "kriswallsmith/assetic": "v1.1.1",
@@ -77,9 +79,11 @@
     ],
     "scripts": {
         "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sfcms\\ComposerHandler::execute"
         ],
         "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sfcms\\ComposerHandler::execute"
         ]
     },
@@ -88,6 +92,10 @@
         "sfcms-static-dir" : "static",
         "branch-alias": {
             "dev-master": "0.5-dev"
+        },
+        "incenteev-parameters": {
+            "file": "app/parameters.yml",
+            "dist-file": "app/parameters.yml.dist"
         }
     }
 }

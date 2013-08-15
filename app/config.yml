@@ -1,0 +1,3 @@
+imports:
+    - { resource: "app/services.yml" }
+    - { resource: "app/parameters.yml" }

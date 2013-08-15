@@ -30,13 +30,27 @@ abstract class Base
 
     public function __construct(Request $request, Object $user = null)
     {
-        App::cms()->addScript('/misc/etc/basket.js');
-
         $this->request = $request;
         $this->user = $user;
         $this->data = array();
 
         $this->load();
+    }
+
+    /**
+     * Create private key for product
+     *
+     * @param $id
+     * @param $details
+     *
+     * @return string
+     */
+    protected function createKey($id, $details = null)
+    {
+        if (null === $id) {
+            return null;
+        }
+        return substr(md5($id . $details), 0, 10);
     }
 
     /**
@@ -49,18 +63,19 @@ abstract class Base
      *
      * @return boolean
      */
-    public function add($id = '', $name = '', $count = 0, $price = 0.0, $details = '')
+    public function add($id = null, $name = null, $count = 0, $price = 0.0, $details = null)
     {
         if (!is_array($this->data)) {
             $this->data = array();
         }
 
-        if (null === $id) {
+        if (null === $id && $name) {
             $id = $name;
         }
+        $hash = $this->createKey($id, $details);
 
         foreach ($this->data as &$prod) {
-            if ((@$prod['name'] == $name || @$prod['id'] == $id) && $prod['details'] == $details) {
+            if ($prod['hash'] == $hash) {
                 $prod['count'] += $count;
                 $prod['price'] = $price;
                 return true;
@@ -69,7 +84,7 @@ abstract class Base
 
         $this->data[] = array(
             'id'    => $id,
-            'name'  => $name,
+            'hash'  => $hash,
             'count' => $count,
             'price' => $price,
             'details'=>$details,
@@ -86,8 +101,9 @@ abstract class Base
      */
     public function setCount($id, $count)
     {
+        $hash = $this->createKey($id, null);
         foreach ($this->data as $i => &$prod) {
-            if (@$prod['name'] == $id || @$prod['id'] == $id) {
+            if ($prod['hash'] == $hash) {
                 if ($count > 0) {
                     $prod['count'] = $count;
                 } else {
@@ -111,13 +127,14 @@ abstract class Base
      */
     public function getCount($id = null)
     {
+        $hash = $this->createKey($id, null);
         if (!is_array($this->data)) {
             throw new Sfcms_Basket_Exception('Basket data corrupted');
         }
         $result = 0;
         if ($id) {
             foreach ($this->data as $prod) {
-                if (@$prod['name'] == $id || @$prod['id'] == $id) {
+                if ($prod['hash'] == $hash) {
                     $result += $prod['count'];
                 }
             }
@@ -146,13 +163,14 @@ abstract class Base
 
 
     /**
-     * @param $name
+     * @param $id
      * @return int
      */
-    public function getPrice( $name )
+    public function getPrice($id)
     {
-        foreach ( $this->data as $prod ) {
-            if ( @$prod['name'] == $name || @$prod['id'] == $name ) {
+        $hash = $this->createKey($id, null);
+        foreach ($this->data as $prod) {
+            if ($prod['hash'] == $hash) {
                 return $prod['price'];
             }
         }
@@ -181,7 +199,6 @@ abstract class Base
         $new_count = $old_count - $count;
 
         if ($count == 0 || $new_count <= 0) {
-//            $this->data[$key]['count'] = 0;
             unset($this->data[$key]);
 
             return 0;
@@ -222,13 +239,14 @@ abstract class Base
      */
     public function getSum($id = null)
     {
+        $hash = $this->createKey($id, null);
         if (!is_array($this->data)) {
             throw new Sfcms_Basket_Exception('Basket data corrupted');
         }
         $result = 0.0;
         if (null !== $id) {
             foreach ($this->data as $prod) {
-                if (@$prod['name'] == $id || @$prod['id'] == $id) {
+                if ($prod['hash'] == $hash) {
                     $result += $prod['count'] * @$prod['price'];
                 }
             }
@@ -245,14 +263,15 @@ abstract class Base
     public function getKeys()
     {
         $result = array();
-        foreach( $this->data as $prod ) {
-            if ( isset( $prod['id'] ) && is_numeric( $prod['id'] ) ) {
+        foreach ($this->data as $prod) {
+            if (isset($prod['id']) && is_numeric($prod['id'])) {
                 $result[] = $prod['id'];
             }
         }
-        if ( count( $result ) ) {
+        if (count($result)) {
             return $result;
         }
+
         return null;
     }
 
