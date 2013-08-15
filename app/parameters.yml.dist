@@ -1,5 +1,5 @@
 parameters:
-    sitename: "SiteForever CMS"
+    sitename: "SiteForeverCMS"
 
     url:
         rewrite: true
@@ -8,7 +8,7 @@ parameters:
 
     cache:
         class: "Sfcms\Cache\CacheBlank"
-        livecycle: 600
+        livecycle: 0
 
     db:
         dsn: "mysql:host=localhost;dbname=siteforever"
@@ -16,16 +16,16 @@ parameters:
         password: ~
         options:
             1002: "SET NAMES utf8"
-        migration: false
+        migration: true
         debug: false
 
     editor: ckeditor
     # editor: tinymce
     # editor: elrte
 
-    language: en
+    language: ru
 
-    logging_handlers: ["@rotating_handler", "@fire_handler"]
+    logging_handlers: ["@rotating_handler"]
 
     mailer_transport: sendmail
     pager_template: pager_twbt
