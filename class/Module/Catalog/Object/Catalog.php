@@ -59,15 +59,12 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  */
 class Catalog extends Object
 {
-//    protected $_gallery = null;
-
     protected $_image   = null;
 
     public function __toString()
     {
         return $this->name;
     }
-
 
     /**
      * Вернет path для текущего объекта

@@ -1,10 +1,10 @@
-<table class="basket-table">
+<table class="table table-bordered">
 <tr>
-    <th width="100">№</th>
-    <th width="100">Дата</th>
-    <th width="100">Статус</th>
-    <th width="100">Количество</th>
-    <th>Сумма</th>
+    <th class="span2">№</th>
+    <th class="span2">Дата</th>
+    <th class="span2>Статус</th>
+    <th class="span2">Количество</th>
+    <th class="span2">Сумма</th>
 </tr>
 {foreach from=$list item="item"}
 <tr>

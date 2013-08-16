@@ -1,25 +1,45 @@
-Здравствуйте, {$order->getEmptorName()}
+{block name="title"}
+<p>Здравствуйте, {$order->getEmptorName()}</p>
+<p>Вы оформили заказ на сайте {$sitename}</p>
+{/block}
 
-Вы оформили заказ на сайте {$sitename}
+{block name="body"}
+    <ul>
+        <li>Номер заказа: {$order_n}</li>
+        <li>Дата: {$date}</li>
+        <li>Открыть <a href="{$ord_link}" target="_blank">заказ на сайте</a></li>
+    </ul>
 
-Номер заказа: {$order_n}
-Дата:         {$date}
-Ссылка для просмотра заказа:
-{$ord_link}
+    <table>
+        <tr>
+            <th>Наименование</th>
+            <th>Цена</th>
+            <th>Количество</th>
+            <th>Сумма</th>
+        </tr>
+        {foreach from=$positions item="pos"}
+            <tr>
+                <td>{$pos.articul}</td>
+                <td>{$pos.price}</td>
+                <td>{$pos.count}</td>
+                <td>{$pos.price * $pos.count}</td>
+            </tr>
+        {/foreach}
+    </table>
 
-{foreach from=$positions item="pos"}
-Наименование: {$pos.articul}
-Цена:         {$pos.price}
-Количество:   {$pos.count}
-Сумма:        {$pos.price * $pos.count}
+    {if $delivery}
+        <h3>Доставка</h3>
+        <ul>
+            <li>{$delivery->getObject()->name}</li>
+            <li>Стоимость: {$delivery->cost($sum)}</li>
+            <li>Адрес: {$order->address}</li>
+        </ul>
+    {/if}
 
-{/foreach}
+    <p><strong>Итого:</strong></p>
+    <ul>
+        <li>Товаров: {$total_count}</li>
+        <li>Сумма к оплате: {$total_summa}</li>
+    </ul>
 
-{if $delivery}
-Доставка:  {$delivery->getObject()->name}
-Стоимость: {$delivery->cost($sum)}
-Адрес:     {$order->address}
-{/if}
-
-Всего: {$total_count}
-Сумма: {$total_summa}
+{/block}

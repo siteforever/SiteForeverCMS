@@ -28,8 +28,11 @@ class Sfcms_Basket_User extends Basket
         $basket = $this->request->getSession()->get('basket');
         if ( $basket && is_array($basket) )
         {
-            array_walk($basket, function($b,$i,$self) {
-                $self->add($b['id'], $b['name'], $b['count'], $b['price'], $b['details']  );
+            array_walk($basket, function($b, $i, $self) {
+                    if (empty($b['name'])) {
+                        $b['name'] = $b['id'];
+                    }
+                $self->add($b['id'], $b['name'], $b['count'], $b['price'], $b['details']);
             }, $this);
             $this->request->getSession()->set('basket',null);
         }

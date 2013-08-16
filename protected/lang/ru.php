@@ -165,6 +165,8 @@ return array(
     'from' => 'от',
     'to' => 'до',
 
+    'Order #' => 'Заказ №',
+
     'Hidden' => 'Скрытое',
     'hidden' => 'скрытое',
     'Created At' => 'Создано',

@@ -223,3 +223,16 @@ div.guestbook_title {
 .b-catalog-product-properties-val {
     margin-left: 100px;
 }
+
+
+#delivery .control-label,
+#payment .control-label {
+    display: block;
+    float: none;
+    font-size: 150%;
+    text-align: left;
+}
+#delivery .field-radio,
+#payment .field-radio {
+    margin: 0 0 20px 0;
+}

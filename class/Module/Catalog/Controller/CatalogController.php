@@ -579,6 +579,10 @@ class CatalogController extends Controller
         $form->getField( 'byorder' )->show();
         $form->getField( 'absent' )->show();
 
+        if ($form->sale_start <= 0 || $form->sale_stop <= 0) {
+            $form->sale_start = $form->sale_stop = time();
+        }
+
         // показываем поля родителя
         if ( $parentId ) {
             $parent = $catalogFinder->find($parentId);

@@ -84,6 +84,7 @@ abstract class Base
 
         $this->data[] = array(
             'id'    => $id,
+            'name'  => $hash,
             'hash'  => $hash,
             'count' => $count,
             'price' => $price,

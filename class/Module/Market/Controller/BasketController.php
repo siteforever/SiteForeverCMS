@@ -22,15 +22,21 @@ class BasketController extends Controller
 {
     public function indexAction()
     {
+        $this->logger->info('request', $this->request->request->all());
+
         $address = $this->request->get('address');
         $form = new Forms_Basket_Address();
         $form->delivery_id = $this->request->getSession()->get('delivery');
 
         // Ajax validate
         if ($form->getPost($this->request)) {
-            $result = $this->formValidate( $form );
+            $result = $this->formValidate($form);
+            $this->logger->info('Form validate result', $result);
             if ($this->request->isXmlHttpRequest()) {
                 return $result;
+            }
+            if (isset($result['redirect'])) {
+                return $this->redirect($result['redirect']);
             }
         }
 
@@ -140,7 +146,7 @@ class BasketController extends Controller
         ));
 
         return $this->renderJson(array(
-            'count'  => $this->getBasket()->getCount(),
+            'count'  => $basket_prod_id ? $this->getBasket()->getCount($basket_prod_id) : null,
             'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
             'widget' => $this->getTpl()->fetch('basket.widget'),
             'msg'    => $basket_prod_name . '<br>'
@@ -208,6 +214,11 @@ class BasketController extends Controller
             'path'      => $this->request->get('path'),
         ));
 
+        $this->getBasket()->save();
+
+        $this->get('logger')->info('request', $this->request->request->all());
+        $this->get('logger')->info('basket', $this->getBasket()->getAll());
+
         return $this->renderJson(array(
             'count'  => $this->getBasket()->getCount(),
             'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
@@ -224,7 +235,7 @@ class BasketController extends Controller
     {
         $result = array('error'=>0);
 
-        if ( $this->request->request->get('recalculate') ) {
+        if ($this->request->request->get('recalculate')) {
             // обновляем количества
             $basket_counts = $this->request->request->get('basket_counts');
 
@@ -254,14 +265,14 @@ class BasketController extends Controller
             $this->getBasket()->save();
         }
 
-        if ( $this->request->request->get('do_order') ) {
-            if ( $form->validate() ) {
+        if ($this->request->request->get('do_order')) {
+            if ($form->validate()) {
                 // Создание заказа
-                if ( $this->getBasket()->getAll() ) {
+                if ($this->getBasket()->getAll()) {
                     // создать заказ
-
+                    $this->request->getSession()->set('delivery', $form['delivery_id']);
                     $delivery = $this->app->getDelivery($this->request);
-                    $this->request->getSession()->set('delivery',$delivery->getType());
+//                    $this->request->getSession()->set('delivery',$delivery->getType());
 
                     /** @var $orderModel OrderModel */
                     $orderModel    = $this->getModel('Order');
@@ -270,8 +281,8 @@ class BasketController extends Controller
                     if ($order) {
                         /** @var $orderPositionModel OrderPositionModel */
                         $orderPositionModel = $this->getModel('OrderPosition');
-                        // Заполняем заказ товарами
 
+                        // Заполняем заказ товарами
                         $pos_list    = array();
                         foreach ($this->getBasket()->getAll() as $data) {
                             /** @var $position OrderPosition */
@@ -312,20 +323,23 @@ class BasketController extends Controller
                             $order->email,
                             $this->config->get('admin'),
                             sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$order->getId()),
-                            $this->tpl->fetch('order.mail.createadmin')
+                            $this->tpl->fetch('order.mail.createadmin'),
+                            'text/html'
                         );
 
                         $this->sendmail(
                             $this->config->get('admin'),
                             $order->email,
                             sprintf('Заказ №%s на сайте %s',$order->getId(),$this->config->get('sitename')),
-                            $this->tpl->fetch('order.mail.create')
+                            $this->tpl->fetch('order.mail.create'),
+                            'text/html'
                         );
 
                         $this->getBasket()->clear();
                         $this->getBasket()->save();
 
                         $this->request->getSession()->set('order_id',$order->id);
+//                        $this->request->getSession()->getFlashBag()->add('info', 'Order is created successfully');
 
                         $paymentModel = $this->getModel('Payment');
                         $payment = $paymentModel->find( $form['payment_id'] );

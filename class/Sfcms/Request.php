@@ -5,6 +5,7 @@ use Sfcms\Kernel\AbstractKernel as Service;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Sfcms\Basket\Base as Basket;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
@@ -51,7 +52,7 @@ class Request extends SymfonyRequest
     }
 
     /**
-     * @return SessionInterface
+     * @return Session
      */
     public function getSession()
     {

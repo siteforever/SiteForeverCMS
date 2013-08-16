@@ -39,7 +39,7 @@ define('module/dialog',[
                 cfg = $.extend(true,cfg,obj.dialogCfg);
             }
 
-            this.$dialog = $('<div id="'+id+'" title="{{ title }}"/>').appendTo('body').hide().dialog(cfg);
+            this.$dialog = $('<div id="'+id+'" title="{{ title }}"></div>').appendTo('body').hide().dialog(cfg);
 
             this.$dialog.dialog("option", "buttons",[
                 {'text': i18n('Save'), 'click' :$.proxy(this.save,this)},
@@ -84,19 +84,21 @@ define('module/dialog',[
         return this;
     };
 
-    dialog.prototype.save = function() {
+    dialog.prototype.save = function(node) {
         var deferred = $.Deferred();
+        $.blockUI({message:"Saving"});
         $('form', this.$dialog).ajaxSubmit({
             dataType: "json",
             success: $.proxy(function (response) {
                 if (response.errors) {
 
                 }
-                $alert(response.msg, 1000, this.$dialog.parent()).done(response.error ? deferred.reject : deferred.resolve);
-                // apply onSave
                 if (!response.error && this.obj.onSave && typeof this.obj.onSave == 'function' ) {
                     deferred.done($.proxy(this.obj.onSave, this.obj, response));
                 }
+                $.unblockUI();
+                // apply onSave
+                $alert(response.msg, 1000, this.$dialog.parent()).done(response.error ? deferred.reject : deferred.resolve);
             },this)
         });
         return deferred.promise();

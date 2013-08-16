@@ -316,7 +316,7 @@ class CatalogModel extends Model
 
 
     /**
-     * Товары, отсортированные по top
+     * Products, sorted by "top"
      * @param int $limit
      * @return array|Collection
      */
@@ -328,7 +328,7 @@ class CatalogModel extends Model
 
 
     /**
-     * Товары, отсортированные по novelty
+     * Products, sorted by "novelty"
      * @param int $limit
      * @return array|Collection
      */
@@ -338,6 +338,25 @@ class CatalogModel extends Model
             ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND absent != 1',array(),'novelty DESC', $limit);
     }
 
+    /**
+     * Products on sale for current time
+     *
+     * @param int $limit
+     *
+     * @return array|Collection
+     */
+    public function findProductsWithSale($limit = 4)
+    {
+        return $this->findAll(
+            join(' AND ', array(
+                    '`deleted` = 0 AND `hidden` = 0 AND `protected` = 0',
+                    '`cat` = 0 AND `absent` != 1',
+                    '`sale` > 0 AND `sale_start` <= ? AND `sale_stop` >= ?',
+                )),
+            array(mktime(0, 0, 0), time(23, 59,59)),
+            'pos DESC',
+            $limit);
+    }
 
 
     /**
@@ -460,17 +479,17 @@ class CatalogModel extends Model
     }
 
     /**
-     * Создает дерево $this->tree по данным из $this->all
+     * Creating tree $this->tree by data from $this->all
      * @return array
      */
     public function createTree()
     {
         if (null === $this->parents) {
             $this->parents = array();
-            if (count($this->all) == 0) {
-                $this->all = $this->findAll('`deleted` = 0 AND `hidden` = 0 AND `cat` = 1', array(), 'pos DESC');
+            if (!$this->all) {
+                $this->all = $this->findAll('`deleted` = 0 AND `cat` = 1', array(), 'pos DESC');
             }
-            // создаем массив, индексируемый по родителям
+            // create array, indexed by parent field
             foreach ($this->all as $obj) {
                 $this->parents[$obj->parent][$obj->id] = $obj;
             }
@@ -529,7 +548,7 @@ class CatalogModel extends Model
      *
      * @return array|boolean
      */
-    public function getSelectTree( $parent, $levelback )
+    public function getSelectTree($parent, $levelback)
     {
         static $maxlevelback;
         if( $maxlevelback < $levelback ) {
@@ -538,15 +557,15 @@ class CatalogModel extends Model
 
         $list = array();
 
-        if( count( $this->all ) == 0 ) {
+        if (!$this->all) {
             $this->createTree();
         }
 
-        if( $levelback <= 0 ) {
+        if ($levelback <= 0) {
             return false;
         }
 
-        if( ! isset( $this->parents[ $parent ] ) ) {
+        if (!isset($this->parents[$parent])) {
             return false;
         }
 
@@ -554,26 +573,27 @@ class CatalogModel extends Model
          * @var Catalog $branch
          * @var Catalog $obj
          */
-        foreach( $this->parents[ $parent ] as $branch ) {
-            if( 0 == $branch->cat || 1 == $branch->deleted ) {
+        foreach ($this->parents[$parent] as $branch) {
+            if (0 == $branch->cat || 1 == $branch->deleted) {
                 continue;
             }
-            $list[ $branch->id ] = str_repeat( '&nbsp;', 4 * ( $maxlevelback - $levelback ) ) . $branch->name;
-            $sublist             = $this->getSelectTree( $branch->id, $levelback - 1 );
-            if( $sublist ) {
-                foreach( $sublist as $i => $item ) {
-                    $obj    = $this->find( $i );
-                    if ( null === $obj ) {
+            $list[$branch->id] = str_repeat('&nbsp;', 4 * ($maxlevelback - $levelback)) . $branch->name;
+            $sublist           = $this->getSelectTree($branch->id, $levelback - 1);
+            if ($sublist) {
+                foreach ($sublist as $i => $item) {
+                    $obj = $this->find($i);
+                    if (null === $obj) {
                         continue;
                     }
-                    if( 1 === $obj->deleted ) {
+                    if (1 === $obj->deleted) {
                         continue;
                     }
-                    $list[ $i ] = $item;
+                    $list[$i] = $item;
                 }
             }
         }
-//        $this->log( $list );
+
+        //        $this->log( $list );
         return $list;
     }
 
@@ -604,14 +624,15 @@ class CatalogModel extends Model
      */
     public function getCategoryList()
     {
-        $parents     = array( 'Корневой раздел' );
-        $select_tree = $this->getSelectTree( 0, 10 );
-//        $this->log( $select_tree, 'select tree' );
-        if( $select_tree ) {
-            foreach( $select_tree as $i => $item ) {
-                $parents[ $i ] = $item;
+        $parents = array('Корневой раздел');
+        $selectTree = $this->getSelectTree(0, 10);
+        $this->log($selectTree, 'select tree');
+        if ($selectTree) {
+            foreach ($selectTree as $i => $item) {
+                $parents[$i] = $item;
             }
         }
+
         return $parents;
     }
 
@@ -730,6 +751,10 @@ class CatalogModel extends Model
                 'value'=>'price',
                 'title'=> $this->t('catalog','Price'),
                 'search' => true,
+            ),
+            'sale' => array(
+                'value' => 'salePrice',
+                'title'=> $this->t('catalog','Sale'),
             ),
             'hidden' => array(
                 'title' => $this->t('catalog','Hidden'),

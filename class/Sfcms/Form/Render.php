@@ -35,19 +35,24 @@ class Render extends FormAbstract
         return '</form>';
     }
 
-    public function htmlFieldWrapped( $name )
+    public function htmlFieldWrapped($name)
     {
-        return $this->getField( $name )->html();
+        return $this->getField($name)->html();
     }
 
-    public function htmlFieldLabel( $name )
+    public function htmlFieldLabel($name)
     {
-        return $this->getField( $name )->htmlLabel();
+        return $this->getField($name)->htmlLabel();
     }
 
-    public function htmlField( $name )
+    public function htmlField($name)
     {
-        return $this->getField( $name )->htmlField();
+        return $this->getField($name)->htmlField();
+    }
+
+    public function htmlError($name)
+    {
+        return $this->getField($name)->htmlError();
     }
 
     /**

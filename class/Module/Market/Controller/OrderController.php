@@ -38,7 +38,7 @@ class OrderController extends Controller
         $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',$this->t('Home'))
             ->addPiece('user/cabinet',$this->t('user','User cabiner'))
-            ->addPiece(null,$this->request->getTitle());
+            ->addPiece('order',$this->request->getTitle());
 
 
         /** @var $order OrderModel */
@@ -58,7 +58,7 @@ class OrderController extends Controller
         // просмотр заказа
         if ( $item ) {
             /** @var $orderObj Order */
-            $orderObj = $order->find( $item );
+            $orderObj = $order->find($item);
 
             if ( $orderObj ) {
                 if ( $this->auth->getId() != $orderObj['user_id'] ) {
@@ -73,6 +73,9 @@ class OrderController extends Controller
                     'all_count' => $positions->sum('count'),
                     'all_summa' => $positions->sum('summa'),
                 ));
+
+                $this->request->setTitle($this->t('Order #') . $orderObj->id);
+                $this->tpl->getBreadcrumbs()->addPiece(null, $this->request->getTitle());
 
                 return $this->tpl->fetch('order.order');
             }
@@ -96,10 +99,13 @@ class OrderController extends Controller
      * @param $code
      * @return mixed
      */
-    public function viewAction($id, $code)
+    public function viewAction(/*$id, $code*/)
     {
-        if ( ! ( $id && $code ) ) {
-            throw new \Sfcms_Http_Exception('Order not defined',404);
+        $id   = $this->request->get('id');
+        $code = $this->request->get('code');
+
+        if (!($id && $code)) {
+            throw new \Sfcms_Http_Exception('Order not defined', 404);
         }
 
         $this->request->set('template', 'inner');
@@ -112,13 +118,13 @@ class OrderController extends Controller
 
         $model = $this->getModel('Order');
         /** @var $order Order */
-        $order = $model->find( $id );
+        $order = $model->find($id);
 
-        if ( ! $order ) {
+        if (!$order) {
             throw new \Sfcms_Http_Exception(sprintf('Order #%d not found', $id), 404);
         }
 
-        if ( ! $order->validateHash( $code ) ) {
+        if (!$order->validateHash($code)) {
             throw new \Sfcms_Http_Exception('Not have permission for viewing this order', 404);
         }
 
@@ -129,26 +135,31 @@ class OrderController extends Controller
 
         $positions = $order->Positions;
 //        $delivery  = $order->Delivery;
-        $delivery  = $this->app()->getDelivery($this->request);
-        $delivery->setType( $order->delivery_id );
+        $delivery  = $this->app->getDelivery($this->request);
+        $delivery->setType($order->delivery_id);
         $payment   = $order->Payment;
 
         $sum = $positions->sum('sum');
 
         $robokassa = null;
-        switch( $payment->module ) {
+        switch ($payment->module) {
             case 'robokassa' :
-                $robokassa = new Robokassa( $this->config->get('service.robokassa') );
-                $robokassa->setInvId( $order->id );
-                $robokassa->setOutSum( $sum + $delivery->cost($sum) );
-                $robokassa->setDesc(sprintf('Оплата заказа №%s в интернет-магазине %s',
-                                    $order->id, $this->app()->getConfig('sitename')));
+                $robokassa = new Robokassa($this->config->get('service.robokassa'));
+                $robokassa->setInvId($order->id);
+                $robokassa->setOutSum($sum + $delivery->cost($sum));
+                $robokassa->setDesc(
+                    sprintf(
+                        'Оплата заказа №%s в интернет-магазине %s',
+                        $order->id,
+                        $this->app()->getConfig('sitename')
+                    )
+                );
                 break;
             case 'basket':
             default:
         }
 
-        return array(
+        return $this->render('order.view', array(
             'order'     => $order,
             'positions' => $positions,
             'delivery'  => $delivery,
@@ -156,7 +167,7 @@ class OrderController extends Controller
             'sum'       => $sum,
             'total'     => $delivery->cost($sum) + $sum,
             'robokassa' => $robokassa,
-        );
+        ));
     }
 
     /**
@@ -165,12 +176,12 @@ class OrderController extends Controller
      */
     public function adminAction()
     {
-        $id = $this->request->get('id');
+        $id     = $this->request->get('id');
         $number = $this->request->get('number');
-        $user = $this->request->get('user');
+        $user   = $this->request->get('user');
 
-        if ( $id ) {
-            return $this->adminEdit( $id );
+        if ($id) {
+            return $this->adminEdit($id);
         }
 
         $model = $this->getModel('Order');
@@ -178,18 +189,18 @@ class OrderController extends Controller
         $cond   = array();
         $params = array();
 
-        if ( $number ) {
+        if ($number) {
             $cond[]   = " id = ? ";
             $params[] = $number;
         }
 
-        if ( $date = $this->request->get('date') ) {
-            if ( $tstamp = strtotime( $date ) ) {
-                $mon    = date('n', $tstamp);
-                $day    = date('d', $tstamp);
-                $yer    = date('Y', $tstamp);
-                $from   = mktime(0,0,0,$mon,$day,$yer);
-                $to     = mktime(23,59,59,$mon,$day,$yer);
+        if ($date = $this->request->get('date')) {
+            if ($tstamp = strtotime($date)) {
+                $mon  = date('n', $tstamp);
+                $day  = date('d', $tstamp);
+                $yer  = date('Y', $tstamp);
+                $from = mktime(0, 0, 0, $mon, $day, $yer);
+                $to   = mktime(23, 59, 59, $mon, $day, $yer);
 
                 $cond[]   = ' `date` BETWEEN ? AND ? ';
                 $params[] = $from;
@@ -197,17 +208,17 @@ class OrderController extends Controller
             }
         }
 
-        if ( $user ) {
-            $cond[]     = " `email` LIKE '%{$user}%'";
+        if ($user) {
+            $cond[] = " `email` LIKE '%{$user}%'";
         }
 
-        $cond   = implode(' AND ', $cond);
+        $cond = implode(' AND ', $cond);
 
-        $count  = $model->count( $cond, $params );
+        $count = $model->count($cond, $params);
 
         //$count = $model->getCountForAdmin($cond);
 
-        $paging = $this->paging( $count, 10, 'order/admin' );
+        $paging = $this->paging($count, 10, 'order/admin');
 
         $orders     = $model->with(array('Positions','Status'))->findAll(array(
             'cond'      => $cond,

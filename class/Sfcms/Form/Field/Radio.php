@@ -32,7 +32,7 @@ class Radio extends Composite
                 $field['checked']= ( $this->_value == $value ) ? " checked='checked' " : '';
                 $field['class']  = 'class="btn"';//.join(' ', $field['class']).'"';
 
-                $html[]  = "<label for='{$this->getId()}_{$value}' class='checkbox inline'>";
+                $html[]  = "<label for='{$this->getId()}_{$value}' class='checkbox'>";
                 $html[]  = "<input ".join(' ', $field).">";
                 $html[]  = "{$label}</label>";
             }

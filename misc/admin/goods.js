@@ -15,12 +15,13 @@ define("admin/goods",[
         "behavior" : {
             "a.edit" : {
                 "click" : function ( event, node ) {
+                    $.blockUI({message: 'Loading...'});
                     this.editUrl = $(node).attr('href');
                     this.dialog.title($(node).attr('title'));
                     var params = {};
                     if ( $(node).data('action') == 'add' ) {
-                        var category = parseInt($('select[name=parent]').val()) || 0,
-                            type     = parseInt($('select[name=type_id]').val()) || 0;
+                        var category = parseInt($('select[name=parent]').val(), 10) || 0,
+                            type     = parseInt($('select[name=type_id]').val(), 10) || 0;
                         params = {
                             'add' : category,
                             'type' : type
@@ -28,6 +29,7 @@ define("admin/goods",[
                     }
                     $.get( this.editUrl, params, $.proxy(function( response ){
                         this.dialog.body( response ).open();
+                        $.unblockUI();
                     },this));
                     return false;
                 }

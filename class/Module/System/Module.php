@@ -113,22 +113,22 @@ class Module extends SfModule
         switch ($container->getParameter('mailer_transport')) {
             case 'smtp':
                 $container->register('mailer_transport', 'Swift_SmtpTransport')
-                    ->addArgument('%mailer.host%')
-                    ->addArgument('%mailer.port%')
-                    ->addArgument('%mailer.security%')
-                    ->addMethodCall('setUsername', array('%mailer.username%'))
-                    ->addMethodCall('setPassword', array('%mailer.password%'))
+                    ->addArgument('%mailer_host%')
+                    ->addArgument('%mailer_port%')
+                    ->addArgument('%mailer_security%')
+                    ->addMethodCall('setUsername', array('%mailer_username%'))
+                    ->addMethodCall('setPassword', array('%mailer_password%'))
                 ;
                 break;
             case 'gmail':
-                http://stackoverflow.com/a/4691183/2090796
+//                http://stackoverflow.com/a/4691183/2090796
                 $container->register('mailer_transport', 'Swift_SmtpTransport')
                     ->addArgument('smtp.gmail.com')
                     ->addArgument(465)
                     ->addArgument('ssl')
-                    ->addMethodCall('setUsername', array('%mailer.username%'))
-                    ->addMethodCall('setPassword', array('%mailer.password%'))
-                    ->addMethodCall('setAuthMode', array('%login%'))
+                    ->addMethodCall('setUsername', array('%mailer_username%'))
+                    ->addMethodCall('setPassword', array('%mailer_password%'))
+                    ->addMethodCall('setAuthMode', array('login'))
                 ;
                 break;
             case 'null':

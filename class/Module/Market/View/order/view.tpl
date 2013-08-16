@@ -21,7 +21,7 @@
                 <i>{$pos.details}</i>
             </td>
             <td>
-                {$pos.count} шт. по {$pos.price} р.
+                {$pos.count} шт.<br>по {$pos.price} р.
             </td>
         </tr>
     {/foreach}
@@ -30,9 +30,9 @@
     {if $delivery}
     <h4>{t cat="delivery"}Delivery{/t}</h4>
     <ul>
-        <li>Способ доставки: {$delivery->name}</li>
+        <li>Способ доставки: {$delivery->getObject()->name}</li>
         <li>Адрес доставки: {$order->address}</li>
-        <li>Стоимость: {$delivery->cost} Р.</li>
+        <li>Стоимость: {$delivery->cost()} Р.</li>
     </ul>
     {/if}
 

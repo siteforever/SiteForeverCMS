@@ -426,10 +426,17 @@ abstract class Field
         return '<div class="'.implode(' ', $class).'" data-field-name="'.$this->_name.'">'
                    .$this->htmlLabel()
                    ."<div class='controls field-{$this->getType()}'>"
-                       .$this->htmlField().($this->_error ? "<div>{$this->_msg}</div>" : '')
-                       .$this->htmlNotice()
-                    ."</div>"
+                       .$this->htmlField() . $this->htmlError() . $this->htmlNotice() ."</div>"
                 ."</div>";
+    }
+
+    /**
+     * Output error
+     * @return string
+     */
+    public function htmlError()
+    {
+        return $this->_error ? "<div class='help-inline'>{$this->_msg}</div>" : '';
     }
 
     /**

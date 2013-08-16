@@ -1,6 +1,3 @@
-{*{form action="basket" method="post" class="form-horizontal ajax-validate"}*}
-{var_dump($this->getBasket()->getAll())}
-
 {if $all_count == 0}
 <p>В корзине нет товаров</p>
 {else}
@@ -86,16 +83,20 @@
         </div>
         <div class="span6">
             <div class="well" id="delivery">
-                <h3>Выбор способа доставки</h3>
-                <div class="control-group" data-field-name="delivery_id">
-                    {$form->htmlField('delivery_id')}
-                </div>
+                {*<h3>Выбор способа доставки</h3>*}
+                {$form->htmlFieldWrapped('delivery_id')}
+                {*<div class="control-group" data-field-name="delivery_id">*}
+                    {*{$form->htmlField('delivery_id')}*}
+                    {*{$form->htmlError('delivery_id')}*}
+                {*</div>*}
             </div>
             <div class="well" id="payment">
-                <h3>Выбор способа оплаты</h3>
-                <div class="control-group" data-field-name="payment_id">
-                    {$form->htmlField('payment_id')}
-                </div>
+                {*<h3>Выбор способа оплаты</h3>*}
+                {$form->htmlFieldWrapped('payment_id')}
+                {*<div class="control-group" data-field-name="payment_id">*}
+                    {*{$form->htmlField('payment_id')}*}
+                    {*{$form->htmlError('payment_id')}*}
+                {*</div>*}
             </div>
             <div class="well">
                 <a href="http://market.yandex.ru/addresses.xml?callback={$host}&type=json">
