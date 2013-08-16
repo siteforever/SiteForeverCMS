@@ -41,7 +41,7 @@ class StaticController extends Controller
             new FileAsset(SF_PATH . '/misc/jquery/fancybox/jquery.fancybox-1.3.1.js'),
             new StringAsset('define("fancybox");'),
             new FileAsset(SF_PATH . '/misc/module/siteforever.js'),
-            new FileAsset(ROOT . '/static/i18n/'.$this->request->getLocale() . '.js'),
+//            new FileAsset(ROOT . '/static/i18n/'.$this->request->getLocale() . '.js'),
             new FileAsset(SF_PATH . '/misc/jquery/jquery.blockUI.js'),
             new StringAsset('define("jquery/jquery.blockUI");'),
             new FileAsset(SF_PATH . '/misc/jquery/jquery.form.js'),
@@ -67,7 +67,7 @@ class StaticController extends Controller
         $statusCode = 200;
 
         $headers = array(
-            'content-type'=>'text/css',
+            'content-type'=>'application/javascript',
             'etag' => $etag,
             'last-modified' => gmdate("D, d M Y H:i:s", $assetCollection->getLastModified()) . " GMT",
         );
