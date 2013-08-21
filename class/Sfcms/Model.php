@@ -1,10 +1,6 @@
 <?php
 namespace Sfcms;
 
-/**
- * Интерфейс модели
- */
-
 use App;
 use Sfcms\Data\Object as DomainObject;
 use Module\System\Model\LogModel;
@@ -25,6 +21,9 @@ use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * Model interface
+ */
 abstract class Model extends Component
 {
     const HAS_MANY = 'has_many'; // содержет много
@@ -116,7 +115,7 @@ abstract class Model extends Component
     }
 
     /**
-     * Инициализация
+     * initialisation
      * @return void
      */
     protected function init()
@@ -124,7 +123,7 @@ abstract class Model extends Component
     }
 
     /**
-     * Отношения модели с другими моделями
+     * Relationship with other models
      *
      * <p>Пример:</p>
      * <pre>array(
@@ -752,7 +751,7 @@ abstract class Model extends Component
     }
 
     /**
-     * Сохраняет данные модели в базе
+     * Saving object data into table
      * @param DomainObject $obj object for saving
      * @param bool $forceInsert Force inserted data in table
      * @param bool $silent Not triggered save events
@@ -775,8 +774,8 @@ abstract class Model extends Component
 
         $fields = call_user_func(array($this->objectClass(), 'fields'));
         $id = $obj->pkValues();
-        $id_keys = array_keys($id);
-        $save_data = array();
+        $idKeys = array_keys($id);
+        $saveData = array();
         /** @var Field $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
@@ -787,30 +786,36 @@ abstract class Model extends Component
                 if ($val instanceof \DateTime) {
                     $val = $val->format('Y-m-d H:i:s');
                 }
-                $save_data[$field->getName()] = $val;
+                $saveData[$field->getName()] = $val;
             }
         }
 
         // Nothing to save
-        if (0 == count($save_data)) {
+        if (0 == count($saveData)) {
             return true;
         }
 
         $ret = false;
         if (!$forceInsert && !in_array(null, $id, true) && Object::STATE_DIRTY == $state) {
+            // UPDATE
             $where = array_map(function ($key, $val) {
                 return "`{$key}` = '{$val}'";
-            }, $id_keys, $id);
-            $ret = $this->getDB()->update($this->getTable(), $save_data, join(' AND ', $where));
+            }, $idKeys, $id);
+            $ret = $this->getDB()->update($this->getTable(), $saveData, join(' AND ', $where));
         } else {
+            // INSERT
             if (count($id) == 1) {
                 /** @var $field Field */
-                $field   = $obj->field($id_keys[0]);
-                if (!($field->isAutoIncrement() && !$obj->get($id_keys[0]))) {
+                $field   = $obj->field($idKeys[0]);
+                $fieldValue = $obj->get($idKeys[0]);
+                if ($field->isAutoIncrement() && null === $fieldValue) {
+                    unset($saveData[$idKeys[0]]);
+                }
+                if ($field->isAutoIncrement() && $obj->get($idKeys[0])) {
                     return false;
                 }
             }
-            $ret = $this->getDB()->insert($this->getTable(), $save_data);
+            $ret = $this->getDB()->insert($this->getTable(), $saveData);
             if ($ret && 1 == count($id)) {
                 $obj->setId($ret);
             }

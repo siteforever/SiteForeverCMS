@@ -96,7 +96,6 @@ define('module/dialog',[
                 if (!response.error && this.obj.onSave && typeof this.obj.onSave == 'function' ) {
                     deferred.done($.proxy(this.obj.onSave, this.obj, response));
                 }
-                $.unblockUI();
                 // apply onSave
                 $alert(response.msg, 1000, this.$dialog.parent()).done(response.error ? deferred.reject : deferred.resolve);
             },this)

@@ -251,6 +251,7 @@ class Catalog extends Object
                 $target = $file->move(ROOT . $dest, $tmb);
             } else {
                 $filesystem->copy($file->getRealPath(), ROOT . $dest . $tmb, true);
+                $target = new File(ROOT . $dest . $tmb, false);
             }
         } catch (FileException $e) {
             $objImage->delete();

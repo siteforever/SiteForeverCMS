@@ -21,6 +21,24 @@ define("admin/admin", [
 
     window.lang = document.getElementsByTagName('html')[0].lang;
 
+    $(document).ajaxError(function(event, xhr){
+        var errorAjaxDialog = $('#errorAjaxDialog');
+        if (0 == errorAjaxDialog.length) {
+            errorAjaxDialog = $('<div id="errorAjaxDialog"></div>').appendTo('body');
+            errorAjaxDialog.dialog({
+                position: "center",
+                title: "Ajax error",
+                modal: true,
+                autoOpen: false
+            });
+        }
+        $.unblockUI();
+        errorAjaxDialog.html(xhr.responseText)
+            .dialog('option', 'width', $(window).width() - 50)
+            .dialog('option', 'height', $(window).height() - 50)
+            .dialog('open');
+    });
+
     Backbone.emulateHTTP = true;
     var dispatcher = {};
     _.extend(dispatcher, Backbone.Events);

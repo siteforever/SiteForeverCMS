@@ -17,10 +17,11 @@ define('admin/prodtype',[
         "behavior" : {
             "a.edit" : {
                 "click" : function( event, node ) {
+                    $.blockUI({message: "Loading..."});
                     this.dialog.title($(node).attr('title'));
                     $.get($(node).attr('href'), $.proxy(function(response){
                         this.dialog.body(response).open();
-                    },this));
+                    },this)).always($.unblockUI);
                     return false;
                 }
             },
@@ -51,13 +52,13 @@ define('admin/prodtype',[
         },
 
         "onSave" : function( response ) {
-            if ( response.fields ) {
-                $('.field-row').each(function(i,fr){
+            if (response.fields) {
+                $('.field-row').each(function (i, fr) {
                     var field = response.fields[i],
-                        $fr   = $(fr);
-                    if ( field && field.id && !$fr.data('field-id') ) {
+                        $fr = $(fr);
+                    if (field && field.id && !$fr.data('field-id')) {
                         $fr.attr('data-field-id', field.id);
-                        $fr.find('input.field-input-id').val( field.id );
+                        $fr.find('input.field-input-id').val(field.id);
                     }
                 });
             }

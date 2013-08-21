@@ -29,8 +29,7 @@ define("admin/goods",[
                     }
                     $.get( this.editUrl, params, $.proxy(function( response ){
                         this.dialog.body( response ).open();
-                        $.unblockUI();
-                    },this));
+                    },this)).always($.unblockUI);
                     return false;
                 }
             }

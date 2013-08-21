@@ -196,15 +196,13 @@ final class db
         $start = microtime(true);
         $sql = trim( $sql );
 
-        //$this->result = $this->resource->query( $sql );
-        //$this->result->execute();
-
-//        try {
+        try {
             $this->return = $this->resource->exec( $sql );
-//        } catch ( Exception $e ) {
-//            print $e->getMessage();
-//            die($sql);
-//        }
+        } catch ( Exception $e ) {
+            $this->log($sql);
+            $this->log($e->getMessage());
+            throw $e;
+        }
 
 
         if ( $this->return === false ) {
@@ -234,9 +232,9 @@ final class db
         }
 
 
-        $exec = round(microtime(true) - $start, 4) . ' sec';
-        $this->log( $sql . " ({$exec})" );
-        $this->time .= $exec;
+        $exec = round(microtime(true) - $start, 4);
+        $this->log( $sql . " ({$exec} sec)" );
+        $this->time += $exec;
 
         $error = $this->resource->errorInfo();
         $this->errno = 0;

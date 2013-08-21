@@ -543,7 +543,7 @@ class CatalogController extends Controller
 
         $form = $catalogFinder->getForm();
 
-        if ( $type ) {
+        if ($type) {
             $form->type_id = $type;
         }
 
@@ -606,7 +606,7 @@ class CatalogController extends Controller
             $this->tpl->assign('gallery_panel', $gallery_panel);
         }
 
-        if (!$item->type_id) {
+        if (!$item->type_id && $type) {
             $item->type_id = $type;
         }
         // Обработка полей из модуля полей
