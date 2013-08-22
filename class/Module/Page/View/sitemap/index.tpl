@@ -18,6 +18,8 @@
     {/if}
 {/function}
 
+<h1>{$request->getTitle()}</h1>
+
 <div class="sfcms-sitemap">
     {recursiveSitemap data=$data level=$level parent=$parent}
 </div>

@@ -203,16 +203,6 @@ class Module extends SfModule
                 'name'  => 'Журнал',
                 'url'   => 'log/admin',
             ),
-            array(
-                'name'=> 'Сервис',
-                'sub' => array(
-                    array(
-                        'name'  => 'Менеджер файлов',
-                        'url'   => 'elfinder/finder',
-                        'class' => 'filemanager',
-                    ),
-                ),
-            ),
             //            array(
             //                'name'  => 'Архивация базы',
             //                'url'   => '/_runtime/sxd',

@@ -140,7 +140,7 @@ class StaticCommand extends Command
             new GlobAsset($source . '/js/commands/*.js'),
             new FileAsset($source . '/js/jquery.dialogelfinder.js'),
             new GlobAsset($source . '/js/proxy/*.js'),
-            new GlobAsset($source . '/js/i18n/*.ru.js'),
+            new GlobAsset(__DIR__ . '/../static/elfinder/js/i18n/*.ru.js'),
             new GlobAsset($source . '/js/i18n/*.en.js'),
         ));
 

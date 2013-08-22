@@ -37,11 +37,11 @@ class Module extends SfModule
         $routes = $router->getRouteCollection();
         $routes->add('elfinder',
             new Route('/elfinder',
-                array('_controller'=>'elfinder', '_action'=>'elfinder')
+                array('_controller'=>'elfinder', '_action'=>'finder')
             ));
-        $routes->add('elfinder/elfinder',
-            new Route('/elfinder/elfinder',
-                array('_controller'=>'elfinder', '_action'=>'elfinder')
+        $routes->add('elfinder/finder',
+            new Route('/elfinder/finder',
+                array('_controller'=>'elfinder', '_action'=>'finder')
             ));
         $routes->add('elfinder/connector',
             new Route('/elfinder/connector',
@@ -53,6 +53,16 @@ class Module extends SfModule
     public function admin_menu()
     {
         return array(
+            array(
+                'name'=> 'Сервис',
+                'sub' => array(
+                    array(
+                        'name'  => 'Менеджер файлов',
+                        'url'   => 'elfinder/finder',
+                        'class' => 'filemanager',
+                    ),
+                ),
+            ),
 //            array(
 //                'name'  => 'Elfinder',
 //                'url'   => 'admin/elfinder',
