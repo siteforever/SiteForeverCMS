@@ -112,9 +112,9 @@ class PageController extends Controller
             return $this->render('get_link_add', array('id' => $get_link_add));
         }
 
-        return array(
+        return $this->render('page.admin', array(
             'data' => $model->getParents(),
-        );
+        ));
     }
 
 
@@ -142,58 +142,56 @@ class PageController extends Controller
 
 
     /**
-     * Добавления
-     * @param int $parent
+     * Additional new page
      * @return mixed
      */
-    public function addAction($parent)
+    public function addAction()
     {
         /**
          * @var PageModel $model
          */
-        $model = $this->getModel( 'Page' );
+        $model = $this->getModel('Page');
+        $parent = $this->request->request->getDigits('parent', null);
 
         // идентификатор раздела, в который надо добавить
-        $name      = $this->request->get( 'name' );
-        $module    = $this->request->get( 'module' );
+        $name = $this->request->get('name');
+        $module = $this->request->get('module');
 
         // родительский раздел
         /** @var $parentObj Page */
         $parentObj = null;
-        if ( $parent ) {
-            $parentObj = $model->find( $parent );
+        if (null !== $parent) {
+            $parentObj = $model->find($parent);
         }
 
         /** @var $form Form */
         $form = $model->getForm();
 
-        $form->setData(
-            array(
-                'parent'    => $parent,
-                'template'  => 'inner',
-                'author'    => $this->user->id,
-                'content'   => '<p>'.$this->t( 'Home page for the filling' ).'',
-                'date'      => time(),
-                'update'    => time(),
-                'pos'       => $model->getNextPos( $parent ),
-            )
-        );
+        $form->setData(array(
+            'parent'    => $parent,
+            'template'  => 'inner',
+            'author'    => $this->user->id,
+            'content'   => '<p>' . $this->t('Home page for the filling') . '',
+            'date'      => time(),
+            'update'    => time(),
+            'pos'       => $model->getNextPos($parent),
+        ));
 
-        $alias = $this->i18n->translit( trim( $name, ' /' ) );
-        if ( $parentObj && $parentObj->alias && 'index' != $parentObj->alias ) {
-            $alias = trim( $parentObj->alias, ' /' ).'/'.$alias;
+        $alias = $this->i18n->translit(trim($name, ' /'));
+        if ($parentObj && $parentObj->alias && 'index' != $parentObj->alias) {
+            $alias = trim($parentObj->alias, ' /') . '/' . $alias;
         }
-        $form->getField('alias')->setValue( $alias );
+        $form->getField('alias')->setValue($alias);
 
-        if ( $parentObj && $parentObj->sort ) {
-            $form->getField('sort')->setValue( $parentObj->sort );
+        if ($parentObj && $parentObj->sort) {
+            $form->getField('sort')->setValue($parentObj->sort);
         }
 
         $form->getField('action')->setValue('index');
         $form->getField('name')->setValue($name);
         $form->getField('controller')->setValue($module);
 
-        $this->request->setTitle( $this->t('Create page') );
+        $this->request->setTitle($this->t('Create page'));
         $this->tpl->assign('form', $form);
         return $this->tpl->fetch('page.edit');
     }

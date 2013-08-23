@@ -10,6 +10,10 @@ use Sfcms\Test\WebCase;
 
 class PageControllerTest extends WebCase
 {
+    protected $serverAjax = array(
+        'HTTP_X_Requested_With' => 'XMLHttpRequest'
+    );
+
     public function testDeleteAction()
     {
         $this->session->set('user_id', 1);
@@ -22,5 +26,54 @@ class PageControllerTest extends WebCase
         $this->assertEquals(0, $json->error);
         $this->assertEquals('ok', $json->msg);
         $this->assertEquals(62, $json->id);
+    }
+
+    public function testAdminAction()
+    {
+        $this->session->set('user_id', 1);
+        $response = $this->runRequest('/page/admin');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals(1, $crawler->filter('#admin')->count());
+        $this->assertEquals('Структура сайта', $crawler->filter('#workspace h2')->text());
+    }
+
+    public function testCreateAction()
+    {
+        $parentId = 1;
+
+        $this->session->set('user_id', 1);
+        $response = $this->runRequest('/page/create?id='.$parentId, 'POST', array(), array(), array(), $this->serverAjax);
+        $crawler = $this->createCrawler($response);
+        $addUrl = $crawler->filter('#url')->attr('value');
+        $this->assertEquals('/page/add', $addUrl);
+        $this->assertEquals(1, $crawler->filter('#module')->count());
+        $this->assertEquals('1', $crawler->filter('#id')->attr('value'));
+
+        $_POST = array(
+            'module' => 'news',
+            'name' => 'Новости',
+            'parent' => $parentId,
+        );
+        $response = $this->runRequest($addUrl, 'POST', $_POST, array(), array(), $this->serverAjax);
+//        print $response->getContent();
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('form_structure', $crawler->filter('#form_structure')->attr('name'));
+        $this->assertEquals($_POST['name'], $crawler->filter('#structure_name')->attr('value'));
+        $this->assertEquals($parentId, $crawler->filter('#structure_parent option[selected="selected"]')->attr('value'));
+        $this->assertEquals($_POST['module'], $crawler->filter('#structure_controller option[selected="selected"]')->attr('value'));
+    }
+
+    public function testShowHide()
+    {
+        $this->session->set('user_id', 1);
+        $response = $this->runRequest('/page/hidden?id=3', 'GET', array(), array(), array(), $this->serverAjax);
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Выкл', trim($crawler->filter('a')->text()));
+        $this->assertEquals('sfcms-icon sfcms-icon-lightbulb-off', $crawler->filter('i')->attr('class'));
+
+        $response = $this->runRequest('/page/hidden?id=3', 'GET', array(), array(), array(), $this->serverAjax);
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Вкл', trim($crawler->filter('a')->text()));
+        $this->assertEquals('sfcms-icon sfcms-icon-lightbulb', $crawler->filter('i')->attr('class'));
     }
 }

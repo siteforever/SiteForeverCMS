@@ -13,10 +13,10 @@ return array(
     array('name' => 'Feedback', 'path' => 'Module\Feedback'),
     array('name' => 'Market', 'path' => 'Module\Market'),
     array('name' => 'Search', 'path' => 'Module\Search'),
+    array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
     array('name' => 'System', 'path' => 'Module\System'),
     array('name' => 'Generator', 'path' => 'Module\Generator'),
     array('name' => 'Install', 'path' => 'Module\Install'),
     array('name' => 'Foo', 'path' => 'Acme\Module\Foo'),
-    array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
     array('name' => 'Monolog', 'path' => 'Module\Monolog'),
 );

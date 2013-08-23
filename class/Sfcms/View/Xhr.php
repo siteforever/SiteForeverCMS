@@ -30,6 +30,9 @@ class Xhr extends ViewAbstract
         $response->setCharset('utf-8');
 
         $types = $request->getAcceptableContentTypes();
+        if (!$types) {
+            $types = array('text/html');
+        }
         switch ($types[0]) {
             case 'application/json':
                 $response->headers->set('Content-type', 'application/json');

@@ -1,13 +1,22 @@
-<input type="hidden" id="id" value="{$parent->id}">
-<input type="hidden" id="url" value="{link url="page/add"}">
+<div class="form-horizontal">
+    <input type="hidden" id="id" value="{$parent->id}">
+    <input type="hidden" id="url" value="{link url="page/add"}">
 
-<p><label for="module">{t cat="page"}Page module{/t}</label></p>
-<p><select id="module">
-{foreach from=$modules key="name" item="title"}
-    <option value="{$name}" {if $name == $parent->controller}selected="selected"{/if}>{$title}</option>
-{/foreach}
-</select>
+    <div class="control-group">
+        <label class="control-label" for="module">{t cat="page"}Page module{/t}</label>
+        <div class="controls">
+            <select id="module" name="module">
+                {foreach from=$modules key="name" item="title"}
+                    <option value="{$name}" {if $name == $parent->controller}selected="selected"{/if}>{$title}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
 
-</p>
-<p><label for="name">{t cat="page"}Page name{/t}</label></p>
-<p><input id="name" type="text"></p>
+    <div class="control-group">
+        <label class="control-label" for="name">{t cat="page"}Page name{/t}</label>
+        <div class="controls">
+            <input id="name" name="name" type="text">
+        </div>
+    </div>
+</div>
