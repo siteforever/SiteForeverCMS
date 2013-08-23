@@ -88,45 +88,47 @@ class NewsController extends Controller
      * @param NewsModel $model
      * @return mixed
      */
-    public function getNewsList( NewsModel $model )
+    public function getNewsList(NewsModel $model)
     {
         /** @var Category $category */
-        $category = $model->category->find( $this->page['link'] );
+        $category = $model->category->find($this->page['link']);
 
-        if ( ! $category ) {
+        if (!$category) {
             return $this->tpl->fetch('news.catempty');
         }
 
-        $cond   = '`deleted` = 0 AND `hidden` = 0 AND `cat_id` = ?';
+        $cond = '`deleted` = 0 AND `hidden` = 0 AND `cat_id` = ?';
         $params = array($category->getId());
 
-        $count  = $model->count($cond, $params);
+        $count = $model->count($cond, $params);
 
-        $paging     = $this->paging( $count, $category->per_page, $this->page->alias );
+        $paging = $this->paging($count, $category->per_page, $this->page->alias);
 
 //        $list   = $model->findAllWithLinks(array(
-        $list   = $model->findAll(array(
-            'cond'     => $cond,
-            'params'   => $params,
-            'limit'    => $paging['limit'],
-            'order'    => '`date` DESC, `priority` DESC, `id` DESC',
-        ));
+        $list = $model->findAll(array(
+                'cond' => $cond,
+                'params' => $params,
+                'limit' => $paging['limit'],
+                'order' => '`date` DESC, `priority` DESC, `id` DESC',
+            )
+        );
 
         $this->tpl->assign(array(
-            'paging'    => $paging,
-            'list'      => $list,
-            'cat'       => $category,
+            'page' => $this->page,
+            'paging' => $paging,
+            'list' => $list,
+            'cat' => $category,
         ));
 
-        switch ( $category['type_list'] ) {
+        switch ($category['type_list']) {
             case 2:
-                $template   = 'news.items_list';
+                $template = 'news.items_list';
                 break;
             default:
-                $template   = 'news.items_blog';
+                $template = 'news.items_blog';
         }
 
-        return $this->tpl->fetch( $template );
+        return $this->tpl->fetch($template);
     }
 
     /**
