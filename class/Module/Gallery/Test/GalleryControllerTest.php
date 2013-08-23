@@ -15,6 +15,7 @@ class GalleryControllerTest extends WebCase
     {
         $response = $this->runRequest('/portfolio');
         $this->assertEquals(200, $response->getStatusCode());
+        print $response->getContent();
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Портфолио', $crawler->filterXPath('//h1')->text());
         $this->assertEquals(3, $crawler->filterXPath('//ul[@class="gallery_list"]/li')->count());
