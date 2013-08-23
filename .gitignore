@@ -1,6 +1,7 @@
 /.idea/
 /runtime/
-/files/.
+/files/.quarantine
+/files/.tmb
 /thumbs/
 /logger.txt
 /vendor/*
