@@ -67,8 +67,7 @@ class PageController extends Controller
         // создаем замыкание страниц (если одна страница указывает на другую)
         while ($this->page['link']) {
             $page = $pageModel->find($this->page['link']);
-
-            if (!$this->user->hasPermission($page['protected'])) {
+            if (!$this->auth->hasPermission($page['protected'])) {
                 throw new HttpException(403, $this->t('Access denied'));
             }
             if (!$page['link']) {
