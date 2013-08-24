@@ -14,9 +14,7 @@ use Sfcms\Kernel\KernelEvent;
 class Admin extends Layout
 {
     /**
-     * @param KernelEvent $event
-     *
-     * @return KernelEvent
+     * @inheritdoc
      */
     public function view(KernelEvent $event)
     {

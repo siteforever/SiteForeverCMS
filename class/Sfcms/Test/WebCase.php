@@ -26,6 +26,19 @@ class WebCase extends PHPUnit_Framework_TestCase
     /** @var Router */
     protected $router;
 
+    protected $serverAjax = array(
+        'HTTP_X_Requested_With' => 'XMLHttpRequest'
+    );
+
+    protected $serverJson = array(
+        'HTTP_ACCEPT' => 'application/json',
+    );
+
+    protected $serverXml = array(
+        'HTTP_ACCEPT' => 'application/xml',
+    );
+
+
     protected function setUp()
     {
         $_POST = array();
@@ -92,9 +105,13 @@ class WebCase extends PHPUnit_Framework_TestCase
      *
      * @return null|Response
      */
-    protected function click(Crawler $crawlerLink)
+    protected function click(Crawler $crawlerLink, $method = 'GET', $ajax = false)
     {
-        return $this->runRequest($crawlerLink->attr('href'));
+        $server = array();
+        if ($ajax) {
+            $server += $this->serverAjax;
+        }
+        return $this->runRequest($crawlerLink->attr('href'), $method, array(), array(), array(), $server);
     }
 
     /**

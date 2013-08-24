@@ -13,9 +13,7 @@ use Sfcms\Kernel\KernelEvent;
 class Xhr extends ViewAbstract
 {
     /**
-     * @param KernelEvent $event
-     * @throws Exception
-     * @return string
+     * @inheritdoc
      */
     public function view(KernelEvent $event)
     {

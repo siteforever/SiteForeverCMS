@@ -190,40 +190,44 @@ class NewsController extends Controller
      */
     public function editAction($id = null, $cat = null)
     {
-        $this->request->setTitle($this->t('news','News edit'));
+        $this->request->setTitle($this->t('news', 'News edit'));
         /** @var $model NewsModel */
-        $model      = $this->getModel('News');
+        $model = $this->getModel('News');
         /** @var $form Form */
-        $form   = $model->getForm();
-        $form->cat_id = $cat;
-
-        if ( $form->getPost($this->request) ) {
-            if ( $form->validate() ) {
-                $obj    = $form->id ? $model->find($form->id) : $model->createObject();
-                $obj->attributes = $form->getData();
-                return array('error'=>0, 'msg'=>$this->t('Data save successfully'));
-            }
-            return array('error'=>1, 'msg'=>$this->request->getFeedbackString());
+        $form = $model->getForm();
+        if (null !== $cat) {
+            $form->cat_id = $cat;
         }
 
-        if ( $id ) {
-            $news   = $model->find( $id );
-            $form->setData( $news->getAttributes() );
+        if ($form->getPost($this->request)) {
+            if ($form->validate()) {
+                $obj = $form->id ? $model->find($form->id) : $model->createObject()->markNew();
+                $obj->attributes = $form->getData();
+
+                return array('error' => 0, 'msg' => $this->t('Data save successfully'));
+            }
+
+            return array('error' => 1, 'msg' => $form->getFeedbackString(), 'errors' => $form->getErrors());
+        }
+
+        if ($id) {
+            $news = $model->find($id);
+            $form->setData($news->getAttributes());
         } else {
-            $news   = $model->createObject();
+            $news = $model->createObject();
         }
 
         $catObj = null;
-        if ( isset( $news['cat_id'] ) && $news['cat_id'] ) {
-            $catObj = $model->category->find( $news['cat_id'] );
+        if (isset($news['cat_id']) && $news['cat_id']) {
+            $catObj = $model->category->find($news['cat_id']);
         }
-        if ( null === $catObj && $cat ) {
-            $catObj = $model->category->find( $cat );
+        if (null === $catObj && $cat) {
+            $catObj = $model->category->find($cat);
         }
 
         return array(
-            'form'  => $form,
-            'cat'   => $catObj,
+            'form' => $form,
+            'cat' => $catObj,
         );
     }
 

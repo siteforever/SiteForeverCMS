@@ -5,6 +5,20 @@ html, body {
     height: 100%;
 }
 
+h1, h2, h3, h4, h5, h6, p {
+    margin: 0 0 1em 0;
+    line-height: 1em;
+}
+h1 {
+    font-size: 200%;
+}
+h2 {
+    font-size: 160%;
+}
+h3 {
+    font-size: 140%;
+}
+
 table.table td {
     font-size: 12px;
 }
@@ -40,18 +54,22 @@ small {
 #loading-application {
     position: fixed;
 }
-    #loading-application div {
-        position: absolute;
-        top: 50%;
-        width: 100%;
-        margin-top: -0.5em;
-        text-align: center;
-        font-size: 30px;
-        color: #fff;
-    }
+#loading-application div {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    margin-top: -0.5em;
+    text-align: center;
+    font-size: 30px;
+    color: #fff;
+}
 
 .form-horizontal .control-group {
     margin-bottom: 10px;
+}
+
+#admin label {
+    display: inline-block;
 }
 
 .blockMsg div.feedback {

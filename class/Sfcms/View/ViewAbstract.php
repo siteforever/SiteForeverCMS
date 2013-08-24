@@ -29,7 +29,7 @@ abstract class ViewAbstract
     /**
      * @abstract
      * @param KernelEvent $event
-     * @return string
+     * @return KernelEvent
      */
      public abstract function view(KernelEvent $event);
 }

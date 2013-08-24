@@ -4,14 +4,16 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
  */
-use Module\News\Controller\RssController;
+namespace Module\News\Test;
 
-class ControllerRssTest extends \Sfcms\Test\WebCase
+use Sfcms\Test\WebCase;
+
+class ControllerRssTest extends WebCase
 {
     public function testIndexAction()
     {
         $response = $this->runController('rss', 'index');
-        $crawler = new \Symfony\Component\DomCrawler\Crawler();
+        $crawler = $this->createCrawler($response);
         $crawler->addHtmlContent($response->getContent());
         $this->assertEquals('SiteForeverCMS', $crawler->filter('rss>channel>title')->text());
     }

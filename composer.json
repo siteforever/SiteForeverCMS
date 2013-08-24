@@ -61,6 +61,7 @@
         "symfony/stopwatch": "2.3.*",
         "symfony/debug": " 2.3.*",
         "helios-ag/fm-elfinder": "v2.0",
+        "spekkionu/htmlpurifier": "dev-master",
         "tonytomov/jqGrid" : "4.4"
     },
     "repositories":[

@@ -4,7 +4,7 @@
  * @link   http://siteforever.ru
  */
 
-define("siteforever",[
+define("module/siteforever",[
     "jquery"
 ], function($) {
 
@@ -21,7 +21,7 @@ define("siteforever",[
         firstDay:1,
         changeMonth:true,
         changeYear:true,
-        buttonImage:'/images/admin/icons/calendar.png',
+//        buttonImage:'/images/admin/icons/calendar.png',
         buttonImageOnly:true,
         showOn:'button',
         dayNamesMin:['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
