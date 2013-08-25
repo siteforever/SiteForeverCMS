@@ -35,7 +35,7 @@ class Forms_News_Edit extends \Sfcms\Form\Form
             'name'      => 'news',
             'action'    => App::cms()->getRouter()->createServiceLink('news','edit'),
             'fields'    => array(
-                'id'        => array('type'=>'int', 'value'=>'0', 'hidden',),
+                'id'        => array('type'=>'int', 'value'=>null, 'hidden',),
                 'cat_id'    => array(
                     'type'      =>  'select',
                     'value'     =>  '0',
@@ -44,15 +44,15 @@ class Forms_News_Edit extends \Sfcms\Form\Form
                     //'hidden',
                 ),
                 'author_id' => array('type'=>'text', 'value'=>$app->getAuth()->getId(), 'label'=>'','hidden',),
-                'name'      => array('type'=>'text', 'value'=>'', 'label'=>'Название',),
+                'name'      => array('type'=>'text', 'value'=>'', 'label'=>'Название', 'required',),
                 'main'      => array(
-                    'type'=>'radio',
+                    'type'=>'checkbox',
                     'label'=>'Показывать на главной',
                     'value'=>'0',
                     'variants' => array('0' => 'Нет', '1' => 'Да'),
                 ),
                 'priority'  => array(
-                    'type'=>'radio',
+                    'type'=>'select',
                     'label'=>'Приоритет',
                     'value'=>'0',
                     'variants' => array('0'=>'0','1'=>'1','2'=>'2','3'=>'3','4'=>'4','5'=>'5'),
@@ -66,7 +66,7 @@ class Forms_News_Edit extends \Sfcms\Form\Form
                 'keywords'  => array('type'=>'text', 'value'=>'', 'label'=>'Ключевые слова',),
                 'description'=> array('type'=>'text', 'value'=>'','label'=>'Описание',),
                 'hidden'    => array(
-                    'type'      => 'radio',
+                    'type'      => 'checkbox',
                     'label'     => 'Скрытое',
                     'value'     => '0',
                     'variants'  => array('Нет', 'Да'),

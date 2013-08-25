@@ -80,9 +80,9 @@ class App extends AbstractKernel
                 if ($event->getResponse() instanceof RedirectResponse) {
                     $event->stopPropagation();
                 }
-            });
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'));
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'));
+            }, 10);
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'), 10);
+        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'), 10);
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'invokeLayout'));
         $this->getEventDispatcher()->addListener('kernel.response', array($this, 'createSignature'));
     }
@@ -237,9 +237,9 @@ class App extends AbstractKernel
         } else {
             $Layout = new Layout($this);
         }
-        $result = $Layout->view($event);
+        $event = $Layout->view($event);
         $this->getLogger()->info('Invoke layout: ' . round(microtime(1) - $start, 3) . ' sec');
-        return $result;
+        return $event;
     }
 
     public function createSignature(Sfcms\Kernel\KernelEvent $event)

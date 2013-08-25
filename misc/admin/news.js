@@ -39,12 +39,12 @@ define("admin/news", [
                  */
                 "click" : function( event, node ) {
                     try {
-                        $.get( $( node ).attr('href') ).then($.proxy(function( response ){
-                            if ( $(node).attr('title') ) {
-                                this.newsEdit.title( $(node).attr('title') );
+                        $.get($(node).attr('href')).then($.proxy(function (response) {
+                            if ($(node).attr('title')) {
+                                this.newsEdit.title($(node).attr('title'));
                             }
-                            this.newsEdit.body( response ).show();
-                        },this));
+                            this.newsEdit.body(response).show();
+                        }, this));
                     } catch (e) {
                         console.error(e);
                     }
@@ -63,18 +63,14 @@ define("admin/news", [
                         if (!response.error) {
                             $.get(window.location.href, function(response){
                                 var $workspace = $('#workspace');
-                                $workspace.find('table').remove();
-                                $workspace.find('p').remove();
+                                $workspace.find(':not(h2)').remove();
                                 $workspace.append(response);
                             });
                             this.msgSuccess(response.msg, 1500);
                         } else {
                             this.msgError(response.msg);
                         }
-                    },this),
-                    'error': $.proxy(function (response){
-                        alert(response);
-                    }, this)
+                    },this)
                 });
             });
         }

@@ -51,7 +51,7 @@ class Module extends SfModule
             ));
         $routes->add('page/add',
             new Route('/page/add',
-                array('_controller'=>'page', '_action'=>'parent')
+                array('_controller'=>'page', '_action'=>'add')
             ));
         $routes->add('page/edit',
             new Route('/page/edit',

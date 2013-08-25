@@ -55,8 +55,7 @@ class Layout extends ViewAbstract
 
 
     /**
-     * @param KernelEvent $event
-     * @return string
+     * @inheritdoc
      */
     public function view(KernelEvent $event)
     {

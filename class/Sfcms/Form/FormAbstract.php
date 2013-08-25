@@ -268,13 +268,14 @@ abstract class FormAbstract
      * @param string $name
      * @return string|void
      */
-    public function name( $name = '' )
+    public function name($name = '')
     {
-        if ( $name ) {
+        if ($name) {
             $this->name = $name;
         } else {
             return $this->name;
         }
+        return $this;
     }
 
     /**
@@ -283,24 +284,23 @@ abstract class FormAbstract
      * @param $toString
      * @return array
      */
-    public function getData( $toString = false )
+    public function getData($toString = false)
     {
         $data = array();
-        foreach( $this->fields as $field ) {
+        foreach ($this->fields as $field) {
             /** @var $field Field */
-            if ( is_object( $field ) ) {
-                if ( ! in_array( $field->getType(), array('submit', 'separator', 'captcha') ) )
-                {
-                    if ( $toString ) {
+            if (is_object($field)) {
+                if (!in_array($field->getType(), array('submit', 'separator', 'captcha'))) {
+                    if ($toString) {
                         $value = $field->getStringValue();
                     } else {
                         $value = $field->getValue();
-                        if ( is_array( $value ) && count( $value ) == 1 ) {
-                            $value = join( '', $value );
+                        if (is_array($value) && count($value) == 1) {
+                            $value = join('', $value);
                         }
                     }
 
-                    $data[ $field->getName() ] = $value;
+                    $data[$field->getName()] = $value;
                 }
             }
         }
@@ -308,26 +308,26 @@ abstract class FormAbstract
     }
 
     /**
-     * Установит массив значений
+     * Settings array of values
      * Как правило, нужно для использования с базой данных
      *
      * @param array|\ArrayAccess $data
      * @return bool
      * @throws Exception
      */
-    public function setData( $data )
+    public function setData($data)
     {
-        if ( count($this->fields) == 0 ) {
-            throw new Exception( 'Форма не содержит полей' );
+        if (count($this->fields) == 0) {
+            throw new Exception('Form has not fields');
         }
 
         if ($data) {
-            foreach( $this->fields as $field ) {
+            foreach ($this->fields as $field) {
                 /** @var $field Field */
-                if ( is_object( $field ) && ! in_array( $field->getType(), array('submit', 'separator') ) ) {
-                    if ( isset($data[ $field->getName() ]) ) {
-                        $value = $data[ $field->getName() ];
-                        $field->setValue( $value );
+                if (is_object($field) && !in_array($field->getType(), array('submit', 'separator'))) {
+                    if (isset($data[$field->getName()])) {
+                        $value = $data[$field->getName()];
+                        $field->setValue($value);
                     }
                 }
             }
@@ -336,7 +336,7 @@ abstract class FormAbstract
     }
 
     /**
-     * Проверка валидности формы
+     * Check for valid form values
      * @return bool
      */
     public function validate()
@@ -354,7 +354,7 @@ abstract class FormAbstract
 
 
     /**
-     * Вернуть список ошибок в формате Json
+     * Return error list as JSON
      * @return string
      */
     public function getJsonErrors()
@@ -363,7 +363,7 @@ abstract class FormAbstract
     }
 
     /**
-     * Вернуть список ошибок
+     * Return all errors as array
      * @return array
      */
     public function getErrors()

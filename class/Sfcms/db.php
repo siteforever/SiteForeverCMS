@@ -490,17 +490,15 @@ final class db
      */
     function insert($table, $data)
     {
-
         // проверка на апостроф
         foreach ($data as $i => $d) {
-            $data[ $i ] = $this->resource->quote( $d );
+            $data[$i] = $this->resource->quote( $d );
         }
 
         $datas = join ( ",", $data );
         if (isset($data[0])) {
             $keys = '';
-        }
-        else {
+        } else {
             $keys = "(`" . join ( "`,`", array_keys( $data ) ) . "`)";
         }
         $sql = "INSERT INTO `{$table}` {$keys} VALUES ($datas)";

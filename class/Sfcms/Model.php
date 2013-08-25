@@ -808,7 +808,7 @@ abstract class Model extends Component
                 /** @var $field Field */
                 $field   = $obj->field($idKeys[0]);
                 $fieldValue = $obj->get($idKeys[0]);
-                if ($field->isAutoIncrement() && null === $fieldValue) {
+                if ($field->isAutoIncrement() && (null === $fieldValue || '' === $fieldValue)) {
                     unset($saveData[$idKeys[0]]);
                 }
                 if ($field->isAutoIncrement() && $obj->get($idKeys[0])) {
@@ -826,7 +826,9 @@ abstract class Model extends Component
                 $this->trigger('save.success', $event);
                 $this->trigger(sprintf('%s.save.success', $this->eventAlias()), $event);
             }
-            $obj->markClean();
+            if ($obj->isStateSaving()) {
+                $obj->markClean();
+            }
         }
 
         return $ret;

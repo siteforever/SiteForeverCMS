@@ -36,13 +36,15 @@ class NewsModel extends Model
         );
     }
 
-    public function onSaveStart(Model\ModelEvent $e)
+    public function onSaveSuccess(Model\ModelEvent $e)
     {
         $obj = $e->getObject();
         if (empty($obj->alias) || '0' == $obj->alias{0}) {
             $obj->alias = $obj->name
                 ? strtolower($obj->id . '-' . \Sfcms::i18n()->translit($obj->name))
                 : $obj->id;
+            $obj->markDirty();
+            $obj->save();
         }
     }
 

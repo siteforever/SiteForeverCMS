@@ -19,7 +19,15 @@ class GalleryControllerTest extends WebCase
         $this->assertEquals('Портфолио', $crawler->filterXPath('//h1')->text());
         $this->assertEquals(3, $crawler->filterXPath('//ul[@class="gallery_list"]/li')->count());
 
+        $this->assertEquals(2, $crawler->selectLink('Пейзаж')->count());
+        $this->assertEquals(
+            $crawler->selectLink('Пейзаж')->eq(0)->attr('href'),
+            $crawler->selectLink('Пейзаж')->eq(1)->attr('href')
+        );
+
+        $this->assertEquals('/portfolio/peizazh', $crawler->selectLink('Пейзаж')->attr('href'));
         $response = $this->click($crawler->selectLink('Пейзаж'));
+
         $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Пейзаж', $crawler->filterXPath('//h1')->text());

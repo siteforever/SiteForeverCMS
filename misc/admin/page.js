@@ -59,9 +59,7 @@ define("admin/page", [
                         this.createModal.show().done(function(){
                             $alert.close(1000);
                         });
-                    }, this), function(response){
-                        alert(response);
-                    });
+                    }, this));
                     return false;
                 }
             },
@@ -128,20 +126,26 @@ define("admin/page", [
         /**
          * OnSave handler for create dialog
          */
-        "createSave" : function( editModal ){
-            if ( ! $.trim( $( '#name' ).val() ) ) {
-                this.msgError( i18n('page','Input Name') );
+        "createSave": function(editModal){
+            var $name = $('#name');
+            $name.parent().find('.help-inline').remove();
+            if (!$.trim($name.val())) {
+                $name.parent().append('<div class="help-inline">'+i18n('page', 'Input Name')+'</div>');
+                $name.parents('.control-group').addClass('error');
                 return;
+            } else {
+                $name.parents('.control-group').removeClass('error');
             }
+
             // page/add
-            $.post( $( '#url' ).val(), {
-                'module':   $( '#module' ).val(),
-                'name':     $( '#name' ).val(),
-                'parent':   $( '#id' ).val()
-            }).then( $.proxy( function( editModal, response ){
+            $.post($('#url').val(), {
+                'module': $('#module').val(),
+                'name': $name.val(),
+                'parent': $('#id').val()
+            }).then($.proxy(function (editModal, response) {
                 this.hide();
-                editModal.title( i18n('page','Create page') ).body( response ).show();
-            }, this, editModal ) );
+                editModal.title(i18n('page', 'Create page')).body(response).show();
+            }, this, editModal));
         },
 
         /**

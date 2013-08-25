@@ -11,8 +11,7 @@ use Sfcms\Kernel\KernelEvent;
 class Page extends Layout
 {
     /**
-     * @param KernelEvent $event
-     * @return KernelEvent
+     * @inheritdoc
      */
     public function view(KernelEvent $event)
     {

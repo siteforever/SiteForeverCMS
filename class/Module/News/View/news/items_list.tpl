@@ -1,3 +1,5 @@
+<h1>{$page.title}</h1>
+
 {if $cat.show_content}
     {$page.content}
 {/if}

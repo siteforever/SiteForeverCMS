@@ -26,6 +26,19 @@ class WebCase extends PHPUnit_Framework_TestCase
     /** @var Router */
     protected $router;
 
+    protected $serverAjax = array(
+        'HTTP_X_Requested_With' => 'XMLHttpRequest'
+    );
+
+    protected $serverJson = array(
+        'HTTP_ACCEPT' => 'application/json',
+    );
+
+    protected $serverXml = array(
+        'HTTP_ACCEPT' => 'application/xml',
+    );
+
+
     protected function setUp()
     {
         $_POST = array();
@@ -61,6 +74,9 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->request->setAction($action);
         $_GET && $this->request->query->replace($_GET);
         $_POST && $this->request->request->replace($_POST);
+        if (!$this->request->headers->has('Accept')) {
+            $this->request->headers->add(array('Accept' => 'text/html'));
+        }
         return \App::cms()->handleRequest($this->request);
     }
 
@@ -77,8 +93,8 @@ class WebCase extends PHPUnit_Framework_TestCase
      */
     protected function runRequest($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
     {
+        $server['HTTP_USER_AGENT'] = 'SiteForeverCMS';
         $this->request = Request::create($uri, $method, $parameters, $cookies, $files, $server, $content);
-        $this->request->query->set('route', $uri);
         $this->request->setSession($this->session);
         return \App::cms()->handleRequest($this->request);
     }
@@ -89,9 +105,13 @@ class WebCase extends PHPUnit_Framework_TestCase
      *
      * @return null|Response
      */
-    protected function click(Crawler $crawlerLink)
+    protected function click(Crawler $crawlerLink, $method = 'GET', $ajax = false)
     {
-        return $this->runRequest($crawlerLink->attr('href'));
+        $server = array();
+        if ($ajax) {
+            $server += $this->serverAjax;
+        }
+        return $this->runRequest($crawlerLink->attr('href'), $method, array(), array(), array(), $server);
     }
 
     /**
