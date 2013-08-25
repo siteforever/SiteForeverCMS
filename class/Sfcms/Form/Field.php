@@ -252,7 +252,7 @@ abstract class Field
      * @param $value
      * @return Field
      */
-    public function setValue( $value )
+    public function setValue($value)
     {
         $value = trim($value);
         $this->_value  = $value;

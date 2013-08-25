@@ -236,7 +236,7 @@ abstract class FormAbstract
                         $field->setValue($data[$field->getName()]);
                     }
                     if ($field->getType() == 'file') {
-                        $field->setValue('');
+                        $field->setValue($request->files->get($field->getName()));
                     }
                 }
             }
