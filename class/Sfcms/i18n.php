@@ -2,6 +2,7 @@
 namespace Sfcms;
 
 use App;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Переводчик
@@ -10,8 +11,8 @@ use App;
 class i18n
 {
 
-    private $_lang;
-    private $_dictionary;
+    private $_lang = null;
+    private $_dictionary = null;
 
     /**
      * @var i18n
@@ -68,45 +69,50 @@ class i18n
 
     public function setLanguage($lang = 'en')
     {
+        if (null !== $this->_lang) {
+            return;
+        }
+        $start = microtime(1);
         $this->_lang = $lang;
+        $fs = new Filesystem();
 
         $dictFile = SF_PATH . '/protected/lang/' . $this->_lang . '.php';
-        if (!file_exists($dictFile)) {
+        if (!$fs->exists($dictFile)) {
             throw new Exception('Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile);
         }
         $this->_dictionary = @include($dictFile);
 
         $dest = ROOT . '/static/i18n';
 
-        if (!is_dir($dest)) {
-            mkdir($dest, 0777, true);
+        if (!$fs->exists($dest)) {
+            $fs->mkdir($dest, 0777, true);
         }
 
         // Prepare dictionary for JS
         $jsDictFile = $dest . '/' . $this->_lang . '.js';
         $jsI18nFile = SF_PATH . '/misc/i18n.js';
 
-        if (App::isDebug() && file_exists($jsDictFile)) {
-            unlink($jsDictFile);
+        if (!App::isDebug() && file_exists($jsDictFile)) {
+            return;
         }
 
-        //        clearstatcache();
-        if (!file_exists($jsDictFile) || filemtime($dictFile) < filemtime($jsDictFile) || filemtime(
-                $jsI18nFile
-            ) < filemtime($jsDictFile)
-        ) {
-            $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents($jsI18nFile);
-
-            $dictList = glob(dirname($dictFile) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php');
-            foreach ($dictList as $file) {
-                $this->_dictionary['cat_' . basename($file, '.php')] = @include($file);
-            }
-            $dict = defined('JSON_UNESCAPED_UNICODE') ? json_encode($this->_dictionary, JSON_UNESCAPED_UNICODE)
-                : json_encode($this->_dictionary);
-
-            $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = ' . $dict . ';', $jsDict);
-            file_put_contents($jsDictFile, $jsDict);
+        $f = fopen($jsDictFile, 'a');
+        flock($f, LOCK_EX);
+        ftruncate($f, 0);
+        $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents($jsI18nFile);
+        $dictList = glob(dirname($dictFile) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php');
+        foreach ($dictList as $file) {
+            $this->_dictionary['cat_' . basename($file, '.php')] = @include($file);
         }
+        $dict = defined('JSON_UNESCAPED_UNICODE') ? json_encode($this->_dictionary, JSON_UNESCAPED_UNICODE)
+            : json_encode($this->_dictionary);
+
+        $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = ' . $dict . ';', $jsDict);
+
+        fwrite($f, $jsDict, strlen($jsDict));
+        flock($f, LOCK_UN);
+        fclose($f);
+        App::cms()->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
     }
 
     /**

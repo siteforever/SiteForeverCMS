@@ -213,6 +213,9 @@ class Catalog extends Object
         }
 
         /** @var Collection $images */
+        if (!$this->Gallery) {
+            $this->Gallery = new Collection();
+        }
         $images = $this->Gallery;
         $createMain = !($images && $images->count()); // Делать ли первую картинку главной
         /** @var GalleryModel $galleryModel */
@@ -265,7 +268,7 @@ class Catalog extends Object
             $objImage->thumb = $objImage->image;
         }
         $objImage->save();
-        $images->add($objImage);
+        $this->Gallery->add($objImage);
     }
 
     /**
