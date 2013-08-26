@@ -8,18 +8,6 @@ return array(
 
     'language'  => 'ru',
 
-    // база данных
-    'db' => array(
-        'dsn'       => 'mysql:host=localhost;dbname=siteforever',
-        'login'     => 'root',
-        'password'  => '',
-        'options'   => array(
-            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
-        ),
-        'migration' => false,
-        'debug'     => false,
-    ),
-
     // тема
     'template' => array(
         'theme'     => 'basic', // тема сайта

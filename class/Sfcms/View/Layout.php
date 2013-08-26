@@ -241,13 +241,14 @@ class Layout extends ViewAbstract
 
             $return[] = '<script type="text/javascript">var require = '.$json.';</script>';
 
-            if ($this->_app->isDebug()) {
-                $return[] = "<script type='text/javascript' "
-                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
-                    . "</script>";
-            } elseif (file_exists(ROOT . '/static/require-jquery-min.js') && file_exists(ROOT . '/static/admin.js')) {
+
+            if (!$this->_app->isDebug() && file_exists(ROOT . '/static/require-jquery-min.js') && file_exists(ROOT . '/static/admin.js')) {
                 $return[] = "<script type='text/javascript' "
                     . "src='/static/require-jquery-min.js' data-main='../static/admin'>"
+                    . "</script>";
+            } else {
+                $return[] = "<script type='text/javascript' "
+                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
                     . "</script>";
             }
         } else {
