@@ -203,15 +203,29 @@ class Layout extends ViewAbstract
             $rjsConfig['shim']['underscore'] = array(
                 'exports' => '_',
             );
+            $rjsConfig['shim']['jquery'] = array(
+                'exports' => '$',
+            );
 
             $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
 
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
             );
-            $controllerJs = 'admin/'.$request->getController();
-            if (file_exists(ROOT . $this->getMisc() . '/' . $controllerJs . '.js')) {
+
+            $controllerJs = $request->getAdminScript();
+            $controllerFile = ROOT . '/' . $controllerJs . '.js';
+//            var_dump(
+//                $controllerJs,
+//                dirname($controllerFile),
+//                realpath(dirname($controllerFile)),
+//                is_dir(dirname($controllerFile))
+//            );
+            if (file_exists($controllerFile)) {
                 $rjsConfig['config']['admin/admin']['use_controller'] = true;
+                if ('static' == substr($controllerJs, 0, 6)) {
+                    $controllerJs = '../' . $controllerJs;
+                }
                 $rjsConfig['map']['*']['controller'] = $controllerJs;
             }
 

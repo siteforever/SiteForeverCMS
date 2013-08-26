@@ -29,7 +29,7 @@ class Admin extends Layout
         $this->attachJUI();
         // jQuery
 
-        //        $this->attachWysiwyg();
+//        $this->attachWysiwyg();
 
         $this->_app->getAssets()->addStyle('/static/admin/jquery/elfinder/elfinder.css');
         $this->_app->getAssets()->addScript('/static/admin.js');

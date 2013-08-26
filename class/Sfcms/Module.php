@@ -13,6 +13,7 @@ use Sfcms\Tpl\Directory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Routing\Router;
@@ -34,6 +35,9 @@ abstract class Module extends Component
     /** @param array */
     protected static $controllers = null;
 
+    /** @var Filesystem */
+    protected $fs;
+
 
     public function __construct(App $app, $name, $ns, $path)
     {
@@ -41,6 +45,7 @@ abstract class Module extends Component
         $this->name = $name;
         $this->ns = $ns;
         $this->path = $path;
+        $this->fs = new Filesystem();
     }
 
     /**
@@ -133,6 +138,19 @@ abstract class Module extends Component
         }
         if (is_dir($this->getPath().'/Widget')) {
             $tpl->addWidgetsDir($this->getPath().'/Widget');
+        }
+    }
+
+    /**
+     * Register static components of current module
+     */
+    public function registerStatic()
+    {
+        $target = strtolower(ROOT . '/static/' . $this->getName());
+        if ($this->fs->exists($this->getPath().'/static')) {
+            if (!$this->fs->exists($target)) {
+                $this->fs->symlink($this->getPath().'/static', $target);
+            }
         }
     }
 

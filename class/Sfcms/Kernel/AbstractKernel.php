@@ -122,8 +122,8 @@ abstract class AbstractKernel
 
     public function __construct($cfg_file, $debug = false)
     {
-        if ( is_null( self::$instance ) ) {
-            self::$instance = $this;
+        if (is_null(static::$instance)) {
+            static::$instance = $this;
         } else {
             throw new Exception('You can not create more than one instance of Application');
         }
@@ -202,6 +202,7 @@ abstract class AbstractKernel
                 call_user_func(array($module, 'registerService'), $_->getContainer());
                 call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl_directory'));
                 call_user_func(array($module, 'registerRoutes'), $_->getContainer()->get('sf_router'));
+                call_user_func(array($module, 'registerStatic'));
                 if (method_exists($module, 'init')) {
                     call_user_func(array($module, 'init'));
                 }

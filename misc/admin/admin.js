@@ -73,17 +73,23 @@ define("admin/admin", [
 
     $(document).ready(function(){
         if (useController) {
-            /** Run init */
             var controller = require('controller');
-            if (controller.init && typeof controller.init == "function") {
-                controller.init();
+
+            if (typeof controller == 'function') {
+                new controller({
+                    'el': $('#workspace')
+                });
+            } else {
+                /** Run init */
+                if (controller.init && typeof controller.init == "function") {
+                    controller.init();
+                }
+                /** Apply behaviors */
+                behavior.apply(controller);
             }
 
-            /**
-             * Apply behaviors
-             */
-            behavior.apply( controller );
         } else {
+
             var DataGrig = require('View/DataGrid');
             $('div.sfcms-admin-dataset').each(function(){
                 var dataGrid = new DataGrig({

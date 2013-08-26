@@ -28,6 +28,7 @@ class Request extends SymfonyRequest
     private $_title = '';
     private $_keywords = '';
     private $_description = '';
+    private $_admin_script = null;
 
     protected $basket;
 
@@ -100,6 +101,24 @@ class Request extends SymfonyRequest
         $this->set('_controller', $controller);
     }
 
+    /**
+     * @param string $admin_script
+     */
+    public function setAdminScript($admin_script)
+    {
+        $this->_admin_script = $admin_script;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminScript()
+    {
+        if (null === $this->_admin_script) {
+            return 'misc/admin/' . $this->getController();
+        }
+        return $this->_admin_script;
+    }
 
     /**
      * @return string
