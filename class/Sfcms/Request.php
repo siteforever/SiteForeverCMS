@@ -115,7 +115,7 @@ class Request extends SymfonyRequest
     public function getAdminScript()
     {
         if (null === $this->_admin_script) {
-            return 'misc/admin/' . $this->getController();
+            return 'admin/' . $this->getController();
         }
         return $this->_admin_script;
     }

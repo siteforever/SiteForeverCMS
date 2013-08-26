@@ -214,7 +214,11 @@ class Layout extends ViewAbstract
             );
 
             $controllerJs = $request->getAdminScript();
-            $controllerFile = ROOT . '/' . $controllerJs . '.js';
+            if ('admin' == substr($controllerJs, 0, 5)) {
+                $controllerFile = ROOT . $this->getMisc() . '/' . $controllerJs . '.js';
+            } else {
+                $controllerFile = ROOT . '/' . $controllerJs . '.js';
+            }
 //            var_dump(
 //                $controllerJs,
 //                dirname($controllerFile),
