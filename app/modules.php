@@ -19,5 +19,5 @@ return array(
     array('name' => 'Install', 'path' => 'Module\Install'),
     array('name' => 'Foo', 'path' => 'Acme\Module\Foo'),
     array('name' => 'Monolog', 'path' => 'Module\Monolog'),
-//    array('name' => 'Purifer', 'path' => 'Module\Purifer'),
+    array('name' => 'Test', 'path' => 'Module\Test'),
 );

@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class File extends Field
 {
     protected $_type = 'file';
+    protected $mime;
+    protected $size;
+    protected $originalName;
+    protected $uploadError;
 
     /**
      * @inheritdoc
@@ -22,7 +26,49 @@ class File extends Field
             throw new \InvalidArgumentException('Value must be `Upload File` type');
         }
         $this->_value = $value;
+        $this->originalName = $value->getClientOriginalName();
+        $this->mime = $value->getClientMimeType();
+        $this->size = $value->getClientSize();
+        $this->uploadError = $value->getError();
         return $this;
     }
 
+    protected function checkValue($value)
+    {
+
+        return true;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getMime()
+    {
+        return $this->mime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOriginalName()
+    {
+        return $this->originalName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUploadError()
+    {
+        return $this->uploadError;
+    }
 }

@@ -8,6 +8,7 @@ namespace Sfcms\Form;
  * @link   http://standart-electronics.ru
  */
 use Sfcms\Form\Exception;
+use Sfcms\Form\Field\File;
 use Sfcms\Request;
 
 abstract class FormAbstract
@@ -227,6 +228,8 @@ abstract class FormAbstract
         if ($this->isSent($request)) {
             $data = $this->data;
 
+            $files = $request->files->get($this->getName());
+
             /**
              * @var $field Field
              */
@@ -235,8 +238,8 @@ abstract class FormAbstract
                     if (isset($data[$field->getName()])) {
                         $field->setValue($data[$field->getName()]);
                     }
-                    if ($field->getType() == 'file') {
-                        $field->setValue($request->files->get($field->getName()));
+                    if ($field instanceof File && isset($files[$field->getName()])) {
+                        $field->setValue($files[$field->getName()]);
                     }
                 }
             }
