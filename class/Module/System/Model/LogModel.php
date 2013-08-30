@@ -22,35 +22,6 @@ class LogModel extends Model
         );
     }
 
-    /**
-     * Логировать сохранение объектов
-     * @param $event
-     *
-     * @return bool
-     * @throws RuntimeException
-     */
-    public function pluginAllSaveStart( Model\ModelEvent $event )
-    {
-        // Записываем все события в таблицу log
-        try {
-            if ($this->config->get('db.log')) {
-                $obj = $event->getObject();
-                if ($obj instanceof User || $obj instanceof Log) {
-                    return false;
-                }
-                /** @var $log Log */
-                $log = $this->createObject();
-                $log->user = $this->app()->getAuth()->getId() ?: 0;
-                $log->object = get_class($obj);
-                $log->action = 'save';
-                $log->timestamp = time();
-                $log->markNew();
-            }
-        } catch( RuntimeException $e ) {
-            print $e->getMessage();
-        }
-    }
-
     public function getProvider(Request $request)
     {
         $provider = new Provider($request);

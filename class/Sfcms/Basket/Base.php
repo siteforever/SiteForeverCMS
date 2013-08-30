@@ -54,7 +54,7 @@ abstract class Base
     }
 
     /**
-     * Добавить товар в корзину
+     * Adding product in basket
      * @param string $id
      * @param string $name
      * @param int $count
@@ -75,7 +75,7 @@ abstract class Base
         $hash = $this->createKey($id, $details);
 
         foreach ($this->data as &$prod) {
-            if ($prod['hash'] == $hash) {
+            if (isset($prod['hash']) && $prod['hash'] == $hash) {
                 $prod['count'] += $count;
                 $prod['price'] = $price;
                 return true;
@@ -95,7 +95,7 @@ abstract class Base
     }
 
     /**
-     * Установить новое значение товара
+     * Setting new count value for product
      * @param  $id
      * @param  $count
      * @return boolean
@@ -104,7 +104,7 @@ abstract class Base
     {
         $hash = $this->createKey($id, null);
         foreach ($this->data as $i => &$prod) {
-            if ($prod['hash'] == $hash) {
+            if (isset($prod['hash']) && $prod['hash'] == $hash) {
                 if ($count > 0) {
                     $prod['count'] = $count;
                 } else {
@@ -119,7 +119,7 @@ abstract class Base
     }
 
     /**
-     * Количество данного товара в корзине
+     * Qty products in basket
      *
      * @param string|int $id
      *
@@ -135,7 +135,7 @@ abstract class Base
         $result = 0;
         if ($id) {
             foreach ($this->data as $prod) {
-                if ($prod['hash'] == $hash) {
+                if (isset($prod['hash']) && $prod['hash'] == $hash) {
                     $result += $prod['count'];
                 }
             }
@@ -171,7 +171,7 @@ abstract class Base
     {
         $hash = $this->createKey($id, null);
         foreach ($this->data as $prod) {
-            if ($prod['hash'] == $hash) {
+            if (isset($prod['hash']) && $prod['hash'] == $hash) {
                 return $prod['price'];
             }
         }
@@ -247,7 +247,7 @@ abstract class Base
         $result = 0.0;
         if (null !== $id) {
             foreach ($this->data as $prod) {
-                if ($prod['hash'] == $hash) {
+                if (isset($prod['hash']) && $prod['hash'] == $hash) {
                     $result += $prod['count'] * @$prod['price'];
                 }
             }

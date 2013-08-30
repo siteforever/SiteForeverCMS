@@ -20,4 +20,5 @@ return array(
     array('name' => 'Foo', 'path' => 'Acme\Module\Foo'),
     array('name' => 'Monolog', 'path' => 'Module\Monolog'),
     array('name' => 'Test', 'path' => 'Module\Test'),
+    array('name' => 'Mailer', 'path' => 'Module\Mailer'),
 );

@@ -1,9 +1,4 @@
 <?php
-/**
- * Заказы
- * @author keltanas
- * @link http://ermin.ru
- */
 namespace Module\Market\Controller;
 
 use Sfcms\Controller;
@@ -13,6 +8,11 @@ use Module\Market\Object\OrderPosition;
 use Sfcms\Request;
 use Sfcms\Robokassa;
 
+/**
+ * Заказы
+ * @author keltanas
+ * @link http://ermin.ru
+ */
 class OrderController extends Controller
 {
     public function access()
@@ -48,8 +48,8 @@ class OrderController extends Controller
             return $this->redirect("index");
         }
 
-        if ( $cancel ) {
-            $can_order = $order->find( $cancel );
+        if ($cancel) {
+            $can_order = $order->find($cancel);
             if ($this->auth->getId() == $can_order['user_id']) {
                 $can_order['status'] = -1;
             }

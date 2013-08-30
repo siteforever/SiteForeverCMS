@@ -1,15 +1,17 @@
 <?php
-/**
- * Выводит заказ в PDF для печати
- * @author Ermin Nikolay <keltanas@gmail.com>
- * @link http://siteforever.ru
- */
 namespace Module\Market\Controller;
 
 use Sfcms\Controller;
 use Module\Market\Object\Order;
 use numeric;
 
+/**
+ * Выводит заказ в PDF для печати
+ *
+ * @legacy
+ * @author Ermin Nikolay <keltanas@gmail.com>
+ * @link http://siteforever.ru
+ */
 class OrderPdfController extends Controller
 {
     public function indexAction()

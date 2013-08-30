@@ -15,7 +15,7 @@ return array(
 
     'pager_template' => 'pager_twbt',
 
-    'mailer_transport' => 'sendmail',
+    'mailer_transport' => 'mail',
 
     'modules' => require_once __DIR__ . '/../modules.php',
 

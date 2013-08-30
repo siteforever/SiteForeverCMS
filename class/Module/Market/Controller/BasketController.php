@@ -7,6 +7,7 @@
  */
 namespace Module\Market\Controller;
 
+use Module\Market\Event\OrderEvent;
 use Module\Market\Model\OrderPositionModel;
 use Module\Market\Object\OrderPosition;
 use Sfcms;
@@ -305,19 +306,22 @@ class BasketController extends Controller
                             $pos_list[] = $position->attributes;
                         }
 
+                        $event = new OrderEvent($order);
+                        $this->app->getEventDispatcher()->dispatch('market.order.create', $event);
+
                         $this->tpl->assign(array(
-                                'order'     => $order,
-                                'sitename'  => $this->config->get('sitename'),
-                                'ord_link'  => $this->config->get('siteurl').$order->getUrl(),
-                                'user'      => $this->auth->getId() ? $this->auth->currentUser()->getAttributes() : array(),
-                                'date'      => date('H:i d.m.Y'),
-                                'order_n'   => $order->getId(),
-                                'positions' => $pos_list,
-                                'total_summa'=> $this->getBasket()->getSum() + $delivery->cost(),
-                                'total_count'=> $this->getBasket()->getCount(),
-                                'delivery'  => $delivery,
-                                'sum'       => $this->getBasket()->getSum(),
-                            ));
+                            'order'     => $order,
+                            'sitename'  => $this->config->get('sitename'),
+                            'ord_link'  => $this->config->get('siteurl').$order->getUrl(),
+                            'user'      => $this->auth->getId() ? $this->auth->currentUser()->getAttributes() : array(),
+                            'date'      => date('H:i d.m.Y'),
+                            'order_n'   => $order->getId(),
+                            'positions' => $pos_list,
+                            'total_summa'=> $this->getBasket()->getSum() + $delivery->cost(),
+                            'total_count'=> $this->getBasket()->getCount(),
+                            'delivery'  => $delivery,
+                            'sum'       => $this->getBasket()->getSum(),
+                        ));
 
                         $this->sendmail(
                             $order->email,
