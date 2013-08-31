@@ -47,7 +47,6 @@ class App extends AbstractKernel
         $this->flushDebug();
         $response->prepare($request);
         $response->send();
-//        print round(microtime(1) - static::$start_time, 3);
     }
 
     /**

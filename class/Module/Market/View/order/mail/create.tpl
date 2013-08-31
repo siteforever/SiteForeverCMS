@@ -18,22 +18,22 @@
             <th>Сумма</th>
         </tr>
         {foreach from=$positions item="pos"}
-            <tr>
-                <td>{$pos.articul}</td>
-                <td>{$pos.price}</td>
-                <td>{$pos.count}</td>
-                <td>{$pos.price * $pos.count}</td>
-            </tr>
+        <tr>
+            <td>{$pos.name}</td>
+            <td>{$pos.price}</td>
+            <td>{$pos.count}</td>
+            <td>{$pos.price * $pos.count}</td>
+        </tr>
         {/foreach}
     </table>
 
     {if $delivery}
-        <h3>Доставка</h3>
-        <ul>
-            <li>{$delivery->getObject()->name}</li>
-            <li>Стоимость: {$delivery->cost($sum)}</li>
-            <li>Адрес: {$order->address}</li>
-        </ul>
+    <h3>Доставка</h3>
+    <ul>
+        <li>{$delivery->getObject()->name}</li>
+        <li>Стоимость: {$delivery->cost($sum)}</li>
+        <li>Адрес: {$order->address}</li>
+    </ul>
     {/if}
 
     <p><strong>Итого:</strong></p>

@@ -41,8 +41,8 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
     {
         return array(
             'kernel.response' => array(
-                'onKernelResponse',
-                'onKernelResponseImage',
+                array('onKernelResponse'),
+                array('onKernelResponseImage'),
             ),
             'save.start' => 'onAllSaveStart',
         );
