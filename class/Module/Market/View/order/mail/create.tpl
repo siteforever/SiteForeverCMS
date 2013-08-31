@@ -1,13 +1,13 @@
 {block name="title"}
 <p>Здравствуйте, {$order->getEmptorName()}</p>
-<p>Вы оформили заказ на сайте {$sitename}</p>
+<p>Вы оформили заказ на сайте {$config->get('sitename')}</p>
 {/block}
 
 {block name="body"}
     <ul>
-        <li>Номер заказа: {$order_n}</li>
-        <li>Дата: {$date}</li>
-        <li>Открыть <a href="{$ord_link}" target="_blank">заказ на сайте</a></li>
+        <li>Номер заказа: {$order.id}</li>
+        <li>Дата: {date('H:i d.m.Y')}</li>
+        <li>Открыть <a href="{$request->getHttpHost()}{$order.url}" target="_blank">заказ на сайте</a></li>
     </ul>
 
     <table>
@@ -17,12 +17,12 @@
             <th>Количество</th>
             <th>Сумма</th>
         </tr>
-        {foreach from=$positions item="pos"}
+        {foreach from=$order->Positions item="pos"}
         <tr>
-            <td>{$pos.name}</td>
+            <td>{$pos.Product.name}</td>
             <td>{$pos.price}</td>
             <td>{$pos.count}</td>
-            <td>{$pos.price * $pos.count}</td>
+            <td>{$pos.sum}</td>
         </tr>
         {/foreach}
     </table>
@@ -31,15 +31,15 @@
     <h3>Доставка</h3>
     <ul>
         <li>{$delivery->getObject()->name}</li>
-        <li>Стоимость: {$delivery->cost($sum)}</li>
+        <li>Стоимость: {$delivery->cost($basket->getSum())}</li>
         <li>Адрес: {$order->address}</li>
     </ul>
     {/if}
 
     <p><strong>Итого:</strong></p>
     <ul>
-        <li>Товаров: {$total_count}</li>
-        <li>Сумма к оплате: {$total_summa}</li>
+        <li>Товаров: {$basket->getCount()}</li>
+        <li>Сумма к оплате: {$basket->getSum() + $delivery->cost()}</li>
     </ul>
 
 {/block}

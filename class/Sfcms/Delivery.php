@@ -23,16 +23,19 @@ class Delivery
     /** @var DeliveryObject */
     protected $delivery = null;
 
+    protected $bound = 0;
+
 
     /**
      * @param SessionInterface $session
      * @param Basket  $basket
      */
-    public function __construct(SessionInterface $session, Basket $basket)
+    public function __construct(SessionInterface $session, Basket $basket, $bound = 0)
     {
         $this->basket  = $basket;
         $this->session = $session;
         $this->id      = $this->session->get('delivery');
+        $this->bound   = $bound;
     }
 
 
@@ -73,11 +76,14 @@ class Delivery
         } catch (Exception $e) {
             return null;
         }
-        if (null === $sum && $this->basket->getSum()) {
-            $sum = $this->basket->getSum();
-        }
-        if ($sum >= 5000) {
-            return $obj->cost <= 500 ? 0 : $obj->cost - 500;
+
+        if ($this->bound) {
+            if (null === $sum && $this->basket->getSum()) {
+                $sum = $this->basket->getSum();
+            }
+            if ($sum >= $this->bound) {
+                return $obj->cost <= round($this->bound / 10) ? 0 : $obj->cost - round($this->bound / 10);
+            }
         }
 
         return $obj->cost;

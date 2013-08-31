@@ -125,6 +125,19 @@ table.dataset {
     }
 
 
+.b-main-structure li>span>a.edit {
+    width: 100%;
+    max-width: 400px;
+    display: inline-block;
+    /*height: 15px;*/
+    /*line-height: 20px;*/
+    overflow: hidden;
+    white-space: nowrap;
+}
+.b-main-structure li>span>small {
+    display: none;
+}
+
 .catalog_data input.trade_pos {
     width:50px;
     text-align:right;

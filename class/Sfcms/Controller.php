@@ -17,6 +17,7 @@ use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -86,12 +87,6 @@ abstract class Controller extends ContainerAware
         }
 
         $this->page = $pageObj;
-
-//        if ($this->app()->isDebug()) {
-//            if ($this->page) {
-//                $this->log($this->page->getAttributes(), 'Page');
-//            }
-//        }
     }
 
     /**

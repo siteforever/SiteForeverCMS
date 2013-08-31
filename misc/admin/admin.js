@@ -20,6 +20,20 @@ define("admin/admin", [
 ],function(require, $, Backbone, i18n, module, behavior, $alert){
 
     window.lang = document.getElementsByTagName('html')[0].lang;
+    window.datepicker = {
+        dateFormat:'dd.mm.yy',
+        firstDay:1,
+        changeMonth:true,
+        changeYear:true,
+        showOn:'button'
+    };
+    if ('ru' == window.lang) {
+        window.datepicker.dayNamesMin = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+        window.datepicker.monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+        window.datepicker.monthNamesShort = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+            'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    }
 
     $(document).ajaxError(function(event, xhr){
         var errorAjaxDialog = $('#errorAjaxDialog');

@@ -6,16 +6,23 @@
  */
 
 /**
- * @property $summa
+ * @property $id
+ * @property $ord_id
+ * @property $product_id
+ * @property $articul
+ * @property $details
+ * @property $currency
+ * @property $item
+ * @property $cat_id
  * @property $count
  * @property $price
- * @property $articul
+ * @property $status
+ * @property $sum
  */
 namespace Module\Market\Object;
 
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
-use Sfcms\Form\Form;
 
 class OrderPosition extends Object
 {

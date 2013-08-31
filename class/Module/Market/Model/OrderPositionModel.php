@@ -14,8 +14,8 @@ class OrderPositionModel extends Model
     public function relation()
     {
         return array(
-            'order' => array( self::BELONGS, 'Order', 'ord_id' ),
-            'Product' => array( self::BELONGS, 'Catalog', 'product_id' ),
+            'order' => array(self::BELONGS, 'Order', 'ord_id'),
+            'Product' => array(self::BELONGS, 'Catalog', 'product_id'),
         );
     }
 }

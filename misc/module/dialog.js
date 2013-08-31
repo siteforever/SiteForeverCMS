@@ -10,33 +10,33 @@ define('module/dialog',[
     "module/alert",
     "jui",
     "jquery/jquery.form"
-],function( $, i18n, $alert ){
+], function ($, i18n, $alert) {
 
     var dialog = function( /* string */ id, /* object */ obj ){
         id = id || 'sfcms_dialog';
         this.obj = obj;
 
-        if ( ! $('#'+id).length ) {
+        if (!$('#' + id).length) {
             var cfg = {
                 resizable: false,
                 autoOpen: false,
                 height: $(window).height() - 10,
                 width: $(window).width() - 20,
                 modal: true,
-                open: function( event, ui ) {
+                open: function (event, ui) {
                     if ( obj.onOpen && typeof obj.onOpen == 'function' ) {
                         obj.onOpen.apply(obj);
                     }
                 },
-                close: function( event, ui ) {
+                close: function (event, ui) {
                     if ( obj.onClose && typeof obj.onClose == 'function' ) {
                         obj.onClose.apply(obj);
                     }
                 }
             };
 
-            if ( obj.dialogCfg && typeof obj.dialogCfg == 'object' ) {
-                cfg = $.extend(true,cfg,obj.dialogCfg);
+            if (obj.dialogCfg && typeof obj.dialogCfg == 'object') {
+                cfg = $.extend(true, cfg, obj.dialogCfg);
             }
 
             this.$dialog = $('<div id="'+id+'" title="{{ title }}"></div>').appendTo('body').hide().dialog(cfg);
@@ -51,8 +51,8 @@ define('module/dialog',[
         }
     };
 
-    dialog.prototype.title = function( title ) {
-        this.$dialog.dialog('option','title', title);
+    dialog.prototype.title = function (title) {
+        this.$dialog.dialog('option', 'title', title);
         return this;
     };
 
@@ -90,6 +90,7 @@ define('module/dialog',[
         $('form', this.$dialog).ajaxSubmit({
             dataType: "json",
             success: $.proxy(function (response) {
+                $.unblockUI();
                 if (response.errors) {
 
                 }
@@ -97,8 +98,12 @@ define('module/dialog',[
                     deferred.done($.proxy(this.obj.onSave, this.obj, response));
                 }
                 // apply onSave
-                $alert(response.msg, 1000, this.$dialog.parent()).done(response.error ? deferred.reject : deferred.resolve);
-            },this)
+                $alert(response.msg, 1000, this.$dialog.parent())
+                    .done(response.error ? deferred.reject : deferred.resolve);
+            },this),
+            error: function() {
+                $.unblockUI();
+            }
         });
         return deferred.promise();
     };

@@ -17,10 +17,34 @@ use Forms_Basket_Address;
 use Module\Market\Object\Delivery;
 use Module\Market\Model\OrderModel;
 use Module\Catalog\Model\CatalogModel;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class BasketController extends Controller
+class BasketController extends Controller implements EventSubscriberInterface
 {
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'market.order.create' => array(
+                array('onOrderCreate'),
+            ),
+        );
+    }
+
+    /**
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function indexAction()
     {
         $this->logger->info('request', $this->request->request->all());
@@ -42,7 +66,7 @@ class BasketController extends Controller
         }
 
         // Fill Address from current user
-        if ( $this->auth->hasPermission( USER_USER ) ) {
+        if ($this->auth->hasPermission(USER_USER)) {
             $form->setData($this->auth->currentUser()->attributes);
         }
 
@@ -269,84 +293,24 @@ class BasketController extends Controller
         if ($this->request->request->get('do_order')) {
             if ($form->validate()) {
                 // Создание заказа
-                if ($this->getBasket()->getAll()) {
+                if ($this->getBasket()->count()) {
                     // создать заказ
                     $this->request->getSession()->set('delivery', $form['delivery_id']);
                     $delivery = $this->app->getDelivery($this->request);
-//                    $this->request->getSession()->set('delivery',$delivery->getType());
 
                     /** @var $orderModel OrderModel */
                     $orderModel    = $this->getModel('Order');
                     $order = $orderModel->createOrder($form, $delivery);
 
                     if ($order) {
-                        /** @var $orderPositionModel OrderPositionModel */
-                        $orderPositionModel = $this->getModel('OrderPosition');
-
-                        // Заполняем заказ товарами
-                        $pos_list    = array();
-                        foreach ($this->getBasket()->getAll() as $data) {
-                            /** @var $position OrderPosition */
-                            $position   = $orderPositionModel->createObject();
-                            $position->attributes = array(
-                                'ord_id'    => $order->getId(),
-                                //'name'      => $data['name'],
-                                'product_id'=> (int) $data['id'],
-                                'articul'   => ! empty( $data['articul'] ) ? $data['articul'] : $data['name'],
-                                'details'   => $data['details'],
-                                'currency'  => isset( $data['currency'] ) ? $data['currency'] : $this->t('catalog','RUR'),
-                                'item'      => isset( $data['item'] ) ? $data['item'] : $this->t('catalog', 'item'),
-                                'cat_id'    => is_numeric( $data['id'] ) ? $data['id'] : '0',
-                                'price'     => $data['price'],
-                                'count'     => $data['count'],
-                                'status'    => 1,
-                            );
-                            $position->save();
-
-                            $pos_list[] = $position->attributes;
-                        }
-
-                        $event = new OrderEvent($order);
+                        $event = new OrderEvent($order, $this->getBasket(), $delivery);
                         $this->app->getEventDispatcher()->dispatch('market.order.create', $event);
-
-                        $this->tpl->assign(array(
-                            'order'     => $order,
-                            'sitename'  => $this->config->get('sitename'),
-                            'ord_link'  => $this->config->get('siteurl').$order->getUrl(),
-                            'user'      => $this->auth->getId() ? $this->auth->currentUser()->getAttributes() : array(),
-                            'date'      => date('H:i d.m.Y'),
-                            'order_n'   => $order->getId(),
-                            'positions' => $pos_list,
-                            'total_summa'=> $this->getBasket()->getSum() + $delivery->cost(),
-                            'total_count'=> $this->getBasket()->getCount(),
-                            'delivery'  => $delivery,
-                            'sum'       => $this->getBasket()->getSum(),
-                        ));
-
-                        $this->sendmail(
-                            $order->email,
-                            $this->config->get('admin'),
-                            sprintf('Новый заказ с сайта %s №%s',$this->config->get('sitename'),$order->getId()),
-                            $this->tpl->fetch('order.mail.createadmin'),
-                            'text/html'
-                        );
-
-                        $this->sendmail(
-                            $this->config->get('admin'),
-                            $order->email,
-                            sprintf('Заказ №%s на сайте %s',$order->getId(),$this->config->get('sitename')),
-                            $this->tpl->fetch('order.mail.create'),
-                            'text/html'
-                        );
-
-                        $this->getBasket()->clear();
-                        $this->getBasket()->save();
 
                         $this->request->getSession()->set('order_id',$order->id);
 //                        $this->request->getSession()->getFlashBag()->add('info', 'Order is created successfully');
 
                         $paymentModel = $this->getModel('Payment');
-                        $payment = $paymentModel->find( $form['payment_id'] );
+                        $payment = $paymentModel->find($form['payment_id']);
                         $order->payment_id = $payment->getId();
 
                         $result['redirect'] = $order->getUrl();
@@ -359,6 +323,60 @@ class BasketController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * Order create handler
+     * @param OrderEvent $event
+     */
+    public function onOrderCreate(OrderEvent $event)
+    {
+        $order = $event->getOrder();
+        $delivery = $event->getDelivery();
+
+        /** @var $orderPositionModel OrderPositionModel */
+        $orderPositionModel = $this->getModel('OrderPosition');
+
+        // Заполняем заказ товарами
+        foreach ($this->getBasket()->getAll() as $data) {
+            $order->Positions->add($orderPositionModel->createObject(array(
+                    'ord_id'    => $order->getId(),
+                    'product_id'=> (int) $data['id'],
+                    'articul'   => !empty($data['articul']) ? $data['articul'] : $data['name'],
+                    'details'   => $data['details'],
+                    'currency'  => isset($data['currency']) ? $data['currency'] : $this->t('catalog', 'RUR'),
+                    'item'      => isset($data['item']) ? $data['item'] : $this->t('catalog', 'item'),
+                    'cat_id'    => is_numeric($data['id']) ? $data['id'] : '0',
+                    'price'     => $data['price'],
+                    'count'     => $data['count'],
+                    'status'    => 1,
+                ))->markNew());
+        }
+
+        $this->tpl->assign(array(
+            'order'     => $order,
+            'basket'    => $event->getBasket(),
+            'delivery'  => $delivery,
+        ));
+
+        $this->sendmail(
+            $this->config->get('admin'),
+            $this->config->get('admin'),
+            sprintf('Новый заказ с сайта %s №%s', $this->config->get('sitename'), $order->getId()),
+            $this->tpl->fetch('order.mail.createadmin'),
+            'text/html'
+        );
+
+        $this->sendmail(
+            $this->config->get('admin'),
+            $order->email,
+            sprintf('Заказ №%s на сайте %s', $order->getId(), $this->config->get('sitename')),
+            $this->tpl->fetch('order.mail.create'),
+            'text/html'
+        );
+
+        $event->getBasket()->clear();
+        $event->getBasket()->save();
     }
 
     /**

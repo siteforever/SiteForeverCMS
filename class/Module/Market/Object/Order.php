@@ -74,8 +74,7 @@ class Order extends Object
      */
     public function getUrl()
     {
-        return /*'http://'.$this->app()->getConfig('siteurl')*/
-            Sfcms::html()->url('order/view',array('id'=>$this->getId(),'code'=>$this->getHash()));
+        return Sfcms::html()->url('order/view',array('id'=>$this->getId(),'code'=>$this->getHash()));
     }
 
     /**

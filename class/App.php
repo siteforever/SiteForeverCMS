@@ -130,7 +130,7 @@ class App extends AbstractKernel
                 default:
                     $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
             if ($this->isDebug()) {
                 throw $e;

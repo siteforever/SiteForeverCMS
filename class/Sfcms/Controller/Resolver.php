@@ -14,6 +14,7 @@ use RuntimeException;
 use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Request;
 use Sfcms_Http_Exception;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Resolver
@@ -136,6 +137,11 @@ class Resolver
         }
         $this->app->getTpl()->assign('this', $controller);
         $this->app->getTpl()->assign('request', $request);
+        $this->app->getTpl()->assign('config', $this->app->getConfig());
+        if ($controller instanceof EventSubscriberInterface) {
+            $this->app->getEventDispatcher()->addSubscriber($controller);
+        }
+
         $arguments = $this->prepareArguments($method, $request);
         $result = $method->invokeArgs($controller, $arguments);
 
