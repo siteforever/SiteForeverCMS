@@ -25,7 +25,7 @@ abstract class Field
      * @param string|null $default
      * @param bool $autoincrement
      */
-    public function __construct( $name, $length = 11, $notnull = false, $default = null, $autoincrement = false )
+    public function __construct($name, $length = 11, $notnull = false, $default = null, $autoincrement = false)
     {
         $this->name     = $name;
         $this->length   = $length;

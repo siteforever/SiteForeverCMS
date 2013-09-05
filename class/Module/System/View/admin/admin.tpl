@@ -1,4 +1,4 @@
-{block name="title"}<h2>{$title}</h2>{/block}
+{block name="title"}<h2>{$title|lang}</h2>{/block}
 
 
 

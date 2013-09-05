@@ -64,6 +64,9 @@ return array(
     'Create manufacturer'                       => 'Создать производителя',
     'Edit manufacturer'                         => 'Изменить производителя',
 
+    'Comments'                                  => 'Комментарии',
+    'Catalog'                                   => 'Каталог',
+
     'Payment'                                   => 'Оплата',
 
     // Goods

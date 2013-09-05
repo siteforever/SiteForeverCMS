@@ -96,6 +96,7 @@ class Order extends Object
             // field, size, nonull, default, autoincrement
             new Field\Int('id', 11, true, null, true),
             new Field\Tinyint('status', 4, true, 0),
+            new Field\Tinyint('person', 4, false),
             new Field\Int('paid', 11, true, 0),
             new Field\Int('delivery_id', 11, true, 0),
             new Field\Int('payment_id', 11, true, 0),
@@ -106,6 +107,8 @@ class Order extends Object
             new Field\Varchar('email', 255, true, ""),
             new Field\Varchar('phone', 255, true, ""),
             new Field\Text('address'),
+            new Field\Text('details'),
+            new Field\Text('passport'),
             new Field\Text('comment'),
         );
     }

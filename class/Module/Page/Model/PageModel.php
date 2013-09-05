@@ -182,18 +182,19 @@ class PageModel extends Model
      *
      * @return Page
      */
-    public function findByControllerLink( $controller, $link )
+    public function findByControllerLink($controller, $link)
     {
-        if ( isset( $this->_controller_link[$controller][$link] ) ) {
+        if (isset($this->_controller_link[$controller][$link])) {
             return $this->_controller_link[$controller][$link];
         }
         /** @var $page Page */
-        foreach ( $this->getAll() as $page ) {
-            if ( $link == $page->link && $controller == $page->controller ) {
-                $this->_controller_link[$controller][$link] = $page;
+        foreach ($this->getAll() as $page) {
+            $this->_controller_link[$controller][$link] = $page;
+            if ($link == $page->link && $controller == $page->controller) {
                 return $page;
             }
         }
+
         return null;
     }
 

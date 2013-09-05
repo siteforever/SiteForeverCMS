@@ -13,7 +13,6 @@ use Module\Market\Object\OrderPosition;
 use Sfcms;
 use Sfcms\Controller;
 use Sfcms\Form\Form;
-use Forms_Basket_Address;
 use Module\Market\Object\Delivery;
 use Module\Market\Model\OrderModel;
 use Module\Catalog\Model\CatalogModel;
@@ -50,7 +49,7 @@ class BasketController extends Controller implements EventSubscriberInterface
         $this->logger->info('request', $this->request->request->all());
 
         $address = $this->request->get('address');
-        $form = new Forms_Basket_Address();
+        $form = $this->get('order.form');
         $form->delivery_id = $this->request->getSession()->get('delivery');
 
         // Ajax validate
@@ -264,18 +263,21 @@ class BasketController extends Controller implements EventSubscriberInterface
             // обновляем количества
             $basket_counts = $this->request->request->get('basket_counts');
 
-            if ( $basket_counts && is_array( $basket_counts ) ) {
+            if ($basket_counts && is_array($basket_counts)) {
                 /** @var $basket Sfcms\Basket\Base */
-                array_walk($basket_counts, function($prod_count, $key, $basket){
-                    $basket->setCount( $key, $prod_count > 0 ? $prod_count : 1 );
-                }, $this->getBasket());
+                array_walk($basket_counts,
+                    function ($prod_count, $key, $basket) {
+                        $basket->setCount($key, $prod_count > 0 ? $prod_count : 1);
+                    },
+                    $this->getBasket()
+                );
             }
 
             // Удалить запись
             $basket_del = $this->request->request->get('basket_del');
-            if ( $basket_del && is_array( $basket_del ) ) {
-                foreach( $basket_del as $key => $prod_del ) {
-                    $this->getBasket()->del( $key );
+            if ($basket_del && is_array($basket_del)) {
+                foreach ($basket_del as $key => $prod_del) {
+                    $this->getBasket()->del($key);
                     $result['delete'][] = $key;
                 }
             }
@@ -286,7 +288,7 @@ class BasketController extends Controller implements EventSubscriberInterface
             $result['basket']['sum'] = $this->getBasket()->getSum() + $delivery->cost();
             $result['basket']['count'] = $this->getBasket()->getCount();
             $result['basket']['delitems'] = isset($result['delete']) ? $result['delete'] : array();
-            unset( $result['delete'] );
+            unset($result['delete']);
             $this->getBasket()->save();
         }
 
@@ -307,7 +309,6 @@ class BasketController extends Controller implements EventSubscriberInterface
                         $this->app->getEventDispatcher()->dispatch('market.order.create', $event);
 
                         $this->request->getSession()->set('order_id',$order->id);
-//                        $this->request->getSession()->getFlashBag()->add('info', 'Order is created successfully');
 
                         $paymentModel = $this->getModel('Payment');
                         $payment = $paymentModel->find($form['payment_id']);
@@ -360,15 +361,15 @@ class BasketController extends Controller implements EventSubscriberInterface
         ));
 
         $this->sendmail(
-            $this->config->get('admin'),
-            $this->config->get('admin'),
+            $this->config->get('email_for_order', $this->config->get('admin')),
+            $this->config->get('email_for_order', $this->config->get('admin')),
             sprintf('Новый заказ с сайта %s №%s', $this->config->get('sitename'), $order->getId()),
             $this->tpl->fetch('order.mail.createadmin'),
             'text/html'
         );
 
         $this->sendmail(
-            $this->config->get('admin'),
+            $this->config->get('email_for_order', $this->config->get('admin')),
             $order->email,
             sprintf('Заказ №%s на сайте %s', $order->getId(), $this->config->get('sitename')),
             $this->tpl->fetch('order.mail.create'),

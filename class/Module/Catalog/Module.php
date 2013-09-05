@@ -224,7 +224,7 @@ class Module extends SfModule
                         'url'   => 'catalogcomment/admin',
                     ),
                     array(
-                        'name'  => 'Каталог',
+                        'name'  => $this->t('Catalog'),
                         'url'   => 'catalog/admin',
                     ),
                 )

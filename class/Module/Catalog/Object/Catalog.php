@@ -126,8 +126,9 @@ class Catalog extends Object
      */
     public function getAlias()
     {
-        $alias = mb_strtolower(($this->cat ? '' : $this->id . '-') . $this->app()->getContainer()->get('i18n')->translit($this->name)) ?: $this->id;
-        $alias = trim($alias, '-');
+        $alias = ($this->cat ? '' : $this->id . '-')
+            . $this->app()->getContainer()->get('i18n')->translit($this->name) ?: $this->id;
+        $alias = mb_strtolower(trim($alias, '-'));
         if (empty($this->data['alias']) || $this->data['alias'] != $alias) {
             $this->data['alias'] = $alias;
             if (!$this->isStateCreate()) {
@@ -151,8 +152,8 @@ class Catalog extends Object
         /** @var $page Page */
         $page = $modelPage->findByControllerLink('catalog', $this->cat ? $this->id : $this->parent);
 
-        if ( null === $page ) {
-            throw new \RuntimeException($this->t('Page for catalog category not found').'; page.link='.$this->parent);
+        if (null === $page) {
+            return $this->alias;
         }
 
         return $page->alias . ($this->cat ? '' : '/' . $this->alias);

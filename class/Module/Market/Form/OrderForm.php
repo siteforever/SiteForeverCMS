@@ -5,17 +5,29 @@
  * @link http://ermin.ru
  */
 
-use Sfcms\Kernel\AbstractKernel;
+namespace Module\Market\Form;
 
-class Forms_Basket_Address extends \Sfcms\Form\Form
+use Sfcms\Kernel\AbstractKernel;
+use Sfcms\Form\Form;
+
+class OrderForm extends Form
 {
     public function __construct()
     {
         return parent::__construct(array(
             'name'      => 'basket_address',
             'class'     => 'form-horizontal ajax-validate',
-            'action'    => App::cms()->getRouter()->createServiceLink('basket','index'),
+            'action'    => \App::cms()->getRouter()->createServiceLink('basket','index'),
             'fields'    => array(
+                'person' => array(
+                    'type' => 'radio',
+                    'label' => 'Заказчик',
+                    'value' => '0',
+                    'variants' => array(
+                        '0' => 'Физическое лицо',
+                        '1' => 'Юридическое лицо',
+                    ),
+                ),
                 'delivery_id'  => array(
                     'type'      =>'radio',
                     'required',
@@ -30,31 +42,26 @@ class Forms_Basket_Address extends \Sfcms\Form\Form
                     'value'     => 1,
                     'variants'  => array(),
                 ),
+
                 'fname'     => array('type'=>'text', 'label'=>'Имя', 'required'),
                 'lname'     => array('type'=>'text', 'label'=>'Фамилия'),
                 'email'     => array('type'=>'text', 'label'=>'Email', 'filter'=>'email', 'required'),
                 'phone'     => array('type'=>'text', 'label'=>'Телефон',
                                      'filter'=>'phone', 'notice'=>'Формат: +7 812 123 45 67', 'required'),
+
+                'zip'       => array('type'=>'text', 'label'=>'Индекс', 'filter'=>'/\d{1,10}/'),
+
                 'country'   => array(
-                    'type'=>'select',
+                    'type'=>'text',
                     'label'=>'Страна',
-                    'variants' => array(
-                        'Россия' => 'Россия',
-                    ),
+                ),
+                'region'      => array(
+                    'type'=>'text',
+                    'label'=>'Область',
                 ),
                 'city'      => array(
-                    'type'=>'select',
+                    'type'=>'text',
                     'label'=>'Город',
-                    'variants'  => array(
-                        'Санкт-Петербург' => 'Санкт-Петербург',
-                        'Выборг'        => 'Выборг',
-                        'Гатчина'       => 'Гатчина',
-                        'Волхов'        => 'Волхов',
-                        'Всеволожск'    => 'Всеволожск',
-                        'Кириши'        => 'Кириши',
-                        'Сосновый Бор'  => 'Сосновый Бор',
-                        'Тихвин'        => 'Тихвин',
-                    ),
                 ),
                 'metro'     => array(
                     'type'  => 'select',
@@ -62,13 +69,25 @@ class Forms_Basket_Address extends \Sfcms\Form\Form
                     'variants'  => array(),
                     'notice'    => 'Укажите ближайшую к вам станцию',
                 ),
+
                 'address'   => array(
                     'type'  => 'textarea',
                     'label' => 'Адрес',
-//                    'required',
                     'notice' => 'ул. Кораблестроителей, д.59, к.2, кв.103, домофон: 1568, и т.д.',
                 ),
-                'zip'       => array('type'=>'text', 'label'=>'Индекс',),
+
+                'details'   => array(
+                    'type'  => 'textarea',
+                    'label' => 'Реквизиты организации',
+                    'notice' => 'Для отправки почтой и транспортными компаниями',
+                ),
+
+                'passport'   => array(
+                    'type'  => 'textarea',
+                    'label' => 'Паспортные данные',
+                    'notice' => 'Для отправки почтой и транспортными компаниями:<br>'
+                                .'Фамилия, Имя, Отчество, Серия, Номер, Кем и Когда выдан',
+                ),
 
                 'comment'   => array('type'=>'textarea', 'label'=>'Комментарий',),
 

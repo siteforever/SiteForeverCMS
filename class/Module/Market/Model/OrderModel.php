@@ -8,13 +8,13 @@
 
 namespace Module\Market\Model;
 
+use Module\Market\Form\OrderForm;
 use Sfcms;
 use Sfcms\Model;
 use Sfcms\Basket\Base as Basket;
 use Module\Market\Object\Delivery;
 use Module\Market\Object\Order;
 use Module\Market\Object\OrderPosition;
-use Forms_Basket_Address;
 
 class OrderModel extends Model
 {
@@ -53,11 +53,11 @@ class OrderModel extends Model
 
     /**
      * Create order
-     * @param Forms_Basket_Address $form
+     * @param OrderForm $form
      * @param Sfcms\Delivery $delivery
      * @return Order|null
      */
-    public function createOrder(Forms_Basket_Address $form, Sfcms\Delivery $delivery)
+    public function createOrder(OrderForm $form, Sfcms\Delivery $delivery)
     {
         /** @var $obj Order */
         $obj = $this->createObject();
@@ -66,13 +66,16 @@ class OrderModel extends Model
         $metro = !$form->metro ? null : $this->getModel('Metro')->find($form->metro);
         $obj->address = join(', ',
             array_filter(array(
-                    $form->zip,
-                    $form->country,
-                    $form->city,
-                    null === $metro ? false : $this->t('subway') . ' ' . $metro->name,
-                    $form->address,
-                )
-            )
+                '0' == $form->person ? 'Физическое лицо' : 'Юридическое лицо',
+                $form->zip,
+                $form->country,
+                $form->region,
+                $form->city,
+                null === $metro ? false : $this->t('subway') . ' ' . $metro->name,
+                $form->address,
+                $form->details,
+                $form->passport,
+            ))
         );
 
         $obj->status = 1;

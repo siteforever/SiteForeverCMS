@@ -8,6 +8,7 @@
 namespace Module\Market;
 
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 use Module\Market\Event\OrderSubscriber;
@@ -40,6 +41,14 @@ class Module extends SfModule
     {
         return include_once __DIR__ . '/config.php';
     }
+
+    public function registerService(ContainerBuilder $container)
+    {
+        if (!$container->has('order.form')) {
+            $container->register('order.form', 'Module\Market\Form\OrderForm');
+        }
+    }
+
 
     public function registerRoutes(Router $router)
     {
