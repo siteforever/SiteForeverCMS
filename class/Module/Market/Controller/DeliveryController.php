@@ -43,27 +43,27 @@ class DeliveryController extends Controller
         $form = new Forms_Delivery_Edit();
         $model = $this->getModel('Delivery');
 
-        if ( $id ) {
-            $obj = $model->find( $id );
-            $form->setData( $obj->attributes );
+        if ($id) {
+            $obj = $model->find($id);
+            $form->setData($obj->attributes);
         }
 
-        if ( $form->getPost($this->request) ) {
-            if ( $form->validate() ) {
-                if ( $id = $form->getField('id')->getValue() ) {
-                    $obj = $model->find( $id );
+        if ($form->getPost($this->request)) {
+            if ($form->validate()) {
+                if ($id = $form->getField('id')->getValue()) {
+                    $obj = $model->find($id);
                 } else {
-                    $obj = $model->createObject();
+                    $obj = $model->createObject()->markNew();
                 }
                 $obj->attributes = $form->getData();
                 $obj->markDirty();
-                return array('error'=>0,'msg'=>$this->t('Data save successfully'));
+                return array('error' => 0, 'msg' => $this->t('Data save successfully'));
             } else {
-                return array('error'=>1,'msg'=>$form->getFeedbackString());
+                return array('error' => 1, 'msg' => $form->getFeedbackString());
             }
         }
 
-        return $form->html(false,false);
+        return $form->html(false, false);
     }
 
 

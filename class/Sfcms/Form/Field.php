@@ -71,7 +71,7 @@ abstract class Field
      * @param string $name
      * @param array $params
      */
-    public function __construct( Form $form, $name, $params )
+    public function __construct(Form $form, $name, $params)
     {
         $this->_form = $form;
         $this->_name = $name;

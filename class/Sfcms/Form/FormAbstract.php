@@ -98,25 +98,25 @@ abstract class FormAbstract
     /**
      * @param Field $field
      * @param string $after
-     * @return void
+     * @return Field
      */
-    public function addField( Field $field, $after = '' )
+    public function addField(Field $field, $after = '')
     {
-        if ( ! $after ) {
-            $this->fields[ $field->getId() ]   = $field;
-            return;
+        if (!$after) {
+            $this->fields[$field->getId()] = $field;
+            return $field;
         }
 
         $fields = $this->fields;
-        $this->fields  = array();
+        $this->fields = array();
 
-        foreach ( $fields as $key => $field ) {
-            $this->fields[ $key ]  = $field;
-            if ( $key == $after ) {
-                $this->fields[ $field->getId() ]   = $field;
+        foreach ($fields as $key => $field) {
+            $this->fields[$key] = $field;
+            if ($key == $after) {
+                $this->fields[$field->getId()] = $field;
             }
         }
-        return;
+        return $field;
     }
 
     /**

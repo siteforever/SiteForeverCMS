@@ -40,7 +40,7 @@ class PaymentController extends Controller
 
         if ( $form->getPost($this->request) ) {
             if ( $form->validate() ) {
-                $payObj = $form->id ? $model->find($form->id) : $model->createObject();
+                $payObj = $form->id ? $model->find($form->id) : $model->createObject()->markNew();
                 $payObj->attributes = $form->getData();
                 return array('error'=>0,'msg'=>$this->t('Data save successfully'));
             } else {
