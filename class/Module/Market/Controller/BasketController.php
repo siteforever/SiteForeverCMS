@@ -123,7 +123,7 @@ class BasketController extends Controller implements EventSubscriberInterface
             'all_summa'     => $this->getBasket()->getSum(),
             'delivery'      => $delivery,
             'form'          => $form,
-            'host'          => urlencode($this->config->get('siteurl').$this->router->createLink('basket') ),
+            'host'          => urlencode($this->request->getHttpHost() . $this->router->createLink('basket') ),
             'auth'          => $this->auth,
         );
     }

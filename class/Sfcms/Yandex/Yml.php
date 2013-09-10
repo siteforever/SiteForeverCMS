@@ -8,17 +8,18 @@
 namespace Sfcms\Yandex;
 
 use App;
-use Data_Collection;
-use Data_Object_Catalog;
+use Sfcms\Data\Collection;
+use Module\Catalog\Object\Catalog;
 use DOMImplementation;
 use DOMDocument;
+use Sfcms\Request;
 
 class Yml
 {
-    /** @var Data_Collection */
+    /** @var Collection */
     private $collection;
 
-    /** @var Data_Collection */
+    /** @var Collection */
     private $categories;
 
     /** @var DOMDocument */
@@ -27,22 +28,22 @@ class Yml
     /** @var App */
     private $app;
 
-    public function __construct( App $app )
+    public function __construct(App $app)
     {
         $this->app = $app;
     }
 
-    public function setCollection( Data_Collection $collection )
+    public function setCollection(Collection $collection)
     {
         $this->collection = $collection;
     }
 
-    public function setCategories( Data_Collection $collection )
+    public function setCategories(Collection $collection)
     {
         $this->categories = $collection;
     }
 
-    private function prepare()
+    private function prepare(Request $request)
     {
         $imp = new DOMImplementation();
 
@@ -63,13 +64,13 @@ class Yml
 
 
         $config = $this->app->getConfig();
-        $shop->appendChild( $dom->createElement('name', $config->get('sitename')) );
-        $shop->appendChild( $dom->createElement('company', $config->get('sitename')) );
-        $shop->appendChild( $dom->createElement('url', $config->get('siteurl')) );
-        $shop->appendChild( $dom->createElement('platform', 'SiteForeverCMS') );
-        $shop->appendChild( $dom->createElement('version', '0.4.1') );
-        $shop->appendChild( $dom->createElement('agency', 'Firetroop') );
-        $shop->appendChild( $dom->createElement('email', 'keltanas@gmail.com') );
+        $shop->appendChild($dom->createElement('name', $config->get('sitename')));
+        $shop->appendChild($dom->createElement('company', $config->get('sitename')));
+        $shop->appendChild($dom->createElement('url', $request->getHttpHost()));
+        $shop->appendChild($dom->createElement('platform', 'SiteForeverCMS'));
+        $shop->appendChild($dom->createElement('version', '0.5'));
+        $shop->appendChild($dom->createElement('agency', 'Firetroop'));
+        $shop->appendChild($dom->createElement('email', 'keltanas@gmail.com'));
 
         $currencies = $dom->createElement('currencies');
         $shop->appendChild( $currencies );
@@ -80,18 +81,20 @@ class Yml
 
         $categories = $dom->createElement('categories');
         $shop->appendChild($categories);
-        array_map(function( Data_Object_Catalog $obj) use ( $dom, $categories ) {
-            $category = $dom->createElement('category', $obj->name);
-            $category->setAttribute('id', $obj->id);
-            if ( $obj->parent ) {
-                $category->setAttribute('parentId', $obj->parent);
-            }
-            $categories->appendChild( $category );
-        },iterator_to_array($this->categories));
+        array_map(function (Catalog $obj) use ($dom, $categories) {
+                $category = $dom->createElement('category', $obj->name);
+                $category->setAttribute('id', $obj->id);
+                if ($obj->parent) {
+                    $category->setAttribute('parentId', $obj->parent);
+                }
+                $categories->appendChild($category);
+            },
+            iterator_to_array($this->categories)
+        );
 
         $offers = $dom->createElement('offers');
         $shop->appendChild( $offers );
-        array_map(function( Data_Object_Catalog $obj ) use ( $dom, $offers, $config ) {
+        array_map(function(Catalog $obj ) use ( $dom, $offers, $config ) {
             $offer = $dom->createElement('offer');
             $offers->appendChild( $offer );
             $offer->setAttribute('id', $obj->id);
@@ -143,9 +146,9 @@ class Yml
         }, iterator_to_array( $this->collection ));
     }
 
-    public function output()
+    public function output(Request $request)
     {
-        $this->prepare();
+        $this->prepare($request);
         $this->dom->formatOutput = true;
         return $this->dom->saveXML();
     }

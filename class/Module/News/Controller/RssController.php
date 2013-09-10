@@ -71,8 +71,6 @@ class RssController extends Controller
             $itemDom->appendChild( $dom->createElement('pubDate', date('r', $article['date']) ) );
         }
 
-//        $xml_string = str_replace('src="','src="'.$this->config->get('siteurl'), $xml_string);
-        //$xml_string = htmlspecialchars_decode( $xml_string );
         $dom->formatOutput = true;
         return new Response($dom->saveXML(), 200, array('content-type'=>'text/xml'));
     }

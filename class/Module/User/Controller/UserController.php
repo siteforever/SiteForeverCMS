@@ -48,9 +48,9 @@ class UserController extends Controller
         if ($confirm && $userid) {
             $this->request->setTitle('Подтверждение регистрации');
             $this->getTpl()->getBreadcrumbs()->addPiece('index', $this->t('Home'))->addPiece(
-                    'user',
+                'user',
                 $this->t('user', 'Sign in site')
-                )->addPiece(null, $this->request->getTitle());
+            )->addPiece(null, $this->request->getTitle());
 
             /** @var User $user */
             $user = $this->getModel('User')->find( array(
@@ -451,7 +451,7 @@ class UserController extends Controller
 
             $tpl->user = $obj;
             $tpl->sitename = $config->get('sitename');
-            $tpl->siteurl  = $config->get('siteurl');
+            $tpl->siteurl  = $this->request->getHttpHost();
 
             $msg = $tpl->fetch('user.mail.register');
 
@@ -464,8 +464,8 @@ class UserController extends Controller
                 $msg
             );
 
-            $this->request->addFeedback("Регистрация прошла успешно. ".
-                "На Ваш Email отправлена ссылка для подтверждения регистрации.");
+            $this->request->addFeedback("Регистрация прошла успешно. "
+                . "На Ваш Email отправлена ссылка для подтверждения регистрации.");
             return true;
         }
         return false;
@@ -507,8 +507,7 @@ class UserController extends Controller
                         'pass'      => $pass,
                         'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
-                        'loginform' => $this->config->get('siteurl').
-                                $this->router->createLink("user/login")
+                        'loginform' => $this->request->getHttpHost() . $this->router->createLink("user/login")
                     ));
 
                     $this->sendmail(
@@ -565,8 +564,8 @@ class UserController extends Controller
                     $this->tpl->assign(array(
                         'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
-                        'siteurl'   => $this->config->get('siteurl'),
-                        'link'      => $this->config->get('siteurl')
+                        'siteurl'   => $this->request->getHttpHost(),
+                        'link'      => $this->request->getHttpHost()
                                       . $this->router->createServiceLink(
                                             "user", "recovery",
                                             array('email'=>$user['email'], 'code'=>md5($user['solt']),  )

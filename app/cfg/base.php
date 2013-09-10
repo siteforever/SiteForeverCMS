@@ -1,7 +1,5 @@
 <?php
 return array(
-    'siteurl'   => 'http://'.$_SERVER['HTTP_HOST'],
-
 //    'editor' => 'tinymce',
     'editor' => 'ckeditor',
 //    'editor' => 'elrte',
