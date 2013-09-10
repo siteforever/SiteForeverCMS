@@ -377,7 +377,7 @@ class UserController extends Controller
                 $user = $model->createObject();
                 $user->attributes = $form->getData();
                 if ($this->register($user)) {
-                    return $this->tpl->fetch('user.register_successfull');
+                    return $this->render('user.register_successfull');
                 }
             } else {
                 $this->request->addFeedback($form->getFeedbackString());
@@ -413,25 +413,26 @@ class UserController extends Controller
         $user->date = $user->last = time();
         $model = $user->getModel();
 
-        $user = $model->find(array(
+        $userLogin = $model->find(array(
             'cond'     => 'login = :login',
-            'params'   => array(':login'=>$user['login']),
+            'params'   => array(':login'=>$user->login),
         ));
 
-        if ($user) {
+        if ($userLogin) {
             $this->request->addFeedback('Пользователь с таким логином уже существует');
             return false;
         }
 
-        $user = $model->find(array(
+        $userEmail = $model->find(array(
             'cond'     => 'email = :email',
             'params'   => array(':email'=>$user['email']),
         ));
 
-        if ($user) {
+        if ($userEmail) {
             $this->request->addFeedback('Пользователь с таким адресом уже существует');
             return false;
         }
+
         // Надо сохранить, чтобы знать id
         if ($model->save($user)) {
             $tpl    = $this->tpl;
