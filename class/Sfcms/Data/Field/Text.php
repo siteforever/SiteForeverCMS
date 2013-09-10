@@ -19,7 +19,7 @@ class Text extends Field
      */
     function validate($value)
     {
-        return filter_var( $value, FILTER_SANITIZE_STRING );
+        return filter_var($value, FILTER_SANITIZE_STRING);
     }
 
     /**
@@ -28,6 +28,6 @@ class Text extends Field
      */
     function toString()
     {
-        return "`{$this->name}` text";
+        return sprintf('`%s` text', $this->name);
     }
 }

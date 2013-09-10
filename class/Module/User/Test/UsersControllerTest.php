@@ -145,9 +145,7 @@ class UsersControllerTest extends WebCase
         $this->assertEquals(1, $crawler->filterXPath('//input[@id="register_captcha"]')->count());
         $this->assertEquals(1, $crawler->filterXPath('//input[@id="register_submit"]')->count());
 
-        $_SESSION['_sf2_attributes']['captcha_code'] = 'test';
-//        $this->request->getSession()->set('captcha_code', 'test');
-//        $this->request->getSession()->save();
+        $this->request->getSession()->set('captcha_code', 'test');
         $this->request->setMethod('POST');
         $_POST = array('register' => array(
             'email' => 'test_user@example.com',
@@ -201,7 +199,10 @@ class UsersControllerTest extends WebCase
         $crawler = $this->createCrawler($response);
 
 
-        $this->assertEquals('Ваша учетная запись отключена', $crawler->filterXPath('//div[@class="alert alert-error"]')->text());
+        $this->assertEquals(
+            'Ваша учетная запись отключена',
+            $crawler->filterXPath('//div[@class="alert alert-error"]')->text()
+        );
     }
 
 
