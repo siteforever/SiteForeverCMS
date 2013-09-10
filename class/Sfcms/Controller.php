@@ -285,7 +285,7 @@ abstract class Controller extends ContainerAware
      *
      * @return int
      */
-    public function sendmail($from, $to, $subject, $msg, $mime_type = 'plain/text')
+    public function sendmail($from, $to, $subject, $msg, $mime_type = 'text/plain')
     {
         /** @var $message \Swift_Message */
         $message = $this->getMailer()->createMessage();

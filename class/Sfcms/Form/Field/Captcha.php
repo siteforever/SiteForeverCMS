@@ -3,6 +3,7 @@ namespace Sfcms\Form\Field;
 
 use App;
 use Sfcms\Form\Field;
+use Sfcms\Request;
 
 /**
  * Поле каптчи
@@ -30,17 +31,14 @@ class Captcha extends Field
      * @param $value
      * @return boolean
      */
-    protected function checkValue( $value )
+    protected function checkValue($value)
     {
-        // todo Надо внедрить в форму Request
-        $captcha_code = isset($_SESSION['_sf2_attributes']['captcha_code'])
-            ? $_SESSION['_sf2_attributes']['captcha_code'] : '';
+        $captcha_code = $this->request->getSession()->get('captcha_code');
+        $this->request->getSession()->remove('captcha_code');
         if (strtolower($captcha_code) == strtolower($value)) {
             return true;
         }
         $this->_msg = $this->t('Code is not valid');
-        unset($_SESSION['_sf2_attributes']['captcha_code']);
         return false;
     }
-
 }

@@ -316,12 +316,13 @@ class PageController extends Controller
         $return = array();
 
         /** @var Page $page */
-        foreach ( $pages as $page ) {
+        foreach ($pages as $page) {
             try {
                 $page->save();
                 $return[] = 'Алиас &laquo;' . $page->name . '&raquo; &rarr; &laquo;' . $page->alias . '&raquo; пересчитан';
-            } catch ( Exception $e ) {
-                $return[] = 'Алиас &laquo;' . $page->name . '&raquo; &rarr; ' . $e->getMessage() . ' &laquo;' . $page->alias . '&raquo;';
+            } catch (Exception $e) {
+                $return[] = 'Алиас &laquo;' . $page->name . '&raquo; &rarr; ' . $e->getMessage(
+                    ) . ' &laquo;' . $page->alias . '&raquo;';
             }
         }
 

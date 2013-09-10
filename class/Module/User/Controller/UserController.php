@@ -37,8 +37,8 @@ class UserController extends Controller
     /**
      * Основное действие
      * Выводит форму логина либо подтверждает регистрацию
-     * @params string $confirm
-     * @params int $userid
+     * @param string $confirm
+     * @param int $userid
      *
      * @return mixed
      */
@@ -54,9 +54,9 @@ class UserController extends Controller
 
             /** @var User $user */
             $user = $this->getModel('User')->find( array(
-                    'cond'      => 'id = :id AND confirm = :confirm',
-                    'params'    => array(':id'=>$userid, ':confirm'=>$confirm),
-                ));
+                'cond'      => 'id = :id AND confirm = :confirm',
+                'params'    => array(':id'=>$userid, ':confirm'=>$confirm),
+            ));
 
             if ($user) {
                 $user->perm = USER_USER;
@@ -376,17 +376,18 @@ class UserController extends Controller
 
         $form = $model->getRegisterForm();
 
-        if ( $form->getPost($this->request) ) {
-            if ( $form->validate() ) {
-                $user   = $model->createObject();
+        if ($form->getPost($this->request)) {
+            if ($form->validate()) {
+                $user = $model->createObject();
                 $user->attributes = $form->getData();
-                if ($this->register( $user )) {
+                if ($this->register($user)) {
                     return $this->tpl->fetch('user.register_successfull');
                 }
             } else {
                 $this->request->addFeedback($form->getFeedbackString());
             }
         }
+
         return $form->html();
     }
 
@@ -395,15 +396,15 @@ class UserController extends Controller
      * Регистрация
      * @param User $obj
      */
-    public function register( User $obj )
+    public function register(User $obj)
     {
-        if ( strlen( $obj['login'] ) < 5 ) {
+        if (strlen($obj['login']) < 5) {
             $this->request->addFeedback('Логин должен быть не короче 5 символов');
             return false;
         }
 
-        if ( strlen( $obj['password'] ) < 6 ) {
-            $this->request->addFeedback( 'Пароль должен быть не короче 6 символов' );
+        if (strlen($obj['password']) < 6) {
+            $this->request->addFeedback('Пароль должен быть не короче 6 символов');
             return false;
         }
 
@@ -418,23 +419,23 @@ class UserController extends Controller
 
         $model = $obj->getModel();
 
-        $user   = $model->find(array(
-                'cond'     => 'login = :login',
-                'params'   => array(':login'=>$obj['login']),
-            ));
+        $user = $model->find(array(
+            'cond'     => 'login = :login',
+            'params'   => array(':login'=>$obj['login']),
+        ));
 
-        if ( $user ) {
-            $this->request->addFeedback( 'Пользователь с таким логином уже существует' );
+        if ($user) {
+            $this->request->addFeedback('Пользователь с таким логином уже существует');
             return false;
         }
 
-        $user   = $model->find(array(
-                'cond'     => 'email = :email',
-                'params'   => array(':email'=>$obj['email']),
-            ));
+        $user = $model->find(array(
+            'cond'     => 'email = :email',
+            'params'   => array(':email'=>$obj['email']),
+        ));
 
-        if ( $user ) {
-            $this->request->addFeedback( 'Пользователь с таким адресом уже существует' );
+        if ($user) {
+            $this->request->addFeedback('Пользователь с таким адресом уже существует');
             return false;
         }
 

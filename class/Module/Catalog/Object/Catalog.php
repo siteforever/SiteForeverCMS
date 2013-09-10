@@ -102,13 +102,24 @@ class Catalog extends Object
      */
     public function getSalePrice()
     {
-        if ( $this->sale ) {
-            $start = mktime( 0,0,0,date('n',$this->data['sale_start']),date('d',$this->data['sale_start']),date('Y',$this->data['sale_start']) );
-            $stop  = mktime( 23,59,59,date('n',$this->data['sale_stop']),date('d',$this->data['sale_stop']),date('Y',$this->data['sale_stop']) );
-            if ( $start <= time() && time() <= $stop ) {
-                return ceil( $this->getPrice() * ( 100 - $this->sale ) / 1000 ) * 10;
+        if ($this->sale) {
+            $start = mktime(
+                0, 0, 0,
+                date('n', $this->data['sale_start']),
+                date('d', $this->data['sale_start']),
+                date('Y', $this->data['sale_start'])
+            );
+            $stop = mktime(
+                23, 59, 59,
+                date('n', $this->data['sale_stop']),
+                date('d', $this->data['sale_stop']),
+                date('Y', $this->data['sale_stop'])
+            );
+            if ($start <= time() && $stop >= time()) {
+                return ceil($this->getPrice() * (100 - $this->sale) / 1000) * 10;
             }
         }
+
         return null;
     }
 

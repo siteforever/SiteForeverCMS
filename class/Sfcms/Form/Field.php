@@ -3,6 +3,7 @@ namespace Sfcms\Form;
 
 use Sfcms\Form\Form;
 use Sfcms\i18n;
+use Sfcms\Request;
 
 /**
  * Интерфейс классов полей формы
@@ -12,6 +13,8 @@ use Sfcms\i18n;
  */
 abstract class Field
 {
+    /** @var Request */
+    protected $request = null;
 
     /**
      * @return i18n
@@ -263,7 +266,7 @@ abstract class Field
      * Установить варианты выбора (для select и radio)
      * @param $list
      */
-    public function setVariants( $list )
+    public function setVariants($list)
     {
         $this->_params['variants'] = $list;
     }
@@ -272,7 +275,7 @@ abstract class Field
      * Назначать новую метку
      * @param $label
      */
-    public function setLabel( $label )
+    public function setLabel($label)
     {
         $this->_label = $label;
     }
@@ -303,9 +306,10 @@ abstract class Field
      */
     public function isRequired()
     {
-        if ( ! $this->_hidden ) {
+        if (!$this->_hidden) {
             return $this->_required;
         }
+
         return false;
     }
 
@@ -347,37 +351,43 @@ abstract class Field
     /**
      * Проверит значение поля на соответствие типу, а также заполнено ли
      * значение обязательного поля
-     * @return boolean
+     *
+     * @param Request $request
+     * @return bool
      */
-    public function validate()
+    public function validate(Request $request)
     {
-        $classes    = explode( ' ', trim($this->_class) );
-        foreach ( $classes as $i => $class ) {
-            if ( $class == 'error' ) {
-                unset( $classes[ $i ] );
+        $this->request = $request;
+
+        $classes = explode(' ', trim($this->_class));
+        foreach ($classes as $i => $class) {
+            if ($class == 'error') {
+                unset($classes[$i]);
             }
         }
 
         // по умолчанию валидно
         $this->_error   = 0;
 
-        $this->checkValid();
+        $this->checkValid($request);
 
-        if ( $this->_error > 0 ) {
-            $this->_form->addFeedback( $this->_msg );
-            $this->_form->addError( $this->_name, $this->_msg );
+        if ($this->_error > 0) {
+            $this->_form->addFeedback($this->_msg);
+            $this->_form->addError($this->_name, $this->_msg);
             $classes[] = 'error';
-            $this->_class    = join(' ', $classes);
+            $this->_class = join(' ', $classes);
         }
 
-        return ! $this->_error;
+        return !$this->_error;
     }
 
     /**
      * Проверка валидности
+     *
+     * @param Request $request
      * @return boolean
      */
-    protected function checkValid()
+    protected function checkValid(Request $request)
     {
         if ($this->isRequired() && $this->isEmpty()) {
             //    или если его значение пустое
@@ -391,7 +401,7 @@ abstract class Field
             return true;
         }
 
-        if (!$this->checkValue($this->getValue())) {
+        if (!$this->checkValue($this->getValue(), $request)) {
             $this->_error = 3;
             $this->_msg   = $this->_msg ? : "&laquo;{$this->_label}&raquo; не соответсвует формату";
 

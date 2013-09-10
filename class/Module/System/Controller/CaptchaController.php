@@ -37,28 +37,28 @@ class CaptchaController extends Controller
         $w  = $this->config->get('captcha.width');
         $l  = $this->config->get('captcha.length');
 
-        $fontsize   = round( $h * 0.7, 2 );
+        $fontsize = round($h * 0.7, 2);
 
-        $img    = imagecreatetruecolor( $w, $h );
+        $img = imagecreatetruecolor($w, $h);
 
-        imagefill( $img, 0, 0, $this->config->get('captcha.bgcolor') );
+        imagefill($img, 0, 0, $this->config->get('captcha.bgcolor'));
 
-        if ($this->request->getSession()->has('captcha_code')) {
+        if ($this->request->getSession()->has('captcha_code') && !$this->request->query->has('hash')) {
             $text = $this->request->getSession()->get('captcha_code');
         } else {
-            $text = $this->generateString($l, '/[ABCEFGHIKMNOP]/');
+            $text = $this->generateString($l, '/[abcdefhkmnopt23456789]/');
             $this->request->getSession()->set('captcha_code', $text);
         }
 
-        $step   = round( ( $w * 0.8 ) / $l );
-        $halfstep   = round( $step / 2 );
-        $quartstep  = round( $step / 4 );
+        $step = round(($w * 0.8) / $l);
+        $halfstep = round($step / 2);
+        $quartstep = round($step / 4);
 
-        for ( $i = 0; $i < $l; $i++ ) {
+        for ($i = 0; $i < $l; $i++) {
             imagettftext(
                 $img,
                 $fontsize,
-                rand(-15, 15),
+                rand(-10, 10),
                 $i * $step + rand(-$quartstep, $quartstep) + $halfstep,
                 rand($fontsize - 2, $fontsize + 2),
                 $this->config->get('captcha.color'),

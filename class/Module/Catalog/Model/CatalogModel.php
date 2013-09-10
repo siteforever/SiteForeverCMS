@@ -295,7 +295,7 @@ class CatalogModel extends Model
      * @deprecated
      * @return array
      */
-    public function findCatsByParent( $parent, $limit = '' )
+    public function findCatsByParent($parent, $limit = '')
     {
         $list = $this->getDB()->fetchAll(
             "SELECT cat.*, COUNT(sub.id) sub_count "
@@ -320,10 +320,15 @@ class CatalogModel extends Model
      * @param int $limit
      * @return array|Collection
      */
-    public function findProductsSortTop( $limit = 4 )
+    public function findProductsSortTop($limit = 4)
     {
         return $this->with('Gallery')
-            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND absent != 1',array(),'top DESC', $limit);
+            ->findAll(
+                'deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND top = 1 AND absent != 1',
+                array(),
+                'top DESC',
+                $limit
+            );
     }
 
 
@@ -332,10 +337,15 @@ class CatalogModel extends Model
      * @param int $limit
      * @return array|Collection
      */
-    public function findProductsSortNovelty( $limit = 4 )
+    public function findProductsSortNovelty($limit = 4)
     {
         return $this->with('Gallery')
-            ->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND absent != 1',array(),'novelty DESC', $limit);
+            ->findAll(
+                'deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0 AND novelty = 1 AND absent != 1',
+                array(),
+                'novelty DESC',
+                $limit
+            );
     }
 
     /**
@@ -353,7 +363,7 @@ class CatalogModel extends Model
                     '`cat` = 0 AND `absent` != 1',
                     '`sale` > 0 AND `sale_start` <= ? AND `sale_stop` >= ?',
                 )),
-            array(mktime(0, 0, 0), time(23, 59,59)),
+            array(mktime(0, 0, 0), mktime(0, 0, 0)),
             'pos DESC',
             $limit);
     }

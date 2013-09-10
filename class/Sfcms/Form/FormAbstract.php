@@ -36,6 +36,9 @@ abstract class FormAbstract
         /** Данные, полученные из _POST или _GET */
         $data      = array();
 
+    /** @var Request */
+    protected $request = null;
+
     protected $err_required  = 0;
     protected $err_untype    = 0;
 
@@ -207,11 +210,10 @@ abstract class FormAbstract
      * @return Field
      * @throws Exception
      */
-    public function getField( $key )
+    public function getField($key)
     {
-        $id = $this->name.'_'.$key;
-        if ( isset( $this->fields[$id] ) )
-        {
+        $id = $this->name . '_' . $key;
+        if (isset($this->fields[$id])) {
             return $this->fields[$id];
         }
         throw new Exception("Field '{$key}' not found");
@@ -225,6 +227,10 @@ abstract class FormAbstract
      */
     public function getPost(Request $request)
     {
+        if (null === $this->request) {
+            $this->request = $request;
+        }
+
         if ($this->isSent($request)) {
             $data = $this->data;
 
@@ -344,14 +350,18 @@ abstract class FormAbstract
      */
     public function validate()
     {
+        if (null === $this->request) {
+            throw new \RuntimeException('Validation requires an Request');
+        }
         $valid = true;
-        foreach( $this->fields as $field ) {
-            if( is_object( $field ) ) {
+        foreach ($this->fields as $field) {
+            if (is_object($field)) {
                 /** @var $field Field */
-                $ret = $field->validate();
+                $ret = $field->validate($this->request);
                 $valid &= ($ret == 1) ? true : false;
             }
         }
+
         return $valid;
     }
 
