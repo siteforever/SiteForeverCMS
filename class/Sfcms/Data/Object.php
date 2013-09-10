@@ -239,7 +239,7 @@ abstract class Object extends Table
      * Вернет модель данных
      * @param string $model
      *
-     * @return self
+     * @return Model
      */
     public function getModel($model = '')
     {

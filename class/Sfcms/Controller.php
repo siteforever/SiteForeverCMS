@@ -295,6 +295,7 @@ abstract class Controller extends ContainerAware
             ->setTo($to)
             ->setBody($msg, $mime_type, 'utf-8');
 
+        $this->get('logger')->info(sprintf('Send email from %s to %s', $from, $to));
         return $this->getMailer()->send($message);
     }
 

@@ -369,13 +369,9 @@ class UserController extends Controller
             ->addPiece('user/login',$this->t('user','Sign in site'))
             ->addPiece(null,$this->request->getTitle());
 
-        /**
-         * @var UserModel $model
-         */
+        /** @var UserModel $model */
         $model  = $this->getModel('User');
-
         $form = $model->getRegisterForm();
-
         if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 $user = $model->createObject();
@@ -388,40 +384,38 @@ class UserController extends Controller
             }
         }
 
-        return $form->html();
+        return $this->render('user.register', array('form'=>$form));
     }
-
 
     /**
      * Регистрация
-     * @param User $obj
+     * @param User $user
+     * @return bool
      */
-    public function register(User $obj)
+    public function register(User $user)
     {
-        if (strlen($obj['login']) < 5) {
+        if (strlen($user->login) < 5) {
             $this->request->addFeedback('Логин должен быть не короче 5 символов');
             return false;
         }
 
-        if (strlen($obj['password']) < 6) {
+        if (strlen($user->password) < 6) {
             $this->request->addFeedback('Пароль должен быть не короче 6 символов');
             return false;
         }
 
-        $obj['solt']    = $obj->generateString(8);
-        $obj['password']= $obj->generatePasswordHash($obj->password, $obj->solt);
-        $obj['perm']    = USER_GUEST;
-        $obj['status']  = 0;
-        $obj['confirm'] = md5($obj['solt'] . md5(microtime(1) . $obj['solt']));
+        $user->solt    = $user->generateString(8);
+        $user->password= $user->generatePasswordHash($user->password, $user->solt);
+        $user->perm    = USER_GUEST;
+        $user->status  = 0;
+        $user->confirm = md5($user->solt . md5(microtime(1) . $user->solt));
 
-        $obj['date']   = time();
-        $obj['last']   = time();
-
-        $model = $obj->getModel();
+        $user->date = $user->last = time();
+        $model = $user->getModel();
 
         $user = $model->find(array(
             'cond'     => 'login = :login',
-            'params'   => array(':login'=>$obj['login']),
+            'params'   => array(':login'=>$user['login']),
         ));
 
         if ($user) {
@@ -431,37 +425,27 @@ class UserController extends Controller
 
         $user = $model->find(array(
             'cond'     => 'email = :email',
-            'params'   => array(':email'=>$obj['email']),
+            'params'   => array(':email'=>$user['email']),
         ));
 
         if ($user) {
             $this->request->addFeedback('Пользователь с таким адресом уже существует');
             return false;
         }
-
-        //printVar($obj->getAttributes());
-
-        //return;
-
-        //$this->setData( $data );
         // Надо сохранить, чтобы знать id
-        if ( $model->save( $obj ) ) {
-            $tpl    = $this->getTpl();
+        if ($model->save($user)) {
+            $tpl    = $this->tpl;
             $config = $this->config;
 
-            $tpl->user = $obj;
+            $tpl->user = $user;
             $tpl->sitename = $config->get('sitename');
             $tpl->siteurl  = $this->request->getHttpHost();
 
-            $msg = $tpl->fetch('user.mail.register');
-
-            //print $msg;
-
             $this->sendmail(
                 $config->get('admin'),
-                $obj->email,
+                $user->email,
                 'Подтверждение регистрации',
-                $msg
+                $tpl->fetch('user.mail.register')
             );
 
             $this->request->addFeedback("Регистрация прошла успешно. "
