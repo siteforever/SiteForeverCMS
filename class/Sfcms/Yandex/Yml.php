@@ -66,7 +66,7 @@ class Yml
         $config = $this->app->getConfig();
         $shop->appendChild($dom->createElement('name', $config->get('sitename')));
         $shop->appendChild($dom->createElement('company', $config->get('sitename')));
-        $shop->appendChild($dom->createElement('url', $request->getHttpHost()));
+        $shop->appendChild($dom->createElement('url', $request->getSchemeAndHttpHost()));
         $shop->appendChild($dom->createElement('platform', 'SiteForeverCMS'));
         $shop->appendChild($dom->createElement('version', '0.5'));
         $shop->appendChild($dom->createElement('agency', 'Firetroop'));

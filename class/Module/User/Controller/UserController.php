@@ -440,7 +440,7 @@ class UserController extends Controller
 
             $tpl->user = $user;
             $tpl->sitename = $config->get('sitename');
-            $tpl->siteurl  = $this->request->getHttpHost();
+            $tpl->siteurl  = $this->request->getSchemeAndHttpHost();
 
             $this->sendmail(
                 $config->get('admin'),
@@ -492,7 +492,7 @@ class UserController extends Controller
                         'pass'      => $pass,
                         'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
-                        'loginform' => $this->request->getHttpHost() . $this->router->createLink("user/login")
+                        'loginform' => $this->request->getSchemeAndHttpHost() . $this->router->createLink("user/login")
                     ));
 
                     $this->sendmail(
@@ -549,8 +549,8 @@ class UserController extends Controller
                     $this->tpl->assign(array(
                         'login'     => $user['login'],
                         'sitename'  => $this->config->get('sitename'),
-                        'siteurl'   => $this->request->getHttpHost(),
-                        'link'      => $this->request->getHttpHost()
+                        'siteurl'   => $this->request->getSchemeAndHttpHost(),
+                        'link'      => $this->request->getSchemeAndHttpHost()
                                       . $this->router->createServiceLink(
                                             "user", "recovery",
                                             array('email'=>$user['email'], 'code'=>md5($user['solt']),  )

@@ -9,7 +9,7 @@
     <ul>
         <li>Номер заказа: {$order.id}</li>
         <li>Дата: {date('H:i d.m.Y')}</li>
-        <li>Открыть <a href="{$request->getHttpHost()}{$order.url}" target="_blank">заказ на сайте</a></li>
+        <li>Открыть <a href="{$request->getSchemeAndHttpHost()}{$order.url}" target="_blank">заказ на сайте</a></li>
     </ul>
 
     <table width="100%" border="1">
