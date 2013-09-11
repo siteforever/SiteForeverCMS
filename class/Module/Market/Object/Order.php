@@ -74,7 +74,7 @@ class Order extends Object
      */
     public function getUrl()
     {
-        return Sfcms::html()->url('order/view',array('id'=>$this->getId(),'code'=>$this->getHash()));
+        return Sfcms::html()->url('order/view', array('id'=>$this->getId(), 'code'=>$this->getHash()));
     }
 
     /**
@@ -83,7 +83,7 @@ class Order extends Object
      */
     public function getEmptorName()
     {
-        return trim( $this->fname . ' ' . $this->lname );
+        return trim($this->fname . ' ' . $this->lname);
     }
 
     /**

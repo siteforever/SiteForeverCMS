@@ -1,3 +1,5 @@
+<html>
+<body>
 {block name="title"}
 <p>Здравствуйте, {$order->getEmptorName()}</p>
 <p>Вы оформили заказ на сайте {$config->get('sitename')}</p>
@@ -10,7 +12,7 @@
         <li>Открыть <a href="{$request->getHttpHost()}{$order.url}" target="_blank">заказ на сайте</a></li>
     </ul>
 
-    <table>
+    <table width="100%" border="1">
         <tr>
             <th>Наименование</th>
             <th>Цена</th>
@@ -27,13 +29,34 @@
         {/foreach}
     </table>
 
-    {if $delivery}
-    <h3>Доставка</h3>
+    <h4>Контактные данные</h4>
     <ul>
-        <li>{$delivery->getObject()->name}</li>
-        <li>Стоимость: {$delivery->cost($basket->getSum())}</li>
-        <li>Адрес: {$order->address}</li>
+        <li>Имя: {$order->emptorName}</li>
+        <li>Email: {$order->email}</li>
+        <li>Телефон: {$order->phone}</li>
     </ul>
+
+    {if $order->comment}
+        <h4>Комментарий</h4>
+        <p>{$order->comment|strip_tags|trim|nl2br}</p>
+    {/if}
+
+    {if $delivery}
+        <h4>{t cat="delivery"}Delivery{/t}</h4>
+        <ul>
+            <li>Способ доставки: {$delivery->getObject()->name}</li>
+            <li>Адрес доставки: {$order->address}</li>
+            <li>Стоимость: {$delivery->cost()} Р.</li>
+        </ul>
+    {/if}
+
+    {if $payment}
+        <h4>{t}Payment{/t}</h4>
+        <p>Способ оплаты: {$payment->name}</p>
+        {if $robokassa}{*
+            *}<p><a class="btn btn-success" href="{$robokassa->getLink(true)}">Перейти к оплате</a></p>{*
+        *}{/if}
+        <p>В ближайшее время наш менеджер свяжется с Вами.</p>
     {/if}
 
     <p><strong>Итого:</strong></p>
@@ -41,5 +64,6 @@
         <li>Товаров: {$basket->getCount()}</li>
         <li>Сумма к оплате: {$basket->getSum() + $delivery->cost()}</li>
     </ul>
-
 {/block}
+</body>
+</html>

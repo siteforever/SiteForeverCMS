@@ -11,21 +11,24 @@
     </tr>
 {foreach from=$positions item="pos"}
     <tr>
-        <td>
-            {thumb src=$pos->Product->image width="100" height="auto"}
-        </td>
-        <td>
-            {a href=$pos->Product->url}{$pos->Product->name}{/a}
-        </td>
-        <td>
-            <i>{$pos.details}</i>
-        </td>
-        <td>
-            {$pos.count} шт.<br>по {$pos.price} р.
-        </td>
+        <td>{thumb src=$pos->Product->image width="100" height="auto"}</td>
+        <td>{a href=$pos->Product->url}{$pos->Product->name}{/a}</td>
+        <td><i>{$pos.details}</i></td>
+        <td>{$pos.count} шт.<br>по {$pos.price} р.</td>
     </tr>
 {/foreach}
 </table>
+
+<h4>Контактные данные</h4>
+<ul>
+    <li>Имя: {$order->emptorName}</li>
+    <li>Email: {$order->email}</li>
+    <li>Телефон: {$order->phone}</li>
+</ul>
+{if $order->comment}
+    <h4>Комментарий</h4>
+    <p>{$order->comment|strip_tags|trim|nl2br}</p>
+{/if}
 
 {if $delivery}
 <h4>{t cat="delivery"}Delivery{/t}</h4>
@@ -35,9 +38,6 @@
     <li>Стоимость: {$delivery->cost()} Р.</li>
 </ul>
 {/if}
-
-<h3>Итого: {$sum} р.</h3>
-
 {if $payment}
 <h4>{t}Payment{/t}</h4>
 <p>Способ оплаты: {$payment->name}</p>
@@ -50,7 +50,7 @@
         <p>В ближайшее время наш менеджер свяжется с Вами.</p>
     {/if}
 {/if}
-
+<h4>Итого: {$sum} р.</h4>
 {if $this->auth->isLogged()}
 <hr>
 <p>

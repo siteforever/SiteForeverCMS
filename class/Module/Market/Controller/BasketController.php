@@ -328,6 +328,7 @@ class BasketController extends Controller implements EventSubscriberInterface
 
     /**
      * Order create handler
+     *
      * @param OrderEvent $event
      */
     public function onOrderCreate(OrderEvent $event)
@@ -338,12 +339,19 @@ class BasketController extends Controller implements EventSubscriberInterface
         /** @var $orderPositionModel OrderPositionModel */
         $orderPositionModel = $this->getModel('OrderPosition');
 
+        $productIds = array_map(function($item){
+            return $item['id'];
+        }, $this->getBasket()->getAll());
+
+        $catalogModel = $this->getModel('Catalog');
+        $products = $catalogModel->findAll('id IN (?)', array($productIds));
+
         // Заполняем заказ товарами
         foreach ($this->getBasket()->getAll() as $data) {
             $order->Positions->add($orderPositionModel->createObject(array(
                     'ord_id'    => $order->getId(),
                     'product_id'=> (int) $data['id'],
-                    'articul'   => !empty($data['articul']) ? $data['articul'] : $data['name'],
+                    'articul'   => $products->getById($data['id'])->name,
                     'details'   => $data['details'],
                     'currency'  => isset($data['currency']) ? $data['currency'] : $this->t('catalog', 'RUR'),
                     'item'      => isset($data['item']) ? $data['item'] : $this->t('catalog', 'item'),

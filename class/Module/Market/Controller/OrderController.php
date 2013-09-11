@@ -7,6 +7,7 @@ use Module\Market\Object\Order;
 use Module\Market\Object\OrderPosition;
 use Sfcms\Request;
 use Sfcms\Robokassa;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Заказы
@@ -96,36 +97,30 @@ class OrderController extends Controller
     /**
      * Просмотр заказа по ссылке
      * @param int $id
-     * @param $code
+     * @param string $code
+     *
+     * @throws HttpException
      * @return mixed
      */
-    public function viewAction(/*$id, $code*/)
+    public function viewAction($id = null, $code = null)
     {
-        $id   = $this->request->get('id');
-        $code = $this->request->get('code');
-
         if (!($id && $code)) {
-            throw new \Sfcms_Http_Exception('Order not defined', 404);
+            throw new HttpException(404, 'Order not defined');
         }
 
-        $this->request->set('template', 'inner');
+        $this->request->setTemplate('inner');
         $this->request->setTitle($this->t('order','Checkout'));
-
-//        if ( ! $order_id = $this->app()->getSession()->get('order_id') ) {
-//            return t('order','Order not defined');
-//        }
-
 
         $model = $this->getModel('Order');
         /** @var $order Order */
         $order = $model->find($id);
 
         if (!$order) {
-            throw new \Sfcms_Http_Exception(sprintf('Order #%d not found', $id), 404);
+            throw new HttpException(404, sprintf('Order #%d not found', $id));
         }
 
         if (!$order->validateHash($code)) {
-            throw new \Sfcms_Http_Exception('Not have permission for viewing this order', 404);
+            throw new HttpException(403, 'Not have permission for viewing this order');
         }
 
         $this->getTpl()->getBreadcrumbs()
@@ -134,7 +129,6 @@ class OrderController extends Controller
             ->addPiece(null, $this->t('order','Checkout'));
 
         $positions = $order->Positions;
-//        $delivery  = $order->Delivery;
         $delivery  = $this->app->getDelivery($this->request);
         $delivery->setType($order->delivery_id);
         $payment   = $order->Payment;
@@ -151,7 +145,7 @@ class OrderController extends Controller
                     sprintf(
                         'Оплата заказа №%s в интернет-магазине %s',
                         $order->id,
-                        $this->app()->getConfig('sitename')
+                        $this->config->get('sitename')
                     )
                 );
                 break;
@@ -216,8 +210,6 @@ class OrderController extends Controller
 
         $count = $model->count($cond, $params);
 
-        //$count = $model->getCountForAdmin($cond);
-
         $paging = $this->paging($count, 10, 'order/admin');
 
         $orders     = $model->with(array('Positions','Status'))->findAll(array(
@@ -227,15 +219,11 @@ class OrderController extends Controller
             'limit'     => $paging->limit,
         ));
 
-        //$orders = $model->findAllForAdmin($cond, $paging['offset'].','.$paging['perpage']);
-
-        $this->tpl->assign(array(
+        $this->request->setTitle('Заказы');
+        return $this->render('order.admin', array(
             'orders'    => $orders,
             'paging'    => $paging,
         ));
-
-        $this->request->setTitle('Заказы');
-        return $this->render('order.admin');
     }
 
     /**
