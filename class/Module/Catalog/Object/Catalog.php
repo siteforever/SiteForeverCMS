@@ -88,7 +88,7 @@ class Catalog extends Object
      * @param bool $wholesale Вернуть розничную цену
      * @return float
      */
-    public function getPrice( $wholesale = false )
+    public function getPrice($wholesale = false)
     {
         if ( $wholesale && $this->get('price2') > 0 ) {
             return $this->get('price2');
@@ -116,7 +116,10 @@ class Catalog extends Object
                 date('Y', $this->data['sale_stop'])
             );
             if ($start <= time() && $stop >= time()) {
-                return ceil($this->getPrice() * (100 - $this->sale) / 1000) * 10;
+                if (preg_match('/(\d+)\s*%/', $this->sale, $m)) {
+                    return ceil($this->getPrice() * (100 - $m[1]) / 1000) * 10;
+                }
+                return $this->getPrice() - $this->sale;
             }
         }
 
@@ -369,7 +372,7 @@ class Catalog extends Object
             new Field\Varchar('p8', 250),
             new Field\Varchar('p9', 250),
             new Field\Tinyint('sort_view', 1, true, '1'),
-            new Field\Int('sale', 1, true, '0'),
+            new Field\Varchar('sale', 10, true, '0'),
             new Field\Int('sale_start', 11, true, '0'),
             new Field\Int('sale_stop', 11, true, '0'),
             new Field\Tinyint('top', 11, true, '0'),

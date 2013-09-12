@@ -366,7 +366,7 @@ abstract class Model extends Component
 
             $this->table = call_user_func(array($class, 'table'));
 
-            if ($this->config->get('db.migration')) {
+            if ($this->config->get('db_migration')) {
                 if ($this->isExistTable($this->table)) {
                     $this->migration();
                 } else {

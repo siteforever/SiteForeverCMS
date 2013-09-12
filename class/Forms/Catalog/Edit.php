@@ -98,7 +98,7 @@ class Forms_Catalog_Edit extends \Sfcms\Form\Form
                 ),
 
                 'sale'      => array(
-                    'type' => 'float', 'label' => 'Скидка, %',
+                    'type' => 'float', 'label' => 'Скидка', 'notice' => 'Для указания скидки в %, надо указать 10%',
                 ),
                 'sale_start'      => array(
                     'type' => 'date', 'label' => 'Начало скидки', 'value' => time(),

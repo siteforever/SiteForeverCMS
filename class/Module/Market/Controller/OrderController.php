@@ -175,7 +175,7 @@ class OrderController extends Controller
         $user   = $this->request->get('user');
 
         if ($id) {
-            return $this->adminEdit($id);
+            return $this->adminEditAction($id);
         }
 
         $model = $this->getModel('Order');
@@ -232,8 +232,9 @@ class OrderController extends Controller
      * @param int $new_status
      * @return mixed
      */
-    public function adminEdit($id)
+    public function adminEditAction($id)
     {
+        /** @var OrderModel $model */
         $model = $this->getModel('Order');
         /** @var $order Order */
         $order      = $model->find( $id );
@@ -249,16 +250,17 @@ class OrderController extends Controller
         $summa = $positions->sum('sum');
         $count = $positions->sum('count');
 
-        $this->tpl->assign(array(
+        $delivery = $this->app->getDelivery($this->request);
+        $delivery->setType($order->delivery_id);
+        return $this->render('order.admin_edit', array(
             'order'     => $order,
+            'delivery'  => $delivery,
             'positions' => $positions,
             'summa'     => $summa,
             'count'     => $count,
             'statuses'  => $this->getModel('OrderStatus')->findAll(),
             'user'      => $user,
         ));
-
-        return $this->render('order.admin_edit');
     }
 
     /**

@@ -16,8 +16,7 @@
     </div>
 {/form}
 
-<hr />
-
+<h4>Контактные данные</h4>
 <p>Имя: {$order.fname}</p>
 <p>Фамилия: {$order.lname}</p>
 <p>Email: <a href="mailto:{$order.email}">{$order.email}</a></p>
@@ -25,9 +24,26 @@
 <p>Адрес: {$order.address}</p>
 <p>Комментарий: {$order.comment}</p>
 
+{if $delivery}
+    <h4>{t cat="delivery"}Delivery{/t}</h4>
+    <ul>
+        <li>Способ доставки: {$delivery->getObject()->name}</li>
+        <li>Адрес доставки: {$order->address}</li>
+        <li>Стоимость: {$delivery->cost()} Р.</li>
+    </ul>
+{/if}
+
+{if $order->Payment}
+    <h4>{t}Payment{/t}</h4>
+    <p>Способ оплаты: {$order->Payment->name}</p>
+    {if $order->paid}
+        <p>Оплачено!</p>
+    {/if}
+{/if}
+
 <hr />
 
-<p><b>Позиции:</b></p>
+<h4>Позиции:</h4>
 
 <table class="table table-striped">
 <thead>
@@ -60,3 +76,4 @@
 </tfoot>
 </table>
 
+<h4>Итого к оплате: {$summa + $delivery->cost()}</h4>
