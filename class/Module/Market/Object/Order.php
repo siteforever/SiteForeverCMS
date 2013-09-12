@@ -86,6 +86,33 @@ class Order extends Object
         return trim($this->fname . ' ' . $this->lname);
     }
 
+    public function getSum()
+    {
+        return $this->Positions ? $this->Positions->sum('sum') : 0;
+    }
+
+    public function getRobokassa(Payment $payment, Sfcms\Delivery $delivery, Sfcms\Config $config)
+    {
+        $robokassa = null;
+        switch ($payment->module) {
+            case 'robokassa' :
+                $robokassa = new Sfcms\Robokassa($config->get('service.robokassa'));
+                $robokassa->setInvId($this->id);
+                $robokassa->setOutSum($this->getSum() + $delivery->cost($this->getSum()));
+                $robokassa->setDesc(
+                    sprintf(
+                        'Оплата заказа №%s в интернет-магазине %s',
+                        $this->id,
+                        $config->get('sitename')
+                    )
+                );
+                break;
+            case 'basket':
+            default:
+        }
+        return $robokassa;
+    }
+
     /**
      * Создаст список полей
      * @return array

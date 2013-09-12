@@ -349,23 +349,25 @@ class BasketController extends Controller implements EventSubscriberInterface
         // Заполняем заказ товарами
         foreach ($this->getBasket()->getAll() as $data) {
             $order->Positions->add($orderPositionModel->createObject(array(
-                    'ord_id'    => $order->getId(),
-                    'product_id'=> (int) $data['id'],
-                    'articul'   => $products->getById($data['id'])->name,
-                    'details'   => $data['details'],
-                    'currency'  => isset($data['currency']) ? $data['currency'] : $this->t('catalog', 'RUR'),
-                    'item'      => isset($data['item']) ? $data['item'] : $this->t('catalog', 'item'),
-                    'cat_id'    => is_numeric($data['id']) ? $data['id'] : '0',
-                    'price'     => $data['price'],
-                    'count'     => $data['count'],
-                    'status'    => 1,
-                ))->markNew());
+                'ord_id'    => $order->getId(),
+                'product_id'=> (int) $data['id'],
+                'articul'   => $products->getById($data['id'])->name,
+                'details'   => $data['details'],
+                'currency'  => isset($data['currency']) ? $data['currency'] : $this->t('catalog', 'RUR'),
+                'item'      => isset($data['item']) ? $data['item'] : $this->t('catalog', 'item'),
+                'cat_id'    => is_numeric($data['id']) ? $data['id'] : '0',
+                'price'     => $data['price'],
+                'count'     => $data['count'],
+                'status'    => 1,
+            ))->markNew());
         }
 
         $this->tpl->assign(array(
             'order'     => $order,
             'basket'    => $event->getBasket(),
             'delivery'  => $delivery,
+            'payment'   => $order->Payment,
+            'robokassa' => $order->getRobokassa($order->Payment, $delivery, $this->config),
         ));
 
         $this->sendmail(
