@@ -143,7 +143,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
             'parent'=> 100600,
             'cat'   => 0,
             'price1'=> 2000,
-            'sale'  => 30,
+            'sale'  => '30%',
             'sale_start' => time(),
             'sale_stop'  => time(),
         ));
