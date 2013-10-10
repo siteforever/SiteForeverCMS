@@ -9,7 +9,6 @@ use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
 use Sfcms\Model;
 use Sfcms\Db\Criteria;
-use Pager;
 use InvalidArgumentException;
 
 use Sfcms\JqGrid\Format;

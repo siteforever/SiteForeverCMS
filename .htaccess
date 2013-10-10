@@ -5,9 +5,9 @@ Options -MultiViews
 Options -Indexes
 
 php_flag  display_errors            on
-php_value error_reporting           15
+php_value error_reporting           E_ALL
 
-php_flag    xdebug.auto_trace       on
+php_flag    xdebug.auto_trace       off
 php_flag    xdebug.remote_enable    on
 
 php_flag session.cookie_httponly    off

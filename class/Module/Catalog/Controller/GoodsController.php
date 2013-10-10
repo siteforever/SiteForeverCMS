@@ -98,10 +98,11 @@ class GoodsController extends Controller
 
     /**
      * @param int $id
+     * @return string
      */
-    public function editAction( $id )
+    public function editAction($id)
     {
-        if ( ! $id ) {
+        if (!$id) {
             return 'id not defined';
         }
         /** @var $model CatalogModel */
@@ -127,6 +128,6 @@ class GoodsController extends Controller
         $yml->setCategories( $categories );
 
         $this->request->setAjax(true, Request::TYPE_XML);
-        return $yml->output();
+        return $yml->output($this->request);
     }
 }

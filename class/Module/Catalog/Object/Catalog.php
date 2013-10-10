@@ -102,6 +102,18 @@ class Catalog extends Object
      */
     public function getSalePrice()
     {
+        if ($this->isSale()) {
+            if (preg_match('/(\d+)\s*%/', $this->sale, $m)) {
+                return ceil($this->getPrice() * (100 - $m[1]) / 1000) * 10;
+            }
+            return $this->getPrice() - $this->sale;
+        }
+
+        return $this->getPrice();
+    }
+
+    public function isSale()
+    {
         if ($this->sale) {
             $start = mktime(
                 0, 0, 0,
@@ -116,14 +128,10 @@ class Catalog extends Object
                 date('Y', $this->data['sale_stop'])
             );
             if ($start <= time() && $stop >= time()) {
-                if (preg_match('/(\d+)\s*%/', $this->sale, $m)) {
-                    return ceil($this->getPrice() * (100 - $m[1]) / 1000) * 10;
-                }
-                return $this->getPrice() - $this->sale;
+                return true;
             }
         }
-
-        return null;
+        return false;
     }
 
     /**

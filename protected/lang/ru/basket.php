@@ -23,4 +23,5 @@ return array(
     'Order list'  => 'Список заказов',
 
     'Add to basket' => 'Добавить в корзину',
+    'was added to basket' => 'добавлен в корзину',
 );

@@ -81,27 +81,4 @@ class DeliveryController extends Controller
             $item->pos = $sort[ $item->id ];
         }
     }
-
-
-    /**
-     * Выбор способа доставки
-     * @param int $type
-     * @return array
-     */
-    public function selectAction($type)
-    {
-        try {
-            $delivery = $this->app->getDelivery($this->request);
-            $delivery->setType( $type );
-            $basketSum = $this->getBasket()->getSum();
-            return array(
-                'error' => 0,
-                'msg'   => 'ok',
-                'cost'  => number_format($delivery->cost(),2,',',' '),
-                'sum'   => number_format( $delivery->cost() + $basketSum, 2, ',', ' ' )
-            );
-        } catch ( \Sfcms\Exception $e ) {
-            return array('error'=>$e->getCode(),'msg'=>$e->getMessage());
-        }
-    }
 }

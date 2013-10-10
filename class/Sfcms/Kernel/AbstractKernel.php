@@ -5,6 +5,7 @@
  */
 namespace Sfcms\Kernel;
 
+use Module\Market\Object\Order;
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Config;
@@ -12,7 +13,7 @@ use Sfcms\Controller\Resolver;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Module;
-use Sfcms\Delivery;
+use Sfcms\DeliveryManager;
 use Sfcms\Request;
 use Symfony\Component\Routing\Router as SfRouter;
 use Sfcms\Router;
@@ -101,7 +102,7 @@ abstract class AbstractKernel
     protected $_resolver;
 
     /**
-     * @var Delivery;
+     * @var DeliveryManager;
      */
     protected $_devivery = null;
 
@@ -137,6 +138,7 @@ abstract class AbstractKernel
         $this->getContainer()->set('app', $this);
         $this->getContainer()->setParameter('root', ROOT);
         $this->getContainer()->setParameter('sf_path', SF_PATH);
+        $this->getContainer()->setParameter('debug', $this->isDebug());
         $locator = new FileLocator(array(ROOT, SF_PATH));
         $loader = new YamlFileLoader($this->getContainer(), $locator);
         $loader->load('app/config.yml');
@@ -268,13 +270,15 @@ abstract class AbstractKernel
     /**
      * Вернет доставку
      * @param Request $request
-     * @return Delivery
+     * @param Order $order
+     * @return DeliveryManager
      */
-    public function getDelivery(Request $request)
+    public function getDeliveryManager(Request $request, Order $order)
     {
-        if ( null === $this->_devivery ) {
-            $this->_devivery = new Delivery($request->getSession(), $request->getBasket());
+        if (null === $this->_devivery) {
+            $this->_devivery = new DeliveryManager($request, $order, $this->getEventDispatcher());
         }
+
         return $this->_devivery;
     }
 

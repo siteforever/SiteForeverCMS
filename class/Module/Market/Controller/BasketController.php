@@ -8,7 +8,9 @@
 namespace Module\Market\Controller;
 
 use Module\Market\Event\OrderEvent;
+use Module\Market\Form\OrderForm;
 use Module\Market\Model\OrderPositionModel;
+use Module\Market\Object\Order;
 use Module\Market\Object\OrderPosition;
 use Sfcms;
 use Sfcms\Controller;
@@ -19,59 +21,78 @@ use Module\Catalog\Model\CatalogModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class BasketController extends Controller implements EventSubscriberInterface
+class BasketController extends Controller
 {
-    /**
-     * Returns an array of event names this subscriber wants to listen to.
-     *
-     * For instance:
-     *
-     *  * array('eventName' => 'methodName')
-     *  * array('eventName' => array('methodName', $priority))
-     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
-     *
-     * @return array The event names to listen to
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            'market.order.create' => array(
-                array('onOrderCreate'),
-            ),
-        );
-    }
-
     /**
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function indexAction()
     {
         $this->logger->info('request', $this->request->request->all());
-
-        $address = $this->request->get('address');
+        /** @var OrderForm $form */
         $form = $this->get('order.form');
-        $form->delivery_id = $this->request->getSession()->get('delivery');
+        $result = array('error'=>0);
 
-        // Ajax validate
-        if ($form->getPost($this->request)) {
-            $result = $this->formValidate($form);
-            $this->logger->info('Form validate result', $result);
-            if ($this->request->isXmlHttpRequest()) {
-                return $result;
+        $this->logger->info('basket', $this->getBasket()->getAll());
+        if ($this->request->request->has('basket_counts')) {
+            // обновляем количества
+            $basket_counts = $this->request->request->get('basket_counts');
+            $this->logger->info('basket_counts', $basket_counts);
+
+            if ($basket_counts && is_array($basket_counts)) {
+                /** @var $basket Sfcms\Basket\Base */
+                array_walk($basket_counts, function($prodCount, $key, $basket) {
+                    $basket->setCount($key, $prodCount > 0 ? $prodCount : 1);
+                }, $this->getBasket());
             }
-            if (isset($result['redirect'])) {
+        }
+
+        if ($this->request->request->has('basket_del')) {
+            // Удалить запись
+            $basket_del = $this->request->request->get('basket_del');
+            if ($basket_del && is_array($basket_del)) {
+                foreach ($basket_del as $key => $prod_del) {
+                    $this->getBasket()->del($key);
+                    $result['delete'][] = $key;
+                }
+            }
+        }
+
+        $this->getBasket()->save();
+
+        /** @var Order $order */
+        $order = $this->getModel('Order')->createObject();
+        $event = new OrderEvent(
+            $order,
+            $this->request,
+            $this->getBasket(),
+            $this->app->getDeliveryManager($this->request, $order)
+        );
+        $this->app->getEventDispatcher()->dispatch('market.order.create', $event);
+
+        if ($this->request->request->has('recalculate')) {
+            $result['delivery']['cost'] = number_format($event->getDeliveryManager()->cost(), 2, ',', '');
+            $result['basket'] = $event->getBasket()->getAll();
+            $result['basket']['sum'] = $event->getBasket()->getSum() + $event->getDeliveryManager()->cost();
+            $result['basket']['count'] = $event->getBasket()->getCount();
+            $result['basket']['delitems'] = isset($result['delete']) ? $result['delete'] : array();
+            unset($result['delete']);
+            if ($form->getErrors()) {
+                $result['error'] = 1;
+                $result['errors'] = $form->getErrors();
+            }
+            if ($this->request->isAjax()) {
+                return $this->renderJson($result);
+            }
+        }
+
+        if ($order->id) { // was create
+            $result['redirect'] = $event->getOrder()->getUrl();
+            if ($this->request->isAjax()) {
+                return $this->renderJson($result);
+            } else {
                 return $this->redirect($result['redirect']);
             }
-        }
-
-        // Fill Address from current user
-        if ($this->auth->hasPermission(USER_USER)) {
-            $form->setData($this->auth->currentUser()->attributes);
-        }
-
-        // Fill Address from Yandex
-        if ($address) {
-            $form->setData($this->fromYandexAddress($address));
         }
 
         $this->request->setTitle($this->t('basket','Basket'));
@@ -86,8 +107,8 @@ class BasketController extends Controller implements EventSubscriberInterface
         $deliveries    = $deliveryModel->findAll('active = ?', array(1), 'pos');
         $form->getField('delivery_id')->setVariants($deliveries->column('name'));
 
-        $delivery = $this->app->getDelivery($this->request);
-        $form->getField('delivery_id')->setValue($delivery->getType());
+        $deliveryManager = $this->app->getDeliveryManager($this->request, $order);
+        $form->getField('delivery_id')->setValue($deliveryManager->getType());
 
         // Заполним методы оплаты
         $paymentModel = $this->getModel('Payment');
@@ -121,9 +142,9 @@ class BasketController extends Controller implements EventSubscriberInterface
                                 }, $this->getBasket()->getAll()),
             'all_count'     => $this->getBasket()->getCount(),
             'all_summa'     => $this->getBasket()->getSum(),
-            'delivery'      => $delivery,
+            'delivery'      => $deliveryManager,
             'form'          => $form,
-            'host'          => urlencode($this->request->getSchemeAndHttpHost() . $this->router->createLink('basket') ),
+            'host'          => $this->request->getSchemeAndHttpHost() . rawurlencode($this->router->createLink('basket')),
             'auth'          => $this->auth,
         );
     }
@@ -162,6 +183,8 @@ class BasketController extends Controller implements EventSubscriberInterface
             $this->getBasket()->save();
         }
 
+        $basket= $this->getBasket();
+
         $this->getTpl()->assign(array(
             'count'     => $this->getBasket()->getCount(),
             'summa'     => $this->getBasket()->getSum(),
@@ -169,12 +192,24 @@ class BasketController extends Controller implements EventSubscriberInterface
             'path'      => $this->request->get('path'),
         ));
 
+        $this->logger->info('added to basket', array(
+                'count'  => $basket_prod_id ? $this->getBasket()->getCount($basket_prod_id) : null,
+                'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
+                'widget' => $this->getTpl()->fetch('basket.widget'),
+                'msg'    => $basket_prod_name . '<br>' . Sfcms::html()->link(
+                        $this->t('basket', 'was added to basket'),
+                        $this->router->createServiceLink('basket','index')
+                    ),
+            ));
+
         return $this->renderJson(array(
             'count'  => $basket_prod_id ? $this->getBasket()->getCount($basket_prod_id) : null,
             'sum'    => number_format($this->getBasket()->getSum(), 2, ',', ''),
             'widget' => $this->getTpl()->fetch('basket.widget'),
-            'msg'    => $basket_prod_name . '<br>'
-                      . Sfcms::html()->link('добавлен в корзину',$this->router->createServiceLink('basket','index')),
+            'msg'    => $basket_prod_name . '<br>' . Sfcms::html()->link(
+                            $this->t('basket', 'was added to basket'),
+                            $this->router->createServiceLink('basket','index')
+                        ),
         ));
     }
 
@@ -250,181 +285,5 @@ class BasketController extends Controller implements EventSubscriberInterface
         ));
     }
 
-    /**
-     * Ajax validate
-     * @param Form $form
-     * @return array
-     */
-    private function formValidate(Form $form)
-    {
-        $result = array('error'=>0);
-
-        if ($this->request->request->get('recalculate')) {
-            // обновляем количества
-            $basket_counts = $this->request->request->get('basket_counts');
-
-            if ($basket_counts && is_array($basket_counts)) {
-                /** @var $basket Sfcms\Basket\Base */
-                array_walk($basket_counts,
-                    function ($prod_count, $key, $basket) {
-                        $basket->setCount($key, $prod_count > 0 ? $prod_count : 1);
-                    },
-                    $this->getBasket()
-                );
-            }
-
-            // Удалить запись
-            $basket_del = $this->request->request->get('basket_del');
-            if ($basket_del && is_array($basket_del)) {
-                foreach ($basket_del as $key => $prod_del) {
-                    $this->getBasket()->del($key);
-                    $result['delete'][] = $key;
-                }
-            }
-
-            $delivery = $this->app->getDelivery($this->request);
-            $result['delivery']['cost'] = number_format( $delivery->cost(), 2, ',', '' );
-            $result['basket'] = $this->getBasket()->getAll();
-            $result['basket']['sum'] = $this->getBasket()->getSum() + $delivery->cost();
-            $result['basket']['count'] = $this->getBasket()->getCount();
-            $result['basket']['delitems'] = isset($result['delete']) ? $result['delete'] : array();
-            unset($result['delete']);
-            $this->getBasket()->save();
-        }
-
-        if ($this->request->request->get('do_order')) {
-            if ($form->validate()) {
-                // Создание заказа
-                if ($this->getBasket()->count()) {
-                    // создать заказ
-                    $this->request->getSession()->set('delivery', $form['delivery_id']);
-                    $delivery = $this->app->getDelivery($this->request);
-
-                    /** @var $orderModel OrderModel */
-                    $orderModel    = $this->getModel('Order');
-                    $order = $orderModel->createOrder($form, $delivery);
-
-                    if ($order) {
-                        $event = new OrderEvent($order, $this->getBasket(), $delivery);
-                        $this->app->getEventDispatcher()->dispatch('market.order.create', $event);
-
-                        $this->request->getSession()->set('order_id',$order->id);
-
-                        $paymentModel = $this->getModel('Payment');
-                        $payment = $paymentModel->find($form['payment_id']);
-                        $order->payment_id = $payment->getId();
-
-                        $result['redirect'] = $order->getUrl();
-                    }
-                }
-            } else {
-                $result['error'] = 1;
-                $result['errors'] = $form->getErrors();
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Order create handler
-     *
-     * @param OrderEvent $event
-     */
-    public function onOrderCreate(OrderEvent $event)
-    {
-        $order = $event->getOrder();
-        $delivery = $event->getDelivery();
-
-        /** @var $orderPositionModel OrderPositionModel */
-        $orderPositionModel = $this->getModel('OrderPosition');
-
-        $productIds = array_map(function($item){
-            return $item['id'];
-        }, $this->getBasket()->getAll());
-
-        $catalogModel = $this->getModel('Catalog');
-        $products = $catalogModel->findAll('id IN (?)', array($productIds));
-
-        // Заполняем заказ товарами
-        foreach ($this->getBasket()->getAll() as $data) {
-            $order->Positions->add($orderPositionModel->createObject(array(
-                'ord_id'    => $order->getId(),
-                'product_id'=> (int) $data['id'],
-                'articul'   => $products->getById($data['id'])->name,
-                'details'   => $data['details'],
-                'currency'  => isset($data['currency']) ? $data['currency'] : $this->t('catalog', 'RUR'),
-                'item'      => isset($data['item']) ? $data['item'] : $this->t('catalog', 'item'),
-                'cat_id'    => is_numeric($data['id']) ? $data['id'] : '0',
-                'price'     => $data['price'],
-                'count'     => $data['count'],
-                'status'    => 1,
-            ))->markNew());
-        }
-
-        $this->tpl->assign(array(
-            'order'     => $order,
-            'basket'    => $event->getBasket(),
-            'delivery'  => $delivery,
-            'payment'   => $order->Payment,
-            'robokassa' => $order->getRobokassa($order->Payment, $delivery, $this->config),
-        ));
-
-        $this->sendmail(
-            $this->config->get('email_for_order', $this->config->get('admin')),
-            $this->config->get('email_for_order', $this->config->get('admin')),
-            sprintf('Новый заказ с сайта %s №%s', $this->config->get('sitename'), $order->getId()),
-            $this->tpl->fetch('order.mail.createadmin'),
-            'text/html'
-        );
-
-        $this->sendmail(
-            $this->config->get('email_for_order', $this->config->get('admin')),
-            $order->email,
-            sprintf('Заказ №%s на сайте %s', $order->getId(), $this->config->get('sitename')),
-            $this->tpl->fetch('order.mail.create'),
-            'text/html'
-        );
-
-        $event->getBasket()->clear();
-        $event->getBasket()->save();
-    }
-
-    /**
-     * Fill Address from Yandex
-     * @param string $address
-     * @return array
-     */
-    private function fromYandexAddress( $address )
-    {
-        $yaAddress = new Sfcms\Yandex\Address();
-        $yaAddress->setJsonData( $address );
-
-        $return = array(
-            'country'   => $yaAddress->country,
-            'city'      => $yaAddress->city,
-            'address'   => $yaAddress->getAddress(),
-            'zip'       => $yaAddress->zip,
-        );
-
-        if ($yaAddress->firstname) {
-            $return['fname'] = $yaAddress->firstname;
-        }
-        if ($yaAddress->lastname) {
-            $return['lname'] = $yaAddress->lastname;
-        }
-        if ($yaAddress->email) {
-            $return['email'] = $yaAddress->email;
-        }
-        if ($yaAddress->phone) {
-            $return['phone'] = $yaAddress->phone;
-        }
-        if ($yaAddress->comment) {
-            $return['comment'] = $yaAddress->comment;
-        }
-
-        return $return;
-
-    }
 
 }

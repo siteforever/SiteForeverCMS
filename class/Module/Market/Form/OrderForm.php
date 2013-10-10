@@ -15,7 +15,7 @@ class OrderForm extends Form
     public function __construct()
     {
         return parent::__construct(array(
-            'name'      => 'basket_address',
+            'name'      => 'order',
             'class'     => 'form-horizontal ajax-validate',
             'action'    => \App::cms()->getRouter()->createServiceLink('basket','index'),
             'fields'    => array(
@@ -28,6 +28,7 @@ class OrderForm extends Form
                         '1' => 'Юридическое лицо',
                     ),
                 ),
+
                 'delivery_id'  => array(
                     'type'      =>'radio',
                     'required',
@@ -35,6 +36,7 @@ class OrderForm extends Form
                     'value'     => '0',
                     'variants'  => array(),
                 ),
+
                 'payment_id' => array(
                     'type'      => 'radio',
                     'required',

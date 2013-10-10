@@ -7,7 +7,7 @@ define("module/basket", [
     "jquery",
     "module/alert",
     "jquery/jquery.form"
-],function($, alert){
+],function($, $alert){
     return {
         "class_name" : '.basket-widget',
 
@@ -22,7 +22,7 @@ define("module/basket", [
          */
         "add": function (/*int*/id, /*string*/product, /*int*/count, /*string*/price, details, callback) {
             callback = callback && typeof callback == 'function' ? callback : function (response) {
-                alert( response.msg, 2000 );
+                $alert(response.msg, 2000);
                 $(this.class_name).replaceWith(response.widget);
             };
 
@@ -46,7 +46,7 @@ define("module/basket", [
          */
         "del": function (/*int*/id, /*int*/count, callback) {
             callback = callback && typeof callback == 'function' ? callback : function (response) {
-                alert( response.msg, 2000 );
+                $alert( response.msg, 2000 );
                 $(this.class_name).replaceWith(response.widget);
             };
 
@@ -59,6 +59,7 @@ define("module/basket", [
         },
 
         "init" : function() {
+            var basket = this;
 
             // basket handler
             $(document).on('sfcms.form.success', function( event, response ){
@@ -88,6 +89,16 @@ define("module/basket", [
                 }
             });
 
+
+            // Обработка выбора доставки
+            $(document).on('click','#delivery input', function(){
+                $('#recalculate').trigger('click');
+            });
+
+            $('input.basket-count').on('change', function(){
+                if ($(this).val() <= 0) $(this).val(1);
+                $('#recalculate').trigger('click');
+            });
         }
     }
 });

@@ -123,6 +123,7 @@ class Resolver
         /** @var Controller $controller */
         $controller = $ref->newInstance($request);
         $controller->setContainer($this->app->getContainer());
+        $this->app->getContainer()->set('controller', $controller);
         $controller->init();
 
         // Защита системных действий

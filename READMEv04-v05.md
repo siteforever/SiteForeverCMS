@@ -13,3 +13,16 @@ Default dsn: `mysql:host=localhost;dbname=siteforever`
 Routes for modules definind in Module::registerRoutes methods for each Module.
 File app/routes.yml can contain custom routes.
 see [official doucumentation](http://symfony.com/doc/current/components/routing/introduction.html)
+
+
+Нужно создать каталог `./app` в котором должны содержаться следующие файлы:
+* console - скрипт запуска консольных команд
+* cfg/console.php - конфиг для запуска из консоли
+* cfg/base.php - базовый конфиг приложения
+* modules.php - список подключенных модулей
+* parameters.yml - генерируется через инсталяцию композера
+
+* В каталоге `./runtime` нужно создать доступный на запись каталог `./logs`
+
+* Новый файл index.php взять из репозитория keltanas/site-forever-cms
+* В каталоге `./themes/name/templates` новый файл `theme.xml` с метаописанием темы

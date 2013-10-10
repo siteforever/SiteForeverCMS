@@ -36,10 +36,11 @@ require([
         // добавить в корзину
         $(document).on('click', '.b-basket-add-button', function(e){
             e.stopPropagation();
+            $(this).attr('disabled', 'disabled');
             var product = $(this).data('product'),
                 properties = [];
             $( "input,select","#properties").each(function(){
-                properties.push( $(this).val() );
+                properties.push($(this).val());
             });
             basket.add(
                 $(this).data('id'),
@@ -48,26 +49,10 @@ require([
                 $(this).data('price'),
                 properties.join(", "),
                 script && script.basket && typeof script.basket == 'function' ? script.basket : false
-            );
+            ).done($.proxy(function () {
+                $(this).removeAttr('disabled');
+            }, this));
             return false;
-        });
-
-
-        // Обработка выбора доставки
-        $(document).on('click','#delivery input', function(){
-            $.post('/delivery/select',{'type':$(this).val()},function(response){
-                if( ! response.error ) {
-                    $('#deliveryRow').find('td.basket-sum').html( response.cost );
-                    $('#totalRow').find('td.basket-sum').find('b').html( response.sum );
-                }
-            }, "json");
-        });
-
-
-        $('input.basket-count').on('change', function(){
-            if ( $(this).val() <= 0 ) $(this).val(1);
-            $('#recalculate').trigger('click');
-
         });
     },this));
 });

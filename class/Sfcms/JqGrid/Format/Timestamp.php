@@ -18,6 +18,6 @@ class Timestamp implements Format
 
     public function apply( $value )
     {
-        return strftime( $this->params['format'], $value );
+        return strftime($this->params['format'], $value);
     }
 }

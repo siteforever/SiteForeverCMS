@@ -17,6 +17,7 @@ use Sfcms\Data\Collection;
 use Forms_Catalog_Edit;
 use PDO;
 use Sfcms\db;
+use Symfony\Component\HttpFoundation\Request;
 
 class CatalogModel extends Model
 {
@@ -677,9 +678,10 @@ class CatalogModel extends Model
 
 
     /**
+     * @param Request $request
      * @return Provider
      */
-    public function getProvider($request)
+    public function getProvider(Request $request)
     {
         $provider = new Provider($request);
         $provider->setModel($this);
@@ -763,8 +765,15 @@ class CatalogModel extends Model
                 'search' => true,
             ),
             'sale' => array(
-                'value' => 'salePrice',
+                'value' => 'sale',
                 'title'=> $this->t('catalog','Sale'),
+            ),
+            'sale_stop' => array(
+                'value' => 'sale_stop',
+                'format' => array(
+                    'timestamp' => array('format'=>'%Y-%m-%d'),
+                ),
+                'title'=> $this->t('catalog','Stop'),
             ),
             'hidden' => array(
                 'title' => $this->t('catalog','Hidden'),

@@ -9,6 +9,17 @@ namespace Module\Market\Object;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 
+/**
+ * Class Delivery
+ * @package Module\Market\Object
+ *
+ * @property $id
+ * @property $name
+ * @property $desc
+ * @property $cost
+ * @property $active
+ * @property $pos
+ */
 class Delivery extends Object
 {
     /**

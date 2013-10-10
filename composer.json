@@ -57,7 +57,7 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "1.6.*",
         "swiftmailer/swiftmailer": "v5.0.1",
-        "kriswallsmith/assetic": "v1.1.1",
+        "kriswallsmith/assetic": "v1.1.2",
         "symfony/stopwatch": "2.3.*",
         "symfony/debug": " 2.3.*",
         "helios-ag/fm-elfinder": "v2.0",

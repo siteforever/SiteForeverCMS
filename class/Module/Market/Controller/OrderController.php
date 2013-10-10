@@ -83,9 +83,9 @@ class OrderController extends Controller
         }
 
         $list   = $order->findAll(array(
-            'cond'      => sprintf('user_id = ? AND status < ?'),
+            'cond'      => sprintf('`user_id` = ? AND `status` < ?'),
             'params'    => array($this->auth->getId(), 100),
-            'order'     => 'status, date DESC',
+            'order'     => '`date` DESC',
         ));
 
         return array(
@@ -129,7 +129,7 @@ class OrderController extends Controller
             ->addPiece(null, $this->t('order','Checkout'));
 
         $positions = $order->Positions;
-        $delivery  = $this->app->getDelivery($this->request);
+        $delivery  = $this->app->getDeliveryManager($this->request, $order);
         $delivery->setType($order->delivery_id);
         $payment   = $order->Payment;
 
@@ -232,7 +232,7 @@ class OrderController extends Controller
         $summa = $positions->sum('sum');
         $count = $positions->sum('count');
 
-        $delivery = $this->app->getDelivery($this->request);
+        $delivery = $this->app->getDeliveryManager($this->request, $order);
         $delivery->setType($order->delivery_id);
         return $this->render('order.admin_edit', array(
             'order'     => $order,

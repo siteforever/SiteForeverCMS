@@ -86,7 +86,7 @@ abstract class Base
             'id'    => $id,
             'name'  => $hash,
             'hash'  => $hash,
-            'count' => $count,
+            'count' => (int)$count,
             'price' => $price,
             'details'=>$details,
         );
@@ -102,9 +102,10 @@ abstract class Base
      */
     public function setCount($id, $count)
     {
-        $hash = $this->createKey($id, null);
+//        $hash = $this->createKey($id, null);
         foreach ($this->data as $i => &$prod) {
-            if (isset($prod['hash']) && $prod['hash'] == $hash) {
+//            if (isset($prod['hash']) && $prod['hash'] == $hash) {
+            if (isset($prod['id']) && $prod['id'] == $id) {
                 if ($count > 0) {
                     $prod['count'] = $count;
                 } else {
@@ -134,16 +135,15 @@ abstract class Base
         }
         $result = 0;
         if ($id) {
-            foreach ($this->data as $prod) {
-                if (isset($prod['hash']) && $prod['hash'] == $hash) {
+            return array_reduce($this->data, function($result, $prod) use ($id) {
+                if (isset($prod['id']) && $prod['id'] == $id) {
                     $result += $prod['count'];
                 }
-            }
-
-            return $result;
+                return $result;
+            }, 0);
         }
         foreach ($this->data as $prod) {
-            $result += $prod['count'];
+            $result += (int) $prod['count'];
         }
 
         return $result;

@@ -138,6 +138,7 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
 
     public function testGetSalePrice()
     {
+        /** @var Catalog $product */
         $product = $this->model->createObject(array(
             'id'    => 100500,
             'parent'=> 100600,
@@ -148,11 +149,11 @@ class Data_Object_CatalogTest extends PHPUnit_Framework_TestCase
             'sale_stop'  => time(),
         ));
 
-        $this->assertEquals('1400', $product->salePrice);
+        $this->assertEquals('1400', $product->getSalePrice());
 
         $product->sale_start = time() + 100500;
 
-        $this->assertEquals(null, $product->salePrice);
+        $this->assertEquals(2000, $product->getSalePrice());
     }
 
     public function testGetMainImage()

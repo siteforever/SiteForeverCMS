@@ -35,6 +35,17 @@ class OrderModel extends Model
     }
 
     /**
+     * @param Model\ModelEvent $event
+     */
+    public function onSaveSuccess(Model\ModelEvent $event)
+    {
+        array_map(function(OrderPosition $pos) use ($event) {
+            $pos->ord_id = $event->getObject()->id;
+            $pos->save();
+        }, iterator_to_array($event->getObject()->Positions));
+    }
+
+    /**
      * Отношения
      * @return array
      */
@@ -48,52 +59,5 @@ class OrderModel extends Model
             'Positions' => array(self::HAS_MANY, 'OrderPosition', 'ord_id', 'with'=>array('Product')),
             'Status' => array(self::BELONGS, 'OrderStatus', 'status'),
         );
-    }
-
-
-    /**
-     * Create order
-     * @param OrderForm $form
-     * @param Sfcms\Delivery $delivery
-     * @return Order|null
-     */
-    public function createOrder(OrderForm $form, Sfcms\Delivery $delivery)
-    {
-        /** @var $obj Order */
-        $obj = $this->createObject();
-        $obj->attributes = $form->getData();
-
-        $metro = !$form->metro ? null : $this->getModel('Metro')->find($form->metro);
-        $obj->address = join(', ',
-            array_filter(array(
-                '0' == $form->person ? 'Физическое лицо' : 'Юридическое лицо',
-                $form->zip,
-                $form->country,
-                $form->region,
-                $form->city,
-                null === $metro ? false : $this->t('subway') . ' ' . $metro->name,
-                $form->address,
-                $form->details,
-                $form->passport,
-            ))
-        );
-
-        $obj->status = 1;
-        $obj->paid = 0;
-        $obj->date = time();
-        $obj->user_id = $this->app()->getAuth()->getId();
-        $obj->delivery = 0;
-
-        if ($delivery->getType()) {
-            $obj->delivery = $delivery->getType();
-        }
-
-        $this->save($obj);
-
-        if ($obj->getId()) {
-            return $obj;
-        }
-
-        return null;
     }
 }

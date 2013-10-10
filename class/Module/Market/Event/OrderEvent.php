@@ -3,7 +3,8 @@ namespace Module\Market\Event;
 
 use Module\Market\Object\Order;
 use Sfcms\Basket\Base as Basket;
-use Sfcms\Delivery;
+use Sfcms\DeliveryManager;
+use Sfcms\Request;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -18,12 +19,18 @@ class OrderEvent extends Event
     /** @var Basket */
     protected $basket;
 
-    /** @var Delivery */
+    /** @var DeliveryManager */
     protected $delivery;
 
-    public function __construct(Order $order, Basket $basket = null, Delivery $delivery = null)
+    /** @var Request */
+    protected $request;
+
+    protected $result = array();
+
+    public function __construct(Order $order, Request $request, Basket $basket = null, DeliveryManager $delivery = null)
     {
         $this->order = $order;
+        $this->request = $request;
         $this->basket = $basket;
         $this->delivery = $delivery;
     }
@@ -45,11 +52,26 @@ class OrderEvent extends Event
     }
 
     /**
-     * @return Delivery
+     * @return DeliveryManager
      */
-    public function getDelivery()
+    public function getDeliveryManager()
     {
         return $this->delivery;
     }
 
+    /**
+     * @return \Sfcms\Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResult()
+    {
+        return $this->result;
+    }
 }

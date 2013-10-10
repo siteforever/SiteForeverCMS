@@ -58,11 +58,26 @@ define("module/form",[
          * Ajax Validate Forms
          */
         $("form.ajax-validate").ajaxForm({
-            "method" : "post",
-            "iframe" : false,
-            "dataType" : "json",
-            "success" : function( response, status, xhr, $form ){
+            method : "post",
+            iframe : false,
+            dataType : "json",
+            success: function (response, status, xhr, $form) {
+                //1.) responseText or responseXML value (depending on the value of the dataType option).
+                //2.) statusText
+                //3.) xhr (or the jQuery-wrapped form element if using jQuery < 1.4)
+                //4.) jQuery-wrapped form element (or undefined if using jQuery < 1.4)
+
                 $(document).trigger('sfcms.form.success', arguments);
+            },
+            beforeSubmit: function(arr, $form, options) {
+                // The array of form data takes the following form:
+                // [ { name: 'username', value: 'jresig' }, { name: 'password', value: 'secret' } ]
+
+                // return false to cancel submit
+                $(document).trigger('sfcms.form.beforeSubmit', arguments);
+            },
+            error: function() {
+                $(document).trigger('sfcms.form.error', arguments);
             }
         });
     });

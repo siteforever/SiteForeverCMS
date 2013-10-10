@@ -8,6 +8,7 @@
 namespace Module\Market;
 
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
@@ -47,6 +48,14 @@ class Module extends SfModule
         if (!$container->has('order.form')) {
             $container->register('order.form', 'Module\Market\Form\OrderForm');
         }
+
+        foreach ($container->findTaggedServiceIds('delivery.subscriber') as $name => $params) {
+            $subscriber = $container->get($name);
+            if ($subscriber instanceof ContainerAware) {
+                $subscriber->setContainer($container);
+            }
+            $container->get('eventDispatcher')->addSubscriber($subscriber);
+        };
     }
 
 

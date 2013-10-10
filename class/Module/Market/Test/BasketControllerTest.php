@@ -122,9 +122,8 @@ class BasketControllerTest extends WebCase
 
         $response = $this->runController('basket');
         $crawler = $this->createCrawler($response);
-        $form = $crawler->filter('form#form_basket_address');
+        $form = $crawler->filter('form#form_order');
         $this->assertEquals(1, $form->count());
-
         $this->assertEquals(2, $form->filter('table.table tbody tr')->count());
     }
 }

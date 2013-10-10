@@ -47,15 +47,18 @@ class Order extends Object
      * @param null $email
      * @return string
      */
-    private function getHash( $id = null, $date = null, $email = null )
+    public function getHash($id = null, $date = null, $email = null)
     {
-        if ( null === $id ) {
-            if ( null === $this->id ) throw new \InvalidArgumentException('Order not defined');
-            $id     = $this->id;
-            $date   = $this->date;
-            $email  = $this->email;
+        if (null === $id) {
+            if (null === $this->id) {
+                throw new \InvalidArgumentException('Order not defined');
+            }
+            $id    = $this->id;
+            $date  = $this->date;
+            $email = $this->email;
         }
-        return md5( $id.':'.$date.':'.$email );
+
+        return md5($id . ':' . $date . ':' . $email);
     }
 
     /**
@@ -91,7 +94,7 @@ class Order extends Object
         return $this->Positions ? $this->Positions->sum('sum') : 0;
     }
 
-    public function getRobokassa(Payment $payment, Sfcms\Delivery $delivery, Sfcms\Config $config)
+    public function getRobokassa(Payment $payment, Sfcms\DeliveryManager $delivery, Sfcms\Config $config)
     {
         $robokassa = null;
         switch ($payment->module) {
