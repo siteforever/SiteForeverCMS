@@ -26,3 +26,9 @@ see [official doucumentation](http://symfony.com/doc/current/components/routing/
 
 * Новый файл index.php взять из репозитория keltanas/site-forever-cms
 * В каталоге `./themes/name/templates` новый файл `theme.xml` с метаописанием темы
+
+* event-orient architecture for market.order module
+* new method `Order->isSale()` indicated about enabled discount
+* add controller object to container before dispatch
+* `Sfcms\Delivery` renamed to `Sfcms\DeliveryManager`
+* New global js events `sfcms.form.beforeSubmit` and `sfcms.form.error` on ajax form
