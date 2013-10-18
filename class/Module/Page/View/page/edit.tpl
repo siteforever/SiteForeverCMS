@@ -1,15 +1,15 @@
 
 {form form=$form}
 
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#tabs-1" data-toggle="tab">{t cat="page"}Main settings{/t}</a></li>
-        <li><a href="#tabs-2" data-toggle="tab">{t cat="page"}Notice{/t}</a></li>
-        <li><a href="#tabs-3" data-toggle="tab">{t cat="page"}Content{/t}</a></li>
-    </ul>
+    {*<ul class="nav nav-tabs">*}
+        {*<li class="active"><a href="#tabs-1" data-toggle="tab">{t cat="page"}Main settings{/t}</a></li>*}
+        {*<li><a href="#tabs-2" data-toggle="tab">{t cat="page"}Notice{/t}</a></li>*}
+        {*<li><a href="#tabs-3" data-toggle="tab">{t cat="page"}Content{/t}</a></li>*}
+    {*</ul>*}
 
     {$form->htmlFieldWrapped('id')}
-    <div class="tab-content">
-        <div class="tab-pane active" id="tabs-1">
+    {*<div class="tab-content">*}
+        {*<div class="tab-pane active" id="tabs-1">*}
             <fieldset>
                 <legend>{"System"|lang:"page"}</legend>
                 {$form->htmlFieldWrapped('name')}
@@ -58,16 +58,22 @@
                     </div>
                 </div>
             </fieldset>
-        </div>
+        {*</div>*}
 
-        <div class="tab-pane" id="tabs-2">
+
+        <fieldset>
+            <legend>{"Notice"|lang:"page"}</legend>
+        {*<div class="tab-pane" id="tabs-2">*}
             {$form->htmlField('notice')}
-        </div>
-
-        <div class="tab-pane" id="tabs-3">
+        {*</div>*}
+        </fieldset>
+        <fieldset>
+            <legend>{"Content"|lang:"page"}</legend>
+        {*<div class="tab-pane" id="tabs-3">*}
             {$form->htmlField('content')}
-        </div>
-</div>
+        {*</div>*}
+        </fieldset>
+{*</div>*}
 {/form}
 
 

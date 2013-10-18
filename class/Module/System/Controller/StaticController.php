@@ -28,7 +28,7 @@ class StaticController extends Controller
         $method = preg_replace($re, '"\1".ucfirst("\2")', $file);
         /** @var Response $response */
         $response = $this->$method();
-        if (!($this->app->isDebug() || $this->filesystem->exists($this->config->get('static_dir') . basename($file)))) {
+        if (!($this->app->isDebug() || $this->filesystem->exists($this->config->get('static_dir') . DIRECTORY_SEPARATOR . basename($file)))) {
             $this->filesystem->dumpFile($this->config->get('static_dir') . basename($file), $response->getContent());
         }
         return $response;
