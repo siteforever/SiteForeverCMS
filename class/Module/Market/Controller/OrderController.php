@@ -141,7 +141,7 @@ class OrderController extends Controller
             'delivery'  => $delivery,
             'payment'   => $order->Payment,
             'sum'       => $sum,
-            'total'     => $delivery->cost($sum) + $sum,
+            'total'     => $delivery->cost() + $sum,
             'robokassa' => $order->getRobokassa($payment, $delivery, $this->config),
         ));
     }

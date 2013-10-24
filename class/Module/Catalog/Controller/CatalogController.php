@@ -6,6 +6,7 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Module\Catalog\Form\CatalogForm;
 use Module\Catalog\Form\CommentForm;
 use Module\Catalog\Object\Comment;
 use Sfcms\Controller;
@@ -22,7 +23,6 @@ use Sfcms;
 use Sfcms_Filter;
 use Sfcms_Filter_Group;
 use Sfcms_Filter_Collection;
-use Forms_Catalog_Edit;
 use Symfony\Component\HttpFoundation\Response;
 
 class CatalogController extends Controller
@@ -527,7 +527,6 @@ class CatalogController extends Controller
          * @var CatalogModel $catalogFinder
          * @var Catalog $pitem
          * @var Field $field
-         * @var Forms_Catalog_Edit $form
          * @var Sfcms_Filter_Collection $filter
          * @var Sfcms_Filter $fvalues
          */
@@ -541,7 +540,8 @@ class CatalogController extends Controller
             $parentId = $this->request->getSession()->get('catalogCategory', 0);
         }
 
-        $form = $catalogFinder->getForm();
+        /** @var CatalogForm $form */
+        $form = $this->get('catalog.product.form');
 
         if ($type) {
             $form->type_id = $type;
@@ -643,7 +643,7 @@ class CatalogController extends Controller
         $id        = $edit;
         $parent_id = $add ?: 0;
 
-        $form = $catalog->getForm();
+        $form = $this->get('catalog.product.form');
 
         if( $id ) { // если редактировать
             $item      = $catalog->find( $id );

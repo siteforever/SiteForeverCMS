@@ -148,10 +148,10 @@ class Catalog extends Object
      */
     public function getAlias()
     {
-        $alias = ($this->cat ? '' : $this->id . '-')
+        if (empty($this->data['alias'])) {
+            $alias = ($this->cat ? '' : $this->id . '-')
             . $this->app()->getContainer()->get('i18n')->translit($this->name) ?: $this->id;
-        $alias = mb_strtolower(trim($alias, '-'));
-        if (empty($this->data['alias']) || $this->data['alias'] != $alias) {
+            $alias = mb_strtolower(trim($alias, '-'));
             $this->data['alias'] = $alias;
             if (!$this->isStateCreate()) {
                 $this->changed['alias'] = true;
@@ -189,7 +189,6 @@ class Catalog extends Object
     {
         if (null === $this->_image) {
             $gallery = $this->Gallery;
-//            var_dump($gallery);
             if (null === $gallery) {
                 return null;
             }

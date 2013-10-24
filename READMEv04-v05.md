@@ -32,3 +32,5 @@ see [official doucumentation](http://symfony.com/doc/current/components/routing/
 * add controller object to container before dispatch
 * `Sfcms\Delivery` renamed to `Sfcms\DeliveryManager`
 * New global js events `sfcms.form.beforeSubmit` and `sfcms.form.error` on ajax form
+
+* For ckeditor loads css from ./themes/{{theme_name}}/css/wysiwyg.css if exists

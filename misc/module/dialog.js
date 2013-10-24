@@ -20,17 +20,20 @@ define('module/dialog',[
             var cfg = {
                 resizable: false,
                 autoOpen: false,
-                height: $(window).height() - 10,
-                width: $(window).width() - 20,
+                height: $(window).height() - 50,
+                width: 800,
                 modal: true,
+                overflow: '',
                 open: function (event, ui) {
                     if ( obj.onOpen && typeof obj.onOpen == 'function' ) {
                         obj.onOpen.apply(obj);
+                        $('body, html').css('overflow', 'hidden');
                     }
                 },
                 close: function (event, ui) {
                     if ( obj.onClose && typeof obj.onClose == 'function' ) {
                         obj.onClose.apply(obj);
+                        $('body, html').css('overflow', 'visible');
                     }
                 }
             };

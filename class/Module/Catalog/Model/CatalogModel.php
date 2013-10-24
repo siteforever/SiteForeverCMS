@@ -648,17 +648,6 @@ class CatalogModel extends Model
     }
 
     /**
-     * @return Forms_Catalog_Edit
-     */
-    public function getForm()
-    {
-        if( is_null( $this->form ) ) {
-            $this->form = new Forms_Catalog_Edit();
-        }
-        return $this->form;
-    }
-
-    /**
      * Вернет HTML для лампочки в меню админки
      *
      * @param $id

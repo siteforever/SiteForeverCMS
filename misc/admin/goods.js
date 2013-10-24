@@ -19,24 +19,23 @@ define("admin/goods",[
                     this.editUrl = $(node).attr('href');
                     this.dialog.title($(node).attr('title'));
                     var params = {};
-                    if ( $(node).data('action') == 'add' ) {
+                    if ($(node).data('action') == 'add') {
                         var category = parseInt($('select[name=parent]').val(), 10) || 0,
-                            type     = parseInt($('select[name=type_id]').val(), 10) || 0;
+                            type = parseInt($('select[name=type_id]').val(), 10) || 0;
                         params = {
-                            'add' : category,
-                            'type' : type
+                            'add': category,
+                            'type': type
                         };
                     }
-                    $.get( this.editUrl, params, $.proxy(function( response ){
-                        this.dialog.body( response ).open();
-                    },this)).always($.unblockUI);
+                    $.get(this.editUrl, params, $.proxy(function (response) {
+                        this.dialog.body(response).open();
+                    }, this)).always($.unblockUI);
                     return false;
                 }
             }
         },
 
         "init" : function() {
-//            parser();
             this.dialog = new Dialog('goodsEditDialog', this);
         },
 
@@ -49,6 +48,7 @@ define("admin/goods",[
         "onClose" : function() {
             if (typeof wysiwyg.destroy == 'function') {
                 wysiwyg.destroy();
+                _gallery.sortable("destroy");
             }
         },
         "onSave" : function() {

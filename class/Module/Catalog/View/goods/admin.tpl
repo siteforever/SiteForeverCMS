@@ -6,11 +6,30 @@
             {icon name="add"} {t cat="catalog"}Add product{/t}
         {/a}
     </div>
-    <div class="span6">
-        <div class="alert alert-info">
-            <strong>Hint:</strong> Выберите в таблице <em>категорию</em> и <em>тип</em> для создания нового товара.
-        </div>
-    </div>
+    {*<div class="span6">*}
+        {*<div class="form-inline">*}
+            {*<span>Групповое действие</span>*}
+            {*<input type="text" id="val" name="val" class="input-mini">*}
+            {*<select class="input-medium" name="cmd" id="cmd">*}
+                {*<option value="mark_top_on">На главную</option>*}
+                {*<option value="mark_top_off">Убрать с главной</option>*}
+                {*<option disabled="disabled">-</option>*}
+                {*<option value="mark_new_on">Новинка</option>*}
+                {*<option value="mark_new_off">Не новинка</option>*}
+                {*<option disabled="disabled">-</option>*}
+                {*<option value="mark_hidden_on">Скрыть</option>*}
+                {*<option value="mark_hidden_off">Показать</option>*}
+                {*<option disabled="disabled">-</option>*}
+                {*<option value="set_price">Проставить цену</option>*}
+            {*</select>*}
+            {*<button class="btn btn-small">Применить</button>*}
+        {*</div>*}
+    {*</div>*}
+    {*<div class="span6">*}
+        {*<div class="alert alert-info">*}
+            {*<strong>Hint:</strong> Выберите в таблице <em>категорию</em> и <em>тип</em> для создания нового товара.*}
+        {*</div>*}
+    {*</div>*}
 </div>
 
 

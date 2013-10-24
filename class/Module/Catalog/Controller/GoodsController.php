@@ -7,6 +7,7 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Sfcms\Form\Form;
 use Sfcms\Request;
 use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
@@ -107,10 +108,13 @@ class GoodsController extends Controller
         }
         /** @var $model CatalogModel */
         $model = $this->getModel('Catalog');
-        $product = $model->find( $id );
-        $form = $model->getForm();
-        $form->setData( $product->attributes );
-        return $form->html(false,false);
+        $product = $model->find($id);
+
+        /** @var Form $form */
+        $form = $this->get('catalog.product.form');
+        $form->setData($product->attributes);
+
+        return $form->html(false, false);
     }
 
     /**
@@ -123,7 +127,7 @@ class GoodsController extends Controller
         $products = $model->findAll('cat = 0 AND hidden = 0 AND deleted = 0 AND protected = 0');
         $categories = $model->findAll('cat = 1 AND hidden = 0 AND deleted = 0 AND protected = 0');
 
-        $yml = new Yml( $this->app() );
+        $yml = new Yml($this->app);
         $yml->setCollection( $products );
         $yml->setCategories( $categories );
 

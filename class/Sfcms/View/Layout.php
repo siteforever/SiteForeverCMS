@@ -185,9 +185,11 @@ class Layout extends ViewAbstract
 //        }
 
         if ( $request->get('admin') ) {
-            $rjsConfig['config']['admin/editor/ckeditor'] = array(
-                'style' => $this->path['css'] . '/style.css',
-            );
+            if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
+                $rjsConfig['config']['admin/editor/ckeditor'] = array(
+                    'style' => $this->path['css'] . '/wysiwyg.css',
+                );
+            }
 
             $rjsConfig['paths']['app'] = 'admin';
             $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';

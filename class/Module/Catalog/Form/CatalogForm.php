@@ -6,10 +6,14 @@
  * @link http://siteforever.ru
  */
 
+namespace Module\Catalog\Form;
+
+use App;
 use Module\Catalog\Model\CatalogModel;
+use Sfcms\Form\Form;
 use Sfcms\Model;
 
-class Forms_Catalog_Edit extends \Sfcms\Form\Form
+class CatalogForm extends Form
 {
     protected $filter = null;
 

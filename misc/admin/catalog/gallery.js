@@ -18,16 +18,14 @@ define("admin/catalog/gallery",[
             'input.a-gallery-file' : {
                 "change" : function( event, node ) {
                     $alert('Загрузка',0,'div.a-gallery');
+                    this.sortable("destroy");
                     $(node).parents('form').ajaxSubmit({
                         "url" : '/cataloggallery/upload',
                         "iframe" : true,
                         "success" :$.proxy(function( response ) {
                             $('div.a-gallery').replaceWith(response);
+                            this.sortable();
                             $alert.close();
-//                            setTimeout($.proxy(function(){
-//                                console.log($('div.a-gallery>ul'));
-//                                this.sortable();
-//                            },this),1000);
                         },this)
                     });
                 }
@@ -69,19 +67,23 @@ define("admin/catalog/gallery",[
             }
         },
 
-        'sortable' : function(){
-            var $items = $( 'div.a-gallery>ul');
+        'sortable' : function(cmd){
+            var $items = $('div.a-gallery>ul');
 //            $items.sortable({'connectWith':'div.a-gallery>ul'});
-            $items.sortable({
-                'update' : function( event, ui ) {
-                    var positions = [];
-                    $(this).find('li').each(function(){
-                        positions.push($(this).data('id'));
-                    });
+            if (!cmd) {
+                $items.sortable({
+                    'update' : function( event, ui ) {
+                        var positions = [];
+                        $(this).find('li').each(function(){
+                            positions.push($(this).data('id'));
+                        });
 //                    console.log('update', positions);
-                    $.post($('div.a-gallery').data('url'), {'positions':positions});
-                }
-            });
+                        $.post($('div.a-gallery').data('url'), {'positions':positions});
+                    }
+                });
+            } else {
+                $items.sortable(cmd);
+            }
             $items.disableSelection();
         }
     }
