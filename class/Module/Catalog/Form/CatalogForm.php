@@ -83,6 +83,7 @@ class CatalogForm extends Form
                     'variants'=>array('0'=>'Ж','1'=>'М','2'=>'Уни'),
                     'require',
                 ),
+                'qty'       => array('type'=>'int', 'label'=>'Qty'),
                 'p0'        => array('type'=>'text', 'label'=>'Параметр 0'),
                 'p1'        => array('type'=>'text', 'label'=>'Параметр 1'),
                 'p2'        => array('type'=>'text', 'label'=>'Параметр 2'),
