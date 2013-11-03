@@ -13,9 +13,11 @@
 
         <div class="span9">
             <div class="b-catalog-product-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                {if !$item->absent}
                 <span>Цена:</span>
                 <span class="b-product-price" itemprop="price">{$item.price|string_format:"%.2f"}</span>
                 <span>{$item.currency}</span>
+                {else}{"absent"|trans:catalog|ucfirst}{/if}
             </div>
 
             {if $item.articul}<div>Артикул: <span>{$item.articul}</span></div>{/if}

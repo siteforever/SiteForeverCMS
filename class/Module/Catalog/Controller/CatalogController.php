@@ -144,7 +144,7 @@ class CatalogController extends Controller
 
             $criteria = $catModel->createCriteria();
 
-            $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 ";
+            $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 AND `absent` = 0 ";
             if (count($categoriesId)) {
                 $criteria->condition .= ' AND `parent` IN (?) ';
                 $criteria->params[] = $categoriesId;
@@ -325,21 +325,21 @@ class CatalogController extends Controller
     public function saveAction()
     {
         /**
-         * @var CatalogModel $catalogFinder
+         * @var CatalogModel $catalogModel
          * @var Field $field
          * @var Form $form
          * @var Catalog $object
          */
-        $catalogFinder = $this->getModel('Catalog');
-        $form          = $catalogFinder->getForm();
+        $catalogModel = $this->getModel('Catalog');
+        $form         = $form = $this->get('catalog.product.form');
 
         // Если форма отправлена
         if ($form->getPost($this->request)) {
             if ($form->validate()) {
                 /** @var $object Catalog */
                 $object = $form->id
-                    ? $catalogFinder->find($form->id)
-                    : $catalogFinder->createObject();
+                    ? $catalogModel->find($form->id)
+                    : $catalogModel->createObject();
                 $data = $form->getData();
                 $object->attributes =  $data;
                 if ($object->isStateCreate()) {
