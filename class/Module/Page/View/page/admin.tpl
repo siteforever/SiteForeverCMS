@@ -55,13 +55,12 @@
 <div id="structureWrapper">
     <div class="b-main-structure">{tree data=$data}</div>
 
-    <hr />
+    {*<hr />*}
 
-    {a htmlClass="realias btn" controller="page" action="realias"}
-        {icon name="arrow_refresh"}
-        {t cat="page"}Conversion of aliases{/t}
-    {/a}
-
+    {*{a htmlClass="realias btn" controller="page" action="realias"}*}
+        {*{icon name="arrow_refresh"}*}
+        {*{t cat="page"}Conversion of aliases{/t}*}
+    {*{/a}*}
 
     {*{modal id="pageEdit" title=$this->t('Edit page')}*}
     {*{modal id="pageCreate" title=$this->t('Create page')}*}

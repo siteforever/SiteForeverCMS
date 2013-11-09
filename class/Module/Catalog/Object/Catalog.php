@@ -150,8 +150,8 @@ class Catalog extends Object
     {
         if (empty($this->data['alias'])) {
             $alias = ($this->cat ? '' : $this->id . '-')
-            . $this->app()->getContainer()->get('i18n')->translit($this->name) ?: $this->id;
-            $alias = mb_strtolower(trim($alias, '-'));
+                    . $this->app()->getContainer()->get('i18n')->translit($this->name) ?: $this->id;
+            $alias = substr(mb_strtolower(trim($alias, '-')), 0, 100);
             $this->data['alias'] = $alias;
             if (!$this->isStateCreate()) {
                 $this->changed['alias'] = true;

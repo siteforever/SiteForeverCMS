@@ -106,6 +106,10 @@ class Module extends SfModule
                 array('_controller'=>'catalogcomment', '_action'=>'list')
             ));
 
+        $routes->add('cataloggallery/index',
+            new Route('/cataloggallery/index',
+                array('_controller'=>'cataloggallery', '_action'=>'index')
+            ));
         $routes->add('cataloggallery/delete',
             new Route('/cataloggallery/delete',
                 array('_controller'=>'cataloggallery', '_action'=>'delete')
