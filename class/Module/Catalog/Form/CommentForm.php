@@ -17,7 +17,7 @@ class CommentForm extends Form
         parent::__construct(array(
             'name'  => 'comment',
             'class' => 'form-horizontal ajax',
-//            'action' => '#product_comments',
+            'action' => '#product_comments',
 //            'action'=> \App::getInstance()->getRouter()->createServiceLink('catalog','comment'),
                 'fields' => array(
                     'product_id' => array('type' => 'hidden'),

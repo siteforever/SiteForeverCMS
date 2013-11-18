@@ -41,3 +41,4 @@ parameters:
     mailer_security: ~
     pager_template: pager_twbt
 
+    email_for_comments: ~

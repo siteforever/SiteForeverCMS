@@ -1,0 +1,11 @@
+parameters:
+
+services:
+    catalog.product.form:
+        class: Module\Catalog\Form\CatalogForm
+
+    catalog.comment.subscriber:
+        class: Module\Catalog\Subscriber\CommentSwiftMailerSubscriber
+        arguments: [ @mailer, @tpl, %email_for_comments% ]
+        tags:
+            - { name: event.subscriber }

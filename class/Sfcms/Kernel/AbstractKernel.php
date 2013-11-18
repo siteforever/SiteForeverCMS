@@ -158,6 +158,10 @@ abstract class AbstractKernel
 
         // Загрузка параметров модулей
         $this->loadModules();
+
+        foreach ($this->getContainer()->findTaggedServiceIds('event.subscriber') as $serviceId => $params) {
+            $this->getEventDispatcher()->addSubscriber($this->getContainer()->get($serviceId));
+        }
     }
 
 
@@ -200,7 +204,13 @@ abstract class AbstractKernel
 
             // А потом инициализируем
             // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(function ($module) use ($_) {
+            array_map(function (Module $module) use ($_) {
+                try {
+                    $locator = new FileLocator(array($module->getPath()));
+                    $loader = new YamlFileLoader($_->getContainer(), $locator);
+                    $loader->load('config.yml');
+                } catch (\InvalidArgumentException $e) { }
+
                 call_user_func(array($module, 'registerService'), $_->getContainer());
                 call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl_directory'));
                 call_user_func(array($module, 'registerRoutes'), $_->getContainer()->get('sf_router'));

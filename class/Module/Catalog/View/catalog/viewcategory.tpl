@@ -22,7 +22,8 @@
 {foreach from=$list item="item"}
 
     <div class="well">
-
+        {if $item->isSale()}<span class="hot">Sale</span>{else}Not sale{/if}
+        {if $item.salePrice}<span class="hot">{$item.salePrice}</span>{/if}
         <div class="row-fluid">
             <div class="span3">
                 {a href=$item->url class="thumbnail"}

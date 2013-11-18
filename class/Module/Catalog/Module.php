@@ -9,6 +9,7 @@ namespace Module\Catalog;
 
 use Sfcms\Module as SfModule;
 use Sfcms\Model;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Routing\Route;
@@ -181,9 +182,6 @@ class Module extends SfModule
 
     public function registerService(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('catalog.product.form')) {
-            $container->setDefinition('catalog.product.form', new Definition('Module\Catalog\Form\CatalogForm'));
-        }
         $container->get('config')->setDefault('catalog', array(
             // сортировка товаров
             'order_list' => array(

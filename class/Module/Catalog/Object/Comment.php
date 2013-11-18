@@ -9,6 +9,23 @@ namespace Module\Catalog\Object;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field as DataField;
 
+/**
+ * Class Comment
+ * @package Module\Catalog\Object
+ *
+ * @property $id
+ * @property $product_id
+ * @property $ip
+ * @property $name
+ * @property $email
+ * @property $phone
+ * @property $subject
+ * @property $content
+ * @property $createdAt
+ * @property $updatedAt
+ * @property $hidden
+ * @property $deleted
+ */
 class Comment extends Object
 {
     /**

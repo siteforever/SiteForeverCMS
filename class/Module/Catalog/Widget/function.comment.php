@@ -19,19 +19,22 @@ function smarty_function_comment($params, Smarty_Internal_Template $smarty)
         throw new InvalidArgumentException('`product` must be Module\Catalog\Object\Catalog instance');
     }
 
-    $productModel = Model::getModel('Catalog');
     $commentModel = Model::getModel('CatalogComment');
 
     $form = new CommentForm();
 
-    if ($form->getPost($smarty->tpl_vars['request']->value)) {
+    /** @var \Sfcms\Request $request */
+    $request = $smarty->tpl_vars['request']->value;
+    if ($form->getPost($request)) {
         if ($form->validate()) {
             $comment = $commentModel->createObject($form->getData());
             $comment->ip = $smarty->tpl_vars['request']->value->getClientIp();
             $comment->createdAt = new DateTime();
             $comment->updatedAt = $comment->createdAt;
             $comment->save();
+            $form->getField('content')->setValue('');
             $smarty->assign('ok', true);
+            $request->getSession()->getFlashBag()->add('success', 'Комментарий добавлен успешно');
         }
     }
 
