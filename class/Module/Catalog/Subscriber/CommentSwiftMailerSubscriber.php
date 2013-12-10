@@ -65,6 +65,10 @@ class CommentSwiftMailerSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if (!$this->email) {
+            return;
+        }
+
         $this->tpl->assign(array(
             'object' => $object,
         ));

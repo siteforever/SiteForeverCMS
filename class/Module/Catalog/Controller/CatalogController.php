@@ -144,7 +144,7 @@ class CatalogController extends Controller
 
             $criteria = $catModel->createCriteria();
 
-            $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 AND `absent` = 0 ";
+            $criteria->condition = " `deleted` = 0 AND `hidden` = 0 AND `cat` = 0 ";
             if (count($categoriesId)) {
                 $criteria->condition .= ' AND `parent` IN (?) ';
                 $criteria->params[] = $categoriesId;

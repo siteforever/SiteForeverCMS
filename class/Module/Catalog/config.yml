@@ -1,4 +1,5 @@
 parameters:
+    email_for_comments: ~
 
 services:
     catalog.product.form:
