@@ -928,6 +928,43 @@ abstract class Model extends Component
     }
 
     /**
+     * Вернет количество записей по условию
+     * @param string|Criteria $cond
+     * @param array           $params
+     *
+     * @return int
+     */
+    final public function sum($column, $cond = '', $params = array())
+    {
+        //$this->log( $cond, 'count' );
+        if (is_object($cond) && $cond instanceof Criteria) {
+            $params = $cond->params;
+            $cond   = $cond->condition;
+        }
+        $criteria = new QueryBuilder($this, array(
+            'select' => sprintf('SUM(`%s`)', $column),
+            'cond'   => $cond,
+            'params' => $params,
+        ));
+        $sql = $criteria->getSQL();
+        $sum = $this->getDB()->fetchOne($sql);
+        if ($sum) {
+            return $sum;
+        }
+
+        return 0;
+    }
+
+    /**
+     * @param array $params
+     * @return QueryBuilder
+     */
+    public function getQueryBuilder($params = array())
+    {
+        return new QueryBuilder($this, $params);
+    }
+
+    /**
      * Начало транзакции
      * @return void
      */

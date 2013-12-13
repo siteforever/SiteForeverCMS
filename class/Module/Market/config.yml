@@ -1,0 +1,8 @@
+parameters:
+
+services:
+    market.dashbord.subscriber:
+        class: Module\Market\Subscriber\DashboardSubscriber
+        arguments: [ @tpl ]
+        tags:
+            - { name: event.subscriber }

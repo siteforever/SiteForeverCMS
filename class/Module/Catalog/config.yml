@@ -10,3 +10,9 @@ services:
         arguments: [ @mailer, @tpl, %email_for_comments% ]
         tags:
             - { name: event.subscriber }
+
+    catalog.dashbord.subscriber:
+        class: Module\Catalog\Subscriber\DashboardSubscriber
+        arguments: [ @tpl ]
+        tags:
+            - { name: event.subscriber }

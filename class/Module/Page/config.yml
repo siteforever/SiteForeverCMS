@@ -1,0 +1,8 @@
+parameters:
+
+services:
+    page.dashbord.subscriber:
+        class: Module\Page\Subscriber\DashboardSubscriber
+        arguments: [ @tpl ]
+        tags:
+            - { name: event.subscriber }

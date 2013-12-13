@@ -55,10 +55,6 @@ class Module extends SfModule
     public function registerRoutes(Router $router)
     {
         $routes = $router->getRouteCollection();
-        $routes->add('admin',
-            new Route('/admin',
-                array('_controller'=>'page', '_action'=>'admin')
-            ));
 
         $routes->add('captcha',
             new Route('/captcha',

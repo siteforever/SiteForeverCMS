@@ -393,3 +393,24 @@ div.elfinder-resize-control input[type="text"] {
     cursor: pointer;
     font-size: 10px;
 }
+
+
+.panel {
+    display: block;
+    float: left;
+    width: 40%;
+    margin-right: 5%;
+    border: 1px #ccc solid;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0,0,0,.2);
+}
+.panel_title {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px;
+    border-bottom: 1px #ccc solid;
+    background: #eee;
+}
+.panel_content {
+    padding: 10px 10px 0 10px;
+}
