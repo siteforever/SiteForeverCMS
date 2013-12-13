@@ -172,8 +172,8 @@ class RouterTest extends PHPUnit_Framework_TestCase
     {
         $this->router->setRoute('/admin');
         $this->router->routing(true);
-        $this->assertEquals('page', $this->request->getController());
-        $this->assertEquals('admin', $this->request->getAction());
+        $this->assertEquals('dashboard', $this->request->getController());
+        $this->assertEquals('index', $this->request->getAction());
     }
 
     public function testFindRouteUsersEdit()
