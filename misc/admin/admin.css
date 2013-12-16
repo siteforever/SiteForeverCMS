@@ -396,10 +396,11 @@ div.elfinder-resize-control input[type="text"] {
 
 
 .panel {
-    display: block;
-    float: left;
+    display: inline-block;
+    vertical-align: top;
     width: 40%;
     margin-right: 5%;
+    margin-bottom: 20px;
     border: 1px #ccc solid;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0,0,0,.2);

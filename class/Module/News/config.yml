@@ -1,0 +1,8 @@
+parameters:
+
+services:
+    news.dashbord.subscriber:
+        class: Module\News\Subscriber\DashboardSubscriber
+        arguments: [ @tpl ]
+        tags:
+            - { name: event.subscriber }

@@ -25,7 +25,16 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'News'  => array(),
+                'Rss'   => array(),
+            ),
+            'models' => array(
+                'News'         => 'Module\\News\\Model\\NewsModel',
+                'NewsCategory' => 'Module\\News\\Model\\CategoryModel',
+            ),
+        );
     }
 
     public function init()
