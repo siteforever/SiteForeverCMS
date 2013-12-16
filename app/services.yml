@@ -10,9 +10,8 @@ parameters:
     language: en
 
     template:
-        theme: %theme%
         cache:
-            livetime: %cache_livecycle%
+            livetime: "%cache_livecycle%"
 
     static_dir: "%root%/static"
 
@@ -30,36 +29,8 @@ parameters:
 
     session_storage: "@session.storage.pdo"
 
-    monolog:
-        handlers:
-            rotating_handler:
-                type: rotating
-                path: runtime/logs/logs.txt
-                max: 5
-            fire_handler:
-                type: firephp
-
-    logging_handlers: ["@rotating_handler", "@fire_handler"]
 
 services:
-    cms_channel:
-        class: Monolog\Logger
-        arguments: ["cms", %logging_handlers%]
-#        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
-
-    logger:
-        class: Module\Monolog\Logger\Logger
-        arguments: ["@cms_channel"]
-
-    db_channel:
-        class: Monolog\Logger
-        arguments: ["db", %logging_handlers%]
-#        arguments: ["db", ["@rotating_handler", "@fire_handler"]]
-
-    db_logger:
-        class: Module\Monolog\Logger\Logger
-        arguments: ["@db_channel"]
-
     db:
         class: Sfcms\db
         arguments: ["@pdo"]
@@ -72,7 +43,6 @@ services:
             params: "%db%"
         calls:
             - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
-
 
     session:
         class: Symfony\Component\HttpFoundation\Session\Session
@@ -126,6 +96,7 @@ services:
 
     i18n:
         class: Sfcms\i18n
+        arguments: ["%sf_path%", "%static_dir%/i18n", "%debug%"]
         calls:
             - [setLanguage, ["%language%"]]
 

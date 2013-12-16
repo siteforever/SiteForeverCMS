@@ -6,7 +6,8 @@ parameters:
 
     admin: "keltanas@gmail.com"
 
-    theme: basic
+    template:
+        theme: basic
 
     cache:
         class: "Sfcms\Cache\CacheBlank"

@@ -1,11 +1,11 @@
 <?php
 namespace Sfcms;
 
-use App;
+use Module\Monolog\Logger\Logger;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
- * Переводчик
+ * Translator
  */
 
 class i18n
@@ -13,6 +13,10 @@ class i18n
 
     private $_lang = null;
     private $_dictionary = null;
+    private $_debug = false;
+    private $_path = '';
+    private $_dest = '';
+    private $logger = null;
 
     /**
      * @var i18n
@@ -59,12 +63,49 @@ class i18n
         ' '   => '_',
     );
 
-    public function __construct()
+    public function __construct($path = __DIR__, $dest = __DIR__, $debug = false)
     {
+        $this->_debug = $debug;
+        $this->_path = $path;
+        $this->_dest = $dest;
         setlocale(LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C');
         setlocale(LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia');
 
         return self::$_instance = $this;
+    }
+
+    public function isDebug()
+    {
+        return $this->_debug;
+    }
+
+    public function getPath()
+    {
+        return $this->_path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDest()
+    {
+        return $this->_dest;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     public function setLanguage($lang = 'en')
@@ -76,23 +117,21 @@ class i18n
         $this->_lang = $lang;
         $fs = new Filesystem();
 
-        $dictFile = SF_PATH . '/protected/lang/' . $this->_lang . '.php';
+        $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '.php';
         if (!$fs->exists($dictFile)) {
             throw new Exception('Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile);
         }
         $this->_dictionary = @include($dictFile);
 
-        $dest = ROOT . '/static/i18n';
-
-        if (!$fs->exists($dest)) {
-            $fs->mkdir($dest, 0777, true);
+        if (!$fs->exists($this->getDest())) {
+            $fs->mkdir($this->getDest(), 0777, true);
         }
 
         // Prepare dictionary for JS
-        $jsDictFile = $dest . '/' . $this->_lang . '.js';
-        $jsI18nFile = SF_PATH . '/misc/i18n.js';
+        $jsDictFile = $this->getDest() . '/' . $this->_lang . '.js';
+        $jsI18nFile = $this->getPath() . '/misc/i18n.js';
 
-        if (!App::isDebug() && file_exists($jsDictFile)) {
+        if (!$this->isDebug() && file_exists($jsDictFile)) {
             return;
         }
 
@@ -112,7 +151,9 @@ class i18n
         fwrite($f, $jsDict, strlen($jsDict));
         flock($f, LOCK_UN);
         fclose($f);
-        App::cms()->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
+        if (null !== $this->getLogger()) {
+            $this->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
+        }
     }
 
     /**
@@ -170,7 +211,7 @@ class i18n
     {
         $category = strtolower($category);
         if ($category && !isset($this->_dictionary[$category])) {
-            $dictFile = SF_PATH . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
+            $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
             if (file_exists($dictFile)) {
                 $this->_dictionary['cat_' . $category] = @include($dictFile);
             } else {
