@@ -10,20 +10,20 @@ parameters:
     language: en
 
     template:
-        theme: basic
+        theme: %theme%
         cache:
             livetime: %cache_livecycle%
 
     static_dir: "%root%/static"
 
     db:
-        login: ~
-        password: ~
-        dsn: "mysql:host=localhost;dbname=siteforever"
-        migrtion: false
-        debug: false
+        dsn: "mysql:host=%db_host%;dbname=%db_name%"
+        login: "%db_login%"
+        password: "%db_password%"
         options:
             1002: "SET NAMES utf8"
+        migration: "%db_migration%"
+        debug: "%db_debug%"
 
     pdo_session:
         db_table: "session"

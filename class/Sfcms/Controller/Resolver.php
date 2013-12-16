@@ -105,15 +105,6 @@ class Resolver
 
         $this->app->getLogger()->info('Run command', $command);
 
-        // если запрос является системным
-        if ($request->get('_system')) {
-            if ($this->app->getAuth()->hasPermission(USER_ADMIN)) {
-                $this->setSystemPage($request);
-            } else {
-                throw new HttpException(403, 'Access denied');
-            }
-        }
-
         if (!class_exists($command['controller'])) {
             throw new HttpException(404, sprintf('Controller class "%s" not exists', $command['controller']));
         }
@@ -123,7 +114,6 @@ class Resolver
         /** @var Controller $controller */
         $controller = $ref->newInstance($request);
         $controller->setContainer($this->app->getContainer());
-        $this->app->getContainer()->set('controller', $controller);
         $controller->init();
 
         // Защита системных действий
@@ -133,7 +123,7 @@ class Resolver
 
         try {
             $method = $ref->getMethod($command['action']);
-        } catch( \ReflectionException $e ) {
+        } catch(\ReflectionException $e) {
             throw new HttpException(404, $e->getMessage());
         }
         $this->app->getTpl()->assign('this', $controller);
@@ -154,6 +144,7 @@ class Resolver
      * Подотавливает список аргументов для передачи в Action, на основе указанных параметров и проверяет типы
      * на основе правил, указанных в DocBlock
      * @param \ReflectionMethod $method
+     * @param Request $request
      * @return array
      */
     protected function prepareArguments(\ReflectionMethod $method, Request $request)
@@ -217,15 +208,15 @@ class Resolver
                 if( ! is_array($ruleMethods) ) {
                     throw new RuntimeException('Expected string or array');
                 }
-                $ruleMethods = array_map( function($method){
+                $ruleMethods = array_map(function($method){
                     if (false === stripos($method, 'action')) {
                         $method = strtolower($method) . 'Action';
                     }
                     return $method;
                 }, $ruleMethods );
-                if ( in_array( $command['action'], $ruleMethods ) ) {
-                    if ( $this->app->getAuth()->hasPermission( $perm ) ) {
-                        if ( $perm == USER_ADMIN ) {
+                if (in_array($command['action'], $ruleMethods)) {
+                    if ($this->app->getAuth()->hasPermission($perm)) {
+                        if ($perm == USER_ADMIN) {
                             $this->setSystemPage($request);
                         }
                     } else {
@@ -241,8 +232,7 @@ class Resolver
      */
     private function setSystemPage(Request $request)
     {
-        $request->setTemplate('index');
-        $request->set('resource', 'system:');
-        $request->set('modules', $this->app->adminMenuModules());
+        $request->setSystem(true);
+        $request->setTemplate('admin');
     }
 }

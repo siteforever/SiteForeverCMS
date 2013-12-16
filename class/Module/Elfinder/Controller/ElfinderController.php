@@ -31,7 +31,7 @@ class ElfinderController extends Controller
     public function finderAction()
     {
         $this->request->setTitle('ElFinder');
-        $this->request->setTemplate('elfinder2');
+        $this->request->setTemplate('elfinder.index');
         return new Response();
     }
 

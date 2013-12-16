@@ -29,6 +29,7 @@ class Request extends SymfonyRequest
     private $_keywords = '';
     private $_description = '';
     private $_admin_script = null;
+    private $_system = false;
 
     protected $basket;
 
@@ -50,6 +51,24 @@ class Request extends SymfonyRequest
                 }
             }
         }
+    }
+
+    /**
+     * Request is system (for admins)
+     * @return bool
+     */
+    public function isSystem()
+    {
+        return $this->_system;
+    }
+
+    /**
+     * Set request as system
+     * @param $system
+     */
+    public function setSystem($system)
+    {
+        $this->_system = $system;
     }
 
     /**

@@ -176,7 +176,7 @@ class Layout extends ViewAbstract
             ),
         );
 
-        if ($request->get('admin') || !$this->_app->getConfig('misc.noBootstrap')) {
+        if ($request->isSystem() || !$this->_app->getConfig('misc.noBootstrap')) {
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
 
@@ -184,7 +184,7 @@ class Layout extends ViewAbstract
         $rjsConfig['paths']['site'] = '../static/site';
 //        }
 
-        if ( $request->get('admin') ) {
+        if ($request->isSystem()) {
             if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
                 $rjsConfig['config']['admin/editor/ckeditor'] = array(
                     'style' => $this->path['css'] . '/wysiwyg.css',
@@ -273,12 +273,12 @@ class Layout extends ViewAbstract
      */
     protected function selectLayout(Request $request)
     {
-        if ('system:' == $request->attributes->get('resource')) {
-            $layout = new Layout\Admin($this->_app);
-            $request->attributes->set('admin', true);
-        } else {
-            $layout = new Layout\Page($this->_app);
-            $request->attributes->set('admin', false);
+        $request->attributes->set('admin', $request->isSystem());
+        $layout = $request->isSystem()
+            ? new Layout\Admin($this->_app)
+            : new Layout\Page($this->_app);
+        if ($request->isSystem()) {
+            $request->set('modules', $this->_app->adminMenuModules());
         }
         return $layout;
     }

@@ -91,8 +91,9 @@ abstract class Module extends Component
      * @static
      * @param $controller
      * @return string
+     * @throws
      */
-    public static function getModuleClass( $controller )
+    public static function getModuleClass($controller)
     {
         if ( null === self::$controllers ) {
             self::$controllers = App::cms()->getControllers();

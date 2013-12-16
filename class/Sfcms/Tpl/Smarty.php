@@ -42,9 +42,9 @@ class Smarty extends Driver
         } else {
             throw new Exception('Theme "' . $theme . '" not found');
         }
-        if (is_dir(SF_PATH."/themes/system")) {
-            $this->addTplDir(SF_PATH."/themes/system");
-        }
+//        if (is_dir(SF_PATH."/themes/system")) {
+//            $this->addTplDir(SF_PATH."/themes/system");
+//        }
         $runtime    = ROOT."/runtime";
         $tpl_c  = $runtime."/templates_c";
         $cache  = $runtime."/cache";

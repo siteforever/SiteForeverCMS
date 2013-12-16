@@ -86,7 +86,15 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'Page'  => array(),
+                'Sitemap'  => array(),
+            ),
+            'models' => array(
+                'Page' => 'Module\\Page\\Model\\PageModel',
+            ),
+        );
     }
 
     public function admin_menu()

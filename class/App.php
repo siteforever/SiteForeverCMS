@@ -71,8 +71,6 @@ class App extends AbstractKernel
         if (!defined('MAX_FILE_SIZE')) {
             define('MAX_FILE_SIZE', 2 * 1024 * 1024);
         }
-        $installer = new Sfcms_Installer();
-        $installer->installationStatic();
 
         $this->getEventDispatcher()
             ->addListener('kernel.response', function(KernelEvent $event){
@@ -94,13 +92,15 @@ class App extends AbstractKernel
      * @return Response
      * @throws Exception
      */
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request = null)
     {
         $this->getLogger()->log(str_repeat('-', 80));
         $this->getLogger()->log(sprintf('%\'-10s%-\'-70.60s', '', $request->getRequestUri()));
         $this->getLogger()->log(str_repeat('-', 80));
 
-        $this->getContainer()->set('request', $request);
+        if ($request) {
+            $this->getContainer()->set('request', $request);
+        }
         $acceptableContentTypes = $request->getAcceptableContentTypes();
         $format = null;
         if ($acceptableContentTypes) {

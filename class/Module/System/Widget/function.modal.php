@@ -21,5 +21,5 @@ function smarty_function_modal( $params, Smarty_Internal_Template $smarty )
         'body'  => isset( $params['body'] ) ? $params['body'] : 'undefined',
     ));
 
-    return $smarty->fetch('widget:modal.tpl');
+    return $smarty->fetch('modal.tpl');
 }

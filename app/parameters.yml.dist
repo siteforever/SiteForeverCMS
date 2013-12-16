@@ -4,26 +4,20 @@ parameters:
     url:
         rewrite: true
 
-    admin: "admin@ermin.ru"
+    admin: "keltanas@gmail.com"
+
+    theme: basic
 
     cache:
         class: "Sfcms\Cache\CacheBlank"
         livecycle: 0
 
     db_name: siteforever
+    db_host: localhost
     db_login: root
     db_password: ~
     db_migration: true
     db_debug: true
-
-    db:
-        dsn: "mysql:host=localhost;dbname=%db_name%"
-        login: "%db_login%"
-        password: "%db_password%"
-        options:
-            1002: "SET NAMES utf8"
-        migration: "%db_migration%"
-        debug: "%db_debug%"
 
     editor: ckeditor
     # editor: tinymce

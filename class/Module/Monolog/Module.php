@@ -46,22 +46,12 @@ class Module extends SfModule
     public function config()
     {
         return array(
-//            'controllers' => array(
-//                'SomeName' => array( 'class' => 'Controller\NameController', ),
-//            ),
-//            'models' => array(
-//                'SomeName' => 'Module\Monolog\Model\SomeModel',
-//            ),
         );
     }
 
     public function admin_menu()
     {
         return array(
-//            array(
-//                'name'  => 'Monolog',
-//                'url'   => 'admin/monolog',
-//            )
         );
     }
 }
