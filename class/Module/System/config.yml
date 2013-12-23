@@ -1,0 +1,83 @@
+assetic:
+    debug: %debug%
+    output: "%root%/static"
+    assets:
+        site_js:
+            output: "static/site.js"
+            input:
+                - "%sf_path%/misc/site.js"
+
+database:
+    login: "%db_login%"
+    password: "%db_password%"
+    options:
+        1002: "SET NAMES utf8"
+    migration: "%db_migration%"
+    debug: "%db_debug%"
+
+services:
+    # database
+
+    db:
+        class: Sfcms\db
+        arguments: ["@pdo"]
+        calls:
+            - [setLoggerClass, ["@db_logger"]]
+
+    pdo:
+        class: Sfcms\PDO
+        arguments:
+            params: "%db%"
+        calls:
+            - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
+
+    # template
+
+    smarty:
+        class: Smarty
+        properties:
+            compile_check: true
+            force_compile: "%debug%"
+
+    tpl:
+        class: Sfcms\Tpl\Smarty
+        arguments: ["%template%", "@smarty", "@tpl_directory"]
+
+    # assetic
+    assets:
+        class: Sfcms\Assets
+
+    assetManager:
+        class: Assetic\AssetManager
+
+    assetWriter:
+        class: Assetic\AssetWriter
+        arguments: ["%assetic.output%"]
+        calls:
+            - [writeManagerAssets, ["@assetManager"]]
+
+    # other
+    filesystem:
+        class: Symfony\Component\Filesystem\Filesystem
+
+    auth:
+        class: Sfcms\Auth
+
+    cache:
+        class: %cache_class%
+        arguments: ["%cache_livecycle%"]
+
+    resolver:
+        class: Sfcms\Controller\Resolver
+        arguments: ["@app"]
+
+    i18n:
+        class: Sfcms\i18n
+        arguments: ["%sf_path%", "%assetic.output%/i18n", "%debug%"]
+        calls:
+            - [setLanguage, ["%language%"]]
+
+    router:
+        class: Sfcms\Router
+        calls:
+            - [setRewrite, ["%url%"]]

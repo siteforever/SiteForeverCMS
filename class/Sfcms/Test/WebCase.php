@@ -49,9 +49,7 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->session->set('user_id', null);
         $this->request->setSession($this->session);
         $this->session->start();
-        \App::cms()->getContainer()->set('request', $this->request);
         \App::cms()->getRouter()->setRequest($this->request);
-        \App::cms()->getAuth()->setRequest($this->request);
     }
 
     protected function createCrawler(Response $response)

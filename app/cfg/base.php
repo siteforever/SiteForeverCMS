@@ -6,8 +6,5 @@ return array(
 
     'language'  => 'ru',
 
-    'pager_template' => 'pager_twbt',
-
     'modules' => require_once __DIR__ . '/../modules.php',
-
 );

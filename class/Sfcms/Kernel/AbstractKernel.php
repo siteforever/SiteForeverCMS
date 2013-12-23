@@ -6,6 +6,9 @@
 namespace Sfcms\Kernel;
 
 use Module\Market\Object\Order;
+use Module\Monolog\DependencyInjection\LoggerExtension;
+use Module\System\DependencyInjection\AsseticExtension;
+use Module\System\DependencyInjection\DatabaseExtension;
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Config;
@@ -15,23 +18,20 @@ use Sfcms\Model;
 use Sfcms\Module;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
-use Symfony\Component\Routing\Router as SfRouter;
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Reference;
 use Sfcms\Router;
-use Sfcms\i18n;
-use Sfcms\Tpl\Directory;
+use Sfcms\Auth;
 use Sfcms\Tpl\Driver;
 use Module\Page\Model\PageModel;
 
-use Sfcms\Data\Object;
-use RuntimeException;
-
 use Sfcms\Basket\Base as Basket;
 
-use Auth;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Routing\Loader\YamlFileLoader as YamlUrlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Config\FileLocator;
 
@@ -120,7 +120,6 @@ abstract class AbstractKernel
 
     abstract public function handleRequest(Request $request);
 
-
     public function __construct($cfg_file, $debug = false)
     {
         if (is_null(static::$instance)) {
@@ -134,30 +133,38 @@ abstract class AbstractKernel
             Debug::enable(E_ALL, true);
         }
 
-        $this->_container = new ContainerBuilder();
-        $this->getContainer()->set('app', $this);
-        $this->getContainer()->setParameter('root', ROOT);
-        $this->getContainer()->setParameter('sf_path', SF_PATH);
-        $this->getContainer()->setParameter('debug', $this->isDebug());
-        $locator = new FileLocator(array(ROOT, SF_PATH));
-        $loader = new YamlFileLoader($this->getContainer(), $locator);
-        $loader->load('app/config.yml');
+        $cacheFile = SF_PATH . '/runtime/cache/container.php';
+        $containerConfigCache = new ConfigCache($cacheFile, true /*$this->isDebug()*/);
 
-        // Конфигурация
-//        $locator = new FileLocator(array(ROOT, SF_PATH));
-        $config = new Config($locator->locate($cfg_file), $this->_container);
-        $this->_container->set('config', $config);
+        if (!$containerConfigCache->isFresh()) {
+            $this->_container = new ContainerBuilder();
+            $this->getContainer()->registerExtension(new LoggerExtension());
+            $this->getContainer()->registerExtension(new DatabaseExtension());
+            $this->getContainer()->registerExtension(new AsseticExtension());
 
-        $router = new SfRouter(
-            new YamlUrlFileLoader($locator),
-            'app/routes.yml',
-            array(/*'cache_dir' => $this->getContainer()->getParameter('cache_dir'),*/
-                  'debug' => $debug)
-        );
-        $this->getContainer()->set('sf_router', $router);
+            $this->getContainer()->set('app', $this);
+            $this->getContainer()->setParameter('root', ROOT);
+            $this->getContainer()->setParameter('sf_path', SF_PATH);
+            $this->getContainer()->setParameter('debug', $this->isDebug());
+            $locator = new FileLocator(array(ROOT, SF_PATH));
+            $loader = new YamlFileLoader($this->getContainer(), $locator);
+            $loader->load('app/config.yml');
 
-        // Загрузка параметров модулей
-        $this->loadModules();
+            // Конфигурация
+            $this->getContainer()->setDefinition('config', new Definition('Sfcms\Config', array(
+                $locator->locate($cfg_file),
+                new Reference('service_container')
+            )));
+
+            // Загрузка параметров модулей
+            $this->loadModules();
+            $this->getContainer()->compile();
+
+            $dumper = new PhpDumper($this->getContainer());
+            file_put_contents($cacheFile, $dumper->dump());
+        }
+//        require_once $cacheFile;
+//        $this->_container = new \ProjectServiceContainer();
 
         $ed = $this->getEventDispatcher();
         foreach ($this->getContainer()->findTaggedServiceIds('event.subscriber') as $serviceId => $params) {
@@ -359,18 +366,6 @@ abstract class AbstractKernel
     {
         return $this->getContainer()->get('assets');
     }
-
-
-    /**
-     * @return Session
-     * @throws RuntimeException
-     * @deprecated Session storaged in request
-     */
-    public function getSession()
-    {
-        throw new RuntimeException('Session storaged in request');
-    }
-
 
     /**
      * Получить список файлов стилей

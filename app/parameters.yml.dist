@@ -26,8 +26,6 @@ parameters:
 
     language: ru
 
-    logging_handlers: ["@rotating_handler"]
-
     mailer_transport: sendmail
     mailer_username: ~
     mailer_password: ~

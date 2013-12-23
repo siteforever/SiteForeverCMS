@@ -28,6 +28,8 @@ class Auth
      */
     public function setRequest(Request $request)
     {
+// todo по идее надо разлогинить, но, тогда тесты отваливаются
+//        $this->logout();
         $this->request = $request;
     }
 

@@ -7,54 +7,28 @@ parameters:
 
     mailer_transport: sendmail
 
+    db_host: localhost
+    db_port: 3306
+
     language: en
 
     template:
+        theme:
+            basic
         cache:
             livetime: "%cache_livecycle%"
 
-    static_dir: "%root%/static"
-
-    db:
-        dsn: "mysql:host=%db_host%;dbname=%db_name%"
-        login: "%db_login%"
-        password: "%db_password%"
-        options:
-            1002: "SET NAMES utf8"
-        migration: "%db_migration%"
-        debug: "%db_debug%"
+    pager_template: pager_twbt
 
     pdo_session:
         db_table: "session"
 
-    session_storage: "@session.storage"
     session_storage_class: "Symfony\Component\HttpFoundation\Session\Storage\\NativeSessionStorage"
 
-assetic:
-    debug: %debug%
-    assets:
-        site_js:
-            input:
-                - "%sf_path/misc/site.js%"
-            output: "static/site.js"
-
 services:
-    db:
-        class: Sfcms\db
-        arguments: ["@pdo"]
-        calls:
-            - [setLoggerClass, ["@db_logger"]]
-
-    pdo:
-        class: Sfcms\PDO
-        arguments:
-            params: "%db%"
-        calls:
-            - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
-
     session:
         class: Symfony\Component\HttpFoundation\Session\Session
-        arguments: ["%session_storage%"]
+        arguments: ["@session.storage"]
 
     session.storage.mock:
         class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
@@ -67,59 +41,25 @@ services:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
         arguments: ["@pdo", "%pdo_session%"]
 
-    smarty:
-        class: Smarty
-        properties:
-            compile_check: true
-            force_compile: "%debug%"
-
     tpl_directory:
         class: Sfcms\Tpl\Directory
 
-    tpl:
-        class: Sfcms\Tpl\Smarty
-        arguments: ["%template%", "@smarty", "@tpl_directory"]
-
-    assets:
-        class: Sfcms\Assets
-
-    filesystem:
-        class: Symfony\Component\Filesystem\Filesystem
-
-    auth:
-        class: Sfcms\Auth
-
-    cache:
-        class: %cache_class%
-        arguments: ["%cache_livecycle%"]
-
     eventDispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
-
-    resolver:
-        class: Sfcms\Controller\Resolver
-        arguments: ["@app"]
-
-    i18n:
-        class: Sfcms\i18n
-        arguments: ["%sf_path%", "%static_dir%/i18n", "%debug%"]
-        calls:
-            - [setLanguage, ["%language%"]]
-
-    router:
-        class: Sfcms\Router
-        calls:
-            - [setRewrite, ["%url%"]]
 
     mailer:
         class: Swift_Mailer
         arguments: ["@mailer_transport"]
 
-    assetManager:
-        class: Assetic\AssetManager
+    locator:
+        class: Symfony\Component\Config\FileLocator
+        arguments: [["%root%", "%sf_path%"]]
 
-    assetWriter:
-        class: Assetic\AssetWriter
-        arguments: ["%static_dir%"]
-        calls:
-            - [writeManagerAssets, ["@assetManager"]]
+    yaml_loader:
+        class: Symfony\Component\Routing\Loader\YamlFileLoader
+        arguments: ["@locator"]
+
+    sf_router:
+        class: Symfony\Component\Routing\Router
+        arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
+

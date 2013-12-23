@@ -28,10 +28,8 @@ class Config
             throw new \InvalidArgumentException('$cfg may be only the path');
         }
         $this->config = @include($cfg);
-        if (null !== $container) {
-            $this->registerParameters('', $this->config, $container);
-        }
         if ($container) {
+            $this->registerParameters('', $this->config, $container);
             foreach($container->getParameterBag()->all() as $key => $parameter) {
                 $this->set($key, $parameter);
             }
