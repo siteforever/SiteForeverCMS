@@ -20,4 +20,3 @@ $app->isConsole(true);
 $console = new Console($app);
 $input = new ArgvInput();
 $console->run($input);
-

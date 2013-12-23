@@ -27,8 +27,16 @@ parameters:
     pdo_session:
         db_table: "session"
 
-    session_storage: "@session.storage.pdo"
+    session_storage: "@session.storage"
+    session_storage_class: "Symfony\Component\HttpFoundation\Session\Storage\\NativeSessionStorage"
 
+assetic:
+    debug: %debug%
+    assets:
+        site_js:
+            input:
+                - "%sf_path/misc/site.js%"
+            output: "static/site.js"
 
 services:
     db:
@@ -51,11 +59,11 @@ services:
     session.storage.mock:
         class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
 
-    session.storage.pdo:
-        class: "Symfony\Component\HttpFoundation\Session\Storage\\NativeSessionStorage"
-        arguments: [[], "@session.handler.pdo"]
+    session.storage:
+        class: "%session_storage_class%"
+        arguments: [[], "@session.handler"]
 
-    session.handler.pdo:
+    session.handler:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
         arguments: ["@pdo", "%pdo_session%"]
 
@@ -79,9 +87,7 @@ services:
         class: Symfony\Component\Filesystem\Filesystem
 
     auth:
-        class: Auth
-        calls:
-            - [setRequest, ["@request"]]
+        class: Sfcms\Auth
 
     cache:
         class: %cache_class%

@@ -4,14 +4,10 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
-// путь к фреймворку
-// если не указан, то в текущей директории
-defined('SF_PATH') || define('SF_PATH', realpath( __DIR__ . '/..' ));
-
 //корень сайта
-defined('ROOT') ||define('ROOT', SF_PATH );
+defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
-require_once SF_PATH . '/vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 use Symfony\Component\Process\Process;
 

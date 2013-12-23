@@ -6,3 +6,16 @@ services:
         arguments: [ @tpl ]
         tags:
             - { name: event.subscriber }
+
+    order.form:
+        class: Module\Market\Form\OrderForm
+
+    market.order.subscriber:
+        class: Module\Market\Subscriber\OrderSubscriber
+        arguments:
+            - "@order.form"
+            - "@logger"
+            - "@tpl"
+            - "@config"
+        tags:
+            - { name: event.subscriber }

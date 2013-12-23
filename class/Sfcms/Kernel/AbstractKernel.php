@@ -144,7 +144,7 @@ abstract class AbstractKernel
         $loader->load('app/config.yml');
 
         // Конфигурация
-        $locator = new FileLocator(array(ROOT, SF_PATH));
+//        $locator = new FileLocator(array(ROOT, SF_PATH));
         $config = new Config($locator->locate($cfg_file), $this->_container);
         $this->_container->set('config', $config);
 
@@ -159,8 +159,11 @@ abstract class AbstractKernel
         // Загрузка параметров модулей
         $this->loadModules();
 
+        $ed = $this->getEventDispatcher();
         foreach ($this->getContainer()->findTaggedServiceIds('event.subscriber') as $serviceId => $params) {
-            $this->getEventDispatcher()->addSubscriber($this->getContainer()->get($serviceId));
+            $ed->addSubscriber(
+                $this->getContainer()->get($serviceId)
+            );
         }
     }
 

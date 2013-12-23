@@ -1,23 +1,75 @@
 <?php
-namespace Module\Market\Event;
+namespace Module\Market\Subscriber;
 
+use Module\Market\Event\OrderEvent;
 use Module\Market\Form\OrderForm;
-use Module\Market\Model\OrderModel;
 use Module\Market\Model\OrderPositionModel;
 use Sfcms\Config;
 use Sfcms\Data\Collection;
+use Sfcms\LoggerInterface;
 use Sfcms\Model;
-use Sfcms\Request;
+use Sfcms\Tpl\Driver;
 use Sfcms\Yandex\Address;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- *
+ * Order processing
  * @author: keltanas <keltanas@gmail.com>
  */
-class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
+class OrderSubscriber implements EventSubscriberInterface
 {
+    /** @var  OrderForm */
+    private $form;
+
+    /** @var  LoggerInterface */
+    private $logger;
+
+    /** @var Driver */
+    private $tpl;
+
+    /** @var Config */
+    private $config;
+
+    public function __construct(OrderForm $form, LoggerInterface $logger, Driver $tpl, Config $config)
+    {
+        $this->form = $form;
+        $this->logger = $logger;
+        $this->tpl = $tpl;
+        $this->config = $config;
+    }
+
+    /**
+     * @return \Module\Market\Form\OrderForm
+     */
+    public function getForm()
+    {
+        return $this->form;
+    }
+
+    /**
+     * @return \Monolog\Logger
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
+
+    /**
+     * @return \Sfcms\Config
+     */
+    public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
+     * @return \Sfcms\Tpl\Driver
+     */
+    public function getTpl()
+    {
+        return $this->tpl;
+    }
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -52,22 +104,17 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
     }
 
     /**
-     * @return OrderForm
-     */
-    private function getForm()
-    {
-        return $this->container->get('order.form');
-    }
-
-    /**
      * @param OrderEvent $event
      */
     public function fillOrderAddress(OrderEvent $event)
     {
-        $this->container->get('logger')->info('market.order.create.fillOrderAddress');
+        $this->getLogger()->info('market.order.create.fillOrderAddress');
         $order = $event->getOrder();
         /** @var OrderForm $form */
         $form = $this->getForm();
+
+        $auth = $event->getController()->auth;
+
         // Ajax validate
         if ($form->getPost($event->getRequest())) {
             if ($form->validate()) {
@@ -89,12 +136,12 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
                 $order->status = 1;
                 $order->paid = 0;
                 $order->date = time();
-                $order->user_id = $this->container->get('auth')->getId();
+                $order->user_id = $auth->getId();
             }
         } else {
             // Fill Address from current user
-            if ($this->container->get('auth')->hasPermission(USER_USER)) {
-                $form->setData($this->container->get('auth')->currentUser()->attributes);
+            if ($auth->hasPermission(USER_USER)) {
+                $form->setData($auth->currentUser()->attributes);
             }
 
             // Fill Address from Yandex
@@ -112,7 +159,7 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
      */
     private function fromYandexAddress($address)
     {
-        $this->container->get('logger')->info('market.order.create.fromYandexAddress');
+        $this->getLogger()->info('market.order.create.fromYandexAddress');
         $yaAddress = new Address();
         $yaAddress->setJsonData( $address );
 
@@ -148,7 +195,7 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
      */
     public function fillOrderDelivery(OrderEvent $event)
     {
-        $this->container->get('logger')->info('market.order.create.fillOrderDelivery');
+        $this->getLogger()->info('market.order.create.fillOrderDelivery');
         if ($this->getForm()->isSent($event->getRequest())) {
             $event->getRequest()->getSession()->set('delivery', $this->getForm()->delivery_id);
             $event->getDeliveryManager()->setType($this->getForm()->delivery_id);
@@ -166,7 +213,7 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
      */
     public function fillOrderPayment(OrderEvent $event)
     {
-        $this->container->get('logger')->info('market.order.create.fillOrderPayment');
+        $this->getLogger()->info('market.order.create.fillOrderPayment');
         $event->getOrder()->payment_id = $this->getForm()->payment_id;
     }
 
@@ -175,7 +222,7 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
      */
     public function addOrderItems(OrderEvent $event)
     {
-        $this->container->get('logger')->info('market.order.create.addOrderItems');
+        $this->getLogger()->info('market.order.create.addOrderItems');
         /** @var $orderPositionModel OrderPositionModel */
         $orderPositionModel = Model::getModel('OrderPosition');
 
@@ -213,44 +260,43 @@ class OrderSubscriber extends ContainerAware implements EventSubscriberInterface
      */
     public function checkout(OrderEvent $event)
     {
-        $this->container->get('logger')->info('market.order.create.checkout');
+        $this->getLogger()->info('market.order.create.checkout');
         if ($event->getRequest()->request->has('do_order')) {
             if ($this->getForm()->validate()) {
 
                 $event->getOrder()->save();
-
                 $event->getBasket()->clear();
                 $event->getBasket()->save();
                 $event->getRequest()->getSession()->set('order_id',$event->getOrder()->id);
 
                 /** @var Config $config */
-                $config = $this->container->get('config');
-                $this->container->get('tpl')->assign(array(
+                $config = $this->getConfig();
+                $this->getTpl()->assign(array(
                     'order'     => $event->getOrder(),
                     'basket'    => $event->getBasket(),
                     'delivery'  => $event->getDeliveryManager(),
                     'deliveryManager' => $event->getDeliveryManager(),
                     'payment'   => $event->getOrder()->Payment,
                     'robokassa' => $event->getOrder()->getRobokassa(
-                                        $event->getOrder()->Payment,
-                                        $event->getDeliveryManager(),
-                                        $config
-                                    ),
+                        $event->getOrder()->Payment,
+                        $event->getDeliveryManager(),
+                        $config
+                    ),
                 ));
 
-                $this->container->get('controller')->sendmail(
+                $event->getController()->sendmail(
                     $config->get('email_for_order', $config->get('admin')),
                     $config->get('email_for_order', $config->get('admin')),
                     sprintf('Новый заказ с сайта %s №%s', $config->get('sitename'), $event->getOrder()->getId()),
-                    $this->container->get('tpl')->fetch('order.mail.createadmin'),
+                    $this->getTpl()->fetch('order.mail.createadmin'),
                     'text/html'
                 );
 
-                $this->container->get('controller')->sendmail(
+                $event->getController()->sendmail(
                     $config->get('email_for_order', $config->get('admin')),
                     $event->getOrder()->email,
                     sprintf('Заказ №%s на сайте %s', $event->getOrder()->getId(), $config->get('sitename')),
-                    $this->container->get('tpl')->fetch('order.mail.create'),
+                    $this->getTpl()->fetch('order.mail.create'),
                     'text/html'
                 );
 

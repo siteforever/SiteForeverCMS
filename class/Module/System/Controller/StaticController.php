@@ -113,6 +113,6 @@ class StaticController extends Controller
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }
-        return new Response($assetCollection->dump(), 200, array('content-type'=>'application/javascript'));;
+        return new Response($assetCollection->dump(), 200, array('content-type'=>'application/javascript'));
     }
 }

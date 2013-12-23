@@ -1,9 +1,7 @@
 <?php
-use Sfcms\Kernel\AbstractKernel as Service;
-use Module\User\Model\UserModel;
-use Module\User\Object\User;
-use Symfony\Component\Security\Core\Util\SecureRandom;
+namespace Sfcms;
 
+use Module\User\Object\User;
 
 /**
  * Интерфейс авторизации
@@ -22,18 +20,16 @@ class Auth
     /** @var bool */
     protected $error = false;
 
-    /** @var  \Sfcms\Request */
+    /** @var  Request */
     protected $request;
 
     /**
-     * @param \Sfcms\Request $request
+     * @param Request $request
      */
-    public function setRequest($request)
+    public function setRequest(Request $request)
     {
         $this->request = $request;
     }
-
-
 
     /**
      * Текущий пользователь
@@ -42,7 +38,7 @@ class Auth
     public function currentUser()
     {
         if ($this->getId()) {
-            $obj = \Sfcms\Model::getModel('User')->findByPk($this->getId());
+            $obj = Model::getModel('User')->findByPk($this->getId());
             if ($obj) {
                 return $obj;
             } else {
@@ -124,7 +120,7 @@ class Auth
      */
     protected function createDefaultUser()
     {
-        return \Sfcms\Model::getModel('User')->createObject(array(
+        return Model::getModel('User')->createObject(array(
                 'login'  => 'guest',
                 'perm'   => USER_GUEST,
             ));

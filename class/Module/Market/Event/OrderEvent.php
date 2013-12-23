@@ -5,6 +5,7 @@ use Module\Market\Object\Order;
 use Sfcms\Basket\Base as Basket;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
+use Sfcms\Controller;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -25,12 +26,16 @@ class OrderEvent extends Event
     /** @var Request */
     protected $request;
 
+    /** @var Controller */
+    protected $controller;
+
     protected $result = array();
 
-    public function __construct(Order $order, Request $request, Basket $basket = null, DeliveryManager $delivery = null)
+    public function __construct(Order $order, Request $request, Controller $controller, Basket $basket = null, DeliveryManager $delivery = null)
     {
         $this->order = $order;
         $this->request = $request;
+        $this->controller = $controller;
         $this->basket = $basket;
         $this->delivery = $delivery;
     }
@@ -60,7 +65,7 @@ class OrderEvent extends Event
     }
 
     /**
-     * @return \Sfcms\Request
+     * @return Request
      */
     public function getRequest()
     {
@@ -73,5 +78,13 @@ class OrderEvent extends Event
     public function getResult()
     {
         return $this->result;
+    }
+
+    /**
+     * @return Controller
+     */
+    public function getController()
+    {
+        return $this->controller;
     }
 }

@@ -10,7 +10,7 @@ return array(
     // база данных
     'db' => array(
         'login'     => 'root',
-        'password'  => '',
+        'password'  => null,
         'dsn'       => 'mysql:host=localhost;dbname=siteforever_test',
         'debug'     => true,
         'migration' => true,

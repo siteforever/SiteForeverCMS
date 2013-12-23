@@ -98,9 +98,7 @@ class App extends AbstractKernel
         $this->getLogger()->log(sprintf('%\'-10s%-\'-70.60s', '', $request->getRequestUri()));
         $this->getLogger()->log(str_repeat('-', 80));
 
-        if ($request) {
-            $this->getContainer()->set('request', $request);
-        }
+        $this->getAuth()->setRequest($request);
         $acceptableContentTypes = $request->getAcceptableContentTypes();
         $format = null;
         if ($acceptableContentTypes) {

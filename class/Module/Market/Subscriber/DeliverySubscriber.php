@@ -14,7 +14,7 @@
  *     - [setBound, [5000]]
  */
 
-namespace Module\Market\Event;
+namespace Module\Market\Subscriber;
 
 
 use Symfony\Component\DependencyInjection\ContainerAware;

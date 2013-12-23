@@ -65,6 +65,7 @@ class BasketController extends Controller
         $event = new OrderEvent(
             $order,
             $this->request,
+            $this,
             $this->getBasket(),
             $this->app->getDeliveryManager($this->request, $order)
         );

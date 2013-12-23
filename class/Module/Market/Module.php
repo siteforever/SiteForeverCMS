@@ -12,16 +12,12 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
-use Module\Market\Event\OrderSubscriber;
+use Module\Market\Subscriber\OrderSubscriber;
 
 class Module extends SfModule
 {
     public function init()
     {
-        $dispatcher = $this->app->getEventDispatcher();
-        $subscriber = new OrderSubscriber();
-        $subscriber->setContainer($this->app->getContainer());
-        $dispatcher->addSubscriber($subscriber);
     }
 
     /**
@@ -40,24 +36,33 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'Basket'        => array(),
+                'Delivery'      => array(),
+                'Manufacturers' => array( 'class' => 'Controller\Manufacturer', ),
+                'Material'      => array(),
+                'Order'         => array(),
+                'OrderAdmin'    => array(),
+                'Orderpdf'      => array(),
+                'Xmlprice'      => array(),
+                'Payment'       => array(),
+                'Producttype'   => array(),
+                'Robokassa'     => array(),
+            ),
+            'models' => array(
+                'Delivery'         => 'Module\\Market\\Model\\DeliveryModel',
+                'Manufacturers'    => 'Module\\Market\\Model\\ManufacturerModel',
+                'Manufacturer'     => 'Module\\Market\\Model\\ManufacturerModel',
+                'Material'         => 'Module\\Market\\Model\\MaterialModel',
+                'Metro'            => 'Module\\Market\\Model\\MetroModel',
+                'Order'            => 'Module\\Market\\Model\\OrderModel',
+                'OrderPosition'    => 'Module\\Market\\Model\\OrderPositionModel',
+                'OrderStatus'      => 'Module\\Market\\Model\\OrderStatusModel',
+                'Payment'          => 'Module\\Market\\Model\\PaymentModel',
+            ),
+        );
     }
-
-    public function registerService(ContainerBuilder $container)
-    {
-        if (!$container->has('order.form')) {
-            $container->register('order.form', 'Module\Market\Form\OrderForm');
-        }
-
-        foreach ($container->findTaggedServiceIds('delivery.subscriber') as $name => $params) {
-            $subscriber = $container->get($name);
-            if ($subscriber instanceof ContainerAware) {
-                $subscriber->setContainer($container);
-            }
-            $container->get('eventDispatcher')->addSubscriber($subscriber);
-        };
-    }
-
 
     public function registerRoutes(Router $router)
     {
