@@ -6,6 +6,7 @@
  */
 
 namespace Sfcms\Route;
+use Module\System\Event\RouteEvent;
 use Sfcms\Request;
 use Sfcms\Route;
 use ReflectionClass;
@@ -26,15 +27,9 @@ class DirectRoute extends Route
         }
     }
 
-    /**
-     * @param Request $request
-     * @param         $route
-     *
-     * @return array|bool|mixed
-     */
-    public function route(Request $request, $route)
+    public function route(RouteEvent $event)
     {
-        $routePieces = explode( '/', $route );
+        $routePieces = explode('/', $event->getRoute());
 
         // Проверяем путь в списке контроллеров
         if (isset(self::$controllers[$routePieces[0]])) {
@@ -43,23 +38,23 @@ class DirectRoute extends Route
             }
 
             $resolver = $this->app->getResolver();
-            $request->setController($routePieces[0]);
-            $request->setAction($routePieces[1]);
-            $command = $resolver->resolveController($request);
+            $event->getRequest()->setController($routePieces[0]);
+            $event->getRequest()->setAction($routePieces[1]);
+            $command = $resolver->resolveController($event->getRequest());
 
             $relectionClass = new ReflectionClass($command['controller']);
 
             if ( $relectionClass->hasMethod( $command['action'] ) ) {
                 $controller = $routePieces[ 0 ];
                 $params = $this->extractAsParams( array_slice( $routePieces, 2 ) );
-                return array(
+                $event->setRouted(array(
                     'controller' => $controller,
                     'action' => $routePieces[1],
                     'params' => $params,
-                );
+                ));
+                $event->stopPropagation();
             }
         }
-        return false;
     }
 
 }

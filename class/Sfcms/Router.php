@@ -6,9 +6,11 @@
  */
 namespace Sfcms;
 
+use Module\System\Event\RouteEvent;
 use Sfcms\Route;
 use Sfcms\Request;
 use Sfcms\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Router
 {
@@ -18,6 +20,9 @@ class Router
 
     /** @var Request */
     private $request;
+
+    /** @var EventDispatcher */
+    private $eventDispatcher;
 
     private static $rewrite = false;
 
@@ -43,11 +48,22 @@ class Router
     public function __construct($debug = true)
     {
         static::$debug = $debug;
-//        $this->addRouteHandler(new Route\DirectRoute());
-//        $this->addRouteHandler(new Route\XmlRoute());
-        $this->addRouteHandler(new Route\YmlRoute());
-        $this->addRouteHandler(new Route\StructureRoute());
-//        $this->addRouteHandler(new Route\DefaultRoute());
+    }
+
+    /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcher $eventDispatcher
+     */
+    public function setEventDispatcher(EventDispatcher $eventDispatcher)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    /**
+     * @return \Symfony\Component\EventDispatcher\EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
     }
 
     /**
@@ -71,7 +87,7 @@ class Router
      *
      * @param \Sfcms\Route $route
      */
-    protected function addRouteHandler(Route $route)
+    public function addRouteHandler(Route $route)
     {
         $this->_routes[] = $route;
     }
@@ -280,7 +296,7 @@ class Router
     /**
      * Маршрутизация
      * @param bool $greedy Показывает, проводить ли "жадную" маршрутизацию?
-     * Жадная маршрутизация выполняется в любом случае. Не жадная, только есть не выбран контроллер.
+     * Жадная маршрутизация выполняется в любом случае. Не жадная, только если не выбран контроллер.
      * Например, контроллер можно указать явно во время запроса.
      *
      * @return bool
@@ -288,6 +304,9 @@ class Router
     public function routing($greedy = false)
     {
         $start = microtime(1);
+        if (null !== $this->getLogger()) {
+            $this->getLogger()->log('Start routing');
+        }
         // Если контроллер указан явно, то не производить маршрутизацию
         if (!$greedy && $this->request->getController()) {
             if (!$this->request->getAction()) {
@@ -299,23 +318,20 @@ class Router
         if (!trim($this->route, '?&/ ')) {
             $this->route = '/';
         }
-        $routed = false;
-        /** @var \Sfcms\Route $route */
-        foreach ($this->_routes as $route) {
-            if ($routed = $route->route($this->request, $this->route)) {
-                if (is_array($routed)) {
-                    $this->request->setController($routed['controller']);
-                    $this->request->setAction($routed['action']);
-                    if (isset($routed['params']) && is_array($routed['params'])) {
-                        $this->_params = array_merge($routed['params'], $this->_params);
-                    }
-                    foreach ($this->_params as $key => $val) {
-                        $this->request->query->set($key, $val);
-                    }
-                }
-                break;
+        $event = new RouteEvent($this->route, $this->request, $this);
+        $this->eventDispatcher->dispatch(RouteEvent::ROUTER_ROUTE, $event);
+        $routed = $event->getRouted();
+        if (is_array($routed)) {
+            $this->request->setController($routed['controller']);
+            $this->request->setAction($routed['action']);
+            if (isset($routed['params']) && is_array($routed['params'])) {
+                $this->_params = array_merge($routed['params'], $this->_params);
+            }
+            foreach ($this->_params as $key => $val) {
+                $this->request->query->set($key, $val);
             }
         }
+
         if (null !== $this->getLogger()) {
             $this->getLogger()->info('Routing (' . round(microtime(1) - $start, 3) . ' sec)');
         }

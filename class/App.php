@@ -40,10 +40,16 @@ class App extends AbstractKernel
      */
     public function run()
     {
-        static::$start_time = microtime( true );
-        $this->init();
+        static::$start_time = microtime(true);
+
+        date_default_timezone_set($this->getContainer()->hasParameter('timezone')
+                ? $this->getContainer()->getParameter('timezone') : 'Europe/Moscow');
+
+        Request::enableHttpMethodParameterOverride();
         $request  = Request::createFromGlobals();
+
         $response = $this->handleRequest($request);
+
         $this->flushDebug();
         $response->prepare($request);
         $response->send();
@@ -60,25 +66,18 @@ class App extends AbstractKernel
     }
 
     /**
-     * Инициализация
-     * @return void
+     * @return string
      */
-    public function init()
+    public function getContainerCacheFile()
     {
-        // TIME_ZONE
-        date_default_timezone_set($this->getContainer()->hasParameter('timezone')
-                ? $this->getContainer()->getParameter('timezone') : 'Europe/Moscow');
+        return SF_PATH . sprintf('/runtime/cache/container_%s.php', $this->getEnvironment());
+    }
 
-        $this->getEventDispatcher()
-            ->addListener(KernelEvent::KERNEL_RESPONSE, function(KernelEvent $event){
-                if ($event->getResponse() instanceof RedirectResponse) {
-                    $event->stopPropagation();
-                }
-            }, 10);
-        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'prepareResult'), 10);
-        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'prepareReload'), 10);
-        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'invokeLayout'));
-        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'createSignature'));
+    public function redirectListener(KernelEvent $event)
+    {
+        if ($event->getResponse() instanceof RedirectResponse) {
+            $event->stopPropagation();
+        }
     }
 
     /**
@@ -91,7 +90,7 @@ class App extends AbstractKernel
     public function handleRequest(Request $request = null)
     {
         $this->getLogger()->log(str_repeat('-', 80));
-        $this->getLogger()->log(sprintf('%\'-10s%-\'-70.60s', '', $request->getRequestUri()));
+        $this->getLogger()->log(sprintf('---%\'--74s---', $request->getRequestUri()));
         $this->getLogger()->log(str_repeat('-', 80));
 
         $this->getContainer()->set('request', $request);
@@ -106,7 +105,7 @@ class App extends AbstractKernel
         $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // define router
-        $this->getRouter()->setRequest($request)->setLogger($this->getLogger())->routing();
+        $this->getRouter()->routing();
 
         static::$init_time = microtime(1) - static::$start_time;
         static::$controller_time = microtime(1);
@@ -210,14 +209,14 @@ class App extends AbstractKernel
      */
     public function prepareReload(KernelEvent $event)
     {
-        if ( $reload = $event->getRequest()->get('reload') ) {
+        if ($reload = $event->getRequest()->get('reload')) {
             $event->getResponse()->setContent($event->getResponse()->getContent() . $reload);
         }
         return $event;
     }
 
     /**
-     * Вызвать отображение
+     * Вызвать обертку для представления
      * @param KernelEvent $event
      *
      * @return KernelEvent
@@ -247,16 +246,16 @@ class App extends AbstractKernel
      */
     protected function flushDebug()
     {
+        $logger = $this->getLogger();
+        $exec_time = microtime(true) - static::$start_time;
         if (self::isDebug()) {
-            $logger = $this->getLogger();
             $logger->log("Init time: " . round(static::$init_time, 3) . " sec.");
             $logger->log("Controller time: " . round(static::$controller_time, 3) . " sec.");
-            $exec_time = microtime(true) - static::$start_time;
-            $logger->log(
-                "Other time: " . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec."
+            $logger->log("Postprocessing time: "
+                . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec."
             );
-            $logger->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
-            $logger->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
         }
+        $logger->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
+        $logger->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
     }
 }

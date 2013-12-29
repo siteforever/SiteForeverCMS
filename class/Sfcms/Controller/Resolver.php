@@ -32,7 +32,7 @@ class Resolver
     }
 
     /**
-     * Берет данные из файла protected/controllers.php через метод $this->app()->getControllers() и на основе этого
+     * Берет данные через метод $this->app()->getControllers() и на основе этого
      * конфига принимает решение о том, какой класс должен выполнять функции контроллера,
      * в каком файле и пространстве имен он находится.
      *
@@ -47,10 +47,10 @@ class Resolver
      */
     public function resolveController(Request $request, $controller = null, $action = null, $moduleName = null)
     {
-        if ( null === $controller ) {
+        if (null === $controller) {
             $controller = strtolower($request->getController());
         }
-        if ( null === $action ) {
+        if (null === $action) {
             $action = $request->getAction();
         }
         $actionMethod = strtolower($action) . 'Action';
@@ -67,22 +67,23 @@ class Resolver
         $config = $this->_controllers[$controller];
         $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
 
-        if ( isset( $config['class'] ) ) {
+        if (isset($config['class'])) {
             $controllerClass = $config['class'];
         } else {
+            // compatibility with old style
             $controllerClass = 'Controller_' . ucfirst($controller);
         }
 
-        if ( $moduleName ) {
-            $module = $this->app->getModule( $moduleName );
+        if ($moduleName) {
+            $module = $this->app->getModule($moduleName);
             $controllerClass = sprintf(
                 '%s\\%sController',
                 $module->getNs(),
-                str_replace( '_', '\\', $controllerClass )
+                str_replace('_', '\\', $controllerClass)
             );
         }
 
-        return array('controller' => $controllerClass, 'action' => $actionMethod, 'module'=>$moduleName);
+        return array('controller' => $controllerClass, 'action' => $actionMethod, 'module' => $moduleName);
     }
 
     /**
@@ -103,7 +104,7 @@ class Resolver
             }
         }
 
-        $this->app->getLogger()->info('Run command', $command);
+        $this->app->getLogger()->info('Command', $command);
 
         if (!class_exists($command['controller'])) {
             throw new HttpException(404, sprintf('Controller class "%s" not exists', $command['controller']));
@@ -136,6 +137,7 @@ class Resolver
         }
 
         $arguments = $this->prepareArguments($method, $request);
+        $this->app->getLogger()->info('Invoke controller', $arguments);
         $result = $method->invokeArgs($controller, $arguments);
 
         return $result;

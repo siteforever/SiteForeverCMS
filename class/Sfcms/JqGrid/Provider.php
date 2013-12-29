@@ -211,7 +211,6 @@ class Provider
             }, array_keys($this->getFields()), array_values($this->getFields())),
 //            'autoWidth' => true,
             'autoHeight' => true,
-            'height'    => $params['height'],
             'rowNum'    => $rowNum,
             'rowList'   => isset( $params['rowList']) ? explode(',',$params['rowList']) : array(10, 20, 30),
             'pager'     => sprintf('#%s_pager',$name),

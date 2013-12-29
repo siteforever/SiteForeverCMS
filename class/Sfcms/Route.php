@@ -7,20 +7,35 @@
 
 namespace Sfcms;
 
+use Module\System\Event\RouteEvent;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Router as SfRouter;
 
 abstract class Route
 {
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * @abstract
-     *
-     * @param $request
-     * @param $route
-     *
-     * @return mixed
      */
-    abstract public function route(Request $request, $route);
+    abstract public function route(RouteEvent $event);
+
+    /**
+     * @param \Sfcms\LoggerInterface $logger
+     */
+    public function setLogger($logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return \Sfcms\LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger;
+    }
 
     /**
      * Из массива [ id, 10, page, 5 ] создаст параметры [ id: 10, page: 5 ]
@@ -51,7 +66,7 @@ abstract class Route
      *
      * @return SfRouter
      */
-    protected function getRouter(Request $request)
+    protected function getSymfonyRouter(Request $request)
     {
         /** @var SfRouter $router */
         $router = \App::cms()->getContainer()->get('sf_router');

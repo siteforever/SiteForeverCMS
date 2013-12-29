@@ -6,6 +6,7 @@
 
 namespace Sfcms\Route;
 
+use Module\System\Event\RouteEvent;
 use Sfcms\Request;
 use Sfcms\Route;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -13,26 +14,17 @@ use Symfony\Component\Routing\RequestContext;
 
 class YmlRoute extends Route
 {
-    /**
-     *
-     * @param $request
-     * @param $route
-     *
-     * @return mixed
-     */
-    public function route(Request $request, $route)
+    public function route(RouteEvent $event)
     {
-        $router = $this->getRouter($request);
+        $router = $this->getSymfonyRouter($event->getRequest());
         try {
-            $match = $router->match($route);
+            $match = $router->match($event->getRoute());
             foreach ($match as $param => $value) {
-                $request->set($param, $value);
+                $event->getRequest()->set($param, $value);
             }
+            $event->setRouted(true);
+            $event->stopPropagation();
         } catch (ResourceNotFoundException $e) {
-            return false;
         }
-
-        return true;
     }
-
 }

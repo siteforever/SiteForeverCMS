@@ -10,7 +10,6 @@ use Forms\User\Restore as FormRestore;
 use Module\User\Model\UserModel;
 use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
-use Symfony\Component\Security\Core\Util\SecureRandom;
 
 class UserController extends Controller
 {
@@ -67,7 +66,7 @@ class UserController extends Controller
                 return array('error'=>false, 'success' => 1, 'message'=>$this->t('Регистрация успешно подтверждена'));
             } else {
                 return array('error'=>true, 'message'=>'Ваш аккаунт не подвержден, обратитесь к '
-                . '<a href="mailto:'.$this->config->get('admin').'">администрации сайта</a>'
+                . '<a href="mailto:'.$this->app->getContainer()->getParameter('admin').'">администрации сайта</a>'
                 );
             }
         }
@@ -151,7 +150,6 @@ class UserController extends Controller
         $this->tpl->assign('users', $users);
         $this->tpl->assign('paging', $paging);
         $this->tpl->assign('request', $this->request);
-        $this->tpl->assign('groups', $this->config->get('users.groups'));
 
         return $this->tpl->fetch('user.admin');
     }
@@ -300,12 +298,6 @@ class UserController extends Controller
 
             $user->last = time();
             $this->auth->setId($user->id);
-
-//            if ( $user->perm == USER_ADMIN ) {
-                // Авторизация Sypex Dumper
-//                $this->app()->getSession()->sxd_auth    = 1;
-//                $this->app()->getSession()->sxd_conf    = $this->app()->getConfig()->get('db');
-//            }
 
             return array('error' => 0, 'message'=>$this->t('user','Authorization was successful'));
         }
@@ -490,12 +482,12 @@ class UserController extends Controller
                     $this->tpl->assign(array(
                         'pass'      => $pass,
                         'login'     => $user['login'],
-                        'sitename'  => $this->config->get('sitename'),
+                        'sitename'  => $this->app->getContainer()->getParameter('sitename'),
                         'loginform' => $this->request->getSchemeAndHttpHost() . $this->router->createLink("user/login")
                     ));
 
                     $this->sendmail(
-                        $this->config->get('admin'),
+                        $this->app->getContainer()->getParameter('admin'),
                         $email,
                         $this->t('user','New password'), $this->tpl->fetch('user.mail.recovery')
                     );
@@ -547,7 +539,7 @@ class UserController extends Controller
                 if ( $user ) {
                     $this->tpl->assign(array(
                         'login'     => $user['login'],
-                        'sitename'  => $this->config->get('sitename'),
+                        'sitename'  => $this->app->getContainer()->getParameter('sitename'),
                         'siteurl'   => $this->request->getSchemeAndHttpHost(),
                         'link'      => $this->request->getSchemeAndHttpHost()
                                       . $this->router->createServiceLink(
@@ -556,7 +548,7 @@ class UserController extends Controller
                                         )
                     ));
                     $this->sendmail(
-                        $this->config->get('admin'),
+                        $this->app->getContainer()->getParameter('admin'),
                         $form->email,
                         $this->t('user','Password recovery'),
                         $this->tpl->fetch('user.mail.restore')

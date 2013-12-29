@@ -6,18 +6,12 @@
  */
 namespace Sfcms\Route;
 
-use Sfcms\Request;
+use Module\System\Event\RouteEvent;
 use Sfcms\Route;
 
 class XmlRoute extends Route
 {
-    /**
-     * @param Request $request
-     * @param         $route
-     *
-     * @return array|bool|mixed
-     */
-    public function route(Request $request, $route)
+    public function route(RouteEvent $event)
     {
         $xml_routes_file = realpath(__DIR__.'/../../../protected/routes.xml');
         if (file_exists($xml_routes_file)) {
@@ -25,7 +19,7 @@ class XmlRoute extends Route
             if ($xmlRoutes) {
                 foreach ($xmlRoutes as $XMLRoute) {
                     $regexp = '@^' . str_replace(array('/','*'), array('\/','([^\/]*)'), $XMLRoute['alias']) . '@ui';
-                    if ($XMLRoute['active'] !== "0" && preg_match($regexp, $route, $match)) {
+                    if ($XMLRoute['active'] !== "0" && preg_match($regexp, $event->getRoute(), $match)) {
                         $controller = (string)$XMLRoute->controller;
                         $action     = isset($XMLRoute->action) ? (string)$XMLRoute->action : 'index';
                         $protected  = $XMLRoute['protected'];
@@ -34,20 +28,19 @@ class XmlRoute extends Route
                             $this->extractAsParams(explode('/', $match[1]));
                         }
 
-                        return array(
+                        $event->setRouted(array(
                             'controller' => $controller,
                             'action'     => $action,
                             'params'     => array(
                                 'protected' => $protected,
                                 'system'    => $system,
                             ),
-                        );
+                        ));
+                        $event->stopPropagation();
                     }
                 }
             }
         }
-
-        return false;
     }
 
 }

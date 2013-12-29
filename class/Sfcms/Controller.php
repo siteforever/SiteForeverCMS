@@ -60,11 +60,6 @@ abstract class Controller extends ContainerAware
         $this->request  = $request;
         $this->params   = $this->request->get('params');
 
-//        $defaults = $this->defaults();
-//        if ($defaults) {
-//            $this->config->setDefault($defaults[0], $defaults[1]);
-//        }
-
         $pageId     = $this->request->get('_id', 0);
         $controller = $this->request->getController();
         $action     = $this->request->getAction();
@@ -78,7 +73,7 @@ abstract class Controller extends ContainerAware
             }
         }
 
-        if ( null !== $pageObj ) {
+        if (null !== $pageObj) {
             // Если страница указана как объект, то в нее нельзя сохранять левые данные
             $this->request->setTemplate($pageObj->get('template'));
             $this->request->setTitle($pageObj->get('title'));

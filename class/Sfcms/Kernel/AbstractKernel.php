@@ -122,9 +122,9 @@ abstract class AbstractKernel
 
     abstract public function run();
 
-    abstract protected function init();
-
     abstract public function handleRequest(Request $request);
+
+    abstract public function getContainerCacheFile();
 
     public function __construct($env, $debug = false)
     {
@@ -144,21 +144,21 @@ abstract class AbstractKernel
         $modules = require ROOT . '/app/modules.php';
         $this->loadModules($modules);
 
-        $cacheFile = SF_PATH . '/runtime/cache/container.php';
-        $containerConfigCache = new ConfigCache($cacheFile, $this->isDebug());
+        $containerConfigCache = new ConfigCache($this->getContainerCacheFile(), $this->isDebug());
 
         if (!$containerConfigCache->isFresh()) {
             $this->_container = $this->createNewContainer();
             $dumper = new PhpDumper($this->getContainer());
-            file_put_contents($cacheFile, $dumper->dump());
+            $containerConfigCache->write($dumper->dump());
         }
-        require_once $cacheFile;
+        require_once $this->getContainerCacheFile();
         $this->_container = new \ProjectServiceContainer();
 
         $this->getContainer()->set('app', $this);
 
         $this->initModules();
     }
+
 
     public function createNewContainer()
     {
