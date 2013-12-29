@@ -8,10 +8,8 @@
 namespace Sfcms;
 
 use App;
-use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Tpl\Directory;
 use Symfony\Component\Console\Application;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -62,6 +60,7 @@ abstract class Module extends Component
      */
     public function config()
     {
+        return false;
     }
 
     /**

@@ -93,10 +93,9 @@ abstract class Model extends Component
     /**
      * Создание модели
      */
-    final private function __construct($config)
+    final public function __construct()
     {
-        $this->config = $config;
-
+        $this->app()->getLogger()->log(sprintf('%s (%s)', get_class($this), __CLASS__));
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
         }
@@ -257,33 +256,13 @@ abstract class Model extends Component
      *
      * @param  $model
      *
-     * @return self
+     * @deprecated
+     * @return Model
      * @throws RuntimeException
      */
     final static public function getModel($model)
     {
-        $class_name = $model;
-        // Если нет в кэше и указан не абсолютный путь
-        if (!isset(self::$all_class[$model]) && false === strpos($class_name, '\\')) {
-            // Если указан псевдоним
-            // Псевдонимом считается класс, не имеющий символов \ и _
-            if (null === self::$models) {
-                self::$models = App::cms()->getModels();
-            }
-            $modelKey = strtolower($class_name);
-            if (isset(self::$models[$modelKey])) {
-                $class_name = self::$models[$modelKey];
-            }
-        }
-        if (!isset(self::$all_class[$model])) {
-            if (class_exists($class_name, true)) {
-                self::$all_class[$model] = new $class_name(App::cms()->getContainer()->getParameter('model'));
-            } else {
-                throw new RuntimeException(sprintf('Model "%s" not found', $class_name));
-            }
-        }
-
-        return self::$all_class[$model];
+        return App::cms()->getContainer()->get('data_manager')->getModel($model);
     }
 
     /**
@@ -372,7 +351,8 @@ abstract class Model extends Component
 
             $this->table = call_user_func(array($class, 'table'));
 
-            if ($this->config['migration']) {
+            $config = App::cms()->getContainer()->getParameter('database');
+            if ($config['migration']) {
                 if ($this->isExistTable($this->table)) {
                     $this->migration();
                 } else {

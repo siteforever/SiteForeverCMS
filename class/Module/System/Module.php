@@ -8,6 +8,7 @@
 namespace Module\System;
 
 use Module\System\DependencyInjection\CaptchaExtension;
+use Module\System\DependencyInjection\Compiler\DatabasePass;
 use Module\System\DependencyInjection\Compiler\EventSubscriberPass;
 use Module\System\DependencyInjection\DatabaseExtension;
 use Module\System\DependencyInjection\AsseticExtension;
@@ -31,6 +32,7 @@ class Module extends SfModule
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new EventSubscriberPass());
+        $container->addCompilerPass(new DatabasePass());
     }
 
     /**
@@ -39,26 +41,31 @@ class Module extends SfModule
      */
     public function config()
     {
+        $controllers = array(
+            'captcha'   => array(),
+            'generator' => array(),
+            'error'     => array(),
+            'log'       => array(),
+            'routes'    => array(),
+            'setting'   => array(),
+            'static'    => array(),
+            'system'    => array(),
+        );
+        $models = array(
+            'Comments'  => 'Module\\System\\Model\\CommentsModel',
+            'Module'    => 'Module\\System\\Model\\ModuleModel',
+            'Routes'    => 'Module\\System\\Model\\RoutesModel',
+            'Settings'  => 'Module\\System\\Model\\SettingsModel',
+            'Session'   => 'Module\\System\\Model\\SessionModel',
+            'Templates' => 'Module\\System\\Model\\TemplatesModel',
+            'Log'       => 'Module\\System\\Model\\LogModel',
+        );
+        if ($this->app->isDebug()) {
+            $models['Test'] = 'Module\\System\\Model\\TestModel';
+        }
         return array(
-            'controllers' => array(
-                'captcha'   => array(),
-                'generator' => array(),
-                'error'     => array(),
-                'log'       => array(),
-                'routes'    => array(),
-                'setting'   => array(),
-                'static'    => array(),
-                'system'    => array(),
-            ),
-            'models'      => array(
-                'Comments'  => 'Module\\System\\Model\\CommentsModel',
-                'Module'    => 'Module\\System\\Model\\ModuleModel',
-                'Routes'    => 'Module\\System\\Model\\RoutesModel',
-                'Settings'  => 'Module\\System\\Model\\SettingsModel',
-                'Session'   => 'Module\\System\\Model\\SessionModel',
-                'Templates' => 'Module\\System\\Model\\TemplatesModel',
-                'Log'       => 'Module\\System\\Model\\LogModel',
-            ),
+            'controllers' => $controllers,
+            'models'      => $models,
         );
     }
 

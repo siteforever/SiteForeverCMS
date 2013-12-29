@@ -27,5 +27,4 @@ if (!$process->isSuccessful()) {
     exit(255);
 }
 
-$app    = new App('test', true);
-$app->init();
+$app = new App('test', true);

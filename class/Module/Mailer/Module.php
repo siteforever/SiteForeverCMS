@@ -17,10 +17,10 @@ class Module extends SfModule
         $container->registerExtension(new MailerExtension());
     }
 
-    public function build(ContainerBuilder $container)
-    {
+//    public function build(ContainerBuilder $container)
+//    {
 //        $container->addCompilerPass(new ChooseTransportPass());
-    }
+//    }
 
     /**
      * Return array config of module

@@ -38,14 +38,6 @@ class Module extends SfModule
         $container->registerExtension(new CatalogExtension());
     }
 
-    public function init()
-    {
-        // todo Реализовать через Extension
-//        $model = Model::getModel('Catalog');
-//        $dispatcher = $this->app->getEventDispatcher();
-//        $dispatcher->addListener('plugin.page-catalog.save.start', array($model,'pluginPageSaveStart'));
-//        $dispatcher->addListener('plugin.page-catalog.resort', array($model,'pluginPageResort'));
-    }
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed

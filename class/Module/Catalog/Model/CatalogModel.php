@@ -14,12 +14,12 @@ use Sfcms\Model;
 use Sfcms\Data\Object;
 use Module\Catalog\Object\Catalog;
 use Sfcms\Data\Collection;
-use Forms_Catalog_Edit;
 use PDO;
 use Sfcms\db;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 
-class CatalogModel extends Model
+class CatalogModel extends Model implements EventSubscriberInterface
 {
     /**
      * Массив, индексируемый по $parent
@@ -36,9 +36,37 @@ class CatalogModel extends Model
     public $html = array();
 
     /**
-     * @var Forms_Catalog_Edit
+     * @var Sfcms\Form\Form
      */
     protected $form = null;
+
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'plugin.page-catalog.save.start' => array('pluginPageSaveStart', 0),
+            'plugin.page-catalog.resort' => array('pluginPageResort', 0),
+        );
+    }
 
     public function relation()
     {

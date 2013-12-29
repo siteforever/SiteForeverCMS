@@ -52,9 +52,9 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param        $message
      * @param string $label
      */
-    public function log( $message, $label = '' )
+    public function log($message, $label = '')
     {
-        $this->app()->getLogger()->log( $message, $label );
+        $this->app()->getLogger()->log($message, $label);
     }
 
 

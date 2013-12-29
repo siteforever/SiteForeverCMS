@@ -2,10 +2,12 @@
 namespace Module\Gallery\Model;
 
 use Module\Gallery\Object\Category;
+use Module\Gallery\Object\Gallery;
 use Sfcms\Model;
 use Forms_Gallery_Category;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class CategoryModel extends Model
+class CategoryModel extends Model implements EventSubscriberInterface
 {
     protected $form;
 
@@ -15,6 +17,33 @@ class CategoryModel extends Model
     function gallery()
     {
         return self::getModel('Gallery');
+    }
+
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'plugin.page-gallery.save.start' => array('pluginPageSaveStart', 0),
+        );
     }
 
     public function relation()
@@ -81,7 +110,7 @@ class CategoryModel extends Model
      */
     function getForm()
     {
-        if ( is_null( $this->form ) ) {
+        if (is_null($this->form)) {
             $this->form = new Forms_Gallery_Category();
         }
         return $this->form;

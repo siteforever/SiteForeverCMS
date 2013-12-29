@@ -177,16 +177,12 @@ abstract class AbstractKernel
         $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sf_path')));
         $loader = new YamlFileLoader($container, $locator);
         $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
+        $container->set('app', $this);
 
         /** @var Module $module */
         foreach($this->getModules() as $module) {
             $module->build($container);
         }
-
-        // ensure these extensions are implicitly loaded
-        $container->getCompilerPassConfig()->setMergePass(
-            new MergeExtensionConfigurationPass(array_map(function($ext){ return $ext->getAlias(); }, $container->getExtensions()))
-        );
 
         $container->compile();
         return $container;
@@ -315,14 +311,12 @@ abstract class AbstractKernel
 
     /**
      * @param $param
-     * @return Config|mixed
+     * @return mixed
      */
-    public function getConfig( $param = null )
+    public function getConfig($param)
     {
-        throw new \RuntimeException('"Config" is depreceted');
-        return (null === $param)
-            ? $this->getContainer()->get('config')
-            : $this->getConfig()->get($param);
+        $this->getLogger()->alert('Access to Kernel::getConfig() method');
+        return $this->getContainer()->getParameter($param);
     }
 
     /**

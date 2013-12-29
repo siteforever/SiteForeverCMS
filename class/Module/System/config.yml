@@ -6,6 +6,76 @@ services:
         tags:
             - { name: event.subscriber }
 
+
+    app:
+        synthetic: true
+
+    kernel:
+        alias: app
+
+    request:
+        synthetic: true
+
+    session:
+        class: Symfony\Component\HttpFoundation\Session\Session
+        arguments: ["@session.storage"]
+
+    session.storage.mock:
+        class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
+
+    session.storage:
+        class: "%session_storage_class%"
+        arguments: [[], "@session.handler"]
+
+    session.handler:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        arguments: ["@pdo", "%pdo_session%"]
+
+    event.dispatcher:
+        class: Symfony\Component\EventDispatcher\EventDispatcher
+        calls:
+            - [addListener, [ "kernel.response", [@app, "redirectListener"], 10 ] ]
+            - [addListener, [ "kernel.response", [@app, "prepareResult"], 10 ] ]
+            - [addListener, [ "kernel.response", [@app, "prepareReload"], 10 ] ]
+            - [addListener, [ "kernel.response", [@app, "invokeLayout"] ] ]
+            - [addListener, [ "kernel.response", [@app, "createSignature"] ] ]
+
+    locator:
+        class: Symfony\Component\Config\FileLocator
+        arguments: [["%root%", "%sf_path%"]]
+
+    yaml_loader:
+        class: Symfony\Component\Routing\Loader\YamlFileLoader
+        arguments: ["@locator"]
+
+
+    # routing
+    sf_router:
+        class: Symfony\Component\Routing\Router
+        arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
+
+
+    route_yaml:
+        class: Sfcms\Route\YmlRoute
+        tags:
+            - { name: event.listener, event: router.route , method: route }
+
+    route_structure:
+        class: Sfcms\Route\StructureRoute
+        calls:
+            - [setLogger, ["@logger"]]
+        tags:
+            - { name: event.listener, event: router.route , method: route }
+
+    router:
+        class: Sfcms\Router
+        arguments: ["%debug%"]
+        calls:
+            - [setEventDispatcher, ["@event.dispatcher"]]
+            - [setLogger, ["@logger"]]
+            - [setRewrite, ["%url%"]]
+
+
     # other
     filesystem:
         class: Symfony\Component\Filesystem\Filesystem
@@ -27,24 +97,3 @@ services:
         calls:
             - [setLanguage, ["%language%"]]
 
-    # routing
-    route_yaml:
-        class: Sfcms\Route\YmlRoute
-        tags:
-            - { name: event.listener, event: router.route , method: route }
-
-    route_structure:
-        class: Sfcms\Route\StructureRoute
-        calls:
-            - [setLogger, ["@logger"]]
-        tags:
-            - { name: event.listener, event: router.route , method: route }
-
-    router:
-        class: Sfcms\Router
-        arguments: ["%debug%"]
-        calls:
-            - [setEventDispatcher, ["@event.dispatcher"]]
-            - [setRequest, ["@?request="]]
-            - [setLogger, ["@logger"]]
-            - [setRewrite, ["%url%"]]

@@ -31,14 +31,6 @@ class Module extends SfModule
         $container->registerExtension(new GalleryExtension());
     }
 
-    public function init()
-    {
-        // todo Реализовать через Extension
-//        $model = Model::getModel('GalleryCategory');
-//        $dispatcher = $this->app->getEventDispatcher();
-//        $dispatcher->addListener('plugin.page-gallery.save.start', array($model,'pluginPageSaveStart'));
-    }
-
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed

@@ -105,7 +105,7 @@ class App extends AbstractKernel
         $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // define router
-        $this->getRouter()->routing();
+        $this->getRouter()->setRequest($request)->routing();
 
         static::$init_time = microtime(1) - static::$start_time;
         static::$controller_time = microtime(1);

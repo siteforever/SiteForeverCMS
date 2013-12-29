@@ -21,15 +21,6 @@ class Module extends SfModule
         return 'NewsCategory';
     }
 
-    public function init()
-    {
-        // todo Зарегистрировать все модели в контейнере
-        // todo Реализовать через Extension
-//        $model = Model::getModel('NewsCategory');
-//        $dispatcher = $this->app->getEventDispatcher();
-//        $dispatcher->addListener('plugin.page-news.save.start', array($model, 'pluginPageSaveStart'));
-    }
-
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed

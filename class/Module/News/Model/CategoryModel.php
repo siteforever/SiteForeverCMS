@@ -10,8 +10,9 @@ namespace Module\News\Model;
 use Module\News\Object\Category;
 use Sfcms\Model;
 use Forms_News_Category;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class CategoryModel extends Model
+class CategoryModel extends Model implements EventSubscriberInterface
 {
     /** @var Forms_News_Category */
     private $form = null;
@@ -24,13 +25,40 @@ class CategoryModel extends Model
     }
 
     /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            'plugin.page-news.save.start' => array('pluginPageSaveStart', 0),
+        );
+    }
+
+    /**
      * Вызывается перед сохранением страницы
      *
      * Цель: создать связь страниц с объектами новостей
      *
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function pluginPageSaveStart( Model\ModelEvent $event )
+    public function pluginPageSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
 

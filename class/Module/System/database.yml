@@ -21,3 +21,7 @@ services:
             params: "%model%"
         calls:
             - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
+
+    data_manager:
+        class: Sfcms\Data\Manager
+        arguments: [ "@service_container" ]
