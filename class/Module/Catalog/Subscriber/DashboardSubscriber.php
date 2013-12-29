@@ -10,18 +10,11 @@ namespace Module\Catalog\Subscriber;
 use Module\Dashboard\Event\DashboardEvent;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
+use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class DashboardSubscriber implements EventSubscriberInterface
+class DashboardSubscriber extends ContainerAware implements EventSubscriberInterface
 {
-    /** @var  Driver */
-    private $tpl;
-
-    public function __construct(Driver $tpl)
-    {
-        $this->tpl = $tpl;
-    }
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -49,6 +42,14 @@ class DashboardSubscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * @return Driver
+     */
+    public function getTpl()
+    {
+        return $this->container->get('tpl');
+    }
+
     public function onDashBuild(DashboardEvent $event)
     {
         $model = Model::getModel('catalog');
@@ -57,12 +58,12 @@ class DashboardSubscriber implements EventSubscriberInterface
         $productHiddenQty = $model->count('hidden = 1 AND deleted = 0');
         $productDeletedQty = $model->count('deleted = 1');
 
-        $this->tpl->assign(array(
+        $this->getTpl()->assign(array(
                 'productQty' => $productQty,
                 'productAbsentQty' => $productAbsentQty,
                 'productHiddenQty' => $productHiddenQty,
                 'productDeletedQty' => $productDeletedQty,
             ));
-        $event->setPanel('catalog', 'Каталог', $this->tpl->fetch('catalog.dashboard'));
+        $event->setPanel('catalog', 'Каталог', $this->getTpl()->fetch('catalog.dashboard'));
     }
 }

@@ -49,10 +49,20 @@ abstract class Module extends Component
     }
 
     /**
+     * Initialisation module
+     * @deprecated
+     */
+    public function init()
+    {
+    }
+
+    /**
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public abstract function config();
+    public function config()
+    {
+    }
 
     /**
      * Вернет поле, которое связывает страницу с ее модулем
@@ -64,7 +74,27 @@ abstract class Module extends Component
         return 'link';
     }
 
-    public function registerService(ContainerBuilder $container)
+    /**
+     * @param ContainerBuilder $container
+     * @deprecated
+     */
+    public final function registerService(ContainerBuilder $container)
+    {
+    }
+
+    /**
+     * Loading module extensions
+     * @param ContainerBuilder $container
+     */
+    public function loadExtensions(ContainerBuilder $container)
+    {
+    }
+
+    /**
+     * Building module and registration compile passes
+     * @param ContainerBuilder $container
+     */
+    public function build(ContainerBuilder $container)
     {
     }
 

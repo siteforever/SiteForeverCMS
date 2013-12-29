@@ -6,13 +6,13 @@ use Sfcms\Basket\Base as Basket;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
 use Sfcms\Controller;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event as BaseEvent;
 
 /**
  * Event is called when something happens with the order
  * @author: keltanas <keltanas@gmail.com>
  */
-class OrderEvent extends Event
+class OrderEvent extends BaseEvent
 {
     /** @var Order  */
     protected $order;

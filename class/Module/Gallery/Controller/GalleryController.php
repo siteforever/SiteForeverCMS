@@ -21,18 +21,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class GalleryController extends Controller
 {
-    public function defaults()
-    {
-        return array(
-            'gallery',
-            array(
-                'dir' => '/files/gallery',
-                'mime' => array('image/jpeg', 'image/gif', 'image/png'),
-                'max_file_size' => defined('MAX_FILE_SIZE') ? MAX_FILE_SIZE : 2 * 1024 * 1024,
-            ),
-        );
-    }
-
     /**
      * Уровень доступа к действиям
      * @return array

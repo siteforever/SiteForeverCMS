@@ -1,0 +1,10 @@
+services:
+    robokassa:
+        class: Module\Robokassa\Component\Robokassa
+        arguments: [ "@tpl", "%robokassa%" ]
+
+    robokassa.subscriber:
+        class: Module\Robokassa\Subscriber\RobokassaSubscriber
+        arguments: ["@robokassa", "%sitename%"]
+        tags:
+            - { name: event.subscriber }

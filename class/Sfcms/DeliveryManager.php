@@ -5,6 +5,7 @@
  */
 namespace Sfcms;
 
+use Module\Market\Event\Event;
 use Module\Market\Event\DeliveryEvent;
 use Module\Market\Object\Order;
 use Sfcms\Basket\Base as Basket;
@@ -72,7 +73,7 @@ class DeliveryManager
     {
         if ($this->getObject()) {
             $event = new DeliveryEvent($this->getObject(), $this->order);
-            $this->eventDispatcher->dispatch('delivery.cost.calculate', $event);
+            $this->eventDispatcher->dispatch(Event::DELIVERY_COST_CALCULATE, $event);
             return $event->getCost();
         }
 

@@ -1,0 +1,14 @@
+services:
+    # template
+    tpl_directory:
+        class: Sfcms\Tpl\Directory
+
+    smarty:
+        class: Smarty
+        properties:
+            compile_check: true
+            force_compile: "%debug%"
+
+    tpl:
+        class: Module\Smarty\Component\Driver
+        arguments: ["%template%", "@smarty", "@tpl_directory"]

@@ -62,9 +62,10 @@ class ManufacturerController extends Controller
         }
 
         $count  = $model->count();
+        $config = $this->container->getParameter('catalog');
         $paging = $this->paging(
             $count,
-            $this->config->get( 'catalog.onPage' ),
+            $config['onPage'],
             $this->getPage()->getUrl()
         );
         $items = $model->findAll(array('limit' => $paging->limit));

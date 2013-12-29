@@ -1,0 +1,10 @@
+imports:
+    - { resource: "app/config_dev.yml" }
+
+parameters:
+    db_name: siteforever_test
+    mailer_transport: ~
+
+services:
+    session_storage:
+        alias: session.storage.mock

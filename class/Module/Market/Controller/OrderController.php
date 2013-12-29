@@ -1,12 +1,14 @@
 <?php
 namespace Module\Market\Controller;
 
+use Module\Market\Event\PaymentEvent;
+use Module\Market\Event\Event;
 use Sfcms\Controller;
 use Module\Market\Model\OrderModel;
 use Module\Market\Object\Order;
 use Module\Market\Object\OrderPosition;
 use Sfcms\Request;
-use Sfcms\Robokassa;
+use Module\Robokassa\Component\Robokassa;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -57,7 +59,7 @@ class OrderController extends Controller
         }
 
         // просмотр заказа
-        if ( $item ) {
+        if ($item) {
             /** @var $orderObj Order */
             $orderObj = $order->find($item);
 
@@ -131,18 +133,19 @@ class OrderController extends Controller
         $positions = $order->Positions;
         $delivery  = $this->app->getDeliveryManager($this->request, $order);
         $delivery->setType($order->delivery_id);
-        $payment   = $order->Payment;
 
         $sum = $positions->sum('sum');
+
+        $paymentEvent = new PaymentEvent($delivery, $order);
+        $this->get('event.dispatcher')->dispatch(Event::ORDER_PAYMENT, $paymentEvent);
 
         return $this->render('order.view', array(
             'order'     => $order,
             'positions' => $positions,
             'delivery'  => $delivery,
-            'payment'   => $order->Payment,
             'sum'       => $sum,
             'total'     => $delivery->cost() + $sum,
-            'robokassa' => $order->getRobokassa($payment, $delivery, $this->config),
+            'payment'   => $paymentEvent->getPayment(),
         ));
     }
 

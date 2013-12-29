@@ -30,7 +30,7 @@ class Layout extends ViewAbstract
         $this->anti_cache = substr( md5(mktime(null,0,0)), 0, 8 );
 
         /** @var $theme string */
-        $theme = $this->_app->getConfig('template.theme');
+        $theme = $this->config['theme'];
 
         $this->path = array(
             'theme'  => '/themes/' . $theme,
@@ -46,11 +46,10 @@ class Layout extends ViewAbstract
             'path'     => $this->path,
             'resource' => $request->get('resource'),
             'template' => $request->getTemplate(),
-            'config'   => $this->_app->getConfig(),
             'feedback' => $request->getFeedbackString(),
             'host'     => $request->getHost(),
             'request'  => $request,
-        ) );
+        ));
     }
 
 
@@ -88,14 +87,13 @@ class Layout extends ViewAbstract
      */
     private function getHead(Request $request)
     {
-        $config = $this->_app->getConfig();
-
         $return = array();
         $return[] = '<meta http-equiv="content-type" content="text/html; charset=UTF-8">';
         $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
         $return[] = '<meta name="viewport" content="width=device-width,initial-scale=1">';
         $return[] = '<meta name="generator" content="SiteForever CMS">';
-        $return[] = "<title>" . strip_tags($request->getTitle()) . ' / ' . $config->get('sitename') . "</title>";
+        $return[] = "<title>" . strip_tags($request->getTitle()) . ' / '
+            . $this->_app->getContainer()->getParameter('sitename') . "</title>";
 
         if ( $request->getKeywords() ) {
             $return[] = "<meta name=\"keywords\" content=\"".$request->getKeywords()."\">";
@@ -152,7 +150,6 @@ class Layout extends ViewAbstract
     private function getScripts(Request $request)
     {
         $return = array();
-        $config = $this->_app->getConfig();
 
         $rjsConfig = array(
             'baseUrl'=> '/misc',
@@ -167,8 +164,8 @@ class Layout extends ViewAbstract
                 'fancybox' => 'jquery/fancybox/jquery.fancybox-1.3.1' . (\App::isDebug() ? '' : '.pack'),
                 'siteforever' => 'module/siteforever',
                 'runtime' => '../runtime',
-                'theme' => '/themes/'.$this->_app->getConfig('template.theme'),
-                'i18n'  => '../static/i18n/'.$this->_app->getConfig('language'),
+                'theme' => '/themes/'.$this->config['theme'],
+                'i18n'  => '../static/i18n/'.$this->_app->getContainer()->getParameter('language'),
             ),
             'map' => array(
                 '*' => array(
@@ -176,7 +173,7 @@ class Layout extends ViewAbstract
             ),
         );
 
-        if ($request->isSystem() || !$this->_app->getConfig('misc.noBootstrap')) {
+        if ($request->isSystem() || $this->_app->getContainer()->getParameter('assetic.bootstrap')) {
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
 
@@ -212,7 +209,7 @@ class Layout extends ViewAbstract
             $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
 
             $rjsConfig['map']['*'] += array(
-                'wysiwyg' => 'admin/editor/'.($config->get('editor')?:'ckeditor'), // tinymce, ckeditor, elrte
+                'wysiwyg' => 'admin/editor/'.($this->_app->getContainer()->getParameter('editor')), // tinymce, ckeditor, elrte
             );
 
             $controllerJs = $request->getAdminScript();
@@ -275,8 +272,8 @@ class Layout extends ViewAbstract
     {
         $request->attributes->set('admin', $request->isSystem());
         $layout = $request->isSystem()
-            ? new Layout\Admin($this->_app)
-            : new Layout\Page($this->_app);
+            ? new Layout\Admin($this->_app, $this->config)
+            : new Layout\Page($this->_app, $this->config);
         if ($request->isSystem()) {
             $request->set('modules', $this->_app->adminMenuModules());
         }

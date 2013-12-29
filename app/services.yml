@@ -5,20 +5,16 @@ parameters:
 #    cache.class: Sfcms\Cache\CacheApc
     cache_dir: "%root%/runtime/cache"
 
-    mailer_transport: sendmail
+    mailer_transport: mail
 
     db_host: localhost
     db_port: 3306
 
     language: en
 
-    template:
-        theme:
-            basic
-        cache:
-            livetime: "%cache_livecycle%"
-
-    pager_template: pager_twbt
+    editor: ckeditor
+#    editor: tinymce
+#    editor: elrte
 
     pdo_session:
         db_table: "session"
@@ -26,6 +22,15 @@ parameters:
     session_storage_class: "Symfony\Component\HttpFoundation\Session\Storage\\NativeSessionStorage"
 
 services:
+    app:
+        synthetic: true
+
+    kernel:
+        alias: app
+
+    request:
+        synthetic: true
+
     session:
         class: Symfony\Component\HttpFoundation\Session\Session
         arguments: ["@session.storage"]
@@ -41,15 +46,8 @@ services:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
         arguments: ["@pdo", "%pdo_session%"]
 
-    tpl_directory:
-        class: Sfcms\Tpl\Directory
-
-    eventDispatcher:
+    event.dispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
-
-    mailer:
-        class: Swift_Mailer
-        arguments: ["@mailer_transport"]
 
     locator:
         class: Symfony\Component\Config\FileLocator
@@ -62,4 +60,5 @@ services:
     sf_router:
         class: Symfony\Component\Routing\Router
         arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
+
 

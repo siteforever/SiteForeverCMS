@@ -177,20 +177,19 @@ class Forms_Page_Page extends \Sfcms\Form\Form
     {
         $templates = array('index'=>$this->t('Main'), 'inner'=>$this->t('Inner'));
 
-        $theme = App::cms()->getConfig('template.theme');
+        $config = App::cms()->getContainer()->getParameter('template');
+        $theme = $config['theme'];
 
         $themePath = ROOT . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $theme;
         $themeXMLFile = $themePath . DIRECTORY_SEPARATOR . 'theme.xml';
 
-        $logger = App::cms()->getLogger();
-
-        if ( file_exists( $themeXMLFile ) ) {
-            $themeXML = new SimpleXMLElement( file_get_contents( $themeXMLFile ) );
-            if ( isset( $themeXML->templates ) ) {
+        if (file_exists($themeXMLFile)) {
+            $themeXML = new SimpleXMLElement(file_get_contents($themeXMLFile));
+            if (isset($themeXML->templates)) {
                 $templates = array();
                 /** @var $tpl SimpleXMLElement */
-                foreach ( $themeXML->templates->template as $tpl ) {
-                    $templates[ (string) $tpl['value'] ] = $this->t( (string) $tpl );
+                foreach ($themeXML->templates->template as $tpl) {
+                    $templates[(string) $tpl['value']] = $this->t((string) $tpl);
                 }
             }
         }

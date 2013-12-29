@@ -6,9 +6,6 @@
 namespace Sfcms\Kernel;
 
 use Module\Market\Object\Order;
-use Module\Monolog\DependencyInjection\LoggerExtension;
-use Module\System\DependencyInjection\AsseticExtension;
-use Module\System\DependencyInjection\DatabaseExtension;
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Config;
@@ -19,9 +16,9 @@ use Sfcms\Module;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
 use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
-use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Sfcms\Router;
 use Sfcms\Auth;
 use Sfcms\Tpl\Driver;
@@ -65,7 +62,7 @@ abstract class AbstractKernel
      * Список модулей и контроллеры в них
      * @var array
      */
-    public $_modules_config = array();
+    private $_modules_config = array();
 
     /**
      * Время запуска
@@ -113,6 +110,15 @@ abstract class AbstractKernel
     /** @var ContainerBuilder */
     protected $_container = null;
 
+    private $environment;
+
+    /**
+     * @return mixed
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
 
     abstract public function run();
 
@@ -120,7 +126,7 @@ abstract class AbstractKernel
 
     abstract public function handleRequest(Request $request);
 
-    public function __construct($cfg_file, $debug = false)
+    public function __construct($env, $debug = false)
     {
         if (is_null(static::$instance)) {
             static::$instance = $this;
@@ -128,64 +134,74 @@ abstract class AbstractKernel
             throw new Exception('You can not create more than one instance of Application');
         }
 
+        $this->environment = $env;
+
         self::$_debug = $debug;
         if ($this->isDebug()) {
             Debug::enable(E_ALL, true);
         }
 
+        $modules = require ROOT . '/app/modules.php';
+        $this->loadModules($modules);
+
         $cacheFile = SF_PATH . '/runtime/cache/container.php';
-        $containerConfigCache = new ConfigCache($cacheFile, true /*$this->isDebug()*/);
+        $containerConfigCache = new ConfigCache($cacheFile, $this->isDebug());
 
         if (!$containerConfigCache->isFresh()) {
-            $this->_container = new ContainerBuilder();
-            $this->getContainer()->registerExtension(new LoggerExtension());
-            $this->getContainer()->registerExtension(new DatabaseExtension());
-            $this->getContainer()->registerExtension(new AsseticExtension());
-
-            $this->getContainer()->set('app', $this);
-            $this->getContainer()->setParameter('root', ROOT);
-            $this->getContainer()->setParameter('sf_path', SF_PATH);
-            $this->getContainer()->setParameter('debug', $this->isDebug());
-            $locator = new FileLocator(array(ROOT, SF_PATH));
-            $loader = new YamlFileLoader($this->getContainer(), $locator);
-            $loader->load('app/config.yml');
-
-            // Конфигурация
-            $this->getContainer()->setDefinition('config', new Definition('Sfcms\Config', array(
-                $locator->locate($cfg_file),
-                new Reference('service_container')
-            )));
-
-            // Загрузка параметров модулей
-            $this->loadModules();
-            $this->getContainer()->compile();
-
+            $this->_container = $this->createNewContainer();
             $dumper = new PhpDumper($this->getContainer());
             file_put_contents($cacheFile, $dumper->dump());
         }
-//        require_once $cacheFile;
-//        $this->_container = new \ProjectServiceContainer();
+        require_once $cacheFile;
+        $this->_container = new \ProjectServiceContainer();
 
-        $ed = $this->getEventDispatcher();
-        foreach ($this->getContainer()->findTaggedServiceIds('event.subscriber') as $serviceId => $params) {
-            $ed->addSubscriber(
-                $this->getContainer()->get($serviceId)
-            );
+        $this->getContainer()->set('app', $this);
+
+        $this->initModules();
+    }
+
+    public function createNewContainer()
+    {
+        $container = new ContainerBuilder(new ParameterBag(array(
+            'root' => ROOT,
+            'sf_path' => SF_PATH,
+            'debug' => $this->isDebug(),
+            'env' => $this->getEnvironment(),
+        )));
+
+        /** @var Module $module */
+        foreach($this->getModules() as $module) {
+            $module->loadExtensions($container);
         }
+
+        $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sf_path')));
+        $loader = new YamlFileLoader($container, $locator);
+        $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
+
+        /** @var Module $module */
+        foreach($this->getModules() as $module) {
+            $module->build($container);
+        }
+
+        // ensure these extensions are implicitly loaded
+        $container->getCompilerPassConfig()->setMergePass(
+            new MergeExtensionConfigurationPass(array_map(function($ext){ return $ext->getAlias(); }, $container->getExtensions()))
+        );
+
+        $container->compile();
+        return $container;
     }
 
 
     /**
-     * Загружает конфиги модулей
+     * @param array $modules
      * @return array
-     * @throws Exception
+     * @throws \Exception
      */
-    protected function loadModules()
+    protected function loadModules(array $modules)
     {
-        if (!$this->_modules_config) {
+        if (!$this->_modules) {
             $_ = $this;
-
-            $moduleArray = $this->getConfig('modules');
 
             try {
                 array_map(function ($module) use ($_) {
@@ -199,41 +215,26 @@ abstract class AbstractKernel
                     $reflection = new \ReflectionClass($className);
                     $place = dirname($reflection->getFileName());
                     $_->setModule(new $className($_, $module['name'], $module['path'], $place));
-                }, $moduleArray);
+                }, $modules);
             } catch (\Exception $e) {
                 throw $e;
             }
-
-            // Сперва загрузим все конфиги
-            array_map(
-                function (Module $module) use ($_) {
-                    $_->_modules_config[$module->getName()] = $module->config();
-                },
-                $this->getModules()
-            );
-
-            // А потом инициализируем
-            // Т.к. для инициализации могут потребоваться зависимые модули
-            array_map(function (Module $module) use ($_) {
-                try {
-                    $locator = new FileLocator(array($module->getPath()));
-                    $loader = new YamlFileLoader($_->getContainer(), $locator);
-                    $loader->load('config.yml');
-                } catch (\InvalidArgumentException $e) { }
-
-                call_user_func(array($module, 'registerService'), $_->getContainer());
-                call_user_func(array($module, 'registerViewsPath'), $_->getContainer()->get('tpl_directory'));
-                call_user_func(array($module, 'registerRoutes'), $_->getContainer()->get('sf_router'));
-                call_user_func(array($module, 'registerStatic'));
-                if (method_exists($module, 'init')) {
-                    call_user_func(array($module, 'init'));
-                }
-            },$this->getModules());
         }
-
-        return $this->_modules_config;
+        return $this->_modules;
     }
 
+    /**
+     * Загрузка параметров модулей
+     * @return array
+     */
+    protected function initModules()
+    {
+        foreach ($this->getModules() as $module) {
+            call_user_func(array($module, 'registerViewsPath'), $this->getContainer()->get('tpl_directory'));
+            call_user_func(array($module, 'registerRoutes'), $this->getContainer()->get('sf_router'));
+            call_user_func(array($module, 'registerStatic'));
+        }
+    }
 
     /**
      * Защита от ошибок сериализации.
@@ -318,6 +319,7 @@ abstract class AbstractKernel
      */
     public function getConfig( $param = null )
     {
+        throw new \RuntimeException('"Config" is depreceted');
         return (null === $param)
             ? $this->getContainer()->get('config')
             : $this->getConfig()->get($param);
@@ -441,34 +443,34 @@ abstract class AbstractKernel
         return false;
     }
 
+    /**
+     * @param Module $module
+     * @return bool
+     * @throws \RuntimeException
+     */
     public function setModule(Module $module)
     {
-        if (!in_array($module, $this->_modules, true)) {
-            $this->_modules[] = $module;
+        if (!isset($this->_modules[$module->getName()])) {
+            $this->_modules[$module->getName()] = $module;
+            $this->_modules_config[$module->getName()] = $module->config();
             return true;
         }
-        return false;
+        throw new \RuntimeException(sprintf('Module "%s" was loaded', $module->getName()));
     }
 
     /**
      * @param $name
      *
      * @return Module
-     * @throws Exception
+     * @throws \RuntimeException
      */
     public function getModule($name)
     {
-        if ( null === $this->_modules ) {
-            $this->loadModules();
-        }
-        /** @var Module $module */
-        foreach ($this->getModules() as $module) {
-            if ($module->getName() == $name) {
-                return $module;
-            }
+        if (isset($this->_modules[$name])) {
+            return $this->_modules[$name];
         }
 
-        throw new Exception(sprintf('Module "%s" not defined', $name));
+        throw new \RuntimeException(sprintf('Module "%s" not defined', $name));
     }
 
     /**
@@ -487,12 +489,12 @@ abstract class AbstractKernel
      */
     public function getModels()
     {
-        if ( null === $this->_models ) {
-            $this->loadModules();
+        $modulesConfig = $this->_modules_config;
+        if (null === $this->_models) {
             $this->_models = array_change_key_case(
                 array_filter(
                     array_reduce(
-                        $this->_modules_config,
+                        $modulesConfig,
                         function ($total, $current) {
                             return isset($current['models']) ? $total + array_map(
                                 function ($model) {
@@ -516,13 +518,11 @@ abstract class AbstractKernel
      */
     public function getControllers()
     {
-        if ( null === $this->_controllers ) {
-            $this->loadModules();
-
+        if (null === $this->_controllers) {
             $this->_controllers = array();
-            foreach ( $this->_modules_config as $module => $config ) {
+            foreach ($this->_modules_config as $module => $config) {
                 if (isset($config['controllers'])) {
-                    foreach ( $config['controllers'] as $controller => $params ) {
+                    foreach ($config['controllers'] as $controller => $params) {
                         $params['module'] = $module;
                         $this->_controllers[strtolower($controller)] = $params;
                     }
@@ -546,7 +546,7 @@ abstract class AbstractKernel
      */
     public function getEventDispatcher()
     {
-        return $this->getContainer()->get('EventDispatcher');
+        return $this->getContainer()->get('event.dispatcher');
     }
 
 

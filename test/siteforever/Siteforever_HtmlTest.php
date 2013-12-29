@@ -18,7 +18,6 @@ class Siteforever_HtmlTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->html = Sfcms::html();
-        App::cms()->getConfig()->set('url.rewrite', true);
     }
 
     /**

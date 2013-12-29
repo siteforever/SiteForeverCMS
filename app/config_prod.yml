@@ -1,0 +1,4 @@
+imports:
+    - { resource: "app/config_dev.yml" }
+
+services:

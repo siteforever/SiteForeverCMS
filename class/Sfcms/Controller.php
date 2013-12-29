@@ -8,7 +8,6 @@ namespace Sfcms;
 use Sfcms\Form\Form;
 use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
-use Sfcms\Config;
 use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\Model;
@@ -17,6 +16,7 @@ use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,12 +31,12 @@ use Sfcms\Data\Watcher;
 /**
  * @property \App $app
  * @property Driver $tpl
- * @property \Auth $auth
+ * @property \Sfcms\Auth $auth
  * @property Router $router
- * @property Config $config
  * @property CacheInterface $cache
  * @property User $user
  * @property Filesystem $filesystem
+ * @property EventDispatcher $eventDispatcher
  * @property i18n $i18n
  */
 abstract class Controller extends ContainerAware
@@ -243,8 +243,9 @@ abstract class Controller extends ContainerAware
      */
     public function paging($count, $perpage, $link, $cacheId = null)
     {
-        if ($this->config->get('pager_template')) {
-            $pager = new Pager($count, $perpage, $link, $this->request, $this->config->get('pager_template'), $cacheId);
+        $config = $this->container->getParameter('template');
+        if ($config['pager']) {
+            $pager = new Pager($count, $perpage, $link, $this->request, $config['pager'], $cacheId);
         } else {
             $pager = new Pager($count, $perpage, $link, $this->request, null, $cacheId);
         }
@@ -299,7 +300,6 @@ abstract class Controller extends ContainerAware
         return $this->getMailer()->send($message);
     }
 
-
     /**
      * Перенаправление на другой урл
      * @param string $url
@@ -347,7 +347,6 @@ abstract class Controller extends ContainerAware
                 'request'   => $this->request,
                 'page'      => $this->page,
                 'auth'      => $this->auth,
-                'config'    => $this->config,
             )
         );
 

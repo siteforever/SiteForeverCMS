@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class KernelEvent extends Event
 {
+    const KERNEL_RESPONSE = 'kernel.response';
+
     /** @var Response */
     protected $response;
     /** @var Request */

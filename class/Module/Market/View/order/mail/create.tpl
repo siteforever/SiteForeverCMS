@@ -2,7 +2,7 @@
 <body>
 {block name="title"}
 <p>Здравствуйте, {$order->getEmptorName()}</p>
-<p>Вы оформили заказ на сайте {$config->get('sitename')}</p>
+<p>Вы оформили заказ на сайте {$sitename}</p>
 {/block}
 
 {block name="body"}
@@ -50,12 +50,10 @@
         </ul>
     {/if}
 
-    {if $payment}
+    {if $order->Payment}
         <h4>{t}Payment{/t}</h4>
-        <p>Способ оплаты: {$payment->name}</p>
-        {if $robokassa}{*
-            *}<p><a class="btn btn-success" href="{$robokassa->getLink(true)}">Перейти к оплате</a></p>{*
-        *}{/if}
+        <p>Способ оплаты: {$order->Payment->name}</p>
+        {if $payment}{$payment->render()}{/if}
         <p>В ближайшее время наш менеджер свяжется с Вами.</p>
     {/if}
 

@@ -128,7 +128,9 @@ class Resolver
         }
         $this->app->getTpl()->assign('this', $controller);
         $this->app->getTpl()->assign('request', $request);
-        $this->app->getTpl()->assign('config', $this->app->getConfig());
+        foreach ($this->app->getContainer()->getParameterBag()->all() as $key => $parameters ) {
+            $this->app->getTpl()->assign($key, $parameters);
+        }
         if ($controller instanceof EventSubscriberInterface) {
             $this->app->getEventDispatcher()->addSubscriber($controller);
         }

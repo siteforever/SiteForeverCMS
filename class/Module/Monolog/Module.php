@@ -6,17 +6,15 @@
 
 namespace Module\Monolog;
 
+use Module\Monolog\DependencyInjection\LoggerExtension;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Module extends SfModule
 {
-    public function init()
+    public function loadExtensions(ContainerBuilder $container)
     {
-    }
-
-    public function registerService(ContainerBuilder $container)
-    {
+        $container->registerExtension(new LoggerExtension());
     }
 
 

@@ -12,10 +12,12 @@ use Sfcms\Kernel\KernelEvent;
 
 abstract class ViewAbstract
 {
+    protected $config = array();
 
-    public function __construct( Application $app )
+    public function __construct(Application $app, array $config)
     {
         $this->_app = $app;
+        $this->config = $config;
     }
 
     /**

@@ -163,7 +163,6 @@ class Provider
     public function getConfig( $name, array $params = array() )
     {
         $rowNum = isset( $params['rowNum'] ) ? $params['rowNum'] : 20;
-        $cellHeight = 28; // todo костыль, определяющий высоту таблицы, исходя из высоты ячейки
 
         $controller = isset($params['controller'])
             ? $params['controller']
@@ -212,7 +211,7 @@ class Provider
             }, array_keys($this->getFields()), array_values($this->getFields())),
 //            'autoWidth' => true,
             'autoHeight' => true,
-            'height'    => isset( $params['height'] ) ? $params['height'] : $rowNum * $cellHeight,
+            'height'    => $params['height'],
             'rowNum'    => $rowNum,
             'rowList'   => isset( $params['rowList']) ? explode(',',$params['rowList']) : array(10, 20, 30),
             'pager'     => sprintf('#%s_pager',$name),

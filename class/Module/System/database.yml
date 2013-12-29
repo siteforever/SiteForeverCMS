@@ -1,0 +1,23 @@
+#database:
+#    login: "%db_login%"
+#    password: "%db_password%"
+#    options:
+#        1002: "SET NAMES utf8"
+#    migration: "%db_migration%"
+#    debug: "%db_debug%"
+
+services:
+
+    # database
+    db:
+        class: Sfcms\db
+        arguments: ["@pdo"]
+#        calls:
+#            - [setLoggerClass, ["@db_logger"]]
+
+    pdo:
+        class: Sfcms\PDO
+        arguments:
+            params: "%model%"
+        calls:
+            - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION

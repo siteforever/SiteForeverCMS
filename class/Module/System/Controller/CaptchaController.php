@@ -12,36 +12,21 @@ use Sfcms\Controller;
 class CaptchaController extends Controller
 {
     /**
-     * Init default config
-     */
-    public function init()
-    {
-        $this->config->setDefault('captcha', array(
-            'width'     => 100,
-            'height'    => 25,
-            'color'     => 0x000000,
-            'bgcolor'   => 0xffffff,
-            'font'      => realpath(__DIR__ . '/../Static/captcha/infroman.ttf'),
-            'length'    => 6,
-         ));
-    }
-
-
-    /**
      * Index action
      * @return mixed
      */
     public function indexAction()
     {
-        $h  = $this->config->get('captcha.height');
-        $w  = $this->config->get('captcha.width');
-        $l  = $this->config->get('captcha.length');
+        $config = $this->container->getParameter('captcha');
+        $h  = $config['height'];
+        $w  = $config['width'];
+        $l  = $config['length'];
 
         $fontsize = round($h * 0.7, 2);
 
         $img = imagecreatetruecolor($w, $h);
 
-        imagefill($img, 0, 0, $this->config->get('captcha.bgcolor'));
+        imagefill($img, 0, 0, $config['bgcolor']);
 
         if ($this->request->getSession()->has('captcha_code') && !$this->request->query->has('hash')) {
             $text = $this->request->getSession()->get('captcha_code');
@@ -61,8 +46,8 @@ class CaptchaController extends Controller
                 rand(-10, 10),
                 $i * $step + rand(-$quartstep, $quartstep) + $halfstep,
                 rand($fontsize - 2, $fontsize + 2),
-                $this->config->get('captcha.color'),
-                $this->config->get('captcha.font'),
+                $config['color'],
+                $config['font'],
                 $text{$i}
             );
         }

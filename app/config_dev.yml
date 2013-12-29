@@ -1,0 +1,72 @@
+imports:
+    - { resource: "app/services.yml" }
+    - { resource: "app/parameters.yml" }
+
+assetic:
+    debug: %debug%
+    output: "%root%/static"
+    bootstrap: true
+
+database:
+    dsn: "mysql:host=%db_host%;port=%db_port%;dbname=%db_name%"
+    login: "%db_login%"
+    password: "%db_password%"
+    migration: "%db_migration%"
+    debug: "%debug%"
+    options:
+        1002: "SET NAMES utf8"
+
+template:
+    theme: %template_theme%
+    pager: %template_pager%
+
+mailer:
+    transport: %mailer_transport%
+    username:  %mailer_username%
+    password:  %mailer_password%
+    spool:
+        type: memory
+#        type: file
+
+# market config
+market:
+
+# system config
+system:
+
+# logger config
+logger:
+    handlers:
+        rotating_handler:
+            type: rotating
+            path: runtime/logs/logs.txt
+            max: 5
+        fire_handler:
+            type: firephp
+
+captcha:
+    width: 100
+    height: 25
+    color: 0x000000
+    bgcolor: 0xFFFFFF
+
+robokassa:
+    MrchLogin: ~
+    MerchantPass1: ~
+    MerchantPass2: ~
+
+gallery:
+    mime:
+        - 'image/jpeg'
+        - 'image/gif'
+        - 'image/png'
+
+catalog:
+    level: 5
+
+robokassa:
+    MrchLogin: "%robokassa_mrch_login%"
+    MerchantPass1: "%robokassa_merchant_pass1%"
+    MerchantPass2: "%robokassa_merchant_pass2%"
+
+services:

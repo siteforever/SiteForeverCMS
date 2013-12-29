@@ -7,6 +7,7 @@
  */
 namespace Module\Market\Object;
 
+use Module\Robokassa\Component\Robokassa;
 use Sfcms;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
@@ -99,16 +100,7 @@ class Order extends Object
         $robokassa = null;
         switch ($payment->module) {
             case 'robokassa' :
-                $robokassa = new Sfcms\Robokassa($config->get('service.robokassa'));
-                $robokassa->setInvId($this->id);
-                $robokassa->setOutSum($this->getSum() + $delivery->cost($this->getSum()));
-                $robokassa->setDesc(
-                    sprintf(
-                        'Оплата заказа №%s в интернет-магазине %s',
-                        $this->id,
-                        $config->get('sitename')
-                    )
-                );
+                $robokassa = new Robokassa($config->get('service.robokassa'));
                 break;
             case 'basket':
             default:

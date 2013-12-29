@@ -1,24 +1,7 @@
 parameters:
 
-logger:
-    handlers:
-        rotating_handler:
-            type: rotating
-            path: runtime/logs/logs.txt
-            max: 5
-        fire_handler:
-            type: firephp
-
 services:
-    cms_channel:
-        class: Monolog\Logger
-        arguments: ["cms", ["@rotating_handler"]]
-#        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
-
-    logger:
-        class: Module\Monolog\Logger\Logger
-        arguments: ["@cms_channel"]
-
+    # logger
     db_channel:
         class: Monolog\Logger
         arguments: ["db", ["@rotating_handler"]]
@@ -27,3 +10,12 @@ services:
     db_logger:
         class: Module\Monolog\Logger\Logger
         arguments: ["@db_channel"]
+
+    cms_channel:
+        class: Monolog\Logger
+        arguments: ["cms", ["@rotating_handler"]]
+#        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
+
+    logger:
+        class: Module\Monolog\Logger\Logger
+        arguments: ["@cms_channel"]

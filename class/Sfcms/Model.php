@@ -85,11 +85,17 @@ abstract class Model extends Component
     protected $with = array();
 
     /**
+     * Config options
+     * @var array
+     */
+    protected $config = array();
+
+    /**
      * Создание модели
      */
-    final private function __construct()
+    final private function __construct($config)
     {
-        $this->config  = $this->app()->getConfig();
+        $this->config = $config;
 
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
@@ -271,7 +277,7 @@ abstract class Model extends Component
         }
         if (!isset(self::$all_class[$model])) {
             if (class_exists($class_name, true)) {
-                self::$all_class[$model] = new $class_name();
+                self::$all_class[$model] = new $class_name(App::cms()->getContainer()->getParameter('model'));
             } else {
                 throw new RuntimeException(sprintf('Model "%s" not found', $class_name));
             }
@@ -366,7 +372,7 @@ abstract class Model extends Component
 
             $this->table = call_user_func(array($class, 'table'));
 
-            if ($this->config->get('db_migration')) {
+            if ($this->config['migration']) {
                 if ($this->isExistTable($this->table)) {
                     $this->migration();
                 } else {

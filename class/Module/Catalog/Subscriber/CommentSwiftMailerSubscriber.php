@@ -10,16 +10,13 @@ namespace Module\Catalog\Subscriber;
 use Module\Catalog\Object\Comment;
 use Sfcms\Model\ModelEvent;
 use Sfcms\Tpl\Driver;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class CommentSwiftMailerSubscriber implements EventSubscriberInterface
+class CommentSwiftMailerSubscriber extends ContainerAware implements EventSubscriberInterface
 {
-    /** @var \Swift_Mailer */
-    private $mailer;
-
-    /** @var Driver */
-    private $tpl;
-
     /** @var string */
     private $email;
 
@@ -50,11 +47,25 @@ class CommentSwiftMailerSubscriber implements EventSubscriberInterface
         );
     }
 
-    public function __construct(\Swift_Mailer $mailer, Driver $tpl,  $email)
+    public function __construct($email)
     {
-        $this->mailer = $mailer;
-        $this->tpl = $tpl;
         $this->email = $email;
+    }
+
+    /**
+     * @return \Swift_Mailer
+     */
+    public function getMailer()
+    {
+        return $this->container->get('mailer');
+    }
+
+    /**
+     * @return Driver
+     */
+    public function getTpl()
+    {
+        return $this->container->get('tpl');
     }
 
     public function onCommentSave(ModelEvent $event)
@@ -69,19 +80,19 @@ class CommentSwiftMailerSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->tpl->assign(array(
+        $this->getTpl()->assign(array(
             'object' => $object,
         ));
-        $messageBody = $this->tpl->fetch('mail.catalog_comment_create');
+        $messageBody = $this->getTpl()->fetch('mail.catalog_comment_create');
 
         /** @var \Swift_Message $message */
-        $message = $this->mailer->createMessage();
+        $message = $this->getMailer()->createMessage();
         $message
             ->setSubject('New comment')
             ->setFrom($this->email)
             ->setTo($this->email)
             ->setBody($messageBody, 'text/html', 'utf-8')
         ;
-        $this->mailer->send($message);
+        $this->getMailer()->send($message);
     }
 }

@@ -11,8 +11,8 @@
     </tr>
 {foreach from=$positions item="pos"}
     <tr>
-        <td>{thumb src=$pos->Product->image width="100" height="auto"}</td>
-        <td>{a href=$pos->Product->url}{$pos->Product->name}{/a}</td>
+        <td>{if $pos->Product}{thumb src=$pos->Product->image width="100" height="auto"}{/if}</td>
+        <td>{if $pos->Product}{a href=$pos->Product->url}{$pos->Product->name}{/a}{/if}</td>
         <td><i>{$pos.details}</i></td>
         <td>{$pos.count} шт.<br>по {$pos.price} р.</td>
     </tr>
@@ -33,23 +33,23 @@
 {if $delivery}
 <h4>{t cat="delivery"}Delivery{/t}</h4>
 <ul>
-    <li>Способ доставки: {$delivery->getObject()->name}</li>
+    {if $delivery->getObject()}<li>Способ доставки: {$delivery->getObject()->name}</li>{/if}
     <li>Адрес доставки: {$order->address}</li>
     <li>Стоимость: {$delivery->cost()} Р.</li>
 </ul>
 {/if}
-{if $payment}
-<h4>{t}Payment{/t}</h4>
-<p>Способ оплаты: {$payment->name}</p>
+
+{if $order->Payment}
+    <h4>{t}Payment{/t}</h4>
+    <p>Способ оплаты: {$order->Payment->name}</p>
     {if $order->paid}
         <p>Оплачено!</p>
     {else}
-        {if $robokassa}{*
-            *}<p><a class="btn btn-success" href="{$robokassa->getLink(true)}">Перейти к оплате</a></p>{*
-        *}{/if}
+        {if $payment}{$payment->render()}{/if}
         <p>В ближайшее время наш менеджер свяжется с Вами.</p>
     {/if}
 {/if}
+
 <h4>Итого: {$sum} р.</h4>
 {if $this->auth->isLogged()}
 <hr>

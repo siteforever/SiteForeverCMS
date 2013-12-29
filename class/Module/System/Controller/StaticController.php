@@ -37,6 +37,8 @@ class StaticController extends Controller
 
     protected function siteJs()
     {
+        $config = $this->container->getParameter('assetic');
+
         $assetCollection = new AssetCollection(array(
             new FileAsset(SF_PATH . '/misc/site.js'),
             new FileAsset(SF_PATH . '/misc/jquery/fancybox/jquery.fancybox-1.3.1.js'),
@@ -57,7 +59,7 @@ class StaticController extends Controller
             new FileAsset(SF_PATH . '/misc/module/alert.js'),
         ));
 
-        if (!$this->config->get('misc.noBootstrap')) {
+        if ($config['bootstrap']) {
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }
@@ -86,6 +88,8 @@ class StaticController extends Controller
 
     protected function adminJs()
     {
+        $config = $this->container->getParameter('assetic');
+
         $assetCollection = new AssetCollection(array(
             new FileAsset(ROOT . '/misc/admin/admin.js'),
             new FileAsset(ROOT . '/misc/jquery/fancybox/jquery.fancybox-1.3.1.js'),
@@ -110,7 +114,7 @@ class StaticController extends Controller
             new FileAsset(ROOT . '/misc/admin/app.js'),
         ));
 
-        if (!$this->config->get('misc.noBootstrap')) {
+        if ($config['bootstrap']) {
             $assetCollection->add(new FileAsset(ROOT . '/misc/bootstrap/js/bootstrap.js'));
             $assetCollection->add(new StringAsset('define("twitter");'));
         }

@@ -7,22 +7,32 @@
 
 namespace Module\System;
 
-use Assetic\Asset\BaseAsset;
-use Assetic\Asset\GlobAsset;
-use Assetic\AssetManager;
-use Module\System\Event\KernelSubscriber;
-use Sfcms\Kernel\KernelEvent;
+use Module\System\DependencyInjection\CaptchaExtension;
+use Module\System\DependencyInjection\Compiler\EventSubscriberPass;
+use Module\System\DependencyInjection\DatabaseExtension;
+use Module\System\DependencyInjection\AsseticExtension;
+use Module\System\DependencyInjection\SystemExtension;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new SystemExtension());
+        $container->registerExtension(new DatabaseExtension());
+        $container->registerExtension(new AsseticExtension());
+        $container->registerExtension(new CaptchaExtension());
+    }
+
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new EventSubscriberPass());
+    }
+
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed
@@ -102,25 +112,6 @@ class Module extends SfModule
                 array('_controller'=>'system', '_action'=>'assembly')
             ));
 
-    }
-
-    public function registerService(ContainerBuilder $container)
-    {
-        /** @var AssetManager $am */
-//        $am = $container->get('assetManager');
-//        $images = new GlobAsset(realpath(__DIR__.'/Static/images/*'));
-//        /** @var BaseAsset $img */
-//        foreach($images as $img) {
-//            $am->set($img->getTargetPath(), $img);
-//        }
-    }
-
-    public function init()
-    {
-        $dispatcher = $this->app->getEventDispatcher();
-        $subscriber = new KernelSubscriber();
-        $subscriber->setContainer($this->app->getContainer());
-        $dispatcher->addSubscriber($subscriber);
     }
 
     public function admin_menu()

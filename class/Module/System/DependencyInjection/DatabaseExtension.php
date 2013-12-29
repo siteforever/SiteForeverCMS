@@ -6,16 +6,19 @@
 
 namespace Module\System\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class DatabaseExtension implements ExtensionInterface
+class DatabaseExtension extends Extension
 {
     /**
      * Loads a specific configuration.
      *
-     * @param array $config An array of configuration values
+     * @param array $configs An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \InvalidArgumentException When provided tag is not defined in this extension
@@ -24,33 +27,14 @@ class DatabaseExtension implements ExtensionInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
+        $loader->load('database.yml');
+
         $configuration = new DatabaseConfiguration();
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);
-        $container->setParameter('db', $config);
-    }
-
-    /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
-     *
-     * @api
-     */
-    public function getNamespace()
-    {
-    }
-
-    /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
-     *
-     * @api
-     */
-    public function getXsdValidationBasePath()
-    {
-        return false;
+        $container->setParameter('model', $config);
+        $container->setParameter($this->getAlias(), $config);
     }
 
     /**

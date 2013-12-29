@@ -27,5 +27,5 @@ if (!$process->isSuccessful()) {
     exit(255);
 }
 
-$app    = new App('app/cfg/test.php', true);
+$app    = new App('test', true);
 $app->init();

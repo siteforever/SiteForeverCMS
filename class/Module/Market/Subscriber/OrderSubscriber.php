@@ -1,15 +1,17 @@
 <?php
 namespace Module\Market\Subscriber;
 
+use Module\Market\Event\Event;
 use Module\Market\Event\OrderEvent;
+use Module\Market\Event\PaymentEvent;
 use Module\Market\Form\OrderForm;
 use Module\Market\Model\OrderPositionModel;
-use Sfcms\Config;
 use Sfcms\Data\Collection;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
 use Sfcms\Yandex\Address;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -27,15 +29,23 @@ class OrderSubscriber implements EventSubscriberInterface
     /** @var Driver */
     private $tpl;
 
-    /** @var Config */
-    private $config;
+    /** @var string */
+    private $email;
 
-    public function __construct(OrderForm $form, LoggerInterface $logger, Driver $tpl, Config $config)
+    /** @var string */
+    private $sitename;
+
+    /** @var EventDispatcher */
+    private $dispatcher;
+
+    public function __construct(OrderForm $form, LoggerInterface $logger, Driver $tpl, EventDispatcher $dispatcher, $email, $sitename)
     {
         $this->form = $form;
         $this->logger = $logger;
         $this->tpl = $tpl;
-        $this->config = $config;
+        $this->dispatcher = $dispatcher;
+        $this->email = $email;
+        $this->sitename = $sitename;
     }
 
     /**
@@ -52,14 +62,6 @@ class OrderSubscriber implements EventSubscriberInterface
     public function getLogger()
     {
         return $this->logger;
-    }
-
-    /**
-     * @return \Sfcms\Config
-     */
-    public function getConfig()
-    {
-        return $this->config;
     }
 
     /**
@@ -161,7 +163,7 @@ class OrderSubscriber implements EventSubscriberInterface
     {
         $this->getLogger()->info('market.order.create.fromYandexAddress');
         $yaAddress = new Address();
-        $yaAddress->setJsonData( $address );
+        $yaAddress->setJsonData($address);
 
         $return = array(
             'country'   => $yaAddress->country,
@@ -269,33 +271,34 @@ class OrderSubscriber implements EventSubscriberInterface
                 $event->getBasket()->save();
                 $event->getRequest()->getSession()->set('order_id',$event->getOrder()->id);
 
-                /** @var Config $config */
-                $config = $this->getConfig();
+                $paymentEvent = new PaymentEvent($event->getDeliveryManager(), $event->getOrder());
+                $this->dispatcher->dispatch(Event::ORDER_PAYMENT, $paymentEvent);
+
                 $this->getTpl()->assign(array(
                     'order'     => $event->getOrder(),
                     'basket'    => $event->getBasket(),
                     'delivery'  => $event->getDeliveryManager(),
                     'deliveryManager' => $event->getDeliveryManager(),
-                    'payment'   => $event->getOrder()->Payment,
-                    'robokassa' => $event->getOrder()->getRobokassa(
-                        $event->getOrder()->Payment,
-                        $event->getDeliveryManager(),
-                        $config
-                    ),
+                    'payment'   => $paymentEvent->getPayment(),
+//                    'robokassa' => $event->getOrder()->getRobokassa(
+//                        $event->getOrder()->Payment,
+//                        $event->getDeliveryManager()
+//                        $config
+//                    ),
                 ));
 
                 $event->getController()->sendmail(
-                    $config->get('email_for_order', $config->get('admin')),
-                    $config->get('email_for_order', $config->get('admin')),
-                    sprintf('Новый заказ с сайта %s №%s', $config->get('sitename'), $event->getOrder()->getId()),
+                    $this->email,
+                    $this->email,
+                    sprintf('Новый заказ с сайта %s №%s', $this->sitename, $event->getOrder()->getId()),
                     $this->getTpl()->fetch('order.mail.createadmin'),
                     'text/html'
                 );
 
                 $event->getController()->sendmail(
-                    $config->get('email_for_order', $config->get('admin')),
+                    $this->email,
                     $event->getOrder()->email,
-                    sprintf('Заказ №%s на сайте %s', $event->getOrder()->getId(), $config->get('sitename')),
+                    sprintf('Заказ №%s на сайте %s', $event->getOrder()->getId(), $this->sitename),
                     $this->getTpl()->fetch('order.mail.create'),
                     'text/html'
                 );

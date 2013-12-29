@@ -7,8 +7,10 @@
 
 namespace Module\Gallery;
 
+use Module\Gallery\DependencyInjection\GalleryExtension;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -24,13 +26,34 @@ class Module extends SfModule
         return 'GalleryCategory';
     }
 
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new GalleryExtension());
+    }
+
+    public function init()
+    {
+        // todo Реализовать через Extension
+//        $model = Model::getModel('GalleryCategory');
+//        $dispatcher = $this->app->getEventDispatcher();
+//        $dispatcher->addListener('plugin.page-gallery.save.start', array($model,'pluginPageSaveStart'));
+    }
+
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'Gallery'   => array(),
+            ),
+            'models' => array(
+                'Gallery'         => 'Module\Gallery\Model\GalleryModel',
+                'GalleryCategory' => 'Module\Gallery\Model\CategoryModel',
+            ),
+        );
     }
 
     public function registerRoutes(Router $router)
@@ -72,13 +95,6 @@ class Module extends SfModule
             new Route('/gallery/realias',
                 array('_controller'=>'gallery', '_action'=>'realias')
             ));
-    }
-
-    public function init()
-    {
-        $model = Model::getModel('GalleryCategory');
-        $dispatcher = $this->app->getEventDispatcher();
-        $dispatcher->addListener('plugin.page-gallery.save.start', array($model,'pluginPageSaveStart'));
     }
 
     public function admin_menu()

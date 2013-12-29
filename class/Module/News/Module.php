@@ -7,8 +7,10 @@
 
 namespace Module\News;
 
+use Module\News\DependencyInjection\NewsExtension;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -17,6 +19,15 @@ class Module extends SfModule
     public static function relatedModel()
     {
         return 'NewsCategory';
+    }
+
+    public function init()
+    {
+        // todo Зарегистрировать все модели в контейнере
+        // todo Реализовать через Extension
+//        $model = Model::getModel('NewsCategory');
+//        $dispatcher = $this->app->getEventDispatcher();
+//        $dispatcher->addListener('plugin.page-news.save.start', array($model, 'pluginPageSaveStart'));
     }
 
     /**
@@ -37,11 +48,9 @@ class Module extends SfModule
         );
     }
 
-    public function init()
+    public function loadExtensions(ContainerBuilder $container)
     {
-        $model = Model::getModel('NewsCategory');
-        $dispatcher = $this->app->getEventDispatcher();
-        $dispatcher->addListener('plugin.page-news.save.start', array($model,'pluginPageSaveStart'));
+        $container->registerExtension(new NewsExtension());
     }
 
     public function registerRoutes(Router $router)

@@ -18,7 +18,7 @@ class Page extends Layout
         $request = $event->getRequest();
         $this->init($request);
 
-        if (!$this->_app->getConfig('misc.noBootstrap')) {
+        if ($this->_app->getContainer()->getParameter('assetic.bootstrap')) {
             $this->_app->getAssets()->addStyle('/misc/bootstrap/css/bootstrap.css');
         }
 

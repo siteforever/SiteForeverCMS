@@ -7,15 +7,18 @@ services:
         tags:
             - { name: event.subscriber }
 
-    order.form:
+    market.order.form:
         class: Module\Market\Form\OrderForm
+        arguments: [ @router ]
 
     market.order.subscriber:
         class: Module\Market\Subscriber\OrderSubscriber
         arguments:
-            - "@order.form"
+            - "@market.order.form"
             - "@logger"
             - "@tpl"
-            - "@config"
+            - "@event.dispatcher"
+            - "%admin%"
+            - "%sitename%"
         tags:
             - { name: event.subscriber }

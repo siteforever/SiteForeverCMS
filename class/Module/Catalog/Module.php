@@ -7,6 +7,7 @@
 
 namespace Module\Catalog;
 
+use Module\Catalog\DependencyInjection\CatalogExtension;
 use Sfcms\Module as SfModule;
 use Sfcms\Model;
 use Symfony\Component\Config\FileLocator;
@@ -32,6 +33,19 @@ class Module extends SfModule
         return 'Catalog';
     }
 
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new CatalogExtension());
+    }
+
+    public function init()
+    {
+        // todo Реализовать через Extension
+//        $model = Model::getModel('Catalog');
+//        $dispatcher = $this->app->getEventDispatcher();
+//        $dispatcher->addListener('plugin.page-catalog.save.start', array($model,'pluginPageSaveStart'));
+//        $dispatcher->addListener('plugin.page-catalog.resort', array($model,'pluginPageResort'));
+    }
     /**
      * Должна вернуть массив конфига для модуля
      * @return mixed
@@ -169,36 +183,6 @@ class Module extends SfModule
             new Route('/prodtype/deletefield',
                 array('_controller'=>'prodtype', '_action'=>'deletefield')
             ));
-    }
-
-
-    public function init()
-    {
-        $model = Model::getModel('Catalog');
-        $dispatcher = $this->app->getEventDispatcher();
-        $dispatcher->addListener('plugin.page-catalog.save.start', array($model,'pluginPageSaveStart'));
-        $dispatcher->addListener('plugin.page-catalog.resort', array($model,'pluginPageResort'));
-    }
-
-    public function registerService(ContainerBuilder $container)
-    {
-        $container->get('config')->setDefault('catalog', array(
-            // сортировка товаров
-            'order_list' => array(
-                ''           => 'Без сортировки',
-                'name'       => 'По наименованию',
-                'price1'     => 'По цене (0->макс)',
-                'price1-d'   => 'По цене (макс->0)',
-                'articul'    => 'По артикулу',
-            ),
-            'order_default' => 'name',
-            'onPage' => '10',
-            'level'  => 0, // < 1 output all products
-            'gallery_dir' => '/files/catalog/gallery',
-                // 1 - добавление полей
-                // 2 - обрезание лишнего
-
-        ));
     }
 
     public function admin_menu()

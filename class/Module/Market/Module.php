@@ -7,19 +7,14 @@
 
 namespace Module\Market;
 
+use Module\Market\DependencyInjection\MarketExtension;
 use Sfcms\Module as SfModule;
-use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
-use Module\Market\Subscriber\OrderSubscriber;
 
 class Module extends SfModule
 {
-    public function init()
-    {
-    }
-
     /**
      * Вернет поле, которое связывает страницу с ее модулем
      * @static
@@ -28,6 +23,11 @@ class Module extends SfModule
     public static function relatedField()
     {
         return 'id';
+    }
+
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new MarketExtension());
     }
 
     /**

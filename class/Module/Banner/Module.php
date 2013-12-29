@@ -19,7 +19,15 @@ class Module extends SfModule
      */
     public function config()
     {
-        return include_once __DIR__ . '/config.php';
+        return array(
+            'controllers' => array(
+                'Banner'    => array(),
+            ),
+            'models' => array(
+                'Banner' => 'Module\\Banner\\Model\\BannerModel',
+                'CategoryBanner' => 'Module\\Banner\\Model\\CategoryModel',
+            ),
+        );
     }
 
     public static function relatedModel()

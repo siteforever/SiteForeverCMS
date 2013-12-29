@@ -6,11 +6,13 @@
 
 namespace Module\Monolog\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Monolog\Logger;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class LoggerExtension implements ExtensionInterface
 {
@@ -26,6 +28,9 @@ class LoggerExtension implements ExtensionInterface
      */
     public function load(array $config, ContainerBuilder $container)
     {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
+        $loader->load('config.yml');
+
         if (isset($config[0]['handlers'])) {
             foreach($config[0]['handlers'] as $name => $handler) {
                 switch ($handler['type']) {

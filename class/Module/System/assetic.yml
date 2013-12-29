@@ -1,0 +1,22 @@
+#assetic:
+#    debug: %debug%
+#    output: "%root%/static"
+#    assets:
+#        site_js:
+#            output: "static/site.js"
+#            input:
+#                - "%sf_path%/misc/site.js"
+
+services:
+    # assetic
+    assets:
+        class: Sfcms\Assets
+
+    assetManager:
+        class: Assetic\AssetManager
+
+    assetWriter:
+        class: Assetic\AssetWriter
+        arguments: ["%assetic.output%"]
+        calls:
+            - [writeManagerAssets, ["@assetManager"]]

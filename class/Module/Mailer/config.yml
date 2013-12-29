@@ -1,0 +1,25 @@
+services:
+    # Mailer
+#    swift_smtp_transport:
+#        class: Swift_SmtpTransport
+#        agruments: ["%mailer_host%", "%mailer_port%", "%mailer_security%"]
+#        calls:
+#            - [setUsername, ["%mailer_username%"]]
+#            - [setPassword, ["%mailer_password%"]]
+
+#    swift_gmail_transport:
+#        class: Swift_SmtpTransport
+#        agruments: ["smtp.gmail.com", "465", "ssl"]
+#        calls:
+#            - [setUsername, ["%mailer_username%"]]
+#            - [setPassword, ["%mailer_password%"]]
+#            - [setAuthMode, ["login"]]
+
+    swift_null_transport:
+        class: Swift_NullTransport
+
+    swift_sendmail_transport:
+        class: Swift_SendmailTransport
+
+    swift_mail_transport:
+        class: Swift_MailTransport

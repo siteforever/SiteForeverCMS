@@ -2,10 +2,6 @@
 <?php
 set_time_limit(0);
 
-// путь к фреймворку
-// если не указан, то в текущей директории
-define('SF_PATH', realpath(__DIR__.'/..'));
-
 //корень сайта
 define('ROOT', realpath(__DIR__.'/..'));
 
@@ -14,7 +10,7 @@ require_once ROOT . '/vendor/autoload.php';
 use Sfcms\Console;
 use Symfony\Component\Console\Input\ArgvInput;
 
-$app = new \App('app/cfg/console.php', true);
+$app = new \App('dev', true);
 $app->isConsole(true);
 
 $console = new Console($app);

@@ -7,7 +7,9 @@
 
 namespace Module\Page;
 
+use Module\Page\DependencyInjection\PageExtension;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
@@ -19,8 +21,9 @@ class Module extends SfModule
         return 'id';
     }
 
-    public function init()
+    public function loadExtensions(ContainerBuilder $container)
     {
+        $container->registerExtension(new PageExtension());
     }
 
     public function registerRoutes(Router $router)

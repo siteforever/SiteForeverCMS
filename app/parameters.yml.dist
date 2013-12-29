@@ -6,8 +6,8 @@ parameters:
 
     admin: "keltanas@gmail.com"
 
-    template:
-        theme: basic
+    template_theme: basic
+    template_pager: pager_twbt
 
     cache:
         class: "Sfcms\Cache\CacheBlank"
@@ -18,7 +18,6 @@ parameters:
     db_login: root
     db_password: ~
     db_migration: true
-    db_debug: true
 
     editor: ckeditor
     # editor: tinymce
@@ -32,6 +31,9 @@ parameters:
     mailer_host: ~
     mailer_port: ~
     mailer_security: ~
-    pager_template: pager_twbt
 
     email_for_comments: ~
+
+    robokassa_mrch_login: test
+    robokassa_merchant_pass1: test1
+    robokassa_merchant_pass2: test2

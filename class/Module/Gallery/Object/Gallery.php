@@ -40,14 +40,14 @@ class Gallery extends Object
     /** @var UploadedFile */
     protected $file;
 
-
     /**
      * Set and move uploaded file
      * @param UploadedFile $file
      */
     public function setUploadedFile(UploadedFile $file)
     {
-        $dest = $this->app()->getConfig('gallery.dir') . DS . substr('0000' . $this->category_id, -4, 4);
+        $config = $this->app()->getContainer()->getParameter('gallery');
+        $dest = $config['path'] . DS . substr('0000' . $this->category_id, -4, 4);
         if (!$this->getId()) {
             $this->save(true);
         }

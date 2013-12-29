@@ -105,14 +105,15 @@ class CatalogController extends Controller
      */
     protected function viewCategory(Catalog $item)
     {
-        $level = $this->config->get('catalog.level');
+        $config = $this->container->getParameter('catalog');
+        $level = $config['level'];
         $pageNum = $this->request->query->getDigits('page', 1);
 
         $manufacturerId = $this->request->get('filter[manufacturer]', false, true);
         $materialId     = $this->request->get('filter[material]', false, true);
 
-        $order = $this->config->get('catalog.order_default');
-        $orderList = $this->config->get('catalog.order_list');
+        $order = $config['order_default'];
+        $orderList = $config['order_list'];
         // Примеряем способ сортировки к списку из конфига
         if ($orderList && is_array($orderList)) {
             if (!($set = $this->request->get('order'))) {
@@ -125,7 +126,8 @@ class CatalogController extends Controller
             }
         }
 
-        $this->getTpl()->caching($this->config->get('template.caching'));
+        $templateConfig = $this->container->getParameter('template');
+        $this->getTpl()->caching(isset($templateConfig['caching']) && $templateConfig['caching']);
         $cacheKey = sprintf('catalog%d%d%d%d%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
         if ($this->getTpl()->isCached('catalog.viewcategory', $cacheKey)) {
             $response = $response = $this->render('catalog.viewcategory', array(), $cacheKey);
@@ -168,7 +170,7 @@ class CatalogController extends Controller
 
             $paging = $this->paging(
                 $count,
-                $this->config->get('catalog.onPage'),
+                $config['onPage'],
                 $this->router->createLink($parent->url),
                 $cacheKey
             );
@@ -192,6 +194,7 @@ class CatalogController extends Controller
                     'order'     => 'pos DESC',
                 )
             );
+
             $response = $this->render('catalog.viewcategory', array(
                 'parent'    => $parent,
                 'properties'=> $properties,
@@ -200,7 +203,7 @@ class CatalogController extends Controller
                 'cats'      => $cats,
                 'paging'    => $paging,
                 'user'      => $this->auth->currentUser(),
-                'order_list'=> $this->config->get('catalog.order_list'),
+                'order_list'=> $config['order_list'],
                 'order_val' => $this->request->get('order'),
             ), $cacheKey);
         }

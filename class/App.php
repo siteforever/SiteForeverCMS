@@ -66,24 +66,20 @@ class App extends AbstractKernel
     public function init()
     {
         // TIME_ZONE
-        date_default_timezone_set($this->getConfig('timezone') ? : 'Europe/Moscow');
-
-        if (!defined('MAX_FILE_SIZE')) {
-            define('MAX_FILE_SIZE', 2 * 1024 * 1024);
-        }
+        date_default_timezone_set($this->getContainer()->hasParameter('timezone')
+                ? $this->getContainer()->getParameter('timezone') : 'Europe/Moscow');
 
         $this->getEventDispatcher()
-            ->addListener('kernel.response', function(KernelEvent $event){
+            ->addListener(KernelEvent::KERNEL_RESPONSE, function(KernelEvent $event){
                 if ($event->getResponse() instanceof RedirectResponse) {
                     $event->stopPropagation();
                 }
             }, 10);
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareResult'), 10);
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'prepareReload'), 10);
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'invokeLayout'));
-        $this->getEventDispatcher()->addListener('kernel.response', array($this, 'createSignature'));
+        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'prepareResult'), 10);
+        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'prepareReload'), 10);
+        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'invokeLayout'));
+        $this->getEventDispatcher()->addListener(KernelEvent::KERNEL_RESPONSE, array($this, 'createSignature'));
     }
-
 
     /**
      * Handle request
@@ -98,6 +94,7 @@ class App extends AbstractKernel
         $this->getLogger()->log(sprintf('%\'-10s%-\'-70.60s', '', $request->getRequestUri()));
         $this->getLogger()->log(str_repeat('-', 80));
 
+        $this->getContainer()->set('request', $request);
         $this->getAuth()->setRequest($request);
         $acceptableContentTypes = $request->getAcceptableContentTypes();
         $format = null;
@@ -105,7 +102,7 @@ class App extends AbstractKernel
             $format = $request->getFormat($acceptableContentTypes[0]);
         }
         $request->setRequestFormat($format);
-        $request->setDefaultLocale($this->getConfig('language'));
+        $request->setDefaultLocale($this->getContainer()->getParameter('language'));
         $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // define router
@@ -152,7 +149,7 @@ class App extends AbstractKernel
         static::$controller_time = microtime(1) - static::$controller_time;
 
         $event = new KernelEvent($response, $request, $result);
-        $this->getEventDispatcher()->dispatch('kernel.response', $event);
+        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_RESPONSE, $event);
 
         // Выполнение операций по обработке объектов
         try {
@@ -195,7 +192,6 @@ class App extends AbstractKernel
             $this->getTpl()->assign(array(
                     'request'   => $request,
                     'auth'      => $this->getAuth(),
-                    'config'    => $this->getConfig(),
                 ));
             $result   = $this->getTpl()->fetch(strtolower($template));
         }
@@ -230,9 +226,9 @@ class App extends AbstractKernel
     {
         $start = microtime(1);
         if ($event->getResponse() instanceof JsonResponse || $event->getRequest()->getAjax()) {
-            $Layout = new Xhr($this);
+            $Layout = new Xhr($this, $this->getContainer()->getParameter('template'));
         } else {
-            $Layout = new Layout($this);
+            $Layout = new Layout($this, $this->getContainer()->getParameter('template'));
         }
         $event = $Layout->view($event);
         $this->getLogger()->info('Invoke layout: ' . round(microtime(1) - $start, 3) . ' sec');
@@ -241,7 +237,7 @@ class App extends AbstractKernel
 
     public function createSignature(Sfcms\Kernel\KernelEvent $event)
     {
-        if (!$this->getConfig('silent')) {
+        if (!$this->getContainer()->hasParameter('silent')) {
             $event->getResponse()->headers->set('X-Powered-By', 'SiteForeverCMS');
         }
     }

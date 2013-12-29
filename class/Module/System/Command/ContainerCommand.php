@@ -22,10 +22,29 @@ class ContainerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $continer = \App::cms()->getContainer();
+        $continer = \App::cms()->createNewContainer();
         $services = $continer->getServiceIds();
+        sort($services);
+
+        $len = array_reduce($services, function($result, $val){
+                return $result < strlen($val) ? strlen($val) : $result;
+            }, 0) + 5;
+
         foreach ($services as $sid) {
-            $output->writeln(sprintf('%s: <info>%s</info>', $sid, $continer->hasDefinition($sid) ? $continer->getDefinition($sid)->getClass() : ''));
+            $output->writeln(
+                sprintf('%\' -' . $len . 's: <info>%s</info>',
+                    $sid,
+                    $continer->hasDefinition($sid)
+                        ? ($continer->getDefinition($sid)->isSynthetic()
+                            ? "?synthetic"
+                            : $continer->getDefinition($sid)->getClass()
+                        )
+                        : ($continer->hasAlias($sid)
+                            ? '@' . $continer->getAlias($sid)
+                            : '-'
+                        )
+                )
+            );
         }
     }
 }

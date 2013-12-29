@@ -6,16 +6,18 @@
 
 namespace Module\System\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class AsseticExtension implements ExtensionInterface
 {
     /**
      * Loads a specific configuration.
      *
-     * @param array $config An array of configuration values
+     * @param array $configs An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \InvalidArgumentException When provided tag is not defined in this extension
@@ -24,6 +26,9 @@ class AsseticExtension implements ExtensionInterface
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
+        $loader->load('assetic.yml');
+
         $configuration = new AsseticConfiguration();
         $processor = new Processor();
         $config = $processor->processConfiguration($configuration, $configs);

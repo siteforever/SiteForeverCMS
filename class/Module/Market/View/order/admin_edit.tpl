@@ -27,7 +27,7 @@
 {if $delivery}
     <h4>{t cat="delivery"}Delivery{/t}</h4>
     <ul>
-        <li>Способ доставки: {$delivery->getObject()->name}</li>
+        <li>Способ доставки: {if $delivery->getObject()}{$delivery->getObject()->name}{/if}</li>
         <li>Адрес доставки: {$order->address}</li>
         <li>Стоимость: {$delivery->cost()} Р.</li>
     </ul>

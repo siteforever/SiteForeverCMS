@@ -54,9 +54,9 @@ class RssController extends Controller
         $rssDom->setAttribute('version', '2.0');
         $rssDom->appendChild( $channelDom = $dom->createElement('channel') );
 
-        $channelDom->appendChild( $dom->createElement('title', $this->config->get('sitename')) );
+        $channelDom->appendChild( $dom->createElement('title', $this->container->getParameter('sitename')) );
         $channelDom->appendChild( $dom->createElement('link', $this->request->getSchemeAndHttpHost()) );
-        $channelDom->appendChild( $dom->createElement('description', $this->config->get('sitename')) );
+        $channelDom->appendChild( $dom->createElement('description', $this->container->getParameter('sitename')) );
         $channelDom->appendChild( $dom->createElement('generator', 'SiteForeverCMS') );
 
         /** @var $article News */

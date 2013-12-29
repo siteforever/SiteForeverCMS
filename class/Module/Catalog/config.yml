@@ -7,12 +7,15 @@ services:
 
     catalog.comment.subscriber:
         class: Module\Catalog\Subscriber\CommentSwiftMailerSubscriber
-        arguments: [ @mailer, @tpl, %email_for_comments% ]
+        arguments: [ %email_for_comments% ]
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
         tags:
             - { name: event.subscriber }
 
     catalog.dashbord.subscriber:
         class: Module\Catalog\Subscriber\DashboardSubscriber
-        arguments: [ @tpl ]
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
         tags:
             - { name: event.subscriber }

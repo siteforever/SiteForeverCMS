@@ -436,14 +436,13 @@ class UserController extends Controller
         // Надо сохранить, чтобы знать id
         if ($model->save($user)) {
             $tpl    = $this->tpl;
-            $config = $this->config;
 
             $tpl->user = $user;
-            $tpl->sitename = $config->get('sitename');
+            $tpl->sitename = $this->container->getParameter('sitename');
             $tpl->siteurl  = $this->request->getSchemeAndHttpHost();
 
             $this->sendmail(
-                $config->get('admin'),
+                $this->container->getParameter('admin'),
                 $user->email,
                 'Подтверждение регистрации',
                 $tpl->fetch('user.mail.register')

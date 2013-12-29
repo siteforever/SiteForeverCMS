@@ -34,3 +34,8 @@ see [official doucumentation](http://symfony.com/doc/current/components/routing/
 * New global js events `sfcms.form.beforeSubmit` and `sfcms.form.error` on ajax form
 
 * For ckeditor loads css from ./themes/{{theme_name}}/css/wysiwyg.css if exists
+
+* Удалены файлы php-настройки. Теперь используются только yml-файлы
+* Первым параметром при инстацировании приложения теперь указывается псевдоним окружения, а не путь к конфигу
+* Каждый модуль теперь может подключать к контейнеру свои Pass'ы и Extension'ы для последующей компиляции и кэширования
+* Ядро полноценно подключает, компилирует и кеширует контейнер, что существенно расширяет возможности и повышает производительность

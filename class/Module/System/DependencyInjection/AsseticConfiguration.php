@@ -23,6 +23,7 @@ class AsseticConfiguration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->booleanNode('debug')->defaultValue('%debug%')->end()
+                ->booleanNode('bootstrap')->defaultValue(false)->end()
                 ->scalarNode('output')->defaultValue('%root%/static')->end()
                 // assets
                 ->arrayNode('assets')
