@@ -23,13 +23,16 @@ services:
     session.storage.mock:
         class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
 
-    session.storage:
+    session.storage.handler:
         class: "%session_storage_class%"
         arguments: [[], "@session.handler"]
 
-    session.handler:
+    session.handler.pdo:
         class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
         arguments: ["@pdo", "%pdo_session%"]
+
+    session.handler.native:
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler
 
     event.dispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher

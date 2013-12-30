@@ -34,6 +34,9 @@ class SystemExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+
+        $container->setAlias('session.handler', sprintf('session.handler.%s', $config['session']['handler']));
+        $container->setAlias('session.storage', sprintf('session.storage.%s', $config['session']['storage']));
     }
 
     public function getAlias()

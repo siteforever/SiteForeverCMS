@@ -5,6 +5,9 @@ parameters:
     db_name: siteforever_test
     mailer_transport: ~
 
+system:
+    session:
+        storage: mock
+        handler: native
+
 services:
-    session_storage:
-        alias: session.storage.mock
