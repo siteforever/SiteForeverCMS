@@ -64,6 +64,7 @@ services:
         class: Sfcms\Route\StructureRoute
         calls:
             - [setLogger, ["@logger"]]
+            - [setDataManager, ["@data.manager"]]
         tags:
             - { name: event.listener, event: router.route , method: route }
 
@@ -74,7 +75,6 @@ services:
             - [setEventDispatcher, ["@event.dispatcher"]]
             - [setLogger, ["@logger"]]
             - [setRewrite, ["%url%"]]
-
 
     # other
     filesystem:

@@ -4,13 +4,11 @@
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
-namespace Module\System\DependencyInjection;
+namespace Module\Database\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class DatabaseExtension extends Extension
@@ -28,12 +26,10 @@ class DatabaseExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
-        $loader->load('database.yml');
+        $loader->load('config.yml');
 
-        $configuration = new DatabaseConfiguration();
-        $processor = new Processor();
-        $config = $processor->processConfiguration($configuration, $configs);
-        $container->setParameter('model', $config);
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
     }
 

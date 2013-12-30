@@ -4,12 +4,12 @@
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
-namespace Module\System\DependencyInjection;
+namespace Module\Database\DependencyInjection;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
-class DatabaseConfiguration implements ConfigurationInterface
+class Configuration implements ConfigurationInterface
 {
     /**
      * Generates the configuration tree builder.
@@ -29,6 +29,7 @@ class DatabaseConfiguration implements ConfigurationInterface
                 ->booleanNode('migration')->defaultValue('%db_migration%')->end()
                 ->booleanNode('debug')->defaultValue('%db_debug%')->end()
             ->end();
+
         return $treeBuilder;
     }
 }

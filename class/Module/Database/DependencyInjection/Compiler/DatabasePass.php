@@ -4,7 +4,7 @@
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
-namespace Module\System\DependencyInjection\Compiler;
+namespace Module\Database\DependencyInjection\Compiler;
 
 
 use Sfcms\Kernel\AbstractKernel;
@@ -38,6 +38,8 @@ class DatabasePass implements CompilerPassInterface
 
         $modules = $kernel->getModules();
 
+        $dispatcher = $container->getDefinition('event.dispatcher');
+
         /** @var Module $module */
         foreach($modules as $module) {
             $config = $module->config();
@@ -47,7 +49,6 @@ class DatabasePass implements CompilerPassInterface
                     $container->setDefinition(sprintf('Mapper.%s', $name), $definition);
                     $container->setAlias(sprintf('Mapper.%s', $className), sprintf('Mapper.%s', $name));
                     $reflectionClass = new \ReflectionClass($className);
-                    $dispatcher = $container->getDefinition('event.dispatcher');
                     if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
                         $dispatcher->addMethodCall('addSubscriber', array(new Reference(sprintf('Mapper.%s', $name))));
                     }

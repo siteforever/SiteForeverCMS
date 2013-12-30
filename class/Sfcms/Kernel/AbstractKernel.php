@@ -8,7 +8,6 @@ namespace Sfcms\Kernel;
 use Module\Market\Object\Order;
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
-use Sfcms\Config;
 use Sfcms\Controller\Resolver;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
@@ -16,7 +15,6 @@ use Sfcms\Module;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
 use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Sfcms\Router;
@@ -37,11 +35,6 @@ abstract class AbstractKernel
     static protected $instance = null;
 
     /**
-     * @var PageModel
-     */
-    static $page;
-
-    /**
      * @var Basket
      */
     static $basket;
@@ -51,12 +44,6 @@ abstract class AbstractKernel
      * @var array
      */
     protected $_controllers = null;
-
-    /**
-     * Список моделей
-     * @var array
-     */
-    protected $_models = null;
 
     /**
      * Список модулей и контроллеры в них
@@ -144,7 +131,7 @@ abstract class AbstractKernel
         if (!is_dir($this->getCachePath())) {
             @mkdir($this->getCachePath(), 0777, true);
         }
-        
+
         $this->environment = $env;
 
         self::$_debug = $debug;
@@ -170,7 +157,9 @@ abstract class AbstractKernel
         $this->initModules();
     }
 
-
+    /**
+     * @return ContainerBuilder
+     */
     public function createNewContainer()
     {
         $container = new ContainerBuilder(new ParameterBag(array(
@@ -237,7 +226,6 @@ abstract class AbstractKernel
     protected function initModules()
     {
         foreach ($this->getModules() as $module) {
-            call_user_func(array($module, 'registerViewsPath'), $this->getContainer()->get('tpl_directory'));
             call_user_func(array($module, 'registerRoutes'), $this->getContainer()->get('sf_router'));
             call_user_func(array($module, 'registerStatic'));
         }
@@ -268,7 +256,7 @@ abstract class AbstractKernel
      */
     static public function cms()
     {
-        if ( null === self::$instance ) {
+        if (null === self::$instance) {
             throw new Exception('Application NOT instanced');
         }
         return self::$instance;
@@ -354,7 +342,7 @@ abstract class AbstractKernel
      */
     public function getModel($model)
     {
-        return Model::getModel($model);
+        return $this->getContainer()->get('data.manager')->getModel($model);
     }
 
     /**
@@ -488,31 +476,6 @@ abstract class AbstractKernel
             return null === $module->admin_menu() ? $total : array_merge_recursive( $total, $module->admin_menu() );
         }, array() );
     }
-
-    /**
-     * @return array
-     */
-    public function getModels()
-    {
-        $modulesConfig = $this->_modules_config;
-        if (null === $this->_models) {
-            $this->_models = array_change_key_case(
-                array_filter(
-                    array_reduce(
-                        $modulesConfig,
-                        function ($total, $current) {
-                            return isset($current['models']) ? $total + array_map(
-                                function ($model) {
-                                    return is_string($model)
-                                        ? $model : (is_array($model) && isset($model['class']) ? $model['class'] : '');
-                                },
-                                $current['models']
-                            ) : $total;
-                        }, array())));
-        }
-        return $this->_models;
-    }
-
 
     /**
      * Загружает список известных системе контроллеров

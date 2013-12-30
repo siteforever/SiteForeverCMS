@@ -1,8 +1,5 @@
 services:
     # template
-    tpl_directory:
-        class: Sfcms\Tpl\Directory
-
     smarty:
         class: Smarty
         properties:
@@ -11,4 +8,4 @@ services:
 
     tpl:
         class: Module\Smarty\Component\Driver
-        arguments: ["%template%", "@smarty", "@tpl_directory"]
+        arguments: ["%template%", "@smarty"]

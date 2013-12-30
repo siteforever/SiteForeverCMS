@@ -3,8 +3,6 @@ namespace Sfcms;
 
 use App;
 use Sfcms\Data\Object as DomainObject;
-use Module\System\Model\LogModel;
-use Sfcms\Component;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
 use Sfcms\Data\Query\Builder as QueryBuilder;
@@ -14,12 +12,9 @@ use Sfcms\Db\Criteria;
 use RuntimeException;
 use PDO;
 use Module\User\Object\User;
-use Sfcms\Data\Table;
-use Sfcms\Form\Form;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Model interface
@@ -95,7 +90,7 @@ abstract class Model extends Component
      */
     final public function __construct()
     {
-        $this->app()->getLogger()->log(sprintf('%s (%s)', get_class($this), __CLASS__));
+//        $this->app()->getLogger()->log(sprintf('%s (%s)', get_class($this), __CLASS__));
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
         }
@@ -262,7 +257,7 @@ abstract class Model extends Component
      */
     final static public function getModel($model)
     {
-        return App::cms()->getContainer()->get('data_manager')->getModel($model);
+        return App::cms()->getContainer()->get('data.manager')->getModel($model);
     }
 
     /**

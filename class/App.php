@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Sfcms\Data\Watcher;
 use Sfcms\View\Layout;
 use Sfcms\View\Xhr;
-use Sfcms\i18n;
 use Sfcms\Model\Exception as ModelException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;

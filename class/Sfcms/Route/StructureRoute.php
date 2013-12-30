@@ -6,26 +6,41 @@
  */
 
 namespace Sfcms\Route;
-use App;
 use Module\Page\Object\Page;
 use Module\System\Event\RouteEvent;
-use Sfcms\Request;
+use Sfcms\Data\Manager;
 use Sfcms\Route;
-use Sfcms\Module;
 use Sfcms\Model;
 use Module\Page\Model\PageModel;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-use Symfony\Component\Routing\RequestContext;
-use Symfony\Component\Routing\Router;
 
 class StructureRoute extends Route
 {
+    /** @var Manager */
+    private $dataManager;
+
     /**
      * @return PageModel
      */
     protected function getPageModel()
     {
-        return Model::getModel('Page');
+        return $this->getDataManager()->getModel('Page');
+    }
+
+    /**
+     * @param \Sfcms\Data\Manager $dataManager
+     */
+    public function setDataManager($dataManager)
+    {
+        $this->dataManager = $dataManager;
+    }
+
+    /**
+     * @return \Sfcms\Data\Manager
+     */
+    public function getDataManager()
+    {
+        return $this->dataManager;
     }
 
     /**

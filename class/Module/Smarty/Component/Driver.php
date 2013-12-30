@@ -6,7 +6,6 @@
 namespace Module\Smarty\Component;
 
 use Sfcms\Tpl\Driver as TplDriver;
-use Sfcms\Tpl\Directory;
 use Sfcms\Exception;
 
 class Driver extends TplDriver
@@ -15,7 +14,7 @@ class Driver extends TplDriver
 
     private $config = array();
 
-    public function __construct($config, \Smarty $engine, Directory $directory)
+    public function __construct($config, \Smarty $engine)
     {
         $this->config = $config;
 
@@ -30,15 +29,6 @@ class Driver extends TplDriver
         }
         $this->ext    = $this->config['ext'];
 
-        $theme  = $config['theme'];
-        $themeCat = ROOT . "/themes/{$theme}/templates";
-
-        $this->setTplDir(array());
-        if (is_dir($themeCat)) {
-            $this->addTplDir($themeCat);
-        } else {
-            throw new Exception('Theme "' . $theme . '" not found');
-        }
         $runtime    = ROOT."/runtime";
         $tpl_c  = $runtime."/templates";
         $cache  = $runtime."/cache";
@@ -48,9 +38,6 @@ class Driver extends TplDriver
 
         $this->engine->compile_check = $this->config['compile_check'];
         $this->engine->caching = false;
-
-        $this->addTplDir($directory->getTplAll());
-        $this->addWidgetsDir($directory->getWidgetsAll());
     }
 
     public function assign( $params, $value = null )

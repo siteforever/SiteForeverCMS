@@ -8,9 +8,7 @@
 namespace Module\System;
 
 use Module\System\DependencyInjection\CaptchaExtension;
-use Module\System\DependencyInjection\Compiler\DatabasePass;
 use Module\System\DependencyInjection\Compiler\EventSubscriberPass;
-use Module\System\DependencyInjection\DatabaseExtension;
 use Module\System\DependencyInjection\AsseticExtension;
 use Module\System\DependencyInjection\SystemExtension;
 use Sfcms\Model;
@@ -24,7 +22,6 @@ class Module extends SfModule
     public function loadExtensions(ContainerBuilder $container)
     {
         $container->registerExtension(new SystemExtension());
-        $container->registerExtension(new DatabaseExtension());
         $container->registerExtension(new AsseticExtension());
         $container->registerExtension(new CaptchaExtension());
     }
@@ -32,7 +29,6 @@ class Module extends SfModule
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new EventSubscriberPass());
-        $container->addCompilerPass(new DatabasePass());
     }
 
     /**

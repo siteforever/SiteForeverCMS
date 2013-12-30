@@ -8,7 +8,6 @@
 namespace Sfcms;
 
 use App;
-use Sfcms\Tpl\Directory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -158,28 +157,15 @@ abstract class Module extends Component
     }
 
     /**
-     * Register directories View and Widget in current module, if exist
-     * @param Directory $tpl
-     */
-    public function registerViewsPath(Directory $tpl)
-    {
-        if (is_dir($this->getPath().'/View')) {
-            $tpl->addTplDir($this->getPath().'/View');
-        }
-        if (is_dir($this->getPath().'/Widget')) {
-            $tpl->addWidgetsDir($this->getPath().'/Widget');
-        }
-    }
-
-    /**
      * Register static components of current module
      */
     public function registerStatic()
     {
-        $target = strtolower(ROOT . '/static/' . $this->getName());
-        if ($this->fs->exists($this->getPath().'/static')) {
+        $output = $this->app->getContainer()->getParameter('assetic.output');
+        $target = strtolower($output . '/' . $this->getName());
+        if ($this->fs->exists($this->getPath() . '/static')) {
             if (!$this->fs->exists($target)) {
-                $this->fs->symlink($this->getPath().'/static', $target);
+                $this->fs->symlink($this->getPath() . '/static', $target);
             }
         }
     }

@@ -5,6 +5,7 @@
 return array(
     array('name' => 'Dashboard', 'path' => 'Module\Dashboard'),
     array('name' => 'System', 'path' => 'Module\System'),
+    array('name' => 'Database', 'path' => 'Module\Database'),
     array('name' => 'Smarty', 'path' => 'Module\Smarty'),
     array('name' => 'Robokassa', 'path' => 'Module\Robokassa'),
     array('name' => 'Page', 'path' => 'Module\Page'),
