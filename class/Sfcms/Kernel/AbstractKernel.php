@@ -126,6 +126,10 @@ abstract class AbstractKernel
 
     abstract public function getContainerCacheFile();
 
+    abstract public function getLogsPath();
+
+    abstract public function getCachePath();
+
     public function __construct($env, $debug = false)
     {
         if (is_null(static::$instance)) {
@@ -134,6 +138,13 @@ abstract class AbstractKernel
             throw new Exception('You can not create more than one instance of Application');
         }
 
+        if (!is_dir($this->getLogsPath())) {
+            @mkdir($this->getLogsPath(), 0777, true);
+        }
+        if (!is_dir($this->getCachePath())) {
+            @mkdir($this->getCachePath(), 0777, true);
+        }
+        
         $this->environment = $env;
 
         self::$_debug = $debug;

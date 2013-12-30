@@ -70,7 +70,23 @@ class App extends AbstractKernel
      */
     public function getContainerCacheFile()
     {
-        return SF_PATH . sprintf('/runtime/cache/container_%s.php', $this->getEnvironment());
+        return $this->getCachePath() . sprintf('/container_%s.php', $this->getEnvironment());
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogsPath()
+    {
+        return ROOT . '/runtime/logs';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePath()
+    {
+        return ROOT . '/runtime/cache';
     }
 
     public function redirectListener(KernelEvent $event)
