@@ -3,24 +3,24 @@
      На основаннии его составляется список выбора модулей про создании страницы -->
 <controllers>
     <controller name="page">
-        <label>Страница</label>
+        <label>Page</label>
     </controller>
     <controller name="news">
-        <label>Новости</label>
+        <label>News</label>
     </controller>
     <controller name="guestbook">
-        <label>Гостевая</label>
+        <label>Guestbook</label>
     </controller>
     <controller name="catalog">
-        <label>Каталог</label>
+        <label>Catalogue</label>
     </controller>
     <controller name="manufacturers">
-        <label>Производители</label>
+        <label>Manufacturers</label>
     </controller>
     <controller name="gallery">
-        <label>Галерея</label>
+        <label>Gallery</label>
     </controller>
     <controller name="feedback">
-        <label>Обратная связь</label>
+        <label>Feedback</label>
     </controller>
 </controllers>

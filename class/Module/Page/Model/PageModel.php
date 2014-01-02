@@ -13,6 +13,7 @@ use Sfcms\Model;
 use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -42,7 +43,7 @@ class PageModel extends Model
      */
     private $form = null;
 
-    protected $available_modules;
+    protected $availableModules;
 
     /** @var array ControllerLink Cache */
     private $_controller_link = array();
@@ -268,33 +269,31 @@ class PageModel extends Model
      */
     public function getAvaibleModules()
     {
-        if (is_null( $this->available_modules )) {
+        if (is_null($this->availableModules)) {
+            $locator = new FileLocator(array(
+                $this->app()->getContainer()->getParameter('root'),
+                $this->app()->getContainer()->getParameter('sf_path')
+            ));
 
-            $content          = '';
-            $controllers_file = '/protected/controllers.xml';
-            if (file_exists( ROOT . $controllers_file )) {
-                $content = file_get_contents( ROOT . $controllers_file );
-            } elseif (ROOT != SF_PATH && file_exists( SF_PATH . $controllers_file )) {
-                $content = file_get_contents( SF_PATH . $controllers_file );
-            }
+            $controllersFile = $locator->locate('app/controllers.xml');
+            $content = file_get_contents($controllersFile);
 
             if (!$content) {
                 return array();
             }
 
-            $xml_controllers = new SimpleXMLElement( $content );
+            $xmlControllers = new SimpleXMLElement( $content );
 
-            $this->available_modules = array();
+            $this->availableModules = array();
 
-            foreach ($xml_controllers->children() as $child) {
-                $this->available_modules[(string)$child['name']] = array('label' => (string)$child->label);
+            foreach ($xmlControllers->children() as $child) {
+                $this->availableModules[(string)$child['name']] = array('label' => (string)$child->label);
             }
         }
 
         $ret = array();
-        foreach ( $this->available_modules as $key => $mod )
-        {
-            $ret[ $key ] = $mod[ 'label' ];
+        foreach ($this->availableModules as $key => $mod) {
+            $ret[$key] = $this->app()->getContainer()->get('translator')->trans($mod['label']);
         }
         return $ret;
     }
