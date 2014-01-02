@@ -3,6 +3,7 @@ namespace Sfcms;
 
 use Module\Monolog\Logger\Logger;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Translation\Translator;
 
 /**
  * Translator
@@ -10,13 +11,13 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class i18n
 {
-
-    private $_lang = null;
     private $_dictionary = null;
     private $_debug = false;
-    private $_path = '';
     private $_dest = '';
     private $logger = null;
+
+    /** @var Translator */
+    private $translator;
 
     /**
      * @var i18n
@@ -63,25 +64,56 @@ class i18n
         ' '   => '_',
     );
 
-    public function __construct($path = __DIR__, $dest = __DIR__, $debug = false)
+    public function __construct(Translator $translator, $dest = __DIR__, $debug = false)
     {
+        $this->translator = $translator;
         $this->_debug = $debug;
-        $this->_path = $path;
         $this->_dest = $dest;
-        setlocale(LC_ALL, 'en_US.UTF-8', 'en_US', 'English', 'C');
-        setlocale(LC_TIME, 'rus', 'ru_RU.UTF-8', 'Russia');
 
-        return self::$_instance = $this;
+//        $start = microtime(1);
+//        $fs = new Filesystem();
+
+//        if (!$fs->exists($this->getDest())) {
+//            $fs->mkdir($this->getDest(), 0777, true);
+//        }
+
+        // Prepare dictionary for JS
+//        $jsDictFile = $this->getDest() . '/' . $this->translator->getLocale() . '.js';
+//        $jsI18nFile = $this->getPath() . '/misc/i18n.js';
+
+//        if (!$this->isDebug() && file_exists($jsDictFile)) {
+//            return;
+//        }
+
+//        $f = fopen($jsDictFile, 'a');
+//        flock($f, LOCK_EX);
+//        ftruncate($f, 0);
+//        $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents($jsI18nFile);
+//        $dictList = glob(dirname($dictFile) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php');
+//        foreach ($dictList as $file) {
+//            $this->_dictionary['cat_' . basename($file, '.php')] = @include($file);
+//        }
+//        $dict = defined('JSON_UNESCAPED_UNICODE') ? json_encode($this->_dictionary, JSON_UNESCAPED_UNICODE)
+//            : json_encode($this->_dictionary);
+//
+//        $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = ' . $dict . ';', $jsDict);
+//
+//        fwrite($f, $jsDict, strlen($jsDict));
+//        flock($f, LOCK_UN);
+//        fclose($f);
+//        if (null !== $this->getLogger()) {
+//            $this->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
+//        }
+    }
+
+    public function setLocale($category, $locale)
+    {
+        call_user_func_array('setlocale', func_get_args());
     }
 
     public function isDebug()
     {
         return $this->_debug;
-    }
-
-    public function getPath()
-    {
-        return $this->_path;
     }
 
     /**
@@ -108,65 +140,21 @@ class i18n
         return $this->logger;
     }
 
-    public function setLanguage($lang = 'en')
-    {
-        if (null !== $this->_lang) {
-            return;
-        }
-        $start = microtime(1);
-        $this->_lang = $lang;
-        $fs = new Filesystem();
-
-        $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '.php';
-        if (!$fs->exists($dictFile)) {
-            throw new Exception('Dictionary for language ' . $this->_lang . ' not found in file ' . $dictFile);
-        }
-        $this->_dictionary = @include($dictFile);
-
-        if (!$fs->exists($this->getDest())) {
-            $fs->mkdir($this->getDest(), 0777, true);
-        }
-
-        // Prepare dictionary for JS
-        $jsDictFile = $this->getDest() . '/' . $this->_lang . '.js';
-        $jsI18nFile = $this->getPath() . '/misc/i18n.js';
-
-        if (!$this->isDebug() && file_exists($jsDictFile)) {
-            return;
-        }
-
-        $f = fopen($jsDictFile, 'a');
-        flock($f, LOCK_EX);
-        ftruncate($f, 0);
-        $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents($jsI18nFile);
-        $dictList = glob(dirname($dictFile) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php');
-        foreach ($dictList as $file) {
-            $this->_dictionary['cat_' . basename($file, '.php')] = @include($file);
-        }
-        $dict = defined('JSON_UNESCAPED_UNICODE') ? json_encode($this->_dictionary, JSON_UNESCAPED_UNICODE)
-            : json_encode($this->_dictionary);
-
-        $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = ' . $dict . ';', $jsDict);
-
-        fwrite($f, $jsDict, strlen($jsDict));
-        flock($f, LOCK_UN);
-        fclose($f);
-        if (null !== $this->getLogger()) {
-            $this->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
-        }
-    }
-
     /**
-     * @static
-     * @return i18n
+     * Translate message
+     * @param $id
+     * @param array $parameters
+     * @param null $domain
+     * @param null $locale
+     *
+     * @return string
      */
-    public static function getInstance()
+    public function trans($id, array $parameters = array(), $domain = null, $locale = null)
     {
-        if (null === self::$_instance) {
-            throw new \RuntimeException('Instance not defined');
+        if (null !== $domain) {
+            $domain = strtolower($domain);
         }
-
-        return self::$_instance;
+        return $this->translator->trans($id, $parameters, $domain, $locale);
     }
 
     /**
@@ -180,20 +168,16 @@ class i18n
     {
         switch (func_num_args()) {
             case 1:
-                if (isset($this->_dictionary[$message])) {
-                    return $this->_dictionary[$message];
-                }
-                break;
+                return $this->translator->trans($message);
             case 2:
                 if (is_string(func_get_arg(1))) {
-                    return $this->getCategoryTranslate(func_get_arg(0), func_get_arg(1));
+                    return $this->translator->trans(func_get_arg(1), array(), func_get_arg(0));
                 }
                 if (is_array(func_get_arg(1))) {
-                    return $this->getCategoryTranslate(null, func_get_arg(0), func_get_arg(1));
+                    return $this->translator->trans(func_get_arg(0), func_get_arg(1));
                 }
-                break;
             case 3:
-                return $this->getCategoryTranslate(func_get_arg(0), func_get_arg(1), func_get_arg(2));
+                return $this->translator->trans(func_get_arg(1), func_get_arg(2), func_get_arg(0));
         }
 
         return $message;
@@ -204,34 +188,35 @@ class i18n
      * @param       $message
      * @param array $params
      *
+     * @deprecated
      * @return mixed
      * @throws Exception
      */
-    protected function getCategoryTranslate($category, $message, $params = array())
-    {
-        $category = strtolower($category);
-        if ($category && !isset($this->_dictionary[$category])) {
-            $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
-            if (file_exists($dictFile)) {
-                $this->_dictionary['cat_' . $category] = @include($dictFile);
-            } else {
-                $this->_dictionary['cat_' . $category] = array();
-            }
-        }
-        if (null !== $category && isset($this->_dictionary['cat_' . $category][$message])) {
-            $message = $this->_dictionary['cat_' . $category][$message];
-        } elseif (isset($this->_dictionary[$message])) {
-            $message = $this->_dictionary[$message];
-        }
-        foreach ($params as $key => $val) {
-            $message = str_replace($key, $val, $message);
-        }
-
-        return $message;
-    }
+//    protected function getCategoryTranslate($category, $message, $params = array())
+//    {
+//        $category = strtolower($category);
+//        if ($category && !isset($this->_dictionary[$category])) {
+//            $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
+//            if (file_exists($dictFile)) {
+//                $this->_dictionary['cat_' . $category] = @include($dictFile);
+//            } else {
+//                $this->_dictionary['cat_' . $category] = array();
+//            }
+//        }
+//        if (null !== $category && isset($this->_dictionary['cat_' . $category][$message])) {
+//            $message = $this->_dictionary['cat_' . $category][$message];
+//        } elseif (isset($this->_dictionary[$message])) {
+//            $message = $this->_dictionary[$message];
+//        }
+//        foreach ($params as $key => $val) {
+//            $message = str_replace($key, $val, $message);
+//        }
+//
+//        return $message;
+//    }
 
     /**
-     * Транслитерация
+     * Transliteration
      * @param string $str
      *
      * @return string

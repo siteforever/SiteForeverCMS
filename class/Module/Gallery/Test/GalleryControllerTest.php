@@ -47,14 +47,14 @@ class GalleryControllerTest extends WebCase
         $response = $this->runRequest('/gallery/admin');
         $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
-        $this->assertEquals('Галерея изображений', $crawler->filterXPath('//h2')->text());
+        $this->assertEquals('Галерея изображений', $crawler->filterXPath('//h1')->text());
 
         // loading section content
         $response = $this->click($crawler->selectLink('Портфолио'));
         $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Портфолио / SiteForeverCMS', $crawler->filterXPath('//title')->text());
-        $this->assertEquals('Портфолио', $crawler->filterXPath('//h2')->text());
+        $this->assertEquals('Портфолио', $crawler->filterXPath('//h1')->text());
         $this->assertEquals(3, $crawler->filterXPath('//ul[@id="gallery"]/li')->count());
         $form = $crawler->filterXPath('//form[@id="load_images"]');
         $this->assertEquals(1, $form->count());

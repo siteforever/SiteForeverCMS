@@ -29,7 +29,7 @@ class GuestbookControllerTest extends WebCase
         $response = $this->runRequest('/guestbook/admin');
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Модуль гостевой / SiteForeverCMS', $crawler->filterXPath('//title')->text());
-        $this->assertEquals('Модуль гостевой', $crawler->filterXPath('//h2')->text());
+        $this->assertEquals('Модуль гостевой', $crawler->filterXPath('//h1')->text());
         $this->assertEquals(8, $crawler->filterXPath('//div[@id="workspace"]/table//tr')->count());
 //        print $response->getContent();
     }

@@ -23,11 +23,10 @@ class DashboardController extends Controller
 
     public function indexAction()
     {
-        $this->request->setTitle($this->t('dashboard', 'dashboard'));
+        $this->request->setTitle('dashboard');
 
         $event = new DashboardEvent();
         $this->app->getEventDispatcher()->dispatch(DashboardEvent::EVENT_BUILD, $event);
-
 
         return $this->render('dashboard.index', array(
                 'panels' => $event->getPanels(),

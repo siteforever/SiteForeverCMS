@@ -104,7 +104,7 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'  => 'Структура',
+                'name'  => 'structure',
                 'url'   => 'page/admin',
             )
         );

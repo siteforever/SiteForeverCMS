@@ -128,7 +128,6 @@ table.dataset {
 .b-main-structure li>span>a.edit {
     width: 100%;
     max-width: 400px;
-    display: inline-block;
     /*height: 15px;*/
     /*line-height: 20px;*/
     overflow: hidden;

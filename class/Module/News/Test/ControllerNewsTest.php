@@ -16,7 +16,7 @@ class ControllerNewsTest extends WebCase
         $response = $this->runRequest('/news/admin');
         $crawler = $this->createCrawler($response);
 
-        $this->assertEquals('Новости', $crawler->filter('#workspace h2')->text());
+        $this->assertEquals('Новости', $crawler->filter('#workspace h1')->text());
         $this->assertEquals(1, $crawler->filter('#workspace table.table')->count());
 
         $this->assertEquals('/news/list?id=1', $crawler->selectLink('Новости')->attr('href'));

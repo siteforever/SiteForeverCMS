@@ -4,6 +4,6 @@
     <div class="panel_content">{$panel.content}</div>
 </div>
 {foreachelse}
-<p>Пока нет панелей</p>
+<p>{'Currently there are no panels'|trans}</p>
 {/foreach}
 <div class="clearfix"></div>

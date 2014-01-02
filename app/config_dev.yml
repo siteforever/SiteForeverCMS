@@ -7,4 +7,7 @@ system:
         storage: handler
         handler: native
 
+translator:
+    locale: %language%
+
 services:

@@ -7,7 +7,7 @@
 
 return array(
     'Catalog'   => 'Каталог',
-    'Trage'     => 'Товар',
+    'Trade'     => 'Товар',
     'Gallery' => 'Галерея',
     'Path'      => 'Путь',
     'No products' => 'Нет товаров',
@@ -51,7 +51,6 @@ return array(
     'Move' => 'Переместить',
     'Save order' => 'Сохранить порядок',
 
-    'Product types' => 'Типы товаров',
     'Fields' => 'Поля',
 
     'Type' => 'Тип',

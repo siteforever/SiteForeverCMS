@@ -1,0 +1,4 @@
+services:
+    i18n:
+        class: Sfcms\i18n
+        arguments: ["@translator", "%assetic.output%/i18n", "%debug%"]

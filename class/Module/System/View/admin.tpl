@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="{$request->getLocale()}"> <![endif]-->
-<!--[if IE 7]> <html class="no-js lt-ie9 lt-ie8" lang="{$request->getLocale()}"> <![endif]-->
-<!--[if IE 8]> <html class="no-js lt-ie9" lang="{$request->getLocale()}"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="{$request->getLocale()}"> <!--<![endif]-->
+<html lang="{$request->getLocale()}">
 <head>
 </head>
 <body class="body" id="admin">
@@ -12,11 +9,11 @@
             <div class="nav-collapse">
                 <span class="brand">SiteForeverCMS</span>
                 <ul class="nav">
-                    <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {t}Goto site{/t}</a></li>
-                    {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {t}Settings{/t}{/a}</li>*}
+                    <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {'Goto site'|trans}</a></li>
+                    {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {'Settings'|trans}{/a}</li>*}
                 </ul>
                 <ul class="nav pull-right">
-                    <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {t}Exit{/t}{/a}</li>
+                    <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {'Exit'|trans}{/a}</li>
                     {*<li class="dropdown">*}
                         {*{a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}*}
                         {*<ul class="dropdown-menu">*}
@@ -30,7 +27,7 @@
     </div>
 </div>
 <div class="modal-backdrop in" id="loading-application">
-    <div>{t}Initialisation{/t}</div>
+    <div>{'Initialisation'|trans}</div>
 </div>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -40,14 +37,14 @@
                     {foreach from=$request->get('modules') item="item"}
                     {if isset( $item.url )}
                         {if ! isset( $item.class )}{$item.class = ""}{/if}
-                        <li>{a href=$item.url htmlClass=$item.class}{$item.name}{/a}</li>
+                        <li>{a href=$item.url htmlClass=$item.class}{$item.name|trans|ucfirst}{/a}</li>
                     {else}
-                        <li class="nav-header">{$item.name}</li>
+                        <li class="nav-header">{$item.name|trans|ucfirst}</li>
                     {/if}
                     {if isset($item.sub)}
                         {foreach from=$item.sub item="sitem"}
                             {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
-                            <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name}{/a}</li>
+                            <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name|trans|ucfirst}{/a}</li>
                         {/foreach}
                         <li class="divider"></li>
                     {/if}
@@ -62,7 +59,7 @@
             <![endif]-->
 
             {*<div class="well">*}
-                {if $request->getTitle() && empty($title)}<h2>{$request->getTitle()}</h2>{/if}
+                {if $request->getTitle() && empty($title)}<h1>{$request->getTitle()|trans|ucfirst}</h1>{/if}
 
                 {if $feedback}<div class="alert alert-block">
                     <a class="close" data-dismiss="alert" href="#">&times;</a>

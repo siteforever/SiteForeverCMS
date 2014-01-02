@@ -109,6 +109,7 @@ return array(
 
     'Site managment'                            => 'Управление сайтом',
     'Site structure'                            => 'Структура сайта',
+    'structure'                                 => 'структура',
     'Control panel'                             => 'Панель управления',
 
     'Could not start the controller'            => 'Не удалось запустить контроллер',
@@ -164,7 +165,7 @@ return array(
     // paging
     'next &gt;' => 'след. &gt;',
     '&lt; pred' => '&lt; пред.',
-    'Pages' => 'Страницы',
+    'pages' => 'страницы',
     'from' => 'от',
     'to' => 'до',
 

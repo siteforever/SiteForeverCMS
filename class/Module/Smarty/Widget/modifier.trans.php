@@ -14,11 +14,10 @@
  * Файл:     modifier.trans.php
  * Тип:      modifier
  * Имя:      lang
- * Назначение:  Translate phrase
- * Alias for smarty_modifier_lang
+ * Назначение:  Translate message
  * -------------------------------------------------------------
  */
-function smarty_modifier_trans($content, $cat = "", $params = array())
+function smarty_modifier_trans($id, $params = array(), $domain = null)
 {
-    return Sfcms::i18n()->write($cat, $content, $params);
+    return Sfcms::i18n()->trans($id, $params, $domain);
 }

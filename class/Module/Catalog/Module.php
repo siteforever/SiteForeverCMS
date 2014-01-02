@@ -10,9 +10,7 @@ namespace Module\Catalog;
 use Module\Catalog\DependencyInjection\CatalogExtension;
 use Sfcms\Module as SfModule;
 use Sfcms\Model;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -47,9 +45,9 @@ class Module extends SfModule
         return array(
             'controllers' => array(
                 'Goods'          => array(),
-                'Prodtype'       => array(),
+                'ProdType'       => array(),
                 'Catalog'        => array(),
-                'Cataloggallery' => array( 'class' => 'Controller\Gallery', ),
+                'CatalogGallery' => array( 'class' => 'Controller\Gallery', ),
                 'CatalogComment' => array( 'class' => 'Controller\Comment', ),
             ),
             'models' => array(
@@ -181,35 +179,34 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'  => 'Каталог',
+                'name'  => 'Catalogue',
                 'sub'   => array(
                     array(
-                        'name'  => $this->t('Goods'),
+                        'name'  => 'Goods',
                         'url'   => 'goods/admin'
                     ),
                     array(
-                        'name'  => $this->t('catalog','Product types'),
+                        'name'  => 'Product types',
                         'url'   => 'prodtype/admin'
                     ),
                     array(
-                        'name'  => $this->t('material','Materials'),
+                        'name'  => 'Materials',
                         'url'   => 'material/admin'
                     ),
                     array(
-                        'name'  => $this->t('Manufacturers'),
+                        'name'  => 'Manufacturers',
                         'url'   => 'manufacturers/admin'
                     ),
                     array(
-                        'name'  => $this->t('Comments'),
+                        'name'  => 'Comments',
                         'url'   => 'catalogcomment/admin',
                     ),
                     array(
-                        'name'  => $this->t('Catalog'),
+                        'name'  => 'Catalogue',
                         'url'   => 'catalog/admin',
                     ),
                 )
             )
         );
     }
-
 }

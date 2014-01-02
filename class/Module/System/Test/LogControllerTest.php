@@ -17,7 +17,7 @@ class LogControllerTest extends WebCase
         $response = $this->runController('Log', 'admin');
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Просмотр журнала изменений / SiteForeverCMS', $crawler->filterXPath('//title')->text());
-        $this->assertEquals('Просмотр журнала изменений', $crawler->filterXPath('//h2')->text());
+        $this->assertEquals('Просмотр журнала изменений', $crawler->filterXPath('//h1')->text());
         $logList = $crawler->filterXPath('//table[@id="logs_list"]');
         $this->assertEquals(1, $logList->count());
         $this->assertEquals('sfcms-jqgrid', $logList->attr('class'));

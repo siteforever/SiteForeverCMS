@@ -117,7 +117,6 @@ class App extends AbstractKernel
         }
         $request->setRequestFormat($format);
         $request->setDefaultLocale($this->getContainer()->getParameter('language'));
-        $this->getContainer()->get('i18n')->setLanguage($request->getLocale());
 
         // define router
         $this->getRouter()->setRequest($request)->routing();

@@ -149,10 +149,6 @@ class Module extends SfModule
 //                    ),
 //                ),
 //            ),
-            array(
-                'name'  => 'Выход',
-                'url'   => 'user/logout',
-            ),
         );
     }
 }

@@ -36,8 +36,13 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'  => 'Dashboard',
-                'url'   => 'admin',
+                'name'  => 'dashboard',
+                'sub' => array(
+                    array(
+                        'name'  => 'dashboard',
+                        'url'   => 'admin',
+                    ),
+                ),
             )
         );
     }

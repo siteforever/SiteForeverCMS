@@ -34,7 +34,7 @@ class PageControllerTest extends WebCase
         $response = $this->runRequest('/page/admin');
         $crawler = $this->createCrawler($response);
         $this->assertEquals(1, $crawler->filter('#admin')->count());
-        $this->assertEquals('Структура сайта', $crawler->filter('#workspace h2')->text());
+        $this->assertEquals('Структура сайта', $crawler->filter('#workspace h1')->text());
     }
 
     public function testCreateAction()

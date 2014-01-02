@@ -33,15 +33,15 @@ class BannerController extends Controller
      */
     public function init()
     {
-        $default = array(
-            'dir' => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'banner',
-        );
-        if (defined('MAX_FILE_SIZE')) {
-            $default['max_file_size'] = MAX_FILE_SIZE;
-        } else {
-            $default['max_file_size'] = 2 * 1024 * 1024;
-        }
-        $this->config->setDefault('banner', $default);
+//        $default = array(
+//            'dir' => DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . 'banner',
+//        );
+//        if (defined('MAX_FILE_SIZE')) {
+//            $default['max_file_size'] = MAX_FILE_SIZE;
+//        } else {
+//            $default['max_file_size'] = 2 * 1024 * 1024;
+//        }
+//        $this->config->setDefault('banner', $default);
     }
 
     /**
@@ -50,7 +50,7 @@ class BannerController extends Controller
      */
     public function adminAction()
     {
-        $this->request->setTitle($this->t('Banners category list'));
+        $this->request->setTitle('Banners category list');
         $category = $this->getModel('CategoryBanner');
         $cat_list = $category->findAll();
 
@@ -65,17 +65,17 @@ class BannerController extends Controller
      * @param int $id
      * @return mixed
      */
-    public function redirectBannerAction( $id )
+    public function redirectBannerAction($id)
     {
         /** @var $model BannerModel */
-        $model = $this->getModel( 'Banner' );
-        if ( ! $id ) {
-            return $this->redirect( $this->router->createLink('error') );
+        $model = $this->getModel('Banner');
+        if (!$id) {
+            return $this->redirect($this->router->createLink('error'));
         }
         /** @var $obj Banner */
-        $obj = $model->find( $id );
+        $obj = $model->find($id);
         $obj->count_click++;
-        return $this->redirect( $obj->url );
+        return $this->redirect($obj->url);
     }
 
     /**
@@ -83,15 +83,15 @@ class BannerController extends Controller
      * @param int $id
      * @return array|string
      */
-    public function saveCatAction( $id )
+    public function saveCatAction($id)
     {
         /** @var CategoryModel $model */
-        $model = $this->getModel( 'CategoryBanner' );
+        $model = $this->getModel('CategoryBanner');
         $form  = $model->getForm();
 
-        if( $form->getPost($this->request) ) {
-            if( $form->validate() ) {
-                $obj = $form['id'] ? $model->find( $form['id'] ) : $model->createObject()->markNew();
+        if ($form->getPost($this->request)) {
+            if ($form->validate()) {
+                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
 
                 return $this->renderJson(array('error' => 0, 'msg' => $this->t('Data save successfully')));
@@ -102,7 +102,7 @@ class BannerController extends Controller
         if ( $id ) {
             try {
                 /** @var $obj Banner */
-                $obj = $model->find( $id );
+                $obj = $model->find($id);
             } catch ( Exception $e ) {
                 return $e->getMessage();
             }

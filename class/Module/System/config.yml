@@ -94,9 +94,3 @@ services:
         class: Sfcms\Controller\Resolver
         arguments: ["@app"]
 
-    i18n:
-        class: Sfcms\i18n
-        arguments: ["%sf_path%", "%assetic.output%/i18n", "%debug%"]
-        calls:
-            - [setLanguage, ["%language%"]]
-

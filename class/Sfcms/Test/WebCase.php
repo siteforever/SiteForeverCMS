@@ -67,6 +67,8 @@ class WebCase extends PHPUnit_Framework_TestCase
      */
     protected function runController($controller, $action = 'index')
     {
+        $controller = strtolower($controller);
+        $action = strtolower($action);
         $this->request->clearFeedback();
         $this->request->setController($controller);
         $this->request->setAction($action);

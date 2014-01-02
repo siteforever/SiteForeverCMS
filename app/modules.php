@@ -4,11 +4,12 @@
  */
 return array(
     array('name' => 'Dashboard', 'path' => 'Module\Dashboard'),
+    array('name' => 'Page', 'path' => 'Module\Page'),
     array('name' => 'System', 'path' => 'Module\System'),
+    array('name' => 'Translator', 'path' => 'Module\Translator'),
     array('name' => 'Database', 'path' => 'Module\Database'),
     array('name' => 'Smarty', 'path' => 'Module\Smarty'),
     array('name' => 'Robokassa', 'path' => 'Module\Robokassa'),
-    array('name' => 'Page', 'path' => 'Module\Page'),
     array('name' => 'User', 'path' => 'Module\User'),
     array('name' => 'News', 'path' => 'Module\News'),
     array('name' => 'Banner', 'path' => 'Module\Banner'),

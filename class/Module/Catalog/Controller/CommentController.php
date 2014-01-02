@@ -30,7 +30,7 @@ class CommentController extends AdminController
 
     protected function adminPerPage()
     {
-        return 5;
+        return 20;
     }
 
     public function getModel($model = '')
