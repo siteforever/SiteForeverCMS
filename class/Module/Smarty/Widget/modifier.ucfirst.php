@@ -18,5 +18,5 @@
  */
 function smarty_modifier_ucfirst($content)
 {
-    return mb_strtoupper(mb_substr($content, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($content, 1, null, 'UTF-8');
+    return mb_strtoupper(mb_substr($content, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($content, 1, mb_strlen($content), 'UTF-8');
 }
