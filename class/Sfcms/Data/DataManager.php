@@ -1,0 +1,92 @@
+<?php
+/**
+ *
+ * @author: Nikolay Ermin <keltanas@gmail.com>
+ */
+
+namespace Sfcms\Data;
+
+use Sfcms\Kernel\AbstractKernel;
+use Sfcms\Model;
+use Sfcms\Module;
+use Symfony\Component\DependencyInjection\ContainerAware;
+
+class DataManager extends ContainerAware
+{
+    /** @var array */
+    private $modelList = null;
+
+    /**
+     * Вернет нужную модель
+     *
+     * @param string $model
+     *
+     * @return Model
+     */
+    public function getModel($model)
+    {
+        if (false !== strpos($model, '.')) {
+            if ('mapper' === strtolower(substr($model, 0, 6))) {
+                return $this->container->get($model);
+            } else {
+                return $this->container->get('mapper.' . $model);
+            }
+        }
+
+        if (false !== strpos($model, '\\') || false !== strpos($model, '_')) {
+            return $this->container->get(sprintf('mapper.%s', trim(strtolower($model), ' _\\')));
+        }
+
+        $models = $this->getModelList();
+        foreach ($models as $cfg) {
+            if ($model == $cfg['alias']) {
+                break;
+            }
+        }
+
+        return $this->container->get($cfg['id']);
+    }
+
+    /**
+     * @param Module $module
+     * @param string $alias
+     *
+     * @return string
+     */
+    public function getModelId(Module $module, $alias)
+    {
+        return sprintf('Mapper.%s.%s', $module->getName(), $alias);
+    }
+
+    /**
+     * @return array
+     */
+    public function getModelList()
+    {
+        if (null === $this->modelList) {
+            /** @var AbstractKernel $kernel */
+            $kernel = $this->container->get('kernel');
+
+            $modules = $kernel->getModules();
+            $models = array();
+
+            /** @var Module $module */
+            foreach($modules as $module) {
+                $config = $module->config();
+                if ($config && isset($config['models'])) {
+                    foreach($config['models'] as $alias => $className) {
+                        $models[] = array(
+                            'id' => $this->getModelId($module, $alias),
+                            'alias' => $alias,
+                            'class' => $className,
+                        );
+                    }
+                }
+            }
+
+            $this->modelList = $models;
+        }
+
+        return $this->modelList;
+    }
+}

@@ -7,6 +7,7 @@
 namespace Module\Database\DependencyInjection\Compiler;
 
 
+use Sfcms\Data\DataManager;
 use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Module;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -39,21 +40,29 @@ class DatabasePass implements CompilerPassInterface
         $modules = $kernel->getModules();
 
         $dispatcher = $container->getDefinition('event.dispatcher');
+        /** @var DataManager $manager */
+        $manager = $container->get('data.manager');
 
-        /** @var Module $module */
-        foreach($modules as $module) {
-            $config = $module->config();
-            if ($config && isset($config['models'])) {
-                foreach($config['models'] as $name => $className) {
-                    $definition = new Definition($className);
-                    $container->setDefinition(sprintf('Mapper.%s', $name), $definition);
-                    $container->setAlias(sprintf('Mapper.%s', $className), sprintf('Mapper.%s', $name));
-                    $reflectionClass = new \ReflectionClass($className);
-                    if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
-                        $dispatcher->addMethodCall('addSubscriber', array(new Reference(sprintf('Mapper.%s', $name))));
-                    }
-                }
+        foreach ($manager->getModelList() as $config) {
+            $definition = new Definition($config['class']);
+            $container->setDefinition($config['id'], $definition);
+            $container->setAlias(sprintf('Mapper.%s', $config['class']), $config['id']);
+            $reflectionClass = new \ReflectionClass($config['class']);
+            if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
+                $dispatcher->addMethodCall('addSubscriber', array(new Reference($config['id'])));
             }
+//            if ($reflectionClass->hasMethod('onSaveStart')) {
+//                $dispatcher->addMethodCall('addListener', array(
+//                        sprintf('%s.save.start', $config['alias']),
+//                        array(new Reference($config['id']), 'onSaveStart')
+//                    ));
+//            }
+//            if ($reflectionClass->hasMethod('onSaveSuccess')) {
+//                $dispatcher->addMethodCall('addListener', array(
+//                        sprintf('%s.save.success', $config['alias']),
+//                        array(new Reference($config['id']), 'onSaveSuccess')
+//                    ));
+//            }
         }
     }
 }

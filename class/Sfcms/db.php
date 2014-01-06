@@ -191,7 +191,7 @@ final class db
      * @param string $sql
      * @return mixed
      */
-    function query($sql)
+    public function query($sql)
     {
         $start = microtime(true);
         $sql = trim( $sql );
@@ -245,6 +245,24 @@ final class db
         }
 
         return $this->return;
+    }
+
+    /**
+     * @param $dbName
+     * @return mixed
+     */
+    public function createDatabase($dbName)
+    {
+        return $this->query(sprintf('CREATE DATABASE `%s`', $dbName));
+    }
+
+    /**
+     * @param $dbName
+     * @return mixed
+     */
+    public function dropDatabase($dbName)
+    {
+        return $this->query(sprintf('DROP DATABASE `%s`', $dbName));
     }
 
     /**
@@ -334,9 +352,7 @@ final class db
 
             return $data;
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     /**
@@ -450,9 +466,8 @@ final class db
             $this->time+= $exec;
             $this->log( $sql." ($exec sec)" );
             return $this->data[0];
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -503,10 +518,7 @@ final class db
         }
         $sql = "INSERT INTO `{$table}` {$keys} VALUES ($datas)";
         $this->query( $sql );
-        if ( $this->result ) {
-            return $this->return;
-        }
-        return false;
+        return $this->return;
     }
 
     /**

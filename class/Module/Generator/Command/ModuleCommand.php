@@ -6,10 +6,11 @@
 
 namespace Module\Generator\Command;
 
-use Symfony\Component\Console\Command\Command;
+use Sfcms\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class ModuleCommand extends Command
 {
@@ -36,34 +37,38 @@ class ModuleCommand extends Command
             $output->writeln(sprintf("<error>Module %s already exists</error>", $name));
             return;
         }
+
+        $fs = new Filesystem();
+
         $modulePath = getcwd() . '/class/Module/'.$name;
         $output->writeln(sprintf('<info>Path to module %s: %s</info>', $name, $modulePath));
-        if (is_dir($modulePath)) {
+        if ($fs->is_dir($modulePath)) {
             $output->writeln(sprintf("<error>Module path already exists</error>"));
             return;
         }
-        mkdir($modulePath, 0755, true);
-        mkdir($modulePath.'/Command', 0755, true);
-        mkdir($modulePath.'/Controller', 0755, true);
-        mkdir($modulePath.'/Model', 0755, true);
-        mkdir($modulePath.'/Object', 0755, true);
-        mkdir($modulePath.'/Test', 0755, true);
-        mkdir($modulePath.'/View', 0755, true);
-        $tpl = \App::cms()->getTpl();
+        $fs->mkdir($modulePath, 0755, true);
+        $fs->mkdir($modulePath.'/Command', 0755, true);
+        $fs->mkdir($modulePath.'/Controller', 0755, true);
+        $fs->mkdir($modulePath.'/Model', 0755, true);
+        $fs->mkdir($modulePath.'/Object', 0755, true);
+        $fs->mkdir($modulePath.'/Test', 0755, true);
+        $fs->mkdir($modulePath.'/View', 0755, true);
+        $tpl = $this->getApplication()->getKernel()->getTpl();
         $tpl->assign(array(
                 'name' => $name,
                 'ns' => $ns,
             ));
         $moduleContent = $tpl->fetch('generator.module');
-        file_put_contents($modulePath . '/Module.php', $moduleContent);
+        $fs->dumpFile($modulePath . '/Module.php', $moduleContent, 0644);
         $output->writeln(sprintf('<info>Created module %s</info>', $name));
+
+
 
         $modules[] = array('name'=>$name, 'path'=>$ns);
         $tpl->assign('modules', $modules);
         $modulesList = $tpl->fetch('generator.modules_list');
-        file_put_contents($modulesConfigFile, $modulesList);
+        $fs->dumpFile($modulesConfigFile, $modulesList, 0644);
         $output->writeln(sprintf('<info>Updated modules list</info>'));
-
     }
 
 }

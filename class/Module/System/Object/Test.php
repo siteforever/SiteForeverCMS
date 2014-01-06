@@ -1,8 +1,8 @@
 <?php
 /**
  *
- * @author Nikolay Ermin <nikolay@ermin.ru>
- * @link http://ermin.ru
+ * @author Nikolay Ermin <keltanas@gmail.com>
+ * @link http://siteforever.ru
  */
 
 namespace Module\System\Object;
@@ -10,6 +10,13 @@ namespace Module\System\Object;
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 
+/**
+ * Class Test
+ * @package Module\System\Object
+ *
+ * @property $id
+ * @property $value
+ */
 class Test extends Object
 {
     /**

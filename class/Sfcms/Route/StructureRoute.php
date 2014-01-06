@@ -8,7 +8,7 @@
 namespace Sfcms\Route;
 use Module\Page\Object\Page;
 use Module\System\Event\RouteEvent;
-use Sfcms\Data\Manager;
+use Sfcms\Data\DataManager;
 use Sfcms\Route;
 use Sfcms\Model;
 use Module\Page\Model\PageModel;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class StructureRoute extends Route
 {
-    /** @var Manager */
+    /** @var DataManager */
     private $dataManager;
 
     /**
@@ -28,7 +28,7 @@ class StructureRoute extends Route
     }
 
     /**
-     * @param \Sfcms\Data\Manager $dataManager
+     * @param \Sfcms\Data\DataManager $dataManager
      */
     public function setDataManager($dataManager)
     {
@@ -36,7 +36,7 @@ class StructureRoute extends Route
     }
 
     /**
-     * @return \Sfcms\Data\Manager
+     * @return \Sfcms\Data\DataManager
      */
     public function getDataManager()
     {

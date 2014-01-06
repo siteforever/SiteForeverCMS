@@ -259,7 +259,7 @@ abstract class Object extends Table
      */
     public function save($forceInsert = false, $silent = false)
     {
-        return $this->model->save($this, $forceInsert, $silent);
+        return $this->getModel()->save($this, $forceInsert, $silent);
     }
 
     /**

@@ -31,12 +31,6 @@ abstract class Model extends Component
     const STAT = 'stat'; // статистическая связь
 
     /**
-     * Тип таблицы
-     * @var string
-     */
-    protected $engine = 'InnoDB'; // 'MyISAM';
-
-    /**
      * @var db
      */
     protected $db;
@@ -63,17 +57,6 @@ abstract class Model extends Component
     protected $fields = array();
 
     /**
-     * Список инстанцированных классов модели
-     * @var array
-     */
-    protected static $all_class = array();
-
-    protected static $exists_tables;
-
-    /** @var array Список моделей, доступных в системе */
-    protected static $models = null;
-
-    /**
      * Количество relation полей, которые должны быть загружены группой
      * @var array
      */
@@ -90,7 +73,6 @@ abstract class Model extends Component
      */
     final public function __construct()
     {
-//        $this->app()->getLogger()->log(sprintf('%s (%s)', get_class($this), __CLASS__));
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
         }
@@ -98,6 +80,19 @@ abstract class Model extends Component
             $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this, 'onSaveSuccess'));
         }
         $this->init();
+    }
+
+    /**
+     * Генерирует псевдоним для события
+     * @return string
+     * @throws \ErrorException
+     */
+    public function eventAlias()
+    {
+        if (preg_match('/(\w+)model$/i', get_class($this), $match)) {
+            return strtolower($match[1]);
+        }
+        throw new \ErrorException("Can not define event alias.\nYou need redefine \"eventAlias()\" method.");
     }
 
     /**
@@ -142,108 +137,6 @@ abstract class Model extends Component
         return array();
     }
 
-    /**
-     * Проверяет существование таблицы
-     * @param string $table
-     *
-     * @return boolean
-     */
-    private function isExistTable($table)
-    {
-        if (!isset(self::$exists_tables)) {
-            self::$exists_tables = array();
-            $tables = $this->getDB()->fetchAll("SHOW TABLES", false, DB::F_ARRAY);
-            foreach ($tables as $t) {
-                self::$exists_tables[] = $t[0];
-            }
-        }
-
-        return in_array($table, self::$exists_tables);
-    }
-
-    /**
-     * Добавит созданную таблицу в кэш
-     * @param string $table
-     *
-     * @return void
-     */
-    private function addNewTable($table)
-    {
-        $this->getDB()->query($this->getCreateTable());
-        self::$exists_tables[] = $table;
-    }
-
-    /**
-     * Построение запроса для создания таблицы
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function getCreateTable()
-    {
-        $result = array(sprintf("CREATE TABLE `%s` (\n\t", $this->getTable()));
-
-        $object_class = $this->objectClass();
-        $fields = call_user_func(array($object_class, 'fields'));
-        $pk     = call_user_func(array($object_class, 'pk'));
-
-        $params = array_map(function ($field) {
-            /** @var Field $field */
-            return $field->toString();
-        }, $fields);
-
-        if ($pk) {
-            if (is_array($pk)) {
-                $pk = '`' . join('`,`', $pk) . '`';
-            } else {
-                $pk = "`" . str_replace(',', '`,`', $pk) . "`";
-            }
-            $params[] = "PRIMARY KEY ({$pk})";
-        }
-
-        foreach (call_user_func(array($object_class, 'keys')) as $key => $val) {
-            $found = false;
-            if (is_array($val)) {
-                foreach ($val as $v) {
-                    $subfound = false;
-                    foreach ($fields as $field) {
-                        /** @var $field Field */
-                        if ($field->getName() == $v) {
-                            $subfound = true;
-                            break;
-                        }
-                    }
-                    $found = $found || $subfound;
-                }
-                $val = implode(',', $val);
-            } else {
-                foreach ($fields as $field) {
-                    /** @var $field Field */
-                    if ($field->getName() == $val) {
-                        $found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!$found) {
-                //die('Key column doesn`t exist in table');
-                throw new Exception("Key column '{$val}' doesn`t exist in table");
-            }
-
-            $val = str_replace(',', '`,`', $val);
-            if (is_numeric($key)) {
-                $key = $val;
-            }
-            $params[] = "KEY `{$key}` (`{$val}`)";
-        }
-
-        $result[] = join(",\n\t", $params) . "\n";
-
-        $result[] = ") ENGINE={$this->engine} DEFAULT CHARSET=utf8";
-
-        return join("\n", $result);
-    }
 
     /**
      * Вернет нужную модель
@@ -345,103 +238,21 @@ abstract class Model extends Component
             $class = $this->tableClass();
 
             $this->table = call_user_func(array($class, 'table'));
-
-            $config = App::cms()->getContainer()->getParameter('database');
-            if ($config['migration']) {
-                if ($this->isExistTable($this->table)) {
-                    $this->migration();
-                } else {
-                    $this->addNewTable($this->table);
-                    $this->onCreateTable();
-                }
-            }
         }
 
-        return $this->table;
+        return (string) $this->table;
     }
 
-    /**
-     * Выполнение сверки таблицы и выполнение миграции полей
-     * @return void
-     */
-    private function migration()
-    {
-        $class = $this->objectClass();
-        $sys_fields  = call_user_func(array($class, 'fields'));
-        $table       = call_user_func(array($class, 'table'));
-        $have_fields = $this->getFields();
-
-        $txtsys_fields = array_map(
-            function (Field $field) {
-                return $field->getName();
-            },
-            $sys_fields
-        );
-
-        $add_array = array_diff($txtsys_fields, $have_fields);
-        $del_array = array_diff($have_fields, $txtsys_fields);
-
-        $sql = array();
-
-        if (count($add_array) || count($del_array)) {
-            foreach ($del_array as $col) {
-                $sql[] = "ALTER TABLE `{$table}` DROP COLUMN `$col`";
-            }
-            foreach ($add_array as $key => $col) {
-                $after = '';
-                if ($key == 0) {
-                    $after = ' FIRST';
-                }
-                if ($key > 0) {
-                    $after = ' AFTER `' . $sys_fields[$key - 1]->getName() . '`';
-                }
-                $sql[] = "ALTER TABLE `{$this->getTable()}` ADD COLUMN " . $sys_fields[$key] . $after;
-            }
-
-            foreach ($sql as $query) {
-                $this->getDB()->query($query);
-            }
-        }
-    }
-
-    /**
-     * Вернет список полей
-     *
-     * @param string $table
-     *
-     * @return array
-     * @throws \ErrorException
-     */
-    protected function getFields()
-    {
-        $table = $this->getTable();
-        $start = microtime(true);
-        $pdo   = $this->getDB()->getResource();
-
-        $result = $pdo->prepare("SHOW COLUMNS FROM `$table`");
-
-        $fields = array();
-
-        if (!$result->execute()) {
-            throw new \ErrorException('Result Fields Query not valid');
-        }
-
-        foreach ($result->fetchAll(PDO::FETCH_OBJ) as $field) {
-            $fields[] = $field->Field;
-        }
-
-        $exec = round(microtime(true) - $start, 3);
-        $this->log("SHOW COLUMNS FROM `$table`" . " ($exec sec)");
-
-        return $fields;
-    }
 
     /**
      * Событие возникает при создании новой таблицы
+     * @deprecated
      * @return void
      */
     protected function onCreateTable()
     {
+        // todo Реализовать через event.manager
+        // todo Возможно, в качестве фикстур
     }
 
     /**
@@ -716,19 +527,6 @@ abstract class Model extends Component
         }
 
         return null;
-    }
-
-    /**
-     * Генерирует псевдоним для события
-     * @return string
-     * @throws \ErrorException
-     */
-    public function eventAlias()
-    {
-        if (preg_match('/(\w+)model$/i', get_class($this), $match)) {
-            return strtolower($match[1]);
-        }
-        throw new \ErrorException("Can not define event alias.\nYou need redefine \"eventAlias()\" method.");
     }
 
     /**

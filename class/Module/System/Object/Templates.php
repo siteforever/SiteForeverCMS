@@ -6,11 +6,11 @@
  * @link http://siteforever.ru
  */
 namespace Module\System\Object;
- 
+
 use Sfcms\Data\Object;
 use Sfcms\Data\Field;
 
-class Template extends Object
+class Templates extends Object
 {
     /**
      * Вернет список полей

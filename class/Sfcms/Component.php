@@ -8,7 +8,6 @@
 namespace Sfcms;
 
 use App;
-use Sfcms\Data\Object;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -57,7 +56,6 @@ abstract class Component implements \ArrayAccess//, Iterator;
         $this->app()->getLogger()->log($message, $label);
     }
 
-
     /**
      * @param $key
      * @return mixed
@@ -66,16 +64,10 @@ abstract class Component implements \ArrayAccess//, Iterator;
     {
         $result = null;
         $method = 'get' . ucfirst($key);
-        if (method_exists($this, $method) && 'getId' != $method) {
+        if (is_callable(array($this, $method)) && 'getId' != $method) {
             $result = $this->$method();
         } else if (isset($this->data[$key])) {
             $result = $this->data[$key];
-        }
-
-        // @todo Переписать на event manager
-        $method = 'onGet' . $key;
-        if (method_exists($this, $method)) {
-            $this->$method($result);
         }
 
         return $result;
@@ -89,16 +81,10 @@ abstract class Component implements \ArrayAccess//, Iterator;
     public function set($key, $value)
     {
         $method = 'set' . ucfirst($key);
-        if (method_exists($this, $method) && 'setId' != $method) {
+        if (is_callable(array($this, $method)) && 'setId' != $method) {
             $this->$method($value);
         } else {
             $this->data[$key] = $value;
-        }
-
-        // @todo Переписать на event manager
-        $method = 'onSet' . ucfirst($key);
-        if (method_exists($this, $method)) {
-            $this->$method();
         }
 
         return $this;
@@ -112,8 +98,8 @@ abstract class Component implements \ArrayAccess//, Iterator;
     public function getAttributes()
     {
         $result = array();
-        foreach ( $this->data as $key => $val ) {
-            $result[ $key ] = $this->get( $key );
+        foreach ($this->data as $key => $val) {
+            $result[$key] = $this->get($key);
         }
         return $result;
     }
@@ -123,10 +109,10 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param array $data
      * @return self
      */
-    public function setAttributes( $data = array() )
+    public function setAttributes($data = array())
     {
-        foreach( $data as $k => $d ) {
-            $this->set( $k, $d );
+        foreach($data as $k => $d) {
+            $this->set($k, $d);
         }
         return $this;
     }
@@ -136,7 +122,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __toString()
     {
-        return get_class( $this );
+        return get_class($this);
     }
 
     /**
@@ -145,7 +131,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __unset($name)
     {
-        unset( $this->data[$name] );
+        unset($this->data[$name]);
     }
 
     /**
@@ -164,7 +150,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __set($name, $value)
     {
-        $this->set( $name, $value );
+        $this->set($name, $value);
     }
 
     /**
@@ -173,9 +159,8 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function __isset($name)
     {
-        return $this->offsetExists( $name );
+        return $this->offsetExists($name);
     }
-
 
     /**
      * Dispatch named event
@@ -187,7 +172,6 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function trigger($eventName, Event $event)
     {
-//        $this->log($eventName, 'trigger');
         $this->log(sprintf('trigger: %s (%s)', $eventName, $event->getName()));
         return $this->app()->getEventDispatcher()->dispatch($eventName, $event);
     }
@@ -268,10 +252,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function offsetUnset($offset)
     {
-        if (isset ($this->data[$offset])) {
-            $this->data[$offset] = null;
-            $this->markDirty(); // TODO WTF!!!
-        }
+        $this->__unset($offset);
     }
 
     /**

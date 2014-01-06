@@ -7,7 +7,7 @@
 namespace Module\Translator\Command;
 
 use Module\Translator\Component\TranslatorComponent;
-use Symfony\Component\Console\Command\Command;
+use Sfcms\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,7 +18,7 @@ class TranslatorCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('debug:translator')
+            ->setName('translator:debug')
             ->setDescription('Print all translate phrases')
             ->addArgument('message', InputArgument::OPTIONAL, 'Message for translation')
             ->addOption('domain', 'd', InputOption::VALUE_OPTIONAL, 'Define custom domain (default "messages")')
@@ -29,7 +29,7 @@ class TranslatorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var TranslatorComponent $translator */
-        $translator = \App::cms()->getContainer()->get('translator');
+        $translator = $this->getContainer()->get('translator');
 
         $message = $input->getArgument('message');
         $domain = $input->getOption('domain');

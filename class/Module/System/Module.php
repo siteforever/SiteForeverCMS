@@ -48,7 +48,6 @@ class Module extends SfModule
             'system'    => array(),
         );
         $models = array(
-            'Comments'  => 'Module\\System\\Model\\CommentsModel',
             'Module'    => 'Module\\System\\Model\\ModuleModel',
             'Routes'    => 'Module\\System\\Model\\RoutesModel',
             'Settings'  => 'Module\\System\\Model\\SettingsModel',

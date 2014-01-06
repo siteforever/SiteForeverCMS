@@ -6,15 +6,16 @@
  */
 namespace Module\Catalog\Object;
 
-/**
- * @property int id
- * @property string name
- * @property Collection Fields
- */
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
-use Sfcms\Data\Field;
+use Sfcms\Data\Field\Int;
+use Sfcms\Data\Field\Varchar;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property Collection $Fields
+ */
 class Type extends Object
 {
     /**
@@ -24,8 +25,8 @@ class Type extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Varchar( 'name', 250, true, null, false ),
+            new Int('id', 11, false, null, true),
+            new Varchar('name', 250, true, null, false),
         );
     }
 

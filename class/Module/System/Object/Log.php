@@ -21,7 +21,7 @@ use Sfcms\Data\Field;
  */
 class Log extends Object
 {
-    protected $engine   = 'MyISAM';
+    protected static $engine   = 'MyISAM';
 
     /**
      * Create field list

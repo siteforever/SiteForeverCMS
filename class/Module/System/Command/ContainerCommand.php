@@ -6,7 +6,7 @@
 
 namespace Module\System\Command;
 
-use Symfony\Component\Console\Command\Command;
+use Sfcms\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -15,14 +15,14 @@ class ContainerCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('debug:container')
+            ->setName('container:debug')
             ->setDescription('Print all services')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $continer = \App::cms()->createNewContainer();
+        $continer = $this->getApplication()->getKernel()->createNewContainer();
         $services = $continer->getServiceIds();
         sort($services);
 
@@ -40,7 +40,7 @@ class ContainerCommand extends Command
                             : $continer->getDefinition($sid)->getClass()
                         )
                         : ($continer->hasAlias($sid)
-                            ? '@' . $continer->getAlias($sid)
+                            ? sprintf('<comment>alias for:</comment> %s', $continer->getAlias($sid))
                             : '-'
                         )
                 )

@@ -24,7 +24,7 @@ abstract class Table extends Component
      * @var string
      */
     //protected $engine   = 'MyISAM';
-    protected $engine   = 'InnoDB';
+    protected static $engine   = 'InnoDB';
 
     /**
      * Список полей
@@ -39,6 +39,22 @@ abstract class Table extends Component
     public function __toString()
     {
         return $this->app()->getConfig('db.prefix') . $this->table();
+    }
+
+    /**
+     * @param string $engine
+     */
+    public static function setEngine($engine)
+    {
+        static::$engine = $engine;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getEngine()
+    {
+        return static::$engine;
     }
 
     /**

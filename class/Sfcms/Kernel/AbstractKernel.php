@@ -15,12 +15,12 @@ use Sfcms\Module;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
 use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Sfcms\Router;
 use Sfcms\Auth;
 use Sfcms\Tpl\Driver;
-use Module\Page\Model\PageModel;
 
 use Sfcms\Basket\Base as Basket;
 
@@ -242,7 +242,7 @@ abstract class AbstractKernel
     }
 
     /**
-     * @return ContainerBuilder
+     * @return Container
      */
     public function getContainer()
     {

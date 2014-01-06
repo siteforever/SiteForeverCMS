@@ -10,9 +10,12 @@ require_once ROOT . '/vendor/autoload.php';
 use Sfcms\Console;
 use Symfony\Component\Console\Input\ArgvInput;
 
-$app = new \App('dev', true);
-$app->isConsole(true);
-
-$console = new Console($app);
 $input = new ArgvInput();
+$env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');
+$debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(array('--no-debug', '')) && $env !== 'prod';
+
+$kernel = new \App($env, $debug);
+$kernel->isConsole(true);
+
+$console = new Console($kernel);
 $console->run($input);

@@ -128,33 +128,24 @@ class ModelTest extends PHPUnit_Framework_TestCase
         $this->assertNotEquals(false, $this->model->save($obj2));
     }
 
-    /**
-     *
-     */
     public function testCount()
     {
-        //$this->assertEquals($this->object->count(), 2);
+        $this->assertEquals(2, $this->model->count());
     }
 
-    /**
-     *
-     */
     public function testFind()
     {
         $obj = $this->model->find(2);
         $this->assertNotNull($obj);
         $this->assertEquals(2, $obj->getId());
-        $this->assertEquals($obj->value, 'val22');
+        $this->assertEquals('val22', $obj->value);
 
         $obj    = $this->model->find(1);
         $this->assertNotNull($obj);
         $this->assertEquals(1, $obj->getId());
-        $this->assertEquals($obj->value, 'val11');
+        $this->assertEquals('val11', $obj->value);
     }
 
-    /**
-     *
-     */
     public function testFindAll()
     {
         /** @var $all Collection */
@@ -166,9 +157,6 @@ class ModelTest extends PHPUnit_Framework_TestCase
         ));
     }
 
-    /**
-     *
-     */
     public function testDelete()
     {
         $this->model->delete(1);
