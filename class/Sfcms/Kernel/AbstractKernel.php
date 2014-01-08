@@ -139,7 +139,8 @@ abstract class AbstractKernel
             Debug::enable(E_ALL, true);
         }
 
-        $modules = require ROOT . '/app/modules.php';
+        $locator = new FileLocator(array(ROOT, SF_PATH));
+        $modules = require $locator->locate('app/modules.php');
         $this->loadModules($modules);
 
         $containerConfigCache = new ConfigCache($this->getContainerCacheFile(), $this->isDebug());

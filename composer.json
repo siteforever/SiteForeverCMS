@@ -20,13 +20,13 @@
     },
     "autoload": {
         "psr-0" : {
-            "" : ["class/","lib/"],
+            "" : ["class/"],
             "Sfcms" : "class/",
             "Module" : ["class/"],
             "Forms" : ["class/"]
         }
     },
-    "include-path": ["./", "lib/","class/"],
+    "include-path": ["./", "class/"],
     "require-dev": {
         "phpunit/php-invoker": "1.1.*",
         "phpunit/phpunit": "3.7.*",

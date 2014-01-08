@@ -1,7 +1,4 @@
 <?php
-require_once SF_PATH.'/class/Sfcms/Data/Relation.php';
-require_once SF_PATH.'/class/Sfcms/Data/Relation/Belongs.php';
-
 use Module\Gallery\Object\Gallery;
 use Module\Gallery\Object\Category;
 use Sfcms\Data\Watcher;
