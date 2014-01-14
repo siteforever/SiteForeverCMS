@@ -77,7 +77,7 @@ define('module/modal',[
                 dataType:"json",
                 success: $.proxy(function (response) {
                     if ( ! response.error ) {
-                        this.msgSuccess( response.msg, 1500).done(function(){
+                        this.msgSuccess(response.msg, 1500).done(function(){
                             window.location.reload();
                         });
                     } else {
@@ -116,9 +116,9 @@ define('module/modal',[
          * @param timeout
          * @return {*Promise}
          */
-        , msgSuccess : function( msg, timeout ) {
+        , msgSuccess: function(msg, timeout) {
             var deferred = new $.Deferred();
-            $alert(msg, timeout, $('.modal-body', this.domnode)).done($.proxy(function(){
+            $alert(msg, timeout).done($.proxy(function(){
                 this.hide.call(this);
                 deferred.resolve();
             }, this));
@@ -141,7 +141,7 @@ define('module/modal',[
         , msgError : function( msg ) {
             var deferred = new $.Deferred();
             $alert(msg, 1000, $('.modal-body', this.domnode));
-            $( '.modal-body', this.domnode).find('.alert').remove().end()
+            $('.modal-body', this.domnode).find('.alert').remove().end()
                 .prepend('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>'+msg+'</div>');
             deferred.resolve();
             return deferred.promise();

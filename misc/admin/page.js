@@ -7,6 +7,7 @@
 define("admin/page", [
     "jquery",
     "module/modal",
+    "module/dialog",
     "i18n",
     "module/alert",
     "module/console",
@@ -14,7 +15,7 @@ define("admin/page", [
     "jui",
     "jquery/jquery.form",
     "admin/admin"
-], function($, Modal, i18n, $alert, console) {
+], function($, Modal, Dialog, i18n, $alert, console) {
 
     return {
         "behavior" : {
@@ -40,7 +41,7 @@ define("admin/page", [
 
             '#structureWrapper a.edit' : {
                 "click" : function( event, node ) {
-                    $alert("Loading...", $('.modal-body', this.domnode));
+                    $alert("Loading...", $('#pageEdit'));
                     $.post($(node).attr('href')).then($.proxy(function (response) {
                         this.editModal.title(i18n('page', 'Edit page')).body(response);
                         this.editModal.show().done(function(){
@@ -53,7 +54,7 @@ define("admin/page", [
 
             '#structureWrapper a.add' : {
                 "click" : function( event, node ) {
-                    $alert("Loading...", $('.modal-body', this.domnode));
+                    $alert("Loading...", $('#pageCreate'));
                     $.post($(node).attr('href')).then($.proxy(function (response) {
                         this.createModal.title($(node).attr('title')).body(response);
                         this.createModal.show().done(function(){
@@ -152,15 +153,15 @@ define("admin/page", [
          * OnSave handler for edit dialog
          */
         "editSave" : function(){
-            $alert('Saving', 0, $('form', this.domnode));
+            $alert('Saving', 0, $('body'));
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
                 success: $.proxy(function (response) {
                     if (!response.error) {
-                        this.msgSuccess( response.msg, 1500).done(function(){
-                            $.get('/page/admin' ).then(function( response ){
+                        this.msgSuccess(response.msg, 1500, $('body')).done(function(){
+                            $.get('/page/admin' ).then(function(response){
                                 $('#structureWrapper').find('.b-main-structure').empty()
-                                    .html( $( response ).find('.b-main-structure').html() );
+                                    .html($(response).find('.b-main-structure').html());
                                 $('div.b-main-structure ul').sortable(this.struntureSortSettings).disableSelection();
                             });
                         });

@@ -146,59 +146,66 @@ table.dataset {
 }
 
 /* Основная структура */
-    div.b-main-structure li {
-        /*display: block;*/
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        /*background:url(/images/admin/cross_li.gif) repeat-y 0 0;*/
+div.b-main-structure li.tree-node {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.placeholder {
+    height: 30px;
+    background: #cae4ff;
+}
+
+    div.b-main-structure li.tree-node>i.sfcms-icon {
+        display: block;
+        float: left;
+        padding: 5px 5px 5px 5px;
+        background-position: 5px 5px;
     }
 
-    .placeholder {
-        height: 30px;
-        background: #cae4ff;
+    div.b-main-structure li.tree-node>span {
+        height: 25px;
+        line-height: 25px;
+        display: block;
+        margin-left: 25px;
+        /*display: inline-block;*/
+        white-space: nowrap;
+        padding: 3px 5px 5px 5px;
     }
-    /*
-    div.b-main-structure li.level_one { background: none; }
-    div.b-main-structure li span.cross1 { background:url(/images/admin/cross1.gif) no-repeat 0 0; }
-    div.b-main-structure li span.cross2 { background:url(/images/admin/cross2.gif) no-repeat 0 0; }
-    div.b-main-structure li span.cross3 { background:url(/images/admin/cross3.gif) no-repeat 0 0; }
-    */
-        div.b-main-structure li span {
+        div.b-main-structure li.tree-node>span span.tools {
+            visibility: hidden;
+            padding: 0 10px;
+            margin: 0;
+            display: inline-block;
+            background: none;
+            font-size: 10px;
+        }
+        div.b-main-structure li.tree-node>span span.id_number {
+            text-align: left;
+            overflow: hidden;
+            width: 100px;
+            /*float: right;*/
+            white-space: nowrap;
+        }
+        div.b-main-structure li.tree-node>span span.order {
+            text-align:right;
             display: block;
-            padding: 3px 5px 5px 5px;
+            float: left;
+            position:relative;
+            left: 100%;
+            margin: 0 0 0 -200px;
+            width: 200px;
+            padding: 0;
+            background: none;
         }
-            div.b-main-structure li span span.tools {
-                visibility: hidden;
-                padding: 0 10px;
-                margin: 0;
-                display: inline;
-                background: none;
-            }
-            div.b-main-structure li span span.id_number {
-                text-align: left;
-                overflow: hidden;
-                width: 100px;
-                float: right;
-                white-space: nowrap;
-            }
-            div.b-main-structure li span span.order {
-                text-align:right;
-                display: block;
-                float: left;
-                position:relative;
-                left: 100%;
-                margin: 0 0 0 -200px;
-                width: 200px;
-                padding: 0;
-                background: none;
-            }
-        div.b-main-structure li span.active {
+    div.b-main-structure li.tree-node>span.active {
             background-color: #cae4ff;
+    }
+        div.b-main-structure li.tree-node>span.active span.tools {
+            visibility: visible;
         }
-            div.b-main-structure li span.active span.tools {
-                visibility: visible;
-            }
 
 #form_guestbook_edit textarea {
     height: 100px;

@@ -19,23 +19,21 @@
 
 {* Print tree menu *}
 {function tree parent=0 level=0}
-<ul data-parent="{$parent}">
+<ul data-parent="{$parent}" class="tree-container">
     {foreach from=$data[$parent] item="branch"}
-    <li data-parent="{$branch->parent}" data-id="{$branch->id}" data-pos="{$branch->pos}">
+    <li data-parent="{$branch->parent}" data-id="{$branch->id}" data-pos="{$branch->pos}" class="tree-node clearfix">
+        {selectIcon branch=$branch}
         <span id="item{$branch->id}">
-            {selectIcon branch=$branch}
             {a class="edit" title=$this->t('page','Edit page') controller="page" action="edit" edit=$branch->id}{$branch->name}{/a}
             <small>{$branch->alias}</small>
             <span class="tools">
                 {*{$branch->linkEdit}*}
-                <small>
-                    {a class="edit" title=$this->t('page','Edit page') controller="page" action="edit" edit=$branch->id}
-                        {icon name="pencil" title=$this->t('page','Edit page')} {t}Edit{/t}{/a}
-                    {a class="add" id=$branch->id title=$this->t('page','Create page') controller="page" action="create"}
-                        {icon name="add" title=$this->t('page','Create page')} {t}Create{/t}{/a}
-                    {a class="do_delete" title=$this->t('Delete') controller="page" action="delete" id=$branch->id}
-                        {icon name="delete" title=$this->t('Delete')} {t}Delete{/t}{/a}
-                </small>
+                {a class="edit" title=$this->t('page','Edit page') controller="page" action="edit" edit=$branch->id}
+                    {icon name="pencil" title=$this->t('page','Edit page')} {t}Edit{/t}{/a}
+                {a class="add" id=$branch->id title=$this->t('page','Create page') controller="page" action="create"}
+                    {icon name="add" title=$this->t('page','Create page')} {t}Create{/t}{/a}
+                {a class="do_delete" title=$this->t('Delete') controller="page" action="delete" id=$branch->id}
+                    {icon name="delete" title=$this->t('Delete')} {t}Delete{/t}{/a}
             </span>
             <span class="order">
                 {call orderHidden page=$branch}

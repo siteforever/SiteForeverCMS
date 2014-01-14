@@ -61,7 +61,8 @@
         "symfony/stopwatch": "2.3.*",
         "symfony/debug": " 2.3.*",
         "helios-ag/fm-elfinder": "v2.0",
-        "tonytomov/jqGrid" : "4.4"
+        "tonytomov/jqGrid" : "4.4",
+        "leafo/lessphp": "~0.4"
     },
     "repositories":[
         {
