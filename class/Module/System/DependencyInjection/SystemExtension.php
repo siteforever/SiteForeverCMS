@@ -10,6 +10,7 @@ namespace Module\System\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -34,6 +35,8 @@ class SystemExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+
+        $container->setParameter('editor', $config['editor']);
 
         $container->setAlias('session.handler', sprintf('session.handler.%s', $config['session']['handler']));
         $container->setAlias('session.storage', sprintf('session.storage.%s', $config['session']['storage']));

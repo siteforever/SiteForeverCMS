@@ -5,8 +5,8 @@
         <th>{t}Category{/t}</th>
         <th>{t}Manufacturer{/t}</th>
         <th>&nbsp;</th>
-        <th>{t}Articul{/t}</th>
-        <th>{t}Price{/t}</th>
+        <th>{'Article'|trans:[]:'catalog'}</th>
+        <th>{'Price'|trans:[]:'catalog'}</th>
         <th></th>
     </tr>
     {foreach from=$list item="item"}

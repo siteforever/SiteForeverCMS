@@ -29,8 +29,15 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('order_list')
                     ->prototype('scalar')->end()
                 ->end()
+                ->arrayNode('cache')
+                    ->children()
+                        ->enumNode('type')
+                            ->values(array(null, 'file', 'apc'))->defaultValue(null)
+                        ->end()
+                        ->scalarNode('live_cycle')->defaultValue(3600)->end()
+                    ->end()
+                ->end()
             ->end()
-        ->end()
         ;
         // 1 - добавление полей
         // 2 - обрезание лишнего

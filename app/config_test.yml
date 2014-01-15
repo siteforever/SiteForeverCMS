@@ -1,5 +1,5 @@
 imports:
-    - { resource: "app/config_dev.yml" }
+    - { resource: "app/config.yml" }
 
 parameters:
     db_name: siteforever_test
@@ -9,5 +9,3 @@ system:
     session:
         storage: mock
         handler: native
-
-services:

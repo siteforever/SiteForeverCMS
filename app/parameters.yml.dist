@@ -15,9 +15,9 @@ parameters:
 
     db_name: siteforever
     db_host: localhost
+    db_port: 3306
     db_login: root
     db_password: ~
-    db_migration: true
 
     editor: ckeditor
     # editor: tinymce

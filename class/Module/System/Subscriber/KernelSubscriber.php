@@ -87,7 +87,7 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
      */
     public function onAllSaveStart(ModelEvent $event)
     {
-        $model = Model::getModel('Log');
+        $model = $this->container->get('data.manager')->getModel('Log');
         // Записываем все события в таблицу log
         $config = $this->container->getParameter('database');
         if (isset($config['log']) && $config['log']) {

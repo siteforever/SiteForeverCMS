@@ -222,14 +222,6 @@ abstract class Controller extends ContainerAware
     }
 
     /**
-     * @return CacheInterface
-     */
-    public function cache()
-    {
-        return $this->get('cache');
-    }
-
-    /**
      * Постраничность
      * @param $count
      * @param $perpage

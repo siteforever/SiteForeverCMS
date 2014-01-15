@@ -27,7 +27,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('login')->defaultValue('%db_login%')->end()
                 ->scalarNode('password')->defaultValue('%db_password%')->end()
                 ->arrayNode('options')->prototype('scalar')->end()->end()
-                ->booleanNode('migration')->defaultValue('%db_migration%')->end()
                 ->booleanNode('debug')->defaultValue('%db_debug%')->end()
             ->end();
 

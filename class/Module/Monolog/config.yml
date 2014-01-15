@@ -1,21 +1,16 @@
 parameters:
 
 services:
-    # logger
     db_channel:
         class: Monolog\Logger
-        arguments: ["db", ["@rotating_handler"]]
-#        arguments: ["db", ["@rotating_handler", "@fire_handler"]]
 
     db_logger:
         class: Module\Monolog\Logger\Logger
         arguments: ["@db_channel"]
 
-    cms_channel:
+    logger_channel:
         class: Monolog\Logger
-        arguments: ["cms", ["@rotating_handler"]]
-#        arguments: ["cms", ["@rotating_handler", "@fire_handler"]]
 
     logger:
         class: Module\Monolog\Logger\Logger
-        arguments: ["@cms_channel"]
+        arguments: ["@logger_channel"]

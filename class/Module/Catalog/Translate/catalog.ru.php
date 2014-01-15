@@ -23,6 +23,8 @@ return array(
     'Images not found' => 'Изображения не найдены',
     'No image' => 'Нет изображения',
 
+    'Products not found' => 'Товаров не найдено',
+
     'Main' => 'Главная',
     'Properties' => 'Свойства',
     'Text' => 'Текст',
@@ -40,7 +42,7 @@ return array(
     'Cancel' => 'Отменить',
     'Name' => 'Наименование',
     'Order' => 'Порядок',
-    'Articul' => 'Артикул',
+    'Article' => 'Артикул',
     'Action' => 'Действия',
     'Edit' => 'Править',
     'On' => 'Включить',

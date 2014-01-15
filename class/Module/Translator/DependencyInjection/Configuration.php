@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('translator');
         $rootNode
             ->children()
-                ->scalarNode('locale')->defaultValue('%language%')->end()
+                ->scalarNode('locale')->defaultValue('en_US%')->end()
                 ->scalarNode('fallback')->defaultValue('en_US')->end()
             ->end()
         ->end()

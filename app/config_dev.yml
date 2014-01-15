@@ -1,13 +1,2 @@
 imports:
-    - { resource: "app/services.yml" }
-    - { resource: "app/parameters.yml" }
-
-system:
-    session:
-        storage: handler
-        handler: native
-
-translator:
-    locale: %language%
-
-services:
+    - { resource: "app/config.yml" }

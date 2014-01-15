@@ -66,15 +66,15 @@ class CatalogForm extends Form
 
                 'path'      => array('type'=>'hidden'),
 
-                'articul'   => array('type'=>'text', 'label'=>'Артикул', 'value'=>'', 'hidden'),
-                'price1'    => array('type'=>'text', 'label'=>'Цена роз.', 'value'=>'0', 'hidden'),
-                'price2'    => array('type'=>'text', 'label'=>'Цена опт.', 'value'=>'0', 'hidden'),
+                'articul'   => array('type'=>'text', 'label'=>'Article', 'value'=>'', 'hidden'),
+                'price1'    => array('type'=>'text', 'label'=>'Price retail', 'value'=>'0', 'hidden'),
+                'price2'    => array('type'=>'text', 'label'=>'Price wholesale', 'value'=>'0', 'hidden'),
                 'manufacturer' => array(
-                    'type'=>'select', 'label'=>'Производитель', 'value'=>'0', 'hidden',
+                    'type'=>'select', 'label'=>'Manufacturer', 'value'=>'0', 'hidden',
                     'variants' => $manufArray,
                 ),
                 'material' => array(
-                    'type'=>'select', 'label'=>'Материал', 'value'=>'0', 'hidden',
+                    'type'=>'select', 'label'=>'Material', 'value'=>'0', 'hidden',
                     'variants' => $materialArray,
                 ),
                 'gender'    => array(
@@ -84,18 +84,18 @@ class CatalogForm extends Form
                     'require',
                 ),
                 'qty'       => array('type'=>'int', 'label'=>'Qty'),
-                'p0'        => array('type'=>'text', 'label'=>'Параметр 0'),
-                'p1'        => array('type'=>'text', 'label'=>'Параметр 1'),
-                'p2'        => array('type'=>'text', 'label'=>'Параметр 2'),
-                'p3'        => array('type'=>'text', 'label'=>'Параметр 3'),
-                'p4'        => array('type'=>'text', 'label'=>'Параметр 4'),
-                'p5'        => array('type'=>'text', 'label'=>'Параметр 5'),
-                'p6'        => array('type'=>'text', 'label'=>'Параметр 6'),
-                'p7'        => array('type'=>'text', 'label'=>'Параметр 7'),
-                'p8'        => array('type'=>'text', 'label'=>'Параметр 8'),
-                'p9'        => array('type'=>'text', 'label'=>'Параметр 9'),
+                'p0'        => array('type'=>'text', 'label'=>'Param 0'),
+                'p1'        => array('type'=>'text', 'label'=>'Param 1'),
+                'p2'        => array('type'=>'text', 'label'=>'Param 2'),
+                'p3'        => array('type'=>'text', 'label'=>'Param 3'),
+                'p4'        => array('type'=>'text', 'label'=>'Param 4'),
+                'p5'        => array('type'=>'text', 'label'=>'Param 5'),
+                'p6'        => array('type'=>'text', 'label'=>'Param 6'),
+                'p7'        => array('type'=>'text', 'label'=>'Param 7'),
+                'p8'        => array('type'=>'text', 'label'=>'Param 8'),
+                'p9'        => array('type'=>'text', 'label'=>'Param 9'),
 
-                'text'      => array('type'=>'textarea', 'label'=>'Описание'),
+                'text'      => array('type'=>'textarea', 'label'=>'Description'),
 
                 'sort_view' => array(
                     'type'=>'radio', 'label'=>'Выводить опции сортировки', 'value'=>'1',

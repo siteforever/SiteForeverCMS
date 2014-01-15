@@ -9,66 +9,55 @@ namespace Module\Monolog\DependencyInjection;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
-use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Monolog\Logger;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
-class LoggerExtension implements ExtensionInterface
+class LoggerExtension extends Extension
 {
     /**
      * Loads a specific configuration.
      *
-     * @param array $config An array of configuration values
+     * @param array $configs An array of configuration values
      * @param ContainerBuilder $container A ContainerBuilder instance
      *
      * @throws \InvalidArgumentException When provided tag is not defined in this extension
      *
      * @api
      */
-    public function load(array $config, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container)
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
         $loader->load('config.yml');
 
-        if (isset($config[0]['handlers'])) {
-            foreach($config[0]['handlers'] as $name => $handler) {
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter($this->getAlias(), $config);
+
+        $handlersReferences = array();
+        if (isset($config['handlers'])) {
+            foreach($config['handlers'] as $name => $handler) {
                 switch ($handler['type']) {
                     case 'rotating':
-                        $handler = $handler + array('max'=>0, 'level'=>Logger::DEBUG);
-                        $handler['path'] = ROOT . '/' . trim($handler['path'], '/ ');
-                        $container->setDefinition($name, new Definition('Monolog\Handler\RotatingFileHandler', array($handler['path'], $handler['max'], $handler['level'])));
+                        $container->setDefinition($name, new Definition(
+                            'Monolog\Handler\RotatingFileHandler',
+                            array($handler['path'], $handler['max'], $handler['level']))
+                        );
                         break;
                     case 'firephp':
-                        $handler = $handler + array('level'=>Logger::DEBUG);
                         $container->setDefinition($name, new Definition('Monolog\Handler\FirePHPHandler', array($handler['level'])));
                         break;
                 }
+                $handlersReferences[] = new Reference($name);
             }
         }
-    }
 
-    /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
-     *
-     * @api
-     */
-    public function getNamespace()
-    {
-    }
+        $dbChannelDefinion = $container->getDefinition('db_channel');
+        $dbChannelDefinion->setArguments(array('db_channel', $handlersReferences));
 
-    /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
-     *
-     * @api
-     */
-    public function getXsdValidationBasePath()
-    {
-        return false;
+        $channelDefinion = $container->getDefinition('logger_channel');
+        $channelDefinion->setArguments(array('logger_channel', $handlersReferences));
     }
 
     /**

@@ -1,3 +1,13 @@
+parameters:
+    pdo_session:
+        db_table: "session"
+
+    session_class: Symfony\Component\HttpFoundation\Session\Session
+    session_storage_native_class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
+    session_storage_mock_class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+    session_handler_pdo_class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+    session_handler_native_class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler
+
 services:
     system.kernel.subscriber:
         class: Module\System\Subscriber\KernelSubscriber
@@ -6,6 +16,8 @@ services:
         tags:
             - { name: event.subscriber }
 
+    auth:
+        class: Sfcms\Auth
 
     app:
         synthetic: true
@@ -17,22 +29,22 @@ services:
         synthetic: true
 
     session:
-        class: Symfony\Component\HttpFoundation\Session\Session
+        class: "%session_class%"
         arguments: ["@session.storage"]
 
     session.storage.mock:
-        class: "Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage"
+        class: "%session_storage_mock_class%"
 
-    session.storage.handler:
-        class: "%session_storage_class%"
+    session.storage.native:
+        class: "%session_storage_native_class%"
         arguments: [[], "@session.handler"]
 
     session.handler.pdo:
-        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        class: "%session_handler_pdo_class%"
         arguments: ["@pdo", "%pdo_session%"]
 
     session.handler.native:
-        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler
+        class: "%session_handler_native_class%"
 
     event.dispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
@@ -56,7 +68,6 @@ services:
     sf_router:
         class: Symfony\Component\Routing\Router
         arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
-
 
     route_yaml:
         class: Sfcms\Route\YmlRoute
@@ -82,13 +93,6 @@ services:
     # other
     filesystem:
         class: Symfony\Component\Filesystem\Filesystem
-
-    auth:
-        class: Sfcms\Auth
-
-    cache:
-        class: %cache_class%
-        arguments: ["%cache_livecycle%"]
 
     resolver:
         class: Sfcms\Controller\Resolver

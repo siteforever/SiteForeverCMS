@@ -773,7 +773,7 @@ class CatalogModel extends Model implements EventSubscriberInterface
                 ),
             ),
             'articul'   => array(
-                'title' => $this->t('catalog','Articul'),
+                'title' => $this->t('catalog','Article'),
                 'search' => true,
             ),
             'price1' => array(

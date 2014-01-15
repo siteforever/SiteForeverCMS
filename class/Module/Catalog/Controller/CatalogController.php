@@ -106,6 +106,7 @@ class CatalogController extends Controller
     protected function viewCategory(Catalog $item)
     {
         $config = $this->container->getParameter('catalog');
+
         $level = $config['level'];
         $pageNum = $this->request->query->getDigits('page', 1);
 
@@ -223,7 +224,7 @@ class CatalogController extends Controller
     {
         $catalog_model = $this->getModel('Catalog');
 
-        $cache = $this->cache();
+        $cache = $this->get('catalog_cache');
         $cacheKey = 'product' . $item->id;
 
         if ($cache->isNotExpired($cacheKey)) {

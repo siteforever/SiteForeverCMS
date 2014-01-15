@@ -8,6 +8,7 @@ namespace Module\Catalog\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
@@ -31,6 +32,22 @@ class CatalogExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+
+        if (!isset($config['cache'])) {
+            $config['cache'] = array('type'=>null, 'live_cycle' => 3600);
+        }
+
+        $cacheId = sprintf('%s_cache', $this->getAlias());
+        switch ($config['cache']['type']) {
+            case 'file':
+                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheFile', array($config['cache']['live_cycle'])));
+                break;
+            case 'apc':
+                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheApc', array($config['cache']['live_cycle'])));
+                break;
+            default:
+                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheBlank', array($config['cache']['live_cycle'])));
+        }
     }
 
     public function getAlias()

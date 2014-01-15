@@ -2,7 +2,7 @@
     {t cat="catalog"}Sort{/t}
     <select class="catalog_select_order">
         {foreach from=$order_list item="ord" key="ord_key"}
-        <option value="{$ord_key}" {if $order_val eq $ord_key}selected="selected"{/if}>{$ord}</option>
+        <option value="{$ord_key}" {if $order_val eq $ord_key}selected="selected"{/if}>{$ord|trans}</option>
         {/foreach}
     </select>
 </div>
@@ -39,7 +39,7 @@
                 <div class="b-catalog-product-title">{a href=$item->url}{$item.name}{/a}</div>
 
                 {if $item.articul}<div class="b-catalog-product-articul">
-                    <span>Артикул</span>
+                    <span>{'Articul'|trans:[]:'catalog'}</span>
                     <span>{$item.articul}</span>
                 </div>{/if}
 
@@ -75,12 +75,8 @@
             </div>
         </div>
     </div>
-
-
 {foreachelse}
-    {if count($cats) == 0}
-    <p>Товаров не найдено</p>
-    {/if}
+    <p>{'Products not found'|trans:[]:'catalog'}</p>
 {/foreach}
 {/form}
 

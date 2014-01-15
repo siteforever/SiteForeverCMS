@@ -20,7 +20,7 @@
                 {else}{"absent"|trans:catalog|ucfirst}{/if}
             </div>
 
-            {if $item.articul}<div>Артикул: <span>{$item.articul}</span></div>{/if}
+            {if $item.articul}<div>{'Article'|trans:[]:'catalog'}: <span>{$item.articul}</span></div>{/if}
 
             {if $item->Manufacturer}
             <div class="b-catalog-product-properties-item">

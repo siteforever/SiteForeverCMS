@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('mailer');
         $rootNode
             ->children()
-                ->scalarNode('transport')->defaultValue('smtp')->end()
+                ->scalarNode('transport')->defaultValue('mail')->end()
                 ->scalarNode('username')->defaultNull()->end()
                 ->scalarNode('password')->defaultNull()->end()
                 ->scalarNode('host')->defaultValue('localhost')->end()
