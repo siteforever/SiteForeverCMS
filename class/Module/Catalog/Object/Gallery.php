@@ -15,7 +15,9 @@
 namespace Module\Catalog\Object;
 
 use Sfcms\Data\Object;
-use Sfcms\Data\Field;
+use Sfcms\Data\Field\Int;
+use Sfcms\Data\Field\Varchar;
+use Sfcms\Data\Field\Tinyint;
 
 class Gallery extends Object
 {
@@ -37,14 +39,14 @@ class Gallery extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Int('cat_id'),
-            new Field\Varchar('uuid', 36),
-            new Field\Varchar('image', 250),
-            new Field\Varchar('thumb', 250),
-            new Field\Tinyint('hidden'),
-            new Field\Tinyint('main'),
-            new Field\Tinyint('pos'),
+            new Int('id', 11, true, null, true),
+            new Int('cat_id'),
+            new Varchar('uuid', 36),
+            new Varchar('image', 250),
+            new Varchar('thumb', 250),
+            new Tinyint('hidden'),
+            new Tinyint('main'),
+            new Tinyint('pos'),
         );
     }
 

@@ -17,6 +17,13 @@ class CatalogControllerTest extends WebCase
 //        var_dump($response->getContent());
     }
 
+    /**
+     * @covers \Module\Page\Controller\PageController::saveAction
+     * @covers \Module\Page\Controller\PageController::init
+     * @covers \App::handleRequest
+     * @covers \Sfcms\Kernel\AbstractKernel::getResolver
+     * @covers \Sfcms\Controller\Resolver::dispatch
+     */
     public function testPageSaveAction()
     {
         $this->session->set('user_id', 1);
