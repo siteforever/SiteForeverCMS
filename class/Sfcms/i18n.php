@@ -151,6 +151,17 @@ class i18n
      */
     public function trans($id, array $parameters = array(), $domain = null, $locale = null)
     {
+        if (is_array($id)) {
+            switch (count($id)) {
+                case 1:
+                    list($id) = $id;
+                    break;
+                case 2:
+                    $parameters = $id;
+                    $id = array_shift($parameters);
+                    break;
+            }
+        }
         if (null !== $domain) {
             $domain = strtolower($domain);
         }

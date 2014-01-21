@@ -5,12 +5,12 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Textarea extends Field
+class Textarea extends FormFieldAbstract
 {
-    protected $_class = 'textarea input-xlarge';
-    protected $_filter = '/.*/';
+    protected $class = 'textarea input-xlarge';
+    protected $filter = '/.*/';
 
     /**
      * Вернет HTML для поля
@@ -24,7 +24,7 @@ class Textarea extends Field
 
         $field['class'][] = 'input-xlarge';
         $field['class'] = "class='".join(' ', $field['class'])."'";
-        return "<textarea ".join(' ', $field).">{$this->_value}</textarea>\n";
+        return "<textarea ".join(' ', $field).">{$this->value}</textarea>\n";
     }
 
     /**

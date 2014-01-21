@@ -6,31 +6,31 @@
 
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Datetime extends Field
+class Datetime extends FormFieldAbstract
 {
     public function setValue($value)
     {
         if (is_string($value)) {
             $value = new \DateTime($value);
         }
-        $this->_value = $value->getTimestamp();
+        $this->value = $value->getTimestamp();
         return $this;
     }
 
     public function getValue()
     {
         $result = new \DateTime();
-        $result->setTimestamp($this->_value);
+        $result->setTimestamp($this->value);
         return $result;
     }
 
     public function getStringValue()
     {
         $value = new \DateTime();
-        if ($this->_value) {
-            $value->setTimestamp($this->_value);
+        if ($this->value) {
+            $value->setTimestamp($this->value);
         }
         return $value->format('Y-m-d H:i:s');
     }
@@ -42,8 +42,8 @@ class Datetime extends Field
      */
     public function htmlInput( $field )
     {
-        $this->_class = 'input-large';
-        if (!$this->_readonly) {
+        $this->class = 'input-large';
+        if (!$this->readonly) {
             $field['class'] = array('input-append', 'datetime');
         }
         return parent::htmlInput( $field )

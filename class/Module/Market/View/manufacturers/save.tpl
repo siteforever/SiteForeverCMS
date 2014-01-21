@@ -1,1 +1,1 @@
-{t}Data saved{/t}
+{'Data saved'|trans}

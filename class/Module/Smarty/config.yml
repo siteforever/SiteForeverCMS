@@ -9,3 +9,10 @@ services:
     tpl:
         class: Module\Smarty\Component\Driver
         arguments: ["%template%", "@smarty"]
+
+    smarty.plugin.form:
+        class: Module\Smarty\Plugin\FormPlugin
+        tags:
+            - { name: smarty.plugin, type: block, plugin: form, method: block_form }
+#            - { name: smarty.plugin, type: function, plugin: form_start, method: function_form_start }
+#            - { name: smarty.plugin, type: function, plugin: form_end, method: function_form_end }

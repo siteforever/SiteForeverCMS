@@ -8,7 +8,7 @@ namespace Module\Market\Controller;
 
 use Sfcms\Controller;
 
-use Forms\Payment\Edit as FormEdit;
+use Module\Market\Form\PaymentForm as FormEdit;
 
 class PaymentController extends Controller
 {
@@ -38,7 +38,7 @@ class PaymentController extends Controller
         $model = $this->getModel('Payment');
         $form = new FormEdit();
 
-        if ( $form->getPost($this->request) ) {
+        if ( $form->handleRequest($this->request) ) {
             if ( $form->validate() ) {
                 $payObj = $form->id ? $model->find($form->id) : $model->createObject()->markNew();
                 $payObj->attributes = $form->getData();

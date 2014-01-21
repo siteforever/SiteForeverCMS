@@ -23,7 +23,7 @@
         <a {href controller="news" action="edit" id=$item.id} class="newsEdit" title="{t cat="news"}News edit{/t}">
             {$item.name|truncate:100}</a>
     </td>
-    <td>{$item.date|date_format:"%x"}</td>
+    <td>{$item.date|date_format:"%Y-%m-%d"}</td>
     <td>{$item.priority}</td>
     <td>{if $item.main}{icon name="accept" title=$this->t('Yes')}{/if}</td>
     <td>

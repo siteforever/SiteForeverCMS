@@ -18,7 +18,7 @@ use Sfcms\Model\Exception;
 use Sfcms_Http_Exception;
 use Sfcms\Request;
 use Sfcms\Form\Form;
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 use Sfcms;
 use Sfcms_Filter;
 use Sfcms_Filter_Group;
@@ -330,7 +330,7 @@ class CatalogController extends Controller
     {
         /**
          * @var CatalogModel $catalogModel
-         * @var Field $field
+         * @var FormFieldAbstract $field
          * @var Form $form
          * @var Catalog $object
          */
@@ -338,7 +338,7 @@ class CatalogController extends Controller
         $form         = $form = $this->get('catalog.product.form');
 
         // Если форма отправлена
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 /** @var $object Catalog */
                 $object = $form->id
@@ -530,7 +530,7 @@ class CatalogController extends Controller
         /**
          * @var CatalogModel $catalogFinder
          * @var Catalog $pitem
-         * @var Field $field
+         * @var FormFieldAbstract $field
          * @var Sfcms_Filter_Collection $filter
          * @var Sfcms_Filter $fvalues
          */
@@ -572,16 +572,16 @@ class CatalogController extends Controller
         // ЕСЛИ ТОВАР
         //$form->image->show();
 //        $form->getField( 'icon' )->hide();
-        $form->getField( 'articul' )->show();
-        $form->getField( 'material' )->show();
-        $form->getField( 'manufacturer' )->show();
-        $form->getField( 'price1' )->show();
-        $form->getField( 'price2' )->show();
-        $form->getField( 'sort_view' )->hide();
+        $form->getChild( 'articul' )->show();
+        $form->getChild( 'material' )->show();
+        $form->getChild( 'manufacturer' )->show();
+        $form->getChild( 'price1' )->show();
+        $form->getChild( 'price2' )->show();
+        $form->getChild( 'sort_view' )->hide();
 
         //$form->top->show();
-        $form->getField( 'byorder' )->show();
-        $form->getField( 'absent' )->show();
+        $form->getChild( 'byorder' )->show();
+        $form->getChild( 'absent' )->show();
 
         if ($form->sale_start <= 0 || $form->sale_stop <= 0) {
             $form->sale_start = $form->sale_stop = time();
@@ -599,7 +599,7 @@ class CatalogController extends Controller
             $form->applyProperties($parent->attributes, isset($fvalues) ? $fvalues : null);
         } else {
             for ($i = 0; $i < 10; $i++) {
-                $form->getField('p' . $i)->hide();
+                $form->getChild('p' . $i)->hide();
             }
         }
 
@@ -639,7 +639,7 @@ class CatalogController extends Controller
     {
         /**
          * @var CatalogModel $catalog
-         * @var Field $field
+         * @var FormFieldAbstract $field
          * @var Form $form
          */
         $catalog = $this->getModel( 'Catalog' );
@@ -655,8 +655,8 @@ class CatalogController extends Controller
             $form->setData( $item->getAttributes() );
         } else { // если новый
             $item = $catalog->createObject();
-            $form->getField( 'parent' )->setValue( $parent_id );
-            $form->getField( 'cat' )->setValue( 1 );
+            $form->getChild( 'parent' )->setValue( $parent_id );
+            $form->getChild( 'cat' )->setValue( 1 );
         }
 
         // наследуем поля родителя
@@ -664,7 +664,7 @@ class CatalogController extends Controller
         if( $parent ) {
             foreach( $parent->getAttributes() as $k => $p ) {
                 if( preg_match( '/p\d+/', $k ) ) {
-                    $field = $form->getField( $k );
+                    $field = $form->getChild( $k );
                     if( trim( $p ) && ! $field->getValue() ) {
                         $field->setValue( $p );
                     }
@@ -676,7 +676,7 @@ class CatalogController extends Controller
         return array(
             'breadcrumbs' => $id ? $this->adminBreadcrumbsById( $id ) : $this->adminBreadcrumbsById( $parent_id ),
             'form'        => $form,
-            'cat'         => $form->getField( 'id' )->getValue(),
+            'cat'         => $form->getChild( 'id' )->getValue(),
         );
     }
 

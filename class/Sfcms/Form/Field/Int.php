@@ -1,15 +1,15 @@
 <?php
 /**
- * Поле целого числа 
+ * Поле целого числа
  * @author keltanas
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
 class Int extends Text
 {
-    protected $_type    = 'number';
-    protected $_class   = 'int';
-    protected $_filter  = '/^-?\d*$/';
+    protected $type    = 'number';
+    protected $class   = 'int';
+    protected $filter  = '/^-?\d*$/';
 }

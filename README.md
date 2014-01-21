@@ -16,6 +16,7 @@ Content management system and framework for her writing in PHP. As a database se
 
 
 Website: http://siteforever.ru
+Documentation: [Русский язык](doc/ru/index.md)
 Documentation: http://wiki.siteforever.ru
 Download: http://siteforever.ru/download
 

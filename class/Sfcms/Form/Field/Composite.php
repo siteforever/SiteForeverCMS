@@ -6,18 +6,8 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-abstract class Composite extends Field
+abstract class Composite extends FormFieldAbstract
 {
-    /**
-     * Добавить варианты выбора к уже имеющимся (для select и radio)
-     * @param $list
-     */
-    public function addVariants( $list )
-    {
-        $this->_params['variants'] = array_merge( $this->_params['variants'], $list );
-    }
-
-
 }

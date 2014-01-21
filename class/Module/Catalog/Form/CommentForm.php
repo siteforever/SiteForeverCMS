@@ -12,7 +12,7 @@ use Sfcms\Request;
 
 class CommentForm extends Form
 {
-    public function __construct($config = array(), Request $request = null)
+    public function __construct($options = array(), Request $request = null)
     {
         parent::__construct(array(
             'name'  => 'comment',

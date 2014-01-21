@@ -8,7 +8,7 @@
 
 use Sfcms\Form\Form;
 
-class form_FormTest extends \Sfcms\Test\WebCase
+class form_FormTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Form
@@ -17,26 +17,25 @@ class form_FormTest extends \Sfcms\Test\WebCase
 
     protected function setUp()
     {
-        $this->form = new Form( array(
-                'name'  => 'test',
-        ), $this->request);
+        $this->form = new Form(array(
+            'name'  => 'test',
+        ));
     }
 
 
     public function testCreateField()
     {
-        $field  = $this->form->createField('id',
-            array(
-                 'type' => 'int',
-                 'label'=> 'Идентификатор'
-            )
-        );
+        $field  = $this->form->createField(array(
+            'name' => 'id',
+            'type' => 'int',
+            'label'=> 'Identifier'
+        ));
 
         try {
-            $this->assertEquals( null, $this->form->getField( 'id' ) );
+            $this->assertEquals(null, $this->form->getChild('id'));
         } catch ( Exception $e ) {
-            $this->form->addField( $field );
-            $this->assertInstanceOf('\Sfcms\Form\Field', $this->form->getField('id'));
+            $this->form->setChild( $field );
+            $this->assertInstanceOf('Sfcms\Form\FormFieldAbstract', $this->form->getChild('id'));
             return;
         }
         $this->fail('Expected exception');

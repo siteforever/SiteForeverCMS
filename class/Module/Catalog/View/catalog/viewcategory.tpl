@@ -18,7 +18,7 @@
 {/if}
 
 
-{form action="basket" method="post"}
+<form action="{link url="basket"}" method="post">
 {foreach from=$list item="item"}
 
     <div class="well">
@@ -78,6 +78,6 @@
 {foreachelse}
     <p>{'Products not found'|trans:[]:'catalog'}</p>
 {/foreach}
-{/form}
+</form>
 
 <p>{$paging.html}</p>

@@ -10,7 +10,7 @@ namespace Module\Market\Controller;
 use Sfcms\Controller;
 use Module\Market\Object\Delivery;
 use Sfcms\Request;
-use Forms_Delivery_Edit;
+use Module\Market\Form\DeliveryEditForm;
 
 class DeliveryController extends Controller
 {
@@ -40,7 +40,7 @@ class DeliveryController extends Controller
      */
     public function editAction($id)
     {
-        $form = new Forms_Delivery_Edit();
+        $form = new DeliveryEditForm();
         $model = $this->getModel('Delivery');
 
         if ($id) {
@@ -48,9 +48,9 @@ class DeliveryController extends Controller
             $form->setData($obj->attributes);
         }
 
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
-                if ($id = $form->getField('id')->getValue()) {
+                if ($id = $form->getChild('id')->getValue()) {
                     $obj = $model->find($id);
                 } else {
                     $obj = $model->createObject()->markNew();

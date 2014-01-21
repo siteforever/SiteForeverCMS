@@ -4,7 +4,7 @@ namespace Module\Gallery\Model;
 use Module\Gallery\Object\Category;
 use Module\Gallery\Object\Gallery;
 use Sfcms\Model;
-use Forms_Gallery_Category;
+use Module\Gallery\Form\CategoryForm;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CategoryModel extends Model implements EventSubscriberInterface
@@ -106,12 +106,12 @@ class CategoryModel extends Model implements EventSubscriberInterface
     }
 
     /**
-     * @return Forms_Gallery_Category
+     * @return CategoryForm
      */
     function getForm()
     {
         if (is_null($this->form)) {
-            $this->form = new Forms_Gallery_Category();
+            $this->form = new CategoryForm();
         }
         return $this->form;
     }

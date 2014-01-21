@@ -1,7 +1,7 @@
 <?php
 namespace Sfcms\Form;
 
-use Sfcms\Form\FormAbstract;
+use Sfcms\Form\FormBaseAbstract;
 
 /**
  *
@@ -10,7 +10,7 @@ use Sfcms\Form\FormAbstract;
  * @link   http://standart-electronics.ru
  */
 
-class Render extends FormAbstract
+class Render extends FormBaseAbstract
 {
     public function htmlStart()
     {
@@ -37,22 +37,22 @@ class Render extends FormAbstract
 
     public function htmlFieldWrapped($name)
     {
-        return $this->getField($name)->html();
+        return $this->getChild($name)->html();
     }
 
     public function htmlFieldLabel($name)
     {
-        return $this->getField($name)->htmlLabel();
+        return $this->getChild($name)->htmlLabel();
     }
 
     public function htmlField($name)
     {
-        return $this->getField($name)->htmlField();
+        return $this->getChild($name)->htmlField();
     }
 
     public function htmlError($name)
     {
-        return $this->getField($name)->htmlError();
+        return $this->getChild($name)->htmlError();
     }
 
     /**
@@ -61,14 +61,14 @@ class Render extends FormAbstract
      * @param $buttons
      * @return string
      */
-    public function html( $hint = true, $buttons = true )
+    public function html($hint = true, $buttons = true)
     {
         $html     = array();
 
         $html[]   = $this->htmlStart();
 
-        foreach ( $this->fields as $field ) {
-            /** @var $field Field */
+        foreach ( $this->children as $field ) {
+            /** @var $field FormFieldAbstract */
             if ( is_object( $field ) ) {
                 $html[ ] = $field->html();
             }
@@ -77,7 +77,7 @@ class Render extends FormAbstract
         if ( $buttons && is_array( $this->buttons ) ) {
             //$html[] = '<hr />';
             foreach ( $this->buttons as $button ) {
-                /** @var $button Field */
+                /** @var $button FormFieldAbstract */
                 $html[]  = $button->html();
             }
         }

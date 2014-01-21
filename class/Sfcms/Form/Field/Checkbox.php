@@ -7,55 +7,31 @@
 namespace Sfcms\Form\Field;
 
 use Sfcms\Form\Field\Radio;
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Checkbox extends Field
+class Checkbox extends FormFieldAbstract
 {
     protected
-        $_type   = 'checkbox',
-        $_class  = 'checkbox';
+        $type   = 'checkbox',
+        $class  = 'checkbox';
 
-
-    /**
-     * Вернет HTML для поля
-     * @var array $filed
-     * @return string
-     */
-    public function htmlInput( $field )
-    {
-        $field['type'] = 'type="hidden"';
-        $field['value'] = 'value="0"';
-        unset($field['class']);
-        $id = $field['id'];
-        unset($field['id']);
-        $result = "<input " . join(' ', $field) . " />";
-
-        $field['id'] = $id;
-        $field['value'] = 'value="1"';
-        $field['type'] = 'type="checkbox"';
-        if ($this->_value) {
-            $field['checked'] = 'checked="checked"';
-        }
-
-        return  $result . "<input " . join(' ', $field) . " />";
-    }
 
     /**
      * Проверит значение на валидность типа
      * @param $value
      * @return boolean
      */
-    public function checkValue( $value )
+    public function checkValue($value)
     {
-        if ( is_array( $value ) ) {
+        if (is_array($value)) {
             $check = true;
-            foreach( $value as $val ) {
-                $check &= $this->checkValue( $val );
+            foreach ($value as $val) {
+                $check &= $this->checkValue($val);
             }
             return $check;
         }
         else {
-            return preg_match($this->_filter, $value);
+            return preg_match('/[0|1]/', $value);
         }
     }
 
@@ -68,27 +44,24 @@ class Checkbox extends Field
      * @param $value
      * @return boolean
      */
-    function setValue( $value )
+    public function setValue($value)
     {
-        if ( ! is_array($value) && strpos( $value, ',' ) !== false ) {
-            $value  = explode( ',', $value );
+        if (!is_array($value) && strpos($value, ',') !== false) {
+            $value  = explode(',', $value);
         }
 
-        if ( $this->checkValue( $value ) )
-        {
-            $this->_value  = $value;
+        if ($this->checkValue($value)) {
+            $this->value = $value;
         }
         return $this;
     }
 
 
-    function getStringValue()
+    public function getStringValue()
     {
-        if ( is_array($this->_value) ) {
-            return join(',', $this->_value);
+        if (is_array($this->value)) {
+            return join(',', $this->value);
         }
-        return $this->_value;
+        return $this->value;
     }
-
-
 }

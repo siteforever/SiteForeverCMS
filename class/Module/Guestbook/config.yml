@@ -1,0 +1,11 @@
+parameters:
+    form.guestbook.guest.class: Module\Guestbook\Form\GuestForm
+    form.guestbook.edit.class: Module\Guestbook\Form\EditForm
+
+services:
+    form.guestbook.guest:
+        class: %form.guestbook.guest.class%
+
+    form.guestbook.edit:
+        class: %form.guestbook.edit.class%
+

@@ -63,7 +63,7 @@ class MaterialController extends Controller
         $this->request->setTitle( $this->t('material','Materials') );
 
         /** @var $model MaterialModel */
-        $model = $this->getModel( 'Material' );
+        $model = $this->getModel('Material');
         $form  = $model->getForm();
 
         if ( $id ) {
@@ -82,7 +82,7 @@ class MaterialController extends Controller
         $model = $this->getModel( 'Material' );
         $form  = $model->getForm();
 
-        if ( $form->getPost($this->request) ) {
+        if ( $form->handleRequest($this->request) ) {
             if ( $form->validate() ) {
                 $obj = $model->createObject( $form->getData() );
                 $obj->save();

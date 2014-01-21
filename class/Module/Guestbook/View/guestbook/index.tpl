@@ -18,5 +18,4 @@
 {/foreach}
 
 <div class="paging">{$paging->html}</div>
-
-{$form->html()}
+{$form->html([domain=>"guestbook", class=>"form-horizontal", hint=>false, buttons=>true])}

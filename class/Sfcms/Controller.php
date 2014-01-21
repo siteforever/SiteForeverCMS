@@ -200,6 +200,10 @@ abstract class Controller extends ContainerAware
      */
     public function getForm($name = null)
     {
+        $formServiceId = sprintf('form.%s', trim($name));
+        if ($this->container->has($formServiceId)) {
+            return $this->get($formServiceId);
+        }
         if (!isset(self::$forms[$name])) {
             $className = 'Forms_' . $name;
             try {

@@ -9,7 +9,7 @@ services:
 
     market.order.form:
         class: Module\Market\Form\OrderForm
-        arguments: [ @router ]
+        lazy: true
 
     market.order.subscriber:
         class: Module\Market\Subscriber\OrderSubscriber

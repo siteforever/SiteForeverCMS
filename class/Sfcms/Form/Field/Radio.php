@@ -11,8 +11,8 @@ use Sfcms\Form\Field\Composite;
 class Radio extends Composite
 {
     protected
-        $_type   = 'radio',
-        $_class  = 'radio';
+        $type   = 'radio',
+        $class  = 'radio';
 
     /**
      * Вернет HTML для поля
@@ -23,13 +23,13 @@ class Radio extends Composite
     {
         $html = array();
 
-        if ( isset($this->_params['variants']) )
+        if ( isset($this->options['variants']) )
         {
-            foreach( $this->_params['variants'] as $value => $label )
+            foreach( $this->options['variants'] as $value => $label )
             {
                 $field['id']     = "id='{$this->getId()}_{$value}'";
                 $field['value']  = "value='{$value}'";
-                $field['checked']= ( $this->_value == $value ) ? " checked='checked' " : '';
+                $field['checked']= ( $this->value == $value ) ? " checked='checked' " : '';
                 $field['class']  = 'class="btn"';//.join(' ', $field['class']).'"';
 
                 $html[]  = "<label for='{$this->getId()}_{$value}' class='checkbox'>";
@@ -37,7 +37,7 @@ class Radio extends Composite
                 $html[]  = "{$label}</label>";
             }
         }
-        $br = in_array('br', $this->_params) ? "<br />" : "";
+        $br = in_array('br', $this->options) ? "<br />" : "";
         return join($br."\n", $html);
     }
 
@@ -47,7 +47,7 @@ class Radio extends Composite
      */
     public function getLabelOfValue()
     {
-        return isset( $this->_params['variants'][ $this->_value ] )
-            ? $this->_params['variants'][ $this->_value ] : '';
+        return isset( $this->options['variants'][ $this->value ] )
+            ? $this->options['variants'][ $this->value ] : '';
     }
 }

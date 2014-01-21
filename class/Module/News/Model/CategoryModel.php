@@ -9,12 +9,12 @@ namespace Module\News\Model;
 
 use Module\News\Object\Category;
 use Sfcms\Model;
-use Forms_News_Category;
+use Module\News\Form\CategoryForm;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CategoryModel extends Model implements EventSubscriberInterface
 {
-    /** @var Forms_News_Category */
+    /** @var CategoryForm */
     private $form = null;
 
     public function relation()
@@ -91,12 +91,12 @@ class CategoryModel extends Model implements EventSubscriberInterface
     }
 
     /**
-     * @return Forms_News_Category
+     * @return CategoryForm
      */
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new Forms_News_Category();
+            $this->form = new CategoryForm();
         }
         return $this->form;
     }

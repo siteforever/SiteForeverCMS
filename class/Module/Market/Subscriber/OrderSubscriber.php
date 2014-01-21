@@ -118,7 +118,7 @@ class OrderSubscriber implements EventSubscriberInterface
         $auth = $event->getController()->auth;
 
         // Ajax validate
-        if ($form->getPost($event->getRequest())) {
+        if ($form->handleRequest($event->getRequest())) {
             if ($form->validate()) {
                 $order->attributes = $form->getData();
 //                $metro = $form->metro ? $this->getModel('Metro')->find($form->metro) : null;
@@ -202,7 +202,7 @@ class OrderSubscriber implements EventSubscriberInterface
             $event->getRequest()->getSession()->set('delivery', $this->getForm()->delivery_id);
             $event->getDeliveryManager()->setType($this->getForm()->delivery_id);
         } else {
-            $this->getForm()->getField('delivery_id')->setValue(
+            $this->getForm()->getChild('delivery_id')->setValue(
                 $event->getDeliveryManager()->getType()
             );
         }

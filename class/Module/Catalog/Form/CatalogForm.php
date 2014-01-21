@@ -185,13 +185,13 @@ class CatalogForm extends Form
     {
         foreach( $properties as $k => $p ) {
             if ( preg_match('/^p(\d+)$/', $k, $m)) {
-                $field = $this->getField($k);
+                $field = $this->getChild($k);
                 trim($p) ? $field->setLabel($p) : $field->hide();
 
                 /** @var Sfcms_Filter_Group $fGroup */
                 if ($fvalues && $fGroup = $fvalues->getFilterGroup($m[1])) {
                     if (is_array($fGroup->getData()) && !$field->getValue()) {
-                        $this->getField($k)->setValue(
+                        $this->getChild($k)->setValue(
                             str_ireplace(array('Все|','All|'), '', implode('|', $fGroup->getData()))
                         );
                     }

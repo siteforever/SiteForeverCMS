@@ -6,12 +6,12 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
 class Select extends Composite
 {
     protected
-        $_class  = 'select';
+        $class  = 'select';
 
 
     /**
@@ -23,20 +23,20 @@ class Select extends Composite
     {
         $html = array();
 
-        $multiple = in_array('multiple', $this->_params) ? ' multiple="multiple" ' : '';
-        $size     = isset( $this->_params['size'] ) ? " size='{$this->_params['size']}' " : '';
+        $multiple = in_array('multiple', $this->options) ? ' multiple="multiple" ' : '';
+        $size     = isset( $this->options['size'] ) ? " size='{$this->options['size']}' " : '';
 
 
         $field['class'] = 'class="'.join(' ', $field['class']).'"';
 
         $html[] = "<select {$field['id']} {$field['class']} {$field['name']}{$multiple}{$size}>\n";
-        if ( isset($this->_params['variants']) )
+        if ( isset($this->options['variants']) )
         {
-            foreach( $this->_params['variants'] as $value => $label )
+            foreach( $this->options['variants'] as $value => $label )
             {
                 $field['id']       = " id='{$this->getId()}_{$value}' ";
                 $field['value']    = " value='{$value}' ";
-                $field['selected'] = ( $this->_value == $value ) ? " selected='selected' " : '';
+                $field['selected'] = ( $this->value == $value ) ? " selected='selected' " : '';
 
                 $html[]  = "<option {$field['value']} {$field['selected']}>{$label}</option>\n";
             }
@@ -62,7 +62,7 @@ class Select extends Composite
             return $check;
         }
         else {
-            return preg_match($this->_filter, $value);
+            return preg_match($this->filter, $value);
         }
     }
 }

@@ -2,7 +2,7 @@
 namespace Sfcms\Form\Field;
 
 use App;
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 use Sfcms\Request;
 
 /**
@@ -11,11 +11,12 @@ use Sfcms\Request;
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Captcha extends Field
+class Captcha extends FormFieldAbstract
 {
-    protected $_type =   'text';
-    protected $_class =  'input-small';
-    protected $_required = true;
+    protected $type =   'text';
+    protected $class =  '';
+    protected $required = true;
+    protected $datable = false;
 
     public function htmlInput( $field )
     {
@@ -38,7 +39,7 @@ class Captcha extends Field
         if (strtolower($captcha_code) == strtolower($value)) {
             return true;
         }
-        $this->_msg = $this->t('Code is not valid');
+        $this->msg = 'Code is not valid';
         return false;
     }
 }

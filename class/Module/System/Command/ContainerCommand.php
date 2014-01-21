@@ -36,7 +36,7 @@ class ContainerCommand extends Command
                     $sid,
                     $continer->hasDefinition($sid)
                         ? ($continer->getDefinition($sid)->isSynthetic()
-                            ? "?synthetic"
+                            ? "<comment>synthetic</comment>"
                             : $continer->getDefinition($sid)->getClass()
                         )
                         : ($continer->hasAlias($sid)

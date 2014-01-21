@@ -639,7 +639,7 @@ abstract class Model extends Component
         }
         $event = new ModelEvent($obj, $this);
 
-        if ($this->onDeleteStart($id) === false) {
+        if (!$this->onDeleteStart($id)) {
             return false;
         }
         $this->trigger('delete.start', $event);
@@ -667,10 +667,12 @@ abstract class Model extends Component
      *
      * @param int $id
      *
+     * @deprecated in 0.6 Was deleted in version 0.8
      * @return boolean
      */
     public function onDeleteStart($id = null)
     {
+        // @todo Delete in v0.8
         return true;
     }
 

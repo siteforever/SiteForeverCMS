@@ -4,7 +4,7 @@
 <div>{"You searched for"|lang:"page"}: <b>&laquo;{$query}&raquo;</b></div>
 <hr>
 {/if}
-{form class="form-search" action="search"}
+<form class="form-search" action="{link url="search"}">
     <div class="input-append">
         <label>{"Type your query"|lang:"page":[":first"=>1]}:
         <input type="text" name="query"
@@ -12,7 +12,7 @@
                value="{$query}"></label>
         <button type="submit" class="btn"><i class="icon-search"></i></button>
     </div>
-{/form}
+</form>
 {if isset($error)}
     <div class="alert alert-error">{$error}</div>
 {elseif (isset($result))}

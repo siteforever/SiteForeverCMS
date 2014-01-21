@@ -7,9 +7,9 @@
  */
 namespace Module\Gallery\Controller;
 
+use Module\Gallery\Form\ImageForm;
 use Sfcms;
 use Sfcms\Controller;
-use Sfcms\Request;
 use Exception;
 use Sfcms\Form\Form;
 use Module\Gallery\Object\Gallery;
@@ -271,7 +271,7 @@ class GalleryController extends Controller
         $model = $this->getModel( 'GalleryCategory' );
         $form  = $model->getForm();
 
-        if( $form->getPost($this->request) ) {
+        if( $form->handleRequest($this->request) ) {
             if( $form->validate() ) {
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
@@ -359,12 +359,12 @@ class GalleryController extends Controller
     {
         $model = $this->getModel('Gallery');
         /** @var $form Form */
-        $form = $this->getForm('Gallery_Image');
+        $form = new ImageForm();
 
         /** @var Gallery $obj */
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
-                $obj = $form->id ? $model->find($form->id) : $model->createObject();
+                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject();
                 $obj->attributes = $form->getData();
                 $obj->save();
 

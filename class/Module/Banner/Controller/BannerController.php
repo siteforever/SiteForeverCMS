@@ -89,7 +89,7 @@ class BannerController extends Controller
         $model = $this->getModel('CategoryBanner');
         $form  = $model->getForm();
 
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
@@ -237,7 +237,7 @@ class BannerController extends Controller
         /** @var BannerModel $model */
         $model = $this->getModel('Banner');
         $form  = $model->getForm();
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit
+        backupGlobals               = "false"
+        colors                      = "true"
+        convertErrorsToExceptions   = "true"
+        convertNoticesToExceptions  = "true"
+        convertWarningsToExceptions = "true"
+        processIsolation            = "false"
+        syntaxCheck                 = "true"
+        stopOnError                 = "false"
+        stopOnFailure               = "false"
+        stopOnIncomplete            = "false"
+        stopOnSkipped               = "false"
+        bootstrap                   = "./bootstrap.php" >
+    <php>
+        <ini name="memory_limit" value="512M"/>
+        <const name="TEST" value="true"/>
+        <server name="HTTP_HOST" value="example.com"/>
+        <server name="SERVER_PORT" value="80"/>
+        <server name="REQUEST_METHOD" value="TEST"/>
+        <request name="id" value="1"/>
+        <request name="route" value="index"/>
+    </php>
+    <testsuites>
+        <testsuite name="Project Test Suite">
+            <directory suffix="Test.php">.</directory>
+            <directory suffix="Test.php">../class/Module/*/Test</directory>
+            <!--<exclude>./web/*</exclude>-->
+        </testsuite>
+    </testsuites>
+    <logging>
+        <log type="coverage-html" target="./codeCoverage" charset="UTF-8"
+             yui="true" highlight="false"
+             lowUpperBound="35" highLowerBound="70"/>
+        <log type="coverage-clover" target="./codeCoverage/codeCoverage.xml"/>
+        <log type="metrics-xml" target="./metrics/metrics.xml"/>
+        <log type="test-xml" target="./testResults/logfile.xml" logIncompleteSkipped="false"/>
+    </logging>
+</phpunit>

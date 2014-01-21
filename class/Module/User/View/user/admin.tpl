@@ -1,12 +1,12 @@
-{form class="well form-horizontal" action="user/admin" method="get"}
+<form class="well form-horizontal" action="{link url='user/admin'}" method="get">
     <div class="input-append">
         <input type="text" name="search" id="search" class="input-xlarge" value="{$request->get('search')}" />
         <input type="submit" class="btn" value="Фильтровать" />
     {if $request->get('search')}{a controller="user" action="admin" class="btn"}Сбросить фильтр{/a}{/if}
     </div>
-{/form}
+</form>
 
-{form action="user/admin" method="post"}
+<form action="{link url='user/admin'}" method="get">
     <table class="table table-striped">
     <thead>
         <tr>
@@ -46,6 +46,6 @@
     </tbody>
     </table>
     <p><input type="submit" class="btn" value={t}Delete{/t} /></p>
-{/form}
+</form>
 
 <p>{$paging.html}</p>

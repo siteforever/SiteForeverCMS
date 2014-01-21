@@ -7,12 +7,20 @@
 
 namespace Module\Guestbook;
 
+use Module\Guestbook\DependencyInjection\GuestbookExtension;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
 {
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new GuestbookExtension());
+    }
+
+
     public static function relatedField()
     {
         return 'id';
@@ -62,7 +70,7 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'  => 'Гостевая',
+                'name'  => 'Guestbook',
                 'url'   => 'guestbook/admin',
             )
         );

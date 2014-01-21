@@ -7,6 +7,7 @@
 
 namespace Module\Market\Model;
 
+use Module\Market\Form\MaterialEditForm;
 use Sfcms\Data\Collection;
 use Sfcms\Model;
 use Sfcms\JqGrid\Provider;
@@ -40,7 +41,7 @@ class MaterialModel extends Model
 
     public function getForm()
     {
-        return new FormEdit();
+        return new MaterialEditForm();
     }
 
     /**

@@ -6,9 +6,6 @@
 namespace Module\Guestbook\Controller;
 
 use Sfcms\Controller;
-use Forms_Guestbook_Form;
-use Forms_Guestbook_Edit;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class GuestbookController extends Controller
 {
@@ -37,17 +34,17 @@ class GuestbookController extends Controller
         if ( null === $this->page ) {
             return $this->t('Can not be used without page');
         }
-        $link   = $this->page->getId();
-        $model  = $this->getModel('Guestbook');
-        $form       = new Forms_Guestbook_Form();
+        $link  = $this->page->getId();
+        $model = $this->getModel('Guestbook');
+        $form  = $this->getForm('guestbook.guest');
 
-        if ( $form->getPost($this->request) ) {
-            if ( $form->validate() ) {
+        if ($form->handleRequest($this->request)) {
+            if ($form->validate()) {
                 $obj = $model->createObject();
 
-                $obj->set('name', strip_tags($form->getField('name')->getValue()));
-                $obj->set('email', strip_tags($form->getField('email')->getValue()));
-                $obj->set('message', strip_tags($form->getField('message')->getValue()));
+                $obj->set('name', strip_tags($form->getChild('name')->getValue()));
+                $obj->set('email', strip_tags($form->getChild('email')->getValue()));
+                $obj->set('message', strip_tags($form->getChild('message')->getValue()));
                 $obj->set('link', $link);
                 $obj->set('date', time());
                 $obj->set('ip', $_SERVER['REMOTE_ADDR']);
@@ -56,18 +53,17 @@ class GuestbookController extends Controller
 
                 $this->sendmail(
                     $obj->email,
-                    $this->config->get('admin'),
-                    'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),
+                    $this->container->getParameter('admin'),
+                    'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
                     $this->getTpl()->fetch('guestbook.letter')
                 );
 
                 $this->sendmail(
                     $obj->email,
                     'keltanas@gmail.com',
-                    'Сообщение в гостевой '.$this->config->get('sitename').' №'.$obj->getId(),
+                    'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
                     $this->getTpl()->fetch('guestbook.letter')
                 );
-
             }
         }
 
@@ -76,18 +72,20 @@ class GuestbookController extends Controller
             'params'=> array( $link ),
         );
 
-        $count  = $model->count( $crit['cond'], $crit['params'] );
-        $paging = $this->paging( $count, 10, $this->page->alias );
+        $count  = $model->count($crit['cond'], $crit['params']);
+        $paging = $this->paging($count, 10, $this->page->alias);
 
         $crit['order'] = ' date DESC ';
         $crit['limit'] = $paging->limit;
 
-        $messages   = $model->findAll( $crit );
+        $messages   = $model->findAll($crit);
+
+//        $formBuilder = new
 
         return $this->render('guestbook.index', array(
             'messages'  => $messages,
             'paging'    => $paging,
-            'form'      => $form,
+            'form'      => $form->createView(),
         ));
     }
 
@@ -131,8 +129,8 @@ class GuestbookController extends Controller
         $this->request->getTitle( $this->t('Edit') );
         $model  = $this->getModel('Guestbook');
 
-        $form = new Forms_Guestbook_Edit();
-        if ($form->getPost($this->request)) {
+        $form = $this->getForm('guestbook.edit');
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $id = $form->id;
                 if (!$id) {

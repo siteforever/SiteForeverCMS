@@ -6,7 +6,7 @@ namespace Module\User\Controller;
 
 use Module\User\Object\User;
 use Sfcms\Controller;
-use Forms\User\Restore as FormRestore;
+use Module\User\Form\RestoreForm as FormRestore;
 use Module\User\Model\UserModel;
 use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
@@ -173,7 +173,7 @@ class UserController extends Controller
         if ( $id && $User = $model->find( $id ) )
         {
             $userForm->setData( $User->getAttributes() );
-            $userForm->getField('password')->setValue('');
+            $userForm->getChild('password')->setValue('');
         }
 
         $this->request->set('template', 'index');
@@ -192,24 +192,24 @@ class UserController extends Controller
     {
         /**
          * @var UserModel $model
-         * @var User $User
+         * @var User $entity
          * @var Form $userForm
          */
         $model  = $this->getModel('User');
         $userForm = $model->getEditForm();
-        if ( $userForm->getPost($this->request) ) {
-            if ( $userForm->validate() ) {
-                $User = ($user_id = $userForm['id']) ? $model->find( $user_id ) : $model->createObject();
-                $password = $User->password;
-                $solt     = $User->solt;
-                $User->attributes = $userForm->getData();
-
-                if ( $userForm['password'] ) {
-                    $User->changePassword( $userForm['password'] );
+        if ( $userForm->handleRequest($this->request) ) {
+            if ($userForm->validate()) {
+                $entity = ($userId = $userForm['id']) ? $model->find($userId) : $model->createObject();
+                $password = $entity->password;
+                $solt     = $entity->solt;
+                $entity->attributes = $userForm->getData();
+                if ($userForm['password']) {
+                    $entity->changePassword($userForm['password']);
                 } else {
-                    $User->password = $password;
-                    $User->solt     = $solt;
+                    $entity->password = $password;
+                    $entity->solt     = $solt;
                 }
+                $model->save($entity);
                 return array('error'=>0,'msg'=>$this->t('Data save successfully'));
             } else {
                 return array('error'=>1,'msg'=>$userForm->getFeedbackString());
@@ -248,7 +248,7 @@ class UserController extends Controller
         // вход в систему
         $form = $model->getLoginForm();
 
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $result = $this->login($form->login, $form->password);
                 if (!$result['error']) {
@@ -327,9 +327,9 @@ class UserController extends Controller
         $form->setData( $this->auth->currentUser()->getAttributes() );
 
         // сохранение профиля
-        if ( $form->getPost($this->request) ) {
+        if ( $form->handleRequest($this->request) ) {
             if ( $form->validate() ) {
-                $user   = $model->find( $form->getField('id')->getValue() );
+                $user   = $model->find( $form->getChild('id')->getValue() );
                 if ( $user ) {
                     $user->attributes =  $form->getData();
                     if ( $model->save( $user ) ) {
@@ -364,7 +364,7 @@ class UserController extends Controller
         /** @var UserModel $model */
         $model  = $this->getModel('User');
         $form = $model->getRegisterForm();
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $user = $model->createObject();
                 $user->attributes = $form->getData();
@@ -529,7 +529,7 @@ class UserController extends Controller
 
         $form = new FormRestore();
 
-        if ( $form->getPost($this->request) ) {
+        if ( $form->handleRequest($this->request) ) {
             if ( $form->validate() ) {
                 $user  = $model->find(array(
                     'cond'  => 'email = :email',
@@ -589,12 +589,12 @@ class UserController extends Controller
         $user = $this->auth->currentUser();
         //printVar($this->user->getData());
 
-        if ( $form->getPost($this->request) )
+        if ( $form->handleRequest($this->request) )
         {
             if ( $form->validate() )
             {
                 $pass_hash  = $user->generatePasswordHash(
-                    $form->getField('password')->getValue(), $user->get('solt')
+                    $form->getChild('password')->getValue(), $user->get('solt')
                 );
                 //$pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );
 
@@ -602,8 +602,8 @@ class UserController extends Controller
                 {
                     //$this->request->addFeedback('Пароль введен верно');
 
-                    if ( strcmp( $form->getField('password1')->getValue(), $form->getField('password2')->getValue() ) === 0 ) {
-                        $user->changePassword( $form->getField('password1')->getValue() );
+                    if ( strcmp( $form->getChild('password1')->getValue(), $form->getChild('password2')->getValue() ) === 0 ) {
+                        $user->changePassword( $form->getChild('password1')->getValue() );
                         $this->request->addFeedback($this->t('user','Password successfully updated'));
                         return $this->tpl->fetch('user.password_success');
                     }

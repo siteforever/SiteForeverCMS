@@ -4,76 +4,73 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\Exception;
+use Sfcms\Form\FormFieldAbstract;
+use Symfony\Component\Validator\Constraints\DateTime;
 
-class Date extends Field
+class Date extends FormFieldAbstract
 {
-    protected $_type = 'text';
-    protected $_class = 'datepicker';
+    const FILTER_DATE_VALID_VALUES = '/^(?:\d{2}\.\d{2}\.\d{4}|\d+)$/';
 
-    protected $_value   = 0;
+    protected $type = 'text';
+    protected $class = 'datepicker';
 
-    public function __construct( $form, $name, $params )
+    protected $value   = 0;
+
+    public function __construct($params)
     {
-        parent::__construct( $form, $name, $params );
-        if ( ! $this->_value ) {
-            $this->_value = time();
+        parent::__construct($params);
+        $this->filter = self::FILTER_DATE_VALID_VALUES;
+        if (! $this->value) {
+            $this->value = time();
         }
     }
 
     /**
-     * Проверит значение на валидность типа
-     * @param $value
-     * @return boolean
-     */
-    public function checkValue( $value )
-    {
-        return preg_match( '/\d{2}\.\d{2}\.\d{4}/', $value ) || preg_match( '/\d+/', $value );
-    }
-
-    /**
      * Вернет значение в виде строки
+     * @throws Exception
      * @return string
      */
     public function getStringValue()
     {
-        return strftime( '%x', $this->_value );
+        $format = 'd.m.Y';
+        if (preg_match('/^\d+$/', $this->value)) {
+            return date($format, $this->value);
+        } elseif ($this->value instanceof \DateTime) {
+            return $this->value->format($format);
+        }
+        throw new Exception('Unknown value type for Date field ' . $this->value);
     }
 
+    protected function checkValue($value)
+    {
+        if ($value instanceof \DateTime) {
+            return true;
+        }
+        if (preg_match(self::FILTER_DATE_VALID_VALUES, $value)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Установит значение поля, предварительно проверив его
      * Если значение не удовлетворяет типу поля, то оно не будет установлено,
      * а метод вернет false
      * @param $value
-     * @return Field|Field\Date
+     * @return FormFieldAbstract|Date
      */
-    public function setValue( $value )
+    public function setValue($value)
     {
-        if ( $this->checkValue( $value ) ) {
-            if ( preg_match( '/\d{2}\.\d{2}\.\d{4}/', $value ) ) {
-                $this->_value    = strtotime( $value );
+        if ($this->checkValue($value)) {
+            if ($value instanceof \DateTime) {
+                $this->value = $value->getTimestamp();
+            } elseif (preg_match('/^\d+$/', $value)) {
+                $this->value = $value;
             } else {
-                $this->_value  = $value;
+                $this->value = strtotime($value);
             }
         }
         return $this;
     }
-
-
-
-
-    /**
-     * Вернет HTML для поля
-     * @var array $filed
-     * @return string
-     */
-    public function htmlInput( $field )
-    {
-        if ( $this->_readonly ) {
-            $field['class']['class'] = 'date';
-        }
-        return parent::htmlInput( $field );
-    }
-
 }

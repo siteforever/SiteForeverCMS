@@ -7,13 +7,12 @@
 namespace Module\Banner\Model;
 
 use Sfcms\Model;
-use Forms_Banners_CategoryBanner;
-use Module\Gallery\Model\GalleryModel;
+use Module\Banner\Form\BannerCategoryForm;
 
 class CategoryModel extends Model
 {
     /**
-     * @var Forms_Banners_CategoryBanner
+     * @var BannerCategoryForm
      */
     protected $form = null;
 
@@ -31,12 +30,12 @@ class CategoryModel extends Model
     }
 
      /**
-     * @return Forms_Banners_CategoryBanner
+     * @return BannerCategoryForm
      */
     public function getForm()
     {
         if ( null === $this->form ) {
-            $this->form = new Forms_Banners_CategoryBanner();
+            $this->form = new BannerCategoryForm();
         }
         return $this->form;
     }

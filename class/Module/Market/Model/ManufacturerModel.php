@@ -9,7 +9,7 @@ namespace Module\Market\Model;
 
 use Sfcms\Data\Collection;
 use Sfcms\Model;
-use Forms_Manufacturers_Edit;
+use Module\Market\Form\ManufacturerEditForm;
 
 class ManufacturerModel extends Model
 {
@@ -38,10 +38,10 @@ class ManufacturerModel extends Model
 
 
     /**
-     * @return Forms_Manufacturers_Edit
+     * @return ManufacturerEditForm
      */
     public function getForm()
     {
-        return new Forms_Manufacturers_Edit();
+        return new ManufacturerEditForm();
     }
 }

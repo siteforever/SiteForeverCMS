@@ -1,17 +1,17 @@
 <?php
 namespace Module\User\Model;
 
+use Module\User\Form\LoginForm;
+use Module\User\Form\PasswordForm;
+use Module\User\Form\ProfileForm;
+use Module\User\Form\RegisterForm;
+use Module\User\Form\RestoreForm;
+use Module\User\Form\UserEditForm;
 use Sfcms\Model;
 
 use Sfcms\Form\Form;
 use Sfcms\Data\Object;
 use Module\User\Object\User;
-use Forms_User_Edit;
-use Forms_User_Register;
-use Forms\User\Login as FormLogin;
-use Forms\User\Profile as FormProfile;
-use Forms\User\Restore as FormRestore;
-use Forms\User\Password as FormPassword;
 
 class UserModel extends Model
 {
@@ -75,7 +75,7 @@ class UserModel extends Model
                 'perm'   => USER_ADMIN,
                 'status' => '1',
                 'date'   => time(),
-                'email'  => $this->config->get('admin'),
+                'email'  => \App::cms()->getContainer()->getParameter('admin'),
             )
         );
 
@@ -120,9 +120,9 @@ class UserModel extends Model
      * @deprecated
      * @return array
      */
-    public function getBasketArray( Object $user )
+    public function getBasketArray(Object $user)
     {
-        $basket = json_decode( $user['basket'], true );
+        $basket = json_decode($user['basket'], true);
         if ( $basket ) {
             return $basket;
         }
@@ -152,7 +152,7 @@ class UserModel extends Model
     public function getLoginForm()
     {
         if ( is_null( $this->login_form ) ) {
-            $this->login_form = new FormLogin();
+            $this->login_form = new LoginForm();
         }
         return $this->login_form;
     }
@@ -164,7 +164,7 @@ class UserModel extends Model
     public function getProfileForm()
     {
         if ( is_null( $this->profile_form ) ) {
-            $this->profile_form = new FormProfile();
+            $this->profile_form = new ProfileForm();
         }
         return $this->profile_form;
     }
@@ -172,7 +172,7 @@ class UserModel extends Model
     public function getPasswordForm()
     {
         if ( is_null( $this->password_form ) ) {
-            $this->password_form = new FormPassword();
+            $this->password_form = new PasswordForm();
         }
         return $this->password_form;
     }
@@ -180,7 +180,7 @@ class UserModel extends Model
     public function getRestoreForm()
     {
         if ( is_null( $this->restore_form ) ) {
-            $this->restore_form = new FormRestore();
+            $this->restore_form = new RestoreForm();
         }
         return $this->restore_form;
     }
@@ -188,7 +188,7 @@ class UserModel extends Model
     public function getRegisterForm()
     {
         if ( is_null( $this->register_form ) ) {
-            $this->register_form = new Forms_User_Register();
+            $this->register_form = new RegisterForm();
         }
         return $this->register_form;
     }
@@ -200,7 +200,7 @@ class UserModel extends Model
     public function getEditForm()
     {
         if ( is_null( $this->edit_form ) ) {
-            $this->edit_form = new Forms_User_Edit();
+            $this->edit_form = new UserEditForm();
         }
         return $this->edit_form;
 

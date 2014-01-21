@@ -13,7 +13,7 @@ use Sfcms\Data\Collection;
 use Sfcms\Db\Criteria;
 use Sfcms\Model;
 use Sfcms\Form\Form;
-use Forms_News_Edit;
+use Module\News\Form\NewsForm;
 
 class NewsModel extends Model
 {
@@ -122,7 +122,7 @@ class NewsModel extends Model
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new Forms_News_Edit();
+            $this->form = new NewsForm();
         }
         return $this->form;
     }

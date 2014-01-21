@@ -199,9 +199,9 @@ class NewsController extends Controller
             $form->cat_id = $cat;
         }
 
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
-                $obj = $form->id ? $model->find($form->id) : $model->createObject()->markNew();
+                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
                 $obj->attributes = $form->getData();
 
                 return array('error' => 0, 'msg' => $this->t('Data save successfully'));
@@ -246,7 +246,7 @@ class NewsController extends Controller
 
         $form   = $categoryModel->getForm();
 
-        if ( $form->getPost($this->request) ) {
+        if ( $form->handleRequest($this->request) ) {
             if ( $form->validate() ) {
                 $data   = $form->getData();
                 if ( $form->id ) {

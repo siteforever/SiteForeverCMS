@@ -180,15 +180,15 @@ class PageController extends Controller
         if ($parentObj && $parentObj->alias && 'index' != $parentObj->alias) {
             $alias = trim($parentObj->alias, ' /') . '/' . $alias;
         }
-        $form->getField('alias')->setValue($alias);
+        $form->getChild('alias')->setValue($alias);
 
         if ($parentObj && $parentObj->sort) {
-            $form->getField('sort')->setValue($parentObj->sort);
+            $form->getChild('sort')->setValue($parentObj->sort);
         }
 
-        $form->getField('action')->setValue('index');
-        $form->getField('name')->setValue($name);
-        $form->getField('controller')->setValue($module);
+        $form->getChild('action')->setValue('index');
+        $form->getChild('name')->setValue($name);
+        $form->getChild('controller')->setValue($module);
 
         $this->request->setTitle($this->t('Create page'));
         $this->tpl->assign('form', $form);
@@ -231,10 +231,10 @@ class PageController extends Controller
 
         $form = $model->getForm();
 
-        if ($form->getPost($this->request)) {
+        if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 /** @var $obj Page */
-                if ( $id = $form->getField('id')->getValue() ) {
+                if ( $id = $form->getChild('id')->getValue() ) {
                     $obj = $model->find( $id );
                     $obj->attributes = $form->getData();
                     $obj->update = time();

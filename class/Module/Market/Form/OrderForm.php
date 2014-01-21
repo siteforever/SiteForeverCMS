@@ -7,18 +7,17 @@
 
 namespace Module\Market\Form;
 
-use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Form\Form;
 use Sfcms\Router;
 
 class OrderForm extends Form
 {
-    public function __construct(Router $router)
+    public function __construct()
     {
         return parent::__construct(array(
             'name'      => 'order',
-            'class'     => 'form-horizontal ajax-validate',
-            'action'    => $router->createServiceLink('basket','index'),
+            'class'     => 'ajax-validate',
+//            'action'    => $this->getRouter()->createServiceLink('basket','index'),
             'fields'    => array(
                 'person' => array(
                     'type' => 'radio',
@@ -41,7 +40,7 @@ class OrderForm extends Form
                 'payment_id' => array(
                     'type'      => 'radio',
                     'required',
-                    'label'     => $this->t('Payment'),
+                    'label'     => 'Payment',
                     'value'     => 1,
                     'variants'  => array(),
                 ),

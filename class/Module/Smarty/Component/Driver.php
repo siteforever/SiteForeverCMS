@@ -68,7 +68,7 @@ class Driver extends TplDriver
      * @return string
      * @throws Exception
      */
-    public function convertTplName( $name )
+    public function convertTplName($name)
     {
         // Если у шаблона не указан ресурс, то выбираем между темой и системой
         $name = preg_replace('/\.'.$this->ext.'$/', '', $name);
@@ -85,12 +85,12 @@ class Driver extends TplDriver
      * @param string $tpl
      * @param int $cache_id
      */
-    public function display( $tpl, $cache_id = null )
+    public function display($tpl, $cache_id = null)
     {
         $start  = microtime(1);
         $tpl = $this->convertTplName($tpl);
 
-        $this->engine->display( $tpl, $cache_id );
+        $this->engine->display($tpl, $cache_id);
         $this->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Display tpl');
 //        print "Genegated: ".round( microtime(1) - $start, 3 );
     }
@@ -105,6 +105,8 @@ class Driver extends TplDriver
     {
         $start  = microtime(1);
         $tpl    = $this->convertTplName($tpl);
+//        $this->engine->assign('template', $tpl);
+//        $result = $this->engine->fetch('form.tpl', $cache_id);
         $result = $this->engine->fetch($tpl, $cache_id);
         $this->log($tpl . ' ('.round( microtime(1) - $start, 3).' sec)', 'Fetch tpl');
         return $result;

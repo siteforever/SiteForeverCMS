@@ -7,7 +7,7 @@ namespace Module\Catalog\Controller;
  */
 use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
-use Forms\Prodtype\Edit as  FormEdit;
+use Module\Catalog\Form\ProdtypeForm;
 use Module\Catalog\Model\FieldModel;
 
 class ProdtypeController extends Controller
@@ -50,16 +50,16 @@ class ProdtypeController extends Controller
      * @param int $id
      * @return string
      */
-    public function editAction( $id )
+    public function editAction($id = null)
     {
-        $model = $this->getModel('Producttype');
-        $obj = $id ? $model->find( $id ) : $model->createObject();
-        $form = new FormEdit();
-        $form->setData( $obj->attributes );
+        $model = $this->getModel('ProductType');
+        $obj = null !== $id ? $model->find($id) : $model->createObject();
+        $form = new ProdtypeForm();
+        $form->setData($obj->attributes);
         return array(
-            'form'=>$form,
-            'fields'=>$obj->Fields,
-            'types' => array(
+            'form'   => $form,
+            'fields' => $obj->id ? $obj->Fields : null,
+            'types'  => array(
                 'string'    => $this->t('catalog','String'),
                 'text'      => $this->t('catalog','Text'),
                 'int'       => $this->t('catalog','Int'),
@@ -74,12 +74,12 @@ class ProdtypeController extends Controller
      */
     public function saveAction()
     {
-        $model = $this->getModel('Producttype');
-        $form = new FormEdit();
-        if ( $form->getPost($this->request) ) {
-            if ( $form->validate() ) {
-                $obj = $form->id ? $model->find($form->id) : $model->createObject();
-                $obj->setAttributes( $form->getData() );
+        $model = $this->getModel('ProductType');
+        $form = new ProdtypeForm();
+        if ($form->handleRequest($this->request)) {
+            if ($form->validate()) {
+                $obj = $form['id'] ? $model->find($form['id']) : $model->createObject();
+                $obj->setAttributes($form->getData());
                 $obj->save();
 
                 if ( $obj->getId() && isset($_POST['field']['id']) && is_array($_POST['field']['id']) ) {

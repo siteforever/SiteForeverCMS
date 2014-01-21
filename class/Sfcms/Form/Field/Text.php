@@ -5,8 +5,8 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Text extends Field
+class Text extends FormFieldAbstract
 {
 }

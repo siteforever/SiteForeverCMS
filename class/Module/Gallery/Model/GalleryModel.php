@@ -7,7 +7,7 @@ namespace Module\Gallery\Model;
 
 use Sfcms\Data\Collection;
 use Sfcms\Model;
-use Forms_Gallery_Image;
+use Module\Gallery\Form\ImageForm;
 use Sfcms\Request;
 
 class GalleryModel extends Model
@@ -122,12 +122,12 @@ class GalleryModel extends Model
     }
 
     /**
-     * @return Forms_Gallery_Image
+     * @return ImageForm
      */
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new Forms_Gallery_Image();
+            $this->form = new ImageForm();
         }
         return $this->form;
     }

@@ -25,14 +25,14 @@ function smarty_function_comment($params, Smarty_Internal_Template $smarty)
 
     /** @var \Sfcms\Request $request */
     $request = $smarty->tpl_vars['request']->value;
-    if ($form->getPost($request)) {
+    if ($form->handleRequest($request)) {
         if ($form->validate()) {
             $comment = $commentModel->createObject($form->getData());
             $comment->ip = $smarty->tpl_vars['request']->value->getClientIp();
             $comment->createdAt = new DateTime();
             $comment->updatedAt = $comment->createdAt;
             $comment->save();
-            $form->getField('content')->setValue('');
+            $form->getChild('content')->setValue('');
             $smarty->assign('ok', true);
             $request->getSession()->getFlashBag()->add('success', 'Комментарий добавлен успешно');
         }

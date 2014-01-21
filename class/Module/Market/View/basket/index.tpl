@@ -64,7 +64,7 @@
 
     <hr>
 
-    <div class="row">
+    <div class="row-fluid">
         <div class="span6">
             <div class="well">
                 <h3>Контактные данные</h3>

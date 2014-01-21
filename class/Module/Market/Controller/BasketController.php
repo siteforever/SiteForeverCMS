@@ -106,21 +106,21 @@ class BasketController extends Controller
         // Заполним методы доставки
         $deliveryModel = $this->getModel('Delivery');
         $deliveries    = $deliveryModel->findAll('active = ?', array(1), 'pos');
-        $form->getField('delivery_id')->setVariants($deliveries->column('name'));
+        $form->getChild('delivery_id')->setVariants($deliveries->column('name'));
 
         $deliveryManager = $this->app->getDeliveryManager($this->request, $order);
-        $form->getField('delivery_id')->setValue($deliveryManager->getType());
+        $form->getChild('delivery_id')->setValue($deliveryManager->getType());
 
         // Заполним методы оплаты
         $paymentModel = $this->getModel('Payment');
         $payments = $paymentModel->findAll('active = ?', array(1));
-        $form->getField('payment_id')->setVariants($payments->column('name'));
-        $form->getField('payment_id')->setValue($payments->rewind() ? $payments->rewind()->getId() : 0);
+        $form->getChild('payment_id')->setVariants($payments->column('name'));
+        $form->getChild('payment_id')->setValue($payments->rewind() ? $payments->rewind()->getId() : 0);
 
-        if ($form->getField('metro')) {
+        if ($form->getChild('metro')) {
             $metroModel = $this->getModel('Metro');
             $metro      = $metroModel->findAll('city_id = ?', array(2), 'name');
-            $form->getField('metro')->setVariants($metro->column('name'));
+            $form->getChild('metro')->setVariants($metro->column('name'));
         }
 
         // Список ID продуктов

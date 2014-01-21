@@ -59,4 +59,12 @@ abstract class Driver extends Component
         }
         return $this->_breacrumbs;
     }
+
+    /**
+     * @return Object
+     */
+    public function getEngine()
+    {
+        return $this->engine;
+    }
 }

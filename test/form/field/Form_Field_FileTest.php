@@ -20,7 +20,8 @@ class Form_Field_FileTest extends PHPUnit_Framework_TestCase
 
     public function testSendFile()
     {
-        $request = Request::create('/send',
+        $request = Request::create(
+            '/send',
             'POST',
             array('test' => array('name' => 'hello',),),
             array(),
@@ -35,7 +36,7 @@ class Form_Field_FileTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->form->getPost($request);
+        $this->form->handleRequest($request);
         $this->form->validate();
         $this->assertCount(0, $this->form->getErrors());
         $this->assertTrue($this->form->file instanceof UploadedFile);

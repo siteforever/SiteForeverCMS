@@ -6,12 +6,12 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class File extends Field
+class File extends FormFieldAbstract
 {
-    protected $_type = 'file';
+    protected $type = 'file';
     protected $mime;
     protected $size;
     protected $originalName;
@@ -25,7 +25,7 @@ class File extends Field
         if (!$value instanceof UploadedFile) {
             throw new \InvalidArgumentException('Value must be `Upload File` type');
         }
-        $this->_value = $value;
+        $this->value = $value;
         $this->originalName = $value->getClientOriginalName();
         $this->mime = $value->getClientMimeType();
         $this->size = $value->getClientSize();
@@ -35,7 +35,6 @@ class File extends Field
 
     protected function checkValue($value)
     {
-
         return true;
     }
 

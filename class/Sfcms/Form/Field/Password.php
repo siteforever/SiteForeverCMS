@@ -5,11 +5,11 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Password extends Field
+class Password extends FormFieldAbstract
 {
-    protected $_type      = 'password';
+    protected $type      = 'password';
 
     public function htmlInput($field)
     {

@@ -7,22 +7,22 @@
 namespace Module\Banner\Model;
 
 use Sfcms\Model;
-use Forms_Banners_Banner;
+use Module\Banner\Form\BannerForm;
 
 class BannerModel extends Model
 {
     /**
-     * @var Forms_Banners_Banner
+     * @var BannerForm
      */
     private $_form  = null;
 
      /**
-     * @return Forms_Banners_Banner
+     * @return BannerForm
      */
     function getForm()
     {
-        if (  null === $this->_form ) {
-            $this->_form = new Forms_Banners_Banner();
+        if (null === $this->_form) {
+            $this->_form = new BannerForm();
         }
         return $this->_form;
     }
@@ -31,12 +31,12 @@ class BannerModel extends Model
      * @param $id
      * @return bool
      */
-    public function onDeleteStart( $id = null )
+    public function onDeleteStart($id = null)
     {
-        $data = $this->find( $id );
-        if ( $data ) {
-            if ( $data['path'] && file_exists(ROOT.$data['path']) ) {
-                @unlink ( ROOT.$data['path'] );
+        $data = $this->find($id);
+        if ($data) {
+            if ($data['path'] && file_exists(ROOT . $data['path'])) {
+                @unlink(ROOT . $data['path']);
             }
             return true;
         }

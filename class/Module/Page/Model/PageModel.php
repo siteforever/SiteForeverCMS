@@ -1,15 +1,10 @@
 <?php
-/**
- * Модель структуры
- */
-
 namespace Module\Page\Model;
 
 use SimpleXMLElement;
 
-use Sfcms\Form\Form;
-use Forms_Page_Page;
 use Sfcms\Model;
+use Module\Page\Form\PageForm;
 use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
@@ -18,6 +13,8 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
 /**
+ * Pages structure
+ *
  * Class PageModel
  * @package Module\Page\Model
  */
@@ -425,14 +422,14 @@ class PageModel extends Model
 
     /**
      * Вернет объект формы
-     * @return Forms_Page_Page
+     * @return PageForm
      */
     public function getForm()
     {
         if (!isset( $this->form )) {
-            $this->form = new Forms_Page_Page();
-            $this->form->getField( 'controller' )->setVariants( $this->getAvaibleModules() );
-            $this->form->getField( 'protected' )->setVariants( self::getModel( 'User' )->getGroups() );
+            $this->form = new PageForm();
+            $this->form->getChild('controller')->setVariants($this->getAvaibleModules());
+            $this->form->getChild('protected')->setVariants(self::getModel('User')->getGroups());
         }
         return $this->form;
     }

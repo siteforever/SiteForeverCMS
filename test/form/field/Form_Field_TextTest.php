@@ -21,15 +21,18 @@ class Form_Field_TextTest extends WebCase
     protected function setUp()
     {
         parent::setUp();
-        $form   = new Form(array('name'=>'test','fields'=>array(
+        $form   = new Form(array(
+            'name'=>'test',
+            'fields'=>array(
                 'test'  => array(
                     'type'  => 'text',
                     'label' => 'test',
                     'value' => 'hello',
+                    'class' => 'input-xlarge',
                 ),
-            )), $this->request );
+            )));
 
-        $this->field = $form->getField('test');
+        $this->field = $form->getChild('test');
     }
 
     /**
@@ -100,10 +103,10 @@ class Form_Field_TextTest extends WebCase
     public function testHtml()
     {
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
-            ."<label for='test_test' class='control-label'>test</label>"
-            ."<div class='controls field-text'>"
-                ."<input id='test_test' type='text' class=\"input-xlarge\" name='test[test]' value='hello' />"
-            ."</div></div>", $this->field->html());
+            ."<label for=\"test_test\" class=\"control-label\">test</label>" . PHP_EOL
+            ."<div class=\"controls\">"
+                ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" value=\"hello\">"
+            ."</div></div>", trim($this->field->createView()->html()));
     }
 
     public function testHtmlCustom()
@@ -113,16 +116,19 @@ class Form_Field_TextTest extends WebCase
         $this->field->setRequired();
 
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
-                ."<label for='test_test' class='control-label'>Name&nbsp;<b>*</b> </label>"
-                ."<div class='controls field-text'>"
-                    ."<input id='test_test' type='text' class=\"input-xlarge required\" name='test[test]' value='Nikolay' />"
-                ."</div></div>", $this->field->html());
+                ."<label for=\"test_test\" class=\"control-label\">Наименование&nbsp;<b>*</b></label>" . PHP_EOL
+                ."<div class=\"controls\">"
+                    ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" required=\"required\" value=\"Nikolay\">"
+                ."</div></div>", trim($this->field->createView()->html()));
     }
 
     public function testHtmlHidden()
     {
         $this->field->hide();
 
-        $this->assertEquals("<input type='hidden' name='test[test]' id='test_test' value='hello' />", $this->field->html());
+        $this->assertEquals(
+            "<input id=\"test_test\" type=\"hidden\" class=\"input-xlarge\" name=\"test[test]\" value=\"hello\">",
+            trim($this->field->createView()->html())
+        );
     }
 }

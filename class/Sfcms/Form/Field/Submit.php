@@ -5,21 +5,10 @@
  */
 namespace Sfcms\Form\Field;
 
-use Sfcms\Form\Field;
+use Sfcms\Form\FormFieldAbstract;
 
-class Submit extends Field
+class Submit extends FormFieldAbstract
 {
-    protected $_class    = 'submit';
-
-
-    /**
-     * Вернет HTML для поля
-     * @param array $field
-     * @return string
-     */
-    public function htmlInput( $field )
-    {
-        return "<input {$field['id']} type='submit' class='btn' {$field['value']} />";
-    }
-
+    protected $type = 'submit';
+    protected $datable = false;
 }
