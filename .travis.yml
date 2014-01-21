@@ -3,6 +3,8 @@ php:
   - "5.5"
   - "5.4"
   - "5.3"
-script: phpunit -c test/
+script: phpunit -c test/phpunit.xml
 before_script:
-  - ./install-test.sh
+  - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar install --prefer-source --no-dev -o --no-interaction
