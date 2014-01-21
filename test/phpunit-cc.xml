@@ -30,6 +30,19 @@
             <!--<exclude>./web/*</exclude>-->
         </testsuite>
     </testsuites>
+    <filter>
+        <blacklist>
+            <directory suffix=".php">../runtime</directory>
+            <directory suffix=".php">../vendor</directory>
+        </blacklist>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">../class</directory>
+            <exclude>
+                <directory suffix="Test.php">.</directory>
+                <directory suffix="Test.php">../class/Module/*/Test</directory>
+            </exclude>
+        </whitelist>
+    </filter>
     <logging>
         <log type="coverage-html" target="./codeCoverage" charset="UTF-8"
              yui="true" highlight="false"
