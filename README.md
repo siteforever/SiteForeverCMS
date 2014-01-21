@@ -14,11 +14,10 @@ Our task - to make the creation and management of the site as simple as possible
 
 Content management system and framework for her writing in PHP. As a database server DBMS MySQL. This allows the system to run on most hosting platforms. SiteForeverCMS written in such a way that does not make any extra database query, thus speeding up the work of the whole site. In connection with this site, built on SiteForeverCMS will work stably even on a non-expensive hosting Tariff maintaining large attendance.
 
-
-Website: http://siteforever.ru
-Documentation: [Русский язык](doc/ru/index.md)
-Documentation: http://wiki.siteforever.ru
-Download: http://siteforever.ru/download
+* Website: http://siteforever.ru
+* Documentation: [Русский язык](doc/ru/readme.md)
+* Documentation: http://wiki.siteforever.ru
+* Download: http://siteforever.ru/download
 
 For usage read [Simple install][1]
 

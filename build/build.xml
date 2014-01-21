@@ -1,0 +1,408 @@
+<?xml version="1.0"?>
+<!-- build.xml -->
+
+<project name="site-forever-cms" default="release-standard" basedir=".">
+
+    <property name="version" value="0.6"/>
+    <property name="git" value="https://github.com/keltanas/SiteForeverCMS.git"/>
+
+    <property name="theme" value="basic"/>
+
+    <property name="db_login" value="root"/>
+    <property name="db_password" value=""/>
+    <property name="db_server" value="localhost"/>
+    <property name="db_name" value="siteforever_test"/>
+
+    <property name="build_dir" value="${phing.dir}/../_build"/>
+
+    <target name="gather">
+        <if>
+            <isset property="packageVersion"/>
+            <then>
+                <echo message="${phing.project.name} version number is ${packageVersion}" />
+            </then>
+            <else>
+                <propertyprompt propertyName="packageVersion" defaultValue="${version}"
+                                promptText="Enter ${phing.project.name} version number"/>
+            </else>
+        </if>
+        <if>
+            <isset property="releaseDate"/>
+            <then>
+                <echo message="Release date is ${releaseDate}" />
+            </then>
+            <else>
+                <propertyprompt propertyName="releaseDate" defaultValue="2014-01-01"
+                                promptText="Enter ${phing.project.name} release date"/>
+            </else>
+        </if>
+        <if>
+            <isset property="documentFormat"/>
+            <then>
+                <echo message="Document Format is ${documentFormat}" />
+            </then>
+            <else>
+                <propertyprompt propertyName="documentFormat" defaultValue="md"
+                                promptText="Enter Document Format"/>
+            </else>
+        </if>
+    </target>
+
+
+
+
+    <target name="prepare" depends="gather">
+        <echo msg="Creating build directory: ./build"/>
+        <mkdir dir="${build_dir}"/>
+    </target>
+
+
+
+    <target name="build" depends="prepare">
+        <echo msg="Copying source files to build directory..."/>
+
+        <copy todir="${build_dir}/app" overwrite="true">
+            <fileset dir="${build_dir}/../app">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/class" overwrite="true">
+            <fileset dir="${build_dir}/../class">
+                <include name="**/*"/>
+                <exclude name="**/Test*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/doc" overwrite="true">
+            <fileset dir="${build_dir}/../doc">
+                <include name="**/*.md"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/misc" overwrite="true">
+            <fileset dir="${build_dir}/../misc">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/themes" overwrite="true">
+            <fileset dir="${build_dir}/../themes">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/static" overwrite="true">
+            <fileset dir="${build_dir}/../static">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${build_dir}/vendor" overwrite="true">
+            <fileset dir="${build_dir}/../vendor">
+                <include name="**/*"/>
+                <exclude name="**/Test*"/>
+            </fileset>
+        </copy>
+
+
+        <mkdir dir="${build_dir}/../files"/>
+
+        <mkdir dir="${build_dir}/../runtime/cache" mode="0755"/>
+        <mkdir dir="${build_dir}/../runtime/logs" mode="0755"/>
+        <mkdir dir="${build_dir}/../runtime/templates" mode="0755"/>
+
+        <copy file="${build_dir}/../version.txt" tofile="${build_dir}/version.txt" overwrite="true"/>
+        <copy file="${phing.dir}/../license.txt" tofile="${build_dir}/license.txt" overwrite="true"/>
+        <copy file="${phing.dir}/../license.ru.txt" tofile="${build_dir}/license.ru.txt" overwrite="true"/>
+
+        <copy file="${build_dir}/../.htaccess" tofile="${build_dir}/.htaccess" overwrite="true"/>
+        <copy file="${build_dir}/../favicon.ico" tofile="${build_dir}/favicon.ico" overwrite="true"/>
+        <copy file="${build_dir}/../index.php" tofile="${build_dir}/index.php" overwrite="true"/>
+        <copy file="${build_dir}/../robots.txt" tofile="${build_dir}/robots.txt" overwrite="true"/>
+    </target>
+
+
+
+    <target name="versionNumber" depends="build">
+        <reflexive>
+            <fileset dir="${build_dir}">
+                <include name="**/*.php"/>
+                <include name="**/*.txt"/>
+                <include name="**/*.md"/>
+            </fileset>
+            <filterchain>
+                <replaceregexp>
+                    <regexp pattern="@version@" replace="${packageVersion}"/>
+                    <regexp pattern="@date@" replace="${releaseDate}"/>
+                </replaceregexp>
+            </filterchain>
+        </reflexive>
+    </target>
+
+
+
+    <target name="apidocs" depends="versionNumber">
+        <echo msg="Generating API documentation..."/>
+        <mkdir dir="${build_dir}/doc/api"/>
+        <phpdoc2 title="${phing.project.name} classes"
+                 destdir="${build_dir}/doc/api"
+                 template="responsive">
+            <fileset dir="${build_dir}/class">
+                <include name="**/*.php"/>
+            </fileset>
+        </phpdoc2>
+    </target>
+
+
+
+
+    <target name="release-standard" depends="apidocs">
+        <mkdir dir="${phing.dir}/release"/>
+
+        <echo msg="Creating release package (v${packageVersion} with ${documentFormat} documents)..."/>
+        <zip destfile="${phing.dir}/release/${phing.project.name}-${packageVersion}-${documentFormat}.zip">
+            <fileset dir="${build_dir}">
+                <include name="**/*"/>
+            </fileset>
+        </zip>
+        <zip destfile="${phing.dir}/../api.zip">
+            <fileset dir="${build_dir}/doc/api">
+                <include name="*"/>
+            </fileset>
+        </zip>
+
+        <echo msg="Cleaning build directory: ./build"/>
+        <delete dir="${build_dir}" includeemptydirs="true"/>
+    </target>
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Setup on this server -->
+    <target name="setup">
+
+        <!-- clear properties and cache -->
+        <echo message="Clear properties and cache"/>
+
+        <delete dir="${destdir}/protected"/>
+        <delete file="${destdir}/images"/>
+        <delete file="${destdir}/misc"/>
+        <delete file="${destdir}/themes/basic"/>
+
+        <echo message="Create application structure"/>
+
+        <mkdir dir="${destdir}/files"/>
+
+        <mkdir dir="${destdir}/protected"/>
+        <mkdir dir="${destdir}/_runtime"/>
+        <mkdir dir="${destdir}/_runtime/_templates_c"/>
+        <mkdir dir="${destdir}/protected/config"/>
+
+        <!--<symlink link="${destdir}/images" target="${basedir}/images"/>-->
+        <!--<symlink link="${destdir}/misc" target="${basedir}/misc"/>-->
+        <copy todir="${destdir}/class" overwrite="true">
+            <fileset dir="${basedir}/class"/>
+        </copy>
+        <copy todir="${destdir}/vendors" overwrite="true">
+            <fileset dir="${basedir}/vendors"/>
+        </copy>
+        <copy todir="${destdir}/images" overwrite="true">
+            <fileset dir="${basedir}/images"/>
+        </copy>
+        <copy todir="${destdir}/misc" overwrite="true">
+            <fileset dir="${basedir}/misc"/>
+        </copy>
+
+        <mkdir dir="${destdir}/_runtime"/>
+        <copy todir="${destdir}/vendors/sxd" overwrite="true">
+            <fileset dir="${basedir}/_runtime/sxd"/>
+        </copy>
+
+        <mkdir dir="${destdir}/themes"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/css"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/images"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/js"/>
+        <mkdir dir="${destdir}/themes/${phing.project.name}/templates"/>
+
+        <!--<symlink link="${destdir}/themes/basic" target="${basedir}/themes/basic"/>-->
+        <copy todir="${destdir}/themes/basic" overwrite="true">
+            <fileset dir="${basedir}/themes/basic"/>
+        </copy>
+
+
+        <copy file="${basedir}/.htaccess" tofile="${destdir}/.htaccess" overwrite="true"/>
+        <copy file="${basedir}/modules.php" tofile="${destdir}/modules.php" overwrite="true"/>
+
+        <!-- config -->
+        <copy file="${basedir}/protected/config/sample.php"
+              tofile="${destdir}/protected/config/${phing.project.name}.php"
+              overwrite="true">
+            <filterchain>
+                <replacetokens>
+                    <token key="theme"      value="${theme}"/>
+                    <token key="db_login"   value="${db_login}"/>
+                    <token key="db_password" value="${db_password}"/>
+                    <token key="db_server"  value="${db_server}"/>
+                    <token key="db_name"    value="${db_name}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+    </target>
+
+
+
+
+
+    <!-- Build an autonomous project  -->
+    <!--<target name="build">-->
+
+        <!--<property name="distribname" value="siteforever_${version}.${revision}.tgz"/>-->
+        <!--<echo>Distribution file: ${distribname}</echo>-->
+
+        <!--<delete file="${user.home}/projects/${distribname}"/>-->
+
+        <!--<delete dir="${destdir}"/>-->
+
+        <!--<mkdir dir="${destdir}"/>-->
+
+        <!--<copy todir="${destdir}">-->
+            <!--<fileset dir="${basedir}">-->
+                <!--<exclude name=".idea/**"/>-->
+                <!--<exclude name="files/**"/>-->
+                <!--<exclude name="test/**"/>-->
+                <!--<exclude name="protected/_runtime/**"/>-->
+                <!--<exclude name="protected/config/**"/>-->
+                <!--<exclude name="functionsTest.php"/>-->
+                <!--<exclude name="build.xml"/>-->
+                <!--<exclude name="info.php"/>-->
+                <!--<exclude name="install.php"/>-->
+                <!--<exclude name="pack.php"/>-->
+                <!--<exclude name="todo.txt"/>-->
+            <!--</fileset>-->
+            <!--<filterchain>-->
+                <!--<replacetokens>-->
+                    <!--<token key="version" value="${version}.${revision}"/>-->
+                <!--</replacetokens>-->
+            <!--</filterchain>-->
+        <!--</copy>-->
+
+        <!--&lt;!&ndash; make other dirs &ndash;&gt;-->
+        <!--<mkdir dir="${destdir}/protected/_runtime/_templates_c"/>-->
+        <!--<mkdir dir="${destdir}/protected/config"/>-->
+        <!--<mkdir dir="${destdir}/files"/>-->
+
+        <!--&lt;!&ndash; config &ndash;&gt;-->
+        <!--<copy file="${basedir}/protected/config/sample.php"-->
+              <!--tofile="${destdir}/protected/config/${phing.project.name}.php"-->
+              <!--overwrite="true">-->
+            <!--<filterchain>-->
+                <!--<replacetokens>-->
+                    <!--<token key="theme"      value="${theme}"/>-->
+                    <!--<token key="db_login"   value="${db_login}"/>-->
+                    <!--<token key="db_password" value="${db_password}"/>-->
+                    <!--<token key="db_server"  value="${db_server}"/>-->
+                    <!--<token key="db_name"    value="${db_name}"/>-->
+                <!--</replacetokens>-->
+            <!--</filterchain>-->
+        <!--</copy>-->
+
+        <!--&lt;!&ndash; coping .htaccess files &ndash;&gt;-->
+        <!--<copy todir="${destdir}">-->
+            <!--<fileset dir="${basedir}">-->
+                <!--<include name="**/.htaccess"/>-->
+            <!--</fileset>-->
+        <!--</copy>-->
+
+        <!--&lt;!&ndash; create disptibution archive &ndash;&gt;-->
+        <!--<tar destFile="${user.home}/projects/${distribname}" compression="gzip">-->
+            <!--<fileset dir="${destdir}">-->
+                <!--<include name="**/**" />-->
+                <!--<include name="**/.htaccess" />-->
+            <!--</fileset>-->
+        <!--</tar>-->
+
+    <!--</target>-->
+
+
+
+
+
+    <target name="phar">
+        <pharpackage
+                destfile="./sfcms.phar"
+                basedir="..//">
+            <fileset dir="../class">
+                <include name="**/**"/>
+            </fileset>
+            <metadata>
+                <element name="version" value="0.4"/>
+                <element name="authors">
+                    <element name="Nikolay Ermin">
+                        <element name="e-mail" value="keltanas@gmail.com"/>
+                    </element>
+                </element>
+            </metadata>
+        </pharpackage>
+    </target>
+
+
+
+
+
+    <target name="sflite">
+        <delete file="class/sflite.php"/>
+        <append destFile="class/sflite.php">
+            <fileset dir="../class">
+                <include name="app.php"/>
+                <include name="application/*.php"/>
+                <include name="auth.php"/>
+                <include name="auth/*.php"/>
+                <include name="basket.php"/>
+                <include name="basket/*.php"/>
+                <include name="db.php"/>
+                <include name="db/*.php"/>
+                <include name="form/*.php"/>
+                <include name="sfcms/*.php"/>
+                <include name="tpl/*.php"/>
+                <include name="view/*.php"/>
+                <include name="pager.php"/>
+            </fileset>
+        </append>
+    </target>
+
+
+
+
+
+    <!--<target name="minimify">-->
+        <!--<mkdir dir="_runtime/asset" />-->
+        <!--<delete file="_runtime/asset/admin.js"/>-->
+        <!--<delete file="_runtime/asset/require-jquery.js"/>-->
+        <!--<append destFile="_runtime/asset/require-jquery.js">-->
+            <!--<fileset dir="../misc">-->
+                <!--<include name="require-jquery.js"/>-->
+            <!--</fileset>-->
+        <!--</append>-->
+        <!--<append destFile="_runtime/asset/admin.js">-->
+            <!--<fileset dir="../misc">-->
+                <!--<include name="admin/*.js"/>-->
+            <!--</fileset>-->
+        <!--</append>-->
+        <!--<jsMin targetDir="_runtime/asset" failOnError="true">-->
+            <!--<fileset dir="_runtime/asset">-->
+                <!--<include name="require-jquery.js"/>-->
+                <!--<include name="admin.js"/>-->
+            <!--</fileset>-->
+        <!--</jsMin>-->
+    <!--</target>-->
+
+</project>

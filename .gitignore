@@ -1,5 +1,9 @@
 /.idea/
 /runtime/
+/_build/
+/api.zip
+/build/release
+/test/codeCoverage
 /files/.quarantine
 /files/.tmb
 /thumbs/
