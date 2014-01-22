@@ -67,10 +67,14 @@
             </fileset>
         </copy>
 
+        <chmod file="${build_dir}/app/console" mode="0755"/>
+
         <copy todir="${build_dir}/class" overwrite="true">
             <fileset dir="${build_dir}/../class">
                 <include name="**/*"/>
-                <exclude name="**/Test*"/>
+                <exclude name="**/Test.php"/>
+                <exclude name="**/TestSe.php"/>
+                <exclude name="**/TestExported.php"/>
             </fileset>
         </copy>
 
@@ -157,7 +161,7 @@
 
         <copy todir="${phing.dir}/release/api" overwrite="true">
             <fileset dir="${build_dir}/doc/api">
-                <include name="*"/>
+                <include name="**/*"/>
             </fileset>
         </copy>
     </target>
