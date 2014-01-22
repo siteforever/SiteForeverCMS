@@ -79,6 +79,7 @@
             <div class="controls">
                 {form_input form=$form class=$class}
                 {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['textarea'])}
@@ -86,13 +87,15 @@
             <div class="controls">
                 <textarea{call form_row_attr class=$class form=$form}>{$attr.value}</textarea>
                 {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['checkbox'])}
             {form_label form=$form class="control-label" domain=$domain}
             <div class="controls">
                 <input type="hidden" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="0">
-                <input type="checkbox" id="{$attr.id}" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="1"{if $attr.value} checked="checked"{/if}>
+                <input type="checkbox" id="{$attr.id}" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="1" {if $attr.value} checked="checked"{/if}>
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['radio'])}
@@ -100,10 +103,11 @@
             <div class="controls">
                 {foreach $attr.variants as $title}
                     <label>
-                        <input type="radio" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="{$title@key}"{if $title@key == $attr.value}checked="checked" {/if}> <span>{$title|trans:[]:$domain}</span>
+                        <input type="radio" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="{$title@key}" {if $title@key == $attr.value} checked="checked" {/if}> <span>{$title|trans:[]:$domain}</span>
                     </label>&nbsp;
                 {/foreach}
                 {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['select'])}
@@ -115,6 +119,7 @@
                 {/foreach}
                 </select>
                 {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['captcha'])}
@@ -125,6 +130,7 @@
                 <img src="{link controller="captcha"}" alt="captcha" />
                 <span class="captcha-reload">{'Refresh'|trans:[]:$domain}</span>
                 {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['button','reset','submit'])}
@@ -132,6 +138,7 @@
             <div class="controls">
                 {$class = ["btn", $attr.class]}
                 <input type="{$attr.type}"{if $class} class="{$class|join:" "|trim}"{/if} name="{$form->parent->vars.attr.name}[{$attr.name}]"{if trim($attr.id)} id="{$attr.id}" {/if} value="{$attr.value|trans:[]:$domain}">
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
             {/if}

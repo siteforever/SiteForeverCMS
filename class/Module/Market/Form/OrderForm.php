@@ -7,6 +7,7 @@
 
 namespace Module\Market\Form;
 
+use Sfcms\Form\Field\Checkbox;
 use Sfcms\Form\Form;
 use Sfcms\Router;
 
@@ -14,7 +15,7 @@ class OrderForm extends Form
 {
     public function __construct()
     {
-        return parent::__construct(array(
+        parent::__construct(array(
             'name'      => 'order',
             'class'     => 'ajax-validate',
 //            'action'    => $this->getRouter()->createServiceLink('basket','index'),

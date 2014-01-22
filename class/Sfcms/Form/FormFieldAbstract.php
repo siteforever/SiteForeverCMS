@@ -2,7 +2,6 @@
 namespace Sfcms\Form;
 
 use Sfcms\Request;
-use Sfcms\Form\FormView;
 use Symfony\Component\Form\FormView as SymfonyFormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -93,7 +92,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
         $options = $this->options = $resolver->resolve($options);
 
         $this->name = $options['name'];
-        $this->type = $options['type'];
+        $this->type = $this->type ?: $options['type'];
         $this->class = $options['class'];
         $this->label = $options['label'];
         $this->notice = $options['notice'];
@@ -141,6 +140,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
                 'name' => $this->getName(),
                 'type' => $this->getType(),
                 'label' => $this->getLabel(),
+                'notice' => $this->notice,
                 'class' => $this->getClass(),
                 'errors' => $this->getErrors(),
                 'error'  => $this->error,
@@ -334,153 +334,6 @@ abstract class FormFieldAbstract extends FormTypeAbstract
 
         return true;
     }
-
-
-
-
-
-
-    /**
-     * Возвращает HTML для поля
-     * @return string
-     */
-//    public function html()
-//    {
-//        // если поле скрытое, то вывести скрытое
-//        if ( $this->hidden ) {
-//            return $this->doInputHidden();
-//        }
-//        return $this->htmlWrapped();
-//    }
-
-//    /**
-//     * Декоратор полей
-//     * @return string
-//     */
-//    protected function htmlWrapped()
-//    {
-//        $class = array('control-group');
-//        if ( $this->error ) $class[] = 'error';
-//
-//        return '<div class="'.implode(' ', $class).'" data-field-name="'.$this->name.'">'
-//                   .$this->htmlLabel()
-//                   ."<div class='controls field-{$this->getType()}'>"
-//                       .$this->htmlField() . $this->htmlError() . $this->htmlNotice() ."</div>"
-//                ."</div>";
-//    }
-
-//    /**
-//     * Output error
-//     * @return string
-//     */
-//    public function htmlError()
-//    {
-//        return $this->error ? "<div class='help-inline'>{$this->msg}</div>" : '';
-//    }
-
-//    /**
-//     * Выводит метку для поля
-//     * @return string
-//     */
-//    public function htmlLabel()
-//    {
-//        $class = array('control-label');
-//        if ( $this->error ) {
-//            $class[] = 'error';
-//        }
-//        return "<label for='{$this->getId()}' class='".implode(' ', $class)."'>"
-//            .$this->label
-//            .( $this->isRequired() ? '&nbsp;<b>*</b> ' : '' )
-//            ."</label>";
-//    }
-
-//    /**
-//     * Выводит Подсказку для поля
-//     * @return string
-//     */
-//    public function htmlNotice()
-//    {
-//        if ( $this->notice ) {
-//            $this->options[ 'help-block' ] = $this->notice;
-//        }
-//
-//        if ( ! empty( $this->options['help-block'] ) ) {
-//            return "<div class=\"help-block\"><small>{$this->options['help-block']}</small></div>";
-//        }
-//
-//        if ( ! empty( $this->options['help-inline'] ) ) {
-//            return "<div class=\"help-inline\"><small>{$this->options['help-inline']}</small></div>";
-//        }
-//
-//        return "";
-//    }
-
-//    public function htmlField()
-//    {
-//        $field = array();
-//
-//        $field['id']  = "id='{$this->getId()}'";
-//
-//        $field['type']     = "type='{$this->getType()}'";
-//
-//        $class = explode( ' ', $this->class );
-//
-//        // исключения из типов
-//        if ( in_array( $this->getType(), array('int', 'float', 'date', 'password') ) )
-//        {
-//            $class['type'] = 'text';
-//        }
-//
-//        if ( $this->isRequired() ) {
-//            $class['required']  = "required";
-//        }
-//
-//        $field['class']    = $class;
-//
-//        $field['name']     = "name='{$this->parent->getName()}[{$this->name}]'";
-//        $field['value']    = "value='{$this->getStringValue()}'";
-//
-//        if ( $this->readonly ) {
-//            $field['readonly'] = 'readonly="readonly"';
-//            $field['class']['readonly'] = 'readonly';
-//        }
-//
-//        if ( $this->disabled ) {
-//            $field['disabled'] = 'disabled="disabled"';
-//        }
-//
-//        if ( isset($this->options['autocomplete']) ) {
-//            $field['autocomplete']  = 'autocomplete="'.$this->options['autocomplete'].'"';
-//        }
-//        return $this->htmlInput( $field );
-//    }
-
-//    /**
-//     * Вернет HTML для поля
-//     * @param $field
-//     * @return string
-//     */
-//    public function htmlInput($field)
-//    {
-//        if (is_array($field['class']) && !in_array($this->class, $field['class'])) {
-//            $field['class'][] = $this->class;
-//        }
-//        if (is_array($field['class'])) {
-//            $field['class'] = join(' ', $field['class']);
-//        }
-//        $field['class'] = 'class="' . $field['class'] . '"';
-//
-//        return "<input " . join(' ', $field) . " />";
-//    }
-
-//    /**
-//     * Вернет HTML для скрытого поля
-//     * @return string
-//     */
-//    protected function doInputHidden()
-//    {
-//        return "<input type='hidden' name='{$this->parent->name()}[{$this->name}]' id='{$this->getId()}' value='{$this->value}' />";
-//    }
 
     /**
      * @param $readonly

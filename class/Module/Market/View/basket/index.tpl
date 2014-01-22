@@ -62,13 +62,14 @@
     </tfoot>
     </table>
 
+{$form->htmlFieldWrapped('agreement')}
+
     <hr>
 
     <div class="row-fluid">
         <div class="span6">
             <div class="well">
                 <h3>Контактные данные</h3>
-
                 {$form->htmlFieldWrapped('fname')}
                 {$form->htmlFieldWrapped('lname')}
                 {$form->htmlFieldWrapped('email')}
