@@ -10,16 +10,41 @@ use Sfcms\Test\WebCase;
 
 class CatalogControllerTest extends WebCase
 {
-
-    public function testIndexAction()
+    /**
+     * @covers \Module\Catalog\Controller\CatalogController::indexAction
+     * @covers \Module\Catalog\Controller\CatalogController::viewCategory
+     * @covers \Sfcms\Model::getRelation
+     */
+    public function testViewCategory()
     {
-//        $response = $this->runRequest('/catalog/velosipedy');
-//        var_dump($response->getContent());
+        $response = $this->runRequest('/catalog');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Каталог', $crawler->filter('h1')->text());
+
+        $response = $this->runRequest('/catalog', 'GET', array('order'=>'name'));
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Каталог', $crawler->filter('h1')->text());
+
+        $this->runRequest('/catalog', 'GET', array('order'=>'bad'));
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Каталог', $crawler->filter('h1')->text());
+    }
+
+    /**
+     * @covers \Module\Catalog\Controller\CatalogController::indexAction
+     * @covers \Module\Catalog\Controller\CatalogController::viewProduct
+     */
+    public function testViewProduct()
+    {
+        $response = $this->runRequest('/catalog/telefony/telefony-htc/7-htc-evo-3d');
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('HTC Evo 3D', $crawler->filter('h1')->text());
     }
 
     /**
      * @covers \Module\Page\Controller\PageController::saveAction
      * @covers \Module\Page\Controller\PageController::init
+     * @covers \App::run
      * @covers \App::handleRequest
      * @covers \Sfcms\Kernel\AbstractKernel::getResolver
      * @covers \Sfcms\Controller\Resolver::dispatch

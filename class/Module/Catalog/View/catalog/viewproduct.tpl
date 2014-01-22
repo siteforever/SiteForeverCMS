@@ -1,4 +1,3 @@
-
 <div class="hproduct" itemscope itemtype="http://schema.org/Product">
     <div class="row-fluid">
         {if $item.image}
@@ -19,6 +18,8 @@
                 <span>{$item.currency}</span>
                 {else}{"absent"|trans:catalog|ucfirst}{/if}
             </div>
+
+            <h1>{$this->request->getTitle()}</h1>
 
             {if $item.articul}<div>{'Article'|trans:[]:'catalog'}: <span>{$item.articul}</span></div>{/if}
 

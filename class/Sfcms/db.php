@@ -299,16 +299,16 @@ final class db
      * @param array $params
      * @return \PDOStatement
      */
-    public function prepare($sql, array $params)
+    public function execute($sql, array $params)
     {
-        try {
-            $this->result = $this->resource->prepare($sql);
-            $this->result->execute($params);
-        } catch ( \PDOException $e ) {
-            $this->logger->error($sql, $params);
-            $this->logger->error($e->getMessage(), array($e->getTrace()));
-            return null;
-        }
+        $this->result = $this->resource->prepare($sql);
+        $this->result->execute($params);
+//        try {
+//        } catch (\PDOException $e) {
+//            $this->logger->error($sql, $params);
+//            $this->logger->error($e->getMessage(), array($e->getTrace()));
+//            return null;
+//        }
 
         return $this->result;
     }
@@ -330,7 +330,7 @@ final class db
             throw new Exception('DB: Using FETCH no for SELECT');
         }
 
-        $this->prepare( $sql, $params );
+        $this->execute( $sql, $params );
 
         $num_rows = $this->result->columnCount();
 
@@ -359,70 +359,70 @@ final class db
      * Возвращает все строки результата запроса
      *
      * @param string $sql
-     * @param bool $index_id|array $params
+     * @param bool $indexId|array $params
      * @param int $extract
      * @param array $params
      * @return array in array
      */
-    function fetchAll( $sql, $index_id = false, $extract = self::F_ASSOC, array $params = array() )
+    public function fetchAll($sql, $indexId = false, $extract = self::F_ASSOC, array $params = array())
     {
         $start  = microtime(1);
-        $sql    = trim( $sql );
-        $command    = substr($sql, 0, strpos($sql, ' '));
+        $sql    = trim($sql);
+        $command= substr($sql, 0, strpos($sql, ' '));
 
-        if ( is_array( $index_id ) ) {
-            $params = $index_id;
-            $index_id = false;
+        if (is_array($indexId)) {
+            $params = $indexId;
+            $indexId = false;
             $extract = self::F_ASSOC;
         }
 
-        if ( ! in_array( $command, array('SELECT','SHOW') )) {
+        if (!in_array($command, array('SELECT','SHOW'))) {
             throw new dbException('Использование fetchAll не для SELECT или SHOW');
         }
 
-        $this->prepare( $sql, $params );
+        $result = $this->execute($sql, $params);
 
-        $num_rows = $this->result->columnCount();
+        $numRows = $result->columnCount();
 
-        if ( $this->result && $num_rows ) {
+        if ($result && $numRows) {
 
-            $all_data = $this->result->fetchAll( $extract );
+            $allData = $this->result->fetchAll($extract);
 
-            $indexed_data = array();
+            $indexedData = array();
 
-            if ( $extract == db::F_XML ) {
+            if ($extract == db::F_XML) {
                 $xml = new SimpleXMLElement('<alldata></alldata>');
-                foreach ( $all_data as $data ) {
+                foreach ($allData as $data) {
                     $xdata = $xml->addChild('data');
-                    foreach ( $data as $n => $v ) {
+                    foreach ($data as $n => $v) {
                         $field = $xdata->addChild('field', $v);
                         $field->addAttribute('name', $n);
                     }
                 }
-                $all_data   = $xml->asXML();
+                $allData   = $xml->asXML();
             } else {
-                if ( $index_id ) {
-                    foreach ( $all_data as $data ) {
-                        if ( $extract == self::F_OBJ ) {
+                if ($indexId) {
+                    foreach ($allData as $data) {
+                        if ($extract == self::F_OBJ) {
                             $index  = $data->id;
                         }
-                        elseif (isset( $data['id'] )) {
-                            $index  = $data['id'];
-                        } elseif ( isset( $data[0] ) ) {
-                            $index  = $data[0];
+                        elseif (isset($data['id'])) {
+                            $index = $data['id'];
+                        } elseif (isset($data[0])) {
+                            $index = $data[0];
                         }
                         else {
-                            $index  = null;
+                            $index = null;
                         }
-                        $indexed_data[ $index ] = $data;
+                        $indexedData[$index] = $data;
                     }
-                    $all_data = $indexed_data;
+                    $allData = $indexedData;
                 }
             }
             $exec = round(microtime(1)-$start, 4);
             $this->log( $sql." ($exec sec)" );
             $this->time += $exec;
-            return $all_data;
+            return $allData;
         }
         return false;
     }
@@ -454,7 +454,7 @@ final class db
             throw new dbException('Using fetchOne not for SELECT');
         }
 
-        $this->prepare( $sql, $params );
+        $this->execute( $sql, $params );
 
         $num_rows = $this->result->columnCount();
 

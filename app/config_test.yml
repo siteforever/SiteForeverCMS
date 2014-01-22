@@ -9,3 +9,9 @@ system:
     session:
         storage: mock
         handler: native
+
+catalog:
+    level: 5
+    order_list:
+        name: name
+        bad: bad

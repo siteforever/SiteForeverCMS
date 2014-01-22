@@ -205,6 +205,22 @@ div.guestbook_title {
     font-size: 2em;
     margin-bottom: 5px;
 }
+.b-catalog-product-price .b-product-sale {
+    display: block;
+    font-size: 14px;
+    text-align: right;
+}
+.b-catalog-product-price .sale,
+.b-catalog-product-price .hot,
+.b-catalog-product-price .cool {
+    color: #FF0000;
+}
+.b-catalog-product-price .cool {
+    color: #0000FF;
+}
+.b-catalog-product-price .sale {
+    color: #333333;
+}
 
 .b-product-properties-item,
 .b-catalog-product-properties-item {

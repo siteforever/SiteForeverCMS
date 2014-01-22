@@ -61,7 +61,8 @@ gallery:
 catalog:
     level: 5
     order_list:
-        name: Name
-        price: Price
+        name: name
+        price1: price-a
+        price1-d: price-d
 
 guestbook: ~

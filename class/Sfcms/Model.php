@@ -465,7 +465,7 @@ abstract class Model extends Component
 
         $raw = $this->getDB()->fetchAll($query->getSQL());
 
-        if (count($raw)) {
+        if ($raw) {
             $collection = new Collection($raw, $this);
 
             if (count($with)) {

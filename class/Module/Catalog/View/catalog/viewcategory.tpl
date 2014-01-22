@@ -1,29 +1,36 @@
-<div class="catalog_order">
-    {t cat="catalog"}Sort{/t}
-    <select class="catalog_select_order">
-        {foreach from=$order_list item="ord" key="ord_key"}
-        <option value="{$ord_key}" {if $order_val eq $ord_key}selected="selected"{/if}>{$ord|trans}</option>
-        {/foreach}
-    </select>
-</div>
+<h1>{$request->getTitle()}</h1>
 
+<div class="catalog_order">{strip}
+    <h4>{t cat="catalog"}Sort{/t}</h4>
+    <ul class="catalog_select_order">
+        {foreach from=$order_list item="ord" key="ord_key"}
+        <li data-value="{$ord_key}">
+            {if $order_val eq $ord_key}
+                <strong>{$ord|trans|ucfirst} {if $order_val eq $ord_key}↕{/if}</strong>
+            {else}
+                <a href="?order={$ord_key}">{$ord|trans|ucfirst}</a>
+            {/if}
+        </li>
+        {/foreach}
+    </ul>
+    <div class="clearfix"></div>
+{/strip}</div>
 {*<div class="clear"></div>*}
 
 {if $cats}
-<ul class="b-cat-list">
+<h4>{'categories'|trans|ucfirst}</h4>
+<ul class="b-cat-list">{strip}
     {foreach from=$cats item="cat"}
     <li><a {href url=$cat->url}>{$cat->name} {*({$cat.sub_count})*}</a></li>
     {/foreach}
 </ul>
-{/if}
+{/strip}{/if}
 
 
 <form action="{link url="basket"}" method="post">
 {foreach from=$list item="item"}
 
     <div class="well">
-        {if $item->isSale()}<span class="hot">Sale</span>{else}Not sale{/if}
-        {if $item.salePrice}<span class="hot">{$item.salePrice}</span>{/if}
         <div class="row-fluid">
             <div class="span3">
                 {a href=$item->url class="thumbnail"}
@@ -32,10 +39,13 @@
             </div>
             <div class="span9">
                 <div class="b-catalog-product-price">
-                    <span class="b-product-price">{$item.price|string_format:"%.0f"}</span>
-                    <span>{$item.currency} Р.</span>
+                    <span class="b-product-price">{$item.price|string_format:"%.2f"}</span>
+                    <span class="b-product-currency">{$item.currency|default:"RUR"}</span>
+                    <div class="b-product-sale">
+                        {if $item->isSale()}<span class="hot">Sale</span>{else}<span class="cool">Not sale</span>{/if}
+                        {if $item.salePrice}<span class="sale">{$item.salePrice|string_format:"%.2f"} {$item.currency|default:"RUR"}</span>{/if}
+                    </div>
                 </div>
-
                 <div class="b-catalog-product-title">{a href=$item->url}{$item.name}{/a}</div>
 
                 {if $item.articul}<div class="b-catalog-product-articul">

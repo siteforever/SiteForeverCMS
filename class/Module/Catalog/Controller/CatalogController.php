@@ -120,10 +120,11 @@ class CatalogController extends Controller
             if (!($set = $this->request->get('order'))) {
                 $set = $this->request->getSession()->get('Sort', false);
             }
-            if ($set && $this->config->get('catalog.order_list.' . $set)) {
+            if ($set && isset($config['order_list'][$set])) {
                 $order = $set;
                 $this->request->set('order', $order);
                 $this->request->getSession()->set('Sort', $order);
+//                $this->request->setTitle(sprintf('%s %s "%s"', $this->request->getTitle(), $this->t('sorting'), $this->t($config['order_list'][$set])));
             }
         }
 
@@ -166,7 +167,7 @@ class CatalogController extends Controller
             // количество товаров
             $count = $catModel->count($criteria);
             if ($order) {
-                $criteria->order = str_replace('-d', ' DESC', $order);
+                $criteria->order = str_replace(array('-d', '_d'), ' DESC', strtolower($order));
             }
 
             $paging = $this->paging(
