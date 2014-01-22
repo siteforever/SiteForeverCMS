@@ -135,4 +135,3 @@ class Example extends PHPUnit_Extensions_SeleniumTestCase
         $this->waitForPageToLoad("30000");
   }
 }
-?>

@@ -3,17 +3,15 @@
  * Event dispatched for order payment
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
-
 namespace Module\Market\Event;
-
 
 use Module\Market\Component\Payment;
 use Module\Market\Object\Payment as PaymentType;
 use Module\Market\Object\Order;
 use Sfcms\DeliveryManager;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 
-class PaymentEvent extends Event
+class PaymentEvent extends SymfonyEvent
 {
     /** @var Payment */
     private $payment = null;

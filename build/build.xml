@@ -145,6 +145,8 @@
     <target name="apidocs" depends="versionNumber">
         <echo msg="Generating API documentation..."/>
         <mkdir dir="${build_dir}/doc/api"/>
+        <delete dir="${phing.dir}/release/api" includeemptydirs="true"/>
+        <mkdir dir="${phing.dir}/release/api"/>
         <phpdoc2 title="${phing.project.name} classes"
                  destdir="${build_dir}/doc/api"
                  template="responsive">
@@ -152,6 +154,12 @@
                 <include name="**/*.php"/>
             </fileset>
         </phpdoc2>
+
+        <copy todir="${phing.dir}/release/api" overwrite="true">
+            <fileset dir="${build_dir}/doc/api">
+                <include name="*"/>
+            </fileset>
+        </copy>
     </target>
 
 
@@ -161,14 +169,10 @@
         <mkdir dir="${phing.dir}/release"/>
 
         <echo msg="Creating release package (v${packageVersion} with ${documentFormat} documents)..."/>
+
         <zip destfile="${phing.dir}/release/${phing.project.name}-${packageVersion}-${documentFormat}.zip">
             <fileset dir="${build_dir}">
                 <include name="**/*"/>
-            </fileset>
-        </zip>
-        <zip destfile="${phing.dir}/../api.zip">
-            <fileset dir="${build_dir}/doc/api">
-                <include name="*"/>
             </fileset>
         </zip>
 
