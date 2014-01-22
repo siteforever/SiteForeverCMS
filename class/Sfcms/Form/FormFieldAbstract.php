@@ -296,7 +296,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
 
         $this->checkValid($request);
 
-        if ($this->error > 0) {
+        if ($this->parent && $this->error > 0) {
             $this->parent->addError($this->name, $this->msg);
             $classes[] = 'error';
             $this->class = join(' ', $classes);

@@ -245,10 +245,6 @@ div.guestbook_title {
     margin-left: 100px;
 }
 
-.control-label {
-    white-space: nowrap;
-}
-
 #delivery .control-label,
 #payment .control-label {
     display: block;

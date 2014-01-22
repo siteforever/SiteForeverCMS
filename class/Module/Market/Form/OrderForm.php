@@ -95,5 +95,12 @@ class OrderForm extends Form
                 'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
             ),
         ));
+
+        $this->setChild(new Checkbox(array(
+                'name' => 'agreement',
+                'required',
+                'label' => 'Я принимаю условия пользовательского соглашения',
+                'value' => '0',
+            )));
     }
 }

@@ -165,6 +165,7 @@ abstract class FormTypeAbstract
     {
         if (!$after) {
             $this->children[$child->getName()] = $child;
+            $child->setParent($this);
             return $child;
         }
 

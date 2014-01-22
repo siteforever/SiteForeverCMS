@@ -1,7 +1,7 @@
 {if $all_count == 0}
 <p>В корзине нет товаров</p>
 {else}
-{form form=$form}
+{form form=$form class="form-horizontal"}
     <table class="table">
     <thead>
         <tr>
@@ -62,50 +62,45 @@
     </tfoot>
     </table>
 
-{$form->htmlFieldWrapped('agreement')}
-
     <hr>
 
-    <div class="row-fluid">
-        <div class="span6">
-            <div class="well">
-                <h3>Контактные данные</h3>
-                {$form->htmlFieldWrapped('fname')}
-                {$form->htmlFieldWrapped('lname')}
-                {$form->htmlFieldWrapped('email')}
-                {$form->htmlFieldWrapped('phone')}
-                {$form->htmlFieldWrapped('zip')}
-                {$form->htmlFieldWrapped('country')}
-                {$form->htmlFieldWrapped('city')}
-                {$form->htmlFieldWrapped('metro')}
-                {$form->htmlFieldWrapped('address')}
-                {$form->htmlFieldWrapped('comment')}
-            </div>
-        </div>
-        <div class="span6">
-            <div class="well" id="delivery">
-                {*<h3>Выбор способа доставки</h3>*}
-                {$form->htmlFieldWrapped('delivery_id')}
-                {*<div class="control-group" data-field-name="delivery_id">*}
-                    {*{$form->htmlField('delivery_id')}*}
-                    {*{$form->htmlError('delivery_id')}*}
-                {*</div>*}
-            </div>
-            <div class="well" id="payment">
-                {*<h3>Выбор способа оплаты</h3>*}
-                {$form->htmlFieldWrapped('payment_id')}
-                {*<div class="control-group" data-field-name="payment_id">*}
-                    {*{$form->htmlField('payment_id')}*}
-                    {*{$form->htmlError('payment_id')}*}
-                {*</div>*}
-            </div>
-            <div class="well">
-                <a href="http://market.yandex.ru/addresses.xml?callback={$host}&type=json">
-                    {*<img src="http://cards2.yandex.net/hlp-get/5814/png/3.png" alt=""></a>*}
-                    <img src="http://cards2.yandex.net/hlp-get/4412/png/4.png" alt=""></a>
-                <input type="submit" class="btn" id="do_order" name="do_order" value="{t cat="basket"}DoOrder{/t}" />
-            </div>
-        </div>
+    {$form->htmlFieldWrapped('agreement')}
+
+
+    <div class="well">
+        <h3>Контактные данные</h3>
+        {$form->htmlFieldWrapped('fname')}
+        {$form->htmlFieldWrapped('lname')}
+        {$form->htmlFieldWrapped('email')}
+        {$form->htmlFieldWrapped('phone')}
+        {$form->htmlFieldWrapped('zip')}
+        {$form->htmlFieldWrapped('country')}
+        {$form->htmlFieldWrapped('city')}
+        {$form->htmlFieldWrapped('metro')}
+        {$form->htmlFieldWrapped('address')}
+        {$form->htmlFieldWrapped('comment')}
+    </div>
+    <div class="well" id="delivery">
+        {*<h3>Выбор способа доставки</h3>*}
+        {$form->htmlFieldWrapped('delivery_id')}
+        {*<div class="control-group" data-field-name="delivery_id">*}
+            {*{$form->htmlField('delivery_id')}*}
+            {*{$form->htmlError('delivery_id')}*}
+        {*</div>*}
+    </div>
+    <div class="well" id="payment">
+        {*<h3>Выбор способа оплаты</h3>*}
+        {$form->htmlFieldWrapped('payment_id')}
+        {*<div class="control-group" data-field-name="payment_id">*}
+            {*{$form->htmlField('payment_id')}*}
+            {*{$form->htmlError('payment_id')}*}
+        {*</div>*}
+    </div>
+    <div class="well">
+        <a href="http://market.yandex.ru/addresses.xml?callback={$host}&type=json">
+            {*<img src="http://cards2.yandex.net/hlp-get/5814/png/3.png" alt=""></a>*}
+            <img src="http://cards2.yandex.net/hlp-get/4412/png/4.png" alt=""></a>
+        <input type="submit" class="btn" id="do_order" name="do_order" value="{t cat="basket"}DoOrder{/t}" />
     </div>
 {/form}
 {/if}
