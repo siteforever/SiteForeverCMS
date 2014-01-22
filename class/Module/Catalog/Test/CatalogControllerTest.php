@@ -28,6 +28,10 @@ class CatalogControllerTest extends WebCase
         $this->runRequest('/catalog', 'GET', array('order'=>'bad'));
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Каталог', $crawler->filter('h1')->text());
+
+//        $this->runRequest('/catalog/huy_blya');
+//        $crawler = $this->createCrawler($response);
+//        $this->assertEquals('Page not found', $crawler->filter('h1')->text());
     }
 
     /**
@@ -42,6 +46,8 @@ class CatalogControllerTest extends WebCase
     }
 
     /**
+     * Check updating category with page
+     *
      * @covers \Module\Page\Controller\PageController::saveAction
      * @covers \Module\Page\Controller\PageController::init
      * @covers \App::run
@@ -66,5 +72,19 @@ class CatalogControllerTest extends WebCase
         $json = json_decode($response->getContent());
         $this->assertEquals(0, $json->error);
         $this->assertEquals("Данные сохранены успешно", $json->msg);
+    }
+
+    /**
+     * @covers \Module\Catalog\Controller\CatalogController::tradeAction
+     */
+    public function testTradeAction()
+    {
+        $this->session->set('user_id', 1);
+
+        $response = $this->runRequest('/catalog/trade', 'GET', array('edit'=>35));
+        $crawler = $this->createCrawler($response);
+        $this->assertEquals('Каталог', $crawler->filter('h1')->text());
+        $this->assertEquals(1, $crawler->filter('#form_catalog')->count());
+
     }
 }

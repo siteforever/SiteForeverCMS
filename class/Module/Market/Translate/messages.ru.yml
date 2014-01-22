@@ -1,0 +1,6 @@
+basket:
+    title: 'корзина'
+    products: 'товары'
+    view: 'просмотр'
+    items: 'штук'
+    sum: 'сумма'

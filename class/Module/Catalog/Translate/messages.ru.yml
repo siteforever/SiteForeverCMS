@@ -1,9 +1,51 @@
 'Product types': 'Типы товаров'
 'Materials': 'Материалы'
 'Catalogue': 'Каталог'
-'name': 'наименование'
 'sorting': 'сортировка по'
 'price': 'цена'
 'price-a': 'цена возр.'
 'price-d': 'цена убыв.'
 'categories': 'категории'
+
+'Message': 'Сообщение'
+'Captcha': 'Код'
+
+
+catalog:
+    name: наименование
+    not_selected: не выбрано
+    category: категория
+    product_type: тип товара
+    article: артикул
+    price_retail: розн. цена
+    price_wholesale: опт. цена
+    manufacturer: производитель
+    material: материал
+    gender: пол
+    female: женский
+    male: мужской
+    unisex: универсальный
+    qty: количество
+    param_0: параметр 0
+    param_1: параметр 1
+    param_2: параметр 2
+    param_3: параметр 3
+    param_4: параметр 4
+    param_5: параметр 5
+    param_6: параметр 6
+    param_7: параметр 7
+    param_8: параметр 8
+    param_9: параметр 9
+    description: описание
+    show_sorting: показать сортировку
+    sale: скидка
+    sale_start: начало скидки
+    sale_end: конец скидки
+    show_main: показывать на главной
+    for_order: под заказ
+    new: новинка
+    absent: отсутсвует
+    hidden: скрытый
+    protected: защита
+    save: сохранить
+

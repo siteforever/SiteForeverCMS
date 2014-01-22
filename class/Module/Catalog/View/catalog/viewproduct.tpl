@@ -19,7 +19,7 @@
                 {else}{"absent"|trans:catalog|ucfirst}{/if}
             </div>
 
-            <h1>{$this->request->getTitle()}</h1>
+            <h1>{$item.title}</h1>
 
             {if $item.articul}<div>{'Article'|trans:[]:'catalog'}: <span>{$item.articul}</span></div>{/if}
 

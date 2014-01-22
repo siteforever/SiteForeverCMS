@@ -15,7 +15,7 @@
 {strip}
     {$attr = $form->vars.attr}
     <label for="{$attr.id}"{if $class} class="{$class}"{/if}>
-        {$attr.label|trans:[]:$domain}{if $attr.required}&nbsp;<b>*</b>{/if}
+        {$attr.label|trans:[]:$domain|ucfirst}{if $attr.required}&nbsp;<b>*</b>{/if}
     </label>
 {/strip}
 {/function}{*
@@ -31,7 +31,7 @@
     </ul>
     {/if}
     {if not empty($attr.msg)}
-    <div class="help-inline">{$attr.msg|trans:[]:$domain}</div>
+    <div class="help-inline">{$attr.msg|trans:["%label%"=>$attr.label|trans]:$domain}</div>
     {/if}
 {/strip}{/function}{*
 

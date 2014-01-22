@@ -28,18 +28,17 @@ class CatalogForm extends Form
 
         $manufModel    = Model::getModel( 'Manufacturers' );
         $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
-        $manufArray    = array('Не выбрано') + $manufacturers->column( 'name' );
+        $manufArray    = array('catalog.not_selected') + $manufacturers->column( 'name' );
 
         $materialModel = Model::getModel( 'Material' );
         $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
-        $materialArray = array('Не выбрано') + $materials->column( 'name' );
+        $materialArray = array('catalog.not_selected') + $materials->column( 'name' );
 
         $typeModel     = Model::getModel('Module\Catalog\Model\TypeModel');
         $types         = $typeModel->findAll(array('order'=>'name'));
 
         parent::__construct(array(
             'name'  => 'catalog',
-            'title' => 'Раздел каталога',
             'class' => 'form-horizontal',
             'action'=> App::cms()->getRouter()->createServiceLink('catalog','save'),
             'fields'=> array(
@@ -47,10 +46,10 @@ class CatalogForm extends Form
                 'id'        => array('type'=>'hidden', 'value'=>'0'),
                 'cat'       => array('type'=>'hidden', 'value'=>'1'),
 
-                'name'      => array('type'=>'text', 'label'=>'Наименование','required'),
+                'name'      => array('type'=>'text', 'label'=>'catalog.name','required'),
                 'parent'    => array(
                     'type'      => 'select',
-                    'label'     => 'Раздел',
+                    'label'     => 'catalog.category',
                     'value'     => '0',
                     'variants'  => $parents,
                     'required',
@@ -58,87 +57,76 @@ class CatalogForm extends Form
 
                 'type_id'   => array(
                     'type' => 'select',
-                    'label' => 'Тип товара',
+                    'label' => 'catalog.product_type',
                     'value' => '0',
-                    'variants' => array('Не выбрано') + $types->column('name'),
+                    'variants' => array('catalog.not_selected') + $types->column('name'),
                     'required',
                 ),
 
                 'path'      => array('type'=>'hidden'),
 
-                'articul'   => array('type'=>'text', 'label'=>'Article', 'value'=>'', 'hidden'),
-                'price1'    => array('type'=>'text', 'label'=>'Price retail', 'value'=>'0', 'hidden'),
-                'price2'    => array('type'=>'text', 'label'=>'Price wholesale', 'value'=>'0', 'hidden'),
+                'articul'   => array('type'=>'text', 'label'=>'catalog.article', 'value'=>'', 'hidden'),
+                'price1'    => array('type'=>'text', 'label'=>'catalog.price_retail', 'value'=>'0', 'hidden'),
+                'price2'    => array('type'=>'text', 'label'=>'catalog.price_wholesale', 'value'=>'0', 'hidden'),
                 'manufacturer' => array(
-                    'type'=>'select', 'label'=>'Manufacturer', 'value'=>'0', 'hidden',
+                    'type'=>'select', 'label'=>'catalog.manufacturer', 'value'=>'0', 'hidden',
                     'variants' => $manufArray,
                 ),
                 'material' => array(
-                    'type'=>'select', 'label'=>'Material', 'value'=>'0', 'hidden',
+                    'type'=>'select', 'label'=>'catalog.material', 'value'=>'0', 'hidden',
                     'variants' => $materialArray,
                 ),
                 'gender'    => array(
-                    'type'=>'select', 'label'=>'Пол',
+                    'type'=>'select', 'label'=>'catalog.gender',
                     'value' => '2',
-                    'variants'=>array('0'=>'Ж','1'=>'М','2'=>'Уни'),
+                    'variants'=>array('0'=>'catalog.female','1'=>'catalog.male','2'=>'catalog.unisex'),
                     'require',
                 ),
-                'qty'       => array('type'=>'int', 'label'=>'Qty'),
-                'p0'        => array('type'=>'text', 'label'=>'Param 0'),
-                'p1'        => array('type'=>'text', 'label'=>'Param 1'),
-                'p2'        => array('type'=>'text', 'label'=>'Param 2'),
-                'p3'        => array('type'=>'text', 'label'=>'Param 3'),
-                'p4'        => array('type'=>'text', 'label'=>'Param 4'),
-                'p5'        => array('type'=>'text', 'label'=>'Param 5'),
-                'p6'        => array('type'=>'text', 'label'=>'Param 6'),
-                'p7'        => array('type'=>'text', 'label'=>'Param 7'),
-                'p8'        => array('type'=>'text', 'label'=>'Param 8'),
-                'p9'        => array('type'=>'text', 'label'=>'Param 9'),
+                'qty'       => array('type'=>'int', 'label'=>'catalog.qty'),
+                'p0'        => array('type'=>'text', 'label'=>'catalog.param_0'),
+                'p1'        => array('type'=>'text', 'label'=>'catalog.param_1'),
+                'p2'        => array('type'=>'text', 'label'=>'catalog.param_2'),
+                'p3'        => array('type'=>'text', 'label'=>'catalog.param_3'),
+                'p4'        => array('type'=>'text', 'label'=>'catalog.param_4'),
+                'p5'        => array('type'=>'text', 'label'=>'catalog.param_5'),
+                'p6'        => array('type'=>'text', 'label'=>'catalog.param_6'),
+                'p7'        => array('type'=>'text', 'label'=>'catalog.param_7'),
+                'p8'        => array('type'=>'text', 'label'=>'catalog.param_8'),
+                'p9'        => array('type'=>'text', 'label'=>'catalog.param_9'),
 
-                'text'      => array('type'=>'textarea', 'label'=>'Description'),
+                'text'      => array('type'=>'textarea', 'label'=>'catalog.description'),
 
                 'sort_view' => array(
-                    'type'=>'radio', 'label'=>'Выводить опции сортировки', 'value'=>'1',
-                    'variants'=>array('1'=>'Выводить','0'=>'Не выводить',),
-                ),
+                    'type'=>'checkbox', 'label'=>'catalog.show_sorting', 'value'=>'1'),
 
                 'sale'      => array(
-                    'type' => 'float', 'label' => 'Скидка', 'notice' => 'Для указания скидки в %, надо указать 10%',
+                    'type' => 'float', 'label' => 'catalog.sale', 'notice' => 'Для указания скидки в %, надо указать 10%',
                 ),
                 'sale_start'      => array(
-                    'type' => 'date', 'label' => 'Начало скидки', 'value' => time(),
+                    'type' => 'date', 'label' => 'catalog.sale_start', 'value' => time(),
                 ),
                 'sale_stop'      => array(
-                    'type' => 'date', 'label' => 'Конец скидки', 'value' => time(),
+                    'type' => 'date', 'label' => 'catalog.sale_end', 'value' => time(),
                 ),
 
-                'top'       => array('type'=>'radio', 'label'=>'Вывод в топе', 'value'=>'0',
-                                     'variants' => array('1'=>'Да','0'=>'Нет',),
-                ),
-                'byorder'   => array('type'=>'radio', 'label'=>'Под заказ', 'value'=>'0', 'hidden',
-                                     'variants' => array('1'=>'Да','0'=>'Нет',),
-                ),
-                'novelty'   => array('type'=>'radio', 'label'=>'Новинка', 'value'=>'0',
-                                     'variants' => array('1'=>'Да','0'=>'Нет',),
-                ),
-                'absent'    => array('type'=>'radio', 'label'=>'Отсутствует', 'value'=>'0', 'hidden',
-                                     'variants' => array('1'=>'Да','0'=>'Нет',),
-                ),
+                'top'       => array('type'=>'checkbox', 'label'=>'catalog.show_main', 'value'=>'0'),
+                'byorder'   => array('type'=>'checkbox', 'label'=>'catalog.for_order', 'value'=>'0', 'hidden'),
+                'novelty'   => array('type'=>'checkbox', 'label'=>'catalog.new', 'value'=>'0'),
+                'absent'    => array('type'=>'checkbox', 'label'=>'catalog.absent', 'value'=>'0'),
 
                 'hidden'    => array(
-                    'type'      => 'radio',
-                    'label'     => 'Скрытое',
+                    'type'      => 'checkbox',
+                    'label'     => 'catalog.hidden',
                     'value'     => '0',
-                    'variants'  => array('1'=>'Да','0'=>'Нет',),
                 ),
                 'protected' => array(
-                    'type'      => 'radio',
-                    'label'     => 'Защита страницы',
+                    'type'      => 'select',
+                    'label'     => 'catalog.protected',
                     'value'     => USER_GUEST,
                     'variants'  => Model::getModel('User')->getGroups()
                 ),
                 'deleted' => array('type'=>'hidden','value'=>'0'),
-                'submit'    => array('type'=>'submit', 'value'=>'Сохранить'),
+                'submit'    => array('type'=>'submit', 'value'=>'catalog.save'),
             ),
         ));
     }
@@ -179,7 +167,7 @@ class CatalogForm extends Form
     /**
      * Заполнит метки полей формы значениями из категории, отображающей тип товара
      * @param array $properties
-     * @param Sfcms_Filter $fvalues
+     * @param \Sfcms_Filter $fvalues
      */
     public function applyProperties( array $properties, $fvalues = null )
     {
@@ -188,7 +176,7 @@ class CatalogForm extends Form
                 $field = $this->getChild($k);
                 trim($p) ? $field->setLabel($p) : $field->hide();
 
-                /** @var Sfcms_Filter_Group $fGroup */
+                /** @var \Sfcms_Filter_Group $fGroup */
                 if ($fvalues && $fGroup = $fvalues->getFilterGroup($m[1])) {
                     if (is_array($fGroup->getData()) && !$field->getValue()) {
                         $this->getChild($k)->setValue(

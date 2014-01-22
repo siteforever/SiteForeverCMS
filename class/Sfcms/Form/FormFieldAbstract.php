@@ -316,7 +316,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
         if ($this->isRequired() && $this->isEmpty()) {
             //    или если его значение пустое
             $this->error = 2;
-            $this->msg   = array('"{label}" is required', '{label}' => $this->label);
+            $this->msg   = '"%label%" is required';
 
             return false;
         }
@@ -327,7 +327,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
 
         if (!$this->checkValue($this->getValue(), $request)) {
             $this->error = 3;
-            $this->msg   = $this->msg ? : array('"{label}" not corresponded specified format', '{label}' => $this->label);
+            $this->msg   = $this->msg ? : '"%label%" not corresponded specified format';
 
             return false;
         }

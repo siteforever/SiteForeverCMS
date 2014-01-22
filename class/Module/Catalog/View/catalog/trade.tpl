@@ -79,8 +79,16 @@
         </div>
     </fieldset>
 
+
+    <fieldset>{*<div class="tab-pane" id="protected">*}
+        {$form->htmlFieldWrapped('hidden')}
+        {$form->htmlFieldWrapped('protected')}
+        {$form->htmlFieldWrapped('deleted')}
+        {*</div>*}</fieldset>
+
+
+
     <fieldset>{*<div class="tab-pane" id="text">*}
-        <legend>{t cat="catalog"}Text{/t}</legend>
         {$form->htmlField('text')}
     {*</div>*}</fieldset>
 
@@ -91,14 +99,6 @@
         {$gallery_panel}
     {*</div>*}</fieldset>
     {/if}
-
-
-    <fieldset>{*<div class="tab-pane" id="protected">*}
-        <legend>{t cat="catalog"}Protected{/t}</legend>
-        {$form->htmlFieldWrapped('hidden')}
-        {$form->htmlFieldWrapped('protected')}
-        {$form->htmlFieldWrapped('deleted')}
-    {*</div>*}</fieldset>
 
 
 {*</div>*}

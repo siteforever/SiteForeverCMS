@@ -2,6 +2,7 @@
 
 use Sfcms\Model;
 use Module\Page\Model\PageModel;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Smarty plugin
@@ -16,21 +17,20 @@ function smarty_function_menu($params, Smarty_Internal_Template $smarty)
 {
     /** @var \Sfcms\Request $request */
     $request = $smarty->tpl_vars['request']->value;
-
-    $parent   = isset( $params[ 'parent' ] ) ? $params[ 'parent' ] : 0;
-    $level    = isset( $params[ 'level' ] ) ? $params[ 'level' ] : 0;
-    $template = isset( $params[ 'template' ] ) ? $params[ 'template' ] : 'menu';
-
     /** @var $model PageModel */
     $model  = Model::getModel('Page');
-    $smarty->assign(
-        array(
-            'parent'    => $parent,
-            'level'     => $level,
-            'currentId' => $request->get( 'id' ),
-            'parents'   => $model->getParents(),
-        )
-    );
 
-    return $smarty->fetch("{$template}.tpl");
+    $resolver = new OptionsResolver();
+    $resolver->setDefaults(array(
+            'parent' => 0,
+            'level'  => 0,
+            'template' => 'menu',
+            'class' => '',
+            'currentId' => $request->get('id'),
+            'parents'   => $model->getParents(),
+        ));
+
+    $smarty->assign($params = $resolver->resolve($params));
+
+    return $smarty->fetch(sprintf('%s.tpl', $params['template']));
 }

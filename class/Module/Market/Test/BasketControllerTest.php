@@ -71,8 +71,8 @@ class BasketControllerTest extends WebCase
         $this->assertArrayHasKey('widget', $json);
         $widget = new Crawler();
         $widget->addHtmlContent($json['widget']);
-        $this->assertEquals('7 шт.', $widget->filter('.b-basket-info tr:nth-child(1) td:nth-child(2)')->text());
-        $this->assertEquals('117000,00 руб.', $widget->filter('.b-basket-info tr:nth-child(2) td:nth-child(2)')->text());
+        $this->assertEquals('7 штук', $widget->filter('.b-basket-info tr:nth-child(1) td:nth-child(2)')->text());
+        $this->assertEquals('117000,00 RUR', $widget->filter('.b-basket-info tr:nth-child(2) td:nth-child(2)')->text());
     }
 
 

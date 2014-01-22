@@ -103,7 +103,7 @@ class Form_Field_TextTest extends WebCase
     public function testHtml()
     {
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
-            ."<label for=\"test_test\" class=\"control-label\">test</label>" . PHP_EOL
+            ."<label for=\"test_test\" class=\"control-label\">Test</label>" . PHP_EOL
             ."<div class=\"controls\">"
                 ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" value=\"hello\">"
             ."</div></div>", trim($this->field->createView()->html()));
@@ -116,7 +116,7 @@ class Form_Field_TextTest extends WebCase
         $this->field->setRequired();
 
         $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
-                ."<label for=\"test_test\" class=\"control-label\">Наименование&nbsp;<b>*</b></label>" . PHP_EOL
+                ."<label for=\"test_test\" class=\"control-label\">Имя&nbsp;<b>*</b></label>" . PHP_EOL
                 ."<div class=\"controls\">"
                     ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" required=\"required\" value=\"Nikolay\">"
                 ."</div></div>", trim($this->field->createView()->html()));

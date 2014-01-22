@@ -24,6 +24,7 @@ use Sfcms_Filter;
 use Sfcms_Filter_Group;
 use Sfcms_Filter_Collection;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class CatalogController extends Controller
 {
@@ -69,13 +70,13 @@ class CatalogController extends Controller
         /** @var $item Catalog */
         $item = null;
         if ($alias) {
-            $item = $catalogModel->find('alias = ?', array($alias));
+            $item = $catalogModel->find('`alias` = ?', array($alias));
         } elseif ($catId) {
             $item = $catalogModel->find($catId);
         }
 
         if (null === $item) {
-            throw new Sfcms_Http_Exception($this->t('Catalogue part not found with id ') . $catId, 404);
+            throw new HttpException(404, $this->t('Catalogue part not found with id ') . $catId);
         }
 
         if ( 0 == $item->cat ) {
@@ -124,7 +125,7 @@ class CatalogController extends Controller
                 $order = $set;
                 $this->request->set('order', $order);
                 $this->request->getSession()->set('Sort', $order);
-//                $this->request->setTitle(sprintf('%s %s "%s"', $this->request->getTitle(), $this->t('sorting'), $this->t($config['order_list'][$set])));
+                $this->request->setTitle(sprintf('%s / %s "%s"', $this->request->getTitle(), $this->t('sorting'), $this->t($config['order_list'][$set])));
             }
         }
 
@@ -176,6 +177,10 @@ class CatalogController extends Controller
                 $this->router->createLink($parent->url),
                 $cacheKey
             );
+
+            if ($paging->page > 1) {
+                $this->request->setTitle(sprintf('%s / %s %d', $this->request->getTitle(), $this->t('page'), $paging->page));
+            }
 
             $criteria->limit = $paging->limit;
 
@@ -529,16 +534,16 @@ class CatalogController extends Controller
     public function tradeAction($edit, $add, $type)
     {
         /**
-         * @var CatalogModel $catalogFinder
+         * @var CatalogModel $catalogModel
          * @var Catalog $pitem
          * @var FormFieldAbstract $field
          * @var Sfcms_Filter_Collection $filter
          * @var Sfcms_Filter $fvalues
          */
 
-        $catalogFinder = $this->getModel('Catalog');
+        $catalogModel = $this->getModel('Catalog');
 
-        if ( $add ) {
+        if ($add) {
             $parentId = $add;
 //            $this->app()->getSession()->set('catalogCategory', $add);
         } else {
@@ -554,13 +559,13 @@ class CatalogController extends Controller
 
         /** @var $item Catalog */
         if ($edit) { // если раздел существует
-            $item     = $catalogFinder->find($edit);
+            $item     = $catalogModel->find($edit);
             $parentId = $item['parent'];
             $form->setData($item->getAttributes());
         } else {
-            $item = $catalogFinder->find('`name` IS NULL AND `deleted` = 1');
+            $item = $catalogModel->find('`name` IS NULL AND `deleted` = 1');
             if (null === $item) {
-                $item = $catalogFinder->createObject();
+                $item = $catalogModel->createObject();
                 $item->deleted = 1;
                 $item->save();
             }
@@ -569,6 +574,8 @@ class CatalogController extends Controller
             $form->cat      = 0;
             $form->deleted  = 0;
         }
+
+        $this->request->setTitle($item->title);
 
         // ЕСЛИ ТОВАР
         //$form->image->show();
@@ -589,8 +596,8 @@ class CatalogController extends Controller
         }
 
         // показываем поля родителя
-        if ( $parentId ) {
-            $parent = $catalogFinder->find($parentId);
+        if ($parentId) {
+            $parent = $catalogModel->find($parentId);
         } else {
             $parent = null;
         }

@@ -1,4 +1,4 @@
-<h1>{$request->getTitle()}</h1>
+<h1>{$page.title}</h1>
 
 <div class="catalog_order">{strip}
     <h4>{t cat="catalog"}Sort{/t}</h4>
@@ -23,44 +23,43 @@
     {foreach from=$cats item="cat"}
     <li><a {href url=$cat->url}>{$cat->name} {*({$cat.sub_count})*}</a></li>
     {/foreach}
-</ul>
-{/strip}{/if}
+{/strip}</ul>
+{/if}
 
 
 <form action="{link url="basket"}" method="post">
 {foreach from=$list item="item"}
-
     <div class="well">
         <div class="row-fluid">
-            <div class="span3">
+            <div class="span3">{strip}
                 {a href=$item->url class="thumbnail"}
                     {thumb width=150 height=150 alt=$item.title src=$item.thumb name=$item.image class="img-rounded" color="f6f6f6"}
                 {/a}
-            </div>
+            {/strip}</div>
             <div class="span9">
-                <div class="b-catalog-product-price">
+                <div class="b-catalog-product-price">{strip}
                     <span class="b-product-price">{$item.price|string_format:"%.2f"}</span>
                     <span class="b-product-currency">{$item.currency|default:"RUR"}</span>
                     <div class="b-product-sale">
                         {if $item->isSale()}<span class="hot">Sale</span>{else}<span class="cool">Not sale</span>{/if}
                         {if $item.salePrice}<span class="sale">{$item.salePrice|string_format:"%.2f"} {$item.currency|default:"RUR"}</span>{/if}
                     </div>
-                </div>
+                {/strip}</div>
                 <div class="b-catalog-product-title">{a href=$item->url}{$item.name}{/a}</div>
 
-                {if $item.articul}<div class="b-catalog-product-articul">
+                {if $item.articul}{strip}<div class="b-catalog-product-articul">
                     <span>{'Articul'|trans:[]:'catalog'}</span>
                     <span>{$item.articul}</span>
-                </div>{/if}
+                </div>{/strip}{/if}
 
-                {if $item->Manufacturer}
+                {if $item->Manufacturer}{strip}
                 <div class="b-catalog-product-properties-item">
                     <div class="b-catalog-product-properties-key">{t}Manufacturer{/t}:</div>
                     <div class="b-catalog-product-properties-val">{$item->Manufacturer->name}</div>
-                </div>{/if}
+                </div>{/strip}{/if}
 
                 {if count($properties[$item->getId()]) > 0}
-                <div class="b-catalog-product-properties">
+                <div class="b-catalog-product-properties">{strip}
                     {foreach from=$properties[$item->getId()] key="pkey" item="pitem"}
                         {if $pitem}
                         <div class="b-catalog-product-properties-item">
@@ -75,7 +74,7 @@
                             <div class="b-catalog-product-properties-val">{$prop->value} {$prop->unit}</div>
                         </div>{/if}
                     {/foreach}
-                </div>
+                {/strip}</div>
                 {/if}
 
                 {if $item.text}<div class="b-catalog-product-desc">{$item.text}</div>{/if}
@@ -90,4 +89,4 @@
 {/foreach}
 </form>
 
-<p>{$paging.html}</p>
+{$paging.html}

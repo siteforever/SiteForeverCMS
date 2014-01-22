@@ -1,36 +1,34 @@
 <h1>{$page.title}</h1>
-
 {$page.content}
-
 <div id="siteforever_gallery_{$category.id}">
-{if $rows}
+{if $rows->count()}
     <ul class="gallery_list">
     {foreach from=$rows item="img"}
-        <li>
+        <li>{strip}
         {if $category.target != '_none'}
             {if $category.target == '_gallery' && $img.link == ''}
-                <a {href url=$img.image} class="gallery" title="{$img.name}" rel="gallery" target="_blank">
+                <a href="{link url=$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
             {elseif $category.target == '_self'}
-                <a {href url=$img->url}>
+                <a href="{link url=$img->url}">
             {else}
-                <a {href url={$img.link|default:$img.image}}" title="{$img.name}" target="{$category.target}">
+                <a href="{link url={$img.link|default:$img.image}}" title="{$img.name}" target="{$category.target}">
             {/if}
         {/if}
         {thumb src=$img.image alt=$img.name width=$category.thumb_width height=$category.thumb_height method=$category.thumb_method color=$category.color}
         {if $category.target != '_none'}</a>{/if} {* _none *}
         {if $img.name}
             {if $category.target == '_self'}
-                {a href=$img->url}{$img.name}{/a}
+                <div class="text-center">{a href=$img->url}{$img.name}{/a}</div>
             {else}
-                <div>{$img.name}</div>
+                <div class="text-center">{$img.name}</div>
             {/if}
         {/if}
-        </li>
+        {/strip}</li>
     {/foreach}
     </ul>
     <div class="clear"></div>
 {else}
-    <p>Изображения не найдены</p>
+    <p>{'image.not.found'|trans|ucfirst}</p>
 {/if}
 </div>
 

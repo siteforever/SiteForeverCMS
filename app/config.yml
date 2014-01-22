@@ -64,5 +64,6 @@ catalog:
         name: name
         price1: price-a
         price1-d: price-d
+    onPage: 5
 
 guestbook: ~

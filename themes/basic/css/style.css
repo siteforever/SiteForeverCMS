@@ -74,9 +74,14 @@ body * {
     height: 65px;
     float: left;
 }
-.b-header {
-    height: 65px;
-    margin-bottom: 20px;
+
+.navbar .brand {
+    padding: 0;
+}
+.navbar ul.nav {
+    padding: 12px 0;
+    white-space: nowrap;
+    float: none;
 }
 
 .b-menu {

@@ -1,8 +1,11 @@
-<div class="b-basket-add">
+<div class="b-basket-add">{strip}
     {$item.item}
-    <div class="input-append">
-        <input type="text" name="basket-prod-count" class="b-basket-add-count span1" value="1" />
-        <input type="button" class="btn b-basket-add-button" value="{t cat="basket"}Add to basket{/t}"
-               data-product="{$item.name}" data-price="{$item.price}" data-id="{$item.id}" />
+    <div class="controls">
+        <div class="input-append">
+            <input type="text" name="basket-prod-count" class="b-basket-add-count input-mini" value="1">
+            <button type="button" class="btn b-basket-add-button" value="" data-product="{$item.name}" data-price="{$item.price}" data-id="{$item.id}">
+                <i class="icon-shopping-cart"></i>
+            </button>
+        </div>
     </div>
-</div>
+{/strip}</div>
