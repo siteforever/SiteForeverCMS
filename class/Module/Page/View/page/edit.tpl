@@ -1,5 +1,7 @@
 {form form=$form class="form-horizontal"}
     {$form->htmlFieldWrapped('id')}
+    {$form->htmlFieldWrapped('notice')}
+    {$form->htmlFieldWrapped('content')}
     <fieldset>
         <legend>{"System"|lang:"page"}</legend>
         {$form->htmlFieldWrapped('name')}
@@ -26,10 +28,6 @@
         {$form->htmlFieldWrapped('thumb')}
         {$form->htmlFieldWrapped('image')}
     </fieldset>
-
-    {$form->htmlFieldWrapped('notice')}
-    {$form->htmlFieldWrapped('content')}
-
     <fieldset>
         <legend>{"Constraints"|lang:"page"}</legend>
         {$form->htmlFieldWrapped('author')}

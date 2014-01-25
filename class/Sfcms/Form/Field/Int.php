@@ -9,7 +9,6 @@ use Sfcms\Form\FormFieldAbstract;
 
 class Int extends Text
 {
-    protected $type    = 'number';
     protected $class   = 'int';
     protected $filter  = '/^-?\d*$/';
 }
