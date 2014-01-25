@@ -19,7 +19,7 @@
 
 <table>
     <tr>
-        <td style="padding-right: 25px;">
+        <td style="padding-right: 25px; vertical-align: top;">
             <a href="{$image->image}" class="gallery">
                 {thumb src=$image.image alt=$image.name width=$category.middle_width height=$category.middle_height color=$category.color method=$category.middle_method}
             </a>

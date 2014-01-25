@@ -27,12 +27,12 @@ class CategoryForm extends \Sfcms\Form\Form
                     'variants'=> array( '1'=> 'Добавление полей', '2'=> 'Обрезание лишнего', ),
                 ),
                 'middle_width'  => array(
-                    'type'  => 'int',
+                    'type'  => 'text',
                     'label' => 'Ширина средней картинки',
                     'value' => '200',
                 ),
                 'middle_height' => array(
-                    'type'  => 'int',
+                    'type'  => 'text',
                     'label' => 'Высота средней картинки',
                     'value' => '200',
                 ),
@@ -44,12 +44,12 @@ class CategoryForm extends \Sfcms\Form\Form
                     'variants'=> array( '1'=> 'Добавление полей', '2'=> 'Обрезание лишнего', ),
                 ),
                 'thumb_width'   => array(
-                    'type'  => 'int',
+                    'type'  => 'text',
                     'label' => 'Ширина миниатюры',
                     'value' => '100',
                 ),
                 'thumb_height'  => array(
-                    'type'  => 'int',
+                    'type'  => 'text',
                     'label' => 'Высота миниатюры',
                     'value' => '100',
                 ),
