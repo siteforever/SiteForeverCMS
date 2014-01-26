@@ -58,16 +58,14 @@
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
             <![endif]-->
 
-            {*<div class="well">*}
-                {if $request->getTitle() && empty($title)}<h1>{$request->getTitle()|trans|ucfirst}</h1>{/if}
+            {if $request->getTitle() && empty($title)}<h1>{$request->getTitle()|trans|ucfirst}</h1>{/if}
 
-                {if $feedback}<div class="alert alert-block">
-                    <a class="close" data-dismiss="alert" href="#">&times;</a>
-                    {$feedback}
-                </div>{/if}
+            {if $feedback}<div class="alert alert-block">
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                {$feedback}
+            </div>{/if}
 
-                {$response->getContent()}
-            {*</div>*}
+            {$response->getContent()}
         </div>
 
         <div class="clear"></div>
@@ -76,11 +74,5 @@
     <div class="l-footer-wrapper"></div>
 
 </div>
-{*<footer>*}
-    {*<div class="contaiter">*}
-        {*<a href="http://siteforever.ru" target="_blank">{t}Working on{/t} &copy; SiteForeverCMS</a>*}
-    {*</div>*}
-{*</footer>*}
-
 </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- *
+ * Backbone+Bootstrap DataGrig
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
@@ -13,24 +13,18 @@ define("View/DataGrid", [
     "jquery/jquery.blockUI"
 ], function($, Backbone, $alert, Item, ItemView, ItemCollection){
     return Backbone.View.extend({
-        $pagination: null,
         $table: null,
-        pages: 1,
-        page: 1,
-        orderDirs: {},
-        order: false,
-        dir: 'asc',
-
-        filter: {},
+        $pagination: null,
 
         loading: false,
         timeout: null,
 
         collection: new ItemCollection,
 
-        baseUrl: '',
-
         _modalView: null,
+
+        dispatcher: null,
+        winManager: null,
 
         /**
          * Events
@@ -41,25 +35,31 @@ define("View/DataGrid", [
             'click .btn-add': 'onAdd',
             'keyup .sfcms-admin-dataset-fiter input': "onFilter",
             'keypress .sfcms-admin-dataset-fiter input': "onFilterPress",
-            'click .btn-refresh' : "loadData"
+            'click .btn-refresh' : "onRefresh"
         },
 
         /**
          * Init
          * @returns {*}
          */
-        initialize: function() {
+        initialize: function(options) {
+            _.bindAll(this, 'render', 'onRefresh', 'modalView', 'onSort', 'onPage', 'onAdd', 'onFilter', 'onFilterPress');
+
             this.$pagination = this.$el.find('.pagination');
             this.$table = this.$el.find('.table');
-            this.page  = this.$pagination.data('page');
-            this.tplAdminItem = this.options.tplAdminItem;
-            this.tplAdminPagingItem = this.options.tplAdminPagingItem;
+
+            this.tplAdminItem = options.tplAdminItem;
+            this.tplAdminPagingItem = options.tplAdminPagingItem;
+            this.dispatcher = options.dispatcher;
+            this.winManager = options.winManager;
 
 
             if (!this.$el.data('url')) {
                 throw new Error('A "url" attribute must be specified');
             }
-            this.baseUrl = this.collection.url = this.$el.data('url');
+
+            this.collection.baseUrl = this.$el.data('url');
+            this.collection.page = this.$pagination.data('page');
 
             this.$el.find('.sfcms-admin-dataset-fiter :input').each($.proxy(function(i, node){
                 var $node = $(node),
@@ -69,13 +69,22 @@ define("View/DataGrid", [
                 }
             }, this));
 
-            // Rendering after appended new or remove item
-            this.collection.on('add remove', this.loadData, this);
-            if (this.options.dispatcher) {
-                this.options.dispatcher.on('admin.model.save', function(model){
+            if (this.dispatcher) {
+                this.dispatcher.on('admin.model.save', function(model){
                     model && model.isNew && this.collection.add(model);
                 }, this);
             }
+
+            this.collection.on('sync add remove', this.render);
+            this.collection.on('request', function(){
+                this.$el.block({message: 'Loading...'});
+            }, this);
+            this.collection.on('sync', function(){
+                this.$el.unblock();
+            }, this);
+
+            this.collection.fetch();
+
             return this;
         },
 
@@ -93,7 +102,7 @@ define("View/DataGrid", [
                 0 == i && (this.pages = objItem.get('_p'));
                 var view = new ItemView({
                     model : objItem,
-                    winManager: this.options.winManager
+                    winManager: this.winManager
                 });
                 view.tplAdminItem = this.tplAdminItem;
                 view.render();
@@ -123,37 +132,8 @@ define("View/DataGrid", [
             return this;
         },
 
-        /**
-         * Loading data from server
-         * @returns {*}
-         */
-        loadData: function(){
-            this.loading = true;
-            this.$el.block({message: 'Loading...'});
-            this.collection.url = this.baseUrl + '?page=' + this.page;
-
-            if (this.order) {
-                this.collection.url += '&o=' + this.order + '&dir=' + this.dir;
-            }
-            if (this.filter) {
-                var key;
-                for (key in this.filter) {
-                    if (this.filter[key].length >= 2) {
-                        this.collection.url += '&filter[' + key + ']=' + this.filter[key];
-                    }
-                }
-            }
-
-            return this.collection.fetch()
-                .done($.proxy(this.render, this))
-                .done($.proxy(this.$el.unblock, this.$el))
-                .done($.proxy(function(){
-                    this.loading = false;
-                    this.collection.url = this.baseUrl;
-                }, this))
-                .fail(function(collection, Response){
-                    $alert(Response.responseText, 3000);
-                }).promise();
+        onRefresh: function() {
+            this.collection.fetch();
         },
 
         /**
@@ -173,22 +153,11 @@ define("View/DataGrid", [
          * @returns {boolean}
          */
         onSort: function(event) {
-            var $node = $(event.target),
-                col   = $node.data('ord'),
-                dir = this.orderDirs[col] ? this.orderDirs[col] : 'desc';
-
-            if (this.order == col) {
-                dir = ('desc' == dir) ? 'asc' : 'desc';
-            } else {
-                this.order = col;
-            }
-            this.orderDirs[col] = dir;
-            this.dir = dir;
-            this.loadData();
-            return false;
+            return this.collection.onSort(event);
         },
 
         /**
+         *
          * Press on button for switch page
          * @param event
          * @returns {boolean}
@@ -196,8 +165,8 @@ define("View/DataGrid", [
         onPage: function(event) {
             var $target = $(event.target);
             if (!$target.parent().hasClass('active')) {
-                this.page = $target.data('page');
-                this.loadData();
+                this.collection.page = $target.data('page');
+                this.collection.fetch();
             }
             return false;
         },
@@ -220,32 +189,7 @@ define("View/DataGrid", [
          * @returns {boolean}
          */
         onFilter: function(event) {
-            if (event.keyCode < 32 && event.keyCode != 8) {
-                return false;
-            }
-
-            var $target = $(event.target),
-                col = $target.data('col'),
-                val = $.trim($target.val());
-
-            if (val == this.filter[col] || !(val || this.filter[col])) {
-                return false;
-            }
-
-            if (val) {
-                this.filter[col] = val;
-            } else {
-                delete this.filter[col];
-            }
-
-            if (this.timeout) {
-                clearTimeout(this.timeout);
-            }
-            if (val.length > 0 && val.length < 2) {
-                return false;
-            }
-            this.timeout = setTimeout($.proxy(this.loadData, this), 500);
-            return true;
+            return this.collection.onFilter(event);
         },
 
         /**
@@ -255,7 +199,7 @@ define("View/DataGrid", [
         onAdd: function(event) {
             event.stopPropagation();
             var item = new Item(),
-                win = this.options.winManager.create({model: item});
+                win = this.winManager.create({model: item});
             win.render();
 
             item.urlRoot = $(event.target).data('href');

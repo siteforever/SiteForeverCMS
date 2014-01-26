@@ -16,15 +16,18 @@ define("View/AdminItem", [
 
         _modalView: null,
 
-        modalView: function() {
-            if (!this._modalView) {
-                this._modalView = this.options.winManager.create({model: this.model});
-            }
-            return this._modalView;
+        winManager: null,
+
+        initialize: function(options) {
+            this.winManager = options.winManager || null;
+            this.model.on('change', this.render, this);
         },
 
-        initialize: function() {
-            this.model.on('change', this.render, this);
+        modalView: function() {
+            if (this.winManager && !this._modalView) {
+                this._modalView = this.winManager.create({model: this.model});
+            }
+            return this._modalView;
         },
 
         render: function() {
@@ -36,6 +39,7 @@ define("View/AdminItem", [
             event.stopPropagation();
 
             this.modalView().render();
+//            console.log(this.model.url());
             $.get(this.model.url()).done($.proxy(function(response){
                 this.modalView().render({content: response});
             }, this));

@@ -11,7 +11,10 @@ define('View/Modal',[
         tagName: 'div',
         className: 'modal hide',
 
+        _overlayTemplate: '<div class="modal-backdrop fade in"></div>',
         $overlay: null,
+
+        options: {},
 
         title: 'Modal',
 
@@ -35,9 +38,8 @@ define('View/Modal',[
         tplBody: null,
         tplFooter: null,
 
-        initialize: function()
-        {
-            console.log(this.options);
+        initialize: function(options) {
+            this.options = options;
             $('body').mousemove($.proxy(this.onMove, this)).mouseup($.proxy(this.onMoveEnd, this));
         },
 
@@ -90,12 +92,11 @@ define('View/Modal',[
             } else if (($overlay = $('.modal-backdrop')).length) {
                 this.$overlay = $overlay.first().removeClass('hide');
             } else {
-                this.$overlay = $(this.make("div", {class:"modal-backdrop fade in"})).appendTo('body');
+                this.$overlay = $(this._overlayTemplate).appendTo('body');
             }
 
             return false;
         },
-
 
         hide: function() {
             this.$el.addClass('hide');
@@ -104,8 +105,6 @@ define('View/Modal',[
             }
             return false;
         },
-
-
 
         moveToCenter: function() {
             this.$el.find('div.modal-body').css('min-height', this.height);
@@ -149,9 +148,11 @@ define('View/Modal',[
                 '</div>'
             ].join(""), {title: title});
         },
+
         _renderBody: function(content) {
             return _.template('<div class="modal-body"><%= content %></div>', {content: content});
         },
+
         _renderFooter: function() {
             return [
                 '<div class="modal-footer">',

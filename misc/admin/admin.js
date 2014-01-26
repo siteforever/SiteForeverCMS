@@ -59,17 +59,20 @@ define("admin/admin", [
 
 
     var ModalManager = Backbone.View.extend({
-
         windows: [],
+        modal: null,
+        dispatcher: null,
 
-        initialize: function() {
+        initialize: function(options) {
+            this.modal = options.modal;
+            this.dispatcher = options.dispatcher;
         },
 
         create: function(opt) {
             opt = opt || {};
-            var win = new this.options.modal(_.defaults(opt, {
+            var win = new this.modal(_.defaults(opt, {
                 model: null,
-                dispatcher: this.options.dispatcher
+                dispatcher: this.dispatcher
             }));
             win.id = _.uniqueId('modal');
             this.windows.push(win);
@@ -83,13 +86,12 @@ define("admin/admin", [
         dispatcher: dispatcher
     });
 
-    var useController = module.config().use_controller;
+    var useController = module.config().use_controller || false;
 
     $(document).ready(function(){
         if (useController) {
             var controller = require('controller');
-
-            if (typeof controller == 'function') {
+            if (typeof controller == 'function') { // it`s backbone
                 new controller({
                     'el': $('#workspace')
                 });
@@ -101,19 +103,16 @@ define("admin/admin", [
                 /** Apply behaviors */
                 behavior.apply(controller);
             }
-
         } else {
-
             var DataGrig = require('View/DataGrid');
             $('div.sfcms-admin-dataset').each(function(){
-                var dataGrid = new DataGrig({
+                new DataGrig({
                     el: $(this),
                     tplAdminItem: $("#tplAdminItem").html(),
                     tplAdminPagingItem: $('#tplAdminPagingItem').html(),
                     dispatcher: dispatcher,
                     winManager: winManager
                 });
-                dataGrid.loadData();
             });
         }
 

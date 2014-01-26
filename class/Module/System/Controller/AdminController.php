@@ -250,6 +250,6 @@ abstract class AdminController extends Controller
             $form->ip = $this->request->getClientIp();
         }
 
-        return new Response($this->getForm()->html(false, false));
+        return new Response($this->getForm()->createView()->html(array('buttons'=>false, 'hint'=>false)));
     }
 }
