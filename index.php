@@ -1,15 +1,26 @@
 <?php
 /**
  * Version @version@
- * Точка входа для SiteForeverCMS
- * Этот файл вызывает сервер при запросах
+ * Entry point SiteForeverCMS
  */
+use Sfcms\Request;
 
-//корень сайта
+if (preg_match('/^\/index/', $_SERVER['REQUEST_URI'])) {
+    header('Status: 301');
+    header('Location: /');
+    exit();
+}
+
 define('ROOT', __DIR__);
 
-// автозагрузка классов
 require_once 'vendor/autoload.php';
-$test = isset($_SERVER['HTTP_HOST']) && preg_match('/^test/', $_SERVER['HTTP_HOST']);
-$app = new App($test ? 'test' : 'dev', true);
-$app->run();
+
+Request::enableHttpMethodParameterOverride();
+$request  = Request::createFromGlobals();
+
+$env = preg_match('/^(?:127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3})$/', $request->getClientIp()) ? 'dev' : 'prod';
+$env = preg_match('/^test/', $request->getHost()) ? 'test' : $env;
+$app = new App($env, true);
+
+$response = $app->run($request);
+$response->send();

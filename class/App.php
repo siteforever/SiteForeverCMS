@@ -33,25 +33,28 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class App extends AbstractKernel
 {
     /**
-     * Запуск приложения
+     * Run application
+     * @param $request
      * @static
-     * @return void
+     * @return Response
      */
-    public function run()
+    public function run(Request $request = null)
     {
         static::$start_time = microtime(true);
 
+        if (null === $request) {
+            Request::enableHttpMethodParameterOverride();
+            $request  = Request::createFromGlobals();
+        }
+
         date_default_timezone_set($this->getContainer()->hasParameter('timezone')
                 ? $this->getContainer()->getParameter('timezone') : 'Europe/Moscow');
-
-        Request::enableHttpMethodParameterOverride();
-        $request  = Request::createFromGlobals();
 
         $response = $this->handleRequest($request);
 
         $this->flushDebug();
         $response->prepare($request);
-        $response->send();
+        return $response;
     }
 
     /**

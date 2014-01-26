@@ -107,7 +107,7 @@ abstract class AbstractKernel
         return $this->environment;
     }
 
-    abstract public function run();
+    abstract public function run(Request $request = null);
 
     abstract public function handleRequest(Request $request);
 

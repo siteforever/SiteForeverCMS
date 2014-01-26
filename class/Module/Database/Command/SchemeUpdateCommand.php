@@ -42,16 +42,18 @@ class SchemeUpdateCommand extends Command
         /** @var db $db */
         $db = $container->get('db');
 
+        $count = 0;
         foreach ($dataManager->getModelList() as $config) {
-//            $output->writeln(sprintf('%-30s <info>%s</info>', $config['id'], $config['class']));
             foreach ($schemeManager->migrate($dataManager->getModel($config['id'])) as $query) {
-                $output->writeln(sprintf('<comment>%s</comment>', $query));
+                $count++;
                 if ($force) {
                     $db->query($query);
+                } else {
+                    $output->writeln(sprintf('<comment>%s</comment>', $query));
                 }
             }
         }
 
-        $output->writeln('ok');
+        $output->writeln(sprintf('%s <info>%d</info> queries', $force ? 'Executed' : 'Need to execute', $count));
     }
 }
