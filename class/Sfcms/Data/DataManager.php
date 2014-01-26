@@ -17,14 +17,16 @@ class DataManager extends ContainerAware
     private $modelList = null;
 
     /**
-     * Вернет нужную модель
+     * Get appropriate model class
      *
      * @param string $model
      *
      * @return Model
+     * @throws \RuntimeException
      */
     public function getModel($model)
     {
+        $model = strtolower($model);
         if (false !== strpos($model, '.')) {
             if ('mapper' === strtolower(substr($model, 0, 6))) {
                 return $this->container->get($model);
@@ -39,12 +41,15 @@ class DataManager extends ContainerAware
 
         $models = $this->getModelList();
         foreach ($models as $cfg) {
-            if ($model == $cfg['alias']) {
-                break;
+            if ($model == strtolower($cfg['alias'])) {
+                return $this->container->get($cfg['id']);
             }
         }
 
-        return $this->container->get($cfg['id']);
+        throw new \RuntimeException(sprintf(
+            'Model "%s" not found. Available values (%s)',
+            $model, join(', ', array_map(function($m){ return $m['alias']; }, $models))
+        ));
     }
 
     /**

@@ -43,9 +43,6 @@ mailer:
         type: memory
 #        type: file
 
-# market config
-market: ~
-
 captcha:
     width: 100
     height: 25
@@ -65,5 +62,7 @@ catalog:
         price1: price-a
         price1-d: price-d
     onPage: 5
+
+market: ~
 
 guestbook: ~
