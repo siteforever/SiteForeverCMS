@@ -69,41 +69,6 @@ class i18n
         $this->translator = $translator;
         $this->_debug = $debug;
         $this->_dest = $dest;
-
-//        $start = microtime(1);
-//        $fs = new Filesystem();
-
-//        if (!$fs->exists($this->getDest())) {
-//            $fs->mkdir($this->getDest(), 0777, true);
-//        }
-
-        // Prepare dictionary for JS
-//        $jsDictFile = $this->getDest() . '/' . $this->translator->getLocale() . '.js';
-//        $jsI18nFile = $this->getPath() . '/misc/i18n.js';
-
-//        if (!$this->isDebug() && file_exists($jsDictFile)) {
-//            return;
-//        }
-
-//        $f = fopen($jsDictFile, 'a');
-//        flock($f, LOCK_EX);
-//        ftruncate($f, 0);
-//        $jsDict = "// RUNTIME DICTIONARY FILE\n\n" . file_get_contents($jsI18nFile);
-//        $dictList = glob(dirname($dictFile) . DIRECTORY_SEPARATOR . $this->_lang . DIRECTORY_SEPARATOR . '*.php');
-//        foreach ($dictList as $file) {
-//            $this->_dictionary['cat_' . basename($file, '.php')] = @include($file);
-//        }
-//        $dict = defined('JSON_UNESCAPED_UNICODE') ? json_encode($this->_dictionary, JSON_UNESCAPED_UNICODE)
-//            : json_encode($this->_dictionary);
-//
-//        $jsDict = str_replace('/*:dictionary:*/', 'i18n._dict = ' . $dict . ';', $jsDict);
-//
-//        fwrite($f, $jsDict, strlen($jsDict));
-//        flock($f, LOCK_UN);
-//        fclose($f);
-//        if (null !== $this->getLogger()) {
-//            $this->getLogger()->info('i18n js generation time: ' . round(microtime(1) - $start, 3) . ' sec');
-//        }
     }
 
     public function setLocale($category, $locale)
