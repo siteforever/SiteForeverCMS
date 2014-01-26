@@ -82,6 +82,14 @@
                 {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
+        {elseif in_array($attr.type, ['datetime'])}
+            {form_label form=$form class="control-label" domain=$domain}
+            <div class="controls">
+                {form_input form=$form class=$class type="text"}
+                {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
+            </div>
+            {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['textarea'])}
             {form_label form=$form class="control-label" domain=$domain}
             <div class="controls">

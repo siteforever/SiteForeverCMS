@@ -9,7 +9,8 @@
 
 'Message': 'Сообщение'
 'Captcha': 'Код'
-
+'Product': 'Товар'
+'You name': 'Ваше имя'
 
 catalog:
     name: наименование

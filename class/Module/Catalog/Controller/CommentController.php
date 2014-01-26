@@ -114,27 +114,27 @@ class CommentController extends AdminController
                         'required',
                         'filter' => '/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/',
                     ),
-                    'name'       => array('type' => 'text', 'label' => $this->t('catalog', 'You name'), 'required',),
+                    'name'       => array('type' => 'text', 'label' => 'You name', 'required',),
                     'email'      => array(
                         'type'   => 'text',
                         'filter' => 'email',
-                        'label'  => $this->t('catalog', 'Email'),
+                        'label'  => 'Email',
                         'required',
                     ),
                     'phone'      => array(
                         'type'   => 'text',
                         'filter' => 'phone',
-                        'label'  => $this->t('catalog', 'Phone')
+                        'label'  => 'Phone'
                     ),
-                    'subject'    => array('type' => 'text', 'label' => $this->t('catalog', 'Subject')),
-                    'content'    => array('type' => 'textarea', 'label' => $this->t('catalog', 'Message'), 'required',),
-                    'createdAt'  => array('type' => 'datetime', 'label' => $this->t('Created At'), 'readonly'),
-                    'updatedAt'  => array('type' => 'datetime', 'label' => $this->t('Updated At'), 'readonly'),
+                    'subject'    => array('type' => 'text', 'label' => 'Subject'),
+                    'content'    => array('type' => 'textarea', 'label' => 'Message', 'required',),
+                    'createdAt'  => array('type' => 'datetime', 'label' => 'Created At', 'readonly'),
+                    'updatedAt'  => array('type' => 'datetime', 'label' => 'Updated At', 'readonly'),
                     'hidden' => array('type'=>'checkbox',
                                       'label'=>$this->t('Hidden'),
                     ),
 
-                    'submit'    => array('type'=>'submit', 'value'=>$this->t('catalog', 'Send')),
+                    'submit'    => array('type'=>'submit', 'value'=>'Send'),
                 ),
             ), $this->request);
         }

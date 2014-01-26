@@ -1,6 +1,4 @@
-{block name="title"}<h2>{$title|lang}</h2>{/block}
-
-
+{block name="title"}<h2>{$title|trans}</h2>{/block}
 
 {block name="dataset"}
 <div class="sfcms-admin-dataset" data-url="{$dataUrl}">
@@ -10,13 +8,13 @@
             {foreach $fields as $field}
                 {if empty($field.hidden)}
                 <th class="{$field.class|default:""}">{if empty($field.sort)}
-                    {$field.label|lang}
+                    {$field.label|trans}
                 {else}
-                    <a href="{$dataUrl}" data-ord="{$field.value}" class="">{$field.label|lang}</a>
+                    <a href="{$dataUrl}" data-ord="{$field.value}" class="">{$field.label|trans}</a>
                 {/if}</th>
                 {/if}
             {/foreach}
-            <th class="span2">Action</th>
+            <th class="span2">{'Action'|trans}</th>
         </tr>
         {if $filtered}
         <tr class="sfcms-admin-dataset-fiter">
@@ -38,13 +36,13 @@
     </table>
     <div class="row-fluid">
         <div class="control-panel span3">
-            <button class="btn btn-small btn-refresh"><i class="icon icon-refresh"></i> {"Refresh"|lang}</button>
+            <button class="btn btn-small btn-refresh"><i class="icon icon-refresh"></i> {"Refresh"|trans}</button>
             <button class="btn btn-small btn-add" data-href="{link url="catalogcomment/edit"}">
-                <i class="icon icon-plus"></i> {"Create"|lang}</button>
+                <i class="icon icon-plus"></i> {"Create"|trans}</button>
         </div>
         <div class="span9">
             <div class="pagination pagination-mini" data-pages="{$paging->pages}" data-page="{$paging->page}">
-                <ul><li class="disabled"><span>{"Pages"|lang}:</span></li></ul>
+                <ul><li class="disabled"><span>{"Pages"|trans}:</span></li></ul>
             </div>
         </div>
     </div>
@@ -68,8 +66,8 @@
     </td>
     {/if}{/foreach}
     <td>
-        <a class="btn btn-small edit" title="{"Edit"|lang}" href="#edit" data-id="<%= id %>"><i class="icon icon-edit"></i></a>
-        <a class="btn btn-small delete" title="{"Delete"|lang}" href="#delete"><i class="icon icon-trash"></i></a>
+        <a class="btn btn-small edit" title="{"Edit"|trans}" href="#edit" data-id="<%= id %>"><i class="icon icon-edit"></i></a>
+        <a class="btn btn-small delete" title="{"Delete"|trans}" href="#delete"><i class="icon icon-trash"></i></a>
     </td>
 </script>
 <script type="text/x-backbone-template" id="tplAdminItemEdit">
