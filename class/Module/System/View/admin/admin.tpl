@@ -1,10 +1,13 @@
-{block name="title"}<h2>{$title|trans}</h2>{/block}
+{block name="title"}<h2>{$title|trans|ucfirst}</h2>{/block}
 
 {block name="dataset"}
 <div class="sfcms-admin-dataset" data-url="{$dataUrl}">
+    <div class="pagination" data-pages="{$paging->pages}" data-page="{$paging->page}">
+        <ul><li><span>{"pages"|trans|ucfirst}:</span></li></ul>
+    </div>
     <table class="table table-striped">
         <thead>
-        <tr>
+        <tr>{strip}
             {foreach $fields as $field}
                 {if empty($field.hidden)}
                 <th class="{$field.class|default:""}">{if empty($field.sort)}
@@ -15,62 +18,62 @@
                 {/if}
             {/foreach}
             <th class="span2">{'Action'|trans}</th>
-        </tr>
+        {/strip}</tr>
         {if $filtered}
-        <tr class="sfcms-admin-dataset-fiter">
+        <tr class="sfcms-admin-dataset-fiter">{strip}
             {foreach $fields as $field}
                 {if empty($field.hidden)}
                     {if empty($field.filter)}
-                        <th></th>
+                        <th>&mdash;</th>
                     {else}
                         <th><input type="text" class="input-small" data-col="{$field.value}" /></th>
                     {/if}
                 {/if}
             {/foreach}
             <th></th>
-        </tr>
+        {/strip}</tr>
         {/if}
         </thead>
         <tbody>
         </tbody>
     </table>
-    <div class="row-fluid">
-        <div class="control-panel span3">
-            <button class="btn btn-small btn-refresh"><i class="icon icon-refresh"></i> {"Refresh"|trans}</button>
-            <button class="btn btn-small btn-add" data-href="{link url="catalogcomment/edit"}">
+    <div class="pagination" data-pages="{$paging->pages}" data-page="{$paging->page}">
+        <ul><li><span>{"pages"|trans|ucfirst}:</span></li></ul>
+        <p>&nbsp;</p>
+    </div>
+    <div class="control-panel">{strip}
+        <div class="btn-group">
+            <button class="btn btn-refresh"><i class="icon icon-refresh"></i> {"Refresh"|trans}</button>
+            <button class="btn btn-add" data-href="{link url="catalogcomment/edit"}">
                 <i class="icon icon-plus"></i> {"Create"|trans}</button>
         </div>
-        <div class="span9">
-            <div class="pagination pagination-mini" data-pages="{$paging->pages}" data-page="{$paging->page}">
-                <ul><li class="disabled"><span>{"Pages"|trans}:</span></li></ul>
-            </div>
-        </div>
-    </div>
+    {/strip}</div>
 </div>
 {/block}
 
 
-
-
 {block name="tplAdminItem"}
-<script type="text/x-backbone-template" id="tplAdminItem">
+<script type="text/x-backbone-template" id="tplAdminItem" class="hide">{strip}
     {foreach $fields as $field}{if empty($field.hidden)}
     <td>
-    {if !empty($field.bool)}
-        <span class="icon <% print({$field.value|replace:$dataSeparator:"_"} == 1 ? 'icon-ok' : 'icon-remove'); %>"></span>
-    {elseif !empty($field.hidden)}
+    {if !empty($field.hidden)}
         <span class="icon <% print({$field.value|replace:$dataSeparator:"_"} == 1 ? 'icon-eye-open' : 'icon-eye-open'); %>"></span>
+    {elseif !empty($field.bool)}
+        <span class="icon <% print({$field.value|replace:$dataSeparator:"_"} == 1 ? 'icon-ok' : 'icon-remove'); %>"></span>
     {else}
         <%- {$field.value|replace:$dataSeparator:"_"} %>
     {/if}
     </td>
     {/if}{/foreach}
     <td>
-        <a class="btn btn-small edit" title="{"Edit"|trans}" href="#edit" data-id="<%= id %>"><i class="icon icon-edit"></i></a>
-        <a class="btn btn-small delete" title="{"Delete"|trans}" href="#delete"><i class="icon icon-trash"></i></a>
+        <div class="btn-group">
+            <a class="btn btn-small edit" title="{"Edit"|trans}" href="#edit" data-id="<%= id %>"><i class="icon icon-edit"></i></a>
+            <a class="btn btn-small delete" title="{"Delete"|trans}" href="#delete"><i class="icon icon-trash"></i></a>
+        </div>
     </td>
-</script>
-<script type="text/x-backbone-template" id="tplAdminItemEdit">
+{/strip}</script>
+
+<script type="text/x-backbone-template" id="tplAdminItemEdit" class="hide">{strip}
     <form class="form-horizontal">
     {foreach $fields as $field}{if empty($field.hidden)}
         <div class="control-group">
@@ -82,14 +85,11 @@
         </div>
     {/if}{/foreach}
     </form>
-</script>
+{/strip}</script>
 {/block}
 
-
-
-
 {block name="tplAdminPagingItem"}
-    <script type="text/x-backbone-template" id="tplAdminPagingItem">
-        <li class="<%= attrClass %>"><a href="<%= url %>" data-page="<%= number %>"><%- number %></a></li>
-    </script>
+<script type="text/x-backbone-template" id="tplAdminPagingItem">
+    <li class="<%= attrClass %>"><a href="<%= url %>" data-page="<%= number %>"><%- number %></a></li>
+</script>
 {/block}

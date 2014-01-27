@@ -12,6 +12,9 @@
 'Product': 'Товар'
 'You name': 'Ваше имя'
 
+'Modal': 'Окно'
+'pages': 'страницы'
+
 catalog:
     name: наименование
     not_selected: не выбрано

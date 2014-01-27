@@ -11,7 +11,7 @@ define("admin/admin", [
     "module/alert",
     "View/WorkSpace",
     "View/DataGrid",
-    "View/AdminModal",
+    "View/DataGridModal",
     "controller",
     "siteforever",
     "jui",
@@ -82,7 +82,7 @@ define("admin/admin", [
 
     var winManager = new ModalManager({
         el: $('#workspace')[0],
-        modal: require('View/AdminModal'),
+        modal: require('View/DataGridModal'),
         dispatcher: dispatcher
     });
 

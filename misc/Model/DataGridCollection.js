@@ -2,12 +2,12 @@
  * Collection for admin item model
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
-define("Model/AdminItemCollection", [
+define("Model/DataGridCollection", [
     "backbone",
-    "Model/AdminItem"
-], function(Backbone, AdminItemModel){
+    "Model/DataGridModel"
+], function(Backbone, DataGridModel){
     return Backbone.Collection.extend({
-        model: AdminItemModel,
+        model: DataGridModel,
 
         baseUrl: '',
         pages: 1,
@@ -21,7 +21,7 @@ define("Model/AdminItemCollection", [
         url: function() {
             var urlComponents = [];
 
-            if (this.page > 2) {
+            if (this.page > 1) {
                 urlComponents.push('page=' + this.page);
             }
 

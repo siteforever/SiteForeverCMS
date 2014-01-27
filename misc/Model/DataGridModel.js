@@ -2,7 +2,7 @@
  * Model for item in admin module
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
-define("Model/AdminItem", [
+define("Model/DataGridModel", [
     "backbone"
 ], function (Backbone) {
     return Backbone.Model.extend({

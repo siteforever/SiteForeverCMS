@@ -6,7 +6,7 @@
 <div class="navbar navbar-inverse">
     <div class="navbar-inner">
         <div class="container">
-            <div class="nav-collapse">
+            <div class="nav-collapse">{strip}
                 <span class="brand">SiteForeverCMS</span>
                 <ul class="nav">
                     <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {'Goto site'|trans}</a></li>
@@ -22,7 +22,7 @@
                         {*<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>*}
                     {*</li>*}
                 </ul>
-            </div>
+            {/strip}</div>
         </div>
     </div>
 </div>
@@ -33,7 +33,7 @@
     <div class="row-fluid">
         <div class="span3">
             <div class="well">
-                <ul class="nav nav-list">
+                <ul class="nav nav-list">{strip}
                     {foreach from=$request->get('modules') item="item"}
                     {if isset( $item.url )}
                         {if ! isset( $item.class )}{$item.class = ""}{/if}
@@ -49,7 +49,7 @@
                         <li class="divider"></li>
                     {/if}
                     {/foreach}
-                </ul>
+                {/strip}</ul>
             </div>
         </div>
 

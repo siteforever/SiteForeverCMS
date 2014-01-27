@@ -2,10 +2,11 @@
  *
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
-define("View/AdminItem", [
+define("View/DataGridItem", [
     "jquery",
-    "backbone"
-], function ($, Backbone) {
+    "backbone",
+    "i18n"
+], function ($, Backbone, i18n) {
     return Backbone.View.extend({
         tagName: "tr",
         className : "b-admin-item",
@@ -38,8 +39,7 @@ define("View/AdminItem", [
         onEdit: function(event) {
             event.stopPropagation();
 
-            this.modalView().render();
-//            console.log(this.model.url());
+            this.modalView().render({title: i18n('Edit')});
             $.get(this.model.url()).done($.proxy(function(response){
                 this.modalView().render({content: response});
             }, this));

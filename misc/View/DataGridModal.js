@@ -2,10 +2,11 @@
  * Modal window for admin interface
  * @base View/Modal
  */
-define('View/AdminModal', [
-    'View/Modal'
-], function(Modal){
-    return Modal.extend({
+define('View/DataGridModal', [
+    'View/Modal',
+    'i18n'
+], function(ModalView, i18n){
+    return ModalView.extend({
         events: {
             'click .btn-close': 'onClickClose',
             'click .btn-save': 'onClickSave',
@@ -16,11 +17,11 @@ define('View/AdminModal', [
 
         buttons: [
             {
-                text: 'Save',
+                text: i18n('Save'),
                 classes: 'btn btn-primary btn-save'
             },
             {
-                text: 'Close',
+                text: i18n('Close'),
                 classes: 'btn btn-close'
             }
         ],
@@ -50,8 +51,13 @@ define('View/AdminModal', [
             // Mark error field
             this.$el.find('.control-group').removeClass('error').find('.help-inline').remove();
             for (i in err) {
-                $elem = this.$el.find('div[data-field-name="'+i+'"]');
-                $elem.addClass('error').find('.controls').append(this.make('span', {class: 'help-inline'}, err[i]));
+                if (err.hasOwnProperty(i)) {
+                    $elem = this.$el.find('div[data-field-name="'+i+'"]');
+                    $elem.addClass('error').find('.controls').append(
+//                    this.make('span', {class: 'help-inline'}, err[i])
+                        '<span class="help-inline">' + err[i] + '</span>'
+                    );
+                }
             }
 
             this.$el.find('.btn-save').removeClass('disabled');

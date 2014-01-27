@@ -6,12 +6,13 @@
 define("View/DataGrid", [
     "jquery",
     "backbone",
+    "i18n",
     "module/alert",
-    "Model/AdminItem",
-    "View/AdminItem",
-    "Model/AdminItemCollection",
+    "Model/DataGridModel",
+    "View/DataGridItem",
+    "Model/DataGridCollection",
     "jquery/jquery.blockUI"
-], function($, Backbone, $alert, Item, ItemView, ItemCollection){
+], function($, Backbone, i18n, $alert, DataGridModel, DataGridItemView, DataGridCollection){
     return Backbone.View.extend({
         $table: null,
         $pagination: null,
@@ -19,7 +20,7 @@ define("View/DataGrid", [
         loading: false,
         timeout: null,
 
-        collection: new ItemCollection,
+        collection: new DataGridCollection,
 
         _modalView: null,
 
@@ -53,7 +54,6 @@ define("View/DataGrid", [
             this.dispatcher = options.dispatcher;
             this.winManager = options.winManager;
 
-
             if (!this.$el.data('url')) {
                 throw new Error('A "url" attribute must be specified');
             }
@@ -75,13 +75,16 @@ define("View/DataGrid", [
                 }, this);
             }
 
-            this.collection.on('sync add remove', this.render);
-            this.collection.on('request', function(){
-                this.$el.block({message: 'Loading...'});
-            }, this);
-            this.collection.on('sync', function(){
-                this.$el.unblock();
-            }, this);
+            this.collection
+                .on('request', function(){
+                    this.collection.off('add remove');
+                    this.$el.block({message: 'Loading...'});
+                }, this)
+                .on('sync', this.render)
+                .on('sync', function(){
+                    this.collection.on('add remove', this.render);
+                    this.$el.unblock();
+                }, this);
 
             this.collection.fetch();
 
@@ -96,14 +99,12 @@ define("View/DataGrid", [
             var $rows = this.$table.find('tbody');
             $rows.find('*').remove();
             if (!this.collection.length) {
-                this.pages = 0;
+                this.collection.pages = 0;
             }
             this.collection.each(function(objItem, i){
-                0 == i && (this.pages = objItem.get('_p'));
-                var view = new ItemView({
-                    model : objItem,
-                    winManager: this.winManager
-                });
+                if (0 == i) this.collection.pages = objItem.get('_p');
+                var view = new DataGridItemView({model : objItem});
+                view.winManager = this.winManager;
                 view.tplAdminItem = this.tplAdminItem;
                 view.render();
                 $rows.append(view.$el);
@@ -115,19 +116,21 @@ define("View/DataGrid", [
             this.$table.find('a[data-ord='+this.order+']').addClass('order-' + this.dir);
 
             var i,
-                $pageContainer = this.$pagination.find('ul');
+                $pageContainer = this.$pagination.find('ul'),
+                $pagination = this.$el.find('.pagination');
 
             $pageContainer.find('li:gt(0)').remove();
-            if (this.pages > 1) {
-                for (i = 1; i <= this.pages; i++) {
+            if (this.collection.pages > 1) {
+                for (i = 1; i <= this.collection.pages; i++) {
                     $pageContainer.append(_.template(this.tplAdminPagingItem, {
                         number: i,
-                        url: this.collection.url,
-                        attrClass: (this.page == i ? 'active' : '')
+                        url: this.collection.url(),
+                        attrClass: (this.collection.page == i ? 'active' : '')
                     }));
                 }
+                $pagination.show();
             } else {
-                this.$el.find('.pagination').hide();
+                $pagination.hide();
             }
             return this;
         },
@@ -198,9 +201,9 @@ define("View/DataGrid", [
          */
         onAdd: function(event) {
             event.stopPropagation();
-            var item = new Item(),
+            var item = new DataGridModel(),
                 win = this.winManager.create({model: item});
-            win.render();
+            win.render({title: i18n('Create')});
 
             item.urlRoot = $(event.target).data('href');
 

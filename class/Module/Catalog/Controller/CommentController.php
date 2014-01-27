@@ -30,7 +30,8 @@ class CommentController extends AdminController
 
     protected function adminPerPage()
     {
-        return 20;
+        $config = $this->container->getParameter('catalog');
+        return isset($config['comments']['admin']['onPage']) ? $config['comments']['admin']['onPage'] : 10;
     }
 
     public function getModel($model = '')
@@ -51,6 +52,10 @@ class CommentController extends AdminController
     protected function adminFields()
     {
         return array(
+            array(
+                'label' => 'id',
+                'value' => 'id',
+            ),
             array(
                 'label' => 'Product',
                 'value' => 'Product.name',

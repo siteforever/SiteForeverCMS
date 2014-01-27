@@ -1,12 +1,13 @@
 /**
- *
+ * Modal window abstract
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 define('View/Modal',[
     "jquery",
     "backbone",
+    "i18n",
     "jquery/jquery.form"
-], function($, Backbone){
+], function($, Backbone, i18n){
     return Backbone.View.extend({
         tagName: 'div',
         className: 'modal hide',
@@ -16,7 +17,7 @@ define('View/Modal',[
 
         options: {},
 
-        title: 'Modal',
+        title: i18n('Modal'),
 
         content: function() {
             return _.template($('#tplAdminItemEdit').html(), this.model.toJSON());
@@ -94,7 +95,7 @@ define('View/Modal',[
             } else {
                 this.$overlay = $(this._overlayTemplate).appendTo('body');
             }
-
+            $('body').css('overflow','hidden');
             return false;
         },
 
@@ -103,6 +104,7 @@ define('View/Modal',[
             if (this.$overlay) {
                 this.$overlay.addClass('hide');
             }
+            $('body').css('overflow','auto');
             return false;
         },
 
@@ -122,9 +124,11 @@ define('View/Modal',[
         },
 
         render: function(options) {
+            options = options || {};
             if (!$('body').find(this.el).length) {
                 this.$el.appendTo('body');
             }
+            if (options.title) this.title = options.title;
             this.$el.html([
                 this._renderTitle(this.title),
                 this._renderBody((options && options.content) || this.content()),

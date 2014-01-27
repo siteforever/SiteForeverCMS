@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Module\Translator\Component\TranslatorComponent;
 
 abstract class AdminController extends Controller
 {
@@ -236,10 +237,16 @@ abstract class AdminController extends Controller
                         'error' => 0,
                     ));
                 } else {
+                    /** @var TranslatorComponent $t */
+                    $t = $this->get('translator');
+                    $errors = array();
+                    foreach ($form->getErrors() as $key => $err) {
+                        $errors[$key] = $t->trans($err, array('%label%'=>$t->trans($form->getChild($key)->getLabel())));
+                    }
                     return new JsonResponse(array(
                         'status' => 'error',
                         'error'  => 1,
-                        'errors' => $form->getErrors()
+                        'errors' => $errors,
                     ));
                 }
             }
