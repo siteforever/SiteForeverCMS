@@ -25,7 +25,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
     protected $notice;
 
     /** @var string RegExp for filtering values */
-    protected $filter;
+    protected $filter = self::FILTER_DEFAULT;
 
     protected $readonly = false;
     protected $required = false;
@@ -74,25 +74,25 @@ abstract class FormFieldAbstract extends FormTypeAbstract
                 'name'
             ));
         $resolver->setDefaults(array(
-                'type'      => 'text',
-                'class'     => '',
-                'id'        => '',
-                'label'     => '',
-                'notice'    => '',
+                'type'      => $this->getType(),
+                'class'     => $this->getClass(),
+                'id'        => $this->getId(),
+                'label'     => $this->getLabel(),
+                'notice'    => $this->notice,
                 'value'     => '',
-                'hidden'    => false,
-                'disable'   => false,
-                'readonly'  => false,
-                'required'  => false,
+                'hidden'    => $this->hidden,
+                'disable'   => $this->disabled,
+                'readonly'  => $this->readonly,
+                'required'  => $this->required,
                 'variants'  => array(),
                 'multiple'  => false,
                 'autocomplete'  => true,
-                'filter'    => self::FILTER_DEFAULT,
+                'filter'    => $this->filter,
             ));
         $options = $this->options = $resolver->resolve($options);
 
         $this->name = $options['name'];
-        $this->type = $this->type ?: $options['type'];
+        $this->type = $options['type'];
         $this->class = $options['class'];
         $this->label = $options['label'];
         $this->notice = $options['notice'];

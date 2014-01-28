@@ -135,8 +135,8 @@
             <div class="controls">
                 {$class = [$class, "input-small", "captcha"]|join:" "}
                 {form_input form=$form type="text" class=$class}
-                <img src="{link controller="captcha"}" alt="captcha" />
-                <span class="captcha-reload">{'Refresh'|trans:[]:$domain}</span>
+                <img src="{link controller=captcha}" alt="captcha">
+                <span class="captcha-reload">{'Refresh'|trans}</span>
                 {form_errors form=$form}
                 {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>

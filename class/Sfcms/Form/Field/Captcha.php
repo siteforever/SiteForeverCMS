@@ -13,19 +13,10 @@ use Sfcms\Request;
  */
 class Captcha extends FormFieldAbstract
 {
-    protected $type =   'text';
+    protected $type =   'captcha';
     protected $class =  '';
     protected $required = true;
     protected $datable = false;
-
-    public function htmlInput( $field )
-    {
-        $field['value']    = 'value=""';
-        $field['class']    = array( 'captcha' );
-        return parent::htmlInput( $field )
-            . '<img src="/?controller=captcha" alt="captcha" />'
-            . '<span class="captcha-reload">Обновить</span>';
-    }
 
     /**
      * Проверит значение на валидность типа
