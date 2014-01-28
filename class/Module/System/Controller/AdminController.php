@@ -105,20 +105,7 @@ abstract class AdminController extends Controller
     {
         if ($this->request->query->has('id')) {
             $id = $this->request->query->getInt('id');
-            if ($this->request->headers->has('x-http-method-override')) {
-                switch ($this->request->headers->get('x-http-method-override')) {
-                    case 'DELETE':
-                        return $this->deleteAction($id);
-                    case 'PUT':
-                        return $this->editAction($id);
-                }
-            } else {
-                return $this->editAction($id);
-            }
-        }
-
-        if ($this->request->isMethod('POST')) {
-            return $this->editAction($this->request->query->getDigits('id', null));
+            return $this->editAction($id);
         }
 
         $criteria = $this->adminDefaultCriteria();

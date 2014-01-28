@@ -70,11 +70,11 @@ abstract class Route
     {
         /** @var SfRouter $router */
         $router = \App::cms()->getContainer()->get('sf_router');
-        if (!$router->getContext()) {
-            $context = new RequestContext();
-            $context->fromRequest($request);
-            $router->setContext($context);
-        }
+//        if (!$router->getContext()) {
+        $context = new RequestContext();
+        $context->fromRequest($request);
+        $router->setContext($context);
+//        }
         return $router;
     }
 

@@ -55,6 +55,7 @@ class CommentController extends AdminController
             array(
                 'label' => 'id',
                 'value' => 'id',
+                'sort'  => true,
             ),
             array(
                 'label' => 'Product',
@@ -62,13 +63,10 @@ class CommentController extends AdminController
                 'class' => 'span3',
             ),
             array(
-                'label' => 'Id',
-                'value' => 'id',
-                'hidden' => true,
-            ),
-            array(
-                'label' => 'Subject',
-                'value' => 'subject',
+                'label' => 'Name',
+                'value' => 'name',
+                'sort'  => true,
+                'filter' => true,
             ),
             array(
                 'label' => 'Email',
@@ -115,7 +113,7 @@ class CommentController extends AdminController
                     'product_id' => array('type' => 'hidden'),
                     'ip'         => array(
                         'type' => 'text',
-                        'label' => $this->t('catalog', 'IP'),
+                        'label' => 'IP',
                         'required',
                         'filter' => '/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/',
                     ),

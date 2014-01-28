@@ -147,7 +147,7 @@ define('View/Modal',[
         _renderTitle: function(title) {
             return _.template([
                 '<div class="modal-header">',
-                '<button type="button" class="close btn-close">&times;</button>',
+                    '<button type="button" class="close btn-close">&times;</button>',
                     '<h3><%- title %></h3>',
                 '</div>'
             ].join(""), {title: title});

@@ -53,7 +53,7 @@ define("admin/admin", [
             .dialog('open');
     });
 
-    Backbone.emulateHTTP = true;
+//    Backbone.emulateHTTP = true;
     var dispatcher = {};
     _.extend(dispatcher, Backbone.Events);
 

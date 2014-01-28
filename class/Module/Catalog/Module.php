@@ -98,18 +98,30 @@ class Module extends SfModule
                 array('_controller'=>'catalog', '_action'=>'hidden')
             ));
 
+
         $routes->add('catalogcomment/admin',
             new Route('/catalogcomment/admin',
                 array('_controller'=>'catalogcomment', '_action'=>'admin')
             ));
         $routes->add('catalogcomment/edit',
             new Route('/catalogcomment/edit',
-                array('_controller'=>'catalogcomment', '_action'=>'edit')
+                array('_controller'=>'catalogcomment', '_action'=>'edit'),
+                array(), array(), '', array(),
+                array('PUT', 'POST')
+            ));
+        $routes->add('catalogcomment/delete',
+            new Route('/catalogcomment/list',
+                array('_controller'=>'catalogcomment', '_action'=>'delete'),
+                array(), array(), '', array(),
+                array('DELETE')
             ));
         $routes->add('catalogcomment/list',
             new Route('/catalogcomment/list',
-                array('_controller'=>'catalogcomment', '_action'=>'list')
+                array('_controller'=>'catalogcomment', '_action'=>'list'),
+                array(), array(), '', array(),
+                array('GET')
             ));
+
 
         $routes->add('cataloggallery/index',
             new Route('/cataloggallery/index',

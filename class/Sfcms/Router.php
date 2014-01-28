@@ -305,7 +305,10 @@ class Router
     {
         $start = microtime(1);
         if (null !== $this->getLogger()) {
-            $this->getLogger()->log('Start routing');
+            $this->getLogger()->info('Start routing', array(
+                    'method' => $this->request->getMethod(),
+                    'route' => $this->route,
+                ));
         }
         // Если контроллер указан явно, то не производить маршрутизацию
         if (!$greedy && $this->request->getController()) {

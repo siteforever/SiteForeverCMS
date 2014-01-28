@@ -7,6 +7,8 @@ define('View/DataGridModal', [
     'i18n'
 ], function(ModalView, i18n){
     return ModalView.extend({
+        options: {},
+
         events: {
             'click .btn-close': 'onClickClose',
             'click .btn-save': 'onClickSave',
@@ -26,6 +28,10 @@ define('View/DataGridModal', [
             }
         ],
 
+        initialize: function(options) {
+            this.options = options;
+        },
+
         content: function() {
             return '<div class="progress progress-striped active">'
                     + '<div class="bar" style="width: 100%;"></div>'
@@ -34,6 +40,7 @@ define('View/DataGridModal', [
 
         onClickSave: function() {
             this.$el.find('.btn-save').addClass('disabled')/*.prepend('<i class="icon icon-time"></i>')*/;
+
             this.$el.find('form').ajaxSubmit({
                 dataType: 'json',
                 success: $.proxy(this.onSaveSuccess, this)
@@ -54,7 +61,6 @@ define('View/DataGridModal', [
                 if (err.hasOwnProperty(i)) {
                     $elem = this.$el.find('div[data-field-name="'+i+'"]');
                     $elem.addClass('error').find('.controls').append(
-//                    this.make('span', {class: 'help-inline'}, err[i])
                         '<span class="help-inline">' + err[i] + '</span>'
                     );
                 }
@@ -71,6 +77,5 @@ define('View/DataGridModal', [
             this.model.set(this.codyData);
             this.hide();
         }
-
     });
 });

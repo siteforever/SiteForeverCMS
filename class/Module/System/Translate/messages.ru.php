@@ -57,6 +57,8 @@ return array(
     'Settings saved'                            => 'Настройки сохранены',
     'Couldn\'t load this tab.'                  => 'Не удалось загрузить эту вкладку.',
 
+    'Would you like to delete?'                 => 'Хотите удалить?',
+    'Loading...'                                => 'Загружается...',
 
     // Banner
     'Banners category list'                     => 'Список категорий баннеров',
