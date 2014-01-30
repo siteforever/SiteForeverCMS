@@ -16,10 +16,6 @@ use Sfcms\Request;
 
 class Layout extends ViewAbstract
 {
-//    const JQ_UI_THEME = 'redmond';
-    const JQ_UI_THEME = 'flick';
-    const JQ_UI_VERSION = '1.9.2';
-
     private $use_less = false; // Need using less library
     private $anti_cache = 0; // Anti cache hash
 
@@ -28,18 +24,6 @@ class Layout extends ViewAbstract
     protected final function init(Request $request)
     {
         $this->anti_cache = substr( md5(mktime(null,0,0)), 0, 8 );
-
-        /** @var $theme string */
-        $theme = $this->config['theme'];
-
-        $this->path = array(
-            'theme'  => '/themes/' . $theme,
-            'css'    => '/themes/' . $theme . '/css',
-            'js'     => '/themes/' . $theme . '/js',
-            'images' => '/themes/' . $theme . '/images',
-            'img'    => '/themes/' . $theme . '/img',
-            'misc'   => '/misc',
-        );
 
         /** Данные шаблона */
         $this->getTpl()->assign( array(
@@ -177,9 +161,7 @@ class Layout extends ViewAbstract
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
 
-//        if (!$this->_app->isDebug()) {
         $rjsConfig['paths']['site'] = '../static/site';
-//        }
 
         if ($request->isSystem()) {
             if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
@@ -189,7 +171,7 @@ class Layout extends ViewAbstract
             }
 
             $rjsConfig['paths']['app'] = 'admin';
-            $rjsConfig['paths']['jui'] = 'jquery/jquery-ui-'.Layout::JQ_UI_VERSION.'.custom.min';
+            $rjsConfig['paths']['jui'] = 'jquery/jquery-ui.min';
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
             if ('en' != $request->getLocale()) {
                 $rjsConfig['shim']['bootstrap/js/locales/bootstrap-datetimepicker.'.$request->getLocale()] = array('bootstrap/js/bootstrap-datetimepicker');
@@ -252,7 +234,7 @@ class Layout extends ViewAbstract
             }
         } else {
             $return[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
-            $return[] = "<script type='text/javascript' src='/misc/require-jquery-min.js' data-main='site'></script>";
+            $return[] = "<script type='text/javascript' src='/misc/require-min.js' data-main='site'></script>";
         }
 
 
@@ -305,15 +287,5 @@ class Layout extends ViewAbstract
     protected function getMisc()
     {
         return $this->path['misc'];
-    }
-
-
-    /**
-     * Attach jQueryUI plugin
-     */
-    protected function attachJUI()
-    {
-        $this->_app->addStyle( $this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui-'.self::JQ_UI_VERSION.'.custom.css' );
-        $this->_app->addScript( $this->getMisc().'/jquery/jquery-ui-'.self::JQ_UI_VERSION.'.custom.min.js' );
     }
 }

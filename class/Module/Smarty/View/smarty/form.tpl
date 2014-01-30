@@ -53,7 +53,12 @@
     {/if}
     {if trim($type)}type="{$type}" {/if}
 
-    {$class = [$class, $attr.class]}
+    {if 'hidden' == $type}
+        {$class = []}
+    {else}
+        {$class = [$class, $attr.class]}
+    {/if}
+
     {if count(array_filter($class))}class="{$class|join:" "|trim}" {/if}
 
     name="{$form->parent->vars.attr.name}[{$attr.name}]"
@@ -70,7 +75,7 @@
 {if not $form->isRendered()}
         {$attr = $form->vars.attr}
     {if $attr.hidden}
-        <input{call form_row_attr class=$class form=$form type="hidden"}>
+        <input{call form_row_attr form=$form type="hidden"}>
         {$form = $form->setRendered()}
     {else}
         <div class="control-group{if $attr.error} error{/if}" data-field-name="{$attr.name}">

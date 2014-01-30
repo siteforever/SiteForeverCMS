@@ -18,6 +18,17 @@ abstract class ViewAbstract
     {
         $this->_app = $app;
         $this->config = $config;
+        /** @var $theme string */
+        $theme = $this->config['theme'];
+
+        $this->path = array(
+            'theme'  => '/themes/' . $theme,
+            'css'    => '/themes/' . $theme . '/css',
+            'js'     => '/themes/' . $theme . '/js',
+            'images' => '/themes/' . $theme . '/images',
+            'img'    => '/themes/' . $theme . '/img',
+            'misc'   => '/misc',
+        );
     }
 
     /**

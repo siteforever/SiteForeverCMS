@@ -43,7 +43,7 @@ define("admin/page", [
                 "click" : function( event, node ) {
                     $alert("Loading...", $('#pageEdit'));
                     $.post($(node).attr('href')).then($.proxy(function (response) {
-                        this.editModal.title(i18n('page', 'Edit page')).body(response);
+                        this.editModal.title(i18n('Edit page')).body(response);
                         this.editModal.show().done(function(){
                             $alert.close(1000);
                         });
@@ -131,7 +131,7 @@ define("admin/page", [
             var $name = $('#name');
             $name.parent().find('.help-inline').remove();
             if (!$.trim($name.val())) {
-                $name.parent().append('<div class="help-inline">'+i18n('page', 'Input Name')+'</div>');
+                $name.parent().append('<div class="help-inline">'+i18n('Input Name')+'</div>');
                 $name.parents('.control-group').addClass('error');
                 return;
             } else {
@@ -145,7 +145,7 @@ define("admin/page", [
                 'parent': $('#id').val()
             }).then($.proxy(function (editModal, response) {
                 this.hide();
-                editModal.title(i18n('page', 'Create page')).body(response).show();
+                editModal.title(i18n('Create page')).body(response).show();
             }, this, editModal));
         },
 

@@ -127,7 +127,7 @@ class Form_Field_TextTest extends WebCase
         $this->field->hide();
 
         $this->assertEquals(
-            "<input id=\"test_test\" type=\"hidden\" class=\"input-xlarge\" name=\"test[test]\" value=\"hello\">",
+            "<input id=\"test_test\" type=\"hidden\" name=\"test[test]\" value=\"hello\">",
             trim($this->field->createView()->html())
         );
     }

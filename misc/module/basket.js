@@ -26,7 +26,7 @@ define("module/basket", [
                 $(this.class_name).replaceWith(response.widget);
             };
 
-            return $.post('/index.php/basket/add', {
+            return $.post('/basket/add', {
                     basket_prod_id:     id,
                     basket_prod_name:   product,
                     basket_prod_count:  parseInt( count, 10 ),
@@ -50,7 +50,7 @@ define("module/basket", [
                 $(this.class_name).replaceWith(response.widget);
             };
 
-            return $.post('/index.php/basket/delete', {
+            return $.post('/basket/delete', {
                     basket_prod_id:     id,
                     basket_prod_count: parseInt(count, 10)
                 }, $.proxy(callback, this),

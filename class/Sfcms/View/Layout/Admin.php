@@ -13,6 +13,8 @@ use Sfcms\Kernel\KernelEvent;
 
 class Admin extends Layout
 {
+    const JQ_UI_THEME = 'flick';
+
     /**
      * @inheritdoc
      */
@@ -23,13 +25,12 @@ class Admin extends Layout
         /** @var AssetWriter $writer */
         $writer = $this->_app->getContainer()->get('assetWriter');
 
+
+        $this->_app->addStyle($this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui.min.css');
+//        $this->_app->addScript( $this->getMisc().'/jquery/jquery-ui-'.self::JQ_UI_VERSION.'.custom.min.js' );
+
         $request = $event->getRequest();
         $this->init($request);
-        // подключение админских стилей и скриптов
-        $this->attachJUI();
-        // jQuery
-
-//        $this->attachWysiwyg();
 
         $this->_app->getAssets()->addStyle('/static/admin/jquery/elfinder/elfinder.css');
         $this->_app->getAssets()->addScript('/static/admin.js');

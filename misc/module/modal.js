@@ -151,6 +151,7 @@ define('module/modal',[
             var deferred = new $.Deferred();
             this.domnode.modal('show');
             $('.modal-body', this.domnode).scrollTop(0);
+            $('body').css('overflow', 'hidden');
             this.domnode.on("shown", function(){
                 deferred.resolve();
                 callback && callback();
@@ -162,6 +163,7 @@ define('module/modal',[
             var deferred = new $.Deferred();
             this.domnode.modal('hide');
             this.domnode.on('hidden', function(){
+                $('body').css('overflow', 'auto');
                 deferred.resolve();
                 callback && callback();
             });
