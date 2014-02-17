@@ -65,4 +65,5 @@ catalog:
 
 market: ~
 
-guestbook: ~
+guestbook:
+    email: "%admin%"

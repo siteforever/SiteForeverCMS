@@ -47,24 +47,20 @@ class GuestbookController extends Controller
                 $obj->set('message', strip_tags($form->getChild('message')->getValue()));
                 $obj->set('link', $link);
                 $obj->set('date', time());
-                $obj->set('ip', $_SERVER['REMOTE_ADDR']);
+                $obj->set('ip', $this->request->getClientIp());
 
                 $model->save( $obj );
 
+                $this->tpl->assign('obj', $obj);
                 $this->sendmail(
-                    $obj->email,
                     $this->container->getParameter('admin'),
+                    $this->container->getParameter('guestbook.email'),
                     'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
-                    $this->getTpl()->fetch('guestbook.letter')
-                );
-
-                $this->sendmail(
-                    $obj->email,
-                    'keltanas@gmail.com',
-                    'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
-                    $this->getTpl()->fetch('guestbook.letter')
+                    $this->getTpl()->fetch('guestbook.letter'),
+                    'text/html'
                 );
             }
+            $form->getChild('captcha')->clear();
         }
 
         $crit   = array(

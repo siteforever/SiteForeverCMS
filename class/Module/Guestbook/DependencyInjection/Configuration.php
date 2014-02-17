@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('guestbook');
         $rootNode
             ->children()
+                ->scalarNode('email')->defaultValue('%admin%')->end()
             ->end()
         ;
 

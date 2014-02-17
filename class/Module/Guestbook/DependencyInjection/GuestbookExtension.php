@@ -32,6 +32,10 @@ class GuestbookExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+        if ('%admin%' == $config['email']) {
+            $config['email'] = $container->getParameter('admin');
+        }
+        $container->setParameter(sprintf('%s.email', $this->getAlias()), $config['email']);
     }
 
     public function getAlias()

@@ -3,14 +3,14 @@
 {foreach from=$messages item="msg"}
 <div class="well">
     <p class="guestbook_title">
-        <strong>{$msg->name}</strong>
+        <strong>{$msg->name|escape}</strong>
         <small>{$msg->date|date_format:"%x"}</small>
     </p>
-    <p class="guestbook_body">{$msg->message|strip_tags|nl2br}</p>
+    <p class="guestbook_body">{$msg->message|strip_tags|escape|nl2br}</p>
     {if $msg->answer}
         <div class="guestbook_answer">
             <p><strong>{t cat="guestbook"}Answer{/t}:</strong></p>
-            {$msg->answer|strip_tags|nl2br}</div>
+            {$msg->answer|strip_tags|escape|nl2br}</div>
     {/if}
 </div>
 {foreachelse}
