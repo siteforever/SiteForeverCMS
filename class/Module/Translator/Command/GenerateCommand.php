@@ -20,7 +20,7 @@ class GenerateCommand extends Command
 
     protected function getDest()
     {
-        return ROOT . '/static';
+        return ROOT . '/static/i18n';
     }
 
     protected function configure()
@@ -57,7 +57,7 @@ class GenerateCommand extends Command
         foreach ($locales as $locale) {
             $this->dictionary = $translator->getCatalogues($domain, $locale);
 
-            $jsDestFile = $this->getDest() . '/i18n/' . $locale . '.js';
+            $jsDestFile = $this->getDest() . '/' . $locale . '.js';
             $output->writeln(sprintf('Dest file <info>%s</info>', $jsDestFile));
 
             $f = fopen($jsDestFile, 'a');

@@ -11,7 +11,6 @@ define("admin/catalog", [
     "module/alert",
     "admin/catalog/gallery",
     "admin/catalog/product",
-    "siteforever",
     "jui"
 ],function( $, Modal, i18n, $alert, _gallery, _product ){
 

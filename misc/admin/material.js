@@ -8,7 +8,6 @@ define("admin/material", [
     "module/parser",
     "module/modal",
     "i18n",
-    "siteforever",
     "jquery/jquery.form"
 ],function ($, parser, Modal) {
     return {

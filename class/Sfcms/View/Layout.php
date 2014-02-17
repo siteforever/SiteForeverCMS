@@ -100,9 +100,9 @@ class Layout extends ViewAbstract
     public function getStyles(Request $request)
     {
         /** @var AssetManager $am */
-        $am = $this->_app->getContainer()->get('assetManager');
+        $am = $this->_app->getContainer()->get('asset.manager');
         /** @var AssetWriter $writer */
-        $writer = $this->_app->getContainer()->get('assetWriter');
+        $writer = $this->_app->getContainer()->get('asset.writer');
 
         $return = array();
 
@@ -146,8 +146,6 @@ class Layout extends ViewAbstract
             ),
             'paths'=> array(
                 'fancybox' => 'jquery/fancybox/jquery.fancybox-1.3.1' . (\App::isDebug() ? '' : '.pack'),
-                'siteforever' => 'module/siteforever',
-                'runtime' => '../runtime',
                 'theme' => '/themes/'.$this->config['theme'],
                 'i18n'  => '../static/i18n/'.$this->_app->getContainer()->getParameter('language'),
             ),
@@ -160,8 +158,6 @@ class Layout extends ViewAbstract
         if ($request->isSystem() || $this->_app->getContainer()->getParameter('assetic.bootstrap')) {
             $rjsConfig['paths']['twitter'] = 'bootstrap/js/bootstrap' . ($this->_app->isDebug() ? '' : '.min');
         }
-
-        $rjsConfig['paths']['site'] = '../static/site';
 
         if ($request->isSystem()) {
             if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
@@ -177,16 +173,6 @@ class Layout extends ViewAbstract
                 $rjsConfig['shim']['bootstrap/js/locales/bootstrap-datetimepicker.'.$request->getLocale()] = array('bootstrap/js/bootstrap-datetimepicker');
             }
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
-            $rjsConfig['shim']['backbone'] = array(
-                'deps' => array('underscore', 'jquery'),
-                'exports' => 'Backbone',
-            );
-            $rjsConfig['shim']['underscore'] = array(
-                'exports' => '_',
-            );
-            $rjsConfig['shim']['jquery'] = array(
-                'exports' => '$',
-            );
 
             $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
 
@@ -200,12 +186,7 @@ class Layout extends ViewAbstract
             } else {
                 $controllerFile = ROOT . '/' . $controllerJs . '.js';
             }
-//            var_dump(
-//                $controllerJs,
-//                dirname($controllerFile),
-//                realpath(dirname($controllerFile)),
-//                is_dir(dirname($controllerFile))
-//            );
+
             if (file_exists($controllerFile)) {
                 $rjsConfig['config']['admin/admin']['use_controller'] = true;
                 if ('static' == substr($controllerJs, 0, 6)) {
@@ -223,23 +204,13 @@ class Layout extends ViewAbstract
             $return[] = '<script type="text/javascript">var require = '.$json.';</script>';
 
 
-            if (!$this->_app->isDebug() && file_exists(ROOT . '/static/require-jquery-min.js') && file_exists(ROOT . '/static/admin.js')) {
-                $return[] = "<script type='text/javascript' "
-                    . "src='/static/require-jquery-min.js' data-main='../static/admin'>"
-                    . "</script>";
-            } else {
-                $return[] = "<script type='text/javascript' "
-                    . "src='/misc/require-jquery.js' data-main='admin/app'>"
-                    . "</script>";
-            }
+            $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='../static/admin'></script>";
         } else {
+            $rjsConfig['paths']['site'] = '../static/site';
+
+
             $return[] = '<script type="text/javascript">var require = '.json_encode($rjsConfig).';</script>';
-            $return[] = "<script type='text/javascript' src='/misc/require-min.js' data-main='site'></script>";
-        }
-
-
-        if ( $this->use_less ) {
-            $return[] = '<script type="text/javascript" src="/misc/less-1.3.0.min.js"></script>';
+            $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='site'></script>";
         }
 
         return join(PHP_EOL, $return);

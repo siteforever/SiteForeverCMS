@@ -13,7 +13,6 @@ define("admin/admin", [
     "View/DataGrid",
     "View/DataGridModal",
     "controller",
-    "siteforever",
     "jui",
     "admin/jquery/jquery.filemanager",
     "admin/jquery/jquery.dumper"

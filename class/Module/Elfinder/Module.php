@@ -6,7 +6,10 @@
 
 namespace Module\Elfinder;
 
+use Module\Elfinder\DependencyInjection\Compiler\ElfinderPass;
+use Module\Elfinder\DependencyInjection\ElfinderExtension;
 use Sfcms\Module as SfModule;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -30,6 +33,16 @@ class Module extends SfModule
 //                'SomeName' => 'Module\Elfinder\Model\SomeModel',
 //            ),
         );
+    }
+
+    public function loadExtensions(ContainerBuilder $container)
+    {
+        $container->registerExtension(new ElfinderExtension());
+    }
+
+    public function build(ContainerBuilder $container)
+    {
+        $container->addCompilerPass(new ElfinderPass());
     }
 
     public function registerRoutes(Router $router)

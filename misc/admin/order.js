@@ -4,8 +4,7 @@
  * @link   http://siteforever.ru
  */
 define("admin/order", [
-    "jquery",
-    "siteforever"
+    "jquery"
 ],function($){
     return {
         "behavior" : {

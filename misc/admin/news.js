@@ -9,7 +9,6 @@ define("admin/news", [
     "module/modal",
     "i18n",
     "module/alert",
-    "siteforever",
     "jquery/jquery.form"
 ],function($, Modal, i18n, $alert){
     return {

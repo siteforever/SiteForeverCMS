@@ -52,9 +52,6 @@ abstract class Controller extends ContainerAware
     /** @var Request */
     protected $request;
 
-    /** @var \Swift_Mailer */
-//    protected static $mailer = null;
-
     public function __construct(Request $request)
     {
         $this->request  = $request;

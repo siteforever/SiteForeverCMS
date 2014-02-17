@@ -9,7 +9,6 @@ define("admin/gallery", [
     "module/modal",
     "i18n",
     "module/alert",
-    "siteforever",
     "jui"
 ], function ($, wysiwyg, Modal, i18n, $alert) {
     return {

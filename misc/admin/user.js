@@ -6,8 +6,7 @@
 
 define("admin/user", [
     "jquery",
-    "module/modal",
-    "siteforever"
+    "module/modal"
 ], function( $, Modal ){
     return {
         "behavior" : {

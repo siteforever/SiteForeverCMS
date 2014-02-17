@@ -7,8 +7,7 @@ define("admin/goods",[
     "admin/catalog/product",
     "jui",
     "jquery/jquery.blockUI",
-    "jquery/jquery.jqGrid",
-    "siteforever"
+    "jquery/jquery.jqGrid"
 ], function( $, /*parser,*/ wysiwyg, Dialog, _gallery, _product ){
 
     return $.extend(true, _gallery, _product, {

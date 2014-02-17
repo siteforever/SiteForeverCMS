@@ -44,7 +44,9 @@
         "kriswallsmith/assetic": "~1.1",
         "helios-ag/fm-elfinder": "v2.0",
         "tonytomov/jqGrid" : "4.4",
-        "leafo/lessphp": "~0.4"
+        "leafo/lessphp": "~0.4",
+        "mrclay/minify": "2.1.*",
+        "natxet/cssmin": "3.0.*"
     },
     "repositories":[
         {

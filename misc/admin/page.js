@@ -11,7 +11,6 @@ define("admin/page", [
     "i18n",
     "module/alert",
     "module/console",
-    "siteforever",
     "jui",
     "jquery/jquery.form",
     "admin/admin"

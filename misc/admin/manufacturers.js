@@ -5,8 +5,7 @@
  */
 define("admin/manufacturers", [
     "jquery",
-    "module/modal",
-    "siteforever"
+    "module/modal"
 ],function($, Modal){
     return {
         "init" : function() {

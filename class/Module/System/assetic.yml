@@ -12,11 +12,26 @@ services:
     assets:
         class: Sfcms\Assets
 
-    assetManager:
+    asset.manager:
         class: Assetic\AssetManager
 
-    assetWriter:
+    asset.filter.manager:
+        class: Assetic\FilterManager
+
+    asset.factory:
+        class: Assetic\Factory\AssetFactory
+        arguments: ["%assetic.output%"]
+        calls:
+            - [setAssetManager, [@asset.manager]]
+            - [setFilterManager, [@asset.filter.manager]]
+            - [setDebug, [%assetic.debug%]]
+
+    asset.writer:
         class: Assetic\AssetWriter
         arguments: ["%assetic.output%"]
         calls:
-            - [writeManagerAssets, ["@assetManager"]]
+            - [writeManagerAssets, ["@asset.manager"]]
+
+    assetic_service:
+        class: Module\System\Service\AsseticService
+        arguments: ["@asset.factory", "@service_container"]

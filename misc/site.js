@@ -10,7 +10,6 @@ require([
     , "theme/js/script"
     , "jquery/jquery.gallery"
     , "jquery/jquery.captcha"
-    , "siteforever"
 ],function(
     $
   , basket

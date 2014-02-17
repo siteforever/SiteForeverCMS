@@ -26,9 +26,6 @@ class Page extends Layout
         if (file_exists(trim($this->getCss(), '/') . '/print.css')) {
             $this->_app->getAssets()->addStyle($this->getCss() . '/print.css');
         }
-        if (file_exists(trim($this->getJs() . '/script.js', '/'))) {
-            $this->_app->getAssets()->addScript($this->getJs() . '/script.js');
-        }
 
         $this->getTpl()->assign('response', $event->getResponse());
         $event->getResponse()->setContent($this->getTpl()->fetch(

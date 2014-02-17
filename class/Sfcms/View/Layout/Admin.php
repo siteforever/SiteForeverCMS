@@ -21,9 +21,9 @@ class Admin extends Layout
     public function view(KernelEvent $event)
     {
         /** @var AssetManager $am */
-        $am = $this->_app->getContainer()->get('assetManager');
+        $am = $this->_app->getContainer()->get('asset.manager');
         /** @var AssetWriter $writer */
-        $writer = $this->_app->getContainer()->get('assetWriter');
+        $writer = $this->_app->getContainer()->get('asset.writer');
 
 
         $this->_app->addStyle($this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui.min.css');

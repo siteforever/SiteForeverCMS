@@ -18,10 +18,82 @@ logger:
 
 page: ~
 
+elfinder: ~
+
 assetic:
-    debug: %debug%
+    debug: false # %debug%
     output: "%root%/static"
     bootstrap: true         # @deprecated
+    filters:
+        jsmin: {}
+        cssmin: {}
+        lessphp: {}
+    assets:
+        require_js:
+            inputs:
+                - "%sf_path%/misc/require.js"
+                - "%sf_path%/misc/jquery.js"
+                - "%sf_path%/misc/json2.js"
+                - "%sf_path%/misc/underscore.js"
+                - "%sf_path%/misc/backbone.js"
+                - "%sf_path%/misc/require-config.js"
+            filters:
+                - ?jsmin
+            output: "require-vendors.js"
+        site_js:
+            inputs:
+                - "%sf_path%/misc/site.js"
+                - "%sf_path%/misc/jquery/fancybox/jquery.fancybox-1.3.1.js"
+                - "%sf_path%/misc/jquery/jquery.form.js"
+                - "%sf_path%/misc/jquery/jquery.gallery.js"
+                - "%sf_path%/misc/jquery/jquery.captcha.js"
+                - "%sf_path%/misc/module/console.js"
+                - "%sf_path%/misc/module/basket.js"
+                - "%sf_path%/misc/module/behavior.js"
+                - "%sf_path%/misc/module/catalog.js"
+                - "%sf_path%/misc/module/form.js"
+                - "%sf_path%/misc/module/alert.js"
+                - "%sf_path%/misc/site-define.js"
+            filters:
+                - ?jsmin
+            output: "site.js"
+        admin_js:
+            inputs:
+                - "%sf_path%/misc/admin/admin.js"
+                - "%sf_path%/misc/admin/jquery/*.js"
+                - "%sf_path%/misc/admin/catalog/*.js"
+                - "@site_js"
+                - "%sf_path%/misc/admin/app.js"
+            filters:
+                - ?jsmin
+            output: "admin.js"
+        jqgrid_js:
+            inputs:
+                - "%root%/vendor/tonytomov/jqGrid/js/i18n/grid.locale-ru.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.base.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.common.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.formedit.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.inlinedit.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.celledit.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.subgrid.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.treegrid.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.grouping.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.custom.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.tbltogrid.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.import.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/jquery.fmatter.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/JsonXml.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.jqueryui.js"
+                - "%root%/vendor/tonytomov/jqGrid/js/grid.filter.js"
+            filters:
+                - ?jsmin
+            output: "admin/jquery/jqgrid/jqgrid.js"
+        jqgrid_css:
+            inputs:
+                - "%root%/vendor/tonytomov/jqGrid/css/ui.jqgrid.css"
+            filters:
+                - ?cssmin
+            output: "admin/jquery/jqgrid/ui.jqgrid.css"
 
 database:
     dsn: "mysql:host=%db_host%;port=%db_port%;dbname=%db_name%"
@@ -40,8 +112,8 @@ mailer:
     username:  %mailer_username%
     password:  %mailer_password%
     spool:
-        type: memory
-#        type: file
+        type: file
+#        type: memory
 
 captcha:
     width: 100

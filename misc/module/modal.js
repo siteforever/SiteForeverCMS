@@ -10,7 +10,6 @@ define('module/modal',[
     "wysiwyg",
     "i18n",
     "module/alert",
-    "siteforever",
     "twitter",
     "jui",
     "jquery/jquery.form",
