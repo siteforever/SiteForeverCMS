@@ -32,6 +32,11 @@
         options:
             1002: "SET NAMES utf8"
 
+###Guestbook###
+
+    guestbook:
+        email: "guest_book_manager@example.com"
+
 ###Logger###
 
     logger:
@@ -49,8 +54,14 @@
         transport: %mailer_transport%
         username:  %mailer_username%
         password:  %mailer_password%
-        spool:
-            type: memory
+        spool: { type: memory } # Опционально для очереди в памяти
+        spool: { type: file } # Опционально для очереди в файлах
+
+Если тип спулинга не указан, то каждое сообщение будет отправлено по отдельности
+
+Если организуется очередь на файлах, то ее неоходимо разгребать (например, по cron) командой
+
+    $ php app/console mailer:spool:send
 
 ###Robokassa###
 

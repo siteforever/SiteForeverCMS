@@ -46,9 +46,25 @@ class MailerExtension extends Extension
         $gmailDefenition->addMethodCall('setAuthMode', array('login'));
         $container->setDefinition('swift_gmail_transport', $gmailDefenition);
 
-        $container->setAlias('mailer_transport', sprintf('swift_%s_transport', $config['transport'] ? $config['transport'] : 'null'));
         $container->setDefinition('swift_mailer', new Definition('Swift_Mailer', array(new Reference('mailer_transport'))));
+        $container->setAlias('mailer_transport_real',
+            sprintf('swift_%s_transport', $config['transport'] ?: 'null')
+        );
         $container->setAlias('mailer', 'swift_mailer');
+
+        if (isset($config['spool'])) {
+            $container->setParameter('mailer.spool', true);
+            $container->setDefinition('swift_memory_spool', new Definition('Swift_MemorySpool'));
+            $container->setDefinition('swift_file_spool', new Definition('Swift_FileSpool', array($config['spool']['path'])));
+            $container->setAlias('swift_spool', sprintf('swift_%s_spool', $config['spool']['type']));
+            $container->setDefinition('swift_spool_transport',
+                new Definition('Swift_SpoolTransport', array(new Reference('swift_spool')))
+            );
+            $container->setAlias('mailer_transport', 'swift_spool_transport');
+        } else {
+            $container->setParameter('mailer.spool', false);
+            $container->setAlias('mailer_transport', 'mailer_transport_real');
+        }
     }
 
     /**

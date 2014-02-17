@@ -23,3 +23,10 @@ services:
 
     swift_mail_transport:
         class: Swift_MailTransport
+
+    swift_subscriber:
+        class: Module\Mailer\Subscriber\EmailSenderSubscriber
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: event.subscriber }
