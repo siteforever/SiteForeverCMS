@@ -146,6 +146,14 @@
                 {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             </div>
             {$form = $form->setRendered()}
+        {elseif 'file' == $attr.type}
+            {form_label form=$form class="control-label" domain=$domain}
+            <div class="controls">
+                {form_input form=$form class=$class}
+                {form_errors form=$form}
+                {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
+            </div>
+            {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['button','reset','submit'])}
             {if $buttons}
             <div class="controls">
@@ -165,14 +173,14 @@
 {/strip}{/function}{*
 
 
-*}{function name=form_rest class="" domain="messages" buttons=true}
+*}{function name=form_rest class="" domain="messages" buttons=true}{strip}
     {$attr = $form->vars.attr}
     {foreach $form->children as $child}
         {if not $form->isRendered()}
             {call form_row form=$child domain=$domain buttons=$buttons}
         {/if}
     {/foreach}
-{/function}{*
+{/strip}{/function}{*
 
 
 *}{function name=form_full class="" domain="messages" hint=true buttons=true}
