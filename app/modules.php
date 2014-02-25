@@ -20,6 +20,7 @@ return array(
     array('name' => 'Market', 'path' => 'Module\Market'),
     array('name' => 'Search', 'path' => 'Module\Search'),
     array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
+    array('name' => 'JqGrid', 'path' => 'Module\JqGrid'),
     array('name' => 'Generator', 'path' => 'Module\Generator'),
     array('name' => 'Install', 'path' => 'Module\Install'),
     array('name' => 'Monolog', 'path' => 'Module\Monolog'),

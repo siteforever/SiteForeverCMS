@@ -1,10 +1,13 @@
 {form form=$form class="form-horizontal"}
     {$form->htmlFieldWrapped('id')}
-    {$form->htmlFieldWrapped('notice')}
-    {$form->htmlFieldWrapped('content')}
+    <fieldset>
+        <legend>{"Content"|lang:"page"}</legend>
+        {$form->htmlFieldWrapped('name')}
+        {$form->htmlFieldWrapped('notice')}
+        {$form->htmlFieldWrapped('content')}
+    </fieldset>
     <fieldset>
         <legend>{"System"|lang:"page"}</legend>
-        {$form->htmlFieldWrapped('name')}
         {$form->htmlFieldWrapped('parent')}
         {$form->htmlFieldWrapped('template')}
         {$form->htmlFieldWrapped('alias')}

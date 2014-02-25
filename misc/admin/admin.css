@@ -421,3 +421,10 @@ div.elfinder-resize-control input[type="text"] {
 .panel_content {
     padding: 10px 10px 0 10px;
 }
+
+.sfcms-icon-progress {
+    background: url("../../static/images/progress-bar15.gif");
+}
+legend + .control-group {
+    margin-top: 0 !important;
+}

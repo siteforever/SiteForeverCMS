@@ -49,8 +49,6 @@ class AsseticExtension implements ExtensionInterface
         $container->setParameter('assetic.ruby.bin', $config['ruby']);
         $container->setParameter('assetic.sass.bin', $config['sass']);
 
-        $factory = $container->getDefinition('asset.factory');
-        $assetManager = $container->getDefinition('asset.manager');
         $filterManager = $container->getDefinition('asset.filter.manager');
         $asseticService = $container->getDefinition('assetic_service');
 
