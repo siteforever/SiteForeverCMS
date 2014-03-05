@@ -133,7 +133,7 @@ abstract class AbstractKernel
             Debug::enable(E_ALL, true);
         }
 
-        $cacheFile = SF_PATH . '/runtime/cache/container.php';
+        $cacheFile = ROOT . '/runtime/cache/container.php';
         $containerConfigCache = new ConfigCache($cacheFile, true /*$this->isDebug()*/);
 
         if (!$containerConfigCache->isFresh()) {
