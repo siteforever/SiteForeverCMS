@@ -1,6 +1,3 @@
-parameters:
-    email_for_comments: ~
-
 services:
     catalog.product.form:
         class: Module\Catalog\Form\CatalogForm

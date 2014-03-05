@@ -1,4 +1,5 @@
 <html><body>
+{'Page'|trans}: <a href="{$request->getSchemeAndHttpHost()}{$request->getRequestUri()}#product_comments">Перейти</a><br>
 {'Name'|trans}: {$object->name}<br>
 {'Email'|trans}: {$object->email}<br>
 {'Phone'|trans}: {$object->phone}<br>
