@@ -20,6 +20,7 @@ class ComposerHandler
 //        static::executeCommand($event, $appDir, 'database:scheme:update --force');
         static::executeCommand($event, $appDir, 'install:static ' . $staticDir);
         static::executeCommand($event, $appDir, 'translator:generate');
+        static::executeCommand($event, $appDir, 'ckeditor:install');
     }
 
     protected static function executeCommand(CommandEvent $event, $appDir, $cmd, $timeout = 300)

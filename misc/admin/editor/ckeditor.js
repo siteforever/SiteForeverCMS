@@ -4,7 +4,7 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-CKEDITOR_BASEPATH = '/misc/ckeditor/';
+CKEDITOR_BASEPATH = '/static/ckeditor/';
 
 define('admin/editor/ckeditor',[
     "module",

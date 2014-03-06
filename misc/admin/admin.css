@@ -35,9 +35,9 @@ input[type=text] {
     height: 20px !important;
 }
 input.cke_dialog_ui_input_text {
-    height: 14px !important;
+    /*height: 14px !important;*/
     margin: 0 !important;
-    font-size: 12px;
+    font-size: 12px !important;
 }
 a, button, input {
     outline: none !important;

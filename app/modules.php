@@ -19,6 +19,7 @@ return array(
     array('name' => 'Feedback', 'path' => 'Module\Feedback'),
     array('name' => 'Market', 'path' => 'Module\Market'),
     array('name' => 'Search', 'path' => 'Module\Search'),
+    array('name' => 'CKEditor', 'path' => 'Module\CKEditor'),
     array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
     array('name' => 'JqGrid', 'path' => 'Module\JqGrid'),
     array('name' => 'Generator', 'path' => 'Module\Generator'),

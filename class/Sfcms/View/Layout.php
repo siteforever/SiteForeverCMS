@@ -175,6 +175,7 @@ class Layout extends ViewAbstract
             $rjsConfig['shim']['ckeditor/adapters/jquery'] = array('ckeditor/ckeditor');
 
             $rjsConfig['paths']['elfinder'] = '../static/admin/jquery/elfinder/elfinder';
+            $rjsConfig['paths']['ckeditor'] = '../static/ckeditor';
 
             $rjsConfig['map']['*'] += array(
                 'wysiwyg' => 'admin/editor/'.($this->_app->getContainer()->getParameter('editor')), // tinymce, ckeditor, elrte
