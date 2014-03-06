@@ -1,0 +1,6 @@
+services:
+    jqgrid.static.listener:
+        class: Module\JqGrid\Listener\StaticListener
+        arguments: ["@assetic_service", "%root%"]
+        tags:
+            - { name: event.listener, event: static.install , method: installJqGrid }

@@ -46,5 +46,16 @@ class ContainerCommand extends Command
                 )
             );
         }
+
+        foreach($continer->getParameterBag()->all() as $key => $val) {
+            $output->writeln(sprintf('<info>%s</info> %s', $key, is_scalar($val)
+                ? $val
+                : (is_null($val)
+                    ? 'null'
+                    : (is_array($val) ? 'array('. count($val) . ')' : '[value]')
+                  )
+                )
+            );
+        }
     }
 }

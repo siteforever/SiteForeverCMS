@@ -2,11 +2,13 @@
 namespace Module\Install\Command;
 
 use Assetic\AssetWriter;
-use Symfony\Component\Console\Command\Command;
+use Module\Install\Event\StaticEvent;
+use Sfcms\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -22,107 +24,71 @@ class StaticCommand extends Command
     {
         $this->setName('install:static')
             ->setDescription('Installing all static files for vendors')
-            ->addArgument('dir', InputArgument::OPTIONAL, 'In which directory to install?', 'static')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var ContainerBuilder */
-        $this->container = $this->getApplication()->getKernel()->getContainer();
+        $this->container = $this->getContainer();
 
-        $staticDir = ROOT . '/' . trim($input->getArgument('dir'), '\\/ '.PHP_EOL);
+        $staticDir = $this->getContainer()->getParameter('assetic.output');
+        $sfPath = $this->getContainer()->getParameter('sf_path');
+        $rootDir = $this->getContainer()->getParameter('root');
 
         $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
 
-        $this->installRequireJs($staticDir, $input, $output);
-        $this->installJqGrid($staticDir, $input, $output);
-        $this->installElFinder($staticDir, $input, $output);
+        /** @var EventDispatcher $ed */
+        $ed = $this->getContainer()->get('event.dispatcher');
+        $event = new StaticEvent($staticDir, $input, $output);
+        $ed->addListener(StaticEvent::STATIC_INSTALL, array($this, 'installRequireJs'));
+        $ed->dispatch(StaticEvent::STATIC_INSTALL, $event);
 
         $filesistem = new Filesystem();
 
         if (!$filesistem->exists($staticDir . '/images')) {
             $filesistem->mirror(
-                SF_PATH . '/class/Module/System/Static/images',
+                $this->getContainer()->getParameter('sf_path') . '/class/Module/System/Static/images',
                 $staticDir . '/images',
                 null,
                 array('override'=>true)
             );
         }
 
-        if (ROOT != SF_PATH && !$filesistem->exists(ROOT . '/misc')) {
-            $filesistem->symlink(SF_PATH . '/misc', ROOT . '/misc');
+        if ($rootDir != $sfPath && !$filesistem->exists($rootDir . '/misc')) {
+            $filesistem->symlink($sfPath . '/misc', $rootDir . '/misc');
             $output->writeln('<info>Create symlink for "misc"</info>');
         }
-        if (!$filesistem->exists(ROOT . '/files')) {
-            $filesistem->mkdir(ROOT . '/files', 0777);
+        if (!$filesistem->exists($rootDir . '/files')) {
+            $filesistem->mkdir($rootDir . '/files', 0777);
             $output->writeln('<info>Create "files" dir</info>');
         }
-        if (!$filesistem->exists(ROOT . '/runtime')) {
-            $filesistem->mkdir(array(ROOT . '/runtime/cache', ROOT . '/runtime/templates_c', ROOT . '/runtime/logs',));
+        if (!$filesistem->exists($rootDir . '/runtime')) {
+            $filesistem->mkdir(array($rootDir . '/runtime/cache', $rootDir . '/runtime/templates_c', $rootDir . '/runtime/logs',));
             $output->writeln('<info>Create "runtime" dir</info>');
         }
 
-        if (!$filesistem->exists(ROOT . '/vendor/.htaccess')) {
-            $filesistem->dumpFile(ROOT . '/vendor/.htaccess', "deny from all", 0644);
+        if (!$filesistem->exists($rootDir . '/vendor/.htaccess')) {
+            $filesistem->dumpFile($rootDir . '/vendor/.htaccess', "deny from all", 0644);
             $output->writeln('<info>Create "vendor/.htaccess" file</info>');
         }
 
         $template = $this->container->getParameter('template');
-        $themePath = ROOT . '/themes/' . $template['theme'];
+        $themePath = $rootDir . '/themes/' . $template['theme'];
         if (!$filesistem->exists($themePath)) {
             $filesistem->mkdir($themePath);
-            $filesistem->mirror(SF_PATH.'/themes/basic', $themePath);
+            $filesistem->mirror($sfPath.'/themes/basic', $themePath);
             $output->writeln(sprintf('Create theme dir "%s"', $themePath));
         }
     }
 
-    protected function installRequireJs($staticDir, InputInterface $input, OutputInterface $output)
+    public function installRequireJs(StaticEvent $event)
     {
         $asset = $this->container->get('assetic_service')->getAsseticCollection('require_js');
-        $writer = new AssetWriter($staticDir);
+        $writer = new AssetWriter($event->getStaticDir());
         $writer->writeAsset($asset);
 
-        $output->writeln(sprintf('<info>Js "%s" was updated.</info>', $asset->getTargetPath()));
+        $event->getOutput()->writeln(sprintf('<info>Js "%s" was updated.</info>', $asset->getTargetPath()));
     }
-
-    protected function installJqGrid($staticDir, InputInterface $input, OutputInterface $output)
-    {
-        $jsAsset = $this->container->get('assetic_service')->getAsseticCollection('jqgrid_js');
-        $writer = new AssetWriter($staticDir);
-        $writer->writeAsset($jsAsset);
-
-        $cssAsset = $this->container->get('assetic_service')->getAsseticCollection('jqgrid_css');
-        $writer->writeAsset($cssAsset);
-
-        $output->writeln(sprintf('<info>Js "%s" was updated.</info>', $jsAsset->getTargetPath()));
-        $output->writeln(sprintf('<info>Css "%s" was updated</info>', $cssAsset->getTargetPath()));
-    }
-
-    /**
-     * @param                 $staticDir
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     */
-    protected function installElFinder($staticDir, InputInterface $input, OutputInterface $output)
-    {
-        $source = ROOT . '/vendor/helios-ag/fm-elfinder/FM/elfinder';
-        $out    = $staticDir . '/admin/jquery/elfinder';
-
-        $jsAsset = $this->container->get('assetic_service')->getAsseticCollection('elfinder_js');
-        $cssAsset = $this->container->get('assetic_service')->getAsseticCollection('elfinder_css');
-
-        $writer = new AssetWriter($out);
-        $writer->writeAsset($jsAsset);
-        $writer->writeAsset($cssAsset);
-
-        $output->writeln(sprintf('<info>ElFinder js to "%s"</info>', $jsAsset->getTargetPath()));
-        $output->writeln(sprintf('<info>ElFinder css to "%s"</info>', $cssAsset->getTargetPath()));
-
-        $filesistem = new Filesystem();
-        $filesistem->symlink($source . '/img', $out . '/../img');
-        $output->writeln(sprintf('<info>ElFinder img symlink to "%s"</info>', $out . '/../img'));
-    }
-
 }

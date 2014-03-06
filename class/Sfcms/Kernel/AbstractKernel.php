@@ -226,9 +226,11 @@ abstract class AbstractKernel
      */
     protected function initModules()
     {
+        $sfRouter = $this->getContainer()->get('sf_router');
+        $outputDir = $this->getContainer()->getParameter('assetic.output');
         foreach ($this->getModules() as $module) {
-            call_user_func(array($module, 'registerRoutes'), $this->getContainer()->get('sf_router'));
-            call_user_func(array($module, 'registerStatic'));
+            call_user_func(array($module, 'registerRoutes'), $sfRouter);
+            call_user_func(array($module, 'registerStatic'), $outputDir);
         }
     }
 

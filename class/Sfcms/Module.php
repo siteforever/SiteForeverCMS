@@ -159,10 +159,9 @@ abstract class Module extends Component
     /**
      * Register static components of current module
      */
-    public function registerStatic()
+    public final function registerStatic($outputDir)
     {
-        $output = $this->app->getContainer()->getParameter('assetic.output');
-        $target = strtolower($output . '/' . $this->getName());
+        $target = strtolower($outputDir . '/' . $this->getName());
         if ($this->fs->exists($this->getPath() . '/static')) {
             if (!$this->fs->exists($target)) {
                 $this->fs->symlink($this->getPath() . '/static', $target);
