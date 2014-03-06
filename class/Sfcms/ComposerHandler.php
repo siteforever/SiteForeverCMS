@@ -14,11 +14,10 @@ class ComposerHandler
     public static function execute(CommandEvent $event)
     {
         $options = self::getOptions($event);
-        $staticDir = $options['sfcms-static-dir'];
         $appDir = $options['sfcms-app-dir'];
 
 //        static::executeCommand($event, $appDir, 'database:scheme:update --force');
-        static::executeCommand($event, $appDir, 'install:static ' . $staticDir);
+        static::executeCommand($event, $appDir, 'install:static');
         static::executeCommand($event, $appDir, 'translator:generate');
     }
 
