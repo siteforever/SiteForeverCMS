@@ -12,7 +12,6 @@ class BannerForm extends \Sfcms\Form\Form
         parent::__construct(array(
             'name'      => 'Banner',
             'action'    => \App::cms()->getRouter()->createLink('banner/save'),
-            'title'     => 'Настройка баннеров',
             'fields'    => array(
                 'id'                => array('type'=>'int', 'hidden'),
                 'cat_id'    => array(
