@@ -3,3 +3,5 @@ imports:
     - { resource: "app/parameters.yml" }
 
 services:
+    market.order.form:
+        class: Module\Market\Form\OrderForm

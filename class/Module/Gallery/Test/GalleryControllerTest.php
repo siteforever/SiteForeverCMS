@@ -58,7 +58,7 @@ class GalleryControllerTest extends WebCase
         $this->assertEquals(3, $crawler->filterXPath('//ul[@id="gallery"]/li')->count());
         $form = $crawler->filterXPath('//form[@id="load_images"]');
         $this->assertEquals(1, $form->count());
-        $this->assertEquals(2, $form->filterXPath('//input')->count());
+        $this->assertEquals(2, $form->filter('input')->count());
 
         // loading edit form
         $responseEdit = $this->click($crawler->filterXPath('//a[@class="gallery_picture_edit"]')->first());
