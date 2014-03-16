@@ -75,7 +75,10 @@ class Layout extends ViewAbstract
         $return[] = '<meta http-equiv="content-type" content="text/html; charset=UTF-8">';
         $return[] = '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">';
         $return[] = '<meta name="viewport" content="width=device-width,initial-scale=1">';
-        $return[] = '<meta name="generator" content="SiteForever CMS">';
+        if (!$this->_app->getContainer()->hasParameter('silent')) {
+            $return[] = '<meta name="generator" content="SiteForever CMS">';
+        }
+
         $return[] = "<title>" . strip_tags($request->getTitle()) . ' / '
             . $this->_app->getContainer()->getParameter('sitename') . "</title>";
 
