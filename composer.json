@@ -42,7 +42,7 @@
         "monolog/monolog": "~1.6",
         "swiftmailer/swiftmailer": "~5.0",
         "kriswallsmith/assetic": "~1.1",
-        "ckeditor/ckeditor": "~4.3",
+        "ckeditor/ckeditor_full": "4.3.*",
         "helios-ag/fm-elfinder": "v2.0",
         "tonytomov/jqGrid" : "4.4",
         "leafo/lessphp": "~0.4",
@@ -59,6 +59,17 @@
                     "type":"git",
                     "url":"https://github.com/tonytomov/jqGrid",
                     "reference":"tags/v4.4.5"
+                }
+            }
+        },
+        {
+            "type":"package",
+            "package":{
+                "name":"ckeditor/ckeditor_full",
+                "version":"4.3.3",
+                "dist": {
+                    "url": "http://download.cksource.com/CKEditor/CKEditor/CKEditor%204.3.3/ckeditor_4.3.3_full.zip",
+                    "type": "zip"
                 }
             }
         }

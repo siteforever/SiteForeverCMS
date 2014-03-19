@@ -36,12 +36,16 @@ class StaticListener
     public function installCKEditor(StaticEvent $event)
     {
         $fs = new Filesystem();
-        $source = $this->rootDir . '/vendor/ckeditor/ckeditor';
+        $source = $this->rootDir . '/vendor/ckeditor/ckeditor_full';
         $target = $event->getStaticDir() . '/ckeditor';
         if ($fs->exists($target)) {
             $fs->remove($target);
         }
-        $fs->symlink($source, $target);
-        $event->getOutput()->writeln('<info>Installing <comment>CKEditor</comment> complete</info>');
+        if ($fs->exists($source)) {
+            $fs->symlink($source, $target);
+            $event->getOutput()->writeln('<info>Installing <comment>CKEditor</comment> complete</info>');
+        } else {
+            $event->getOutput()->writeln(sprintf('<error>CKEditor path "%s" not found</error>', $source));
+        }
     }
 }

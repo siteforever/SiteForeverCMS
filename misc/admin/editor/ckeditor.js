@@ -39,7 +39,7 @@ define('admin/editor/ckeditor',[
                         filebrowserImageWindowWidth:finderWidth,
                         filebrowserImageWindowHeight:finderHeight,
                         contentsCss: module.config().style,
-                        height: 200
+                        height: 300
                     });
                 }
             });
