@@ -9,7 +9,9 @@ namespace Module\Market;
 
 use Module\Market\DependencyInjection\MarketExtension;
 use Sfcms\Module as SfModule;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\Router;
 
@@ -67,23 +69,10 @@ class Module extends SfModule
     public function registerRoutes(Router $router)
     {
         $routes = $router->getRouteCollection();
-        $routes->add('basket',
-            new Route('/basket',
-                array('_controller'=>'basket', '_action'=>'index')
-            ));
-        $routes->add('basket/add',
-            new Route('/basket/add',
-                array('_controller'=>'basket', '_action'=>'add')
-            ));
-        $routes->add('basket/delete',
-            new Route('/basket/delete/{key}/{count}',
-                array('_controller'=>'basket', '_action'=>'delete')
-            ));
-        $routes->add('basket/count',
-            new Route('/basket/count',
-                array('_controller'=>'basket', '_action'=>'count'),
-                array('method'=>'POST')
-            ));
+
+        $locator = new FileLocator(__DIR__);
+        $loader = new YamlFileLoader($locator);
+        $routes->addCollection($loader->load('routes.yml'));
 
         $routes->add('delivery/admin',
             new Route('/delivery/admin',
@@ -142,23 +131,6 @@ class Module extends SfModule
         $routes->add('material/save',
             new Route('/material/save',
                 array('_controller'=>'material', '_action'=>'save')
-            ));
-
-        $routes->add('order',
-            new Route('/order',
-                array('_controller'=>'order', '_action'=>'index')
-            ));
-        $routes->add('order/view',
-            new Route('/order/view',
-                array('_controller'=>'order', '_action'=>'view')
-            ));
-        $routes->add('order/admin',
-            new Route('/order/admin',
-                array('_controller'=>'order', '_action'=>'admin')
-            ));
-        $routes->add('order/status',
-            new Route('/order/status',
-                array('_controller'=>'order', '_action'=>'status')
             ));
 
         $routes->add('payment',

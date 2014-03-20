@@ -158,6 +158,7 @@ class OrderController extends Controller
         $id     = $this->request->get('id');
         $number = $this->request->get('number');
         $user   = $this->request->get('user');
+        $date   = $this->request->get('date');
 
         if ($id) {
             return $this->adminEditAction($id);
@@ -173,7 +174,7 @@ class OrderController extends Controller
             $params[] = $number;
         }
 
-        if ($date = $this->request->get('date')) {
+        if ($date) {
             if ($tstamp = strtotime($date)) {
                 $mon  = date('n', $tstamp);
                 $day  = date('d', $tstamp);
@@ -249,7 +250,7 @@ class OrderController extends Controller
     }
 
     /**
-     * @param $id
+     * @param int $id
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */

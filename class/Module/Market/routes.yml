@@ -1,0 +1,39 @@
+### Basket
+
+basket:
+    path: /basket
+    defaults: {_controller: basket, _action: index}
+
+basket/add:
+    path: /basket/add
+    defaults: {_controller: basket, _action: add}
+
+basket/delete:
+    path: /basket/delete/{key}/{count}
+    defaults: {_controller: basket, _action: delete}
+
+basket/count:
+    path: /basket/count
+    defaults: {_controller: basket, _action: count}
+    methods: [POST]
+
+
+### Orders
+
+order:
+    path: /order
+    defaults: {_controller: order, _action: index}
+
+order/view:
+    path: /order/view
+    defaults: {_controller: order, _action: view}
+
+order/admin:
+    path: /order/admin
+    defaults: {_controller: order, _action: admin}
+
+order/status:
+    path: /order/status
+    defaults: {_controller: order, _action: status}
+    methods: [POST]
+

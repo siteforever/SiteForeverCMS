@@ -2,7 +2,7 @@
 <p>{a controller="order" action="admin"}&laquo; Список заказов{/a}</p>
 
 
-{form action="order/admin" method="post" class="well form-inline"}
+<form action="{link url="order/admin"}" method="post" class="well form-inline">
     <input type="hidden" name="id" value="{$order->id}">
     <label for="new_status" class="control-label">Статус:&nbsp;</label>
     <div class="input-append">
@@ -14,7 +14,7 @@
         <span class="new_status_result"></span>
         {*<input type="submit" class="btn" value={t}Save{/t}>*}
     </div>
-{/form}
+</form>
 
 <h4>Контактные данные</h4>
 <p>Имя: {$order.fname}</p>

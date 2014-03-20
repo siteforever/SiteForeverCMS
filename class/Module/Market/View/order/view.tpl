@@ -1,4 +1,4 @@
-<h3>{$order->emptorName}, Ваш заказ №{$order->id}</h3>
+<h1>{$order->emptorName}, Ваш заказ №{$order->id}</h1>
 
 {*<h4>Вы готовы заказать товары из корзины?</h4>*}
 

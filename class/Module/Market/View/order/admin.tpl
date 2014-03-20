@@ -1,19 +1,16 @@
-{form action="order/admin" method="get" class="well"}
+<form action="{link url='order/admin'}" method="get" class="well">
 <p><strong>Настройка фильтра</strong></p>
-<p>
-    <div class="input-append">
-        <input class="input-medium" type="text" name="number"
-               value="{$request->get("number")}" placeholder="Номер">
-        <input class="input-medium filterDate"  type="date" name="date"
-               value="{$request->get("date")}" class="datepicker" placeholder="Дата dd.mm.yyyy">
-        <input class="input-medium filterEmail" type="text" name="user"
-               value="{$request->get("user")}" placeholder="Аккаунт">
-        <input type="submit" class="btn" value="Фильтровать" />
-        {a class="btn" controller="order" action="admin"}Сбросить фильтр{/a}
-    </div>
-</p>
-
-{/form}
+<div class="input-append">
+    <input class="input-medium" type="text" name="number"
+           value="{$request->get("number")}" placeholder="Номер">
+    <input class="input-medium filterDate"  type="date" name="date"
+           value="{$request->get("date")}" class="datepicker" placeholder="Дата dd.mm.yyyy">
+    <input class="input-medium filterEmail" type="text" name="user"
+           value="{$request->get("user")}" placeholder="Аккаунт">
+    <input type="submit" class="btn" value="Фильтровать" />
+    {a class="btn" controller="order" action="admin"}Сбросить фильтр{/a}
+</div>
+</form>
 
 <p></p>
 
@@ -43,7 +40,7 @@
     </tr>
     {foreachelse}
     <tr>
-        <td colspan="56">Ничего не найдено</td>
+        <td colspan="7">Ничего не найдено</td>
     </tr>
     {/foreach}
 </tbody>
