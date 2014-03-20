@@ -309,7 +309,7 @@ fieldset legend {
     width: auto;
     border: none;
     margin: 0;
-    font-size: 20px;
+    font-size: 12px;
     line-height: normal;
     padding: 0;
 }
@@ -427,4 +427,17 @@ div.elfinder-resize-control input[type="text"] {
 }
 legend + .control-group {
     margin-top: 0 !important;
+}
+
+
+#pageEdit .title {
+    line-height: 30px;
+    padding-bottom: 5px;
+    border-bottom: 1px #cccccc solid;
+}
+#pageEdit input[type="text"] {
+    width: 90% !important;
+}
+#pageEdit select {
+    width: 50% !important;
 }

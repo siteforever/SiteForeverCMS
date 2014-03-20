@@ -49,10 +49,31 @@
 {/function}
 
 
+{*<div class="well well-small">*}
+    {*<button type="button" class="btn btn-switch">*}
+        {*<i class="icon icon-th"></i>*}
+    {*</button>*}
+{*</div>*}
 
 <div id="structureWrapper">
     <div class="b-main-structure">{tree data=$data}</div>
-
+    <div class="hide" id="pageEdit">
+        <div class="clearfix">
+            {*<button type="button" class="btn-close close">&times;</button>*}
+            <p class="pull-right">
+                <button type="button" class="btn btn-success btn-save">
+                    <i class="icon icon-white icon-hdd"></i> {"Save"|trans|capitalize}</button>
+                <button type="button" class="btn btn-success btn-save-close">
+                    <i class="icon icon-white icon-hdd"></i> {"Save and close"|trans|capitalize}</button>
+                <button type="button" class="btn btn-danger btn-close">
+                    <i class="icon icon-white icon-remove"></i> {"Close"|trans|capitalize}</button>
+            </p>
+            <h3 class="title"></h3>
+        </div>
+        <div class="buttons">
+        </div>
+        <div class="body"></div>
+    </div>
     {*<hr />*}
 
     {*{a htmlClass="realias btn" controller="page" action="realias"}*}
