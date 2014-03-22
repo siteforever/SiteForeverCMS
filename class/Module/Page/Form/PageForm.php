@@ -104,8 +104,9 @@ class PageForm extends \Sfcms\Form\Form
                         'label'=> 'Ключевые слова'
                     ),
                     'description'=> array(
-                        'type' => 'text',
-                        'label'=> 'Описание'
+                        'type' => 'textarea',
+                        'label'=> 'Описание',
+                        'class' => 'plain',
                     ),
                     'nofollow'     => array(
                         'type'      => 'checkbox',

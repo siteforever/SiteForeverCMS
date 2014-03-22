@@ -435,7 +435,9 @@ legend + .control-group {
     padding-bottom: 5px;
     border-bottom: 1px #cccccc solid;
 }
-#pageEdit input[type="text"] {
+#pageEdit input[type="text"],
+#pageEdit textarea.plain
+{
     width: 90% !important;
 }
 #pageEdit select {

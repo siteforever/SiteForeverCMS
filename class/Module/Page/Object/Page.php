@@ -54,6 +54,7 @@ class Page extends Object
     /**
      * Вернет ссылку на редактирования модуля в админке
      * @return null|string
+     * @todo Зависимость от всех модулей. Надо переделать
      */
     public function getLinkEdit()
     {
@@ -87,6 +88,46 @@ class Page extends Object
             return $this->data['title'];
         }
         return $this->data['name'];
+    }
+
+    public function getKeywords()
+    {
+        if (!empty($this->data['keywords'])) {
+            return $this->data['keywords'];
+        }
+        return join(', ', $this->getKeywordsList(4));
+    }
+
+    public function getKeywordsList($bound = 3)
+    {
+        $content = $this->content;
+        $content = strip_tags($content);
+        $content = mb_strtoupper($content);
+        $content = preg_replace('/[^0-9A-ZА-Я ]/mui', ' ', $content);
+        $content = preg_replace('/\s+/mui', ' ', $content);
+        $words = explode(' ', $content);
+        $words = array_filter($words, function($word) use($bound) {
+                return mb_strlen($word) >= $bound;
+            });
+        $index = array();
+        foreach ($words as $word) {
+            if (isset($index[$word])) {
+                $index[$word]['weight']++;
+            } else {
+                $index[$word] = array('word'=>$word, 'weight'=>1);
+            }
+        }
+        $index = array_filter($index, function($item){
+                return $item['weight'] > 1;
+            });
+        uasort($index, function($item1, $item2){
+                return $item1['weight'] - $item2['weight'];
+            });
+        $result = array();
+        foreach ($index as $item) {
+            $result[mb_strtolower($item['word'])] = $item['weight'];
+        }
+        return array_keys($result);
     }
 
     /**
