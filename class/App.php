@@ -121,9 +121,6 @@ class App extends AbstractKernel
         $request->setRequestFormat($format);
         $request->setDefaultLocale($this->getContainer()->getParameter('language'));
 
-        // define router
-        $this->getRouter()->setRequest($request)->routing();
-
         static::$init_time = microtime(1) - static::$start_time;
         static::$controller_time = microtime(1);
 
@@ -131,6 +128,7 @@ class App extends AbstractKernel
         /** @var Response $response */
         $response = null;
         try {
+            $this->getRouter()->setRequest($request)->routing();
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
             $this->getLogger()->error($e->getMessage());
