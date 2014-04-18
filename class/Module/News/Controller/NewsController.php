@@ -91,7 +91,7 @@ class NewsController extends Controller
     public function getNewsList(NewsModel $model)
     {
         /** @var Category $category */
-        $category = $model->category->find($this->page['link']);
+        $category = $model->getModel('NewsCategory')->find($this->page['link']);
 
         if (!$category) {
             return $this->tpl->fetch('news.catempty');
@@ -142,7 +142,7 @@ class NewsController extends Controller
 
         /** @var NewsModel $model */
         $model      = $this->getModel('News');
-        $category   = $model->category;
+        $category   = $model->getModel('NewsCategory');
 
         $list   = $category->findAll(array('cond'=>'deleted = 0'));
         return array(
@@ -219,10 +219,10 @@ class NewsController extends Controller
 
         $catObj = null;
         if (isset($news['cat_id']) && $news['cat_id']) {
-            $catObj = $model->category->find($news['cat_id']);
+            $catObj = $model->getModel('NewsCategory')->find($news['cat_id']);
         }
         if (null === $catObj && $cat) {
-            $catObj = $model->category->find($cat);
+            $catObj = $model->getModel('NewsCategory')->find($cat);
         }
 
         return array(

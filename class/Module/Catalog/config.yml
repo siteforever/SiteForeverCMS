@@ -22,6 +22,6 @@ services:
 
     catalog.sitemap.subscriber:
         class: Module\Catalog\Subscriber\SiteMapSubscriber
-        arguments: [ @mapper.catalog.catalog ]
+        arguments: [ @data.manager ]
         tags:
             - { name: event.subscriber }

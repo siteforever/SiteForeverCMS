@@ -10,20 +10,12 @@ namespace Module\Page\Subscriber;
 
 
 use Module\Page\Component\SiteMap\SiteMapItem;
+use Module\Page\Component\SiteMap\SiteMapSubscriberAbstract;
 use Module\Page\Event\SiteMapEvent;
-use Module\Page\Model\PageModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class SiteMapSubscriber implements EventSubscriberInterface
+class SiteMapSubscriber extends SiteMapSubscriberAbstract
 {
-    /** @var  PageModel */
-    private $model;
-
-    function __construct(PageModel $model)
-    {
-        $this->model = $model;
-    }
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -53,7 +45,7 @@ class SiteMapSubscriber implements EventSubscriberInterface
 
     public function onSiteMap(SiteMapEvent $event)
     {
-        $pages = $this->model->getAll();
+        $pages = $this->dataManager->getModel('Page')->getAll();
         $host = $event->getRequest()->getSchemeAndHttpHost();
         foreach ($pages as $page) {
             $item = new SiteMapItem($host . '/' . $page->alias);

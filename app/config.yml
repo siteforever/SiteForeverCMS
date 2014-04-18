@@ -18,6 +18,7 @@ logger:
 
 page: ~
 news: ~
+market: ~
 ckeditor: ~
 elfinder: ~
 jqgrid: ~
@@ -71,8 +72,6 @@ catalog:
         price1: price-a
         price1-d: price-d
     onPage: 5
-
-market: ~
 
 guestbook:
     email: "%admin%"

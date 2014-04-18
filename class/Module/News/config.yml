@@ -9,6 +9,6 @@ services:
 
     news.sitemap.subscriber:
         class: Module\News\Subscriber\SiteMapSubscriber
-        arguments: [ @mapper.news.news ]
+        arguments: [ @data.manager ]
         tags:
             - { name: event.subscriber }

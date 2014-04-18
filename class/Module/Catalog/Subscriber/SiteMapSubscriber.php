@@ -9,22 +9,14 @@
 namespace Module\Catalog\Subscriber;
 
 
-use Module\Catalog\Model\CatalogModel;
 use Module\Catalog\Object\Catalog;
 use Module\Page\Component\SiteMap\SiteMapItem;
+use Module\Page\Component\SiteMap\SiteMapSubscriberAbstract;
 use Module\Page\Event\SiteMapEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class SiteMapSubscriber implements EventSubscriberInterface
+class SiteMapSubscriber extends SiteMapSubscriberAbstract
 {
-    /** @var  CatalogModel */
-    private $model;
-
-    function __construct(CatalogModel $model)
-    {
-        $this->model = $model;
-    }
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -55,7 +47,7 @@ class SiteMapSubscriber implements EventSubscriberInterface
     public function onSiteMap(SiteMapEvent $event)
     {
         /** @var Catalog[] $products */
-        $products = $this->model->findAllProducts();
+        $products = $this->dataManager->getModel('Catalog')->findAllProducts();
         $host = $event->getRequest()->getSchemeAndHttpHost();
         foreach ($products as $product) {
             $item = new SiteMapItem($host . '/' . $product->getUrl());

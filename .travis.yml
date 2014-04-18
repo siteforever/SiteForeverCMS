@@ -2,7 +2,6 @@ language: php
 php:
   - "5.5"
   - "5.4"
-  - "5.3"
 script: phpunit -c test/phpunit.xml
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"

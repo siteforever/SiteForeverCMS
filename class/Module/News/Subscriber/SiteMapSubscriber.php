@@ -8,23 +8,14 @@
 
 namespace Module\News\Subscriber;
 
-
-use Module\News\Model\NewsModel;
 use Module\News\Object\News;
 use Module\Page\Component\SiteMap\SiteMapItem;
+use Module\Page\Component\SiteMap\SiteMapSubscriberAbstract;
 use Module\Page\Event\SiteMapEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class SiteMapSubscriber implements EventSubscriberInterface
+class SiteMapSubscriber extends SiteMapSubscriberAbstract
 {
-    /** @var  NewsModel */
-    private $model;
-
-    function __construct(NewsModel $model)
-    {
-        $this->model = $model;
-    }
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -55,7 +46,7 @@ class SiteMapSubscriber implements EventSubscriberInterface
     public function onSiteMap(SiteMapEvent $event)
     {
         /** @var News[] $news */
-        $news = $this->model->findAll('`hidden` = 0 AND `protected` = 0 AND `deleted` = 0');
+        $news = $this->dataManager->getModel('News')->findAll('`hidden` = 0 AND `protected` = 0 AND `deleted` = 0');
         $host = $event->getRequest()->getSchemeAndHttpHost();
         foreach ($news as $new) {
             $item = new SiteMapItem($host . '/' . $new->getUrl());

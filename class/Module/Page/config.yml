@@ -9,6 +9,6 @@ services:
 
     page.sitemap.subscriber:
         class: Module\Page\Subscriber\SiteMapSubscriber
-        arguments: [ @mapper.page.page ]
+        arguments: [ @data.manager ]
         tags:
             - { name: event.subscriber }
