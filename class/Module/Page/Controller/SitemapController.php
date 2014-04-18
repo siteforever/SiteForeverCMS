@@ -7,6 +7,8 @@
 namespace Module\Page\Controller;
 
 use DOMDocument;
+use Module\Page\Component\SiteMap\SiteMapItem;
+use Module\Page\Event\SiteMapEvent;
 use Sfcms\Controller;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
@@ -39,24 +41,18 @@ class SitemapController extends Controller
         $dom->appendChild( $urlset = $dom->createElement('urlset') );
         $urlset->setAttributeNS('','xmlns','http://www.sitemaps.org/schemas/sitemap/0.9');
 
-        /** @var $modelPage PageModel */
-        $modelPage = $this->getModel('Page');
-        $pages = $modelPage->getAll();
-
-        $host = $this->request->getSchemeAndHttpHost();
+        $event = new SiteMapEvent($this->request);
+        $this->getEventDispatcher()->dispatch(SiteMapEvent::EVENT_CONSTRUCT, $event);
 
         array_map(
-            function (Page $page) use ($urlset, $host) {
-                if ($page->link) {
-                    return false;
-                }
+            function (SiteMapItem $item) use ($urlset) {
                 $urlset->appendChild($url = $urlset->ownerDocument->createElement('url'));
-                $alias = 'index' == $page->alias ? '' : $page->alias;
-                $url->appendChild($url->ownerDocument->createElement('loc', $host . '/' . $alias));
-                $url->appendChild($url->ownerDocument->createElement('lastmod', strftime('%Y-%m-%d', $page->update)));
-                return $page;
+                $url->appendChild($url->ownerDocument->createElement('loc', $item->getLoc()));
+                $url->appendChild($url->ownerDocument->createElement('lastmod', $item->getLastmodLong()));
+                $url->appendChild($url->ownerDocument->createElement('changefreq', $item->getChangefreq()));
+                $url->appendChild($url->ownerDocument->createElement('priority', $item->getPriority()));
             },
-            iterator_to_array($pages)
+            iterator_to_array($event->getMap())
         );
 
         $dom->formatOutput = true;

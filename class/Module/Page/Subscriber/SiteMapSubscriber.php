@@ -1,0 +1,64 @@
+<?php
+/**
+ * This file is part of the @package@.
+ *
+ * @author: Nikolay Ermin <keltanas@gmail.com>
+ * @version: @version@
+ */
+
+namespace Module\Page\Subscriber;
+
+
+use Module\Page\Component\SiteMap\SiteMapItem;
+use Module\Page\Event\SiteMapEvent;
+use Module\Page\Model\PageModel;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class SiteMapSubscriber implements EventSubscriberInterface
+{
+    /** @var  PageModel */
+    private $model;
+
+    function __construct(PageModel $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return array(
+            SiteMapEvent::EVENT_CONSTRUCT => 'onSiteMap',
+        );
+    }
+
+    public function onSiteMap(SiteMapEvent $event)
+    {
+        $pages = $this->model->getAll();
+        $host = $event->getRequest()->getSchemeAndHttpHost();
+        foreach ($pages as $page) {
+            $item = new SiteMapItem($host . '/' . $page->alias);
+            $item->setLastmod($page->update);
+            $event->getMap()->add($item);
+        }
+    }
+}

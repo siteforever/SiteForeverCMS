@@ -19,16 +19,6 @@ class NewsModel extends Model
 {
     private $form = null;
 
-    /**
-     * @var CategoryModel
-     */
-    public $category;
-
-    public function Init()
-    {
-        $this->category = self::getModel( 'NewsCategory' );
-    }
-
     public function relation()
     {
         return array(

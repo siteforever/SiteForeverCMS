@@ -19,3 +19,9 @@ services:
             - [ setContainer, [ "@service_container" ] ]
         tags:
             - { name: event.subscriber }
+
+    catalog.sitemap.subscriber:
+        class: Module\Catalog\Subscriber\SiteMapSubscriber
+        arguments: [ @mapper.catalog.catalog ]
+        tags:
+            - { name: event.subscriber }

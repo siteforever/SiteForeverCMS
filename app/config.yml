@@ -17,6 +17,7 @@ logger:
             path: "%root%/runtime/logs/%env%.txt"
 
 page: ~
+news: ~
 ckeditor: ~
 elfinder: ~
 jqgrid: ~

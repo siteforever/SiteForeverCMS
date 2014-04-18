@@ -343,6 +343,13 @@ class CatalogModel extends Model implements EventSubscriberInterface
         return $list;
     }
 
+    /**
+     * @return Catalog[]|Collection
+     */
+    public function findAllProducts()
+    {
+        return $this->findAll('deleted = 0 AND hidden = 0 AND protected = 0 AND cat = 0');
+    }
 
     /**
      * Products, sorted by "top"

@@ -77,7 +77,7 @@ class PageModel extends Model
 
     /**
      * Выбирает из базы и кэширует структуру страниц
-     * @return array|Collection|null
+     * @return Page[]|null
      */
     public function getAll()
     {

@@ -6,3 +6,9 @@ services:
         arguments: [ @tpl ]
         tags:
             - { name: event.subscriber }
+
+    page.sitemap.subscriber:
+        class: Module\Page\Subscriber\SiteMapSubscriber
+        arguments: [ @mapper.page.page ]
+        tags:
+            - { name: event.subscriber }

@@ -36,7 +36,6 @@ use Sfcms\Data\Watcher;
  * @property CacheInterface $cache
  * @property User $user
  * @property Filesystem $filesystem
- * @property EventDispatcher $eventDispatcher
  * @property i18n $i18n
  */
 abstract class Controller extends ContainerAware
@@ -186,6 +185,14 @@ abstract class Controller extends ContainerAware
         }
 
         return Model::getModel($model);
+    }
+
+    /**
+     * @return EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        return $this->get('event.dispatcher');
     }
 
     /**
