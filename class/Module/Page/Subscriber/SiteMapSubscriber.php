@@ -48,7 +48,7 @@ class SiteMapSubscriber extends SiteMapSubscriberAbstract
         $pages = $this->dataManager->getModel('Page')->getAll();
         $host = $event->getRequest()->getSchemeAndHttpHost();
         foreach ($pages as $page) {
-            $item = new SiteMapItem($host . ('index' == $page->alias ? '' : '/' . $page->alias));
+            $item = new SiteMapItem($host . ($page->getUrl() ? '/' . $page->getUrl() : ''));
             $item->setLastmod($page->update);
             $event->getMap()->add($item);
         }

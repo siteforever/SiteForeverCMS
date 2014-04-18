@@ -48,7 +48,7 @@ class Page extends Object
      */
     public function getUrl()
     {
-        return $this->alias;
+        return 'index' == $this->alias ? '' : $this->alias;
     }
 
     /**
