@@ -1,0 +1,16 @@
+services:
+    doctrine.configuration:
+        class: Doctrine\ORM\Configuration
+
+    doctrine.cache.apc:
+        class: Doctrine\Common\Cache\ApcCache
+
+    doctrine.cache.array:
+        class: Doctrine\Common\Cache\ArrayCache
+
+    doctrine.cache.filesystem:
+        class: Doctrine\Common\Cache\FilesystemCache
+        arguments: ["%root%/runtime/cache", "dc"]
+
+    doctrine.annotation.reader:
+        class: Doctrine\Common\Annotations\AnnotationReader

@@ -8,6 +8,7 @@ return array(
     array('name' => 'System', 'path' => 'Module\System'),
     array('name' => 'Translator', 'path' => 'Module\Translator'),
     array('name' => 'Database', 'path' => 'Module\Database'),
+    array('name' => 'Doctrine', 'path' => 'Module\Doctrine'),
     array('name' => 'Smarty', 'path' => 'Module\Smarty'),
     array('name' => 'Robokassa', 'path' => 'Module\Robokassa'),
     array('name' => 'User', 'path' => 'Module\User'),
