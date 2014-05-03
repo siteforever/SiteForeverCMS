@@ -32,7 +32,7 @@ class StaticCommand extends Command
         /** @var ContainerBuilder */
         $this->container = $this->getContainer();
 
-        $staticDir = $this->getContainer()->getParameter('assetic.output');
+        $staticDir = $this->getContainer()->getParameter('assetic.output') . '/static';
         $sfPath = $this->getContainer()->getParameter('sf_path');
         $rootDir = $this->getContainer()->getParameter('root');
 
