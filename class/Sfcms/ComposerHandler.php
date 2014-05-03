@@ -20,7 +20,8 @@ class ComposerHandler
                 @mkdir($cwd, 0755, true);
             }
             if (!is_file($cwd . '/console')) {
-                symlink($cms . '/console', $cwd . '/console');
+                copy($cms . '/console', $cwd . '/console');
+                chmod($cwd . '/console', 0755);
             }
             if (!is_file($cwd . '/.htaccess')) {
                 copy($cms . '/.htaccess', $cwd . '/.htaccess');
