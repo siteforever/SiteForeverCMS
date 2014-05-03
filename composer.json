@@ -81,6 +81,7 @@
     ],
     "scripts": {
         "post-install-cmd": [
+            "Sfcms\\ComposerHandler::install",
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
             "Sfcms\\ComposerHandler::execute"
         ],

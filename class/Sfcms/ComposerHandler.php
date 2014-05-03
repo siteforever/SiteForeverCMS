@@ -1,9 +1,9 @@
 <?php
 namespace Sfcms;
 
+use Composer\Script\Event;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
-use Composer\Script\CommandEvent;
 
 /**
  * Delegates the call to the installation of static files
@@ -11,7 +11,24 @@ use Composer\Script\CommandEvent;
  */
 class ComposerHandler
 {
-    public static function execute(CommandEvent $event)
+    public static function install(Event $event)
+    {
+        $cwd = getcwd() . '/app';
+        $cms = realpath(__DIR__ . '/../../app');
+        if ($cms != $cwd) {
+            if (!is_dir($cwd)) {
+                @mkdir($cwd, 0755, true);
+            }
+            if (!is_file($cwd . '/console')) {
+                symlink($cms . '/console', $cwd . '/console');
+            }
+            if (!is_file($cwd . '/.htaccess')) {
+                copy($cms . '/.htaccess', $cwd . '/.htaccess');
+            }
+        }
+    }
+
+    public static function execute(Event $event)
     {
         $options = self::getOptions($event);
         $appDir = $options['sfcms-app-dir'];
@@ -21,7 +38,7 @@ class ComposerHandler
         static::executeCommand($event, $appDir, 'translator:generate');
     }
 
-    protected static function executeCommand(CommandEvent $event, $appDir, $cmd, $timeout = 300)
+    protected static function executeCommand(Event $event, $appDir, $cmd, $timeout = 300)
     {
         $php = escapeshellarg(self::getPhp());
         $console = escapeshellarg($appDir.'/console');
@@ -36,7 +53,7 @@ class ComposerHandler
         }
     }
 
-    protected static function getOptions(CommandEvent $event)
+    protected static function getOptions(Event $event)
     {
         $options = array_merge(array(
                 'sfcms-app-dir' => 'app',
