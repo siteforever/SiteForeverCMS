@@ -8,7 +8,7 @@
 {/strip}{/function}{*
 
 
-*}{function name=form_end}</form>{/function}{*
+*}{function name=form_end}</form>{$form = $form->setRendered()}{/function}{*
 
 
 *}{function name=form_label class="" domain="messages"}
@@ -193,5 +193,4 @@
     {if $hint}<p><b>*</b> &ndash; {'smarty.form.hint'|trans:[]:'smarty'}</p>{/if}
     {call form_rest form=$form domain=$domain buttons=$buttons}
     {form_end}
-    {$form = $form->setRendered()}
 {/function}

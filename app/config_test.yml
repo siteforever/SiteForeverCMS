@@ -15,3 +15,7 @@ catalog:
     order_list:
         name: name
         bad: bad
+
+template:
+    theme: basic
+    pager: pager_twbt

@@ -25,12 +25,23 @@ jqgrid: ~
 
 assetic:
     debug: %debug%
-    output: "%root%/static"
+    output: "%root%"
     filters:
         jsmin: {}
         cssmin: {}
         lessphp: {}
-#    assets: {}
+        cssrewrite: ~
+        yui_css:
+            jar: "%sf_path%/misc/bin/yuicompressor-2.4.7.jar"
+        yui_js:
+            jar: "%sf_path%/misc/bin/yuicompressor-2.4.7.jar"
+        pngout:
+            # http://www.jonof.id.au/pngout
+            bin: "%sf_path%/misc/bin/pngout"
+        less:
+            node: /usr/local/bin/node
+            node_paths: [/usr/local/lib/node_modules]
+            apply_to: "\.less$"
 
 database:
     dsn: "mysql:host=%db_host%;port=%db_port%;dbname=%db_name%"

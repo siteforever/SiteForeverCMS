@@ -9,7 +9,7 @@
         <parameter key="assetic.filter.cssembed.java">%assetic.java.bin%</parameter>
         <parameter key="assetic.filter.cssembed.jar" />
         <parameter key="assetic.filter.cssembed.timeout">null</parameter>
-        <parameter key="assetic.filter.cssembed.charset">%kernel.charset%</parameter>
+        <parameter key="assetic.filter.cssembed.charset">%sfcms.charset%</parameter>
         <parameter key="assetic.filter.cssembed.mhtml">false</parameter>
         <parameter key="assetic.filter.cssembed.mhtml_root">null</parameter>
         <parameter key="assetic.filter.cssembed.root">null</parameter>

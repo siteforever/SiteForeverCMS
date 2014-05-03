@@ -50,7 +50,7 @@ class AsseticExtension implements ExtensionInterface
         $container->setParameter('assetic.sass.bin', $config['sass']);
 
         $filterManager = $container->getDefinition('asset.filter.manager');
-        $asseticService = $container->getDefinition('assetic_service');
+        $asseticService = $container->getDefinition('asset.service');
 
         // register filters
         foreach ($config['filters'] as $name => $filter) {

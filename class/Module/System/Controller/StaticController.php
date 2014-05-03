@@ -21,7 +21,7 @@ class StaticController extends Controller
         $this->request->setAjax(true, 'js');
 
         $file = str_replace('.', '_', strtolower(basename($this->request->getRequestUri())));
-        $assetCollection = $this->get('assetic_service')->getAsseticCollection($file);
+        $assetCollection = $this->get('asset.service')->getAsseticCollection($file);
 //        $re = '/.*?([^\/]+)\.([^\/]+)$/ie';
 //        $method = preg_replace($re, '"\1".ucfirst("\2")', $file);
         /** @var Response $response */
@@ -66,7 +66,7 @@ class StaticController extends Controller
     protected function siteJs()
     {
         /** @var AssetCollection $assetCollection */
-        $assetCollection = $this->get('assetic_service')->getAsseticCollection('site_js');
+        $assetCollection = $this->get('asset.service')->getAsseticCollection('site_js');
 
         return $this->wrappingJsCollection($assetCollection);
     }
@@ -74,7 +74,7 @@ class StaticController extends Controller
     protected function adminJs()
     {
         /** @var AssetCollection $assetCollection */
-        $assetCollection = $this->get('assetic_service')->getAsseticCollection('admin_js');
+        $assetCollection = $this->get('asset.service')->getAsseticCollection('admin_js');
 
         return $this->wrappingJsCollection($assetCollection);
     }

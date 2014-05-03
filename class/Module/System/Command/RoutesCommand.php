@@ -39,7 +39,7 @@ class RoutesCommand extends Command
         $start = microtime(1);
         /** @var Router $router */
         /** @var Route $route */
-        $router = \App::cms()->getContainer()->get('sf_router');
+        $router = \App::cms()->getContainer()->get('symfony_router');
 
         $this->getPageModel()->fillRoutes($router);
 

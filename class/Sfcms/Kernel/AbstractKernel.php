@@ -168,6 +168,7 @@ abstract class AbstractKernel
             'sf_path' => SF_PATH,
             'debug' => $this->isDebug(),
             'env' => $this->getEnvironment(),
+            'sfcms.charset' => 'utf8',
         )));
 
         /** @var Module $module */
@@ -226,11 +227,11 @@ abstract class AbstractKernel
      */
     protected function initModules()
     {
-        $sfRouter = $this->getContainer()->get('sf_router');
+        $sfRouter = $this->getContainer()->get('symfony_router');
         $outputDir = $this->getContainer()->getParameter('assetic.output');
         foreach ($this->getModules() as $module) {
             call_user_func(array($module, 'registerRoutes'), $sfRouter);
-            call_user_func(array($module, 'registerStatic'), $outputDir);
+            call_user_func(array($module, 'registerStatic'), $outputDir . '/static');
         }
     }
 
@@ -327,7 +328,7 @@ abstract class AbstractKernel
     public function getRouter()
     {
         return $this->getContainer()->get('router');
-//        return $this->getContainer()->get('sf_router');
+//        return $this->getContainer()->get('symfony_router');
     }
 
     /**

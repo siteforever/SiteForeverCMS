@@ -23,12 +23,12 @@ class ElfinderPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('assetic_service')) {
+        if (!$container->hasDefinition('asset.service')) {
             return;
         }
 
         $source = ROOT . '/vendor/helios-ag/fm-elfinder/FM/elfinder/js';
-        $asseticService = $container->getDefinition('assetic_service');
+        $asseticService = $container->getDefinition('asset.service');
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.elfinder_js'));
         $container->setParameter('assetic.assets.elfinder_js', array(
                 'inputs' => array(

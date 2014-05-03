@@ -69,7 +69,7 @@ abstract class Route
     protected function getSymfonyRouter(Request $request)
     {
         /** @var SfRouter $router */
-        $router = \App::cms()->getContainer()->get('sf_router');
+        $router = \App::cms()->getContainer()->get('symfony_router');
 //        if (!$router->getContext()) {
         $context = new RequestContext();
         $context->fromRequest($request);

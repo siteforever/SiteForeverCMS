@@ -12,3 +12,8 @@ services:
         arguments: [ @data.manager ]
         tags:
             - { name: event.subscriber }
+
+    news.rss.listener:
+        class: Module\News\Listener\RssListener
+        tags:
+            - { name: event.listener, event: kernel.response , method: onKernelResponse }

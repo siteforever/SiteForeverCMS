@@ -23,11 +23,11 @@ class SiteAdminJsPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('assetic_service')) {
+        if (!$container->hasDefinition('asset.service')) {
             return;
         }
 
-        $asseticService = $container->getDefinition('assetic_service');
+        $asseticService = $container->getDefinition('asset.service');
 
         $source = __DIR__ . '/../../Static/js';
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.site_js'));

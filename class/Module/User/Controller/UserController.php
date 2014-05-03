@@ -260,7 +260,7 @@ class UserController extends Controller
             }
         }
         $this->request->setTitle($this->t('user','Sign in site'));
-        $this->tpl->assign('form', $form );
+        $this->tpl->assign('form', $form->createView());
 
         return $this->render('user.login');
     }

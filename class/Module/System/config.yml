@@ -65,7 +65,7 @@ services:
 
 
     # routing
-    sf_router:
+    symfony_router:
         class: Symfony\Component\Routing\Router
         arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
 

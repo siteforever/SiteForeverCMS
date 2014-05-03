@@ -10,8 +10,9 @@ use Sfcms\Module as SfModule;
 
 class Module extends SfModule
 {
-    public function init()
+    public function loadExtensions(ContainerBuilder $container)
     {
+        $container->registerExtension(new {$ns}Extension());
     }
 
     /**
@@ -27,16 +28,6 @@ class Module extends SfModule
             'models' => array(
                 'SomeName' => '{$ns}\Model\SomeModel',
             ),
-        );
-    }
-
-    public function admin_menu()
-    {
-        return array(
-            array(
-                'name'  => '{$name}',
-                'url'   => 'admin/{$name|strtolower}',
-            )
         );
     }
 }

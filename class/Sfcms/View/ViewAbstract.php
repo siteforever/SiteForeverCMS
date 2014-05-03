@@ -14,9 +14,12 @@ abstract class ViewAbstract
 {
     protected $config = array();
 
+    /** @var Application */
+    protected $app;
+
     public function __construct(Application $app, array $config)
     {
-        $this->_app = $app;
+        $this->app = $app;
         $this->config = $config;
         /** @var $theme string */
         $theme = $this->config['theme'];
@@ -36,7 +39,7 @@ abstract class ViewAbstract
      */
     protected function getTpl()
     {
-        return $this->_app->getTpl();
+        return $this->app->getTpl();
     }
 
     /**

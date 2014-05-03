@@ -244,7 +244,7 @@ class App extends AbstractKernel
         } else {
             $Layout = new Layout($this, $this->getContainer()->getParameter('template'));
         }
-        $event = $Layout->view($event);
+        $Layout->view($event);
         $this->getLogger()->info('Invoke layout: ' . round(microtime(1) - $start, 3) . ' sec');
         return $event;
     }

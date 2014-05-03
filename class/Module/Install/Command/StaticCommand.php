@@ -85,7 +85,7 @@ class StaticCommand extends Command
 
     public function installRequireJs(StaticEvent $event)
     {
-        $asset = $this->container->get('assetic_service')->getAsseticCollection('require_js');
+        $asset = $this->container->get('asset.service')->getAsseticCollection('require_js');
         $writer = new AssetWriter($event->getStaticDir());
         $writer->writeAsset($asset);
 

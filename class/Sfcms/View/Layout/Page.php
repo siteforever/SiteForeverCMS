@@ -16,21 +16,9 @@ class Page extends Layout
     public function view(KernelEvent $event)
     {
         $request = $event->getRequest();
-        $this->init($request);
-
-        if ($this->_app->getContainer()->getParameter('assetic.bootstrap')) {
-            $this->_app->getAssets()->addStyle('/misc/bootstrap/css/bootstrap.css');
-        }
-
-        $this->_app->getAssets()->addStyle($this->getCss() . '/style.css');
-        if (file_exists(trim($this->getCss(), '/') . '/print.css')) {
-            $this->_app->getAssets()->addStyle($this->getCss() . '/print.css');
-        }
 
         $this->getTpl()->assign('response', $event->getResponse());
-        $event->getResponse()->setContent($this->getTpl()->fetch(
-            $request->get('resource') . $request->getTemplate()
-        ));
+        $event->getResponse()->setContent($this->getTpl()->fetch($request->getTemplate()));
         return $event;
     }
 }

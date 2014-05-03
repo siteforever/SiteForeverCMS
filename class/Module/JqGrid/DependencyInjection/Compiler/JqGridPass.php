@@ -23,12 +23,12 @@ class JqGridPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('assetic_service')) {
+        if (!$container->hasDefinition('asset.service')) {
             return;
         }
 
         $source = ROOT . '/vendor/tonytomov/jqGrid';
-        $asseticService = $container->getDefinition('assetic_service');
+        $asseticService = $container->getDefinition('asset.service');
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.jqgrid_js'));
 
         $container->setParameter('assetic.assets.jqgrid_js', array(

@@ -18,13 +18,17 @@ services:
     asset.filter.manager:
         class: Assetic\FilterManager
 
+    asset.cache_boosting.worker:
+        class: Assetic\Factory\Worker\CacheBustingWorker
+
     asset.factory:
         class: Assetic\Factory\AssetFactory
         arguments: ["%assetic.output%"]
         calls:
             - [setAssetManager, [@asset.manager]]
             - [setFilterManager, [@asset.filter.manager]]
-            - [setDebug, [%assetic.debug%]]
+            - [setDebug, [%debug%]]
+#            - [addWorker, [@asset.cache_boosting.worker]]
 
     asset.writer:
         class: Assetic\AssetWriter
@@ -32,6 +36,13 @@ services:
         calls:
             - [writeManagerAssets, ["@asset.manager"]]
 
-    assetic_service:
+    asset.service:
         class: Module\System\Service\AsseticService
         arguments: ["@asset.factory", "@service_container"]
+
+    smarty.plugin.asset:
+        class: Module\System\Plugin\AssetPlugin
+        arguments: ["@asset.factory"]
+        tags:
+            - { name: smarty.plugin, type: function, plugin: style, method: functionStyle }
+            - { name: smarty.plugin, type: function, plugin: js, method: functionJs }

@@ -8,6 +8,7 @@
 namespace Module\System;
 
 use Module\System\DependencyInjection\CaptchaExtension;
+use Module\System\DependencyInjection\Compiler\AssetPluginPass;
 use Module\System\DependencyInjection\Compiler\EventSubscriberPass;
 use Module\System\DependencyInjection\AsseticExtension;
 use Module\System\DependencyInjection\Compiler\RequireJsPass;
@@ -33,6 +34,7 @@ class Module extends SfModule
         $container->addCompilerPass(new RequireJsPass());
         $container->addCompilerPass(new SiteAdminJsPass());
         $container->addCompilerPass(new EventSubscriberPass());
+        $container->addCompilerPass(new AssetPluginPass());
     }
 
     /**

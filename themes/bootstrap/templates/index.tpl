@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="{$request->getLocale()}">
 <head>
-{*{css file="theme:less/style.less"}*}
-{*{js file="@jquery"}*}
-{*{js file="theme:js/script.js"}*}
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+{style file="@theme:less/style.less" filters='less,cssrewrite,?yui_css' output="static/style.css"}
 </head>
 <body>
 <div class="container">
+    <header>
+        <a class="logo" href="/"></a>
+    </header>
     <div class="row">
         <div class="col-sm-4">
             <div class="b-left-menu">
@@ -25,5 +27,7 @@
         </div>
     </div>
 </div>
+{js file="@root:components/jquery/jquery.js,@theme:js/script.js" filters='?yui_js'  output="static/script.js"}
+{*{js file="@theme:js/script.js" filters='?yui_js'  output="static/script.js"}*}
 </body>
 </html>

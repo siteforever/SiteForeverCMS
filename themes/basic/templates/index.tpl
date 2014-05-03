@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="{$request->getLocale()}">
-<head></head>
+<head>
+{style file="@misc:bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="style.css"}
+</head>
 <body>
-<div class="contaiter">
+<div class="container">
     {include file="header.tpl"}
 
     <div class="row">

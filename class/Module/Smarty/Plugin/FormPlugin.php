@@ -6,7 +6,7 @@
 
 namespace Module\Smarty\Plugin;
 
-use Sfcms\Form\Form;
+use Sfcms\Form\FormBaseAbstract;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -39,7 +39,13 @@ class FormPlugin
     {
         if ($content) {
             $params = $this->resolveParams($params);
-            $params['form'] = $params['form']->createView();
+            if (!$params['form'] instanceof FormView) {
+                if ($params['form'] instanceof FormBaseAbstract) {
+                    $params['form'] = $params['form']->createView();
+                } else {
+                    throw new \InvalidArgumentException('`form` will be instance of Sfcms\Form\FormBaseAbstract or Symfony\Component\Form\FormView');
+                }
+            }
             $params['content'] = $content;
             /** @var \Smarty_Internal_Template $template */
             $template = $smarty->smarty->createTemplate('smarty/function_form.tpl');
