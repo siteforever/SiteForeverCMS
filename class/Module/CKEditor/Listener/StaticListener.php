@@ -10,7 +10,7 @@ namespace Module\CKEditor\Listener;
 
 
 use Assetic\AssetWriter;
-use Module\Install\Event\StaticEvent;
+use Module\System\Event\StaticEvent;
 use Module\System\Service\AsseticService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

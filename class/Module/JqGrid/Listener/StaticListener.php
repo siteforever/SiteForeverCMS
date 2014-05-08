@@ -9,7 +9,7 @@
 namespace Module\JqGrid\Listener;
 
 use Assetic\AssetWriter;
-use Module\Install\Event\StaticEvent;
+use Module\System\Event\StaticEvent;
 use Module\System\Service\AsseticService;
 
 class StaticListener
