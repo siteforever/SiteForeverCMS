@@ -13,18 +13,24 @@ class ComposerHandler
 {
     public static function install(Event $event)
     {
-        $cwd = getcwd() . '/app';
-        $cms = realpath(__DIR__ . '/../../app');
+        $cwd = getcwd();
+        $cms = realpath(__DIR__ . '/../..');
         if ($cms != $cwd) {
             if (!is_dir($cwd)) {
                 @mkdir($cwd, 0755, true);
             }
-            if (!is_file($cwd . '/console')) {
-                copy($cms . '/console', $cwd . '/console');
-                chmod($cwd . '/console', 0755);
+            if (!is_file($cwd . '/app/console')) {
+                copy($cms . '/app/console', $cwd . '/app/console');
+                chmod($cwd . '/app/console', 0755);
+            }
+            if (!is_file($cwd . '/app/.htaccess')) {
+                copy($cms . '/app/.htaccess', $cwd . '/app/.htaccess');
             }
             if (!is_file($cwd . '/.htaccess')) {
                 copy($cms . '/.htaccess', $cwd . '/.htaccess');
+            }
+            if (!is_file($cwd . '/index.php')) {
+                copy($cms . '/index.php', $cwd . '/index.php');
             }
         }
     }

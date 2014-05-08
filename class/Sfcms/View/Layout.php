@@ -38,10 +38,7 @@ class Layout extends ViewAbstract
 
         $this->selectLayout($event->getRequest())->view($event);
 
-        /** @var AssetManager $am */
-        $am = $this->app->getContainer()->get('asset.manager');
-        /** @var AssetWriter $writer */
-        $writer = $this->app->getContainer()->get('asset.writer');
+        $this->app->getContainer()->get('asset.writer');
 
         $content = $event->getResponse()->getContent();
         $content = str_replace('<head>', '<head>' . PHP_EOL . $this->getHead($event->getRequest()), $content);

@@ -1,5 +1,5 @@
 <?php
-namespace Module\Install\Command;
+namespace Module\System\Command;
 
 use Assetic\AssetWriter;
 use Module\Install\Event\StaticEvent;
@@ -49,7 +49,7 @@ class StaticCommand extends Command
 
         if (!$filesistem->exists($staticDir . '/images')) {
             $filesistem->mirror(
-                $this->getContainer()->getParameter('sf_path') . '/class/Module/System/Static/images',
+                $this->getContainer()->getParameter('sf_path') . '/class/Module/System/static/images',
                 $staticDir . '/images',
                 null,
                 array('override'=>true)

@@ -175,8 +175,8 @@ class PageForm extends \Sfcms\Form\Form
         $config = App::cms()->getContainer()->getParameter('template');
         $theme = $config['theme'];
 
-        $themePath = ROOT . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . $theme;
-        $themeXMLFile = $themePath . DIRECTORY_SEPARATOR . 'theme.xml';
+        $themePath = ROOT . '/themes/' . $theme;
+        $themeXMLFile = $themePath . '/theme.xml';
 
         if (file_exists($themeXMLFile)) {
             $themeXML = new SimpleXMLElement(file_get_contents($themeXMLFile));

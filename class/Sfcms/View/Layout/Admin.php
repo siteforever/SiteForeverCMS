@@ -23,8 +23,6 @@ class Admin extends Layout
     {
         /** @var AssetManager $am */
         $am = $this->app->getContainer()->get('asset.manager');
-        /** @var AssetWriter $writer */
-        $writer = $this->app->getContainer()->get('asset.writer');
 
         $this->app->addStyle($this->getMisc().'/jquery/'.self::JQ_UI_THEME.'/jquery-ui.min.css');
 //        $this->_app->addScript( $this->getMisc().'/jquery/jquery-ui-'.self::JQ_UI_VERSION.'.custom.min.js' );

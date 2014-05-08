@@ -61,6 +61,7 @@ doctrine: ~
 template:
     theme: %template_theme%
     pager: %template_pager%
+    form: %template_form%
 
 mailer:
     transport: %mailer_transport%

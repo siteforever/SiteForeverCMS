@@ -1,9 +1,12 @@
-imports:
-    - { resource: "app/config.yml" }
-
 parameters:
     db_name: siteforever_test
     mailer_transport: ~
+    template_theme: basic
+    template_pager: pager_twbs2
+    template_form: smarty/form_bs2.tpl
+
+imports:
+    - { resource: "app/config.yml" }
 
 system:
     session:
@@ -15,7 +18,3 @@ catalog:
     order_list:
         name: name
         bad: bad
-
-template:
-    theme: basic
-    pager: pager_twbt

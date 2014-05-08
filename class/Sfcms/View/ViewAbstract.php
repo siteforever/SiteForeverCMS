@@ -27,6 +27,7 @@ abstract class ViewAbstract
         $this->path = array(
             'theme'  => '/themes/' . $theme,
             'css'    => '/themes/' . $theme . '/css',
+            'less'    => '/themes/' . $theme . '/less',
             'js'     => '/themes/' . $theme . '/js',
             'images' => '/themes/' . $theme . '/images',
             'img'    => '/themes/' . $theme . '/img',

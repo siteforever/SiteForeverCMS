@@ -24,7 +24,6 @@ return array(
     array('name' => 'Elfinder', 'path' => 'Module\Elfinder'),
     array('name' => 'JqGrid', 'path' => 'Module\JqGrid'),
     array('name' => 'Generator', 'path' => 'Module\Generator'),
-    array('name' => 'Install', 'path' => 'Module\Install'),
     array('name' => 'Monolog', 'path' => 'Module\Monolog'),
     array('name' => 'Test', 'path' => 'Module\Test'),
     array('name' => 'Mailer', 'path' => 'Module\Mailer'),

@@ -77,7 +77,7 @@
 
 Либо, кастомизовать по своему вкусу:
 
-    {include file="smarty/form.tpl"}
+    {include file="smarty/form_bs2.tpl"}
 
     {call form_start form=$form}
     <div class="control-group">
@@ -94,3 +94,7 @@
     {call form_input form=$form.submit}
     </div>
     {call form_end}
+
+Если используется twitter bootstrap3, то можно указать шаблон:
+
+    {include file="smarty/form_bs3.tpl"}

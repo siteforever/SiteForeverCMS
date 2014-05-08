@@ -24,6 +24,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('theme')->end()
                 ->scalarNode('pager')->end()
+                ->scalarNode('form')->defaultValue('form_twbs3')->end()
                 ->scalarNode('ext')->defaultValue('tpl')->end()
                 ->booleanNode('compile_check')->defaultValue(true)->end()
                 ->booleanNode('caching')->defaultValue(false)->end()

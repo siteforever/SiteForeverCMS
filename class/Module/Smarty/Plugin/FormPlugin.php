@@ -12,6 +12,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FormPlugin
 {
+    private $formTemplate = 'smarty/form_bs3.tpl';
+
+    public function __construct($formTemplate)
+    {
+        $this->formTemplate = $formTemplate;
+    }
+
     protected function resolveParams($params)
     {
         $class = array();
@@ -26,6 +33,7 @@ class FormPlugin
                 'hint' => true,
                 'buttons' => true,
                 'domain' => 'messages',
+                'form_template' => $this->formTemplate,
                 'class' => '',
                 'action' => '',
                 'method' => '',

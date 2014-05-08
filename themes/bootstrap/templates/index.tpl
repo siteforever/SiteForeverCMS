@@ -19,7 +19,7 @@
         <div class="col-sm-8 b-content">
             {block breadcrumbs}{/block}
 
-            {if $request->getFeedback()}
+            {if $request->getFeedbackString()}
                 <div class="alert alert-success">{$request->getFeedbackString()}</div>
             {/if}
 

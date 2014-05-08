@@ -6,12 +6,9 @@ parameters:
 
     admin: "keltanas@gmail.com"
 
-    template_theme: basic
-    template_pager: pager_twbt
-
-    cache:
-        class: "Sfcms\Cache\CacheBlank"
-        livecycle: 0
+    template_theme: bootstrap
+    template_pager: pager_twbs3
+    template_form: smarty/form_bs3.tpl
 
     db_name: siteforever
     db_host: localhost
@@ -20,8 +17,6 @@ parameters:
     db_password: ~
 
     editor: ckeditor
-    # editor: tinymce
-    # editor: elrte
 
     language: ru
 

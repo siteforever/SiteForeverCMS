@@ -6,7 +6,7 @@
  * @version: @version@
  */
 
-namespace Module\Install\Event;
+namespace Module\System\Event;
 
 
 use Symfony\Component\Console\Input\InputInterface;

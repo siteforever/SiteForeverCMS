@@ -120,9 +120,9 @@ class Driver extends TplDriver
     public function theme_exists($tpl_name)
     {
         $theme = $this->config['theme'];
-        $path = 'themes' . DIRECTORY_SEPARATOR . $theme . DIRECTORY_SEPARATOR . 'templates';
+        $path = 'themes/' . $theme . '/templates';
 
-        if ( file_exists( $path.DIRECTORY_SEPARATOR.$tpl_name ) ) {
+        if (file_exists($path . '/' . $tpl_name)) {
             return true;
         }
         return false;

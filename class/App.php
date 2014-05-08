@@ -22,6 +22,7 @@ use Sfcms\View\Xhr;
 use Sfcms\Model\Exception as ModelException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 /**
  * Класс приложение
@@ -238,14 +239,14 @@ class App extends AbstractKernel
      */
     public function invokeLayout(KernelEvent $event)
     {
-        $start = microtime(1);
+        $watch = (new Stopwatch())->start(__FUNCTION__);
         if ($event->getResponse() instanceof JsonResponse || $event->getRequest()->getAjax()) {
             $Layout = new Xhr($this, $this->getContainer()->getParameter('template'));
         } else {
             $Layout = new Layout($this, $this->getContainer()->getParameter('template'));
         }
         $Layout->view($event);
-        $this->getLogger()->info('Invoke layout: ' . round(microtime(1) - $start, 3) . ' sec');
+        $this->getLogger()->info(sprintf('Invoke layout: %.3f sec', $watch->stop(__FUNCTION__)->getDuration() / 1000));
         return $event;
     }
 

@@ -1,5 +1,4 @@
 <h1>{$request->getTitle()}</h1>
-
 {if isset($success)}{alert type='success' msg=$msg}{/if}
 {*{if $request->getFeedback()}{alert type='error' msg=$request->getFeedbackString()}{/if}*}
 

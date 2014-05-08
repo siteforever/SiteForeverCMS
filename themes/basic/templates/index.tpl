@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{$request->getLocale()}">
 <head>
-{style file="@misc:bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="style.css"}
+{style file="@misc:bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="static/style.css"}
 </head>
 <body>
 <div class="container">
