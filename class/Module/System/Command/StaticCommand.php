@@ -2,7 +2,7 @@
 namespace Module\System\Command;
 
 use Assetic\AssetWriter;
-use Module\Install\Event\StaticEvent;
+use Module\System\Event\StaticEvent;
 use Sfcms\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
