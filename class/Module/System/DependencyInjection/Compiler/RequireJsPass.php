@@ -27,7 +27,7 @@ class RequireJsPass implements CompilerPassInterface
             return;
         }
 
-        $source = __DIR__ . '/../../Static/js/vendor';
+        $source = __DIR__ . '/../../static/js/vendor';
         $asseticService = $container->getDefinition('asset.service');
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.require_js'));
 

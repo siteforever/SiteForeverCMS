@@ -33,7 +33,7 @@ class Admin extends Layout
         $this->app->getAssets()->addScript('/static/admin.js');
         $this->app->getAssets()->addStyle($this->getMisc() . '/bootstrap/css/bootstrap.css');
         $this->app->getAssets()->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
-        $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../../Module/System/Static/icons.css')));
+        $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../../Module/System/static/icons.css')));
         $am->get('admIcons')->setTargetPath('admIcons.css');
         $this->app->getAssets()->addStyle('/static/admIcons.css');
         $this->app->getAssets()->addStyle('/misc/bootstrap/css/bootstrap-datetimepicker.min.css');

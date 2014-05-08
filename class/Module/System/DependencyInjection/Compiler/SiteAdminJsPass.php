@@ -29,7 +29,7 @@ class SiteAdminJsPass implements CompilerPassInterface
 
         $asseticService = $container->getDefinition('asset.service');
 
-        $source = __DIR__ . '/../../Static/js';
+        $source = __DIR__ . '/../../static/js';
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.site_js'));
 
         $container->setParameter('assetic.assets.site_js', array(
@@ -54,7 +54,7 @@ class SiteAdminJsPass implements CompilerPassInterface
             ));
 
 
-        $source = __DIR__ . '/../../Static/js/admin';
+        $source = __DIR__ . '/../../static/js/admin';
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.admin_js'));
 
         $container->setParameter('assetic.assets.admin_js', array(

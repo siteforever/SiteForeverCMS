@@ -27,7 +27,7 @@ class AdmiconsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $finder = new Finder();
-        $finder->files()->in(__DIR__ . '/../Static/icons')->name('*.png');
+        $finder->files()->in(__DIR__ . '/../static/icons')->name('*.png');
 
         $css = array('.sfcms-icon {'
             .'display: inline-block;'
@@ -47,7 +47,7 @@ class AdmiconsCommand extends Command
                    . 'url("data:'.$is['mime'].';base64,'.base64_encode(file_get_contents($file->getRealPath())).'")'
                    . ' no-repeat 0 0;}';
         }
-        file_put_contents(__DIR__ . '/../Static/icons.css', join("\n", $css));
+        file_put_contents(__DIR__ . '/../static/icons.css', join("\n", $css));
         $output->writeln("<info>done</info>");
     }
 }
