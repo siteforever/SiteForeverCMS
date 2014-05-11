@@ -86,6 +86,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
                 'required'  => $this->required,
                 'variants'  => array(),
                 'multiple'  => false,
+                'placeholder' => '',
                 'autocomplete'  => true,
                 'filter'    => $this->filter,
             ));
@@ -153,6 +154,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
                 'autocomplete' => isset($this->options['autocomplete']) && !$this->options['autocomplete'] ? false : true,
                 'variants' => $this->getVariants(),
                 'multiple' => empty($this->options['multiple']) ? false : true,
+                'placeholder' => $this->options['placeholder'],
             ),
         );
 
