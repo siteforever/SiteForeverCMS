@@ -45,6 +45,7 @@ class NewsForm extends \Sfcms\Form\Form
                 ),
                 'author_id' => array('type'=>'text', 'value'=>$app->getAuth()->getId(), 'label'=>'','hidden',),
                 'name'      => array('type'=>'text', 'value'=>'', 'label'=>'Название', 'required',),
+                'alias'     => array('type'=>'text', 'value'=>'', 'label'=>'Ссылка', 'required',),
                 'main'      => array(
                     'type'=>'checkbox',
                     'label'=>'Показывать на главной',

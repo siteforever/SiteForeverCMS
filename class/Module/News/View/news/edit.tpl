@@ -5,6 +5,8 @@
 
     {$form->htmlFieldWrapped('name')}
 
+    {$form->htmlFieldWrapped('alias')}
+
     {$form->htmlFieldWrapped('cat_id')}
 
     {$form->htmlFieldWrapped('notice')}
