@@ -168,7 +168,7 @@ class AssetPlugin
 
         $inputs = array_map(function($input) {
                 $scope = null;
-                if (preg_match('/@([a-z]+):([a-z0-9\/\.]+)/i', $input, $match)) {
+                if (preg_match('/@([a-z]+):([a-z0-9\/\.-]+)/i', $input, $match)) {
                     $scope = $match[1];
                     $input = $match[2];
                 }
