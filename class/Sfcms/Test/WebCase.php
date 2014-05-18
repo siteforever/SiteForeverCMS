@@ -99,6 +99,12 @@ class WebCase extends PHPUnit_Framework_TestCase
         return \App::cms()->handleRequest($this->request);
     }
 
+    protected function runJsonXhrRequest($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
+    {
+        $server = array_merge($server, $this->serverAjax, $this->serverJson);
+        return $this->runRequest($uri, $method, $parameters, $cookies, $files, $server, $content);
+    }
+
     /**
      * Click by link and get response
      * @param Crawler $crawlerLink

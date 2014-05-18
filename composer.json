@@ -28,17 +28,22 @@
     },
     "include-path": ["./", "class/"],
     "require-dev": {
+        "behat/mink": "~1.5",
+        "behat/mink-browserkit-driver": "~1.1",
+        "behat/mink-goutte-driver": "~1.0",
+        "behat/mink-selenium2-driver": "~1.1",
+        "behat/mink-zombie-driver": "~1.1",
         "phpunit/php-invoker": "1.1.*",
         "phpunit/phpunit": "3.7.*",
         "phpunit/phpunit-mock-objects": "1.2.*",
         "phpunit/php-code-coverage": "1.2.*",
-        "phpunit/php-file-iterator": "1.3.*",
-        "doctrine/migrations": "1.0.*@dev"
+        "phpunit/php-file-iterator": "1.3.*"
     },
     "require": {
         "php": ">=5.4",
         "symfony/symfony": "2.4.*",
         "doctrine/orm": "2.4.*",
+        "doctrine/migrations": "1.0.*@dev",
         "smarty/smarty": "3.1.*",
         "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "~1.6",
@@ -91,7 +96,8 @@
         ]
     },
     "config": {
-        "component-dir": "components"
+        "component-dir": "components",
+        "bin-dir": "app"
     },
     "minimum-stability": "stable",
     "extra": {
@@ -102,5 +108,6 @@
             "file": "app/parameters.yml",
             "dist-file": "app/parameters.yml.dist"
         }
-    }
+    },
+    "bin": ["app/console"]
 }

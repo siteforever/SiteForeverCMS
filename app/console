@@ -7,7 +7,10 @@ define('ROOT', realpath(__DIR__.'/..'));
 
 require_once ROOT . '/vendor/autoload.php';
 
-use Sfcms\Console;
+use Module\Doctrine\Manager\DoctrineManager;
+use Sfcms\ConsoleApplication;
+use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\ArgvInput;
 
 $input = new ArgvInput();
@@ -17,5 +20,11 @@ $debug = getenv('SYMFONY_DEBUG') !== '0' && !$input->hasParameterOption(array('-
 $kernel = new \App($env, $debug);
 $kernel->isConsole(true);
 
-$console = new Console($kernel);
-$console->run($input);
+$app = new ConsoleApplication($kernel);
+
+/** @var DoctrineManager $doctrineManager */
+$doctrineManager = $kernel->getContainer()->get('doctrine.manager');
+$app->setHelperSet(ConsoleRunner::createHelperSet($doctrineManager->getEntityManager()));
+$app->getHelperSet()->set(new DialogHelper(), 'dialog');
+
+$app->run($input);

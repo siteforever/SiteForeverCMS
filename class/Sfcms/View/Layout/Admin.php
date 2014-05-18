@@ -34,7 +34,7 @@ class Admin extends Layout
         $this->app->getAssets()->addStyle($this->getMisc() . '/bootstrap/css/bootstrap.css');
         $this->app->getAssets()->addStyle('/static/admin/jquery/jqgrid/ui.jqgrid.css');
         $am->set('admIcons', new FileAsset(realpath(__DIR__ . '/../../../Module/System/static/icons.css')));
-        $am->get('admIcons')->setTargetPath('admIcons.css');
+        $am->get('admIcons')->setTargetPath('/static/admIcons.css');
         $this->app->getAssets()->addStyle('/static/admIcons.css');
         $this->app->getAssets()->addStyle('/misc/bootstrap/css/bootstrap-datetimepicker.min.css');
         $this->app->getAssets()->addStyle($this->getMisc() . '/admin/admin.css');

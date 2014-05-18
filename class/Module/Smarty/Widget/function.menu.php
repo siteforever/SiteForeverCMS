@@ -26,9 +26,11 @@ function smarty_function_menu($params, Smarty_Internal_Template $smarty)
             'level'  => 0,
             'template' => 'menu',
             'class' => '',
+            'active' => 'all',
             'currentId' => $request->get('id'),
             'parents'   => $model->getParents(),
         ));
+//    var_dump($model->getParents());
 
     $smarty->assign($params = $resolver->resolve($params));
 

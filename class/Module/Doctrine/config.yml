@@ -1,6 +1,10 @@
 services:
-    doctrine.configuration:
-        class: Doctrine\ORM\Configuration
+    doctrine.manager:
+        class: Module\Doctrine\Manager\DoctrineManager
+        arguments: ["@doctrine.configuration", "@doctrine.event_manager", "@pdo"]
+
+    doctrine.event_manager:
+        class: Doctrine\Common\EventManager
 
     doctrine.cache.apc:
         class: Doctrine\Common\Cache\ApcCache
@@ -14,3 +18,14 @@ services:
 
     doctrine.annotation.reader:
         class: Doctrine\Common\Annotations\AnnotationReader
+
+    doctrine.driver:
+        class: Doctrine\ORM\Mapping\Driver\AnnotationDriver
+        arguments: ["@doctrine.annotation.reader"]
+
+    doctrine.configuration:
+        class: Doctrine\ORM\Configuration
+        calls:
+            - ["setProxyNamespace", ["sfcms"]]
+            - ["setMetadataDriverImpl", ["@doctrine.driver"]]
+

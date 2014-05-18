@@ -38,6 +38,7 @@ class ControllerNewsTest extends WebCase
                 'id' => '',
                 'author_id' => $this->session->get('user_id'),
                 'name' => 'test',
+                'alias' => '',
                 'cat_id' => '1',
                 'date' => date('d.m.Y'),
                 'main' => '0',
@@ -53,10 +54,9 @@ class ControllerNewsTest extends WebCase
                 'deleted' => '0',
             ),
         );
-        $jsonXhrServer = array_merge($this->serverAjax, $this->serverJson);
-        $response = $this->runRequest('/news/edit', 'POST', $_POST, array(), array(), $jsonXhrServer);
+        $response = $this->runJsonXhrRequest('/news/edit', 'POST', $_POST);
         $response = json_decode($response->getContent());
-        $this->assertEquals('0', $response->error);
+        $this->assertEquals('0', $response->error, $response->msg);
         $this->assertEquals('Данные сохранены успешно', $response->msg);
 
         $response = $this->runRequest('/news/list?id=1', 'GET', array(), array(), array(), $this->serverAjax);

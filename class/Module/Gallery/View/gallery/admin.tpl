@@ -29,10 +29,12 @@
     {/foreach}
 </tbody>
 </table>
+{*
 <p>
     {a class="realias btn" controller="gallery" action="realias" htmlTarget="_blank"}
         {icon name="arrow_refresh"} Пересчитать алиасы изображений
     {/a}
 </p>
+*}
 
 {modal id="editCat"}

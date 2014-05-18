@@ -48,7 +48,17 @@ class Page extends Object
      */
     public function getUrl()
     {
-        return 'index' == $this->alias ? '' : $this->alias;
+        $alias = $this->alias;
+        if ($this->link) {
+            $obj = $this->getModel()->findByPk($this->link);
+            if ($obj) {
+                $alias = $obj->getUrl();
+            }
+        }
+        if ('index' === $alias) {
+            $alias = '';
+        }
+        return $alias;
     }
 
     /**

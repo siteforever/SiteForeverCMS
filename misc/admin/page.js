@@ -117,7 +117,7 @@ define("admin/page", [
 
         initialize : function() {
             /* Сортировка для структуры сайта */
-            this.$el.find('div.b-main-structure ul').sortable(this.structureSortSettings).disableSelection();
+            this.$el.find('div.b-main-structure').find('ul').sortable(this.structureSortSettings).disableSelection();
             this.$createDialog = $('<div id="dialogCreatePage"/>').appendTo('body').dialog(this.dialogCreate);
         },
 
@@ -138,7 +138,7 @@ define("admin/page", [
             var $pe = this.$el.find('#pageEdit');
             $pe.find('.title').html(this.editTitle);
             $pe.find('.body').html(this.editBody);
-            $pe.find('.datepicker').datepicker(window.datepicker);
+            $pe.find('.datepicker').datepicker();
             wysiwyg.init();
             this.hideStructure();
         },
@@ -154,10 +154,10 @@ define("admin/page", [
         /**
          * Sortable settings
          */
-        "structureSortSettings" : {
+        structureSortSettings: {
             stop : function (event, ui) {
                 var positions = [];
-                $('>li', this).each(function (i) {
+                $('>li', this).each(function () {
                     positions.push($(this).attr('data-id'));
                 });
                 $.post('/page/resort/', {'sort':positions}).fail(function( response ){
@@ -181,17 +181,12 @@ define("admin/page", [
                             $.unblockUI();
                             timoutDefer.resolve();
                         }, 1500);
-                        $.get('/page/admin' ).then(function(response){
-                            $('#structureWrapper')
-                                .find('.b-main-structure')
-                                .empty()
-                                .html($(response).find('.b-main-structure').html());
-                            $('div.b-main-structure')
-                                .find('ul')
-                                .sortable(this.structureSortSettings)
-                                .disableSelection();
+                        $('div.b-main-structure').find('ul').sortable("destroy");
+                        $.get('/page/admin' ).then($.proxy(function(response){
+                            $('#structureWrapper').find('.b-main-structure').html($(response).find('.b-main-structure').html());
+                            $('div.b-main-structure').find('ul').sortable(this.structureSortSettings).disableSelection();
                             ajaxDefer.resolve();
-                        });
+                        }, this));
                     } else {
                         $.unblockUI();
                         timoutDefer.reject();
