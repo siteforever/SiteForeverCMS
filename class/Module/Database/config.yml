@@ -9,8 +9,6 @@ services:
         class: Sfcms\PDO
         arguments:
             params: "%database%"
-        calls:
-            - [setAttribute, [3, 2]] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
 
     data.manager:
         class: Sfcms\Data\DataManager

@@ -28,7 +28,6 @@
     },
     "include-path": ["./", "class/"],
     "require-dev": {
-        "codeception/codeception": "~1.8",
         "behat/mink": "~1.5",
         "behat/mink-browserkit-driver": "~1.1",
         "behat/mink-goutte-driver": "~1.0",
@@ -98,7 +97,7 @@
     },
     "config": {
         "component-dir": "components",
-        "bin-dir": "app"
+        "bin-dir": "bin"
     },
     "minimum-stability": "stable",
     "extra": {

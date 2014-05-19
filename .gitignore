@@ -1,9 +1,10 @@
-/.idea/
-/runtime/
-/components
-/_build/
 /api.zip
+/app/parameters.yml
+/bin/
+/components
 /build/release
+/_build/
+/runtime/
 /test/codeCoverage
 /files/.quarantine
 /files/.tmb
@@ -13,4 +14,3 @@
 /static/
 /composer.phar
 /composer.lock
-/app/parameters.yml

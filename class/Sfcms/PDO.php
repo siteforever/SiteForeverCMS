@@ -17,5 +17,6 @@ class PDO extends \PDO
             $params['password'],
             $params['options']
         );
+        $this->setAttribute(self::ATTR_ERRMODE, self::ERRMODE_EXCEPTION);
     }
 }
