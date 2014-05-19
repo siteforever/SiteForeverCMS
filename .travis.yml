@@ -18,7 +18,7 @@ before_install:
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
   - curl -sS https://getcomposer.org/installer | php
-  - php composer.phar install --prefer-source --no-dev -o --no-interaction
+  - php composer.phar install --prefer-source -o --no-interaction
 
 addons:
   sauce_connect:
