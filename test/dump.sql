@@ -334,16 +334,6 @@ CREATE TABLE `log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `log`
---
-
-LOCK TABLES `log` WRITE;
-/*!40000 ALTER TABLE `log` DISABLE KEYS */;
-INSERT INTO `log` VALUES (1,1,'Module\\User\\Object\\User','save',1368777673),(2,1,'Module\\User\\Object\\User','save',1368777677),(3,1,'Module\\User\\Object\\User','save',1368777679),(4,1,'Module\\User\\Object\\User','save',1368777830),(5,1,'Module\\User\\Object\\User','save',1368777835),(6,1,'Module\\Gallery\\Object\\Gallery','save',1368777835),(7,1,'Module\\Gallery\\Object\\Category','save',1368777835),(8,1,'Module\\Gallery\\Object\\Gallery','save',1368777835),(9,1,'Module\\Gallery\\Object\\Category','save',1368777835),(10,1,'Module\\User\\Object\\User','save',1368777839),(11,1,'Module\\User\\Object\\User','save',1368777840),(12,1,'Module\\Gallery\\Object\\Gallery','save',1368778128),(13,1,'Module\\Gallery\\Object\\Category','save',1368778128),(14,1,'Module\\Gallery\\Object\\Gallery','save',1368778128),(15,1,'Module\\Gallery\\Object\\Category','save',1368778128),(16,1,'Module\\Gallery\\Object\\Gallery','save',1368778143),(17,1,'Module\\Gallery\\Object\\Category','save',1368778143),(18,1,'Module\\Gallery\\Object\\Gallery','save',1368778143),(19,1,'Module\\Gallery\\Object\\Category','save',1368778143);
-/*!40000 ALTER TABLE `log` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `manufacturers`
 --
 
@@ -958,7 +948,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','1d6e78a363b33060b045524af5fb3740','lFzyLXGn','Аникей','Сковородкин','admin@ermin.ru','','+7 904 324-57-65','','','','',1,1294952400,1370855525,10,'','a:2:{i:0;a:5:{s:2:\"id\";s:1:\"7\";s:4:\"name\";s:10:\"HTC Evo 3D\";s:5:\"count\";s:1:\"1\";s:5:\"price\";s:5:\"15000\";s:7:\"details\";s:0:\"\";}i:1;a:5:{s:2:\"id\";s:2:\"14\";s:4:\"name\";s:9:\"Nokia 500\";s:5:\"count\";s:1:\"1\";s:5:\"price\";s:1:\"0\";s:7:\"details\";s:0:\"\";}}');
+INSERT INTO `users` VALUES (1,'admin','b65c90889bea16927f96453f2445706b','215b9551','Аникей','Сковородкин','admin@ermin.ru','','+7 904 324-57-65','','','','',1,1294952400,1370855525,10,'','a:2:{i:0;a:5:{s:2:\"id\";s:1:\"7\";s:4:\"name\";s:10:\"HTC Evo 3D\";s:5:\"count\";s:1:\"1\";s:5:\"price\";s:5:\"15000\";s:7:\"details\";s:0:\"\";}i:1;a:5:{s:2:\"id\";s:2:\"14\";s:4:\"name\";s:9:\"Nokia 500\";s:5:\"count\";s:1:\"1\";s:5:\"price\";s:1:\"0\";s:7:\"details\";s:0:\"\";}}');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

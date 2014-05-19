@@ -8,6 +8,7 @@ Distributed under The MIT License
 [![Latest Stable Version](https://poser.pugx.org/keltanas/site-forever-cms/v/stable.png)](https://packagist.org/packages/keltanas/site-forever-cms)
 [![Latest Unstable Version](https://poser.pugx.org/keltanas/site-forever-cms/v/unstable.png)](https://packagist.org/packages/keltanas/site-forever-cms)
 [![Coverage Status](https://coveralls.io/repos/keltanas/SiteForeverCMS/badge.png)](https://coveralls.io/r/keltanas/SiteForeverCMS)
+[![Dependency Status](https://www.versioneye.com/php/keltanas:site-forever-cms/dev-master/badge.svg)](https://www.versioneye.com/php/keltanas:site-forever-cms/dev-master)
 
 CMS SiteForever we have created in order to facilitate the programmers to develop sites at different levels of complexity, and their customers to help manage the site using a simple interface.
 

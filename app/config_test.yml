@@ -1,3 +1,6 @@
+imports:
+    - { resource: "app/config.yml" }
+
 parameters:
     db_name: siteforever_test
     mailer_transport: ~
@@ -5,13 +8,10 @@ parameters:
     template_pager: pager_twbs2
     template_form: smarty/form_bs2.tpl
 
-imports:
-    - { resource: "app/config.yml" }
-
-system:
-    session:
-        storage: mock
-        handler: native
+#system:
+#    session:
+#        storage: mock
+#        handler: native
 
 catalog:
     level: 5

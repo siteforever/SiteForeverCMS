@@ -29,5 +29,6 @@
     </div>
 </div>
 {include file="footer.tpl"}
+{js file="@root:components/jquery/jquery.js" filters='?yui_js'  output="static/jquery.js"}
 </body>
 </html>

@@ -8,7 +8,7 @@
         convertNoticesToExceptions  = "true"
         convertWarningsToExceptions = "true"
         processIsolation            = "false"
-        syntaxCheck                 = "true"
+        syntaxCheck                 = "false"
         verbose                     = "true"
         strict                      = "false"
         stopOnError                 = "false"
@@ -18,7 +18,7 @@
         bootstrap                   = "./bootstrap.php" >
     <php>
         <const name="TEST" value="true"/>
-        <server name="HTTP_HOST" value="example.com"/>
+        <server name="HTTP_HOST" value="test.cms.sf"/>
         <server name="SERVER_PORT" value="80"/>
         <server name="REQUEST_METHOD" value="TEST"/>
         <request name="id" value="1"/>

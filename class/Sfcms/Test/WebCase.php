@@ -6,6 +6,7 @@
 
 namespace Sfcms\Test;
 
+use Behat\Mink\Mink;
 use PHPUnit_Framework_TestCase;
 use Sfcms\Request;
 use Sfcms\Router;
@@ -26,6 +27,12 @@ class WebCase extends PHPUnit_Framework_TestCase
     /** @var Router */
     protected $router;
 
+    /** @var Mink */
+    protected $mink;
+
+    /** @var string */
+    protected $startUrl;
+
     protected $serverAjax = array(
         'HTTP_X_Requested_With' => 'XMLHttpRequest'
     );
@@ -41,9 +48,13 @@ class WebCase extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        global $mink, $startUrl;
+
         $_POST = array();
         $_GET = array();
         $_FILES = array();
+        $this->mink = $mink;
+        $this->startUrl = $startUrl;
         $this->request = Request::create('/');
         $this->session = new Session(new MockArraySessionStorage());
         $this->session->set('user_id', null);
@@ -52,11 +63,56 @@ class WebCase extends PHPUnit_Framework_TestCase
         \App::cms()->getRouter()->setRequest($this->request);
     }
 
+    protected function tearDown()
+    {
+        parent::tearDown();
+    }
+
+
     protected function createCrawler(Response $response)
     {
         $crawler = new Crawler();
         $crawler->addHtmlContent($response->getContent());
         return $crawler;
+    }
+
+    /**
+     * @param string $name
+     * @return \Behat\Mink\Session
+     */
+    protected function getSession($name = null)
+    {
+        return $this->mink->getSession($name);
+    }
+
+    protected function loginAsAdmin()
+    {
+        $this->visitPage('/user/login');
+        $this->getPage()->fillField('login_login', 'admin');
+        $this->getPage()->fillField('login_password', 'admin');
+        $this->getPage()->findButton('Войти')->click();
+        $this->assertNotNull($alert = $this->getPage()->find('css', '.alert-error'));
+        $this->assertEquals('Ваш пароль не подходит', $alert->getText());
+        print $this->getPage()->find('css', '.b-content')->getHtml();
+        $this->assertEquals('Кабинет пользователя', $this->getPage()->find('css', 'h1'));
+    }
+
+    /**
+     * @param string $url
+     */
+    protected function visitPage($url)
+    {
+        $this->getSession()->visit($this->startUrl . $url);
+    }
+
+    /**
+     * @param $session
+     *
+     * @return \Behat\Mink\Element\DocumentElement
+     */
+    protected function getPage($session = null)
+    {
+        return $this->getSession($session)->getPage();
     }
 
     /**
@@ -97,6 +153,12 @@ class WebCase extends PHPUnit_Framework_TestCase
         $this->request = Request::create($uri, $method, $parameters, $cookies, $files, $server, $content);
         $this->request->setSession($this->session);
         return \App::cms()->handleRequest($this->request);
+    }
+
+    protected function runXhrRequest($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)
+    {
+        $server = array_merge($server, $this->serverAjax);
+        return $this->runRequest($uri, $method, $parameters, $cookies, $files, $server, $content);
     }
 
     protected function runJsonXhrRequest($uri, $method = 'GET', $parameters = array(), $cookies = array(), $files = array(), $server = array(), $content = null)

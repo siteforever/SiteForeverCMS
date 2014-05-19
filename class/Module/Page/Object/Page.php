@@ -49,7 +49,7 @@ class Page extends Object
     public function getUrl()
     {
         $alias = $this->alias;
-        if ($this->link) {
+        if ($this->link && 'page' == $this->controller) {
             $obj = $this->getModel()->findByPk($this->link);
             if ($obj) {
                 $alias = $obj->getUrl();

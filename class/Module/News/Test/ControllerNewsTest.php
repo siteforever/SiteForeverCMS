@@ -10,8 +10,23 @@ use Sfcms\Test\WebCase;
 
 class ControllerNewsTest extends WebCase
 {
+    public function testHome()
+    {
+        $this->visitPage('/');
+        $this->getPage()->clickLink('Новости');
+        $this->assertEquals('Новости', $this->getPage()->find('css', 'h1')->getText());
+    }
+
     public function testAdminAction()
     {
+//        $this->loginAsAdmin();
+//
+//        $this->getPage()->clickLink('Управление сайтом');
+//        $this->getSession()->wait(5000, '$("h1").html() == "Структура сайта"');
+//        $this->getPage()->clickLink('Новости/статьи');
+//        $this->assertEquals('Новости', $this->getPage()->find('css', 'h1'));
+
+
         $this->session->set('user_id', 1);
         $response = $this->runRequest('/news/admin');
         $crawler = $this->createCrawler($response);

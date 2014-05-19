@@ -4,8 +4,8 @@ parameters:
 
     session_class: Symfony\Component\HttpFoundation\Session\Session
     session_storage_native_class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
-    session_storage_mock_class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
-    session_handler_pdo_class: Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage
+    session_storage_mock_class: Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage
+    session_handler_pdo_class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
     session_handler_native_class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler
 
 services:

@@ -254,7 +254,6 @@ class UserController extends Controller
                 if (!$result['error']) {
                     return $this->redirect($this->request->server->get('HTTP_REFERER'));
                 } else {
-
                     $this->getTpl()->assign($result);
                 }
             }

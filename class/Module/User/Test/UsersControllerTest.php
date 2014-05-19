@@ -183,26 +183,20 @@ class UsersControllerTest extends WebCase
      */
     public function testLoginAction()
     {
-        $response = $this->runController('user', 'login');
-        $crawler = $this->createCrawler($response);
-        $this->assertEquals(200, $response->getStatusCode());
-        $form = $crawler->filterXPath('//form');
-        $this->assertEquals(1, $form->count());
-        $this->assertEquals('form_login', $form->attr('id'));
-        $this->assertEquals('form_login', $form->attr('name'));
+        $this->visitPage('/user/login');
+        $this->getPage()->fillField('login_login', 'admin');
+        $this->getPage()->fillField('login_password', 'admin');
+        $this->getPage()->pressButton('login_submit');
+        $this->assertEquals('Кабинет пользователя', $this->getPage()->find('css', 'h1')->getText());
 
-        $_POST['login'] = array(
-            'login' => 'test_user',
-            'password' => 'test_test',
-        );
-        $response = $this->runController('user', 'login');
-        $crawler = $this->createCrawler($response);
+        $this->visitPage('/user/logout');
+        $this->visitPage('/user/login');
+        $this->getPage()->fillField('login_login', 'test_user');
+        $this->getPage()->fillField('login_password', 'test_test');
+        $this->getPage()->pressButton('Войти');
 
-
-        $this->assertEquals(
-            'Ваша учетная запись отключена',
-            $crawler->filterXPath('//div[@class="alert alert-error"]')->text()
-        );
+        $this->assertNotNull($alert = $this->getPage()->find('css', '.alert-error'));
+        $this->assertEquals('Ваша учетная запись отключена', $alert->getText());
     }
 
 

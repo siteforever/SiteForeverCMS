@@ -1,6 +1,6 @@
 <?php
 /**
- * Запус тестов
+ * Запуск тестов
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
@@ -9,6 +9,12 @@ defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
 require_once 'vendor/autoload.php';
 
+use Behat\Mink\Driver\ZombieDriver;
+use Behat\Mink\Driver\Selenium2Driver;
+use Behat\Mink\Driver\GoutteDriver;
+use Behat\Mink\Mink;
+use Behat\Mink\Session;
+use Behat\Mink\Driver\NodeJS\Server\ZombieServer;
 use Symfony\Component\Process\Process;
 
 //$mysqlFrom = "mysqldump -u root --add-drop-database=TRUE siteforever";
@@ -39,3 +45,12 @@ if (!$process->isSuccessful()) {
 print $process->getOutput();
 
 $app = new App('test', true);
+
+$startUrl = 'http://test.cms.sf';
+$mink = new Mink([
+    'zombie' => new Session(new ZombieDriver(new ZombieServer())),
+    'selenium' => new Session(new Selenium2Driver('firefox', $startUrl)),
+    'goutte' => new Session(new GoutteDriver),
+]);
+$mink->setDefaultSessionName('selenium');
+$mink->getSession()->setCookie('XDEBUG_SESSION', 'PHPSTORM');

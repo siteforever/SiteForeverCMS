@@ -1,9 +1,21 @@
 language: php
 php:
-  - "5.5"
-  - "5.4"
+  - 5.5
+  - 5.4
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: hhvm
+
 script: phpunit -c test/phpunit.xml
+
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
   - curl -sS https://getcomposer.org/installer | php
   - php composer.phar install --prefer-source --no-dev -o --no-interaction
+
+addons:
+  sauce_connect:
+    username: "keltanas"
+    access_key: "d23c6840-48d6-4ad1-ada7-ec1e252d9ef5"
