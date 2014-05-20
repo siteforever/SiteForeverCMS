@@ -9,7 +9,7 @@ matrix:
   allow_failures:
     - php: hhvm
 
-script: phpunit -c test/phpunit-travis.xml
+script: phpunit -c test/phpunit.xml
 
 before_install:
   - "export DISPLAY=:99.0"

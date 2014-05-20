@@ -1,5 +1,4 @@
-Siteforever CMS - It is opensource CMS on PHP 5.3 and MySql 5.1
-
+Siteforever CMS - It is opensource CMS on PHP 5.4 and MySql 5.5
 
 Distributed under The MIT License
 
@@ -18,8 +17,7 @@ Content management system and framework for her writing in PHP. As a database se
 
 * Website: http://siteforever.ru
 * Documentation: [Русский язык](doc/ru/readme.md)
-* Documentation: http://wiki.siteforever.ru
-* Download: http://siteforever.ru/download
+* Wiki: [Русский язык](http://wiki.siteforever.ru)
 
 For usage read [Simple install][1]
 
