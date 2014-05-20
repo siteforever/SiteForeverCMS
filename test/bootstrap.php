@@ -46,10 +46,20 @@ print $process->getOutput();
 
 $app = new App('test', true);
 
+var_dump($_ENV, $_SERVER);
+
+$capabilities = [];
+$hubUri = 'http://localhost:4444/wd/hub';
+if (defined('TRAVIS')) {
+    $capabilities['tunnel-identifier'] = $_ENV['TRAVIS_JOB_NUMBER'];
+    $capabilities['build'] = $_ENV['TRAVIS_BUILD_NUMBER'];
+    $capabilities['tags'] = [$_ENV['TRAVIS_PYTHON_VERSION'], 'CI'];
+    $hubUri = sprintf('http://%s:%s@localhost:4445/wd/hub', $_ENV['SAUCE_USERNAME'], $_ENV['SAUCE_ACCESS_KEY']);
+}
 $startUrl = 'http://test.cms.sf';
 $mink = new Mink([
     'zombie' => new Session(new ZombieDriver(new ZombieServer())),
-    'selenium' => new Session(new Selenium2Driver('firefox', $startUrl)),
+    'selenium' => new Session(new Selenium2Driver('firefox', $capabilities, $hubUri)),
     'goutte' => new Session(new GoutteDriver),
 ]);
 $mink->setDefaultSessionName('selenium');
