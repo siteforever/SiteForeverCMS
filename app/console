@@ -2,13 +2,15 @@
 <?php
 set_time_limit(0);
 
-//корень сайта
-define('ROOT', realpath(__DIR__.'/..'));
-
-require_once ROOT . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    define('ROOT', realpath(__DIR__.'/..'));
+    @include_once __DIR__ . '/../vendor/autoload.php';
+} else {
+    define('ROOT', realpath(__DIR__.'/../../../..'));
+    @include_once __DIR__ . '/../../../autoload.php';
+}
 
 use Sfcms\ConsoleApplication;
-use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 
@@ -24,10 +26,5 @@ $kernel = new \App($env, $debug);
 $kernel->isConsole(true);
 
 $app = new ConsoleApplication($kernel);
-
-///** @var DoctrineManager $doctrineManager */
-//$doctrineManager = $kernel->getContainer()->get('doctrine.manager');
-//$app->setHelperSet(ConsoleRunner::createHelperSet($doctrineManager->getEntityManager()));
-//$app->getHelperSet()->set(new DialogHelper(), 'dialog');
 
 $app->run($input);
