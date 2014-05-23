@@ -30,9 +30,9 @@ class GalleryExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
         $loader->load('config.yml');
 
-        //$configuration = $this->getConfiguration($configs, $container);
-        //$config = $this->processConfiguration($configuration, $configs);
-        //$container->setParameter($this->getAlias(), $config);
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+        $container->setParameter($this->getAlias(), $config);
     }
 
     /**
