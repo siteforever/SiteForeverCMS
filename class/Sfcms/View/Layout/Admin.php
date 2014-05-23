@@ -91,12 +91,8 @@ class Admin extends Layout
         );
 
         $controllerJs = $request->getAdminScript();
-        $controllerFile = ROOT . '/static/' . $controllerJs . '.js';
-
-        if (file_exists($controllerFile)) {
-            $rjsConfig['config']['system/admin']['use_controller'] = true;
-            $rjsConfig['map']['*']['controller'] = $controllerJs;
-        }
+        $rjsConfig['config']['system/admin']['use_controller'] = true;
+        $rjsConfig['map']['*']['controller'] = $controllerJs;
 
         $rjsConfig['map']['*']['jqgrid'] = 'admin/jquery/jqgrid/jqgrid';
 

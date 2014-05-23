@@ -73,6 +73,7 @@
 
 
 *}{function name=form_row class="form-control" domain="messages" buttons=true}{strip}
+{if "" == $class}{$class = "form-control"}{/if}
 {if not $form->isRendered()}
         {$attr = $form->vars.attr}
     {if $attr.hidden}
@@ -118,7 +119,7 @@
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['select'])}
             {form_label form=$form class="control-label" domain=$domain}
-            <select name="{$form->parent->vars.attr.name}[{$attr.name}]"{if trim($attr.id)} id="{$attr.id}" {/if}{if $attr.multiple} multiple="multiple"{/if}>
+            <select name="{$form->parent->vars.attr.name}[{$attr.name}]"{if trim($attr.id)} class="{$class}" id="{$attr.id}" {/if}{if $attr.multiple} multiple="multiple"{/if}>
             {foreach $attr.variants as $title}
                 <option value="{$title@key}"{if $title@key == $attr.value} selected="selected"{/if}>{$title|trans:[]:$domain}</option>
             {/foreach}

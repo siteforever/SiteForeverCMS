@@ -67,19 +67,15 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'=> 'Сервис',
+                'name'=> 'service',
                 'sub' => array(
                     array(
-                        'name'  => 'Менеджер файлов',
+                        'name'  => 'filemanager',
                         'url'   => 'elfinder/finder',
                         'class' => 'filemanager',
                     ),
                 ),
             ),
-//            array(
-//                'name'  => 'Elfinder',
-//                'url'   => 'admin/elfinder',
-//            )
         );
     }
 }

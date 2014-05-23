@@ -18,15 +18,16 @@ define('system/module/modal',[
 
     var SfModal = function( id ) {
         this._id = id;
-        if ( ! $('#'+id).length ) {
-            $('body').append(this.template.replace(/\{\{id\}\}/,this._id));
-        }
         this.domnode = $('#'+id);
-        this.domnode.on('shown', function(){
+        if ( ! this.domnode.length ) {
+            this.domnode = $(this.template.replace(/\{\{id\}\}/,this._id)).appendTo('body');
+        }
+        this.domnode.on('shown.bs.modal', function(){
+            console.log('shown.bs.modal');
             $('.datepicker').datepicker( window.datepicker );
             wysiwyg.init();
         });
-        this.domnode.on('hidden', function(){
+        this.domnode.on('hidden.bs.modal', function(){
             if ( typeof wysiwyg.destroy == 'function' ) {
                 wysiwyg.destroy();
             }
@@ -36,16 +37,18 @@ define('system/module/modal',[
 
     SfModal.prototype = {
 
-        template : '<div class="siteforeverModal modal hide" id="{{id}}" data-backdrop="static">'
-            + '<div class="modal-header">'
-                + '<button type="button" class="close" data-dismiss="modal">×</button>'
-                + '<h3>{{title}}</h3>'
-            + '</div>'
-            + '<div class="modal-body">{{body}}</div>'
-            + '<div class="modal-footer">'
-                + '<a href="#" class="btn btn-primary save">' + i18n('Save changes') + '</a>'
-                + '<a href="#" class="btn" data-dismiss="modal">' + i18n('Close') + '</a>'
-            + '</div>'
+        template : '<div class="modal fade" id="{{id}}" data-backdrop="static">'
+            + '<div class="modal-dialog modal-lg"><div class="modal-content">'
+                + '<div class="modal-header">'
+                    + '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>'
+                    + '<h3 class="modal-title">{{title}}</h3>'
+                + '</div>'
+                + '<div class="modal-body">{{body}}</div>'
+                + '<div class="modal-footer">'
+                    + '<a href="#" class="btn btn-primary save">' + i18n('Save changes') + '</a>'
+                    + '<a href="#" class="btn btn-default" data-dismiss="modal">' + i18n('Close') + '</a>'
+                + '</div>'
+            + '</div></div>'
         + '</div>'
 
         /**

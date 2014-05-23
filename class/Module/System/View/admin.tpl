@@ -3,23 +3,49 @@
 <head>
 {style file=[
     "@root:components/bootstrap/css/bootstrap.css",
-    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css",
+    "@root:components/bootstrap/css/bootstrap-theme.css"
+] filters="cssrewrite,?yui_css" output="static/css/bootstrap.css"}
+{style file=[
+    "@root:components/jquery-ui/themes/flick/jquery-ui.css",
+    "@root:static/admin/jquery/elfinder/elfinder.css",
+    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css"
+] filters="cssrewrite,?yui_css" output="static/css/jquery-ui.css"}
+{style file=[
     "@root:static/system/icons.css",
     "@root:static/system/admin.css"
 ] filters="cssrewrite,?yui_css" output="static/css/admin.css"}
 </head>
 <body class="body" id="admin">
-<div class="navbar navbar-inverse navbar-static-top">{strip}
+<div class="navbar navbar-inverse">{strip}
     <div class="container-fluid">
         <div class="navbar-header">
-            <span class="navbar-brand">SiteForeverCMS</span>
+            <span class="navbar-brand">{$sitename}</span>
         </div>
         <ul class="nav navbar-nav">
-            <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {'Goto site'|trans}</a></li>
-            {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {'Settings'|trans}{/a}</li>*}
+            <li><a href="/" target="_blank"><i class="glyphicon glyphicon-home"></i> {'Goto site'|trans}</a></li>
         </ul>
+        <ul class="nav navbar-nav">{strip}
+            {foreach from=$request->get('modules') item="item"}
+                {if ! isset( $item.class )}{$item.class = ""}{/if}
+                {if isset($item.sub)}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown">{$item.name|trans|ucfirst} <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            {foreach from=$item.sub item="sitem"}
+                                {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
+                                <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name|trans|ucfirst}{/a}</li>
+                            {/foreach}
+                        </ul>
+                    </li>
+                {else}
+                    <li>
+                        <a href="/{$item.url|default:""}" class="{$item.class}">{$item.name|trans|ucfirst}</a>
+                    </li>
+                {/if}
+            {/foreach}
+        {/strip}</ul>
         <ul class="nav navbar-nav navbar-right">
-            <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {'Exit'|trans}{/a}</li>
+            <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
         </ul>
     </div>
 {/strip}</div>
@@ -28,29 +54,7 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-2">
-            <div class="well">
-                <ul class="nav nav-list">{strip}
-                    {foreach from=$request->get('modules') item="item"}
-                    {if isset( $item.url )}
-                        {if ! isset( $item.class )}{$item.class = ""}{/if}
-                        <li>{a href=$item.url htmlClass=$item.class}{$item.name|trans|ucfirst}{/a}</li>
-                    {else}
-                        <li class="nav-header">{$item.name|trans|ucfirst}</li>
-                    {/if}
-                    {if isset($item.sub)}
-                        {foreach from=$item.sub item="sitem"}
-                            {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
-                            <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name|trans|ucfirst}{/a}</li>
-                        {/foreach}
-                        <li class="divider"></li>
-                    {/if}
-                    {/foreach}
-                {/strip}</ul>
-            </div>
-        </div>
-
-        <div class="col-md-10" id="workspace">
+        <div class="col-md-offset-1 col-md-10" id="workspace">
             <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
             <![endif]-->

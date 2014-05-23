@@ -107,10 +107,28 @@ define("gallery/admin/gallery", [
 
             "a.editCat": {
                 "click": function (event, node) {
+                    event.preventDefault();
+//                    var $dialog = $('#edit-dialog');
+//                    if (!$dialog.length) {
+//                        $dialog = $('<div id="edit-dialog"></div>').appendTo('body');
+//                        $dialog.dialog({
+//                            autoOpen: false,
+//                            modal: true,
+//                            width: 500,
+//                            buttons: [
+//                                {text:i18n('Save'), click: this.onSave},
+//                                {text:i18n('Close'), click: function(){$(this).dialog("close");}}
+//                            ]
+//                        });
+//                    }
+//                    $dialog.html(i18n("Loading")).dialog("option","title", $(node).parents('.media-body').find('h3').text()).dialog("open");
+//                    $.get($(node).attr('href'), $.proxy(function (response) {
+//                        $dialog.html(response);
+//                    }, this));
+                    this.edit
                     $.get($(node).attr('href'), $.proxy(function (response) {
                         this.editCat.title($(node).attr('title')).body(response).show();
                     }, this));
-                    return false;
                 }
             }
         },

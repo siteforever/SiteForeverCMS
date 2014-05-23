@@ -35,7 +35,7 @@ class FormView extends SymfonyFormView
                 'hint' => true,
                 'buttons' => true,
                 'domain' => 'messages',
-                'class' => '',
+                'class' => null,
             ));
 
         $tpl = \App::cms()->getTpl();

@@ -31,9 +31,6 @@ table td.bottom {
     vertical-align: bottom;
 }
 
-input[type=text] {
-    height: 20px !important;
-}
 input.cke_dialog_ui_input_text {
     /*height: 14px !important;*/
     margin: 0 !important;
@@ -41,9 +38,6 @@ input.cke_dialog_ui_input_text {
 }
 a, button, input {
     outline: none !important;
-}
-a.btn {
-    line-height: 18px;
 }
 
 small {
@@ -433,13 +427,4 @@ legend + .control-group {
 #pageEdit .title {
     line-height: 30px;
     padding-bottom: 5px;
-    border-bottom: 1px #cccccc solid;
-}
-#pageEdit input[type="text"],
-#pageEdit textarea.plain
-{
-    width: 90% !important;
-}
-#pageEdit select {
-    width: 50% !important;
 }

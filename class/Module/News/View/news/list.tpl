@@ -1,7 +1,7 @@
 <ul class="breadcrumb">
-<li>{a controller="news" action="admin"}{t cat="news"}News category{/t}{/a} &gt; </li>
+<li>{a controller="news" action="admin"}{t cat="news"}News category{/t}{/a}</li>
 <li>{$cat.name} {a controller="news" action="catedit" id=$cat.id class="catEdit" title=$this->t("news","Cat edit")}
-    {icon name="pencil" title=$this->t('Edit')}{/a} &gt; </li>
+    {icon name="pencil" title=$this->t('Edit')}{/a}</li>
 <li>{a controller="news" action="edit" cat=$cat.id class="newsEdit" title=$this->t('news','Create article')}
     {t cat="news"}Create article{/t}{/a}</li></ul>
 

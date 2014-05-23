@@ -151,8 +151,8 @@ class PageController extends Controller
         $parent = $this->request->request->getDigits('parent', null);
 
         // идентификатор раздела, в который надо добавить
-        $name = $this->request->get('name');
-        $module = $this->request->get('module');
+        $name = $this->request->request->get('name');
+        $module = $this->request->request->get('module');
 
         // родительский раздел
         /** @var $parentObj Page */

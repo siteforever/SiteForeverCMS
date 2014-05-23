@@ -45,7 +45,7 @@
         {/foreach}
     </tbody>
     </table>
-    <p><input type="submit" class="btn" value={t}Delete{/t} /></p>
+    <p><input type="submit" class="btn btn-default" value={t}Delete{/t} /></p>
 </form>
 
 <p>{$paging.html}</p>
