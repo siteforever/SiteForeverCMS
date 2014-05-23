@@ -33,7 +33,7 @@ class RequireJsPass implements CompilerPassInterface
 
         $container->setParameter('assetic.assets.require_js', array(
                 'inputs' => array(
-                    $root . '/components/require.js',
+                    __DIR__ . '/../../static/require.js',
                     $root . '/components/jquery/jquery.js',
                     $root . '/components/jquery-ui/ui/i18n/jquery.ui.datepicker-ru.js',
                     $root . '/components/jquery-ui/jquery-ui-built.js',
