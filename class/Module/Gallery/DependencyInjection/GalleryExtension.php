@@ -10,9 +10,10 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-class GalleryExtension implements ExtensionInterface
+class GalleryExtension extends Extension
 {
     /**
      * Loads a specific configuration.
@@ -29,34 +30,9 @@ class GalleryExtension implements ExtensionInterface
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/..'));
         $loader->load('config.yml');
 
-        $configuration = new GalleryConfiguration();
-        $processor = new Processor();
-        $config = $processor->processConfiguration($configuration, $configs);
-        $container->setParameter($this->getAlias(), $config);
-    }
-
-    /**
-     * Returns the namespace to be used for this extension (XML namespace).
-     *
-     * @return string The XML namespace
-     *
-     * @api
-     */
-    public function getNamespace()
-    {
-        return '';
-    }
-
-    /**
-     * Returns the base path for the XSD files.
-     *
-     * @return string The XSD base path
-     *
-     * @api
-     */
-    public function getXsdValidationBasePath()
-    {
-        return false;
+        //$configuration = $this->getConfiguration($configs, $container);
+        //$config = $this->processConfiguration($configuration, $configs);
+        //$container->setParameter($this->getAlias(), $config);
     }
 
     /**

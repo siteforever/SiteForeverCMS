@@ -91,22 +91,25 @@ class Category extends Object
      */
     public function getImage()
     {
-//        if ( ! isset( $this->data['image'] ) || ! $this->data['image'] ) {
-        $imageModel = $this->getModel('Gallery');
-        $image = $imageModel->find(array(
-            'cond' => 'category_id = ? AND hidden != ?',
-            'params' => array($this->id, 1),
-            'order' => 'pos',
-        ));
-        if ( $image ) {
-            if ( empty($this->data['image']) || $image->image != $this->data['image'] ) {
+        $image = null;
+        if ($this->id) {
+            $imageModel = $this->getModel('Gallery');
+            $image = $imageModel->find(
+                array(
+                    'cond' => 'category_id = ? AND hidden != ?',
+                    'params' => array($this->id, 1),
+                    'order' => 'pos',
+                )
+            );
+        }
+        if ($image) {
+            if (empty($this->data['image']) || $image->image != $this->data['image']) {
                 $this->data['image'] = $image->image;
                 $this->markDirty();
             }
         } else {
             $this->data['image'] = '';
         }
-//        }
         return $this->data['image'];
     }
 
