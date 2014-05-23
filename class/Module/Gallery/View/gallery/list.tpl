@@ -5,7 +5,7 @@
 
 <ul id="gallery">
 {foreach from=$images item="img"}
-<li class="ui-state-default" rel="{$img.id}">
+<li class="ui-state-default" rel="{$img.id}" data-id="{$img.id}">
 
     <div style="width: 200px; height: 200px; background: #999;">
         {thumb src=$img.image width=200 height=200 alt=$img.name}
@@ -37,7 +37,7 @@
 {/foreach}
 </ul>
 
-<form id="load_images" action="{link url="gallery/list"}" method="post" enctype="multipart/form-data" class="well form-horizontal">
+<form id="load_images" action="{link url="gallery/list" id=$category.id}" method="post" enctype="multipart/form-data" class="well form-horizontal">
     <div class="newimage">
         <div class="row">
             <div class="col-xs-2">

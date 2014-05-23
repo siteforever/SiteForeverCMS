@@ -1,12 +1,11 @@
 @CHARSET "UTF-8";
 
 html, body {
-    font: 12px Verdana;
+    font: 12px Arial;
     height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6, p {
-    margin: 0 0 1em 0;
     line-height: 1em;
 }
 h1 {
@@ -17,6 +16,12 @@ h2 {
 }
 h3 {
     font-size: 140%;
+}
+.growlUI h1 {
+    font-size: 150%;
+}
+.growlUI h2 {
+    font-size: 120%;
 }
 
 table.table td {

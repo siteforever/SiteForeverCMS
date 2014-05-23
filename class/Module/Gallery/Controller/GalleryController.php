@@ -241,19 +241,21 @@ class GalleryController extends Controller
      */
     public function deleteAction($id)
     {
-        $model = $this->getModel( 'Gallery' );
-        if( $id ) {
-            $image = $model->find( $id );
+        $model = $this->getModel('Gallery');
+        if ($id) {
+            $image = $model->find($id);
             $image->deleted = 1;
-            if( $image->save() ) {
+            if ($image->save()) {
                 return array(
                     'error' => 0,
                     'msg' => $this->t('Image was deleted'),
                     'id' => $id,
                 );
             }
-            return array('error' => 1, 'msg' => $this->t( 'Can not delete' ));
+
+            return array('error' => 1, 'msg' => $this->t('Can not delete'));
         }
+
         return $this->t('Image not was deleted');
     }
 
@@ -276,7 +278,6 @@ class GalleryController extends Controller
                 $obj    = $form->id ? $model->find($form->id) : $model->createObject();
                 $obj->attributes = $form->getData();
                 $model->save( $obj );
-//                $this->reload( 'gallery/admin', array(), 1000 );
                 return array('error'=>0,'msg'=>$this->t( 'Data save successfully' ),'name'=>$obj->name,'id'=>$obj->id);
             } else {
                 return array('error'=>1,'msg'=>$form->getFeedbackString());
@@ -296,8 +297,7 @@ class GalleryController extends Controller
                 $form->alias = $obj->getAlias();
             }
         }
-        return array('form' => $form);
-//        return $this->tpl->fetch( 'gallery.admin_category_edit' );
+        return array('form' => $form->createView());
     }
 
     /**
@@ -320,10 +320,14 @@ class GalleryController extends Controller
      * Просмотр категории
      * @param int $id
      *
+     * @throws \RuntimeException
      * @return array
      */
     public function listAction($id)
     {
+        if (!$id) {
+            throw new \RuntimeException('Parameter "id" is not defined');
+        }
         /** @var CategoryModel $category */
         $category = $this->getModel('GalleryCategory');
 
@@ -334,6 +338,7 @@ class GalleryController extends Controller
 
         if ($this->request->files->has('image')) {
             $this->upload($cat);
+            return $this->redirect('gallery/list', ['id'=>$id]);
         }
 
         $images = $model->findAll(array(
@@ -424,11 +429,10 @@ class GalleryController extends Controller
     {
         /** @var GalleryModel $model */
         $model         = $this->getModel('Gallery');
-        $max_file_size = $this->config->get( 'gallery.max_file_size' );
         $upload_ok     = 0;
-
+        $config = $this->container->getParameter('gallery');
+        $max_file_size = $config['max_file_size'];
         if ($this->request->files->has('image')) {
-
             $images = $this->request->files->get('image');
             $names  = array();
 
@@ -443,7 +447,7 @@ class GalleryController extends Controller
             foreach ($images as $i => $file) {
                 /** @var $file UploadedFile */
                 if ($file->isValid()) {
-                    if (!in_array($file->getClientMimeType(), $this->config->get('gallery.mime'))) {
+                    if (!in_array($file->getClientMimeType(), $config['mime'])) {
                         $this->request->addFeedback($this->t('Mime type not access in').' '.$file->getClientOriginalName());
                         continue;
                     }
@@ -453,7 +457,6 @@ class GalleryController extends Controller
                     $image->main = 0;
                     $image->hidden = 0;
                     $image->name = $names[$i];
-//                    $image->Category = $cat;
                     $image->category_id = $cat->getId();
                     $image->setUploadedFile($file);
 

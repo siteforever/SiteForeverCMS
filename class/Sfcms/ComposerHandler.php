@@ -40,9 +40,7 @@ class ComposerHandler
         $options = self::getOptions($event);
         $appDir = $options['sfcms-app-dir'];
 
-//        static::executeCommand($event, $appDir, 'database:scheme:update --force');
         static::executeCommand($event, $appDir, 'system:static');
-        static::executeCommand($event, $appDir, 'system:assets');
         static::executeCommand($event, $appDir, 'translator:generate');
     }
 

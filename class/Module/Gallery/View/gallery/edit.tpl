@@ -1,4 +1,4 @@
-{form form=$form class="form-horizontal"}
+{form form=$form}
 
 {$form->htmlFieldWrapped('id')}
 {$form->htmlFieldWrapped('name')}

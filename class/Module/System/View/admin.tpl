@@ -19,34 +19,45 @@
 <div class="navbar navbar-inverse">{strip}
     <div class="container-fluid">
         <div class="navbar-header">
-            <span class="navbar-brand">{$sitename}</span>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-cms-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand" title="{'Goto site'|trans}" target="_blank"><i class="glyphicon glyphicon-home"></i> {$sitename}</a>
         </div>
-        <ul class="nav navbar-nav">
-            <li><a href="/" target="_blank"><i class="glyphicon glyphicon-home"></i> {'Goto site'|trans}</a></li>
-        </ul>
-        <ul class="nav navbar-nav">{strip}
-            {foreach from=$request->get('modules') item="item"}
-                {if ! isset( $item.class )}{$item.class = ""}{/if}
-                {if isset($item.sub)}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown">{$item.name|trans|ucfirst} <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            {foreach from=$item.sub item="sitem"}
-                                {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
-                                <li>{a href=$sitem.url htmlClass=$sitem.class}{$sitem.name|trans|ucfirst}{/a}</li>
-                            {/foreach}
-                        </ul>
-                    </li>
-                {else}
-                    <li>
-                        <a href="/{$item.url|default:""}" class="{$item.class}">{$item.name|trans|ucfirst}</a>
-                    </li>
-                {/if}
-            {/foreach}
-        {/strip}</ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
-        </ul>
+        <div class="collapse navbar-collapse" id="bs-cms-navbar-collapse">
+            <ul class="nav navbar-nav">{strip}
+                    {foreach from=$request->get('modules') item="item"}
+                        {if ! isset( $item.class )}{$item.class = ""}{/if}
+                        {if isset($item.sub)}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown">
+                                    {if isset($item.gliph)}<i class="glyphicon glyphicon-{$item.gliph}"></i> {/if}
+                                    {$item.name|trans|ucfirst} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    {foreach from=$item.sub item="sitem"}
+                                        {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
+                                        <li>{a href=$sitem.url htmlClass=$sitem.class}
+                                            {if isset($sitem.gliph)}<i class="glyphicon glyphicon-{$sitem.gliph}"></i> {/if}
+                                            {$sitem.name|trans|ucfirst}{/a}</li>
+                                    {/foreach}
+                                </ul>
+                            </li>
+                        {else}
+                            <li>
+                                <a href="/{$item.url|default:""}" class="{$item.class}">
+                                    {if isset($item.gliph)}<i class="glyphicon glyphicon-{$item.gliph}"></i> {/if}
+                                    {$item.name|trans|ucfirst}</a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                {/strip}</ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
+            </ul>
+        </div>
     </div>
 {/strip}</div>
 <div class="modal-backdrop in" id="loading-application">

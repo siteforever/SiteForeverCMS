@@ -22,16 +22,12 @@ define('system/module/modal',[
         if ( ! this.domnode.length ) {
             this.domnode = $(this.template.replace(/\{\{id\}\}/,this._id)).appendTo('body');
         }
-        this.domnode.on('shown.bs.modal', function(){
-            console.log('shown.bs.modal');
-            $('.datepicker').datepicker( window.datepicker );
-            wysiwyg.init();
-        });
-        this.domnode.on('hidden.bs.modal', function(){
-            if ( typeof wysiwyg.destroy == 'function' ) {
-                wysiwyg.destroy();
-            }
-        });
+        this.domnode.on('shown.bs.modal', $.proxy(function(){
+            this.init();
+        }, this));
+        this.domnode.on('hidden.bs.modal', $.proxy(function(){
+            this.deInit();
+        }, this));
         this.onSave( this.onSaveHandler );
     };
 
@@ -50,6 +46,19 @@ define('system/module/modal',[
                 + '</div>'
             + '</div></div>'
         + '</div>'
+
+        , init: function() {
+            $('.datepicker').datepicker( window.datepicker );
+            wysiwyg.init();
+            return this;
+        }
+
+        , deInit: function() {
+            if ( typeof wysiwyg.destroy == 'function' ) {
+                wysiwyg.destroy();
+            }
+            return this;
+        }
 
         /**
          * Сохраняет обработчик сохранения
@@ -95,7 +104,7 @@ define('system/module/modal',[
         , title : function( title ) {
             if ( title ) {
                 this._title = title;
-                this.domnode.find('.modal-header').find('h3').text( this._title );
+                this.domnode.find('.modal-title').text( this._title );
                 return this;
             } else {
                 return this._title;
@@ -124,14 +133,6 @@ define('system/module/modal',[
                 this.hide.call(this);
                 deferred.resolve();
             }, this));
-//            if ( timeout ) {
-//                setTimeout($.proxy( function( deferred ) {
-//                    this.hide.call(this);
-//                    deferred.resolve();
-//                },this, deferred), timeout);
-//            } else {
-//                deferred.resolve();
-//            }
             return deferred.promise();
         }
 
@@ -151,24 +152,24 @@ define('system/module/modal',[
 
         , show : function(callback) {
             var deferred = new $.Deferred();
-            this.domnode.modal('show');
             $('.modal-body', this.domnode).scrollTop(0);
             $('body').css('overflow', 'hidden');
-            this.domnode.on("shown", function(){
+            this.domnode.one("shown.bs.modal", function(){
                 deferred.resolve();
                 callback && callback();
             });
+            this.domnode.modal('show');
             return deferred.promise();
         }
 
         , hide : function(callback) {
             var deferred = new $.Deferred();
-            this.domnode.modal('hide');
-            this.domnode.on('hidden', function(){
+            this.domnode.one('hidden.bs.modal', function(){
                 $('body').css('overflow', 'auto');
                 deferred.resolve();
                 callback && callback();
             });
+            this.domnode.modal('hide');
             return deferred.promise();
         }
     };

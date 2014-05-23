@@ -85,6 +85,7 @@ class Module extends SfModule
             array(
                 'name'  => 'Новости/статьи',
                 'url'   => 'news/admin',
+                'gliph' => 'bullhorn',
             )
         );
     }

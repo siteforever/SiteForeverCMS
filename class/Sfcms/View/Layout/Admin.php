@@ -102,6 +102,7 @@ class Admin extends Layout
 
         $return[] = '<script type="text/javascript">var require = '.$json.';</script>';
         $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='system/app'></script>";
+//        $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='admin'></script>";
 
         return join(PHP_EOL, $return);
     }

@@ -57,6 +57,7 @@ class Module extends SfModule
             array(
                 'name'  => 'structure',
                 'url'   => 'page/admin',
+                'gliph' => 'tree-deciduous',
             )
         );
     }

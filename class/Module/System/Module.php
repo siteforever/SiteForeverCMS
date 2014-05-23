@@ -126,10 +126,6 @@ class Module extends SfModule
     {
         return array(
             array(
-                'name'  => 'Пользователи',
-                'url'   => 'user/admin',
-            ),
-            array(
                 'name'  => 'Журнал',
                 'url'   => 'log/admin',
             ),

@@ -28,6 +28,17 @@ class Module extends SfModule
         );
     }
 
+    public function admin_menu()
+    {
+        return array(
+            array(
+                'name'  => 'Пользователи',
+                'url'   => 'user/admin',
+                'gliph' => 'user',
+            ),
+        );
+    }
+
     public function registerRoutes(Router $router)
     {
         $routes = $router->getRouteCollection();

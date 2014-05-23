@@ -18,24 +18,13 @@ class PageControllerMinkTest extends WebCase
 
     public function testDeleteAction()
     {
-        $this->markTestSkipped();
-        $this->loginAsAdmin();
-
-        $this->request->setAjax(true, 'json');
-        $this->request->query->set('id', 62);
-        $response = $this->runController('page', 'delete');
-        $this->assertEquals(200, $response->getStatusCode());
-        $json = json_decode($response->getContent());
-        $this->assertEquals(0, $json->error);
-        $this->assertEquals('ok', $json->msg);
-        $this->assertEquals(62, $json->id);
-    }
-
-    public function testAdminAction()
-    {
         $this->loginAsAdmin();
         $this->visitPage('/page/admin');
-        $this->assertEquals('Структура сайта', $this->findCss('h1')->getText());
+        $this->assertEquals('Удалить', $this->getTextByCss('#item62 .do_delete'));
+        $this->findCss('#item62 .do_delete')->click();
+        $this->getSession()->wait(500);
+        $this->getPage()->pressButton('Ok');
+        $this->getSession()->wait(1000);
     }
 
     public function testCreateAction()
@@ -68,17 +57,14 @@ class PageControllerMinkTest extends WebCase
 
     public function testShowHide()
     {
-        $this->markTestSkipped();
-
         $this->loginAsAdmin();
-        $response = $this->runXhrRequest('/page/hidden?id=3');
-        $crawler = $this->createCrawler($response);
-        $this->assertEquals('Выкл', trim($crawler->filter('a')->text()));
-        $this->assertEquals('sfcms-icon sfcms-icon-lightbulb-off', $crawler->filter('i')->attr('class'));
-
-        $response = $this->runXhrRequest('/page/hidden?id=3');
-        $crawler = $this->createCrawler($response);
-        $this->assertEquals('Вкл', trim($crawler->filter('a')->text()));
-        $this->assertEquals('sfcms-icon sfcms-icon-lightbulb', $crawler->filter('i')->attr('class'));
+        $this->visitPage('/page/admin');
+        $this->assertEquals("Вкл", $this->getTextByCss('#item3 .order_hidden'));
+        $this->findCss('#item3 .order_hidden')->click();
+        $this->getSession()->wait(1000, '$("#item3 .order_hidden").text() == "Выкл"');
+        $this->assertEquals("Выкл", $this->getTextByCss('#item3 .order_hidden'));
+        $this->findCss('#item3 .order_hidden')->click();
+        $this->getSession()->wait(1000, '$("#item3 .order_hidden").text() == "Вкл"');
+        $this->assertEquals("Вкл", $this->getTextByCss('#item3 .order_hidden'));
     }
 }

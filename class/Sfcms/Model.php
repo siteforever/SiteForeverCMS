@@ -371,7 +371,7 @@ abstract class Model extends Component
         }
 
         if (!(is_object($crit) || $crit instanceof Criteria)) {
-            throw new Exception('Not valid criteria');
+            throw new RuntimeException('Criteria for '.__METHOD__.' is not valid ');
         }
 
         if (null === $query && $crit) {

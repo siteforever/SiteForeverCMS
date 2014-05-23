@@ -86,8 +86,11 @@ class WebCase extends PHPUnit_Framework_TestCase
 
     protected function loginAsAdmin()
     {
+        if ($this->findCss('body#admin')) {
+            return;
+        }
         $this->visitPage('/user/login');
-        if ('Кабинет пользователя' == $this->getPage()->find('css', 'h1')->getText()) {
+        if ('Кабинет пользователя' == $this->findCss('h1')->getText()) {
             return;
         }
         $this->getPage()->fillField('login_login', 'admin');
@@ -120,6 +123,19 @@ class WebCase extends PHPUnit_Framework_TestCase
     protected function findCss($selector)
     {
         return $this->getPage()->find('css', $selector);
+    }
+
+    /**
+     * @param $selector
+     * @return null|string
+     */
+    protected function getTextByCss($selector)
+    {
+        $element = $this->getPage()->find('css', $selector);
+        if (null !== $element) {
+            return $element->getText();
+        }
+        return null;
     }
 
     /**

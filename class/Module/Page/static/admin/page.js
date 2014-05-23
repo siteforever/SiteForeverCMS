@@ -13,13 +13,14 @@ define("page/admin/page", [
     "system/module/alert",
     "system/module/console",
     "wysiwyg",
+    "system/admin/confirm/delete",
     "jquery-ui",
     "system/jquery/jquery.form",
     "system/admin"
-], function($, Backbone, Modal, Dialog, i18n, $alert, console, wysiwyg) {
+], function($, Backbone, Modal, Dialog, i18n, $alert, console, wysiwyg, deleteConfirm) {
 
     return Backbone.View.extend({
-        "progressTpl": '<div class="progress progress-striped active"><div class="bar" style="width: 100%"></div></div>',
+        "progressTpl": '<div class="progress progress-striped active"><div class="progress-bar" style="width: 100%"></div></div>',
 
         editTitle: 'Редактировать страницу',
 
@@ -90,20 +91,7 @@ define("page/admin/page", [
              * Remove page
              * Warning before remove
              */
-            'click a.do_delete': function(e) {
-                try {
-                    if (confirm(i18n('The data will be lost. Do you really want to delete?'))) {
-                        $.post($(e.target).attr('href'), function (result) {
-                            if (!result.error) {
-                                $('li[data-id="' + result.id + '"]').remove();
-                            }
-                        }, "json");
-                    }
-                } catch (e) {
-                    console.error(e);
-                }
-                return false;
-            },
+            'click a.do_delete': deleteConfirm,
 
             "click button.btn-switch": function() {
                 this.$el.find('div.b-main-structure').toggleClass('hide');
@@ -176,9 +164,9 @@ define("page/admin/page", [
                 dataType:"json",
                 success: $.proxy(function (response) {
                     if (!response.error) {
-                        $.blockUI({message: response.msg});
+                        $.growlUI(response.msg);
+                        $.unblockUI();
                         setTimeout(function(){
-                            $.unblockUI();
                             timoutDefer.resolve();
                         }, 1500);
                         $('div.b-main-structure').find('ul').sortable("destroy");
