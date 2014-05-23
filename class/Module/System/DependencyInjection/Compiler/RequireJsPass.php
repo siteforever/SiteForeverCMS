@@ -27,22 +27,24 @@ class RequireJsPass implements CompilerPassInterface
             return;
         }
 
-        $source = __DIR__ . '/../../static/js/vendor';
+        $root = $container->getParameter('root');
         $asseticService = $container->getDefinition('asset.service');
-        $asseticService->addMethodCall('addAsseticName', array('assetic.assets.require_js'));
+        $asseticService->addMethodCall('addAsseticName', ['assetic.assets.require_js']);
 
         $container->setParameter('assetic.assets.require_js', array(
                 'inputs' => array(
-                    $source . '/require.js',
-                    $source . '/jquery.js',
-                    $source . '/json2.js',
-                    $source . '/underscore.js',
-                    $source . '/backbone.js',
-                    $source . '/require-config.js',
+                    $root . '/components/require.js',
+                    $root . '/components/jquery/jquery.js',
+                    $root . '/components/jquery-ui/ui/i18n/jquery.ui.datepicker-ru.js',
+                    $root . '/components/jquery-ui/jquery-ui-built.js',
+                    $root . '/components/underscore/underscore-built.js',
+                    $root . '/components/backbone/backbone-built.js',
+                    $root . '/components/bootstrap/bootstrap-built.js',
+                    $root . '/static/system/admin/define.js',
                 ),
-                'filters' => array('?jsmin'),
+                'filters' => array('?yui_js'),
                 'options' => array(
-                    'output' => 'require-vendors.js',
+                    'output' => 'static/require-vendors.js',
                 ),
             ));
     }

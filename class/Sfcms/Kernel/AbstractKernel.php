@@ -357,66 +357,6 @@ abstract class AbstractKernel
         return $this->getContainer()->get('resolver');
     }
 
-
-    /**
-     * @return Assets
-     */
-    public function getAssets()
-    {
-        return $this->getContainer()->get('assets');
-    }
-
-    /**
-     * Получить список файлов стилей
-     * @return array
-     * @deprecated
-     */
-    public function getStyle()
-    {
-        return $this->getAssets()->getStyle();
-    }
-
-    /**
-     * @param $style
-     * @deprecated
-     */
-    public function addStyle( $style )
-    {
-        $this->getAssets()->addStyle($style);
-    }
-
-    /**
-     * @deprecated
-     */
-    public function cleanStyle()
-    {
-        $this->getAssets()->cleanStyle();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function getScript()
-    {
-        return $this->getAssets()->getScript();
-    }
-
-    /**
-     * @deprecated
-     */
-    public function addScript( $script )
-    {
-        $this->getAssets()->addScript( $script );
-    }
-
-    /**
-     * @deprecated
-     */
-    public function cleanScript()
-    {
-        $this->getAssets()->cleanScripts();
-    }
-
     /**
      * Вернет список зарегистрированных модулей
      * @return array of Module

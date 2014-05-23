@@ -9,9 +9,6 @@
 
 services:
     # assetic
-    assets:
-        class: Sfcms\Assets
-
     asset.manager:
         class: Assetic\AssetManager
 

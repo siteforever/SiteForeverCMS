@@ -102,8 +102,6 @@ class PageController extends Controller
         $this->request->set('template', 'index');
         $this->request->setTitle($this->t('Site structure'));
 
-        $this->app->addScript('/misc/admin/page.js');
-
         /** @var PageModel $model */
         $model = $this->getModel('Page');
 

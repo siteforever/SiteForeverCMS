@@ -2,14 +2,14 @@
 <html lang="{$request->getLocale()}">
 <head>
     {style file="@misc:jquery/fancybox/jquery.fancybox-1.3.1.css" filters='cssrewrite,?yui_css' output="static/fancybox.css"}
-    {style file="@misc:bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="static/style.css"}
+    {style file="@root:components/bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="static/style.css"}
 </head>
 <body>
 <div class="container">
     {include file="header.tpl"}
 
     <div class="row">
-        <div class="span2">
+        <div class="col-xs-3">
             <div>
                 {basket}
             </div>
@@ -18,7 +18,7 @@
                 {menu parent=1 level=3}
             </div>
         </div>
-        <div class="span8 b-content">
+        <div class="col-xs-9 b-content">
             {block breadcrumbs}{/block}
 
             {if $request->getFeedback()}

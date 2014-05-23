@@ -92,7 +92,6 @@ class Driver extends TplDriver
 
         $this->engine->display($tpl, $cache_id);
         $this->log($tpl . ' ('.round( microtime(1) - $start, 3 ).' sec)', 'Display tpl');
-//        print "Genegated: ".round( microtime(1) - $start, 3 );
     }
 
     /**
@@ -105,8 +104,6 @@ class Driver extends TplDriver
     {
         $start  = microtime(1);
         $tpl    = $this->convertTplName($tpl);
-//        $this->engine->assign('template', $tpl);
-//        $result = $this->engine->fetch('form.tpl', $cache_id);
         $result = $this->engine->fetch($tpl, $cache_id);
         $this->log($tpl . ' ('.round( microtime(1) - $start, 3).' sec)', 'Fetch tpl');
         return $result;

@@ -183,6 +183,7 @@ class UsersControllerTest extends WebCase
      */
     public function testLoginAction()
     {
+        $this->getSession()->restart();
         $this->visitPage('/user/login');
         $this->getPage()->fillField('login_login', 'admin');
         $this->getPage()->fillField('login_password', 'admin');

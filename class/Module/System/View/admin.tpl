@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="{$request->getLocale()}">
 <head>
+{style file=[
+    "@root:components/bootstrap/css/bootstrap.css",
+    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css",
+    "@root:static/system/icons.css",
+    "@root:static/system/admin.css"
+] filters="cssrewrite,?yui_css" output="static/css/admin.css"}
 </head>
 <body class="body" id="admin">
-<div class="navbar navbar-inverse">
-    <div class="navbar-inner">
-        <div class="container">
-            <div class="nav-collapse">{strip}
-                <span class="brand">SiteForeverCMS</span>
-                <ul class="nav">
-                    <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {'Goto site'|trans}</a></li>
-                    {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {'Settings'|trans}{/a}</li>*}
-                </ul>
-                <ul class="nav pull-right">
-                    <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {'Exit'|trans}{/a}</li>
-                    {*<li class="dropdown">*}
-                        {*{a href="#" htmlData-toggle="dropdown" htmlClass="dropdown-toggle"}User <b class="caret"></b>{/a}*}
-                        {*<ul class="dropdown-menu">*}
-                            {*<li>{a href="user/logout"}{t}Exit{/t}{/a}</li>*}
-                        {*</ul>*}
-                        {*<a data-toggle="dropdown" class="dropdown-toggle" href="#">Dropdown <b class="caret"></b></a>*}
-                    {*</li>*}
-                </ul>
-            {/strip}</div>
+<div class="navbar navbar-inverse navbar-static-top">{strip}
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <span class="navbar-brand">SiteForeverCMS</span>
         </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/" target="_blank"><i class="icon-home icon-white"></i> {'Goto site'|trans}</a></li>
+            {*<li>{a href="setting/admin"}<i class="icon-cog icon-white"></i> {'Settings'|trans}{/a}</li>*}
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>{a href="user/logout"}<i class="icon-remove icon-white"></i> {'Exit'|trans}{/a}</li>
+        </ul>
     </div>
-</div>
+{/strip}</div>
 <div class="modal-backdrop in" id="loading-application">
     <div>{'Initialisation'|trans}</div>
 </div>
 <div class="container-fluid">
-    <div class="row-fluid">
-        <div class="span3">
+    <div class="row">
+        <div class="col-md-2">
             <div class="well">
                 <ul class="nav nav-list">{strip}
                     {foreach from=$request->get('modules') item="item"}
@@ -53,7 +50,7 @@
             </div>
         </div>
 
-        <div class="span9" id="workspace">
+        <div class="col-md-10" id="workspace">
             <!--[if lt IE 9]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
             <![endif]-->

@@ -8,6 +8,7 @@
 
 namespace Sfcms\Controller;
 
+use Module\System\Event\ControllerEvent;
 use Sfcms\Controller;
 use ReflectionClass;
 use RuntimeException;
@@ -50,38 +51,39 @@ class Resolver
         if (null === $controller) {
             $controller = strtolower($request->getController());
         }
-        if (null === $action) {
+        if (preg_match('/([a-z]+):([a-z]+):?([a-z]*)/i', $controller, $m)) {
+            $moduleName = ucfirst($m[1]);
+            $controller = $m[2];
+            $action =  isset($m[3]) ? $m[3] : 'index';
+        }
+
+        if (!$action) {
             $action = $request->getAction();
         }
         $actionMethod = strtolower($action) . 'Action';
-
-        // Если не удалось определить контроллер, как известный, то инициировать ош. 404
-        if (!isset($this->_controllers[$controller])) {
-            throw new HttpException(404, sprintf('Controller "%s" not found', $controller));
+        $controllerClass = null;
+        if (isset($this->_controllers[$controller])) {
+            $config = $this->_controllers[$controller];
+            $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
+            $controllerClass = isset($config['class']) ? $config['class'] : $controller;
         }
 
-        if (!is_array($this->_controllers[$controller])) {
-            throw new RuntimeException(sprintf('Configuration of the controller "%s" should be an array', $controller));
+        if (null === $controllerClass) {
+            $controllerClass = $controller;
         }
 
-        $config = $this->_controllers[$controller];
-        $moduleName = isset($config['module']) ? $config['module'] : $moduleName;
-
-        if (isset($config['class'])) {
-            $controllerClass = $config['class'];
-        } else {
-            // compatibility with old style
-            $controllerClass = 'Controller_' . ucfirst($controller);
-        }
-
-        if ($moduleName) {
+        if (isset($moduleName) && false === strpos($controllerClass, '\\')) {
             $module = $this->app->getModule($moduleName);
             $controllerClass = sprintf(
-                '%s\\%sController',
+                '%s\\Controller\\%sController',
                 $module->getNs(),
-                str_replace('_', '\\', $controllerClass)
+                ucfirst($controllerClass)
             );
         }
+
+        $request->setModule($moduleName);
+        $request->setController($controller);
+        $request->setAction($action);
 
         return array('controller' => $controllerClass, 'action' => $actionMethod, 'module' => $moduleName);
     }
@@ -129,16 +131,17 @@ class Resolver
         }
         $this->app->getTpl()->assign('this', $controller);
         $this->app->getTpl()->assign('request', $request);
-        foreach ($this->app->getContainer()->getParameterBag()->all() as $key => $parameters ) {
-            $this->app->getTpl()->assign($key, $parameters);
-        }
         if ($controller instanceof EventSubscriberInterface) {
             $this->app->getEventDispatcher()->addSubscriber($controller);
         }
 
         $arguments = $this->prepareArguments($method, $request);
+
         $this->app->getLogger()->info('Invoke controller', $arguments);
+        $event = new ControllerEvent($controller, $arguments, $request);
+        $this->app->getEventDispatcher()->dispatch(ControllerEvent::RUN_BEFORE, $event);
         $result = $method->invokeArgs($controller, $arguments);
+        $this->app->getEventDispatcher()->dispatch(ControllerEvent::RUN_AFTER, $event);
 
         return $result;
     }
@@ -224,7 +227,7 @@ class Resolver
                             $this->setSystemPage($request);
                         }
                     } else {
-                        throw new Sfcms_Http_Exception('Access denied', 403);
+                        throw new HttpException(403, 'Access denied');
                     }
                 }
             }

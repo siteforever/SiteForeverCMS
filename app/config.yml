@@ -68,8 +68,8 @@ mailer:
     username:  %mailer_username%
     password:  %mailer_password%
     spool:
-        type: file
-#        type: memory
+        type: memory
+#        type: file
 
 captcha:
     width: 100

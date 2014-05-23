@@ -10,12 +10,6 @@ use Sfcms\Test\WebCase;
 
 class PageControllerTest extends WebCase
 {
-    public function testHome()
-    {
-        $this->visitPage('/');
-        $this->assertEquals('Главная', $this->getPage()->find('css', 'h1')->getHtml());
-    }
-
     public function testDeleteAction()
     {
         $this->session->set('user_id', 1);
@@ -45,6 +39,7 @@ class PageControllerTest extends WebCase
 
         $this->session->set('user_id', 1);
         $response = $this->runXhrRequest('/page/create?id='.$parentId, 'POST');
+        $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $addUrl = $crawler->filter('#url')->attr('value');
         $this->assertEquals('/page/add', $addUrl);
@@ -69,6 +64,7 @@ class PageControllerTest extends WebCase
     {
         $this->session->set('user_id', 1);
         $response = $this->runXhrRequest('/page/hidden?id=3');
+        $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Выкл', trim($crawler->filter('a')->text()));
         $this->assertEquals('sfcms-icon sfcms-icon-lightbulb-off', $crawler->filter('i')->attr('class'));

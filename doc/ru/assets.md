@@ -18,7 +18,7 @@
 
 подключение bootstrap и своих стилей, и сливание их в один файл:
 
-    {style file="@misc:bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="style.css"}
+    {style file="@root:components/bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="style.css"}
 
 подключение `less`-файла с компиляцией "на лету":
 

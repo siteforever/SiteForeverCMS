@@ -18,18 +18,18 @@ class Request extends SymfonyRequest
     const TYPE_JSON = 'json';
     const TYPE_XML  = 'xml';
 
-    private $_feedback = array();
+    private $feedback = array();
 
-    private $_error = 0;
+    private $error = 0;
 
     /** @var Response */
-    private $_response;
+    private $response;
 
-    private $_title = '';
-    private $_keywords = '';
-    private $_description = '';
-    private $_admin_script = null;
-    private $_system = false;
+    private $title = '';
+    private $keywords = '';
+    private $description = '';
+    private $adminScript = null;
+    private $system = false;
 
     protected $basket;
 
@@ -59,7 +59,7 @@ class Request extends SymfonyRequest
      */
     public function isSystem()
     {
-        return $this->_system;
+        return $this->system;
     }
 
     /**
@@ -68,7 +68,7 @@ class Request extends SymfonyRequest
      */
     public function setSystem($system)
     {
-        $this->_system = $system;
+        $this->system = $system;
     }
 
     /**
@@ -109,7 +109,7 @@ class Request extends SymfonyRequest
      */
     public function getController()
     {
-        return $this->get('_controller', $this->query->get('controller', null));
+        return $this->get('controller', $this->get('_controller', null));
     }
 
     /**
@@ -117,7 +117,7 @@ class Request extends SymfonyRequest
      */
     public function setController($controller)
     {
-        $this->set('_controller', $controller);
+        $this->set('controller', $controller);
     }
 
     /**
@@ -125,7 +125,7 @@ class Request extends SymfonyRequest
      */
     public function setAdminScript($admin_script)
     {
-        $this->_admin_script = $admin_script;
+        $this->adminScript = $admin_script;
     }
 
     /**
@@ -133,10 +133,10 @@ class Request extends SymfonyRequest
      */
     public function getAdminScript()
     {
-        if (null === $this->_admin_script) {
-            return 'admin/' . $this->getController();
+        if (null === $this->adminScript) {
+            return $this->adminScript = strtolower($this->getModule() . '/admin/' . $this->getController());
         }
-        return $this->_admin_script;
+        return $this->adminScript;
     }
 
     /**
@@ -144,7 +144,7 @@ class Request extends SymfonyRequest
      */
     public function getModule()
     {
-        return $this->get('_module', $this->query->get('module', null));
+        return $this->get('module', $this->get('_module', null));
     }
 
     /**
@@ -152,7 +152,7 @@ class Request extends SymfonyRequest
      */
     public function setModule($module)
     {
-        $this->set('_module', $module);
+        $this->set('module', $module);
     }
 
 
@@ -161,7 +161,7 @@ class Request extends SymfonyRequest
      */
     public function getAction()
     {
-        return $this->get('_action', $this->query->get('action', 'index'));
+        return $this->get('action', $this->get('_action', 'index'));
     }
 
     /**
@@ -169,7 +169,7 @@ class Request extends SymfonyRequest
      */
     public function setAction($action)
     {
-        $this->set('_action', $action);
+        $this->set('action', $action);
     }
 
 
@@ -178,7 +178,7 @@ class Request extends SymfonyRequest
      */
     public function setDescription($description)
     {
-        $this->_description = $description;
+        $this->description = $description;
     }
 
     /**
@@ -186,7 +186,7 @@ class Request extends SymfonyRequest
      */
     public function getDescription()
     {
-        return $this->_description;
+        return $this->description;
     }
 
     /**
@@ -194,7 +194,7 @@ class Request extends SymfonyRequest
      */
     public function setKeywords($keywords)
     {
-        $this->_keywords = $keywords;
+        $this->keywords = $keywords;
     }
 
     /**
@@ -202,7 +202,7 @@ class Request extends SymfonyRequest
      */
     public function getKeywords()
     {
-        return $this->_keywords;
+        return $this->keywords;
     }
 
     /**
@@ -259,7 +259,7 @@ class Request extends SymfonyRequest
      */
     public function setError($error)
     {
-        $this->_error = $error;
+        $this->error = $error;
     }
 
     /**
@@ -269,7 +269,7 @@ class Request extends SymfonyRequest
      */
     public function getError()
     {
-        return $this->_error;
+        return $this->error;
     }
 
     /**
@@ -290,7 +290,7 @@ class Request extends SymfonyRequest
      */
     public function setTitle($title)
     {
-        $this->_title = $title;
+        $this->title = $title;
     }
 
     /**
@@ -299,7 +299,7 @@ class Request extends SymfonyRequest
      */
     public function getTitle()
     {
-        return $this->_title;
+        return $this->title;
     }
 
     /**
@@ -331,14 +331,14 @@ class Request extends SymfonyRequest
     public function addFeedback($msg)
     {
         if (is_string($msg)) {
-            $this->_feedback[] = $msg;
+            $this->feedback[] = $msg;
 
             return;
         }
         if (is_array($msg)) {
             foreach ($msg as $m) {
                 if (is_string($m)) {
-                    $this->_feedback[] = $m;
+                    $this->feedback[] = $m;
                 }
             }
         }
@@ -346,14 +346,14 @@ class Request extends SymfonyRequest
 
     public function getFeedback()
     {
-        return $this->_feedback;
+        return $this->feedback;
     }
 
     public function getFeedbackString($sep = "<br />\n")
     {
         $ret = '';
-        if (count($this->_feedback)) {
-            $ret = join($sep, $this->_feedback);
+        if (count($this->feedback)) {
+            $ret = join($sep, $this->feedback);
         }
 
         return $ret;
@@ -361,7 +361,7 @@ class Request extends SymfonyRequest
 
     public function clearFeedback()
     {
-        $this->_feedback = array();
+        $this->feedback = array();
     }
 
     /**
@@ -372,7 +372,7 @@ class Request extends SymfonyRequest
      */
     public function setResponse(Response $response)
     {
-        $this->_response = $response;
+        $this->response = $response;
     }
 
     /**
@@ -381,6 +381,6 @@ class Request extends SymfonyRequest
      */
     public function getResponse()
     {
-        return $this->_response;
+        return $this->response;
     }
 }

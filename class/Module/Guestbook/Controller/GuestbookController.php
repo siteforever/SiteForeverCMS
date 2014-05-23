@@ -91,8 +91,6 @@ class GuestbookController extends Controller
      */
     public function adminAction()
     {
-        $this->app()->addScript('/misc/admin/guestbook.js');
-
         $model  = $this->getModel('Guestbook');
         $crit = $model->createCriteria();
 

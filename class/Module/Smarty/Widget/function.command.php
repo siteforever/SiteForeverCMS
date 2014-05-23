@@ -20,24 +20,16 @@ function smarty_function_command($params)
 {
     $app = App::cms();
 
-    if (!isset($params['controller']) && !isset($params['name'])) {
-        throw new Exception();
+    if (!isset($params['controller'])) {
+        throw new RuntimeException('Controller not defined');
     }
 
-    if (isset($params['name'])) {
-        $controller = 'Controller_' . $params['name'];
-        unset($params['name']);
-    }
-
-    if (isset($params['controller'])) {
-        $controller = $params['controller'];
-        unset($params['controller']);
-    }
+    $controller = $params['controller'];
+    unset($params['controller']);
 
     $action = (isset($params['action'])) ? $params['action'] : 'index';
-
     $action = strtolower($action) . 'Action';
-
+    $result = null;
     if (class_exists($controller)) {
         /** @var Controller $command */
         $command = new $controller(Request::createFromGlobals());

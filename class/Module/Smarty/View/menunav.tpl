@@ -1,6 +1,6 @@
 {function recursiveNavMenu level=1 parent=0 data=array()}
     {if $level>=0 && isset( $data[$parent] )}
-        <ul class="level{$level} parent{$parent}{if $level==1} nav{else} dropdown-menu{/if}">
+        <ul class="level{$level} parent{$parent}{if $level==1} nav navbar-nav{else} dropdown-menu{/if}">
             {$first = 1}
             {foreach from=$data[$parent] item="item"}
                 {if !$item->hidden}

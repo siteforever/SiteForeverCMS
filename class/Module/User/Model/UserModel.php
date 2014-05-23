@@ -1,7 +1,6 @@
 <?php
 namespace Module\User\Model;
 
-use Module\User\Form\LoginForm;
 use Module\User\Form\PasswordForm;
 use Module\User\Form\ProfileForm;
 use Module\User\Form\RegisterForm;
@@ -143,18 +142,6 @@ class UserModel extends Model
         //$this->data['basket'] = $basket;
         $this->save( $obj );
         //die( $this->data['basket'] );
-    }
-
-    /**
-     * Вернет форму для логина
-     * @return Form
-     */
-    public function getLoginForm()
-    {
-        if ( is_null( $this->login_form ) ) {
-            $this->login_form = new LoginForm();
-        }
-        return $this->login_form;
     }
 
     /**

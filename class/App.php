@@ -129,6 +129,8 @@ class App extends AbstractKernel
         /** @var Response $response */
         $response = null;
         try {
+            $tpl = $this->getTpl();
+            $tpl->assign($this->getContainer()->getParameterBag()->all());
             $this->getRouter()->setRequest($request)->routing();
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {

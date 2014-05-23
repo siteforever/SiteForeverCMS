@@ -42,7 +42,7 @@ class Module extends SfModule
             'controllers' => array(
                 'Basket'        => array(),
                 'Delivery'      => array(),
-                'Manufacturers' => array( 'class' => 'Controller\Manufacturer', ),
+                'Manufacturers' => array( 'class' => 'Module\Market\Controller\ManufacturerController'),
                 'Material'      => array(),
                 'Order'         => array(),
                 'OrderAdmin'    => array(),

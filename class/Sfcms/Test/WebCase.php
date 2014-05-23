@@ -68,7 +68,6 @@ class WebCase extends PHPUnit_Framework_TestCase
         parent::tearDown();
     }
 
-
     protected function createCrawler(Response $response)
     {
         $crawler = new Crawler();
@@ -88,13 +87,12 @@ class WebCase extends PHPUnit_Framework_TestCase
     protected function loginAsAdmin()
     {
         $this->visitPage('/user/login');
+        if ('Кабинет пользователя' == $this->getPage()->find('css', 'h1')->getText()) {
+            return;
+        }
         $this->getPage()->fillField('login_login', 'admin');
         $this->getPage()->fillField('login_password', 'admin');
         $this->getPage()->findButton('Войти')->click();
-        $this->assertNotNull($alert = $this->getPage()->find('css', '.alert-error'));
-        $this->assertEquals('Ваш пароль не подходит', $alert->getText());
-        print $this->getPage()->find('css', '.b-content')->getHtml();
-        $this->assertEquals('Кабинет пользователя', $this->getPage()->find('css', 'h1'));
     }
 
     /**
@@ -113,6 +111,15 @@ class WebCase extends PHPUnit_Framework_TestCase
     protected function getPage($session = null)
     {
         return $this->getSession($session)->getPage();
+    }
+
+    /**
+     * @param string $selector
+     * @return \Behat\Mink\Element\NodeElement|null
+     */
+    protected function findCss($selector)
+    {
+        return $this->getPage()->find('css', $selector);
     }
 
     /**

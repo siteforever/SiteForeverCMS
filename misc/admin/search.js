@@ -5,7 +5,7 @@
  */
 define("admin/search", [
     "jquery",
-    "jui"
+    "jquery-ui"
 ], function($){
     return {
         "behavior" : {

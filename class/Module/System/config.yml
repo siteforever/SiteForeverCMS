@@ -16,6 +16,12 @@ services:
         tags:
             - { name: event.subscriber }
 
+    system.controller.subscriber:
+        class: Module\System\Subscriber\ControllerSubscriber
+        arguments: ["@data.manager"]
+        tags:
+            - { name: event.subscriber }
+
     auth:
         class: Sfcms\Auth
 

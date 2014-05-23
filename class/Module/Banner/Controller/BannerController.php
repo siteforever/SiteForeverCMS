@@ -156,7 +156,6 @@ class BannerController extends Controller
      */
     public function catAction( $id )
     {
-        $this->app()->addScript('/misc/admin/banner.js');
         /** @var $model BannerModel */
         $model    = $this->getModel( 'Banner' );
         /** @var $category CategoryModel */

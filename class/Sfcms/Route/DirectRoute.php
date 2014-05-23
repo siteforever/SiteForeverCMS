@@ -6,6 +6,7 @@
  */
 
 namespace Sfcms\Route;
+
 use Module\System\Event\RouteEvent;
 use Sfcms\Request;
 use Sfcms\Route;
@@ -22,7 +23,7 @@ class DirectRoute extends Route
     public function __construct()
     {
         $this->app = App::cms();
-        if ( null === self::$controllers ) {
+        if (null === self::$controllers) {
             self::$controllers = $this->app->getControllers();
         }
     }
@@ -42,18 +43,20 @@ class DirectRoute extends Route
             $event->getRequest()->setAction($routePieces[1]);
             $command = $resolver->resolveController($event->getRequest());
 
-            $relectionClass = new ReflectionClass($command['controller']);
+//            $relectionClass = new ReflectionClass($command['controller']);
 
-            if ( $relectionClass->hasMethod( $command['action'] ) ) {
-                $controller = $routePieces[ 0 ];
-                $params = $this->extractAsParams( array_slice( $routePieces, 2 ) );
-                $event->setRouted(array(
+//            if ( $relectionClass->hasMethod( $command['action'] ) ) {
+            $controller = $routePieces[0];
+            $params = $this->extractAsParams(array_slice($routePieces, 2));
+            $event->setRouted(
+                array(
                     'controller' => $controller,
                     'action' => $routePieces[1],
                     'params' => $params,
-                ));
-                $event->stopPropagation();
-            }
+                )
+            );
+            $event->stopPropagation();
+//            }
         }
     }
 

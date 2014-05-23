@@ -206,7 +206,7 @@ class AssetPlugin
 
         $this->assetFactory->getAssetManager()->set(preg_replace('/[^a-z]+/', '_', $one), $coll);
 
-        if ($combine) {
+        if (!$combine) {
             $many = array($one);
         } else {
             $many = array();

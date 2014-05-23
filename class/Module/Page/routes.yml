@@ -1,0 +1,47 @@
+sitemap:
+    path: /sitemap
+    defaults: {controller: page:sitemap}
+
+sitemap_xml:
+    path: /sitemap.xml
+    defaults: {controller: page:sitemap:xml}
+
+page/index:
+    path: /
+    defaults: {controller: page:page, _id: 1}
+
+page/admin:
+    path: /page/admin
+    defaults: {controller: page:page:admin}
+
+page/create:
+    path: /page/create
+    defaults: {controller: page:page:create}
+
+page/add:
+    path: /page/add
+    defaults: {controller: page:page:add}
+
+page/edit:
+    path: /page/edit
+    defaults: {controller: page:page:edit}
+
+page/save:
+    path: /page/save
+    defaults: {controller: page:page:save}
+
+page/delete:
+    path: /page/delete
+    defaults: {controller: page:page:delete}
+
+page/resort:
+    path: /page/resort
+    defaults: {controller: page:page:resort}
+
+page/hidden:
+    path: /page/hidden
+    defaults: {controller: page:page:hidden}
+
+page/realias:
+    path: /page/realias
+    defaults: {controller: page:page:realias}

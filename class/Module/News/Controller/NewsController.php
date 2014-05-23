@@ -138,11 +138,10 @@ class NewsController extends Controller
     public function adminAction()
     {
         $this->request->setTitle($this->t('news','News'));
-        $this->app()->addScript('/misc/admin/news.js');
 
         /** @var NewsModel $model */
         $model      = $this->getModel('News');
-        $category   = $model->getModel('NewsCategory');
+        $category   = $this->getModel('NewsCategory');
 
         $list   = $category->findAll(array('cond'=>'deleted = 0'));
         return array(
@@ -157,10 +156,7 @@ class NewsController extends Controller
      */
     public function listAction($id)
     {
-        /**/
         $this->request->setTitle($this->t('news','News'));
-        $this->app()->addScript('/misc/admin/news.js');
-
         $model      = $this->getModel('News');
 
         $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$id));

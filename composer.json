@@ -52,6 +52,9 @@
         "components/normalize.css": "2.*",
         "components/jquery": "~1.11",
         "components/jqueryui": "~1.10",
+        "components/backbone": "1.1.*",
+        "components/highlightjs": "~8.0",
+        "components/bootstrap": "~3.1",
         "ckeditor/ckeditor_full": "4.3.*",
         "helios-ag/fm-elfinder": "v2.0",
         "tonytomov/jqGrid" : "4.4",
@@ -109,5 +112,5 @@
             "dist-file": "app/parameters.yml.dist"
         }
     },
-    "bin": ["app/console"]
+    "bin": ["app/console", "misc/bin/pngout", "misc/bin/yuicompressor-2.4.7.jar"]
 }

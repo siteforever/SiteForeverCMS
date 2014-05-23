@@ -4,6 +4,7 @@
  */
 namespace Module\User\Controller;
 
+use Module\User\Form\LoginForm;
 use Module\User\Object\User;
 use Sfcms\Controller;
 use Module\User\Form\RestoreForm as FormRestore;
@@ -234,9 +235,6 @@ class UserController extends Controller
     public function loginAction()
     {
         $this->request->setTitle($this->t('Personal page'));
-        /** @var UserModel $model */
-        $model  = $this->getModel('User');
-
         $this->getTpl()->getBreadcrumbs()
             ->addPiece('index',$this->t('Home'))
             ->addPiece(null, $this->t('user','Sign in site'));
@@ -246,7 +244,7 @@ class UserController extends Controller
         }
 
         // вход в систему
-        $form = $model->getLoginForm();
+        $form = new LoginForm();
 
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
@@ -268,6 +266,8 @@ class UserController extends Controller
      * Логин
      * @param string $login
      * @param string $password
+     *
+     * @return array
      */
     private function login( $login, $password )
     {

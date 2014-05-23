@@ -6,13 +6,9 @@
 namespace Sfcms;
 
 use Sfcms\Form\Form;
-use Sfcms\Module as Module;
 use Sfcms\Tpl\Driver;
-use Sfcms\Request;
 use Sfcms\Router;
 use Sfcms\Model;
-use Sfcms\Exception;
-use Sfcms\i18n;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
 use Symfony\Component\DependencyInjection\ContainerAware;
@@ -55,29 +51,6 @@ abstract class Controller extends ContainerAware
     {
         $this->request  = $request;
         $this->params   = $this->request->get('params');
-
-        $pageId     = $this->request->get('_id', 0);
-        $controller = $this->request->getController();
-        $action     = $this->request->getAction();
-
-        // Define page
-        $pageObj = null;
-        if ($controller) {
-            if ($pageId && 'index' == $action) {
-                $model    = $this->getModel('Page');
-                $pageObj = $model->find($pageId);
-            }
-        }
-
-        if (null !== $pageObj) {
-            // Если страница указана как объект, то в нее нельзя сохранять левые данные
-            $this->request->setTemplate($pageObj->get('template'));
-            $this->request->setTitle($pageObj->get('title'));
-            $this->request->setDescription($pageObj->get('description'));
-            $this->request->setKeywords($pageObj->get('keywords'));
-        }
-
-        $this->page = $pageObj;
     }
 
     /**
@@ -138,15 +111,6 @@ abstract class Controller extends ContainerAware
      */
     public function defaults()
     {
-
-    }
-
-    /**
-     * Уничтожение контроллера
-     */
-    public function __destruct()
-    {
-        $this->deInit();
     }
 
     /**
@@ -154,14 +118,6 @@ abstract class Controller extends ContainerAware
      * @return void
      */
     public function init()
-    {
-    }
-
-    /**
-     * Деинициализация
-     * @return void
-     */
-    public function deInit()
     {
     }
 
@@ -175,16 +131,14 @@ abstract class Controller extends ContainerAware
     public function getModel($model='')
     {
         if ('' === $model) {
-            if (preg_match('@^Controller_(\w+)@', get_class($this), $m)) {
-                $model = $m[1];
-            } elseif (preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class($this), $m)) {
+            if (preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class($this), $m)) {
                 $model = '\\Module\\' . $m[1] . '\\Model\\' . $m[2];
             } else {
                 throw new Exception(sprintf('Model not defined in class %s', get_class($this)));
             }
         }
 
-        return Model::getModel($model);
+        return $this->get('data.manager')->getModel($model);
     }
 
     /**
@@ -250,7 +204,7 @@ abstract class Controller extends ContainerAware
     /**
      * @param Page $page
      */
-    public function setPage( Page $page)
+    public function setPage(Page $page = null)
     {
         $this->page = $page;
     }

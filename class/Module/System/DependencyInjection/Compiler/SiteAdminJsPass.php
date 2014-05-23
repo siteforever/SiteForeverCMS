@@ -29,13 +29,12 @@ class SiteAdminJsPass implements CompilerPassInterface
 
         $asseticService = $container->getDefinition('asset.service');
 
-        $source = __DIR__ . '/../../static/js';
+        $source = __DIR__ . '/../../static';
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.site_js'));
 
         $container->setParameter('assetic.assets.site_js', array(
                 'inputs' => array(
                     $source . '/site/site.js',
-//                    $source . '/jquery/fancybox/jquery.fancybox-1.3.1.js',
                     $source . '/jquery/jquery.form.js',
                     $source . '/jquery/jquery.gallery.js',
                     $source . '/jquery/jquery.captcha.js',

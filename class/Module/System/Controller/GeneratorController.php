@@ -31,8 +31,6 @@ class GeneratorController extends Controller
      */
     public function indexAction()
     {
-        $this->app->addScript('/misc/admin/generator.js');
-
         $table_list = $this->getDB()->fetchAll("SHOW TABLES", false, \PDO::FETCH_COLUMN);
 
         $this->tpl->assign('tables', $table_list);
