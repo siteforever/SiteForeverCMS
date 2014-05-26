@@ -458,7 +458,7 @@ class GalleryController extends Controller
                     $image->pos = $pos++;
                     $image->main = 0;
                     $image->hidden = 0;
-                    $image->name = $names[$i];
+                    $image->name = isset($names[$i]) ? $names[$i] : $names[0];
                     $image->category_id = $cat->getId();
                     $image->setUploadedFile($file);
 
