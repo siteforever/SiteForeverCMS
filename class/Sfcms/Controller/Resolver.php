@@ -112,12 +112,11 @@ class Resolver
             throw new HttpException(404, sprintf('Controller class "%s" not exists', $command['controller']));
         }
 
-        $ref = new ReflectionClass($command['controller']);
+        $reflectionController = new ReflectionClass($command['controller']);
 
         /** @var Controller $controller */
-        $controller = $ref->newInstance($request);
+        $controller = $reflectionController->newInstance($request);
         $controller->setContainer($this->app->getContainer());
-        $controller->init();
 
         // Защита системных действий
         $access = $controller->access();
@@ -125,7 +124,7 @@ class Resolver
         $this->acl($request, $access, $command);
 
         try {
-            $method = $ref->getMethod($command['action']);
+            $method = $reflectionController->getMethod($command['action']);
         } catch(\ReflectionException $e) {
             throw new HttpException(404, $e->getMessage());
         }
@@ -140,6 +139,7 @@ class Resolver
         $this->app->getLogger()->info('Invoke controller', $arguments);
         $event = new ControllerEvent($controller, $arguments, $request);
         $this->app->getEventDispatcher()->dispatch(ControllerEvent::RUN_BEFORE, $event);
+        $controller->init();
         $result = $method->invokeArgs($controller, $arguments);
         $this->app->getEventDispatcher()->dispatch(ControllerEvent::RUN_AFTER, $event);
 

@@ -14,7 +14,7 @@ class Breadcrumbs
     /**
      * @var string
      */
-    private $_separator = '<span class="divider">&gt;</span>';
+    private $_separator = '';
 
     public function __construct( array $pieces = array() )
     {

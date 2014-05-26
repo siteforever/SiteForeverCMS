@@ -2,7 +2,7 @@
     {*<a {href controller="banner" action="admin"}> </a> &rarr; {$cat.name}*}
 {*</h3>*}
 <ul class="breadcrumb">
-    <li>{a controller="banner" action="admin"}Категории{/a} > </li>
+    <li>{a controller="banner" action="admin"}Категории{/a}</li>
     <li>{$cat->name}</li>
 </ul>
 

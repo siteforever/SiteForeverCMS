@@ -416,8 +416,7 @@ class CatalogController extends Controller
                 }
             }
         }
-        return '<ul class="breadcrumb"><li>'.$this->t('catalog','Path').': '
-                . join( '<span class="divider">&gt;</span></li><li>', $bc ) . '</li></ul>';
+        return '<ul class="breadcrumb"><li>'.$this->t('catalog','Path').': ' . join( '</li><li>', $bc ) . '</li></ul>';
     }
 
     /**
