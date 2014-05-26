@@ -72,9 +72,29 @@
 
             {if $request->getTitle() && empty($title)}<h1>{$request->getTitle()|trans|ucfirst}</h1>{/if}
 
-            {if $feedback}<div class="alert alert-block">
+            {if $this->hasFlash('default')}<div class="alert alert-info">
                 <a class="close" data-dismiss="alert" href="#">&times;</a>
-                {$feedback}
+                {foreach $this->getFlash('default') as $message}
+                    {$message}{if not $message@last}<br>{/if}
+                {/foreach}
+            </div>{/if}
+            {if $this->hasFlash('success')}<div class="alert alert-success">
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                {foreach $this->getFlash('success') as $message}
+                    {$message}{if not $message@last}<br>{/if}
+                {/foreach}
+            </div>{/if}
+            {if $this->hasFlash('warning')}<div class="alert alert-warning">
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                {foreach $this->getFlash('warning') as $message}
+                    {$message}{if not $message@last}<br>{/if}
+                {/foreach}
+            </div>{/if}
+            {if $this->hasFlash('error')}<div class="alert alert-danger">
+                <a class="close" data-dismiss="alert" href="#">&times;</a>
+                {foreach $this->getFlash('error') as $message}
+                    {$message}{if not $message@last}<br>{/if}
+                {/foreach}
             </div>{/if}
 
             {$response->getContent()}

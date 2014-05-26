@@ -429,9 +429,8 @@ class GalleryController extends Controller
     {
         /** @var GalleryModel $model */
         $model         = $this->getModel('Gallery');
-        $upload_ok     = 0;
+        $uploadOk     = 0;
         $config = $this->container->getParameter('gallery');
-        $max_file_size = $config['max_file_size'];
         if ($this->request->files->has('image')) {
             $images = $this->request->files->get('image');
             $names  = array();
@@ -446,9 +445,12 @@ class GalleryController extends Controller
 
             foreach ($images as $i => $file) {
                 /** @var $file UploadedFile */
+                if (!$file) {
+                    continue;
+                }
                 if ($file->isValid()) {
                     if (!in_array($file->getClientMimeType(), $config['mime'])) {
-                        $this->request->addFeedback($this->t('Mime type not access in').' '.$file->getClientOriginalName());
+                        $this->request->addFeedback($this->t('Mime type not access in').' '.$file->getClientOriginalName(), 'error');
                         continue;
                     }
                     /** @var $image Gallery */
@@ -460,31 +462,16 @@ class GalleryController extends Controller
                     $image->category_id = $cat->getId();
                     $image->setUploadedFile($file);
 
-                    $upload_ok = 1;
+                    $uploadOk = 1;
                 } else {
-                    switch($file->getError()){
-                        case UPLOAD_ERR_FORM_SIZE:
-                            $this->request->addFeedback( $this->t('Form size error') );
-                            break;
-                        case UPLOAD_ERR_EXTENSION:
-                            $this->request->addFeedback( $this->t('Extension error') );
-                            break;
-                        case UPLOAD_ERR_PARTIAL:
-                            $this->request->addFeedback( $this->t('Partial error') );
-                            break;
-                        case UPLOAD_ERR_NO_FILE:
-                            $this->request->addFeedback( $this->t('No file') );
-                            break;
-                        default:
-                            $this->request->addFeedback( $this->t('Unknown error') );
-                    }
+                    $this->request->addFeedback($file->getErrorMessage(), 'error');
                 }
             }
         }
-        if ($upload_ok) {
-            $this->request->addFeedback($this->t('Images are loaded'));
+        if ($uploadOk) {
+            $this->request->addFeedback($this->t('Images are loaded'), 'success');
         } else {
-            $this->request->addFeedback($this->t('Image not loaded'));
+            $this->request->addFeedback($this->t('Image not loaded'), 'error');
         }
         return;
     }

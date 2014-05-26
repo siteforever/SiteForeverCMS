@@ -324,36 +324,53 @@ class Request extends SymfonyRequest
 
     /**
      * Добавить сообщение
-     * @param $msg
-     *
-     * @return void
+     * @param string|array $msg
+     * @param string $type
      */
-    public function addFeedback($msg)
+    public function addFeedback($msg, $type = 'default')
     {
         if (is_string($msg)) {
-            $this->feedback[] = $msg;
-
-            return;
-        }
-        if (is_array($msg)) {
+            $this->getSession()->getFlashBag()->add($type, $msg);
+        } elseif (is_array($msg)) {
             foreach ($msg as $m) {
                 if (is_string($m)) {
-                    $this->feedback[] = $m;
+                    $this->addFeedback($m, $type);
                 }
             }
         }
     }
 
-    public function getFeedback()
+    /**
+     * @param string $type
+     * @return array
+     */
+    public function getFeedback($type = 'default')
     {
-        return $this->feedback;
+        return $this->getSession()->getFlashBag()->get($type);
     }
 
-    public function getFeedbackString($sep = "<br />\n")
+    /**
+     * @param string $type
+     * @return bool
+     */
+    public function hasFeedback($type = 'default')
     {
+        return $this->getSession()->getFlashBag()->has($type);
+    }
+
+    /**
+     * @param string $sep
+     * @param string $type
+     * @return string
+     * @deprecated since 0.7, remove since 0.8
+     */
+    public function getFeedbackString($sep = "<br />\n", $type = 'info')
+    {
+        trigger_error('Will remove since 0.8', E_USER_DEPRECATED);
         $ret = '';
-        if (count($this->feedback)) {
-            $ret = join($sep, $this->feedback);
+        $feedback = $this->getFeedback($type);
+        if (count($feedback)) {
+            $ret = join($sep, $feedback);
         }
 
         return $ret;

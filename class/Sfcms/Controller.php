@@ -122,6 +122,33 @@ abstract class Controller extends ContainerAware
     }
 
     /**
+     * @param $type
+     * @param $message
+     */
+    public function addFlash($type, $message)
+    {
+        $this->request->getSession()->getFlashBag()->add($type, $message);
+    }
+
+    /**
+     * @param $type
+     * @return bool
+     */
+    public function hasFlash($type)
+    {
+        return $this->request->getSession()->getFlashBag()->has($type);
+    }
+
+    /**
+     * @param $type
+     * @return array
+     */
+    public function getFlash($type)
+    {
+        return $this->request->getSession()->getFlashBag()->get($type);
+    }
+
+    /**
      * Вернет указанную модель, либо модель, имя которой соответствует контроллеру
      * @param string $model
      *
