@@ -7,8 +7,8 @@
 ] filters="cssrewrite,?yui_css" output="static/css/bootstrap.css"}
 {style file=[
     "@root:components/jquery-ui/themes/flick/jquery-ui.css",
-    "@root:static/admin/jquery/elfinder/elfinder.css",
-    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css"
+    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css",
+    "@root:static/admin/jquery/elfinder/elfinder.css"
 ] filters="cssrewrite,?yui_css" output="static/css/jquery-ui.css"}
 {style file=[
     "@root:static/system/icons.css",

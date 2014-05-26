@@ -83,7 +83,7 @@ class Admin extends Layout
         $rjsConfig['paths']['app'] = 'admin';
         $rjsConfig['shim']['ckeditor/adapters/jquery'] = ['ckeditor/ckeditor'];
 
-        $rjsConfig['paths']['elfinder'] = 'admin/jquery/elfinder/elfinder';
+//        $rjsConfig['paths']['elfinder'] = 'admin/jquery/elfinder/elfinder';
         $rjsConfig['paths']['ckeditor'] = 'ckeditor';
 
         $rjsConfig['map']['*'] += array(

@@ -384,6 +384,11 @@ div.modal div.modal-header {
     z-index: 940;
 }
 
+.elfinder .elfinder-button {
+    height: auto;
+    width: auto;
+}
+
 div.elfinder-resize-control input[type="text"] {
     border: 1px solid #AAAAAA;
     text-align: right;

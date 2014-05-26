@@ -63,10 +63,10 @@ class StaticCommand extends Command
             );
         }
 
-        if ($rootDir != $sfDir && !$filesistem->exists($rootDir . '/misc')) {
-            $filesistem->symlink($sfDir . '/misc', $rootDir . '/misc');
-            $output->writeln('<info>Create symlink for "misc"</info>');
-        }
+//        if ($rootDir != $sfDir && !$filesistem->exists($rootDir . '/misc')) {
+//            $filesistem->symlink($sfDir . '/misc', $rootDir . '/misc');
+//            $output->writeln('<info>Create symlink for "misc"</info>');
+//        }
         if (!$filesistem->exists($rootDir . '/files')) {
             $filesistem->mkdir($rootDir . '/files', 0777);
             $output->writeln('<info>Create "files" dir</info>');
