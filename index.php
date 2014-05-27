@@ -21,6 +21,4 @@ $request  = Request::createFromGlobals();
 $env = preg_match('/^(?:127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3})$/', $request->getClientIp()) ? 'dev' : 'prod';
 $env = preg_match('/^test/', $request->getHost()) ? 'test' : $env;
 $app = new App($env, 'prod'!=$env);
-
-$response = $app->run($request);
-$response->send();
+$app->run($request);

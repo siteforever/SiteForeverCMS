@@ -38,7 +38,7 @@ class EmailSenderSubscriber extends ContainerAware implements EventSubscriberInt
     public static function getSubscribedEvents()
     {
         return array(
-            'kernel.response' => 'onKernelResponse',
+            KernelEvent::KERNEL_RESPONSE_SENT => 'onKernelResponse',
         );
     }
 

@@ -36,8 +36,6 @@ class App extends AbstractKernel
     /**
      * Run application
      * @param $request
-     * @static
-     * @return Response
      */
     public function run(Request $request = null)
     {
@@ -55,7 +53,8 @@ class App extends AbstractKernel
 
         $this->flushDebug();
         $response->prepare($request);
-        return $response;
+        $response->send();
+        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_RESPONSE_SENT, new KernelEvent($response, $request));
     }
 
     /**
@@ -257,23 +256,5 @@ class App extends AbstractKernel
         if (!$this->getContainer()->hasParameter('silent')) {
             $event->getResponse()->headers->set('X-Powered-By', 'SiteForeverCMS');
         }
-    }
-
-    /**
-     * Flushing debug info
-     */
-    protected function flushDebug()
-    {
-        $logger = $this->getLogger();
-        $exec_time = microtime(true) - static::$start_time;
-        if (self::isDebug()) {
-            $logger->log("Init time: " . round(static::$init_time, 3) . " sec.");
-            $logger->log("Controller time: " . round(static::$controller_time, 3) . " sec.");
-            $logger->log("Postprocessing time: "
-                . round($exec_time - static::$init_time - static::$controller_time, 3) . " sec."
-            );
-        }
-        $logger->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
-        $logger->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
     }
 }

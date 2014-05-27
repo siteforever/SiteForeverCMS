@@ -15,6 +15,8 @@ class KernelEvent extends Event
 {
     const KERNEL_RESPONSE = 'kernel.response';
 
+    const KERNEL_RESPONSE_SENT = 'kernel.response.sent';
+
     /** @var Response */
     protected $response;
     /** @var Request */

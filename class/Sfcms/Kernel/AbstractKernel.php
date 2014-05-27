@@ -5,6 +5,7 @@
  */
 namespace Sfcms\Kernel;
 
+use App;
 use Module\Market\Object\Order;
 use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
@@ -328,7 +329,6 @@ abstract class AbstractKernel
     public function getRouter()
     {
         return $this->getContainer()->get('router');
-//        return $this->getContainer()->get('symfony_router');
     }
 
     /**
@@ -336,7 +336,7 @@ abstract class AbstractKernel
      */
     public function getLogger()
     {
-        return $this->getContainer()->get('logger');
+        return $this->getContainer()->has('logger') ? $this->getContainer()->get('logger') : null;
     }
 
     /**
@@ -484,6 +484,28 @@ abstract class AbstractKernel
         }
         $this->_is_console = $is_console;
         return $is_console;
+    }
+
+    /**
+     * Flushing debug info
+     */
+    protected function flushDebug()
+    {
+        $logger = $this->getLogger();
+        if (!$logger) {
+            return;
+        }
+        $exec_time = microtime(true) - AbstractKernel::$start_time;
+        if (AbstractKernel::isDebug()) {
+            $logger->log("Init time: " . round(AbstractKernel::$init_time, 3) . " sec.");
+            $logger->log("Controller time: " . round(AbstractKernel::$controller_time, 3) . " sec.");
+            $logger->log(
+                "Postprocessing time: "
+                . round($exec_time - AbstractKernel::$init_time - AbstractKernel::$controller_time, 3) . " sec."
+            );
+        }
+        $logger->log("Execution time: " . round($exec_time, 3) . " sec.", 'app');
+        $logger->log("Required memory: " . round(memory_get_peak_usage(true) / 1024, 3) . " kb.");
     }
 }
 
