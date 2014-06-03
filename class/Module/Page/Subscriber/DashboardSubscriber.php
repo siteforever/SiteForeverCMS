@@ -8,6 +8,8 @@ namespace Module\Page\Subscriber;
 
 
 use Module\Dashboard\Event\DashboardEvent;
+use Module\Page\Model\PageModel;
+use Sfcms\Data\DataManager;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,9 +19,13 @@ class DashboardSubscriber implements EventSubscriberInterface
     /** @var  Driver */
     private $tpl;
 
-    public function __construct(Driver $tpl)
+    /** @var DataManager */
+    private $dataManager;
+
+    public function __construct(Driver $tpl, DataManager $dataManager)
     {
         $this->tpl = $tpl;
+        $this->dataManager = $dataManager;
     }
 
     /**
@@ -51,15 +57,19 @@ class DashboardSubscriber implements EventSubscriberInterface
 
     public function onDashBuild(DashboardEvent $event)
     {
-        $model = Model::getModel('page');
+        /** @var PageModel $model */
+        $model = $this->dataManager->getModel('page');
         $pageQty = $model->count('deleted = 0');
         $pageHiddenQty = $model->count('hidden = 1 AND deleted = 0');
         $pageDeletedQty = $model->count('deleted = 1');
+
+        $latestPages = $model->findAll('`deleted` = 0 AND `update` > UNIX_TIMESTAMP(NOW() - INTERVAL 1 MONTH - INTERVAL 5 DAY)', [], '`update` DESC');
 
         $this->tpl->assign(array(
             'pageQty' => $pageQty,
             'pageHiddenQty' => $pageHiddenQty,
             'pageDeletedQty' => $pageDeletedQty,
+            'latestPages' => $latestPages,
         ));
         $event->setPanel('pages', 'Структура', $this->tpl->fetch('page.dashboard'));
     }

@@ -3,7 +3,7 @@ parameters:
 services:
     page.dashbord.subscriber:
         class: Module\Page\Subscriber\DashboardSubscriber
-        arguments: [ @tpl ]
+        arguments: [ @tpl, @data.manager ]
         tags:
             - { name: event.subscriber }
 

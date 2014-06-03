@@ -34,11 +34,6 @@ class DatabasePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        /** @var AbstractKernel $kernel */
-        $kernel = $container->get('kernel');
-
-        $modules = $kernel->getModules();
-
         $dispatcher = $container->getDefinition('event.dispatcher');
         /** @var DataManager $manager */
         $manager = $container->get('data.manager');
@@ -47,23 +42,10 @@ class DatabasePass implements CompilerPassInterface
             $definition = new Definition($config['class']);
             $definition->setLazy(true);
             $container->setDefinition($config['id'], $definition);
-            $container->setAlias(sprintf('Mapper.%s', $config['class']), $config['id']);
             $reflectionClass = new \ReflectionClass($config['class']);
             if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
                 $dispatcher->addMethodCall('addSubscriber', array(new Reference($config['id'])));
             }
-//            if ($reflectionClass->hasMethod('onSaveStart')) {
-//                $dispatcher->addMethodCall('addListener', array(
-//                        sprintf('%s.save.start', $config['alias']),
-//                        array(new Reference($config['id']), 'onSaveStart')
-//                    ));
-//            }
-//            if ($reflectionClass->hasMethod('onSaveSuccess')) {
-//                $dispatcher->addMethodCall('addListener', array(
-//                        sprintf('%s.save.success', $config['alias']),
-//                        array(new Reference($config['id']), 'onSaveSuccess')
-//                    ));
-//            }
         }
     }
 }

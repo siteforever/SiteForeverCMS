@@ -200,10 +200,8 @@ abstract class AbstractKernel
     protected function loadModules(array $modules)
     {
         if (!$this->_modules) {
-            $_ = $this;
-
             try {
-                array_map(function ($module) use ($_) {
+                array_map(function ($module) {
                     if (!isset($module['path'])) {
                         throw new Exception('Directive "path" not defined in modules config');
                     }
@@ -213,7 +211,7 @@ abstract class AbstractKernel
                     $className = $module['path'] . '\Module';
                     $reflection = new \ReflectionClass($className);
                     $place = dirname($reflection->getFileName());
-                    $_->setModule(new $className($_, $module['name'], $module['path'], $place));
+                    $this->setModule(new $className($this, $module['name'], $module['path'], $place));
                 }, $modules);
             } catch (\Exception $e) {
                 throw $e;
@@ -343,9 +341,11 @@ abstract class AbstractKernel
      * Вернет модель
      * @param string $model
      * @return Model
+     * @deprecated Deprecated since 0.7, will remove since 0.8
      */
     public function getModel($model)
     {
+        trigger_error('Deprecated since 0.7, will delete since 0.8');
         return $this->getContainer()->get('data.manager')->getModel($model);
     }
 

@@ -24,7 +24,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( null === $this->model ) {
-            $this->model = Model::getModel('\\Module\\System\\Model\\TestModel');
+            $this->model = Model::getModel('System.Test');
         }
         Watcher::instance()->clear();
     }
@@ -60,7 +60,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     public function testGetModel()
     {
         $this->assertTrue(
-            $this->model->getModel('\\Module\\System\\Model\\TestModel') instanceof \Module\System\Model\TestModel
+            $this->model->getModel('System.Test') instanceof \Module\System\Model\TestModel
         );
     }
 

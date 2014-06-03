@@ -35,10 +35,6 @@ class DataManager extends ContainerAware
             }
         }
 
-        if (false !== strpos($model, '\\') || false !== strpos($model, '_')) {
-            return $this->container->get(sprintf('mapper.%s', trim(strtolower($model), ' _\\')));
-        }
-
         $models = $this->getModelList();
         foreach ($models as $cfg) {
             if ($model == strtolower($cfg['alias'])) {

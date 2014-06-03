@@ -7,6 +7,9 @@
 namespace Module\News\Subscriber;
 
 use Module\Dashboard\Event\DashboardEvent;
+use Module\News\Model\CategoryModel;
+use Module\News\Model\NewsModel;
+use Sfcms\Data\DataManager;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -16,9 +19,13 @@ class DashboardSubscriber implements EventSubscriberInterface
     /** @var  Driver */
     private $tpl;
 
-    public function __construct(Driver $tpl)
+    /** @var DataManager */
+    private $dataManager;
+
+    public function __construct(Driver $tpl, DataManager $dataManager)
     {
         $this->tpl = $tpl;
+        $this->dataManager = $dataManager;
     }
 
     /**
@@ -50,15 +57,20 @@ class DashboardSubscriber implements EventSubscriberInterface
 
     public function onDashBuild(DashboardEvent $event)
     {
-        $modelNews = Model::getModel('News');
+        /** @var NewsModel $modelNews */
+        $modelNews = $this->dataManager->getModel('News.News');
         $newsQty = $modelNews->count('deleted = 0');
 
-        $modelCat = Model::getModel('NewsCategory');
+        /** @var CategoryModel $modelCat */
+        $modelCat = $this->dataManager->getModel('News.NewsCategory');
         $catQty = $modelCat->count('deleted = 0');
+
+        $latestNews = $modelNews->findAll('`deleted` = 0 AND `date` > UNIX_TIMESTAMP(NOW() - INTERVAL 1 MONTH - INTERVAL 5 DAY)', [], '`date` DESC');
 
         $this->tpl->assign(array(
                 'newsQty' => $newsQty,
                 'catQty' => $catQty,
+                'latestNews' => $latestNews,
             ));
         $event->setPanel('news', 'Новости', $this->tpl->fetch('news.dashboard'));
     }

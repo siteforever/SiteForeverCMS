@@ -34,7 +34,7 @@ class CatalogForm extends Form
         $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
         $materialArray = array('catalog.not_selected') + $materials->column( 'name' );
 
-        $typeModel     = Model::getModel('Module\Catalog\Model\TypeModel');
+        $typeModel     = Model::getModel('Catalog.ProductType');
         $types         = $typeModel->findAll(array('order'=>'name'));
 
         parent::__construct(array(

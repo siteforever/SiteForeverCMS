@@ -37,8 +37,6 @@ class DataManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($testModel instanceof \Module\System\Model\TestModel);
         $testModel = $this->dataManager->getModel('system.test');
         $this->assertTrue($testModel instanceof \Module\System\Model\TestModel);
-        $testModel = $this->dataManager->getModel('Module\System\Model\TestModel');
-        $this->assertTrue($testModel instanceof \Module\System\Model\TestModel);
         try {
             $this->dataManager->getModel('huy');
         } catch (\RuntimeException $e) {
