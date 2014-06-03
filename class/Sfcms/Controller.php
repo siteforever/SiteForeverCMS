@@ -149,6 +149,34 @@ abstract class Controller extends ContainerAware
     }
 
     /**
+     * Return forms errors as prepared array
+     *
+     * @param Form $form
+     * @return array
+     */
+    protected function formErrorsToArray(Form $form)
+    {
+        $errors = [];
+        foreach ($form->getErrors() as $field => $msg) {
+            $errors[$field] = str_replace('%label%', $this->t($form->getChild($field)->getLabel()), $this->t($msg));
+        }
+        return $errors;
+    }
+
+    /**
+     * Add form errors to flash as error
+     *
+     * @param Form $form
+     * @param string $type
+     */
+    protected function formErrorsToFlash(Form $form, $type = 'error')
+    {
+        foreach ($this->formErrorsToArray($form) as $msg) {
+            $this->addFlash($type, $msg);
+        }
+    }
+
+    /**
      * Вернет указанную модель, либо модель, имя которой соответствует контроллеру
      * @param string $model
      *

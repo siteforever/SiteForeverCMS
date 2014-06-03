@@ -30,6 +30,10 @@ abbr {
     cursor: pointer;
 }
 
+form {
+    margin: 0 15px;
+}
+
 .feedback {
     margin-bottom: 10px;
 }

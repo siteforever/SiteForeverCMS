@@ -339,7 +339,7 @@ class UserController extends Controller
                 }
             } else {
                 if ( $this->request->isAjax() ) {
-                    return array('error'=>1,'errors'=>$form->getErrors());
+                    return ['error'=>1,'errors'=> $this->formErrorsToArray($form)];
                 }
             }
         };
@@ -371,7 +371,9 @@ class UserController extends Controller
                     return $this->render('user.register_successfull');
                 }
             } else {
-                $this->request->addFeedback($form->getFeedbackString());
+                foreach ($this->formErrorsToArray($form) as $error) {
+                    $this->addFlash('error', $error);
+                }
             }
         }
 
@@ -386,12 +388,12 @@ class UserController extends Controller
     public function register(User $user)
     {
         if (strlen($user->login) < 5) {
-            $this->request->addFeedback('Логин должен быть не короче 5 символов');
+            $this->addFlash('error', 'Логин должен быть не короче 5 символов');
             return false;
         }
 
         if (strlen($user->password) < 6) {
-            $this->request->addFeedback('Пароль должен быть не короче 6 символов');
+            $this->addFlash('error', 'Пароль должен быть не короче 6 символов');
             return false;
         }
 
@@ -410,7 +412,7 @@ class UserController extends Controller
         ));
 
         if ($userLogin) {
-            $this->request->addFeedback('Пользователь с таким логином уже существует');
+            $this->addFlash('error', 'Пользователь с таким логином уже существует');
             return false;
         }
 
@@ -420,7 +422,7 @@ class UserController extends Controller
         ));
 
         if ($userEmail) {
-            $this->request->addFeedback('Пользователь с таким адресом уже существует');
+            $this->addFlash('error', 'Пользователь с таким адресом уже существует');
             return false;
         }
 
@@ -439,7 +441,7 @@ class UserController extends Controller
                 $tpl->fetch('user.mail.register')
             );
 
-            $this->request->addFeedback("Регистрация прошла успешно. "
+            $this->addFlash('success', "Регистрация прошла успешно. "
                 . "На Ваш Email отправлена ссылка для подтверждения регистрации.");
             return true;
         }
@@ -557,7 +559,9 @@ class UserController extends Controller
                     $this->request->addFeedback($this->t('user','The user with the mailbox is not registered'));
                 }
             }
-            $this->request->addFeedback( $form->getFeedbackString() );
+            foreach ($this->formErrorsToArray($form) as $error) {
+                $this->addFlash('error', $error);
+            }
         }
         return $this->render('user.restore', array('form'=>$form));
     }
@@ -595,27 +599,25 @@ class UserController extends Controller
                 $pass_hash  = $user->generatePasswordHash(
                     $form->getChild('password')->getValue(), $user->get('solt')
                 );
-                //$pass_hash = $this->user->generatePasswordHash( $form->password, $this->user->get('solt') );
-
                 if ( $user->get('password') == $pass_hash )
                 {
                     //$this->request->addFeedback('Пароль введен верно');
 
                     if ( strcmp( $form->getChild('password1')->getValue(), $form->getChild('password2')->getValue() ) === 0 ) {
                         $user->changePassword( $form->getChild('password1')->getValue() );
-                        $this->request->addFeedback($this->t('user','Password successfully updated'));
+                        $this->request->addFeedback($this->t('user','Password successfully updated'), 'success');
                         return $this->tpl->fetch('user.password_success');
                     }
                     else {
-                        $this->request->addFeedback($this->t('user','You must enter a new password 2 times'));
+                        $this->request->addFeedback($this->t('user','You must enter a new password 2 times'), 'error');
                     }
 
                 } else {
-                    $this->request->addFeedback($this->t('user','Password is not correct'));
+                    $this->request->addFeedback($this->t('user','Password is not correct'), 'error');
                 }
 
             } else {
-                $this->request->addFeedback( $form->getFeedbackString() );
+                $this->formErrorsToFlash($form);
             }
         }
 

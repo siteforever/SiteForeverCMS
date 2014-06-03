@@ -160,7 +160,7 @@ class UsersControllerTest extends WebCase
         $crawler = $this->createCrawler($response);
 
         $this->assertEquals('Регистрация прошла успешно. На Ваш Email отправлена ссылка для подтверждения регистрации.',
-            $crawler->filterXPath('//div[@class="alert"]')->text()
+            $crawler->filter('div.alert')->text()
         );
 
 
@@ -269,7 +269,7 @@ class UsersControllerTest extends WebCase
         $response = $this->runController('user', 'password');
         $crawler = $this->createCrawler($response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('Нужно ввести новый пароль 2 раза', $crawler->filterXPath('//div[@class="alert"]')->text());
+        $this->assertEquals('Нужно ввести новый пароль 2 раза', $crawler->filter('div.alert')->text());
 
 
         $_POST = array('password' => array(
@@ -281,6 +281,6 @@ class UsersControllerTest extends WebCase
         $response = $this->runController('user', 'password');
         $crawler = $this->createCrawler($response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('Пароль успешно изменен', $crawler->filterXPath('//div[@class="alert"]')->text());
+        $this->assertEquals('Пароль успешно изменен', $crawler->filter('div.alert')->text());
     }
 }

@@ -21,8 +21,14 @@
         <div class="col-xs-9 b-content">
             {block breadcrumbs}{/block}
 
-            {if $request->getFeedback()}
-                <div class="alert">{$request->getFeedbackString()}</div>
+            {if $request->hasFeedback('error')}
+                <div class="alert alert-danger">{$request->getFeedbackString('<br>', 'error')}</div>
+            {/if}
+            {if $request->hasFeedback('default')}
+                <div class="alert alert-info">{$request->getFeedbackString('<br>', 'default')}</div>
+            {/if}
+            {if $request->hasFeedback('success')}
+                <div class="alert alert-success">{$request->getFeedbackString('<br>', 'success')}</div>
             {/if}
 
             {$response->getContent()}

@@ -128,8 +128,8 @@
             {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['captcha'])}
-            {form_label form=$form class="col-xs-1 control-label" domain=$domain}
-            <div class="col-xs-2">
+            {form_label form=$form class="col-xs-3 control-label" domain=$domain}
+            <div class="col-xs-3">
                 {$class = [$class, "captcha"]|join:" "}
                 {form_input form=$form type="text" class=$class}
             </div>
