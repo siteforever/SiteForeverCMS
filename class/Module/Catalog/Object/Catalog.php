@@ -353,7 +353,6 @@ class Catalog extends Object
             new Field\Int('type_id', 11, true, 0),
             new Field\Tinyint('cat'),
             new Field\Varchar('uuid', 36),
-            new Field\Varchar('parent_uuid', 36),
             new Field\Varchar('name', 100),
             new Field\Varchar('full_name', 100),
             new Field\Varchar('alias', 100),
@@ -404,15 +403,9 @@ class Catalog extends Object
     public static function keys()
     {
         return array(
-            'showed' => array('deleted', 'hidden', 'cat'),
-            'cat',
-            'uuid',
-            'parent_uuid',
-            'alias',
-            'hidden',
-            'deleted',
+            'showed' => array('cat', 'deleted', 'hidden'),
+            'uuid' => 'uuid',
+            'alias' => 'alias',
         );
     }
-
-
 }

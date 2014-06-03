@@ -1,31 +1,37 @@
+parameters:
+    doctrine.configuration.class: Doctrine\ORM\Configuration
+    doctrine.connection.class: Doctrine\DBAL\Connection
+    doctrine.event_manager.class: Doctrine\Common\EventManager
+    doctrine.annotation.reader.class: Doctrine\Common\Annotations\AnnotationReader
+    doctrine.annotation.driver.class: Doctrine\ORM\Mapping\Driver\AnnotationDriver
+    doctrine.cache.apc.class: Doctrine\Common\Cache\ApcCache
+    doctrine.cache.array.class: Doctrine\Common\Cache\ArrayCache
+    doctrine.cache.filesystem.class: Doctrine\Common\Cache\FilesystemCache
+    doctrine.cache.xcache.class: Doctrine\Common\Cache\XcacheCache
+
 services:
-    doctrine.manager:
-        class: Module\Doctrine\Manager\DoctrineManager
-        arguments: ["@doctrine.configuration", "@doctrine.event_manager", "@pdo"]
-
     doctrine.event_manager:
-        class: Doctrine\Common\EventManager
-
-    doctrine.cache.apc:
-        class: Doctrine\Common\Cache\ApcCache
-
-    doctrine.cache.array:
-        class: Doctrine\Common\Cache\ArrayCache
-
-    doctrine.cache.filesystem:
-        class: Doctrine\Common\Cache\FilesystemCache
-        arguments: ["%root%/runtime/cache", "dc"]
+        class: %doctrine.event_manager.class%
 
     doctrine.annotation.reader:
-        class: Doctrine\Common\Annotations\AnnotationReader
+        class: %doctrine.annotation.reader.class%
 
     doctrine.driver:
-        class: Doctrine\ORM\Mapping\Driver\AnnotationDriver
+        alias: doctrine.annotation.driver
+
+    doctrine.annotation.driver:
+        class: %doctrine.annotation.driver.class%
         arguments: ["@doctrine.annotation.reader"]
 
     doctrine.configuration:
-        class: Doctrine\ORM\Configuration
+        class: %doctrine.configuration.class%
         calls:
-            - ["setProxyNamespace", ["sfcms"]]
-            - ["setMetadataDriverImpl", ["@doctrine.driver"]]
+            - ["setProxyNamespace", [ sfcms ]]
+            - ["setMetadataDriverImpl", [ @doctrine.driver ]]
+#            - ["setSQLLogger", [ @doctrine.logger ]]
 
+    doctrine.logger:
+        class: Module\Doctrine\Logger\DoctrineLogger
+
+    doctrine.connection:
+        class: %doctrine.connection.class%

@@ -117,7 +117,7 @@ class Order extends Object
         return array(
             // field, size, nonull, default, autoincrement
             new Field\Int('id', 11, true, null, true),
-            new Field\Tinyint('status', 4, true, 0),
+            new Field\Int('status', 4, true, 0),
             new Field\Tinyint('person', 4, false),
             new Field\Int('paid', 11, true, 0),
             new Field\Int('delivery_id', 11, true, 0),

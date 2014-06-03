@@ -34,6 +34,10 @@ class DatabasePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
+        if ($container->hasDefinition('doctrine.connection')) {
+            $container->getDefinition('db')->setArguments([new Reference('doctrine.connection')]);
+        }
+
         $dispatcher = $container->getDefinition('event.dispatcher');
         /** @var DataManager $manager */
         $manager = $container->get('data.manager');

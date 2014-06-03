@@ -83,6 +83,7 @@ abstract class Module extends Component
     /**
      * Loading module extensions
      * @param ContainerBuilder $container
+     * @deprecated since 0.7, will remove since 0.8. Using method build()
      */
     public function loadExtensions(ContainerBuilder $container)
     {

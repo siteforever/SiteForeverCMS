@@ -44,24 +44,29 @@ assetic:
             apply_to: "\.less$"
 
 database:
-    dsn: "mysql:host=%db_host%;port=%db_port%;dbname=%db_name%"
-    login: "%db_login%"
-    password: "%db_password%"
     debug: "%debug%"
-    options:
-        1002: "SET NAMES utf8"
 
-doctrine: ~
+
+doctrine:
+    debug: %debug%
+    connection:
+        dbname: %db_name%
+        host: %db_host%
+        port: %db_port%
+        user: %db_login%
+        password: %db_password%
 #    cache:
-#        metadata: { type: array }
-#        query: { type: file, path: "%root%/runtime/cache" }
-#        result: { type: apc }
-
+#        metadata: { type: filesystem }
+#        query: { type: filesystem }
+#        result: { type: filesystem }
 
 template:
-    theme: %template_theme%
-    pager: %template_pager%
-    form: %template_form%
+    parameters:
+        theme: %template_theme%
+        pager: %template_pager%
+        form: %template_form%
+        compile_check: %debug%
+        force_compile: false
 
 mailer:
     transport: %mailer_transport%

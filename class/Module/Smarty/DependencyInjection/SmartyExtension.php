@@ -30,9 +30,15 @@ class SmartyExtension extends Extension
 
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
-        $container->getDefinition('smarty')->addMethodCall('assign', ['form_template', $config['form']]);
-        $container->setParameter($this->getAlias(), $config);
-        foreach ($config as $key => $val) {
+
+        $smarty = $container->getDefinition('smarty');
+        $smarty->addMethodCall('assign', ['form_template', $config['parameters']['form']]);
+        $smarty->setProperty('compile_check', $config['parameters']['compile_check']);
+        $smarty->setProperty('force_compile', $config['parameters']['force_compile']);
+        $smarty->setProperty('caching', $config['parameters']['caching']);
+
+        $container->setParameter($this->getAlias(), $config['parameters']);
+        foreach ($config['parameters'] as $key => $val) {
             $container->setParameter(sprintf('%s.%s', $this->getAlias(), $key), $val);
         }
     }

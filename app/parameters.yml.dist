@@ -20,7 +20,7 @@ parameters:
 
     language: ru
 
-    mailer_transport: sendmail
+    mailer_transport: mail
     mailer_username: ~
     mailer_password: ~
     mailer_host: ~

@@ -88,7 +88,7 @@ class App extends AbstractKernel
      */
     public function getCachePath()
     {
-        return ROOT . '/runtime/cache';
+        return ROOT . '/runtime/cache/' . $this->getEnvironment();
     }
 
     public function redirectListener(KernelEvent $event)
@@ -128,8 +128,13 @@ class App extends AbstractKernel
         /** @var Response $response */
         $response = null;
         try {
+            $container = $this->getContainer();
             $tpl = $this->getTpl();
-            $tpl->assign($this->getContainer()->getParameterBag()->all());
+            $tpl->assign([
+                    'sitename' => $container->getParameter('sitename'),
+                    'debug' => $container->getParameter('debug'),
+                ]);
+//            $tpl->assign($this->getContainer()->getParameterBag()->all());
             $this->getRouter()->setRequest($request)->routing();
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {

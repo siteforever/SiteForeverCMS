@@ -1,14 +1,8 @@
 services:
     db:
         class: Sfcms\db
-        arguments: ["@pdo"]
-        calls:
-            - [setLoggerClass, ["@db_logger"]]
-
-    pdo:
-        class: Sfcms\PDO
-        arguments:
-            params: "%database%"
+#        calls:
+#            - [setLoggerClass, ["@db_logger"]]
 
     data.manager:
         class: Sfcms\Data\DataManager

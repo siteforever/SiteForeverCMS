@@ -13,13 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Module extends SfModule
 {
-    public function loadExtensions(ContainerBuilder $container)
-    {
-        $container->registerExtension(new SmartyExtension());
-    }
-
     public function build(ContainerBuilder $container)
     {
+        $container->registerExtension(new SmartyExtension());
         $container->addCompilerPass(new ResolveViewPathPass());
         $container->addCompilerPass(new RegisterPluginsPass());
     }

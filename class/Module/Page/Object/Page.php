@@ -201,11 +201,9 @@ class Page extends Object
     public static function keys()
     {
         return array(
-            'id_structure'  => 'parent',
             'alias'         => 'alias',
             'date'          => 'date',
             'order'         => array('parent','pos'),
-            'request'       => 'alias'
         );
     }
 }

@@ -55,7 +55,6 @@ class Module extends SfModule
             'models' => array(
                 'Delivery'         => 'Module\\Market\\Model\\DeliveryModel',
                 'Manufacturers'    => 'Module\\Market\\Model\\ManufacturerModel',
-                'Manufacturer'     => 'Module\\Market\\Model\\ManufacturerModel',
                 'Material'         => 'Module\\Market\\Model\\MaterialModel',
                 'Metro'            => 'Module\\Market\\Model\\MetroModel',
                 'Order'            => 'Module\\Market\\Model\\OrderModel',

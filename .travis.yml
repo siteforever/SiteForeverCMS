@@ -1,12 +1,13 @@
 language: php
 php:
-  - 5.6
-  - 5.5
   - 5.4
+  - 5.5
+  - 5.6
   - hhvm
 
 matrix:
   allow_failures:
+    - php: 5.6
     - php: hhvm
 
 script: phpunit -c test/phpunit.xml
@@ -19,7 +20,7 @@ before_install:
 before_script:
   - sh -c "mysql -e 'create database IF NOT EXISTS siteforever_test;'"
   - curl -sS https://getcomposer.org/installer | php
-  - php composer.phar install --prefer-source -o --no-interaction
+  - php composer.phar install -o -n
 
 addons:
   sauce_connect:

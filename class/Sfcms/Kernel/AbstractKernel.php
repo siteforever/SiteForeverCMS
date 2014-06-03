@@ -120,6 +120,12 @@ abstract class AbstractKernel
 
     public function __construct($env, $debug = false)
     {
+        $this->environment = $env;
+        self::$_debug = $debug;
+        if ($this->isDebug()) {
+            Debug::enable(E_ALL, true);
+        }
+
         if (is_null(static::$instance)) {
             static::$instance = $this;
         } else {
@@ -131,13 +137,6 @@ abstract class AbstractKernel
         }
         if (!is_dir($this->getCachePath())) {
             @mkdir($this->getCachePath(), 0777, true);
-        }
-
-        $this->environment = $env;
-
-        self::$_debug = $debug;
-        if ($this->isDebug()) {
-            Debug::enable(E_ALL, true);
         }
 
         $locator = new FileLocator(array(ROOT, SF_PATH));
@@ -166,26 +165,26 @@ abstract class AbstractKernel
     {
         $container = new ContainerBuilder(new ParameterBag(array(
             'root' => ROOT,
+            'sfcms.root' => ROOT,
             'sf_path' => SF_PATH,
+            'sfcms.path' => SF_PATH,
             'debug' => $this->isDebug(),
             'env' => $this->getEnvironment(),
+            'sfcms.env' => $this->getEnvironment(),
+            'sfcms.cache_dir' => $this->getCachePath(),
             'sfcms.charset' => 'utf8',
         )));
 
         /** @var Module $module */
         foreach($this->getModules() as $module) {
             $module->loadExtensions($container);
+            $module->build($container);
         }
 
         $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sf_path')));
         $loader = new YamlFileLoader($container, $locator);
         $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
         $container->set('app', $this);
-
-        /** @var Module $module */
-        foreach($this->getModules() as $module) {
-            $module->build($container);
-        }
 
         $container->compile();
         return $container;

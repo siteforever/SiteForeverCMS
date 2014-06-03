@@ -2,9 +2,6 @@ services:
     # template
     smarty:
         class: Smarty
-        properties:
-            compile_check: true
-            force_compile: "%debug%"
 
     tpl:
         class: Module\Smarty\Component\Driver

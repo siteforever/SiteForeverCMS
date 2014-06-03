@@ -28,9 +28,9 @@ class Metro extends Object
         return array(
             new Field\Int( 'id', 10, false, null, true ),
             new Field\Varchar( 'name', 50, true, null, false ),
-            new Field\Int( 'city_id', 10, false, null, false ),
-            new Field\Decimal( 'lat', 10, true, null, false ),
-            new Field\Decimal( 'lng', 10, true, null, false ),
+            new Field\Int( 'city_id', 10, true, null, false ),
+            new Field\Decimal( 'lat', '10,6', true, null, false ),
+            new Field\Decimal( 'lng', '10,6', true, null, false ),
         );
     }
 

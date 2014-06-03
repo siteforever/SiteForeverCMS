@@ -4,9 +4,11 @@
  */
 namespace Module\Database\Command;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Schema\Schema;
 use Sfcms\Console\Command;
 use Sfcms\Data\DataManager;
-use Sfcms\Data\SchemeManager;
+use Sfcms\Data\Field;
 use Sfcms\db;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,27 +35,74 @@ class SchemeUpdateCommand extends Command
     {
         $force = $input->getOption('force');
 
-        $kernel = $this->getApplication()->getKernel();
-        $container = $kernel->getContainer();
+        $container = $this->getContainer();
+
+        /** @var Connection $conn */
+        $conn = $container->get('doctrine.connection');
+
+        $schemeManager = $conn->getSchemaManager();
+
         /** @var DataManager $dataManager */
         $dataManager = $container->get('data.manager');
-        /** @var SchemeManager $schemeManager */
-        $schemeManager = $container->get('data.scheme.manager');
-        /** @var db $db */
-        $db = $container->get('db');
+        $currentSchema = $schemeManager->createSchema();
 
-        $count = 0;
+        $tables = [];
+        if ($currentSchema->hasTable('migration')) {
+            $tables[] = $currentSchema->getTable('migration');
+        }
+        $schema = new Schema($tables, [], $schemeManager->createSchemaConfig());
+
         foreach ($dataManager->getModelList() as $config) {
-            foreach ($schemeManager->migrate($dataManager->getModel($config['id'])) as $query) {
-                $count++;
-                if ($force) {
-                    $db->query($query);
+            $model = $dataManager->getModel($config['id']);
+            $class = $model->objectClass();
+            /** @var Field[] $fields */
+            $fields  = call_user_func(array($class, 'fields'));
+            $pk = call_user_func(array($class, 'pk'));
+            $keys = call_user_func(array($class, 'keys'));
+            $tableName = call_user_func(array($class, 'table'));
+            $table = $schema->createTable($tableName);
+            foreach ($fields as $field) {
+                $column = $table->addColumn($field->getName(), Field::$types[get_class($field)], []);
+                if (preg_match('/^(\d+),(\d+)$/', $field->getLength(), $m)) {
+                    $column->setPrecision($m[1]);
+                    $column->setScale($m[2]);
                 } else {
-                    $output->writeln(sprintf('<comment>%s</comment>', $query));
+                    $column->setLength($field->getLength());
                 }
+                $column->setNotnull(!$field->isNull());
+                $column->setDefault($field->getDefault());
+                if ($field->isAutoIncrement()) {
+                    $column->setAutoincrement(true);
+                }
+                if ($field->getDefault()) {
+                    $column->setDefault($field->getDefault());
+                }
+            }
+            if (is_string($pk)) {
+                if (false !== strpos($pk, ',')) {
+                    $pk = explode(',', $pk);
+                } else {
+                    $pk = (array)$pk;
+                }
+            }
+            $table->setPrimaryKey((array)$pk);
+            foreach ($keys as $indexName => $columnNames) {
+                $table->addIndex((array)$columnNames, $indexName);
             }
         }
 
-        $output->writeln(sprintf('%s <info>%d</info> queries', $force ? 'Executed' : 'Need to execute', $count));
+        $sqlList = $currentSchema->getMigrateToSql($schema, $conn->getDatabasePlatform());
+
+        foreach ($sqlList as $sql) {
+            if (false !== strpos($sql, ' order ')) {
+                $sql = str_replace(' order ', ' `order` ', $sql);
+            }
+            $output->writeln($sql);
+            if ($force) {
+                $conn->exec($sql);
+            }
+        }
+
+        $output->writeln(sprintf('%s <info>%d</info> queries', $force ? 'Executed' : 'Need to execute', count($sqlList)));
     }
 }

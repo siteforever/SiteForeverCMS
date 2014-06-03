@@ -54,10 +54,10 @@ class LoggerExtension extends Extension
         }
 
         $dbChannelDefinion = $container->getDefinition('db_channel');
-        $dbChannelDefinion->setArguments(array('db_channel', $handlersReferences));
+        $dbChannelDefinion->setArguments(array('db', $handlersReferences));
 
         $channelDefinion = $container->getDefinition('logger_channel');
-        $channelDefinion->setArguments(array('logger_channel', $handlersReferences));
+        $channelDefinion->setArguments(array('log', $handlersReferences));
     }
 
     /**

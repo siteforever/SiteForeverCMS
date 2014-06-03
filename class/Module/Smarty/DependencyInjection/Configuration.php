@@ -22,18 +22,24 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('template');
         $rootNode
             ->children()
-                ->scalarNode('theme')->end()
-                ->scalarNode('pager')->end()
-                ->scalarNode('form')->defaultValue('form_twbs3')->end()
-                ->scalarNode('ext')->defaultValue('tpl')->end()
-                ->booleanNode('compile_check')->defaultValue(true)->end()
-                ->booleanNode('caching')->defaultValue(false)->end()
-
-                ->arrayNode('cache')
+                ->arrayNode('parameters')
+                    ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('livetime')->end()
+                        ->scalarNode('theme')->isRequired()->end()
+                        ->scalarNode('pager')->isRequired()->end()
+                        ->scalarNode('form')->defaultValue('form_twbs3')->end()
+                        ->scalarNode('ext')->defaultValue('tpl')->end()
+                        ->booleanNode('compile_check')->defaultValue("%debug%")->end()
+                        ->booleanNode('force_compile')->defaultFalse()->end()
+                        ->booleanNode('caching')->defaultFalse()->end()
+                        ->arrayNode('cache')
+                            ->children()
+                                ->scalarNode('livetime')->end()
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
+
             ->end()
         ;
         return $treeBuilder;

@@ -16,6 +16,15 @@ abstract class Field
     protected $default;
     protected $autoincrement;
 
+    public static $types = [
+        'Sfcms\Data\Field\Datetime' => 'datetime',
+        'Sfcms\Data\Field\Decimal' => 'decimal',
+        'Sfcms\Data\Field\Int' => 'integer',
+        'Sfcms\Data\Field\Tinyint' => 'integer',
+        'Sfcms\Data\Field\Text' => 'text',
+        'Sfcms\Data\Field\Blob' => 'blob',
+        'Sfcms\Data\Field\Varchar' => 'string',
+    ];
 
     /**
      * Создает поле
@@ -37,6 +46,54 @@ abstract class Field
     public function __toString()
     {
         return $this->toString();
+    }
+
+    /**
+     * @param null|string $default
+     */
+    public function setDefault($default)
+    {
+        $this->default = $default;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param int $length
+     */
+    public function setLength($length)
+    {
+        $this->length = $length;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLength()
+    {
+        return $this->length;
+    }
+
+    /**
+     * @param boolean $null
+     */
+    public function setNull($null)
+    {
+        $this->null = $null;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isNull()
+    {
+        return $this->null;
     }
 
     /**

@@ -47,7 +47,7 @@ services:
 
     session.handler.pdo:
         class: "%session_handler_pdo_class%"
-        arguments: ["@pdo", "%pdo_session%"]
+        arguments: ["@doctrine.connection", "%pdo_session%"]
 
     session.handler.native:
         class: "%session_handler_native_class%"

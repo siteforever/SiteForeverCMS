@@ -1,6 +1,7 @@
 <?php
 namespace Sfcms;
 
+use Doctrine\DBAL\Connection;
 use ErrorException;
 use Sfcms\LoggerInterface;
 use SimpleXMLElement;
@@ -112,8 +113,9 @@ final class db
      */
     private function init($dbc = null)
     {
-        if ($dbc instanceof \PDO) {
+        if ($dbc instanceof \PDO || $dbc instanceof Connection) {
             $this->resource = $dbc;
+            return;
         }
 
         if (is_array($dbc)) {
@@ -132,7 +134,10 @@ final class db
             }
             $this->resource->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->resource->setAttribute(\PDO::MYSQL_ATTR_INIT_COMMAND, \PDO::ERRMODE_EXCEPTION);
+            return;
         }
+
+        throw new \RuntimeException('Unknown config type');
     }
 
     /**
@@ -142,7 +147,6 @@ final class db
         $this->init($config);
         self::$instance = $this;
     }
-
 
     /**
      * Вернет ссылку на объект базы данных
