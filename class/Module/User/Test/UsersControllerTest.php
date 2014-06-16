@@ -197,7 +197,7 @@ class UsersControllerTest extends WebCase
         $this->getPage()->pressButton('Войти');
 
         $this->assertNotNull($alert = $this->getPage()->find('css', '.alert-error'));
-        $this->assertEquals('Ваша учетная запись отключена', $alert->getText());
+        $this->assertEquals('Недостаточно прав доступа', $alert->getText());
     }
 
 

@@ -13,7 +13,9 @@ class PageControllerMinkTest extends WebCase
     public function testHome()
     {
         $this->visitPage('/');
-        $this->assertEquals('Главная', $this->getPage()->find('css', 'h1')->getHtml());
+        $h1 = $this->getPage()->find('css', 'h1');
+        $this->assertNotNull($h1);
+        $this->assertEquals('Главная', $h1->getHtml());
     }
 
     public function testDeleteAction()

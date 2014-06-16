@@ -19,8 +19,9 @@
     <php>
         <ini name="memory_limit" value="512M"/>
         <const name="TEST" value="true"/>
-        <server name="HTTP_HOST" value="test.cms.sf"/>
-        <server name="SERVER_PORT" value="80"/>
+        <const name="SERVER_HOST" value="localhost" />
+        <const name="SERVER_PORT" value="1349" />
+        <const name="SERVER_DOCROOT" value="." />
         <server name="REQUEST_METHOD" value="TEST"/>
         <request name="id" value="1"/>
         <request name="route" value="index"/>
