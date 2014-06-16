@@ -56,16 +56,17 @@ define("system/admin/jquery/jquery.filemanager",[
             .css({"padding": 0, "overflow": "hidden"});
     }
 
+
     /**
      * File manager open by a.filemanager
      */
-    $(document).on('click', 'a.filemanager', function(){
+    $(document).on('click', 'a.filemanager', function(event){
+        event.preventDefault();
         var opt = $.extend({}, dialog, {
             open: $.proxy(dialog.open, this, undefined),
             title: $(this).text()
         });
         $filemanager.dialog(opt);
-        return false;
     });
 
     /**

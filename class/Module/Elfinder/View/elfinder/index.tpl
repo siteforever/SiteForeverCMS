@@ -6,10 +6,10 @@
 {style file=[
 "@root:components/jquery-ui/themes/flick/jquery-ui.css",
 "@root:static/admin/jquery/elfinder/elfinder.css"
-] filters="cssrewrite,?yui_css" output="static/css/elfinder-index.css"}
+] filters="cssrewrite" output="static/css/elfinder-index.css"}
 <head>
 </head>
-<body style="overflow: hidden;">
-<div id="elfinder"></div>
+<body style="overflow: hidden; margin: 0">
+<div id="elfinder">{t}Loading{t}</div>
 </body>
 </html>

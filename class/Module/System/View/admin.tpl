@@ -13,7 +13,7 @@
 {style file=[
     "@root:static/system/icons.css",
     "@root:static/system/admin.css"
-] filters="cssrewrite,?yui_css" output="static/cms/admin.css"}
+] filters="cssrewrite" output="static/cms/admin.css"}
 </head>
 <body class="body" id="admin">
 <div class="navbar navbar-inverse">{strip}

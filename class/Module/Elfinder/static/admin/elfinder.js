@@ -4,9 +4,8 @@
  * @link   http://siteforever.ru
  */
 define("elfinder/admin/elfinder", [
-    "jquery",
-    "wysiwyg",
-    "elfinder"
+    "jquery"
+    , "wysiwyg"
 ],function( $, wysiwyg ){
     return {
         "init" : function() {
