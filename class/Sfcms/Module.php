@@ -162,7 +162,7 @@ abstract class Module extends Component
      */
     public final function registerStatic($outputDir)
     {
-        $target = strtolower($outputDir . '/' . $this->getName());
+        $target = $outputDir . '/' . strtolower($this->getName());
         if ($this->fs->exists($this->getPath() . '/static')) {
             if (!$this->fs->exists($target)) {
                 $this->fs->symlink($this->getPath() . '/static', $target);

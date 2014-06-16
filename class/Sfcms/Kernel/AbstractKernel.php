@@ -76,13 +76,6 @@ abstract class AbstractKernel
      */
     private $_modules = array();
 
-    /**
-     * Статические скрипты и стили
-     * @var \Sfcms\Assets
-     */
-    protected  $_assets = null;
-
-
     /** @param Resolver */
     protected $_resolver;
 

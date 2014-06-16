@@ -10,6 +10,6 @@
 <head>
 </head>
 <body style="overflow: hidden; margin: 0">
-<div id="elfinder">{t}Loading{t}</div>
+<div id="elfinder">{t}Loading{/t}</div>
 </body>
 </html>
