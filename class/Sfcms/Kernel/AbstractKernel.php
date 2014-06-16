@@ -337,7 +337,7 @@ abstract class AbstractKernel
      */
     public function getModel($model)
     {
-        trigger_error('Deprecated since 0.7, will delete since 0.8');
+        //trigger_error('Deprecated since 0.7, will delete since 0.8', E_USER_DEPRECATED);
         return $this->getContainer()->get('data.manager')->getModel($model);
     }
 

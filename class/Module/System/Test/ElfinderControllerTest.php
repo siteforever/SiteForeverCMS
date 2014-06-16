@@ -18,7 +18,7 @@ class ElfinderControllerTest extends WebCase
         $crawler = new Crawler();
         $crawler->addHtmlContent($response->getContent());
         $finder = $crawler->filterXPath('//div[@id="elfinder"]');
-        $this->assertEquals('', $finder->text());
+        $this->assertEquals('Загрузка', $finder->text());
     }
 
     public function testConnectorAction()
