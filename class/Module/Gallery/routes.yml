@@ -1,0 +1,35 @@
+gallery:
+    path: /gallery
+    defaults: {controller: gallery:gallery:index}
+
+gallery/admin:
+    path: /gallery/admin
+    defaults: {controller: gallery:admin:admin}
+
+gallery/switchimg:
+    path: /gallery/switchimg
+    defaults: {controller: gallery:admin:switchimg}
+
+gallery/delete:
+    path: /gallery/delete
+    defaults: {controller: gallery:admin:delete}
+
+gallery/editcat:
+    path: /gallery/editcat
+    defaults: {controller: gallery:admin:editcat}
+
+gallery/delcat:
+    path: /gallery/delcat
+    defaults: {controller: gallery:admin:delcat}
+
+gallery/list:
+    path: /gallery/list
+    defaults: {controller: gallery:admin:list}
+
+gallery/edit:
+    path: /gallery/edit
+    defaults: {controller: gallery:admin:edit}
+
+gallery/switchimg:
+    path: /gallery/switchimg
+    defaults: {controller: gallery:admin:switchimg}

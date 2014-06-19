@@ -22,8 +22,9 @@ class ContainerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $continer = $this->getApplication()->getKernel()->createNewContainer();
-        $services = $continer->getServiceIds();
+        $container = $this->getApplication()->getKernel()->createNewContainer();
+        $container->compile();
+        $services = $container->getServiceIds();
         sort($services);
 
         $len = array_reduce($services, function($result, $val){
@@ -34,20 +35,20 @@ class ContainerCommand extends Command
             $output->writeln(
                 sprintf('%\' -' . $len . 's: <info>%s</info>',
                     $sid,
-                    $continer->hasDefinition($sid)
-                        ? ($continer->getDefinition($sid)->isSynthetic()
+                    $container->hasDefinition($sid)
+                        ? ($container->getDefinition($sid)->isSynthetic()
                             ? "<comment>synthetic</comment>"
-                            : $continer->getDefinition($sid)->getClass()
+                            : $container->getDefinition($sid)->getClass()
                         )
-                        : ($continer->hasAlias($sid)
-                            ? sprintf('<comment>alias for:</comment> %s', $continer->getAlias($sid))
+                        : ($container->hasAlias($sid)
+                            ? sprintf('<comment>alias for:</comment> %s', $container->getAlias($sid))
                             : '-'
                         )
                 )
             );
         }
 
-        foreach($continer->getParameterBag()->all() as $key => $val) {
+        foreach($container->getParameterBag()->all() as $key => $val) {
             $output->writeln(sprintf('<info>%s</info> %s', $key, is_scalar($val)
                 ? $val
                 : (is_null($val)

@@ -7,6 +7,7 @@
 namespace Module\Catalog\Subscriber;
 
 
+use Module\Catalog\Model\CatalogModel;
 use Module\Dashboard\Event\DashboardEvent;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
@@ -52,7 +53,8 @@ class DashboardSubscriber extends ContainerAware implements EventSubscriberInter
 
     public function onDashBuild(DashboardEvent $event)
     {
-        $model = Model::getModel('catalog');
+        /** @var CatalogModel $model */
+        $model = $this->container->get('data.manager')->getModel('catalog');
         $productQty = $model->count('cat = 0 AND deleted = 0');
         $productAbsentQty = $model->count('absent = 1 AND deleted = 0');
         $productHiddenQty = $model->count('hidden = 1 AND deleted = 0');

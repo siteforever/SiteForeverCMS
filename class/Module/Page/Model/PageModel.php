@@ -429,7 +429,7 @@ class PageModel extends Model
         if (!isset( $this->form )) {
             $this->form = new PageForm();
             $this->form->getChild('controller')->setVariants($this->getAvaibleModules());
-            $this->form->getChild('protected')->setVariants(self::getModel('User')->getGroups());
+            $this->form->getChild('protected')->setVariants($this->getModel('User')->getGroups());
         }
         return $this->form;
     }

@@ -12,7 +12,7 @@ use Module\Banner\Object\Banner;
  */
 function smarty_function_banner($params)
 {
-    $modelBanner = Model::getModel('Banner');
+    $modelBanner = \App::cms()->getDataManager()->getModel('Banner');
     if (!isset($params['parent'])) {
         return 'You must specify a "parent" category id';
     }

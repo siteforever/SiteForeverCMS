@@ -17,7 +17,7 @@ function smarty_function_login($params, $smarty)
     $app    = App::cms();
     $tpl    = $app->getTpl();
 
-    $tpl->assign('form', \Sfcms\Model::getModel('User')->getLoginForm());
+    $tpl->assign('form', \App::cms()->getDataManager()->getModel('User')->getLoginForm());
     $tpl->assign('user', $app->getAuth()->currentUser());
     $tpl->assign('auth', (bool)$app->getAuth()->getId());
 

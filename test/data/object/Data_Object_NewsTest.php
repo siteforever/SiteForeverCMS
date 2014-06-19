@@ -14,7 +14,7 @@ class Object_NewsTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         Watcher::instance()->clear();
-        $this->model = Model::getModel('News');
+        $this->model = App::cms()->getModel('News');
         $this->obj   = $this->model->createObject(array('id'=>1));
     }
 

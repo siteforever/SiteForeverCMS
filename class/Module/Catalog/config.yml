@@ -4,6 +4,7 @@ parameters:
 services:
     catalog.product.form:
         class: Module\Catalog\Form\CatalogForm
+        arguments: [ @data.manager ]
 
     catalog.comment.subscriber:
         class: Module\Catalog\Subscriber\CommentSwiftMailerSubscriber

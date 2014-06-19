@@ -16,7 +16,7 @@ class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->model = Model::getModel('Catalog');
+        $this->model = App::cms()->getModel('Catalog');
         $this->request = \Sfcms\Request::create('/');
     }
 

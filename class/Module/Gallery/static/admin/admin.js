@@ -3,7 +3,7 @@
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://ermin.ru
  */
-define("gallery/admin/gallery", [
+define("gallery/admin/admin", [
     "jquery",
     "backbone",
     "wysiwyg",

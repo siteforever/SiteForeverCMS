@@ -31,7 +31,7 @@ class RoutesCommand extends Command
      */
     protected function getPageModel()
     {
-        return Model::getModel('Page');
+        return \App::cms()->getDataManager()->getModel('Page');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

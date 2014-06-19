@@ -8,6 +8,7 @@ namespace Module\Market\Subscriber;
 
 
 use Module\Dashboard\Event\DashboardEvent;
+use Sfcms\Data\DataManager;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,9 +18,13 @@ class DashboardSubscriber implements EventSubscriberInterface
     /** @var  Driver */
     private $tpl;
 
-    public function __construct(Driver $tpl)
+    /** @var DataManager */
+    private $dataManager;
+
+    public function __construct(Driver $tpl, DataManager $dataManager)
     {
         $this->tpl = $tpl;
+        $this->dataManager = $dataManager;
     }
 
     /**
@@ -51,8 +56,8 @@ class DashboardSubscriber implements EventSubscriberInterface
 
     public function onDashBuild(DashboardEvent $event)
     {
-        $model = Model::getModel('Order');
-        $modelPos = Model::getModel('OrderPosition');
+        $model = $this->dataManager->getModel('Order');
+        $modelPos = $this->dataManager->getModel('OrderPosition');
         $orderQty = $model->count();
 
         $dateMonth = mktime(0,0,0,date('n'),1);

@@ -15,7 +15,7 @@ class Data_Object_OrderTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         /** @var OrderModel */
-        $this->model = Model::getModel('Order');
+        $this->model = App::cms()->getModel('Order');
 
         $this->obj  = $this->model->createObject(array(
             'id'    => 100500,

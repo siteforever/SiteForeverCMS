@@ -51,7 +51,7 @@ class DeliveryManager
     public function getObject($id = null)
     {
         if (null === $this->delivery) {
-            $model = Model::getModel('Delivery');
+            $model = \App::cms()->getDataManager()->getModel('Delivery');
             if (null !== $id) {
                 $this->delivery = $model->find($id);
             } elseif (null !== $this->id) {

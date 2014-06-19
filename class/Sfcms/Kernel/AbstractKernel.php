@@ -7,9 +7,9 @@ namespace Sfcms\Kernel;
 
 use App;
 use Module\Market\Object\Order;
-use Sfcms\Assets;
 use Sfcms\Cache\CacheInterface;
 use Sfcms\Controller\Resolver;
+use Sfcms\Data\DataManager;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Module;
@@ -18,6 +18,7 @@ use Sfcms\Request;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Sfcms\Router;
 use Sfcms\Auth;
@@ -27,9 +28,10 @@ use Sfcms\Basket\Base as Basket;
 
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
 
 abstract class AbstractKernel
 {
@@ -140,6 +142,7 @@ abstract class AbstractKernel
 
         if (!$containerConfigCache->isFresh()) {
             $this->_container = $this->createNewContainer();
+            $this->_container->compile();
             $dumper = new PhpDumper($this->getContainer());
             $containerConfigCache->write($dumper->dump());
         }
@@ -156,6 +159,16 @@ abstract class AbstractKernel
      */
     public function createNewContainer()
     {
+        $modules = [];
+        /** @var Module $module */
+        foreach($this->getModules() as $module) {
+            $name = $module->getName();
+            if (isset($modules[$name])) {
+                throw new \LogicException(sprintf('Trying to register two modules with the same name "%s"', $name));
+            }
+            $modules[$module->getName()] = get_class($module);
+        }
+
         $container = new ContainerBuilder(new ParameterBag(array(
             'root' => ROOT,
             'sfcms.root' => ROOT,
@@ -166,20 +179,30 @@ abstract class AbstractKernel
             'sfcms.env' => $this->getEnvironment(),
             'sfcms.cache_dir' => $this->getCachePath(),
             'sfcms.charset' => 'utf8',
+            'modules' => $modules,
         )));
 
         /** @var Module $module */
         foreach($this->getModules() as $module) {
             $module->loadExtensions($container);
             $module->build($container);
+            if ($this->isDebug()) {
+                $container->addObjectResource($module);
+            }
         }
+
+        $extensions = array_map(function(ExtensionInterface $ext){
+                return $ext->getAlias();
+            }, $container->getExtensions());
+
+        // ensure these extensions are implicitly loaded
+        $container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions));
 
         $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sf_path')));
         $loader = new YamlFileLoader($container, $locator);
         $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
         $container->set('app', $this);
 
-        $container->compile();
         return $container;
     }
 
@@ -322,6 +345,14 @@ abstract class AbstractKernel
     }
 
     /**
+     * @return DataManager
+     */
+    public function getDataManager()
+    {
+        return $this->getContainer()->get('data.manager');
+    }
+
+    /**
      * @return LoggerInterface
      */
     public function getLogger()
@@ -338,7 +369,7 @@ abstract class AbstractKernel
     public function getModel($model)
     {
         //trigger_error('Deprecated since 0.7, will delete since 0.8', E_USER_DEPRECATED);
-        return $this->getContainer()->get('data.manager')->getModel($model);
+        return $this->getDataManager()->getModel($model);
     }
 
     /**

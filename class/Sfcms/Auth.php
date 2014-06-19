@@ -2,6 +2,8 @@
 namespace Sfcms;
 
 use Module\User\Object\User;
+use Sfcms\Data\DataManager;
+use Symfony\Component\DependencyInjection\ContainerAware;
 
 /**
  * Интерфейс авторизации
@@ -9,7 +11,7 @@ use Module\User\Object\User;
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Auth
+class Auth extends ContainerAware
 {
     /** @var User */
     protected $user;
@@ -22,6 +24,14 @@ class Auth
 
     /** @var  Request */
     protected $request;
+
+    /**
+     * @return DataManager
+     */
+    public function getDataManager()
+    {
+        return $this->container->get('data.manager');
+    }
 
     /**
      * @param Request $request
@@ -38,7 +48,7 @@ class Auth
     public function currentUser()
     {
         if ($this->getId()) {
-            $obj = Model::getModel('User')->findByPk($this->getId());
+            $obj = $this->getDataManager()->getModel('User')->findByPk($this->getId());
             if ($obj) {
                 return $obj;
             } else {
@@ -120,7 +130,7 @@ class Auth
      */
     protected function createDefaultUser()
     {
-        return Model::getModel('User')->createObject(array(
+        return $this->getDataManager()->getModel('User')->createObject(array(
                 'login'  => 'guest',
                 'perm'   => USER_GUEST,
             ));

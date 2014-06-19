@@ -44,7 +44,7 @@ function smarty_function_lastnews( $params, $smarty )
     /**
      * @var \Module\News\Model\NewsModel $model
      */
-    $model = \Sfcms\Model::getModel('News');
+    $model = App::cms()->getDataManager()->getModel('News');
 
     $list = $model->findAll( join( " AND ", $where ), $param, $sort, $params[ 'limit' ] );
 

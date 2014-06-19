@@ -28,7 +28,7 @@ class PageForm extends \Sfcms\Form\Form
                     'parent' => array(
                         'type' => 'select',
                         'label' => 'Parent',
-                        'variants' => Model::getModel('Page')->getSelectOptions(),
+                        'variants' => \App::cms()->getDataManager()->getModel('Page')->getSelectOptions(),
                         'value' => '0',
                     ),
                     'name'       => array(
@@ -74,7 +74,7 @@ class PageForm extends \Sfcms\Form\Form
                     'controller' => array(
                         'type'      => 'select',
                         'label'     => 'Контроллер',
-                        'variants'  => Model::getModel('Page')->getAvaibleModules(),
+                        'variants'  => App::cms()->getModel('Page')->getAvaibleModules(),
                         'required',
                     ),
                     'link'       => array(

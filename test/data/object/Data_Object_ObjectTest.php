@@ -14,7 +14,7 @@ class Data_Object_ObjectTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->model = \Sfcms\Model::getModel('System.Test');
+        $this->model = App::cms()->getModel('System.Test');
         $this->object = $this->model->createObject();
     }
 

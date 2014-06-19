@@ -28,8 +28,8 @@ class Object_GalleryCategoryTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         Watcher::instance()->clear();
-        $this->modelCategory  = Model::getModel('GalleryCategory');
-        $this->model          = Model::getModel('Gallery');
+        $this->modelCategory  = App::cms()->getModel('GalleryCategory');
+        $this->model          = App::cms()->getModel('Gallery');
 
         $this->galleryCategory = $this->modelCategory->createObject(
             array(

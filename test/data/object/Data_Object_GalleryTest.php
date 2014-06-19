@@ -17,7 +17,7 @@ class GalleryTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         Watcher::instance()->clear();
-        $this->gallery    = Model::getModel('Gallery')->createObject(
+        $this->gallery    = App::cms()->getModel('Gallery')->createObject(
             array(
                 'id'            => 1,
                 'category_id'   => 7,

@@ -22,7 +22,7 @@ class BannerModel extends Model
     function getForm()
     {
         if (null === $this->_form) {
-            $this->_form = new BannerForm();
+            $this->_form = new BannerForm($this->getDataManager());
         }
         return $this->_form;
     }

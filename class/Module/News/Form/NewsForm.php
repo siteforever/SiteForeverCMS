@@ -23,7 +23,7 @@ class NewsForm extends \Sfcms\Form\Form
     {
         $app    = \App::cms();
 
-        $category   = Model::getModel('NewsCategory');
+        $category   = \App::cms()->getDataManager()->getModel('NewsCategory');
         $cats_data = $category->findAll();
 
         $cats   = array(0=>'Ничего не выбрано');
@@ -75,7 +75,7 @@ class NewsForm extends \Sfcms\Form\Form
                     'type'      => 'select',
                     'label'     => 'Защита страницы',
                     'value'     => USER_GUEST,
-                    'variants'  => Model::getModel('User')->getGroups(),
+                    'variants'  => \App::cms()->getModel('User')->getGroups(),
                 ),
 
                 'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

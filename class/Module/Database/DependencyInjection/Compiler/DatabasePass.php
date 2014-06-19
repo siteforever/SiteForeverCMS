@@ -44,6 +44,7 @@ class DatabasePass implements CompilerPassInterface
 
         foreach ($manager->getModelList() as $config) {
             $definition = new Definition($config['class']);
+            $definition->setArguments([new Reference('data.manager')]);
             $definition->setLazy(true);
             $container->setDefinition($config['id'], $definition);
             $reflectionClass = new \ReflectionClass($config['class']);

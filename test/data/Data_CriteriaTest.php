@@ -21,7 +21,7 @@ class CriteriaTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( ! isset( $this->obj ) ) {
-            $model = \Sfcms\Model::getModel('System.Test');
+            $model = App::cms()->getModel('System.Test');
             $this->obj  = $model->createObject();
         }
     }

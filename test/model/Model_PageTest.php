@@ -14,8 +14,8 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->model = Model::getModel('Page');
-        $this->db    = Model::getDB();
+        $this->model = App::cms()->getModel('Page');
+        $this->db    = App::cms()->getContainer()->get('db');
         Watcher::instance()->clear();
     }
 

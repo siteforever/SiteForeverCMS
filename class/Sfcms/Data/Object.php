@@ -246,7 +246,7 @@ abstract class Object extends Table
         if ('' === $model) {
             return $this->model;
         } else {
-            return Model::getModel($model);
+            return \App::cms()->getDataManager()->getModel($model);
         }
     }
 

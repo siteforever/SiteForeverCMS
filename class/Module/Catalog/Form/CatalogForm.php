@@ -10,6 +10,7 @@ namespace Module\Catalog\Form;
 
 use App;
 use Module\Catalog\Model\CatalogModel;
+use Sfcms\Data\DataManager;
 use Sfcms\Form\Form;
 use Sfcms\Model;
 
@@ -17,24 +18,27 @@ class CatalogForm extends Form
 {
     protected $filter = null;
 
+    protected $dataManager;
+
     /**
      * Создание формы
      */
-    public function __construct()
+    public function __construct(DataManager $dataManager)
     {
+        $this->dataManager = $dataManager;
         /** @var $model CatalogModel */
-        $model   = Model::getModel( 'Catalog' );
+        $model   = $dataManager->getModel( 'Catalog' );
         $parents = $model->getCategoryList();
 
-        $manufModel    = Model::getModel( 'Manufacturers' );
+        $manufModel    = $dataManager->getModel( 'Manufacturers' );
         $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
         $manufArray    = array('catalog.not_selected') + $manufacturers->column( 'name' );
 
-        $materialModel = Model::getModel( 'Material' );
+        $materialModel = $dataManager->getModel( 'Material' );
         $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
         $materialArray = array('catalog.not_selected') + $materials->column( 'name' );
 
-        $typeModel     = Model::getModel('Catalog.ProductType');
+        $typeModel     = $dataManager->getModel('Catalog.ProductType');
         $types         = $typeModel->findAll(array('order'=>'name'));
 
         parent::__construct(array(
@@ -123,7 +127,7 @@ class CatalogForm extends Form
                     'type'      => 'select',
                     'label'     => 'catalog.protected',
                     'value'     => USER_GUEST,
-                    'variants'  => Model::getModel('User')->getGroups()
+                    'variants'  => $dataManager->getModel('User')->getGroups()
                 ),
                 'deleted' => array('type'=>'hidden','value'=>'0'),
                 'submit'    => array('type'=>'submit', 'value'=>'catalog.save'),
@@ -147,7 +151,7 @@ class CatalogForm extends Form
      */
     public function applyFilter( $parentId )
     {
-        $catalogFinder = Model::getModel( 'Catalog' );
+        $catalogFinder = $this->dataManager->getModel( 'Catalog' );
 
         $pitem   = $catalogFinder->find( $parentId );
         $fvalues = null;

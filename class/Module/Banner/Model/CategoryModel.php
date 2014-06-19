@@ -48,7 +48,7 @@ class CategoryModel extends Model
     public function remove($id)
     {
         $category = $this->find($id);
-        $modelBanner = self::getModel('Banner');
+        $modelBanner = $this->getModel('Banner');
 
         if ( $category ) {
             $banners = $modelBanner->findAll(array(

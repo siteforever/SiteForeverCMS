@@ -18,7 +18,7 @@ function smarty_function_menu($params, Smarty_Internal_Template $smarty)
     /** @var \Sfcms\Request $request */
     $request = $smarty->tpl_vars['request']->value;
     /** @var $model PageModel */
-    $model  = Model::getModel('Page');
+    $model  = App::cms()->getContainer()->get('data.manager')->getModel('Page');
 
     $resolver = new OptionsResolver();
     $resolver->setDefaults(array(

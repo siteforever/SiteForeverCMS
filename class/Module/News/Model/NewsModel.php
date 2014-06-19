@@ -79,7 +79,7 @@ class NewsModel extends Model
             $list_id[]  = $news->cat_id;
         }
 
-        $structure  = self::getModel('Page');
+        $structure  = $this->getModel('Page');
 
         //printVar( Data_Watcher::instance()->dumpDirty() );
         $page_data_all = $structure->findAll(array(

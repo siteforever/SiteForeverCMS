@@ -2,6 +2,7 @@
 namespace Sfcms;
 
 use App;
+use Sfcms\Data\DataManager;
 use Sfcms\Data\Object as DomainObject;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
@@ -10,7 +11,6 @@ use Sfcms\Model\ModelEvent;
 use Sfcms\db;
 use Sfcms\Db\Criteria;
 use RuntimeException;
-use PDO;
 use Module\User\Object\User;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Field;
@@ -68,10 +68,12 @@ abstract class Model extends Component
      */
     protected $config = array();
 
+    private $dataManager;
+
     /**
      * Создание модели
      */
-    final public function __construct()
+    final public function __construct(DataManager $dataManager)
     {
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $this->eventAlias()), array($this, 'onSaveStart'));
@@ -80,6 +82,14 @@ abstract class Model extends Component
             $this->on(sprintf('%s.save.success', $this->eventAlias()), array($this, 'onSaveSuccess'));
         }
         $this->init();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDataManager()
+    {
+        return $this->dataManager;
     }
 
     /**
@@ -97,6 +107,7 @@ abstract class Model extends Component
 
     /**
      * @static
+     * @deprecated since version 0.7, will be removed on version 0.8
      * @return db
      */
     static public function getDB()
@@ -137,20 +148,17 @@ abstract class Model extends Component
         return array();
     }
 
-
     /**
      * Вернет нужную модель
-     * @static
      *
      * @param  $model
      *
-     * @deprecated
      * @return Model
      * @throws RuntimeException
      */
-    final static public function getModel($model)
+    final public function getModel($model)
     {
-        return App::cms()->getContainer()->get('data.manager')->getModel($model);
+        return \App::cms()->getDataManager()->getModel($model);
     }
 
     /**

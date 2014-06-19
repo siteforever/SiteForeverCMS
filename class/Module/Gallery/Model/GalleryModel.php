@@ -83,7 +83,7 @@ class GalleryModel extends Model
             $new_pos[] = array('id'=>$id, 'pos'=>$pos);
         }
         $imgObj     = $this->find( $positions[0] );
-        $catModel   = self::getModel('GalleryCategory');
+        $catModel   = $this->getModel('GalleryCategory');
         $catObj     = $catModel->find( $imgObj->get('category_id') );
         $catObj->set('thumb', $imgObj->get('thumb'));
         $catObj->save();

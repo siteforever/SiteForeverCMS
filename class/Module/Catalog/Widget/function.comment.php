@@ -4,6 +4,7 @@
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
+use Module\Catalog\Model\CommentModel;
 use Sfcms\Model;
 use Module\Catalog\Form\CommentForm;
 use Module\Catalog\Object\Catalog;
@@ -19,7 +20,8 @@ function smarty_function_comment($params, Smarty_Internal_Template $smarty)
         throw new InvalidArgumentException('`product` must be Module\Catalog\Object\Catalog instance');
     }
 
-    $commentModel = Model::getModel('CatalogComment');
+    /** @var CommentModel $commentModel */
+    $commentModel = App::cms()->getContainer()->get('data.manager')->getModel('CatalogComment');
 
     $form = new CommentForm();
 

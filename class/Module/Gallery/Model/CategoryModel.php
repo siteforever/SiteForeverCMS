@@ -2,7 +2,7 @@
 namespace Module\Gallery\Model;
 
 use Module\Gallery\Object\Category;
-use Module\Gallery\Object\Gallery;
+use Module\Page\Object\Page;
 use Sfcms\Model;
 use Module\Gallery\Form\CategoryForm;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,14 +10,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class CategoryModel extends Model implements EventSubscriberInterface
 {
     protected $form;
-
-    /**
-     * @return Gallery
-     */
-    function gallery()
-    {
-        return self::getModel('Gallery');
-    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -43,6 +35,7 @@ class CategoryModel extends Model implements EventSubscriberInterface
     {
         return array(
             'plugin.page-gallery.save.start' => array('pluginPageSaveStart', 0),
+            'category.save.success' => array('onSaveSuccess', 0),
         );
     }
 
@@ -61,14 +54,11 @@ class CategoryModel extends Model implements EventSubscriberInterface
      *
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function pluginPageSaveStart( Model\ModelEvent $event )
+    public function pluginPageSaveStart(Model\ModelEvent $event)
     {
+        /** @var Page $obj */
         $obj = $event->getObject();
-        if ( $obj->link ) {
-            $category = $this->find( $obj->link );
-        } else {
-            $category = $this->createObject();
-        }
+        $category = $obj->link ? $this->find($obj->link) : $this->createObject();
         /** @var $category Category */
         $category->name         = $obj->name;
         $category->hidden       = $obj->hidden;
@@ -77,32 +67,20 @@ class CategoryModel extends Model implements EventSubscriberInterface
 
         $category->save();
         $obj->link = $category->id;
+        $obj->image = $category->getImage();
     }
 
-    /**
-     * Удаление категории
-     * @param int $id
-     * @return mixed
-     */
-    public function remove( $id )
+    public function onSaveSuccess(Model\ModelEvent $event)
     {
-        /** @var Gallery $gallery */
-        $category   = $this->find( $id );
-        if ( $category ) {
-            $images = $this->gallery()->findAll(array(
-                'cond'      => 'category_id = :cat_id',
-                'params'    => array(':cat_id'=>$category->getId()),
-            ));
-            foreach ( $images as $img ) {
-                $this->gallery()->delete( $img['id'] );
+        $obj = $event->getObject();
+        if ($obj instanceof Category) {
+            $image = $obj->getImage();
+            $pageObj = $this->getModel('Page')->find('link = ? and controller = ?', [$obj->id, 'gallery']);
+            if ($pageObj && $pageObj->image != $image) {
+                $pageObj->image = $image;
+                $this->getModel('Page')->save($pageObj);
             }
-            $dir = ROOT . $this->config->get('gallery.dir')
-                 . DIRECTORY_SEPARATOR.substr( '0000' . $category['id'], -4, 4 );
-            @rmdir( $dir );
-            $category->markDeleted();
         }
-
-        return;
     }
 
     /**
@@ -115,4 +93,5 @@ class CategoryModel extends Model implements EventSubscriberInterface
         }
         return $this->form;
     }
+
 }

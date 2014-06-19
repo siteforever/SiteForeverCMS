@@ -41,7 +41,8 @@
     },
     "require": {
         "php": ">=5.4",
-        "symfony/symfony": "2.4.*",
+        "symfony/symfony": "2.5.*",
+        "symfony/proxy-manager-bridge": "2.5.*",
         "doctrine/orm": "2.4.*",
         "doctrine/migrations": "1.0.*@dev",
         "smarty/smarty": "3.1.*",
@@ -58,7 +59,6 @@
         "ckeditor/ckeditor_full": "4.3.*",
         "helios-ag/fm-elfinder": "v2.0",
         "tonytomov/jqGrid" : "4.4",
-        "leafo/lessphp": "~0.4",
         "mrclay/minify": "2.1.*",
         "natxet/cssmin": "3.0.*"
     },
@@ -112,5 +112,5 @@
             "dist-file": "app/parameters.yml.dist"
         }
     },
-    "bin": ["app/console", "misc/bin/pngout", "misc/bin/yuicompressor-2.4.7.jar"]
+    "bin": ["app/console", "app/bin/pngout", "app/bin/yuicompressor-2.4.7.jar"]
 }

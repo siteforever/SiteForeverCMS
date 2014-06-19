@@ -7,6 +7,7 @@ use Module\Market\Event\PaymentEvent;
 use Module\Market\Form\OrderForm;
 use Module\Market\Model\OrderPositionModel;
 use Sfcms\Data\Collection;
+use Sfcms\Data\DataManager;
 use Sfcms\LoggerInterface;
 use Sfcms\Model;
 use Sfcms\Tpl\Driver;
@@ -38,7 +39,10 @@ class OrderSubscriber implements EventSubscriberInterface
     /** @var EventDispatcher */
     private $dispatcher;
 
-    public function __construct(OrderForm $form, LoggerInterface $logger, Driver $tpl, EventDispatcher $dispatcher, $email, $sitename)
+    /** @var DataManager */
+    private $dataManager;
+
+    public function __construct(OrderForm $form, DataManager $dataManager, LoggerInterface $logger, Driver $tpl, EventDispatcher $dispatcher, $email, $sitename)
     {
         $this->form = $form;
         $this->logger = $logger;
@@ -46,6 +50,7 @@ class OrderSubscriber implements EventSubscriberInterface
         $this->dispatcher = $dispatcher;
         $this->email = $email;
         $this->sitename = $sitename;
+        $this->dataManager = $dataManager;
     }
 
     /**
@@ -226,7 +231,7 @@ class OrderSubscriber implements EventSubscriberInterface
     {
         $this->getLogger()->info('market.order.create.addOrderItems');
         /** @var $orderPositionModel OrderPositionModel */
-        $orderPositionModel = Model::getModel('OrderPosition');
+        $orderPositionModel = $this->dataManager->getModel('OrderPosition');
 
         if ($event->getBasket()->count()) {
             $order = $event->getOrder();
@@ -236,7 +241,7 @@ class OrderSubscriber implements EventSubscriberInterface
                 return $item['id'];
             }, $event->getBasket()->getAll());
 
-            $catalogModel = Model::getModel('Catalog');
+            $catalogModel = $this->dataManager->getModel('Catalog');
             $products = $catalogModel->findAll('id IN (?)', array($productIds));
 
             // Заполняем заказ товарами

@@ -29,15 +29,14 @@ assetic:
     filters:
         jsmin: {}
         cssmin: {}
-        lessphp: {}
         cssrewrite: ~
         yui_css:
-            jar: "%sf_path%/misc/bin/yuicompressor-2.4.7.jar"
+            jar: "%sf_path%/app/bin/yuicompressor-2.4.7.jar"
         yui_js:
-            jar: "%sf_path%/misc/bin/yuicompressor-2.4.7.jar"
+            jar: "%sf_path%/app/bin/yuicompressor-2.4.7.jar"
         pngout:
             # http://www.jonof.id.au/pngout
-            bin: "%sf_path%/misc/bin/pngout"
+            bin: "%sf_path%/app/bin/pngout"
         less:
             node: /usr/local/bin/node
             node_paths: [/usr/local/lib/node_modules]
@@ -45,7 +44,6 @@ assetic:
 
 database:
     debug: "%debug%"
-
 
 doctrine:
     debug: %debug%

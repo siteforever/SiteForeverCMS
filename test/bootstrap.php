@@ -20,7 +20,9 @@ use Symfony\Component\Process\Process;
 $capabilities = Selenium2Driver::getDefaultCapabilities();
 $capabilities['selenium-version'] = '2.41.0';
 $hubUri = 'http://localhost:4444/wd/hub';
-$startUrl = 'http://test.cms.sf';
+$host = 'localhost';
+$port = '1888';
+$startUrl = sprintf('http://%s:%s', $host, $port);
 if (!empty($_SERVER['TRAVIS'])) {
     $capabilities['tunnel-identifier'] = $_SERVER['TRAVIS_JOB_ID'];
     $capabilities['build'] = $_SERVER['TRAVIS_BUILD_NUMBER'];
@@ -29,22 +31,20 @@ if (!empty($_SERVER['TRAVIS'])) {
     $startUrl = sprintf('http://%s:%s', $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT']);
 } else {
     // Command that starts the built-in web server
-    $command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!', SERVER_HOST, SERVER_PORT, SERVER_DOCROOT);
+    $command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!', $host, $port, realpath(__DIR__ . '/..'));
     // Execute the command and store the process ID
     $output = array();
     exec($command, $output);
     sleep(1);
     $pid = (int) $output[0];
 
-    echo sprintf('%s - Web server started on %s:%d with PID %d', date('r'), SERVER_HOST, SERVER_PORT, $pid) . PHP_EOL;
+    echo sprintf('%s - Web server started on %s:%d with PID %d', date('r'), $host, $port, $pid) . PHP_EOL;
 
     // Kill the web server when the process ends
     register_shutdown_function(function() use ($pid) {
             echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
             exec('kill ' . $pid);
         });
-
-    $startUrl = sprintf('http://%s:%s', SERVER_HOST, SERVER_PORT);
 }
 
 //$mysqlFrom = "mysqldump -u root --add-drop-database=TRUE siteforever";

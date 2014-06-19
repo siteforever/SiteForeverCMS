@@ -60,7 +60,7 @@ class CategoryForm extends \Sfcms\Form\Form
                              'type'      => 'select',
                              'label'     => 'Защита страницы',
                              'value'     => USER_GUEST,
-                             'variants'  => Model::getModel('User')->getGroups(),
+                             'variants'  => \App::cms()->getDataManager()->getModel('User')->getGroups(),
                      ),
 
                      'deleted'   => array('type'=>'int', 'value'=>'0', 'hidden'),

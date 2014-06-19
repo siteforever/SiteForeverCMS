@@ -24,7 +24,7 @@ class ModelTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         if ( null === $this->model ) {
-            $this->model = Model::getModel('System.Test');
+            $this->model = App::cms()->getDataManager()->getModel('System.Test');
         }
         Watcher::instance()->clear();
     }
