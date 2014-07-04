@@ -34,13 +34,7 @@ class StaticCommand extends Command
     {
         /** @var ContainerBuilder */
         $this->container = $this->getContainer();
-        /** @var AssetWriter $writer */
-        $writer = $this->container->get('asset.writer');
-        /** @var AssetFactory $factory */
-        $factory = $this->container->get('asset.factory');
-
         $staticDir = $this->getContainer()->getParameter('assetic.output') . '/static';
-        $sfDir = $this->getContainer()->getParameter('sf_path');
         $rootDir = $this->getContainer()->getParameter('root');
 
         $output->writeln('<info>Command Install</info>');
@@ -76,20 +70,12 @@ class StaticCommand extends Command
             $output->writeln('<info>Create "vendor/.htaccess" file</info>');
         }
 
-        $template = $this->container->getParameter('template');
-        $themePath = $rootDir . '/themes/' . $template['theme'];
-        if (!$filesistem->exists($themePath)) {
-            $filesistem->mkdir($themePath);
-            $filesistem->mirror($sfDir.'/themes/basic', $themePath);
-            $output->writeln(sprintf('Create theme dir "%s"', $themePath));
-        }
-
-        $collection = $factory->createAsset([
-                ROOT . '/misc/module/*.js',
-                __DIR__.'/../../System/static/admin.js',
-                __DIR__.'/../../System/static/app.js',
-            ], ['?yui_js'], ['output' => 'static/admin.js']);
-        $writer->writeAsset($collection);
-        $output->writeln('<info>"admin.js" created.</info>');
+//        $template = $this->container->getParameter('template');
+//        $themePath = $rootDir . '/themes/' . $template['theme'];
+//        if (!$filesistem->exists($themePath)) {
+//            $filesistem->mkdir($themePath);
+//            $filesistem->mirror($sfDir.'/themes/basic', $themePath);
+//            $output->writeln(sprintf('Create theme dir "%s"', $themePath));
+//        }
     }
 }
