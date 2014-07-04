@@ -22,6 +22,12 @@ services:
         tags:
             - { name: event.subscriber }
 
+    system.require_js.listener:
+        class: Module\System\Subscriber\RequireJsListener
+        arguments: [ "@asset.service", "@asset.writer" ]
+        tags:
+            - { name: event.listener, event: static.install, method: installRequireJs }
+
     auth:
         class: Sfcms\Auth
 

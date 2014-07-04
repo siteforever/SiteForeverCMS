@@ -15,17 +15,11 @@ define("system/admin", [
     "controller",
     "jquery-ui",
     "system/admin/jquery/jquery.filemanager",
-    "system/admin/jquery/jquery.dumper"
+    "system/admin/jquery/jquery.dumper",
+    "datepicker_i18n"
 ],function(require, $, Backbone, i18n, module, behavior){
 
     window.lang = document.getElementsByTagName('html')[0].lang;
-    window.datepicker = {
-        dateFormat:'dd.mm.yy',
-        firstDay:1,
-        changeMonth:true,
-        changeYear:true,
-        showOn:'button'
-    };
 
     $(document).ajaxError(function(event, xhr){
         var errorAjaxDialog = $('#errorAjaxDialog');

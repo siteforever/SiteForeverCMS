@@ -27,7 +27,6 @@ class AssetPluginPass implements CompilerPassInterface
         }
         $definition = $container->getDefinition('smarty.plugin.asset');
         $definition->addMethodCall('addScope', ['root', $container->getParameter('root')]);
-        $definition->addMethodCall('addScope', ['misc', $container->getParameter('root') . '/misc']);
         $definition->addMethodCall('addScope', ['theme', $container->getParameter('root') . '/themes/'
             . $container->getParameter('template_theme')]);
     }

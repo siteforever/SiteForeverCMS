@@ -43,6 +43,8 @@ class AsseticService extends ContainerAware
         if (!$am->getNames()) {
             foreach ($this->asseticNames as $aName) {
                 $config = $this->container->getParameter($aName);
+                $config['filters'] = isset($config['filters']) ? $config['filters'] : [];
+                $config['options'] = isset($config['options']) ? $config['options'] : [];
                 $assetCollection = $this->factory->createAsset($config['inputs'], $config['filters'], $config['options']);
                 $am->set(preg_replace('/^.*?([^\.]+)$/', '$1', $aName), $assetCollection);
             }

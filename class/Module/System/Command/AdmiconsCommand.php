@@ -16,6 +16,9 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class AdmiconsCommand extends Command
 {
+    /** @var array hot icons list */
+    private $hot;
+
     protected function configure()
     {
         $this
@@ -36,18 +39,37 @@ class AdmiconsCommand extends Command
             .'line-height: 16px;'
             .'margin-top: 1px;'
             .'vertical-align: text-top;'
+            .'background: transparent no-repeat 0 0;'
             .'}'
+        );
+
+        $this->hot = array(
+            '^folder.*',
+            'delete',
+            '^lightbulb',
+            '^link',
+            'page',
+            'pencil',
+            '^picture',
         );
 
         /** @var SplFileInfo $file */
         foreach ($finder as $file) {
-            $is = getimagesize($file->getRealPath());
             $css[] = '.sfcms-icon-'.strtolower(preg_replace(array('/_/', '/\..*?$/'), array('-',''), $file->getBasename()))
-                   . '{background:'
-                   . 'url("data:'.$is['mime'].';base64,'.base64_encode(file_get_contents($file->getRealPath())).'")'
-                   . ' no-repeat 0 0;}';
+                   . '{background-image:' . $this->getUrl($file) . ';}';
         }
-        file_put_contents(__DIR__ . '/../static/icons.css', join("\n", $css));
+        file_put_contents(__DIR__ . '/../static/icons.css', join('', $css));
         $output->writeln("<info>done</info>");
+    }
+
+    private function getUrl(SplFileInfo $file)
+    {
+        foreach ($this->hot as $regexp) {
+            if (preg_match('#' . $regexp . '#', $file->getBasename('.png'))) {
+                $is = getimagesize($file->getRealPath());
+                return 'url("data:'.$is['mime'].';base64,'.base64_encode(file_get_contents($file->getRealPath())).'")';
+            }
+        }
+        return 'url("icons/' . $file->getFilename() . '")';
     }
 }

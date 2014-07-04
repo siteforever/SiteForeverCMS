@@ -62,7 +62,7 @@ if (!$process->isSuccessful()) {
     exit(255);
 }
 
-$process = new Process("php app/console --env=test database:scheme:update --force");
+$process = new Process("php bin/console --env=test database:scheme:update --force");
 print $process->getCommandLine() . PHP_EOL;
 $process->start();
 while ($process->isRunning()) {

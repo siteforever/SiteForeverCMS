@@ -50,12 +50,7 @@
         "monolog/monolog": "~1.6",
         "swiftmailer/swiftmailer": "~5.0",
         "kriswallsmith/assetic": "~1.1",
-        "components/normalize.css": "2.*",
-        "components/jquery": "~1.11",
-        "components/jqueryui": "~1.10",
-        "components/backbone": "1.1.*",
-        "components/highlightjs": "~8.0",
-        "components/bootstrap": "~3.1",
+        "twbs/bootstrap": ">=3.2.0,<3.3",
         "ckeditor/ckeditor_full": "4.3.*",
         "helios-ag/fm-elfinder": "v2.0",
         "tonytomov/jqGrid" : "4.4",
@@ -99,7 +94,8 @@
         ]
     },
     "config": {
-        "component-dir": "components",
+        "component-dir": "static/components",
+        "component-baseurl": "static",
         "bin-dir": "bin"
     },
     "minimum-stability": "stable",

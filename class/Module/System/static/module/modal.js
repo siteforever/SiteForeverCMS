@@ -48,7 +48,7 @@ define('system/module/modal',[
         + '</div>'
 
         , init: function() {
-            $('.datepicker').datepicker( window.datepicker );
+            $('.datepicker').datepicker();
             wysiwyg.init();
             return this;
         }

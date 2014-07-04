@@ -81,7 +81,15 @@
         {$form = $form->setRendered()}
     {else}
         <div class="form-group{if $attr.error} has-error{/if}" data-field-name="{$attr.name}">
-        {if in_array($attr.type, ['text', 'password', 'int', 'float', 'date'])}
+        {if in_array($attr.type, ['int', 'float', 'date'])}
+            {form_label form=$form class="control-label" domain=$domain}
+            <div class="row">
+                <div class="col-xs-3">{form_input form=$form class=$class}</div>
+            </div>
+            {form_errors form=$form}
+            {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
+            {$form = $form->setRendered()}
+        {elseif in_array($attr.type, ['text', 'password'])}
             {form_label form=$form class="control-label" domain=$domain}
             {form_input form=$form class=$class}
             {form_errors form=$form}
@@ -101,7 +109,7 @@
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['checkbox'])}
             <input type="hidden" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="0">
-            <label for="{$attr.id}" class="checkbox">
+            <label for="{$attr.id}" class="checkbox col-xs-6">
                 <input type="checkbox" id="{$attr.id}" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="1" {if $attr.value} checked="checked"{/if}>
                 {$attr.label|trans:[]:$domain|ucfirst}{if $attr.required}&nbsp;<b>*</b>{/if}
             </label>

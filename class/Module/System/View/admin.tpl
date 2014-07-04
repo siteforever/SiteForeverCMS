@@ -2,18 +2,20 @@
 <html lang="{$request->getLocale()}">
 <head>
 {style file=[
-    "@root:components/bootstrap/css/bootstrap.min.css",
-    "@root:components/bootstrap/css/bootstrap-theme.min.css"
+    "@root:static/system/vendor/twbs/css/bootstrap.min.css",
+    "@root:static/system/vendor/twbs/css/bootstrap-theme.min.css"
 ] filters="cssrewrite" output="static/cms/bootstrap.css"}
 {style file=[
-    "@root:components/jquery-ui/themes/flick/jquery-ui.min.css",
+    "@root:static/system/vendor/jquery-ui/jquery-ui.min.css",
+    "@root:static/system/vendor/jquery-ui/jquery-ui.structure.min.css",
+    "@root:static/system/vendor/jquery-ui/jquery-ui.theme.min.css",
     "@root:static/admin/jquery/jqgrid/ui.jqgrid.css",
     "@root:static/admin/jquery/elfinder/elfinder.css"
-] filters="cssrewrite" output="static/cms/jquery-ui.css"}
+] filters="cssrewrite,?cssmin" output="static/cms/jquery-ui.css"}
 {style file=[
     "@root:static/system/icons.css",
     "@root:static/system/admin.css"
-] filters="cssrewrite" output="static/cms/admin.css"}
+] filters="cssrewrite,?cssmin" output="static/cms/admin.css"}
 </head>
 <body class="body" id="admin">
 <div class="navbar navbar-inverse">{strip}

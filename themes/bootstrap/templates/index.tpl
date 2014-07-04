@@ -27,7 +27,7 @@
         </div>
     </div>
 </div>
-{js file="@root:components/jquery/jquery.js,@theme:js/script.js" filters='?yui_js'  output="static/script.js"}
+{js file="@root:static/system/vendor/jquery-1.11.1.min.js,@theme:js/script.js" filters='?yui_js'  output="static/script.js"}
 {*{js file="@theme:js/script.js" filters='?yui_js'  output="static/script.js"}*}
 </body>
 </html>

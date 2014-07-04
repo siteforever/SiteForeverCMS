@@ -49,7 +49,6 @@ class StaticCommand extends Command
         /** @var EventDispatcher $ed */
         $ed = $this->getContainer()->get('event.dispatcher');
         $event = new StaticEvent($staticDir, $input, $output);
-        $ed->addListener(StaticEvent::STATIC_INSTALL, array($this, 'installRequireJs'));
         $ed->dispatch(StaticEvent::STATIC_INSTALL, $event);
 
         $filesistem = new Filesystem();
@@ -63,16 +62,12 @@ class StaticCommand extends Command
             );
         }
 
-//        if ($rootDir != $sfDir && !$filesistem->exists($rootDir . '/misc')) {
-//            $filesistem->symlink($sfDir . '/misc', $rootDir . '/misc');
-//            $output->writeln('<info>Create symlink for "misc"</info>');
-//        }
         if (!$filesistem->exists($rootDir . '/files')) {
             $filesistem->mkdir($rootDir . '/files', 0777);
             $output->writeln('<info>Create "files" dir</info>');
         }
         if (!$filesistem->exists($rootDir . '/runtime')) {
-            $filesistem->mkdir(array($rootDir . '/runtime/cache', $rootDir . '/runtime/templates_c', $rootDir . '/runtime/logs',));
+            $filesistem->mkdir(array($rootDir . '/runtime/cache', $rootDir . '/runtime/templates', $rootDir . '/runtime/logs',));
             $output->writeln('<info>Create "runtime" dir</info>');
         }
 
@@ -96,17 +91,5 @@ class StaticCommand extends Command
             ], ['?yui_js'], ['output' => 'static/admin.js']);
         $writer->writeAsset($collection);
         $output->writeln('<info>"admin.js" created.</info>');
-    }
-
-    public function installRequireJs(StaticEvent $event)
-    {
-        /** @var AssetWriter $writer */
-        $writer = $this->container->get('asset.writer');
-
-        /** @var AssetCollection $asset */
-        $asset = $this->container->get('asset.service')->getAsseticCollection('require_js');
-        $writer->writeAsset($asset);
-
-        $event->getOutput()->writeln(sprintf('<info>Js "%s" was updated.</info>', $asset->getTargetPath()));
     }
 }

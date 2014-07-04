@@ -2,7 +2,7 @@
 <html lang="{$request->getLocale()}">
 <head>
     {style file="@root:static/system/jquery/fancybox/jquery.fancybox-1.3.1.css" filters='cssrewrite,?yui_css' output="static/site/fancybox.css"}
-    {style file="@root:components/bootstrap/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="static/site/style.css"}
+    {style file="@root:static/system/vendor/twbs/css/bootstrap.css,@theme:css/style.css" filters='cssrewrite,?yui_css' output="static/site/style.css"}
 </head>
 <body>
 <div class="container">
@@ -36,7 +36,7 @@
     </div>
 </div>
 {include file="footer.tpl"}
-{js file="@root:components/jquery/jquery.js" filters='?yui_js'  output="static/site/jquery.js"}
-{js file="@root:static/system/jquery/fancybox/jquery.fancybox-1.3.1.js,@theme:js/script.js" filters='?yui_js'  output="static/site/script.js"}
+{js file="@root:static/system/vendor/jquery-1.11.1.min.js" output="static/site/jquery.js"}
+{js file="@root:static/system/jquery/fancybox/jquery.fancybox-1.3.1.js,@theme:js/script.js" filters="?yui_js"  output="static/site/script.js"}
 </body>
 </html>

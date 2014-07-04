@@ -48,24 +48,22 @@ class Admin extends Layout
 
         $rjsConfig = [
             'baseUrl'=> '/static',
-            'packages' => [
-                ['name' => 'underscore', 'main' => 'underscore-built.js'],
-                ['name' => 'backbone', 'main' => 'backbone-built.js'],
-                ['name' => 'bootstrap', 'main' => 'bootstrap-built.js'],
-                ['name' => 'jquery', 'main' => 'jquery-built.js'],
-                ['name' => 'jquery-ui', 'main' => 'jquery-ui-built.js'],
+            'config' => [
+                'locale' => $request->getLocale(),
             ],
-            'config' => [],
             'shim' => [
-                'backbone' => ['deps' => ['underscore'], 'exports' => 'Backbone'],
-                'bootstrap' => ['deps' => ['jquery'], 'exports' => 'jquery'],
                 'jquery-ui' => ['deps' => ['jquery'], 'exports' => 'jquery'],
+                'bootstrap' => ['deps' => ['jquery'], 'exports' => 'jquery'],
+                'backbone' => ['deps' => ['underscore'], 'exports' => 'Backbone'],
                 'underscore' => ['exports' => '_'],
             ],
             'paths'=> [
-                'components' => '../components',
-                'misc' => '../misc',
-                'fancybox' => 'system/jquery/fancybox/jquery.fancybox-1.3.1' . ($this->app->isDebug() ? '' : '.pack'),
+                'jquery' => 'system/vendor/jquery-1.11.1',
+                'jquery-ui' => 'system/vendor/jquery-ui',
+                'bootstrap' => 'system/vendor/twbs/js/bootstrap',
+                'backbone' => 'system/vendor/backbone',
+                'underscore' => 'system/vendor/underscore',
+                'fancybox' => 'system/jquery/fancybox/jquery.fancybox-1.3.1.pack',
                 'theme' => '/themes/'.$this->config['theme'],
                 'i18n'  => 'i18n/'.$request->getLocale(),
             ],
@@ -73,6 +71,10 @@ class Admin extends Layout
                 '*' => [],
             ],
         ];
+
+        if ('en' != $request->getLocale()) {
+            $rjsConfig['paths']['datepicker_i18n'] = 'system/vendor/jquery-ui/i18n/datepicker-'.$request->getLocale();
+        }
 
         if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
             $rjsConfig['config']['system/editor/ckeditor'] = array(
@@ -101,8 +103,7 @@ class Admin extends Layout
             : json_encode($rjsConfig, JSON_NUMERIC_CHECK);
 
         $return[] = '<script type="text/javascript">var require = '.$json.';</script>';
-        $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='system/app'></script>";
-//        $return[] = "<script type='text/javascript' src='/static/require-vendors.js' data-main='admin'></script>";
+        $return[] = "<script type='text/javascript' src='/static/system/vendor/require.js' data-main='system/app'></script>";
 
         return join(PHP_EOL, $return);
     }

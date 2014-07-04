@@ -1,5 +1,6 @@
 /api.zip
 /app/parameters.yml
+!/bin/console
 /bin/
 /components
 /build/release
@@ -9,7 +10,6 @@
 /files/.quarantine
 /files/.tmb
 /thumbs/
-/logger.txt
 /vendor/*
 /static/
 /composer.phar
