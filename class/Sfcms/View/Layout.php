@@ -5,8 +5,6 @@
  */
 namespace Sfcms\View;
 
-use Assetic\AssetManager;
-use Assetic\AssetWriter;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Request;
 
@@ -37,8 +35,6 @@ class Layout extends ViewAbstract
             ));
 
         $this->selectLayout($event->getRequest())->view($event);
-
-        $this->app->getContainer()->get('asset.writer');
 
         $content = $event->getResponse()->getContent();
         $content = str_replace('<head>', '<head>' . PHP_EOL . $this->getHead($event->getRequest()), $content);

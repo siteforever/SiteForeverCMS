@@ -27,7 +27,7 @@ class JqGridPass implements CompilerPassInterface
             return;
         }
 
-        $source = ROOT . '/vendor/tonytomov/jqGrid';
+        $source = $container->getParameter('root') . '/vendor/tonytomov/jqGrid';
         $asseticService = $container->getDefinition('asset.service');
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.jqgrid_js'));
 

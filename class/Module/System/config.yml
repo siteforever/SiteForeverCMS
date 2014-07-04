@@ -24,7 +24,7 @@ services:
 
     system.require_js.listener:
         class: Module\System\Subscriber\RequireJsListener
-        arguments: [ "@asset.service", "@asset.writer" ]
+        arguments: [ "@asset.service" ]
         tags:
             - { name: event.listener, event: static.install, method: installRequireJs }
 

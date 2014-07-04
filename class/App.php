@@ -54,7 +54,7 @@ class App extends AbstractKernel
         $this->flushDebug();
         $response->prepare($request);
         $response->send();
-        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_RESPONSE_SENT, new KernelEvent($response, $request));
+        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_TERMINATE, new KernelEvent($response, $request));
     }
 
     /**
@@ -252,6 +252,7 @@ class App extends AbstractKernel
             $Layout = new Layout($this, $this->getContainer()->getParameter('template'));
         }
         $Layout->view($event);
+
         $this->getLogger()->info(sprintf('Invoke layout: %.3f sec', $watch->stop(__FUNCTION__)->getDuration() / 1000));
         return $event;
     }

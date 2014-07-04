@@ -27,15 +27,15 @@ services:
             - [setDebug, [%debug%]]
 #            - [addWorker, [@asset.cache_boosting.worker]]
 
-    asset.writer:
-        class: Assetic\AssetWriter
-        arguments: ["%assetic.output%"]
-        calls:
-            - [writeManagerAssets, ["@asset.manager"]]
+    asset.writer.listener:
+        class: Module\System\Subscriber\AssetWriteListener
+        arguments: ["@asset.manager", "%assetic.output%"]
+        tags:
+            - { name: event.listener, event: kernel.terminate, method: writeAllAssets }
 
     asset.service:
         class: Module\System\Service\AsseticService
-        arguments: ["@asset.factory", "@service_container"]
+        arguments: ["@asset.factory", "@service_container", "%assetic.output%"]
 
     smarty.plugin.asset:
         class: Module\System\Plugin\AssetPlugin

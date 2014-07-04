@@ -25,10 +25,10 @@ class RequireJsListener
     /** @var AsseticService */
     protected $assetService;
 
-    function __construct(AsseticService $assetService, AssetWriter $assetWriter)
+    function __construct(AsseticService $assetService)
     {
         $this->assetService = $assetService;
-        $this->assetWriter = $assetWriter;
+        $this->assetWriter = new AssetWriter($assetService->getDir());
     }
 
     public function installRequireJs(StaticEvent $event)

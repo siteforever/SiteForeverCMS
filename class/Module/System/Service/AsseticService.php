@@ -21,15 +21,35 @@ class AsseticService extends ContainerAware
 
     private $asseticNames = array();
 
-    public function __construct(AssetFactory $factory, ContainerInterface $container)
+    /** @var string */
+    private $dir;
+
+    public function __construct(AssetFactory $factory, ContainerInterface $container, $dir = null)
     {
         $this->factory = $factory;
+        $this->dir = $dir;
         $this->setContainer($container);
     }
 
     public function addAsseticName($name)
     {
         $this->asseticNames[] = $name;
+    }
+
+    /**
+     * @return AssetFactory
+     */
+    public function getFactory()
+    {
+        return $this->factory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDir()
+    {
+        return $this->dir;
     }
 
     /**
