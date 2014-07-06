@@ -259,6 +259,7 @@ class NewsController extends Controller
             }
         }
 
+        $news = null;
         if ($id) {
             $news   = $categoryModel->find($id);
             $form->setData( $news->getAttributes() );

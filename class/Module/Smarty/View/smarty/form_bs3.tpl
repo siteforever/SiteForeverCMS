@@ -67,7 +67,7 @@
     {if $attr.readonly} readonly="readonly"{/if}
     {if $attr.disabled} disabled="disabled"{/if}
     {if ! $attr.autocomplete} autocomplete="off"{/if}
-    {if $attr.value and 'password' != $attr.type and 'textarea' != $attr.type} value="{$attr.value}"{/if}
+    {if $attr.value and 'password' != $attr.type and 'textarea' != $attr.type} value="{$attr.value|escape}"{/if}
     {if !empty($attr.placeholder)} placeholder="{$attr.placeholder}"{/if}
 {/strip}{/function}{*
 
