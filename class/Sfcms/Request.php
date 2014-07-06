@@ -366,7 +366,6 @@ class Request extends SymfonyRequest
      */
     public function getFeedbackString($sep = "<br />\n", $type = 'default')
     {
-        trigger_error('Will remove since 0.8', E_USER_DEPRECATED);
         $ret = '';
         $feedback = $this->getFeedback($type);
         if (count($feedback)) {

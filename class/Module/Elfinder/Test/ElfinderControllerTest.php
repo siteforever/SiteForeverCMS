@@ -7,7 +7,6 @@
 namespace Module\System\Test;
 
 use Sfcms\Test\WebCase;
-use Symfony\Component\DomCrawler\Crawler;
 
 class ElfinderControllerTest extends WebCase
 {
@@ -15,10 +14,13 @@ class ElfinderControllerTest extends WebCase
     {
         $this->session->set('user_id', 1);
         $response = $this->runController('Elfinder', 'finder');
-        $crawler = new Crawler();
-        $crawler->addHtmlContent($response->getContent());
-        $finder = $crawler->filterXPath('//div[@id="elfinder"]');
+        $crawler = $this->createCrawler($response);
+        $finder = $crawler->filter('#elfinder');
         $this->assertEquals('Загрузка', $finder->text());
+
+//        $response = $this->runRequest('http://cms.sf/elfinder/finder?CKEditor=structure_notice&CKEditorFuncNum=1&langCode=ru');
+//        print $response->getContent();
+//        $this->assertNotContains('Whoops, looks like something went wrong.', $response->getContent());
     }
 
     public function testConnectorAction()

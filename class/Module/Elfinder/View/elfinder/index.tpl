@@ -4,9 +4,11 @@
 <!--[if IE 8]> <html class="no-js lt-ie9" lang="{$request->getLocale()}"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="{$request->getLocale()}"> <!--<![endif]-->
 {style file=[
-"@root:components/jquery-ui/themes/flick/jquery-ui.css",
+"@root:static/system/vendor/jquery-ui/jquery-ui.min.css",
+"@root:static/system/vendor/jquery-ui/jquery-ui.structure.min.css",
+"@root:static/system/vendor/jquery-ui/jquery-ui.theme.min.css",
 "@root:static/admin/jquery/elfinder/elfinder.css"
-] filters="cssrewrite" output="static/css/elfinder-index.css"}
+] filters="cssrewrite" output="static/cms/elfinder.css"}
 <head>
 </head>
 <body style="overflow: hidden; margin: 0">

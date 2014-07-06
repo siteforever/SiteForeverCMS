@@ -72,9 +72,7 @@ class Admin extends Layout
             ],
         ];
 
-        if ('en' != $request->getLocale()) {
-            $rjsConfig['paths']['datepicker_i18n'] = 'system/vendor/jquery-ui/i18n/datepicker-'.$request->getLocale();
-        }
+        $rjsConfig['paths']['datepicker_i18n'] = 'system/vendor/jquery-ui/i18n/datepicker-'.$request->getLocale();
 
         if (file_exists(ROOT . '/' . $this->path['css'] . '/wysiwyg.css')) {
             $rjsConfig['config']['system/editor/ckeditor'] = array(

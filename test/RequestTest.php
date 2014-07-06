@@ -202,37 +202,6 @@ class RequestTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->request->getTitle(), 'My content', 'Broken title information');
     }
 
-    /**
-     */
-    public function testAddFeedback()
-    {
-        $this->request->addFeedback('Test');
-        $feedback   = $this->request->getFeedback();
-        $this->assertTrue( in_array( 'Test', $feedback ), 'Feedback Test not found' );
-    }
-
-    /**
-     */
-    public function testGetFeedback()
-    {
-        $this->request->addFeedback('Test');
-        $feedback   = $this->request->getFeedback();
-        $this->assertTrue( in_array( 'Test', $feedback ), 'Feedback Test not found' );
-        $this->request->addFeedback(array('Test1', 'Test2'));
-        $feedback   = $this->request->getFeedback();
-        $this->assertTrue( in_array( 'Test1', $feedback ), 'Feedback Test1 not found' );
-        $this->assertTrue( in_array( 'Test2', $feedback ), 'Feedback Test2 not found' );
-    }
-
-    /**
-     */
-    public function testGetFeedbackString()
-    {
-        $this->request->addFeedback('Test1');
-        $this->request->addFeedback('Test2');
-        $this->assertEquals( $this->request->getFeedbackString("\n"), "Test1\nTest2", 'Feedback String fail' );
-    }
-
 /*    public function testGetResponseAsXML()
     {
         $this->request->setResponseError(10,'test error');

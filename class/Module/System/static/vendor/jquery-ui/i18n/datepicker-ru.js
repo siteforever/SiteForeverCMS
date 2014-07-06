@@ -1,10 +1,10 @@
 /* Russian (UTF-8) initialisation for the jQuery UI date picker plugin. */
 /* Written by Andrew Stromnov (stromnov@gmail.com). */
-(function (factory) {
-    // Browser globals
-    factory(jQuery.datepicker);
-}(function (datepicker) {
-    datepicker.regional['ru'] = {
+define('datepicker_i18n', [
+    'jquery',
+    'jquery-ui'
+], function ($) {
+    $.datepicker.regional['ru'] = {
         closeText: 'Закрыть',
         prevText: '&#x3C;Пред',
         nextText: 'След&#x3E;',
@@ -26,7 +26,7 @@
         changeYear: true,
         showButtonPanel: true
     };
-    datepicker.setDefaults(datepicker.regional['ru']);
+    $.datepicker.setDefaults($.datepicker.regional['ru']);
 
-    return datepicker.regional['ru'];
-}));
+    return $.datepicker.regional['ru'];
+});

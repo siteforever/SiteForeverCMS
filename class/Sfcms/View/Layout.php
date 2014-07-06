@@ -30,6 +30,7 @@ class Layout extends ViewAbstract
                 'resource' => $event->getRequest()->get('resource'),
                 'template' => $event->getRequest()->getTemplate(),
                 'feedback' => $event->getRequest()->getFeedbackString(),
+                'flash'    => $event->getRequest()->getSession()->getFlashBag(),
                 'host'     => $event->getRequest()->getHost(),
                 'request'  => $event->getRequest(),
             ));
