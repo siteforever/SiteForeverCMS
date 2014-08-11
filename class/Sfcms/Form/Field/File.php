@@ -25,7 +25,12 @@ class File extends FormFieldAbstract
      */
     public function setValue($value)
     {
-        $this->supportValue($value);
+        try {
+            $this->supportValue($value);
+        } catch (\InvalidArgumentException $e) {
+            $this->msg = $e->getMessage();
+            return $this;
+        }
         /** @var UploadedFile $value */
         $this->value = $value;
         $this->fileName = $value->getFilename();
@@ -57,13 +62,18 @@ class File extends FormFieldAbstract
 
     protected function checkValue($value)
     {
-        $this->supportValue($value);
+        try {
+            $this->supportValue($value);
+        } catch (\InvalidArgumentException $e) {
+            $this->msg = $e->getMessage();
+            return false;
+        }
         /** @var UploadedFile $value */
         $mime = $this->options['mime'];
         $size = $this->options['size'];
 
         if (!in_array($this->getMime(), $mime)) {
-            $this->msg = array('Unsupported type %mime%', 'mime'=>$this->getMime());
+            $this->msg = array('Unsupported type %mime%', '%mime%'=>$this->getMime());
             return false;
         }
 
@@ -86,12 +96,13 @@ class File extends FormFieldAbstract
 
     /**
      * @param $dir
+     * @param $name
      *
      * @return \Symfony\Component\HttpFoundation\File\File
      */
-    public function moveTo($dir)
+    public function moveTo($dir, $name = null)
     {
-        return $this->value->move($dir);
+        return $this->value->move($dir, $name);
     }
 
     /**

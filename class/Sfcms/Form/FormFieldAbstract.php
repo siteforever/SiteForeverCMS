@@ -41,7 +41,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
      * Текст ошибки поля
      * @var string
      */
-    protected   $msg  = '';
+    protected   $msg;
 
     /**
      * Создаем поле формы
