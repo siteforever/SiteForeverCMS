@@ -26,12 +26,20 @@ class FeedbackController extends Controller
 
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
-                $this->sendmail(
+                $location = $this->container->getParameter('root') . '/files/attachment';
+                /** @var Sfcms\Form\Field\File $fileFiled */
+                $fileFiled = $form->getChild('image');
+                $targetFile = $fileFiled->moveTo($location);
+
+                $message = $this->createMessage(
                     $form->email,
                     $this->config->get('admin'),
                     $this->t('Message from site') . ' :' . $form->title,
                     $form->message
                 );
+                $message->attach(new \Swift_Attachment($targetFile->getPathname()));
+                $this->sendMessage($message);
+
                 $form->message->clear();
                 $form->title->clear();
                 $this->request->addFeedback('Your message was sent');

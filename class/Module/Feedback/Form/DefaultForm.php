@@ -14,24 +14,33 @@ class DefaultForm extends Form
     {
         return parent::__construct( array(
             'name'      => 'feedback',
+            'enctype'   => 'multipart/form-data',
             'fields'    => array(
                 'name'      => array(
                     'type'      => 'text',
-                    'label'     => 'Ваше имя',
+                    'label'     => 'You name',
                     'required',
                 ),
                 'email'     => array(
                     'type'      => 'text',
-                    'label'     => 'Email',
+                    'label'     => 'You email',
+                    'filter'    => 'email',
                     'required',
                 ),
                 'title'     => array(
                     'type'      => 'text',
-                    'label'     => 'Тема',
+                    'label'     => 'Subject',
                 ),
                 'message'   => array(
                     'type'      => 'textarea',
-                    'label'     => 'Сообщение'
+                    'label'     => 'Message'
+                ),
+                'image' => array(
+                    'type'      => 'file',
+                    'mime'      => array('image/png','image/jpeg','image/gif'),
+                    'size'      => array('max' => 100 * 1024),
+                    'multiple'  => true,
+                    'label'     => 'Attach image',
                 ),
                 'submit'    => array(
                     'type'      => 'submit',

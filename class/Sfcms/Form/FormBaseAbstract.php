@@ -63,6 +63,10 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
                 'id'        => '',
                 'validate'  => false,
                 'method'    => 'post',
+                'enctype'   => null,
+            ));
+        $resolver->setAllowedValues(array(
+                'enctype'=> array(null, 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain'),
             ));
         $options = $this->options = $resolver->resolve($options);
 
@@ -100,6 +104,7 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
                 'method' => $this->getMethod(),
                 'class' => $this->getClass(),
                 'errors' => $this->getErrors(),
+                'enctype' => $this->options['enctype'],
                 'validate' => $this->htmlValidate,
             ),
         );

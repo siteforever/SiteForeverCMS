@@ -292,15 +292,42 @@ abstract class Controller extends ContainerAware
      */
     public function sendmail($from, $to, $subject, $msg, $mime_type = 'text/plain')
     {
+        $message = $this->createMessage($from, $to, $subject, $msg, $mime_type);
+
+        return $this->sendMessage($message);
+    }
+
+    /**
+     * @param        $from
+     * @param        $to
+     * @param        $subject
+     * @param        $msg
+     * @param string $mime_type
+     *
+     * @return \Swift_Message
+     */
+    public function createMessage($from, $to, $subject, $msg, $mime_type = 'text/plain')
+    {
         /** @var $message \Swift_Message */
         $message = $this->getMailer()->createMessage();
         $message
             ->setSubject($subject)
             ->setFrom($from)
             ->setTo($to)
-            ->setBody($msg, $mime_type, 'utf-8');
+            ->setBody($msg, $mime_type, 'utf-8')
+        ;
 
-        $this->get('logger')->info(sprintf('Send email from %s to %s', $from, join(', ', (array) $to)));
+        return $message;
+    }
+
+    /**
+     * @param \Swift_Message $message
+     *
+     * @return int
+     */
+    public function sendMessage(\Swift_Message $message)
+    {
+        //$this->get('logger')->info(sprintf('Send email from %s to %s', $message->getFrom(), join(', ', array_keys($message->getTo()))));
         return $this->getMailer()->send($message);
     }
 

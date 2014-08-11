@@ -1,3 +1,11 @@
-'Feedback': 'Обратная связь'
-'Message from site': 'Сообщение с сайта'
-'Your message was sent': 'Ваше сообщение отправлено'
+Feedback: 'Обратная связь'
+Message from site: 'Сообщение с сайта'
+Your message was sent: 'Ваше сообщение отправлено'
+You name: Ваше имя
+You email: Ваш email
+Subject: Тема
+Message: Сообщение
+Attach image: Прикрепить изображение
+'File size should be no more than %size% Kb': 'Размер файла должен быть не более %size% Кб'
+'File size should not be less than %size% Kb': 'Размер файла должен быть не менее %size% Кб'
+'Unsupported type %mime%': 'Неподдерживаемый тип %mime%'

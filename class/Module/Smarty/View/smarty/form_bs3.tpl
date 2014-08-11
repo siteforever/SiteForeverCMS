@@ -4,6 +4,7 @@
     <form name="form_{$attr.name}" id="form_{$attr.id}" role="form" method="{$attr.method}"
             {if not $attr.validate} novalidate="novalidate"{/if}
             {if $class} class="{$class}"{/if}
+            {if $attr.enctype} enctype="{$attr.enctype}"{/if}
             {if $attr.action} action="{$attr.action}"{/if}>
 {/strip}{/function}{*
 
@@ -63,6 +64,8 @@
 
     name="{$form->parent->vars.attr.name}[{$attr.name}]"
 
+    {if isset($attr.multiple) && $attr.multiple} multiple="multiple"{/if}
+    {if isset($attr.formenctype)} formenctype="{$attr.formenctype}"{/if}
     {if $attr.required} required="required"{/if}
     {if $attr.readonly} readonly="readonly"{/if}
     {if $attr.disabled} disabled="disabled"{/if}

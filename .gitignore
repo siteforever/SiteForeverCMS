@@ -1,13 +1,13 @@
 /app/parameters.yml
+/app/bootstrap.php.cache
 /bin/*
 !bin/console
 !bin/pngout
-!bin/yuicompressor-2.4.7.jar
+!bin/yuicompressor-*.jar
 /build/release
 /runtime/*
 /test/codeCoverage
-/files/.quarantine
-/files/.tmb
+/files/*
 /thumbs/*
 /vendor/*
 /static/*

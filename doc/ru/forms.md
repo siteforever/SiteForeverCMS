@@ -98,3 +98,66 @@
 Если используется twitter bootstrap3, то можно указать шаблон:
 
     {include file="smarty/form_bs3.tpl"}
+
+### Работа с полем файла
+
+Определение формы:
+
+``` php
+use Sfcms\Form\Form;
+
+class FeedbackForm extends Form
+{
+    public function __construct()
+    {
+        return parent::__construct([
+               'name'      => 'feedback',
+               'action'    => 'feedback',
+               'enctype'   => 'multipart/form-data',
+               'fields'    => [
+                   'name'     => ['type'=>'text', 'label'=>'Name', 'required'],
+                   'email'    => ['type'=>'text', 'label'=>'Email', 'filter' => 'email', 'required'],
+                   'message'  => ['type'=>'textarea','label'=>'Message', 'required'],
+                   'image' => [
+                       'type'      => 'file',
+                       'mime'      => ['image/png','image/jpeg','image/gif'],
+                       'size'      => ['max' => 1024 * 1024],
+                       'multiple'  => true,
+                       'label'     => 'Attach image',
+                   ],
+                   'submit'    => ['type'=>'submit', 'value'=>'Enter'],
+               ],
+           ]);
+    }
+}
+```
+
+Обработка формы:
+
+``` php
+class FeedbackController
+
+    $form = new FeedbackForm();
+
+    if ($form->handleRequest($this->request)) {
+        if ($form->validate()) {
+            $location = $this->container->getParameter('root') . '/files/attachment';
+            /** @var Sfcms\Form\Field\File $fileFiled */
+            $fileFiled = $form->getChild('image');
+            $fileFiled->moveTo($location);
+            $message = $this->createMessage(
+                $form->email,
+                $this->container->getParameter('admin'),
+                $this->t('Message from site') . ' :' . $form->title,
+                $form->message
+            );
+            $message->attach(new \Swift_Attachment($location . '/' . $fileFiled->getOriginalName()));
+            $this->sendMessage($message);
+
+            $form->message->clear();
+            $form->title->clear();
+            $this->request->addFeedback('Your message was sent');
+        }
+    }
+
+```

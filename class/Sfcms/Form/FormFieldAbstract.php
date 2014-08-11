@@ -73,23 +73,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
         $resolver->setRequired(array(
                 'name'
             ));
-        $resolver->setDefaults(array(
-                'type'      => $this->getType(),
-                'class'     => $this->getClass(),
-                'id'        => $this->getId(),
-                'label'     => $this->getLabel(),
-                'notice'    => $this->notice,
-                'value'     => '',
-                'hidden'    => $this->hidden,
-                'disable'   => $this->disabled,
-                'readonly'  => $this->readonly,
-                'required'  => $this->required,
-                'variants'  => array(),
-                'multiple'  => false,
-                'placeholder' => '',
-                'autocomplete'  => true,
-                'filter'    => $this->filter,
-            ));
+        $resolver->setDefaults($this->getDefaultOptions());
         $options = $this->options = $resolver->resolve($options);
 
         $this->name = $options['name'];
@@ -122,6 +106,27 @@ abstract class FormFieldAbstract extends FormTypeAbstract
         }
 
         $this->options   = $options;
+    }
+
+    protected function getDefaultOptions()
+    {
+        return array(
+            'type'      => $this->getType(),
+            'class'     => $this->getClass(),
+            'id'        => $this->getId(),
+            'label'     => $this->getLabel(),
+            'notice'    => $this->notice,
+            'value'     => '',
+            'hidden'    => $this->hidden,
+            'disable'   => $this->disabled,
+            'readonly'  => $this->readonly,
+            'required'  => $this->required,
+            'variants'  => array(),
+            'multiple'  => false,
+            'placeholder' => '',
+            'autocomplete'  => true,
+            'filter'    => $this->filter,
+        );
     }
 
     public function createView(SymfonyFormView $parentView = null)
