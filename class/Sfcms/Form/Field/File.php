@@ -86,12 +86,13 @@ class File extends FormFieldAbstract
 
     /**
      * @param $dir
+     * @param $name
      *
      * @return \Symfony\Component\HttpFoundation\File\File
      */
-    public function moveTo($dir)
+    public function moveTo($dir, $name = null)
     {
-        return $this->value->move($dir);
+        return $this->value->move($dir, $name);
     }
 
     /**
