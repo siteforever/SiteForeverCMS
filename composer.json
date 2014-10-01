@@ -52,7 +52,7 @@
         "kriswallsmith/assetic": "~1.1",
         "twbs/bootstrap": ">=3.2.0,<3.3",
         "ckeditor/ckeditor_full": "4.3.*",
-        "helios-ag/fm-elfinder": "v2.0",
+        "Studio-42/elFinder": "2.1",
         "tonytomov/jqGrid" : "4.4",
         "mrclay/minify": "2.1.*",
         "natxet/cssmin": "3.0.*"
@@ -67,6 +67,17 @@
                     "type":"git",
                     "url":"https://github.com/tonytomov/jqGrid",
                     "reference":"tags/v4.4.5"
+                }
+            }
+        },
+        {
+            "type":"package",
+            "package":{
+                "name":"Studio-42/elFinder",
+                "version":"2.1",
+                "dist": {
+                    "url": "https://codeload.github.com/Studio-42/elFinder/zip/2.1",
+                    "type": "zip"
                 }
             }
         },

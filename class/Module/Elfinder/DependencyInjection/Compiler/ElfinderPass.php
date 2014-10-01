@@ -27,7 +27,7 @@ class ElfinderPass implements CompilerPassInterface
             return;
         }
 
-        $source = ROOT . '/vendor/helios-ag/fm-elfinder/FM/elfinder/js';
+        $source = ROOT . '/vendor/Studio-42/elFinder/js';
         $asseticService = $container->getDefinition('asset.service');
         $asseticService->addMethodCall('addAsseticName', array('assetic.assets.elfinder_js'));
         $container->setParameter('assetic.assets.elfinder_js', array(
