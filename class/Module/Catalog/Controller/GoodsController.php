@@ -7,11 +7,11 @@
 namespace Module\Catalog\Controller;
 
 use App;
+use Sfcms\Data\Collection;
 use Sfcms\Form\Form;
 use Sfcms\Request;
 use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
-use Sfcms\JqGrid\Provider;
 use Sfcms\Yandex\Yml;
 
 class GoodsController extends Controller
@@ -28,7 +28,6 @@ class GoodsController extends Controller
         );
     }
 
-
     /**
      * Поиск товаров
      * @return array
@@ -36,10 +35,10 @@ class GoodsController extends Controller
     public function searchAction()
     {
         $query = filter_var($this->request->get('q'));
-        $query = trim( urldecode( $query ) );
+        $query = trim(urldecode($query));
 
-        if ( strlen( $query ) < 2 ) {
-            return 'Запрос слишком короткий';
+        if (strlen($query) <= 1) {
+            return $this->t('goods', 'Query is too short');
         }
 
         $this->request->setTitle($this->t('goods','Goods search'));
@@ -48,18 +47,21 @@ class GoodsController extends Controller
         /** @var $modelCatalog CatalogModel */
         $modelCatalog  = $this->getModel('Catalog');
 
-        $crit = $modelCatalog->createCriteria();
-        $crit->condition = '`deleted`=0 AND `hidden`=0 AND `protected`=0 AND `cat`=0 AND `absent`!=1 AND '
-            .'( `name` LIKE ? OR `text` LIKE ? )';
-        $crit->params = array("%$query%", "%$query%", );
+        $qb = $modelCatalog->buildGoodsByQuery($query);
 
-        $count = $modelCatalog->count($crit);
+        $qbCount = clone $qb;
+        $qbCount->select('COUNT(*)')->setMaxResults(1);
+        $count = $modelCatalog->getDBAL()->fetchColumn($qbCount->getSQL(), $qbCount->getParameters());
+
         $paging = $this->paging($count, 10, 'goods/search?q='.urlencode($query));
+        $qb->setMaxResults($paging->perpage);
+        $qb->setFirstResult($paging->from);
+        $qb->orderBy('top', 'DESC');
 
-        $crit->limit = $paging->limit;
-        $crit->from = $paging->from;
-        $crit->order = '`top` DESC';
-        $goods = $modelCatalog->findAll($crit);
+        $goods = new Collection(
+            $modelCatalog->getDBAL()->fetchAll($qb->getSQL(), $qb->getParameters()),
+            $modelCatalog
+        );
 
         return $this->render('goods.search', array(
             'query' => $query,

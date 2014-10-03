@@ -5,6 +5,7 @@
  */
 namespace Module\Catalog\Model;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms;
@@ -412,26 +413,32 @@ class CatalogModel extends Model implements EventSubscriberInterface
      *
      * @use GoodsController::searchAction
      *
-     * @return Collection
+     * @return QueryBuilder
      */
-    public function findGoodsByQuery($query, $limit = 10)
+    public function buildGoodsByQuery($query, $limit = 10)
     {
-        $list = $this->getDB()->fetchAll(
-            "SELECT * FROM {$this->getTable()} "
-            . "WHERE `cat` = 0 AND `hidden` = 0 AND `protected` <= ? AND `deleted` = 0 "
-                . "AND ( `name` LIKE ? OR `text` LIKE ? ) "
-            . "LIMIT 10",
-            false,
-            PDO::FETCH_ASSOC,
-            array(
-                $this->app()->getAuth()->getPermission(),
-                '%'.$query.'%',
-                '%'.$query.'%'
-            )
-        );
+        $qb = $this->dbalQueryBuilder();
+        $expr = $qb->expr();
+        $qb->select('*')->where($expr->andX(
+                $expr->eq('t.cat', 0),
+                $expr->eq('t.hidden', 0),
+                $expr->lte('t.protected', ':permission'),
+                $expr->eq('t.deleted', 0),
+                $expr->orX(
+                    $expr->like('t.name', ':name'),
+                    $expr->like('t.text', ':text')
+                )
+            ))->setMaxResults($limit);
 
-        return new Collection($list, $this);
+        $qb
+            ->setParameter(':permission', $this->app()->getAuth()->getPermission())
+            ->setParameter(':name', '%' . $query . '%')
+            ->setParameter(':text', '%' . $query . '%')
+        ;
+
+        return $qb;
     }
+
 
     /**
      * Количество подразделов/товаров по родителю
