@@ -230,6 +230,8 @@ class Collection implements \Iterator
                 $obj->markClean();
             }
             $this->_objects[$num] = $obj;
+        } else {
+            return null;
         }
 
         return $this->_objects[$num];
