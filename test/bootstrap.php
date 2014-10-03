@@ -23,12 +23,14 @@ $hubUri = 'http://localhost:4444/wd/hub';
 $host = 'localhost';
 $port = '1888';
 $startUrl = sprintf('http://%s:%s', $host, $port);
+$travis = false;
 if (!empty($_SERVER['TRAVIS'])) {
+    $travis = true;
     $capabilities['tunnel-identifier'] = $_SERVER['TRAVIS_JOB_ID'];
     $capabilities['build'] = $_SERVER['TRAVIS_BUILD_NUMBER'];
     $capabilities['tags'] = [$_SERVER['TRAVIS_PHP_VERSION'], 'CI'];
-    $hubUri = sprintf('http://%s:%s@localhost:4445/wd/hub', $_SERVER['SAUCE_USERNAME'], $_SERVER['SAUCE_ACCESS_KEY']);
-    $startUrl = sprintf('http://%s:%s', $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT']);
+//    $hubUri = sprintf('http://%s:%s@localhost:4445/wd/hub', $_SERVER['SAUCE_USERNAME'], $_SERVER['SAUCE_ACCESS_KEY']);
+//    $startUrl = sprintf('http://%s:%s', $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT']);
 } else {
     // Command that starts the built-in web server
     $command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!', $host, $port, realpath(__DIR__ . '/..'));
@@ -82,5 +84,5 @@ $mink = new Mink([
     'selenium' => new Session(new Selenium2Driver('firefox', $capabilities, $hubUri)),
     'goutte' => new Session(new GoutteDriver),
 ]);
-$mink->setDefaultSessionName('selenium');
+$mink->setDefaultSessionName($travis ? 'goutte' : 'selenium');
 $mink->getSession()->setCookie('XDEBUG_SESSION', 'PHPSTORM');

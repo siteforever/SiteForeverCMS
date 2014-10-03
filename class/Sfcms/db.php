@@ -163,8 +163,8 @@ final class db
     }
 
     /**
-     * Ресурс \PDO
-     * @return \PDO
+     * Ресурс DBAL
+     * @return Connection
      */
     function getResource()
     {

@@ -2,6 +2,7 @@
 namespace Sfcms;
 
 use App;
+use Doctrine\DBAL;
 use Sfcms\Data\DataManager;
 use Sfcms\Data\Object as DomainObject;
 use Sfcms\Data\Collection;
@@ -118,6 +119,14 @@ abstract class Model extends Component
             static::app()->getLogger()->alert($e->getMessage());
             die($e->getMessage());
         }
+    }
+
+    /**
+     * @return DBAL\Connection
+     */
+    public function getDBAL()
+    {
+        return $this->app()->getContainer()->get('doctrine.connection');
     }
 
     /**
@@ -754,13 +763,23 @@ abstract class Model extends Component
     }
 
     /**
+     * @return DBAL\Query\QueryBuilder
+     */
+    public function dbalQueryBuilder()
+    {
+        $qb = $this->getDBAL()->createQueryBuilder();
+        $qb->from($this->getTable(), 't');
+
+        return $qb;
+    }
+
+    /**
      * Начало транзакции
      * @return void
      */
     public function transaction()
     {
-        $pdo = $this->getDB()->getResource();
-        $pdo->beginTransaction();
+        $this->getDBAL()->beginTransaction();
     }
 
     /**
