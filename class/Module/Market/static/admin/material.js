@@ -8,7 +8,8 @@ define("market/admin/material", [
     "system/module/parser",
     "system/module/modal",
     "i18n",
-    "system/jquery/jquery.form"
+    "system/jquery/jquery.form",
+    "bootstrap"
 ],function ($, parser, Modal) {
     return {
         "init" : function(){

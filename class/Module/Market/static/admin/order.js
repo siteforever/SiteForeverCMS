@@ -4,7 +4,8 @@
  * @link   http://siteforever.ru
  */
 define("market/admin/order", [
-    "jquery"
+    "jquery",
+    "bootstrap"
 ],function($){
     return {
         "behavior" : {

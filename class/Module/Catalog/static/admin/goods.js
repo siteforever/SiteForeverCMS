@@ -4,6 +4,7 @@ define("catalog/admin/goods",[
     "system/module/dialog",
     "system/admin/catalog/gallery",
     "system/admin/catalog/product",
+    "bootstrap",
     "jquery-ui",
     "system/jquery/jquery.blockUI",
     "system/jquery/jquery.jqGrid"

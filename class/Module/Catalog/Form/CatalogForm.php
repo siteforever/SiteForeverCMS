@@ -14,6 +14,30 @@ use Sfcms\Data\DataManager;
 use Sfcms\Form\Form;
 use Sfcms\Model;
 
+/**
+ * Class CatalogForm
+ * @package Module\Catalog\Form
+ *
+ * @property $id
+ * @property $cat
+ * @property $name
+ * @property $parent
+ * @property $type_id
+ * @property $title
+ * @property $keywords
+ * @property $description
+ * @property $path
+ * @property $articul
+ * @property $price1
+ * @property $price2
+ * @property $manufacturer
+ * @property $material
+ * @property $gender
+ * @property $qty
+ * @property $deleted
+ * @property $protected
+ * @property $hidden
+ */
 class CatalogForm extends Form
 {
     protected $filter = null;
@@ -27,19 +51,19 @@ class CatalogForm extends Form
     {
         $this->dataManager = $dataManager;
         /** @var $model CatalogModel */
-        $model   = $dataManager->getModel( 'Catalog' );
+        $model = $dataManager->getModel('Catalog');
         $parents = $model->getCategoryList();
 
-        $manufModel    = $dataManager->getModel( 'Manufacturers' );
-        $manufacturers = $manufModel->findAll( array( 'order'=> 'name' ) );
-        $manufArray    = array('catalog.not_selected') + $manufacturers->column( 'name' );
+        $manufModel = $dataManager->getModel('Manufacturers');
+        $manufacturers = $manufModel->findAll(array('order' => 'name'));
+        $manufArray = array('catalog.not_selected') + $manufacturers->column('name');
 
-        $materialModel = $dataManager->getModel( 'Material' );
-        $materials     = $materialModel->findAll( array( 'cond'=>'active=1', 'order'=> 'name' ) );
-        $materialArray = array('catalog.not_selected') + $materials->column( 'name' );
+        $materialModel = $dataManager->getModel('Material');
+        $materials = $materialModel->findAll(array('cond' => 'active=1', 'order' => 'name'));
+        $materialArray = array('catalog.not_selected') + $materials->column('name');
 
-        $typeModel     = $dataManager->getModel('Catalog.ProductType');
-        $types         = $typeModel->findAll(array('order'=>'name'));
+        $typeModel = $dataManager->getModel('Catalog.ProductType');
+        $types = $typeModel->findAll(array('order' => 'name'));
 
         parent::__construct(array(
             'name'  => 'catalog',
@@ -66,6 +90,10 @@ class CatalogForm extends Form
                     'variants' => array('catalog.not_selected') + $types->column('name'),
                     'required',
                 ),
+
+                'title'      => array('type'=>'text', 'label'=>'catalog.title'),
+                'keywords'      => array('type'=>'text', 'label'=>'catalog.keywords'),
+                'description'      => array('type'=>'textarea', 'label'=>'catalog.description', 'class' => 'plain'),
 
                 'path'      => array('type'=>'hidden'),
 

@@ -6,7 +6,8 @@
 define("market/admin/payment", [
     "jquery",
     "system/module/modal",
-    "i18n"
+    "i18n",
+    "bootstrap"
 ], function($,Modal,i18n){
     return {
         "behavior" : {

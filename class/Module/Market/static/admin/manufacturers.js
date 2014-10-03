@@ -5,7 +5,8 @@
  */
 define("market/admin/manufacturers", [
     "jquery",
-    "system/module/modal"
+    "system/module/modal",
+    "bootstrap"
 ],function($, Modal){
     return {
         "init" : function() {

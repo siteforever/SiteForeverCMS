@@ -11,6 +11,7 @@ define("catalog/admin/catalog", [
     "system/module/alert",
     "system/admin/catalog/gallery",
     "system/admin/catalog/product",
+    "bootstrap",
     "jquery-ui"
 ],function( $, Modal, i18n, $alert, _gallery, _product ){
 

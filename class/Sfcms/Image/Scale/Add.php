@@ -18,8 +18,8 @@ class Sfcms_Image_Scale_Add extends Sfcms_Image_Scale_Abstr
     public function getScalingImage( $width, $height, $color )
     {
         // 1. пропорции
-        $kh = $this->height / $height;
-        $kw = $this->width / $width;
+        $kh = $height ? $this->height / $height : 1;
+        $kw = $width ? $this->width / $width : 1;
 
         $this->k = max( array( $kw, $kh ) );
 

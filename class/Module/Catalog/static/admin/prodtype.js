@@ -8,6 +8,7 @@ define('catalog/admin/prodtype',[
     "jquery",
     "system/module/dialog",
     "i18n",
+    "bootstrap",
     "jquery-ui",
     "system/jquery/jquery.form",
     "system/jquery/jquery.jqGrid"

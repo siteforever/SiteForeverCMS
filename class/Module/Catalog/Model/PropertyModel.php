@@ -7,6 +7,9 @@
 
 namespace Module\Catalog\Model;
 
+use Module\Catalog\Object\Catalog;
+use Module\Catalog\Object\Field;
+use Module\Catalog\Object\Property;
 use Sfcms\Model;
 
 /**
@@ -23,6 +26,18 @@ class PropertyModel extends Model
     {
         return array(
             'Field' => array(self::BELONGS, 'ProductField', 'product_field_id', 'order' => 'pos'),
+        );
+    }
+
+    /**
+     * @param Field $field
+     *
+     * @return Property
+     */
+    public function findProductPropertyByField(Catalog $product, Field $field)
+    {
+        return $this->find(
+            'product_id = ? AND product_field_id = ?', array($product->id, $field->id)
         );
     }
 }

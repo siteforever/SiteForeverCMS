@@ -6,6 +6,8 @@
 namespace Module\Catalog\Model;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Module\Catalog\Object\Field;
+use Module\Catalog\Object\Property;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms;

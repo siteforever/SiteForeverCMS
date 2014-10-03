@@ -14,7 +14,7 @@ use Sfcms\Data\Field\Varchar;
 /**
  * @property int $id
  * @property string $name
- * @property Collection $Fields
+ * @property Collection|Field[] $Fields
  */
 class Type extends Object
 {

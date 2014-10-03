@@ -56,7 +56,7 @@ class GalleryController extends Controller
             $this->tpl->cat = $id;
             return $this->getPanel( $id );
         }
-        return $this->t('Not found parametr ID');
+        return $this->t('Param ID not found');
     }
 
     /**
@@ -156,11 +156,12 @@ class GalleryController extends Controller
 
         /** @var $trade Catalog */
         $trade = $this->getModel('Catalog')->find($prodId);
+        $config = $this->container->getParameter('catalog');
 
         /** @var UploadedFile $file */
         foreach ($this->request->files->get('image') as $file) {
             try {
-                $trade->uploadImage($this->config->get('catalog.gallery_dir') , $file);
+                $trade->uploadImage($config['gallery_dir'], $file);
             } catch (\RuntimeException $e) {
                 $this->request->addFeedback($e->getMessage());
                 continue;

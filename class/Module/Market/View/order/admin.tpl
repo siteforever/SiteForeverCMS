@@ -1,18 +1,25 @@
-<form action="{link url='order/admin'}" method="get" class="well">
-<p><strong>Настройка фильтра</strong></p>
-<div class="input-append">
-    <input class="input-medium" type="text" name="number"
-           value="{$request->get("number")}" placeholder="Номер">
-    <input class="input-medium filterDate"  type="date" name="date"
-           value="{$request->get("date")}" class="datepicker" placeholder="Дата dd.mm.yyyy">
-    <input class="input-medium filterEmail" type="text" name="user"
-           value="{$request->get("user")}" placeholder="Аккаунт">
-    <input type="submit" class="btn" value="Фильтровать" />
-    {a class="btn" controller="order" action="admin"}Сбросить фильтр{/a}
-</div>
-</form>
+<form action="{link url='order/admin'}" method="get" class="well form-inline">
+    <div class="form-group">
+        <strong>Настройка фильтра</strong>
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="text" name="number" value="{$request->get("number")}" placeholder="Номер">
+    </div>
 
-<p></p>
+    <div class="form-group">
+        <input class="form-control filterDate datepicker" type="date" name="date" value="{$request->get("date")}" placeholder="Дата dd.mm.yyyy">
+    </div>
+    <div class="form-group">
+        <input class="form-control filterEmail" type="text" name="user" value="{$request->get("user")}" placeholder="Аккаунт">
+    </div>
+    <div class="form-group">
+        <input class="form-control filterEmail" type="text" name="user" value="{$request->get("user")}" placeholder="Аккаунт">
+    </div>
+    <div class="form-group">
+        <button class="btn btn-default" type="submit">Фильтровать</button>
+        {a class="btn btn-link" controller="order" action="admin"}Сбросить фильтр{/a}
+    </div>
+</form>
 
 <table class="table table-striped">
 <thead>

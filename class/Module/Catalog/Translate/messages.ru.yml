@@ -3,8 +3,6 @@
 'Catalogue': 'Каталог'
 'sorting': 'сортировка по'
 'price': 'цена'
-'price-a': 'цена возр.'
-'price-d': 'цена убыв.'
 'categories': 'категории'
 
 'Message': 'Сообщение'
@@ -17,6 +15,9 @@
 
 catalog:
     name: наименование
+    title: тайтл
+    keywords: ключевые слова
+    description: описание
     not_selected: не выбрано
     category: категория
     product_type: тип товара

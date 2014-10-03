@@ -47,8 +47,8 @@ class Module extends SfModule
                 'Goods'          => array(),
                 'ProdType'       => array(),
                 'Catalog'        => array(),
-                'CatalogGallery' => array( 'class' => 'Controller\Gallery', ),
-                'CatalogComment' => array( 'class' => 'Controller\Comment', ),
+                'CatalogGallery' => array( 'class' => 'Module\Catalog\Controller\GalleryController', ),
+                'CatalogComment' => array( 'class' => 'Module\Catalog\Controller\CommentController', ),
             ),
             'models' => array(
                 'Catalog'         => 'Module\Catalog\Model\CatalogModel',

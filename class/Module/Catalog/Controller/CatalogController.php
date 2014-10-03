@@ -8,6 +8,7 @@ namespace Module\Catalog\Controller;
 use App;
 use Module\Catalog\Form\CatalogForm;
 use Module\Catalog\Form\CommentForm;
+use Module\Catalog\Model\PropertyModel;
 use Module\Catalog\Object\Comment;
 use Sfcms\Controller;
 use Module\Catalog\Model\CatalogModel;
@@ -338,47 +339,48 @@ class CatalogController extends Controller
          * @var CatalogModel $catalogModel
          * @var FormFieldAbstract $field
          * @var Form $form
-         * @var Catalog $object
+         * @var Catalog $catalogEntry
          */
         $catalogModel = $this->getModel('Catalog');
-        $form         = $form = $this->get('catalog.product.form');
+        /** @var CatalogForm $form */
+        $form = $this->get('catalog.product.form');
 
         // Если форма отправлена
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 /** @var $object Catalog */
-                $object = $form->id
-                    ? $catalogModel->find($form->id)
+                $catalogEntry = $form->getChild('id')->getValue()
+                    ? $catalogModel->find($form->getChild('id')->getValue())
                     : $catalogModel->createObject();
+
                 $data = $form->getData();
-                $object->attributes =  $data;
-                if ($object->isStateCreate()) {
-                    $object->save();
+                $catalogEntry->setAttributes($data);
+                if ($catalogEntry->isStateCreate()) {
+                    $catalogEntry->save();
                 }
 
                 // Сохранение внешних полей
-                if ( "0" === $object->cat && $object->type_id ) {
+                if ( "1" != $catalogEntry->cat && $catalogEntry->type_id ) {
+                    /** @var PropertyModel $propModel */
                     $propModel = $this->getModel('ProductProperty');
-                    $type = $object->Type;
-                    $fields = $type->Fields;
+                    $entryType = $catalogEntry->Type;
+                    $fields = $entryType->Fields;
                     $postField = $this->request->request->get('field');
-                    foreach ($fields as $f) {
+                    foreach ($fields as $entryField) {
                         /** @var $property Property */
-                        $property = $propModel->find(
-                            'product_id = ? AND product_field_id = ?', array($object->id, $f->id)
-                        );
+                        $property = $propModel->findProductPropertyByField($catalogEntry, $entryField);
                         if (!$property) {
                             $property = $propModel->createObject();
-                            $property->product_id       = $object->id;
-                            $property->product_field_id = $f->id;
+                            $property->product_id       = $catalogEntry->id;
+                            $property->product_field_id = $entryField->id;
                             $property->markNew();
                         }
-                        $property->pos = $f->pos;
-                        $property->set('value_' . $f->type,  $postField[$f->id]);
+                        $property->pos = $entryField->pos;
+                        $property->set('value_' . $entryField->type,  $postField[$entryField->id]);
                     }
                 }
 
-                if ($object->getId() && $object->getId() == $object->parent) {
+                if ($catalogEntry->getId() && $catalogEntry->getId() == $catalogEntry->parent) {
                     // раздел не может быть замкнут на себя
                     return array('error' => 1, $this->t('The section can not be in myself'));
                 }
@@ -544,7 +546,6 @@ class CatalogController extends Controller
 
         if ($add) {
             $parentId = $add;
-//            $this->app()->getSession()->set('catalogCategory', $add);
         } else {
             $parentId = $this->request->getSession()->get('catalogCategory', 0);
         }
