@@ -12,6 +12,8 @@ class PageControllerMinkTest extends WebCase
 {
     public function testHome()
     {
+        $this->markTestSkipped();
+
         $this->visitPage('/');
         $h1 = $this->getPage()->find('css', 'h1');
         $this->assertNotNull($h1);
@@ -61,6 +63,8 @@ class PageControllerMinkTest extends WebCase
 
     public function testShowHide()
     {
+        $this->markTestSkipped();
+
         $this->loginAsAdmin();
         $this->visitPage('/page/admin');
         $this->assertEquals("Вкл", $this->getTextByCss('#item3 .order_hidden'));

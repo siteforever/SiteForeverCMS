@@ -19,7 +19,7 @@ class TestFileForm extends Form
             'name' => 'test',
             'fields' => array(
                 'name' => array('type'=>'text', 'label'=>'Your name'),
-                'file' => array('type'=>'file', 'label'=>'choose you file'),
+                'file' => array('type'=>'file', 'label'=>'choose you file', 'mime' => ['image/jpeg']),
                 'submit' => array('type'=>'submit', 'value'=>'send file'),
             ),
         ));
