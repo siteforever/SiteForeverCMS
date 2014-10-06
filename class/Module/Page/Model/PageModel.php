@@ -264,7 +264,7 @@ class PageModel extends Model
      * Нужны для составления списка создания страницы в админке
      * @return array|null
      */
-    public function getAvaibleModules()
+    public function getAvailableModules()
     {
         if (is_null($this->availableModules)) {
             $locator = new FileLocator(array(
@@ -418,19 +418,5 @@ class PageModel extends Model
         }
 
         return $return;
-    }
-
-    /**
-     * Вернет объект формы
-     * @return PageForm
-     */
-    public function getForm()
-    {
-        if (!isset( $this->form )) {
-            $this->form = new PageForm();
-            $this->form->getChild('controller')->setVariants($this->getAvaibleModules());
-            $this->form->getChild('protected')->setVariants($this->getModel('User')->getGroups());
-        }
-        return $this->form;
     }
 }

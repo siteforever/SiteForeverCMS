@@ -28,6 +28,10 @@ services:
         tags:
             - { name: event.listener, event: static.install, method: installRequireJs }
 
+    module.manager:
+        class: Module\System\Component\ModuleManager
+        arguments: [ "%sfcms.root%", "%sfcms.path%", "@translator" ]
+
     auth:
         class: Sfcms\Auth
 

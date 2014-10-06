@@ -12,3 +12,7 @@ services:
         arguments: [ @data.manager ]
         tags:
             - { name: event.subscriber }
+
+    page.form.edit:
+        class: Module\Page\Form\PageForm
+        arguments: [ @module.manager, @data.manager, %sfcms.root%, %template% ]

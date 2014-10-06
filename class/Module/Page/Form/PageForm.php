@@ -2,6 +2,8 @@
 namespace Module\Page\Form;
 
 use App;
+use Module\System\Component\ModuleManager;
+use Sfcms\Data\DataManager;
 use SimpleXMLElement;
 use Sfcms\Model;
 
@@ -13,7 +15,7 @@ use Sfcms\Model;
  */
 class PageForm extends \Sfcms\Form\Form
 {
-    public function __construct()
+    public function __construct(ModuleManager $moduleManager, DataManager $dataManager, $rootPath, array $config)
     {
         parent::__construct(
             array(
@@ -28,7 +30,7 @@ class PageForm extends \Sfcms\Form\Form
                     'parent' => array(
                         'type' => 'select',
                         'label' => 'Parent',
-                        'variants' => \App::cms()->getDataManager()->getModel('Page')->getSelectOptions(),
+                        'variants' => $dataManager->getModel('Page')->getSelectOptions(),
                         'value' => '0',
                     ),
                     'name'       => array(
@@ -40,7 +42,7 @@ class PageForm extends \Sfcms\Form\Form
                         'type' => 'select',
                         'label'=> 'Шаблон',
                         'value'=> 'inner',
-                        'variants' => $this->getTemplatesList(),
+                        'variants' => $this->getTemplatesList($rootPath, $config),
                         'required'
                     ),
                     //'uri'       => array('type'=>'text','label'=>'Псевдоним', 'value='=>'', 'hidden'),
@@ -74,7 +76,7 @@ class PageForm extends \Sfcms\Form\Form
                     'controller' => array(
                         'type'      => 'select',
                         'label'     => 'Контроллер',
-                        'variants'  => App::cms()->getModel('Page')->getAvaibleModules(),
+                        'variants'  => $moduleManager->getAvailableModules(),
                         'required',
                     ),
                     'link'       => array(
@@ -162,20 +164,22 @@ class PageForm extends \Sfcms\Form\Form
                 ),
             )
         );
+
+        $this->getChild('controller')->setVariants($moduleManager->getAvailableModules());
+        $this->getChild('protected')->setVariants($dataManager->getModel('User')->getGroups());
     }
 
     /**
      * Список шаблонов для нужной темы
      * @return array
      */
-    protected function getTemplatesList()
+    protected function getTemplatesList($rootPath, $config)
     {
         $templates = array('index'=>'Main', 'inner'=>'Inner');
 
-        $config = App::cms()->getContainer()->getParameter('template');
         $theme = $config['theme'];
 
-        $themePath = ROOT . '/themes/' . $theme;
+        $themePath = $rootPath . '/themes/' . $theme;
         $themeXMLFile = $themePath . '/theme.xml';
 
         if (file_exists($themeXMLFile)) {

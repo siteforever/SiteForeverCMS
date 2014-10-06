@@ -124,7 +124,7 @@ class PageController extends Controller
     {
         /** @var $model PageModel */
         $model = $this->getModel('Page');
-        $modules = $model->getAvaibleModules();
+        $modules = $this->get('module_manager')->getAvailableModules();
 
         if (null === $id) {
             return $this->t('Unknown error');
@@ -162,7 +162,7 @@ class PageController extends Controller
         }
 
         /** @var $form Form */
-        $form = $model->getForm();
+        $form = $this->get('page.form.edit');
 
         $form->setData(array(
             'parent'    => $parent,
@@ -202,7 +202,7 @@ class PageController extends Controller
     {
         /** @var PageModel $model */
         $model = $this->getModel('Page');
-        $form  = $model->getForm();
+        $form  = $this->get('page.form.edit');
 
         if ($edit) {
             // данные страницы
@@ -227,7 +227,7 @@ class PageController extends Controller
         /** @var PageModel $model */
         $model = $this->getModel('Page');
 
-        $form = $model->getForm();
+        $form = $this->get('page.form.edit');
 
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
