@@ -124,7 +124,7 @@ class PageController extends Controller
     {
         /** @var $model PageModel */
         $model = $this->getModel('Page');
-        $modules = $this->get('module_manager')->getAvailableModules();
+        $modules = $this->get('module.manager')->getAvailableModules();
 
         if (null === $id) {
             return $this->t('Unknown error');

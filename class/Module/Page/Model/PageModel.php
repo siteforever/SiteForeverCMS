@@ -4,7 +4,6 @@ namespace Module\Page\Model;
 use SimpleXMLElement;
 
 use Sfcms\Model;
-use Module\Page\Form\PageForm;
 use Module\Page\Object\Page;
 use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
@@ -33,12 +32,6 @@ class PageModel extends Model
     protected $all = null;
 
     public $html = array();
-
-    /**
-     * Форма редактирования
-     * @var Form
-     */
-    private $form = null;
 
     protected $availableModules;
 

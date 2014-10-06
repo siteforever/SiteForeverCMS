@@ -6,18 +6,12 @@
 namespace Module\Catalog\Model;
 
 use Doctrine\DBAL\Query\QueryBuilder;
-use Module\Catalog\Object\Field;
-use Module\Catalog\Object\Property;
-use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
 use Sfcms;
 use Sfcms\JqGrid\Provider;
-use Sfcms\Exception;
 use Sfcms\Model;
-use Sfcms\Data\Object;
 use Module\Catalog\Object\Catalog;
 use Sfcms\Data\Collection;
-use PDO;
 use Sfcms\db;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,6 +106,9 @@ class CatalogModel extends Model implements EventSubscriberInterface
         }
         if (!$category) {
             $category = $this->createObject();
+            $category->cat = 1;
+            $this->save($category, true, true);
+            $page->link = $category->getId();
         }
 
         // Надо скрыть или показать все товары в данной категории, если изменился уровень видимости категории
@@ -133,8 +130,6 @@ class CatalogModel extends Model implements EventSubscriberInterface
         $category->protected    = $page->protected;
         $category->deleted      = $page->deleted;
 
-        $category->cat = 1;
-
         if ($page->parent) {
             /** @var $parentPage Page */
             $parentPage = $pageModel->find($page->parent);
@@ -145,6 +140,8 @@ class CatalogModel extends Model implements EventSubscriberInterface
                 $category->parent = 0;
             }
         }
+
+        $this->save($category, false, true);
         $category->Page = $page;
     }
 

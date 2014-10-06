@@ -64,9 +64,9 @@ class OrderPosition extends Object
     public static function keys()
     {
         return array(
-            'ord_id',
-            'cat_id',
-            'articul',
+            'idx_ord_id' => 'ord_id',
+            'idx_cat_id' => 'cat_id',
+            'idx_articul' => 'articul',
         );
     }
 }

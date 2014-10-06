@@ -28,8 +28,9 @@
     },
     "include-path": ["./", "class/"],
     "require-dev": {
+        "behat/behat": "~3.0",
+        "behat/mink-extension": "~2.0",
         "behat/mink": "~1.5",
-        "behat/mink-browserkit-driver": "~1.1",
         "behat/mink-goutte-driver": "~1.0",
         "behat/mink-selenium2-driver": "~1.1",
         "behat/mink-zombie-driver": "~1.1",
