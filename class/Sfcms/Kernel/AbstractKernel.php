@@ -178,6 +178,7 @@ abstract class AbstractKernel
             'env' => $this->getEnvironment(),
             'sfcms.env' => $this->getEnvironment(),
             'sfcms.cache_dir' => $this->getCachePath(),
+            'sfcms.log_dir' => $this->getLogsPath(),
             'sfcms.charset' => 'utf8',
             'modules' => $modules,
         )));
@@ -198,7 +199,7 @@ abstract class AbstractKernel
         // ensure these extensions are implicitly loaded
         $container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions));
 
-        $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sf_path')));
+        $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sfcms.path')));
         $loader = new YamlFileLoader($container, $locator);
         $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
         $container->set('app', $this);

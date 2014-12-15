@@ -262,7 +262,7 @@ class PageModel extends Model
         if (is_null($this->availableModules)) {
             $locator = new FileLocator(array(
                 $this->app()->getContainer()->getParameter('root'),
-                $this->app()->getContainer()->getParameter('sf_path')
+                $this->app()->getContainer()->getParameter('sfcms.path')
             ));
 
             $controllersFile = $locator->locate('app/controllers.xml');

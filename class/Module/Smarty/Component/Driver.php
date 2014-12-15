@@ -14,9 +14,12 @@ class Driver extends TplDriver
 
     private $config = array();
 
-    public function __construct($config, \Smarty $engine)
+    private $cacheDir;
+
+    public function __construct(\Smarty $engine, $config, $cacheDir)
     {
         $this->config = $config;
+        $this->cacheDir = $cacheDir;
 
         if (!isset($this->config['theme'])) {
             throw new Exception('Theme name in "template[theme]" not defined');
@@ -29,9 +32,14 @@ class Driver extends TplDriver
         }
         $this->ext    = $this->config['ext'];
 
-        $runtime    = ROOT."/runtime";
-        $tpl_c  = $runtime."/templates";
-        $cache  = $runtime."/cache";
+        $tpl_c  = $this->cacheDir . "/templates";
+        $cache  = $this->cacheDir . "/smarty";
+        if (!is_dir($tpl_c)) {
+            @mkdir($tpl_c, 0755, true);
+        }
+        if (!is_dir($cache)) {
+            @mkdir($cache, 0755, true);
+        }
 
         $this->setCplDir($tpl_c);
         $this->setCacheDir($cache);
@@ -46,9 +54,7 @@ class Driver extends TplDriver
     }
 
     /**
-     * Установка кэширования
-     * @param bool $state
-     * @return void
+     * {@inheritdoc}
      */
     public function caching($state = false)
     {

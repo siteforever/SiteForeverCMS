@@ -80,7 +80,7 @@ class App extends AbstractKernel
      */
     public function getLogsPath()
     {
-        return ROOT . '/runtime/logs';
+        return ROOT . '/var/logs';
     }
 
     /**
@@ -88,7 +88,7 @@ class App extends AbstractKernel
      */
     public function getCachePath()
     {
-        return ROOT . '/runtime/cache/' . $this->getEnvironment();
+        return ROOT . '/var/cache/' . $this->getEnvironment();
     }
 
     public function redirectListener(KernelEvent $event)

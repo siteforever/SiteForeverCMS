@@ -22,8 +22,6 @@ see [official doucumentation](http://symfony.com/doc/current/components/routing/
 * modules.php - список подключенных модулей
 * parameters.yml - генерируется через инсталяцию композера
 
-* В каталоге `./runtime` нужно создать доступный на запись каталог `./logs`
-
 * Новый файл index.php взять из репозитория keltanas/site-forever-cms
 * В каталоге `./themes/name/templates` новый файл `theme.xml` с метаописанием темы
 

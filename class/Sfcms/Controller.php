@@ -77,7 +77,7 @@ abstract class Controller extends ContainerAware
     }
 
     /**
-     * @return Driver
+     * @return Driver|\Smarty
      */
     public function getTpl()
     {

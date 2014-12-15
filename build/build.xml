@@ -112,9 +112,9 @@
 
         <mkdir dir="${build_dir}/../files"/>
 
-        <mkdir dir="${build_dir}/../runtime/cache" mode="0755"/>
-        <mkdir dir="${build_dir}/../runtime/logs" mode="0755"/>
-        <mkdir dir="${build_dir}/../runtime/templates" mode="0755"/>
+        <mkdir dir="${build_dir}/../var/cache" mode="0755"/>
+        <mkdir dir="${build_dir}/../var/logs" mode="0755"/>
+        <mkdir dir="${build_dir}/../var/templates" mode="0755"/>
 
         <copy file="${build_dir}/../version.txt" tofile="${build_dir}/version.txt" overwrite="true"/>
         <copy file="${phing.dir}/../license.txt" tofile="${build_dir}/license.txt" overwrite="true"/>
@@ -210,8 +210,8 @@
         <mkdir dir="${destdir}/files"/>
 
         <mkdir dir="${destdir}/protected"/>
-        <mkdir dir="${destdir}/_runtime"/>
-        <mkdir dir="${destdir}/_runtime/_templates_c"/>
+        <mkdir dir="${destdir}/var"/>
+        <mkdir dir="${destdir}/var/templates"/>
         <mkdir dir="${destdir}/protected/config"/>
 
         <!--<symlink link="${destdir}/images" target="${basedir}/images"/>-->
@@ -229,9 +229,9 @@
             <fileset dir="${basedir}/misc"/>
         </copy>
 
-        <mkdir dir="${destdir}/_runtime"/>
+        <mkdir dir="${destdir}/var"/>
         <copy todir="${destdir}/vendors/sxd" overwrite="true">
-            <fileset dir="${basedir}/_runtime/sxd"/>
+            <fileset dir="${basedir}/var/sxd"/>
         </copy>
 
         <mkdir dir="${destdir}/themes"/>
@@ -287,7 +287,7 @@
                 <!--<exclude name=".idea/**"/>-->
                 <!--<exclude name="files/**"/>-->
                 <!--<exclude name="test/**"/>-->
-                <!--<exclude name="protected/_runtime/**"/>-->
+                <!--<exclude name="protected/var/**"/>-->
                 <!--<exclude name="protected/config/**"/>-->
                 <!--<exclude name="functionsTest.php"/>-->
                 <!--<exclude name="build.xml"/>-->
@@ -304,7 +304,7 @@
         <!--</copy>-->
 
         <!--&lt;!&ndash; make other dirs &ndash;&gt;-->
-        <!--<mkdir dir="${destdir}/protected/_runtime/_templates_c"/>-->
+        <!--<mkdir dir="${destdir}/protected/var/templates"/>-->
         <!--<mkdir dir="${destdir}/protected/config"/>-->
         <!--<mkdir dir="${destdir}/files"/>-->
 
@@ -392,21 +392,21 @@
 
 
     <!--<target name="minimify">-->
-        <!--<mkdir dir="_runtime/asset" />-->
-        <!--<delete file="_runtime/asset/admin.js"/>-->
-        <!--<delete file="_runtime/asset/require-jquery.js"/>-->
-        <!--<append destFile="_runtime/asset/require-jquery.js">-->
+        <!--<mkdir dir="var/asset" />-->
+        <!--<delete file="var/asset/admin.js"/>-->
+        <!--<delete file="var/asset/require-jquery.js"/>-->
+        <!--<append destFile="var/asset/require-jquery.js">-->
             <!--<fileset dir="../misc">-->
                 <!--<include name="require-jquery.js"/>-->
             <!--</fileset>-->
         <!--</append>-->
-        <!--<append destFile="_runtime/asset/admin.js">-->
+        <!--<append destFile="var/asset/admin.js">-->
             <!--<fileset dir="../misc">-->
                 <!--<include name="admin/*.js"/>-->
             <!--</fileset>-->
         <!--</append>-->
-        <!--<jsMin targetDir="_runtime/asset" failOnError="true">-->
-            <!--<fileset dir="_runtime/asset">-->
+        <!--<jsMin targetDir="var/asset" failOnError="true">-->
+            <!--<fileset dir="var/asset">-->
                 <!--<include name="require-jquery.js"/>-->
                 <!--<include name="admin.js"/>-->
             <!--</fileset>-->

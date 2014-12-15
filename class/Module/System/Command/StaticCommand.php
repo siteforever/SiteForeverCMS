@@ -36,6 +36,8 @@ class StaticCommand extends Command
         $this->container = $this->getContainer();
         $staticDir = $this->getContainer()->getParameter('assetic.output') . '/static';
         $rootDir = $this->getContainer()->getParameter('root');
+        $cacheDir = $this->getContainer()->getParameter('sfcms.cache_dir');
+        $logsDir = $this->getContainer()->getParameter('sfcms.log_dir');
 
         $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
@@ -49,7 +51,7 @@ class StaticCommand extends Command
 
         if (!$filesistem->exists($staticDir . '/images')) {
             $filesistem->mirror(
-                $this->getContainer()->getParameter('sf_path') . '/class/Module/System/static/images',
+                $this->getContainer()->getParameter('sfcms.path') . '/class/Module/System/static/images',
                 $staticDir . '/images',
                 null,
                 array('override'=>true)
@@ -60,8 +62,8 @@ class StaticCommand extends Command
             $filesistem->mkdir($rootDir . '/files', 0777);
             $output->writeln('<info>Create "files" dir</info>');
         }
-        if (!$filesistem->exists($rootDir . '/runtime')) {
-            $filesistem->mkdir(array($rootDir . '/runtime/cache', $rootDir . '/runtime/templates', $rootDir . '/runtime/logs',));
+        if (!$filesistem->exists($cacheDir)) {
+            $filesistem->mkdir([$cacheDir, $cacheDir . '/templates', $logsDir]);
             $output->writeln('<info>Create "runtime" dir</info>');
         }
 

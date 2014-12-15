@@ -133,8 +133,8 @@ class CatalogController extends Controller
         $templateConfig = $this->container->getParameter('template');
         $this->getTpl()->caching(isset($templateConfig['caching']) && $templateConfig['caching']);
         $cacheKey = sprintf('catalog%d%d%d%d%s', $item->id, $pageNum, $manufacturerId, $materialId, $order);
-        if ($this->getTpl()->isCached('catalog.viewcategory', $cacheKey)) {
-            $response = $response = $this->render('catalog.viewcategory', array(), $cacheKey);
+        if ($this->getTpl()->isCached('catalog.view_category', $cacheKey)) {
+            $response = $response = $this->render('catalog.view_category', [], $cacheKey);
         } else {
             /** @var $catModel CatalogModel */
             $catModel = $this->getModel('Catalog');
@@ -763,7 +763,7 @@ class CatalogController extends Controller
         $content     = 'ничего не удалено';
         if( is_array( $delete_list ) && count( $delete_list ) ) {
             $search = join( ',', $delete_list );
-            if( App::$db->update( $this->getModel('Catalog')->getTable(),
+            if( $this->getDB()->update( $this->getModel('Catalog')->getTable(),
                     array( 'deleted'=> 1 ), "id IN ({$search})", '' )
             ) {
                 $content = $search;

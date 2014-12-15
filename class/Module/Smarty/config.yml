@@ -5,7 +5,7 @@ services:
 
     tpl:
         class: Module\Smarty\Component\Driver
-        arguments: ["%template%", "@smarty"]
+        arguments: ["@smarty", "%template%", "%sfcms.cache_dir%"]
 
     smarty.plugin.form:
         class: Module\Smarty\Plugin\FormPlugin

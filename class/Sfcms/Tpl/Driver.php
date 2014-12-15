@@ -39,6 +39,15 @@ abstract class Driver extends Component
 
     abstract public function addWidgetsDir($dir);
 
+    /**
+     * Установка кэширования
+     * @param bool $state
+     * @return void
+     */
+    abstract public function caching($state = false);
+
+    abstract public function isCached($template, $cache_id = null);
+
     public function set( $key, $value )
     {
         $this->assign($key, $value);

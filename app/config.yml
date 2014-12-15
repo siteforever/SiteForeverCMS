@@ -14,7 +14,7 @@ logger:
         rotating_handler:
             type: rotating
             max: 1
-            path: "%root%/runtime/logs/%env%.txt"
+            path: "%sfcms.log_dir%/%env%.log"
 
 page: ~
 news: ~

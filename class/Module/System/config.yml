@@ -73,7 +73,7 @@ services:
 
     locator:
         class: Symfony\Component\Config\FileLocator
-        arguments: [["%root%", "%sf_path%"]]
+        arguments: [["%root%", "%sfcms.path%"]]
 
     yaml_loader:
         class: Symfony\Component\Routing\Loader\YamlFileLoader

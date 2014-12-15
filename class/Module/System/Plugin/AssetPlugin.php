@@ -30,11 +30,15 @@ class AssetPlugin
 
     private $javaScriptTemplate = '<script type="text/javascript" src="/%s"></script>';
 
-    public function __construct(AssetFactory $assetFactory)
+    /** @var string */
+    private $path;
+
+    public function __construct(AssetFactory $assetFactory, $path)
     {
         $this->assetFactory = $assetFactory;
         $this->assetManager = $assetFactory->getAssetManager();
         $this->scopes = new ArrayCollection();
+        $this->path = $path;
     }
 
     public function addScope($key, $value)
@@ -197,7 +201,7 @@ class AssetPlugin
     {
         $coll = new AssetCache(
             $this->assetFactory->createAsset($inputs, $filters, $options),
-            new FilesystemCache(ROOT . '/runtime/cache/assetic')
+            new FilesystemCache($this->path)
         );
 
         $debug = isset($options['debug']) ? $options['debug'] : $this->assetFactory->isDebug();

@@ -54,7 +54,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('spool')
                     ->children()
                         ->scalarNode('type')->defaultValue('file')->end()
-                        ->scalarNode('path')->defaultValue('%root%/runtime/spool/%env%')->end()
+                        ->scalarNode('path')->defaultValue('%root%/spool/%env%')->end()
                         ->scalarNode('id')->defaultNull()->info('Used by "service" type')->end()
                     ->end()
                     ->validate()

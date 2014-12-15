@@ -5,7 +5,7 @@
 #        site_js:
 #            output: "static/site.js"
 #            input:
-#                - "%sf_path%/misc/site.js"
+#                - "%sfcms.path%/misc/site.js"
 
 services:
     # assetic
@@ -39,7 +39,7 @@ services:
 
     smarty.plugin.asset:
         class: Module\System\Plugin\AssetPlugin
-        arguments: ["@asset.factory"]
+        arguments: ["@asset.factory", "%sfcms.cache_dir%/assetic"]
         tags:
             - { name: smarty.plugin, type: function, plugin: style, method: functionStyle }
             - { name: smarty.plugin, type: function, plugin: js, method: functionJs }

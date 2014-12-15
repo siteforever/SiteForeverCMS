@@ -669,55 +669,6 @@ final class db
 
     }
 
-    public function createMetaDataXML( $table )
-    {
-        $start = microtime(true);
-
-        $this->result   = $this->resource->prepare("SHOW COLUMNS FROM `$table`");
-
-        $xml = new DOMDocument('1.0','utf8');
-        $xml->appendChild( $xmlTable = $xml->createElement('table') );
-        $xmlTable->setAttribute('name', $table);
-        $xmlFields = $xmlTable->appendChild( $xml->createElement('fields') );
-        $xmlKeys = $xmlTable->appendChild( $xml->createElement('keys') );
-
-        if ( ! $this->result->execute() ) {
-            throw new ErrorException('Result Fields Query not valid');
-        }
-
-        foreach ( $this->result->fetchAll(\PDO::FETCH_OBJ) as $field  ) {
-            $xmlFields->appendChild( $xmlField = $xml->createElement('field',$field->Default) );
-            $xmlField->setAttribute('name',$field->Field);
-            $xmlField->setAttribute('type',$field->Type);
-            $xmlField->setAttribute('null',$field->Null);
-        }
-
-        $this->result = $this->resource->prepare("SHOW KEYS FROM `$table`");
-
-        if ( ! $this->result->execute() ) {
-            throw new ErrorException('Result Keys Query not valid');
-        }
-
-        foreach ( $this->result->fetchAll( \PDO::FETCH_OBJ ) as $key ) {
-            $xmlKeys->appendChild( $xmlKey = $xml->createElement('key') );
-            $xmlKey->setAttribute( 'column', $key->Column_name );
-            $xmlKey->setAttribute( 'key', $key->Key_name );
-            $xmlKey->setAttribute( 'type', $key->Index_type );
-        }
-
-        $exec = round(microtime(true)-$start, 4);
-        $this->time += $exec;
-        $this->log( "SHOW COLUMNS FROM `$table`"." ($exec sec)" );
-        $xml->formatOutput = true;
-        $path = ROOT.'/_runtime/model';
-        if ( ! file_exists( $path ) ) {
-            mkdir( $path, 0775, true );
-        } elseif ( ! is_writable( $path ) ) {
-            throw new ErrorException("Path '$path' is not writable");
-        }
-        $xml->save( $path .'/'. $table.'.xml' );
-    }
-
     /**
      * Экранирует символы
      * @param $str
