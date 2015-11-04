@@ -9,10 +9,10 @@ namespace Module\Elfinder\Controller;
 use Sfcms\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-require_once 'vendor/helios-ag/fm-elfinder/FM/elfinder/php/elFinderConnector.class.php';
-require_once 'vendor/helios-ag/fm-elfinder/FM/elfinder/php/elFinder.class.php';
-require_once 'vendor/helios-ag/fm-elfinder/FM/elfinder/php/elFinderVolumeDriver.class.php';
-require_once 'vendor/helios-ag/fm-elfinder/FM/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
+require_once 'vendor/studio-42/elfinder/php/elFinderConnector.class.php';
+require_once 'vendor/studio-42/elfinder/php/elFinder.class.php';
+require_once 'vendor/studio-42/elfinder/php/elFinderVolumeDriver.class.php';
+require_once 'vendor/studio-42/elfinder/php/elFinderVolumeLocalFileSystem.class.php';
 
 class ElfinderController extends Controller
 {

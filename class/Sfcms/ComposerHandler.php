@@ -17,6 +17,9 @@ class ComposerHandler
         $staticDir = $options['sfcms-static-dir'];
         $appDir = $options['sfcms-app-dir'];
 
+        mkdir($appDir . '/runtime/cache', 0777, true);
+        mkdir($appDir . '/runtime/logs', 0777, true);
+
         static::executeCommand($event, $appDir, 'install:static ' . $staticDir);
     }
 

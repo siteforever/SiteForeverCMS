@@ -7,8 +7,8 @@
     <property name="destdir" value="${user.home}/siteforever"/>
 
     <property name="version" value="0.4"/>
-    <property name="svn" value="https://github.com/keltanas/SiteForeverCMS.git"/>
-    <!--<property name="git" value="git://github.com/keltanas/SiteForeverCMS.git"></property>-->
+    <property name="svn" value="https://github.com/siteforever/SiteForeverCMS"/>
+    <!--<property name="git" value="git://github.com/siteforever/SiteForeverCMS.git"></property>-->
     <property name="git" value="${project.basedir}"/>
 
     <property name="theme" value="basic"/>

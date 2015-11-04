@@ -19,7 +19,7 @@
                 </div>
                 <div class="b-left-menu">
                     <h3>Карта сайта</h3>
-                    {menu parent=1 level=3}
+                    {menu parent="1" level="3"}
                 </div>
             </div>
             <div class="span8 b-content">

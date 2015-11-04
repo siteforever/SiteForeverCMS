@@ -38,7 +38,7 @@ services:
         arguments: [[], "@session.handler"]
 
     session.handler:
-        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        class: Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeSessionHandler
         arguments: ["@pdo", "%pdo_session%"]
 
     tpl_directory:

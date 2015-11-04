@@ -14,8 +14,8 @@
     ],
     "support" : {
         "email" : "keltanas@gmail.com",
-        "source" : "https://github.com/keltanas/SiteForeverCMS",
-        "issues" : "https://github.com/keltanas/SiteForeverCMS/issues",
+        "source" : "https://github.com/siteforever/SiteForeverCMS",
+        "issues" : "https://github.com/siteforever/SiteForeverCMS/issues",
         "wiki" : "http://wiki.siteforever.ru"
     },
     "autoload": {
@@ -37,13 +37,13 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": "2.4.*",
-        "smarty/smarty": "3.1.*",
+        "symfony/symfony": "2.7.*",
+        "smarty/smarty": "3.1.19",
         "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "1.6.*",
         "swiftmailer/swiftmailer": "v5.0.1",
         "kriswallsmith/assetic": "v1.1.2",
-        "helios-ag/fm-elfinder": "v2.0",
+        "studio-42/elfinder": "2.x-dev",
         "tonytomov/jqGrid" : "4.4"
     },
     "repositories":[

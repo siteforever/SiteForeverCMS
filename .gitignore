@@ -1,5 +1,4 @@
 /.idea/
-/runtime/
 /files/.quarantine
 /files/.tmb
 /thumbs/
@@ -9,3 +8,8 @@
 /composer.phar
 /composer.lock
 /app/parameters.yml
+/build
+!/var/.gitkeep
+/var
+!/runtime/.gitkeep
+/runtime

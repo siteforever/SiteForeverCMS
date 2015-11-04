@@ -1,6 +1,6 @@
 <?php
 /**
- * 
+ *
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
 
@@ -34,7 +34,7 @@ class ComposerHandler
 
         $rootDir = getenv('PWD');
 
-        self::$source = $rootDir . '/vendor/Studio-42/elFinder';
+        self::$source = $rootDir . '/vendor/studio-42/elfinder';
         self::$dest   = $rootDir . '/'.$extra[ $outDir ].'/admin/jquery/elfinder';
 
         try {

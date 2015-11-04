@@ -125,7 +125,7 @@ class StaticCommand extends Command
     protected function installElFinder($staticDir, InputInterface $input, OutputInterface $output)
     {
         $source = ROOT . '/vendor/keltanas/fm-elfinder/FM/elfinder';
-        $source = ROOT . '/vendor/helios-ag/fm-elfinder/FM/elfinder';
+        $source = ROOT . '/vendor/studio-42/elfinder';
         $out    = $staticDir . '/admin/jquery/elfinder';
 
         $jsAsset = new AssetCollection(array(
