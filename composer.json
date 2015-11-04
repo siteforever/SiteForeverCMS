@@ -1,5 +1,5 @@
 {
-    "name" : "keltanas/site-forever-cms",
+    "name" : "siteforever/site-forever-cms",
     "description": "Simple CMS for PHP and MySQL",
     "keywords": [ "siteforever", "cms", "smarty", "php", "keltanas" ],
     "homepage": "http://siteforever.ru",
@@ -70,7 +70,7 @@
             "Sfcms\\ComposerHandler::execute"
         ]
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "extra": {
         "sfcms-static-dir" : "static",
         "branch-alias": {
