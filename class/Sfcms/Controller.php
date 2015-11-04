@@ -34,7 +34,6 @@ use Sfcms\Data\Watcher;
  * @property \Auth $auth
  * @property Router $router
  * @property Config $config
- * @property CacheInterface $cache
  * @property User $user
  * @property Filesystem $filesystem
  * @property i18n $i18n

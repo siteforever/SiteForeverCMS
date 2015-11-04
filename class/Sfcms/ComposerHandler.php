@@ -14,11 +14,8 @@ class ComposerHandler
     public static function execute(CommandEvent $event)
     {
         $options = self::getOptions($event);
-        $staticDir = $options['sfcms-static-dir'];
-        $appDir = $options['sfcms-app-dir'];
-
-        mkdir($appDir . '/runtime/cache', 0777, true);
-        mkdir($appDir . '/runtime/logs', 0777, true);
+        $staticDir = getcwd() . '/' . $options['sfcms-static-dir'];
+        $appDir = getcwd() . '/' . $options['sfcms-app-dir'];
 
         static::executeCommand($event, $appDir, 'install:static ' . $staticDir);
     }

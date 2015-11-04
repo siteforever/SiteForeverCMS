@@ -1,2 +1,2 @@
 #!/bin/bash
-./vendor/bin/phpunit -c test/
+./bin/phpunit -c test/

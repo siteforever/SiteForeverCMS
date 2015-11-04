@@ -32,6 +32,10 @@ class LoggerExtension implements ExtensionInterface
                     case 'rotating':
                         $handler = $handler + array('max'=>0, 'level'=>Logger::DEBUG);
                         $handler['path'] = ROOT . '/' . trim($handler['path'], '/ ');
+                        $dir = dirname($handler['path']);
+                        if (!is_dir($dir)) {
+                            @mkdir($dir, 0777, true);
+                        }
                         $container->setDefinition($name, new Definition('Monolog\Handler\RotatingFileHandler', array($handler['path'], $handler['max'], $handler['level'])));
                         break;
                     case 'firephp':

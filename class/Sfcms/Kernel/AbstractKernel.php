@@ -161,6 +161,9 @@ abstract class AbstractKernel
             $this->getContainer()->compile();
 
             $dumper = new PhpDumper($this->getContainer());
+            if (!is_dir(dirname($cacheFile))) {
+                @mkdir(dirname($cacheFile), 0777, true);
+            }
             file_put_contents($cacheFile, $dumper->dump());
         }
 //        require_once $cacheFile;
