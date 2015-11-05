@@ -9,9 +9,9 @@ namespace Module\Market\Event;
 
 use Module\Market\Object\Delivery;
 use Module\Market\Object\Order;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event as BaseEvent;
 
-class DeliveryEvent extends Event
+class DeliveryEvent extends BaseEvent
 {
     /** @var Delivery */
     protected $delivery;

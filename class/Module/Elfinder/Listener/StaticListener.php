@@ -35,7 +35,7 @@ class StaticListener
      */
     public function installElFinder(StaticEvent $event)
     {
-        $source = $this->rootDir . '/vendor/Studio-42/elFinder';
+        $source = $this->rootDir . '/vendor/studio-42/elfinder';
         $out    = $event->getStaticDir() . '/admin/jquery/elfinder';
 
         $jsAsset = $this->asseticService->getAsseticCollection('elfinder_js');

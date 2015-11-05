@@ -231,38 +231,29 @@ class CatalogController extends Controller
     {
         $catalog_model = $this->getModel('Catalog');
 
-        $cache = $this->get('catalog_cache');
-        $cacheKey = 'product' . $item->id;
+        $properties = array();
 
-        if ($cache->isNotExpired($cacheKey)) {
-            $response = new Response($cache->get($cacheKey));
-        } else {
-            $properties = array();
-
-            if ($item->parent) {
-                $category   = $catalog_model->find($item['parent']);
-                $properties = $this->buildParamView($category, $item);
-            }
-
-            $gallery_model = $this->getModel('CatalogGallery');
-
-            $gallery = $gallery_model->findAll(
-                array(
-                    'cond'   => ' cat_id = ? AND hidden = 0 ',
-                    'params' => array($item->id),
-                )
-            );
-
-            $response = $this->render('catalog.viewproduct', array(
-                    'item'       => $item,
-                    'inBasket'   => $this->getBasket()->getCount($item->id),
-                    'parent'     => $item->parent ? $catalog_model->find($item->parent) : null,
-                    'properties' => $properties,
-                    'gallery'    => $gallery,
-                    'user'       => $this->auth->currentUser(),
-                ));
-            $cache->set($cacheKey, $response->getContent());
+        if ($item->parent) {
+            $properties = $this->buildParamView($catalog_model->find($item['parent']), $item);
         }
+
+        $gallery_model = $this->getModel('CatalogGallery');
+
+        $gallery = $gallery_model->findAll(
+            array(
+                'cond'   => ' cat_id = ? AND hidden = 0 ',
+                'params' => array($item->id),
+            )
+        );
+
+        $response = $this->render('catalog.viewproduct', array(
+            'item'       => $item,
+            'inBasket'   => $this->getBasket()->getCount($item->id),
+            'parent'     => $item->parent ? $catalog_model->find($item->parent) : null,
+            'properties' => $properties,
+            'gallery'    => $gallery,
+            'user'       => $this->auth->currentUser(),
+        ));
 
         $this->request->setTitle($item->name);
 

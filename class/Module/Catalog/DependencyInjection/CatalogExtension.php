@@ -38,16 +38,6 @@ class CatalogExtension extends Extension
         }
 
         $cacheId = sprintf('%s_cache', $this->getAlias());
-        switch ($config['cache']['type']) {
-            case 'file':
-                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheFile', array($config['cache']['live_cycle'])));
-                break;
-            case 'apc':
-                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheApc', array($config['cache']['live_cycle'])));
-                break;
-            default:
-                $container->setDefinition($cacheId, new Definition('Sfcms\Cache\CacheBlank', array($config['cache']['live_cycle'])));
-        }
     }
 
     public function getAlias()

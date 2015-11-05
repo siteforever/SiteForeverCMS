@@ -1,2 +1,2 @@
 #!/bin/bash
-phpunit -c test/phpunit-cc.xml
+bin/phpunit -c test/phpunit-cc.xml
