@@ -1,13 +1,13 @@
 parameters:
-    doctrine.configuration.class: Doctrine\ORM\Configuration
+    doctrine.configuration.class: Doctrine\DBAL\Configuration
     doctrine.connection.class: Doctrine\DBAL\Connection
     doctrine.event_manager.class: Doctrine\Common\EventManager
     doctrine.annotation.reader.class: Doctrine\Common\Annotations\AnnotationReader
-    doctrine.annotation.driver.class: Doctrine\ORM\Mapping\Driver\AnnotationDriver
-    doctrine.cache.apc.class: Doctrine\Common\Cache\ApcCache
+    doctrine.annotation.driver.class: Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver
+    doctrine.cache.redis.class: Doctrine\Common\Cache\RedisCache
     doctrine.cache.array.class: Doctrine\Common\Cache\ArrayCache
     doctrine.cache.filesystem.class: Doctrine\Common\Cache\FilesystemCache
-    doctrine.cache.xcache.class: Doctrine\Common\Cache\XcacheCache
+    doctrine.cache.memcached.class: Doctrine\Common\Cache\MemcachedCache
 
 services:
     doctrine.event_manager:
@@ -26,8 +26,8 @@ services:
     doctrine.configuration:
         class: %doctrine.configuration.class%
         calls:
-            - ["setProxyNamespace", [ sfcms ]]
-            - ["setMetadataDriverImpl", [ @doctrine.driver ]]
+#            - ["setProxyNamespace", [ sfcms ]]
+#            - ["setMetadataDriverImpl", [ @doctrine.driver ]]
 #            - ["setSQLLogger", [ @doctrine.logger ]]
 
     doctrine.logger:

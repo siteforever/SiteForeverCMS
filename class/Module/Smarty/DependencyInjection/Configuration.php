@@ -26,8 +26,6 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('theme')->isRequired()->end()
-                        ->scalarNode('pager')->isRequired()->end()
-                        ->scalarNode('form')->defaultValue('form_twbs3')->end()
                         ->scalarNode('ext')->defaultValue('tpl')->end()
                         ->booleanNode('compile_check')->defaultValue("%debug%")->end()
                         ->booleanNode('force_compile')->defaultFalse()->end()

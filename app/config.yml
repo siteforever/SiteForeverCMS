@@ -19,28 +19,7 @@ logger:
 page: ~
 news: ~
 market: ~
-ckeditor: ~
 elfinder: ~
-jqgrid: ~
-
-assetic:
-    debug: %debug%
-    output: "%root%"
-    filters:
-        jsmin: {}
-        cssmin: {}
-        cssrewrite: ~
-        yui_css:
-            jar: "%sf_path%/app/bin/yuicompressor-2.4.7.jar"
-        yui_js:
-            jar: "%sf_path%/app/bin/yuicompressor-2.4.7.jar"
-        pngout:
-            # http://www.jonof.id.au/pngout
-            bin: "%sf_path%/app/bin/pngout"
-        less:
-            node: /usr/local/bin/node
-            node_paths: [/usr/local/lib/node_modules]
-            apply_to: "\.less$"
 
 database:
     debug: "%debug%"
@@ -61,8 +40,6 @@ doctrine:
 template:
     parameters:
         theme: %template_theme%
-        pager: %template_pager%
-        form: %template_form%
         compile_check: %debug%
         force_compile: false
 

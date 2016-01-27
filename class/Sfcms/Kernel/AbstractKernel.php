@@ -243,7 +243,7 @@ abstract class AbstractKernel
     protected function initModules()
     {
         $sfRouter = $this->getContainer()->get('symfony_router');
-        $outputDir = $this->getContainer()->getParameter('assetic.output');
+        $outputDir = ROOT;
         foreach ($this->getModules() as $module) {
             call_user_func(array($module, 'registerRoutes'), $sfRouter);
             call_user_func(array($module, 'registerStatic'), $outputDir . '/static');

@@ -1,6 +1,0 @@
-services:
-    ckeditor.static.listener:
-        class: Module\CKEditor\Listener\StaticListener
-        arguments: ["@asset.service", "%root%"]
-        tags:
-            - { name: event.listener, event: static.install , method: installCKEditor }

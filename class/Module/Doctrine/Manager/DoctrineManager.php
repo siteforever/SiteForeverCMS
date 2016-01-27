@@ -8,16 +8,11 @@
 
 namespace Module\Doctrine\Manager;
 
-
 use Doctrine\Common\EventManager;
-use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Configuration;
 
 class DoctrineManager
 {
-    /** @var EntityManager */
-    protected $entityManager;
-
     /** @var \PDO */
     protected $pdo;
 
@@ -27,24 +22,34 @@ class DoctrineManager
     /** @var EventManager */
     protected $eventManager;
 
-    function __construct(Configuration $configuration, EventManager $eventManager, \PDO $pdo)
+    public function __construct(Configuration $configuration, EventManager $eventManager, \PDO $pdo)
     {
         $this->configuration = $configuration;
         $this->eventManager = $eventManager;
         $this->pdo = $pdo;
     }
 
-    public function getEntityManager()
+    /**
+     * @return \PDO
+     */
+    public function getPdo()
     {
-        if (null === $this->entityManager) {
-            $this->entityManager = $this->createEntityManager();
-        }
-
-        return $this->entityManager;
+        return $this->pdo;
     }
 
-    protected function createEntityManager()
+    /**
+     * @return Configuration
+     */
+    public function getConfiguration()
     {
-        return EntityManager::create(['pdo'=>$this->pdo], $this->configuration, $this->eventManager);
+        return $this->configuration;
+    }
+
+    /**
+     * @return EventManager
+     */
+    public function getEventManager()
+    {
+        return $this->eventManager;
     }
 }

@@ -44,34 +44,17 @@
     "require": {
         "php": ">=5.5",
         "symfony/symfony": "~2.7",
-        "symfony/proxy-manager-bridge": "2.5.*",
-        "doctrine/orm": "2.4.*",
-        "doctrine/migrations": "1.0.*@dev",
+        "doctrine/common": "~2.6",
+        "doctrine/dbal": "~2.5",
+        "doctrine/cache": "~1.6",
+        "doctrine/migrations": "~1.3",
         "smarty/smarty": "3.1.19",
         "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "~1.6",
         "swiftmailer/swiftmailer": "~5.0",
         "kriswallsmith/assetic": "~1.1",
-        "twbs/bootstrap": ">=3.2.0,<3.3",
-        "ckeditor/ckeditor": "dev-full/4.3.x",
-        "studio-42/elfinder": "2.x@dev",
-        "tonytomov/jqGrid" : "4.4",
-        "mrclay/minify": "2.1.*",
-        "natxet/cssmin": "3.0.*"
+        "studio-42/elfinder": "~2.1"
     },
-    "repositories":[
-        {
-            "type":"package",
-            "package":{
-                "name":"tonytomov/jqGrid",
-                "version":"4.4",
-                "dist": {
-                    "url": "https://github.com/tonytomov/jqGrid/archive/v4.4.5.zip",
-                    "type": "zip"
-                }
-            }
-        }
-    ],
     "scripts": {
         "post-install-cmd": [
             "Sfcms\\ComposerHandler::install",
@@ -84,8 +67,6 @@
         ]
     },
     "config": {
-        "component-dir": "static/components",
-        "component-baseurl": "static",
         "bin-dir": "bin"
     },
     "minimum-stability": "stable",

@@ -2,7 +2,8 @@
 <html lang="{$request->getLocale()}">
 <head>
 <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-{style file="@theme:less/style.less" filters='less,cssrewrite,?yui_css' output="static/style.css"}
+<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap-theme.min.css" />
 </head>
 <body>
 <div class="container">
@@ -27,7 +28,8 @@
         </div>
     </div>
 </div>
-{js file="@root:static/system/vendor/jquery-1.11.1.min.js,@theme:js/script.js" filters='?yui_js'  output="static/script.js"}
-{*{js file="@theme:js/script.js" filters='?yui_js'  output="static/script.js"}*}
+<script type="text/javascript" src="/static/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="/static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/themes/bootstrap/js/script.js"></script>
 </body>
 </html>

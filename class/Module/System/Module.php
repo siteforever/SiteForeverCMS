@@ -8,11 +8,8 @@
 namespace Module\System;
 
 use Module\System\DependencyInjection\CaptchaExtension;
-use Module\System\DependencyInjection\Compiler\AssetPluginPass;
 use Module\System\DependencyInjection\Compiler\AuthPass;
 use Module\System\DependencyInjection\Compiler\EventSubscriberPass;
-use Module\System\DependencyInjection\AsseticExtension;
-use Module\System\DependencyInjection\Compiler\RequireJsPass;
 use Module\System\DependencyInjection\Compiler\SiteAdminJsPass;
 use Module\System\DependencyInjection\SystemExtension;
 use Sfcms\Model;
@@ -26,13 +23,10 @@ class Module extends SfModule
     public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new SystemExtension());
-        $container->registerExtension(new AsseticExtension());
         $container->registerExtension(new CaptchaExtension());
 
-        $container->addCompilerPass(new RequireJsPass());
         $container->addCompilerPass(new SiteAdminJsPass());
         $container->addCompilerPass(new EventSubscriberPass());
-        $container->addCompilerPass(new AssetPluginPass());
         $container->addCompilerPass(new AuthPass());
     }
 

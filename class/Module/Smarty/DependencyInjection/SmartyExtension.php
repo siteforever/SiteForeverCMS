@@ -31,11 +31,17 @@ class SmartyExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
+        // template_pager: pager_twbs3
+        // template_form: smarty/form_bs3.tpl
+
         $smarty = $container->getDefinition('smarty');
-        $smarty->addMethodCall('assign', ['form_template', $config['parameters']['form']]);
+        $smarty->addMethodCall('assign', ['form_template', 'smarty/form_bs3.tpl']);
         $smarty->setProperty('compile_check', $config['parameters']['compile_check']);
         $smarty->setProperty('force_compile', $config['parameters']['force_compile']);
         $smarty->setProperty('caching', $config['parameters']['caching']);
+
+        $formPlugin = $container->getDefinition('smarty.plugin.form');
+        $formPlugin->setArguments(['smarty/form_bs3.tpl']);
 
         $container->setParameter($this->getAlias(), $config['parameters']);
         foreach ($config['parameters'] as $key => $val) {

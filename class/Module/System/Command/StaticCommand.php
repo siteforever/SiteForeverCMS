@@ -34,7 +34,7 @@ class StaticCommand extends Command
     {
         /** @var ContainerBuilder */
         $this->container = $this->getContainer();
-        $staticDir = $this->getContainer()->getParameter('assetic.output') . '/static';
+        $staticDir = ROOT . '/static';
         $rootDir = $this->getContainer()->getParameter('root');
         $cacheDir = $this->getContainer()->getParameter('sfcms.cache_dir');
         $logsDir = $this->getContainer()->getParameter('sfcms.log_dir');
@@ -42,10 +42,10 @@ class StaticCommand extends Command
         $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
 
-        /** @var EventDispatcher $ed */
-        $ed = $this->getContainer()->get('event.dispatcher');
+        /** @var EventDispatcher $eventDispatcher */
+        $eventDispatcher = $this->getContainer()->get('event.dispatcher');
         $event = new StaticEvent($staticDir, $input, $output);
-        $ed->dispatch(StaticEvent::STATIC_INSTALL, $event);
+        $eventDispatcher->dispatch(StaticEvent::STATIC_INSTALL, $event);
 
         $filesistem = new Filesystem();
 
@@ -71,13 +71,5 @@ class StaticCommand extends Command
             $filesistem->dumpFile($rootDir . '/vendor/.htaccess', "deny from all", 0644);
             $output->writeln('<info>Create "vendor/.htaccess" file</info>');
         }
-
-//        $template = $this->container->getParameter('template');
-//        $themePath = $rootDir . '/themes/' . $template['theme'];
-//        if (!$filesistem->exists($themePath)) {
-//            $filesistem->mkdir($themePath);
-//            $filesistem->mirror($sfDir.'/themes/basic', $themePath);
-//            $output->writeln(sprintf('Create theme dir "%s"', $themePath));
-//        }
     }
 }

@@ -1,0 +1,41 @@
+{
+  "name": "siteforever",
+  "version": "0.7.0",
+  "homepage": "https://github.com/siteforever/SiteForeverCMS",
+  "authors": [
+    "keltanas <keltanas@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "static/lib",
+    "test"
+  ],
+  "dependencies": {
+    "jquery": "~1.11",
+    "jquery-ui": "~1.10",
+    "jquery-form": "~3",
+    "blockui": "http://malsup.github.io/jquery.blockUI.js",
+    "requirejs": "~2.1",
+    "requirejs-text": "~2.0",
+    "jqGrid": "tonytomov/jqGrid#~5.0.0",
+    "bootstrap": "3.3.*",
+    "underscore": "1.8.*",
+    "underscore.string": "~3.0",
+    "backbone": "1.2.*",
+    "backbone.marionette": "2.4.*",
+    "fancybox": "~2.1",
+    "jstree": "~3.0",
+    "twig.js": "0.8.*",
+    "chosen": "1.4.*",
+    "backbone.model_binder": "https://github.com/theironcook/Backbone.ModelBinder.git",
+    "jquery.maskedinput": "~1.4.1",
+    "ckeditor": "~4.5.6"
+  },
+  "resolutions": {
+    "underscore": "1.8.*",
+    "bootstrap": "3.3.*",
+    "backbone": "1.2.*"
+  }
+}

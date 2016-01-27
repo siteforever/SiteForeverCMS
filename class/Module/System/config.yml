@@ -22,12 +22,6 @@ services:
         tags:
             - { name: event.subscriber }
 
-    system.require_js.listener:
-        class: Module\System\Subscriber\RequireJsListener
-        arguments: [ "@asset.service" ]
-        tags:
-            - { name: event.listener, event: static.install, method: installRequireJs }
-
     module.manager:
         class: Module\System\Component\ModuleManager
         arguments: [ "%sfcms.root%", "%sfcms.path%", "@translator" ]

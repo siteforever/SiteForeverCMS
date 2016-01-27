@@ -73,24 +73,24 @@ class DoctrineExtension extends Extension
 
         $configuration = $container->getDefinition('doctrine.configuration');
 
-        $container->setDefinition(
-            'doctrine.metadata.cache',
-            $this->createCacheDefinition($config['cache']['metadata'])
-        );
-        $container->setDefinition(
-            'doctrine.query.cache',
-            $this->createCacheDefinition($config['cache']['query'])
-        );
-        $container->setDefinition(
-            'doctrine.result.cache',
-            $this->createCacheDefinition($config['cache']['result'])
-        );
+//        $container->setDefinition(
+//            'doctrine.metadata.cache',
+//            $this->createCacheDefinition($config['cache']['metadata'])
+//        );
+//        $container->setDefinition(
+//            'doctrine.query.cache',
+//            $this->createCacheDefinition($config['cache']['query'])
+//        );
+//        $container->setDefinition(
+//            'doctrine.result.cache',
+//            $this->createCacheDefinition($config['cache']['result'])
+//        );
 
-        $configuration->addMethodCall('setMetadataCacheImpl', [new Reference('doctrine.metadata.cache')]);
-        $configuration->addMethodCall('setQueryCacheImpl', [new Reference('doctrine.query.cache')]);
-        $configuration->addMethodCall('setResultCacheImpl', [new Reference('doctrine.result.cache')]);
-        $configuration->addMethodCall('setProxyDir', ['%sfcms.cache_dir%/doctrine/proxy']);
-        $configuration->addMethodCall('setAutoGenerateProxyClasses', [$config['debug']]);
+//        $configuration->addMethodCall('setMetadataCacheImpl', [new Reference('doctrine.metadata.cache')]);
+//        $configuration->addMethodCall('setQueryCacheImpl', [new Reference('doctrine.query.cache')]);
+//        $configuration->addMethodCall('setResultCacheImpl', [new Reference('doctrine.result.cache')]);
+//        $configuration->addMethodCall('setProxyDir', ['%sfcms.cache_dir%/doctrine/proxy']);
+//        $configuration->addMethodCall('setAutoGenerateProxyClasses', [$config['debug']]);
 
         foreach ($config as $key => $val) {
             $container->setParameter($this->getAlias() . '.' . $key, $val);

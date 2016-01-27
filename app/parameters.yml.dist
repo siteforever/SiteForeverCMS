@@ -7,8 +7,6 @@ parameters:
     admin: "keltanas@gmail.com"
 
     template_theme: bootstrap
-    template_pager: pager_twbs3
-    template_form: smarty/form_bs3.tpl
 
     db_name: siteforever
     db_host: localhost

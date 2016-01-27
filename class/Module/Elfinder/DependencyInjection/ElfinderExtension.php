@@ -32,6 +32,9 @@ class ElfinderExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+
+        $listener = $container->getDefinition('elfinder.static.listener');
+        $listener->setArguments([ROOT]);
     }
 
     public function getAlias()

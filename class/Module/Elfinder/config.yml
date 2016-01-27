@@ -1,6 +1,6 @@
 services:
     elfinder.static.listener:
         class: Module\Elfinder\Listener\StaticListener
-        arguments: ["@asset.service", "%root%"]
+        arguments: [""]
         tags:
             - { name: event.listener, event: static.install , method: installElFinder }

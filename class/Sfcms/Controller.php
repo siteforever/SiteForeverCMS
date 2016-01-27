@@ -18,7 +18,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Sfcms\Cache\CacheInterface;
 use Module\Page\Object\Page;
 use Module\User\Object\User;
 
@@ -248,7 +247,7 @@ abstract class Controller extends ContainerAware
     public function paging($count, $perpage, $link, $cacheId = null)
     {
         $config = $this->container->getParameter('template');
-        if ($config['pager']) {
+        if (!empty($config['pager'])) {
             $pager = new Pager($count, $perpage, $link, $this->request, $config['pager'], $cacheId);
         } else {
             $pager = new Pager($count, $perpage, $link, $this->request, null, $cacheId);

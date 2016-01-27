@@ -9,7 +9,7 @@ services:
 
     smarty.plugin.form:
         class: Module\Smarty\Plugin\FormPlugin
-        arguments: [%template.form%]
+        arguments: ~
         tags:
             - { name: smarty.plugin, type: block, plugin: form, method: block_form }
 #            - { name: smarty.plugin, type: function, plugin: form_start, method: function_form_start }
