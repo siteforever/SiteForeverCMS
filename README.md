@@ -2,12 +2,12 @@ Siteforever CMS - It is opensource CMS on PHP 5.4 and MySql 5.5
 
 Distributed under The MIT License
 
-[![Build Status](https://travis-ci.org/keltanas/SiteForeverCMS.png?branch=master)](https://travis-ci.org/keltanas/SiteForeverCMS)
-[![Downloads](https://poser.pugx.org/keltanas/site-forever-cms/downloads.png)](https://packagist.org/packages/keltanas/site-forever-cms)
-[![Latest Stable Version](https://poser.pugx.org/keltanas/site-forever-cms/v/stable.png)](https://packagist.org/packages/keltanas/site-forever-cms)
-[![Latest Unstable Version](https://poser.pugx.org/keltanas/site-forever-cms/v/unstable.png)](https://packagist.org/packages/keltanas/site-forever-cms)
-[![Coverage Status](https://coveralls.io/repos/keltanas/SiteForeverCMS/badge.png)](https://coveralls.io/r/keltanas/SiteForeverCMS)
-[![Dependency Status](https://www.versioneye.com/php/keltanas:site-forever-cms/dev-master/badge.svg)](https://www.versioneye.com/php/keltanas:site-forever-cms/dev-master)
+[![Build Status](https://travis-ci.org/siteforever/SiteForeverCMS.png?branch=master)](https://travis-ci.org/keltanas/SiteForeverCMS)
+[![Downloads](https://poser.pugx.org/siteforever/site-forever-cms/downloads.png)](https://packagist.org/packages/siteforever/site-forever-cms)
+[![Latest Stable Version](https://poser.pugx.org/siteforever/site-forever-cms/v/stable.png)](https://packagist.org/packages/siteforever/site-forever-cms)
+[![Latest Unstable Version](https://poser.pugx.org/siteforever/site-forever-cms/v/unstable.png)](https://packagist.org/packages/siteforever/site-forever-cms)
+[![Coverage Status](https://coveralls.io/repos/siteforever/SiteForeverCMS/badge.png)](https://coveralls.io/r/siteforever/SiteForeverCMS)
+[![Dependency Status](https://www.versioneye.com/php/siteforever:site-forever-cms/dev-master/badge.svg)](https://www.versioneye.com/php/siteforever:site-forever-cms/dev-master)
 
 CMS SiteForever we have created in order to facilitate the programmers to develop sites at different levels of complexity, and their customers to help manage the site using a simple interface.
 
