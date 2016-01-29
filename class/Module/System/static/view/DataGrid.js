@@ -11,7 +11,7 @@ define("system/view/DataGrid", [
     "system/model/DataGridModel",
     "system/model/DataGridCollection",
     "system/view/DataGridModal",
-    "system/jquery/jquery.blockUI"
+    "jquery-blockui"
 ], function ($, Backbone, i18n, $alert, DataGridModel, DataGridCollection, DataGridModal) {
 
     var DataGridItemView = Backbone.View.extend({

@@ -13,7 +13,8 @@ define("elfinder/admin/elfinder", [
             $(window).resize(function(){
                 $('#elfinder').elfinder({
                     width: $(this).width() - 2,
-                    height: $(this).height() - 2
+                    height: $(this).height() - 2,
+                    lang: "ru"
                 });
             });
             return $('#elfinder').elfinder(wysiwyg.elfinder).elfinder('instance');

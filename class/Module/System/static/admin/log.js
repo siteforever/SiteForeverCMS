@@ -5,7 +5,7 @@
  */
 define('system/admin/log',[
     "jquery",
-    "system/jquery/jquery.jqGrid"
+    "jqgrid"
 ],function($){
     return {
 

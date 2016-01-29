@@ -7,7 +7,7 @@ define('system/view/Modal',[
     "backbone",
     "underscore",
     "i18n",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ], function($, Backbone, _, i18n){
     return Backbone.View.extend({
         tagName: 'div',

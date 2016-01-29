@@ -15,8 +15,7 @@ define("page/admin/page", [
     "wysiwyg",
     "system/admin/confirm/delete",
     "jquery-ui",
-    "system/jquery/jquery.form",
-    "system/admin"
+    "jquery-form"
 ], function($, Backbone, Modal, Dialog, i18n, $alert, console, wysiwyg, deleteConfirm) {
 
     return Backbone.View.extend({

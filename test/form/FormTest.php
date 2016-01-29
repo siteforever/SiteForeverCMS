@@ -53,7 +53,7 @@ class FormTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('password', $crawler->filter('#fixture_password')->attr('type'));
         $this->assertEquals('text', $crawler->filter('#fixture_phone')->attr('type'));
         $this->assertEquals('text', $crawler->filter('#fixture_birthday')->attr('type'));
-        $this->assertEquals('date datepicker', $crawler->filter('#fixture_birthday')->attr('class'));
+        $this->assertContains('date datepicker', $crawler->filter('#fixture_birthday')->attr('class'));
         $this->assertEquals('file', $crawler->filter('#fixture_upload')->attr('type'));
         $this->assertEquals('checkbox', $crawler->filter('#fixture_check')->attr('type'));
         $this->assertEquals('radio', $crawler->filter('input[type=radio]:checked')->attr('type'));

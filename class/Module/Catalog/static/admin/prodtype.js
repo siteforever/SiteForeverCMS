@@ -10,7 +10,7 @@ define('catalog/admin/prodtype',[
     "i18n",
     "bootstrap",
     "jquery-ui",
-    "system/jquery/jquery.form",
+    "jquery-form",
     "system/jquery/jquery.jqGrid"
 ],function( $, /*parser,*/ Dialog, i18n ){
     return {

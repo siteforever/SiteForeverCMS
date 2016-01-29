@@ -6,7 +6,7 @@
 define("system/module/basket", [
     "jquery",
     "system/module/alert",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ],function($, $alert){
     return {
         "class_name" : '.basket-widget',

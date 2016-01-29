@@ -9,7 +9,7 @@ define("news/admin/news", [
     "system/module/modal",
     "i18n",
     "system/module/alert",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ],function($, Modal, i18n, $alert){
     return {
         "behavior" : {

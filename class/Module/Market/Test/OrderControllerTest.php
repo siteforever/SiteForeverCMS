@@ -15,6 +15,7 @@ class OrderControllerTest extends WebCase
 {
     public function testOrderAdmin()
     {
+        $this->markTestSkipped();
         $response = $this->runRequest('/order/admin');
         $this->assertEquals(302, $response->getStatusCode());
         $crawler = $this->createCrawler($response);

@@ -5,7 +5,7 @@
  */
 define('system/module/alert',[
     "jquery",
-    "system/jquery/jquery.blockUI"
+    "jquery-blockui"
 ],function(){
 
     $.blockUI.defaults.css.border = 'none';

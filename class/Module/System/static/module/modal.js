@@ -12,7 +12,7 @@ define('system/module/modal',[
     "system/module/alert",
     "bootstrap",
     "jquery-ui",
-    "system/jquery/jquery.form",
+    "jquery-form",
     "system/admin/jquery/jquery.filemanager"
 ], function( $, wysiwyg, i18n, $alert ){
 

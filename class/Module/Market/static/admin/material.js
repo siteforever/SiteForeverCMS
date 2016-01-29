@@ -4,16 +4,14 @@
  * @link http://siteforever.ru
  */
 define("market/admin/material", [
-    "query",
-    "system/module/parser",
+    "jquery",
     "system/module/modal",
     "i18n",
-    "system/jquery/jquery.form",
+    "jquery-form",
     "bootstrap"
-],function ($, parser, Modal) {
+],function ($, Modal) {
     return {
         "init" : function(){
-            parser();
             this.editModal = new Modal('MaterialEdit');
             this.editModal.onSave(function(){
                 $('form', this.domnode).ajaxSubmit({

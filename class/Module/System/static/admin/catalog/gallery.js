@@ -10,7 +10,7 @@ define("system/admin/catalog/gallery",[
     "i18n",
     "system/module/alert",
     "jquery-ui",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ], function( $, i18n, $alert ){
     return {
         "behavior" : {

@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html lang="{$request->getLocale()}">
 <head>
-{style file=[
-    "@root:static/system/vendor/twbs/css/bootstrap.min.css",
-    "@root:static/system/vendor/twbs/css/bootstrap-theme.min.css"
-] filters="cssrewrite" output="static/cms/bootstrap.css"}
-{style file=[
-    "@root:static/system/vendor/jquery-ui/jquery-ui.min.css",
-    "@root:static/system/vendor/jquery-ui/jquery-ui.structure.min.css",
-    "@root:static/system/vendor/jquery-ui/jquery-ui.theme.min.css",
-    "@root:static/admin/jquery/jqgrid/ui.jqgrid.css",
-    "@root:static/admin/jquery/elfinder/elfinder.css"
-] filters="cssrewrite,?cssmin" output="static/cms/jquery-ui.css"}
-{style file=[
-    "@root:static/system/icons.css",
-    "@root:static/system/admin.css"
-] filters="cssrewrite,?cssmin" output="static/cms/admin.css"}
+<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap-theme.min.css" />
+<link rel="stylesheet" href="/static/lib/jquery-ui/themes/smoothness/jquery-ui.min.css" />
+<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid.css" />
+<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid-bootstrap.css" />
+<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid-bootstrap-ui.css" />
+<link rel="stylesheet" href="/static/admin/jquery/elfinder/elfinder.css" />
+<link rel="stylesheet" href="/static/system/icons.css" />
+<link rel="stylesheet" href="/static/system/admin.css" />
 </head>
 <body class="body" id="admin">
 <div class="navbar navbar-inverse">{strip}

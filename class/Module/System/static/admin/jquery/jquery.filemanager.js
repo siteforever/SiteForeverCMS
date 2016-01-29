@@ -9,7 +9,8 @@
 define("system/admin/jquery/jquery.filemanager",[
     "jquery",
     "jquery-ui",
-    "admin/jquery/elfinder/elfinder"
+    "admin/jquery/elfinder/elfinder",
+    "admin/jquery/elfinder/i18n/elfinder.ru"
 ], function($){
 
     /** cache for jquery elFinder node */
@@ -18,7 +19,8 @@ define("system/admin/jquery/jquery.filemanager",[
         /** begin settings for elFinder */
         filemanager = {
             url: "/elfinder/connector",
-            lang: window.lang,
+            //lang: window.lang,
+            lang: 'ru',
             resizable: false,
             debug: false
         },

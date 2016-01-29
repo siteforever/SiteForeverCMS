@@ -6,7 +6,7 @@ define("catalog/admin/goods",[
     "system/admin/catalog/product",
     "bootstrap",
     "jquery-ui",
-    "system/jquery/jquery.blockUI",
+    "jquery-blockui",
     "system/jquery/jquery.jqGrid"
 ], function( $, wysiwyg, Dialog, _gallery, _product ){
 

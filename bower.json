@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "jquery": "~1.11",
-    "jquery-ui": "~1.10",
+    "jquery-ui": "~1.11.4",
     "jquery-form": "~3",
     "blockui": "http://malsup.github.io/jquery.blockUI.js",
     "requirejs": "~2.1",
@@ -36,6 +36,7 @@
   "resolutions": {
     "underscore": "1.8.*",
     "bootstrap": "3.3.*",
-    "backbone": "1.2.*"
+    "backbone": "1.2.*",
+    "jquery-ui": "~1.11.4"
   }
 }

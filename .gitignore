@@ -11,6 +11,8 @@
 /thumbs
 /vendor
 /static
+!static/admin.min.js
+!static/admin.src.js
 /composer.phar
 /composer.lock
 /node_modules

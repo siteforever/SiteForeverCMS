@@ -17,7 +17,7 @@
 
 define("system/module/form",[
     "jquery",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ],function($){
 
     // error handler

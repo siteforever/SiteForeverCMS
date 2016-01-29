@@ -9,7 +9,7 @@ define('system/module/dialog',[
     "i18n",
     "system/module/alert",
     "jquery-ui",
-    "system/jquery/jquery.form"
+    "jquery-form"
 ], function ($, i18n, $alert) {
 
     var dialog = function( /* string */ id, /* object */ obj ){
