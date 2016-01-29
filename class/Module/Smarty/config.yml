@@ -14,3 +14,9 @@ services:
             - { name: smarty.plugin, type: block, plugin: form, method: block_form }
 #            - { name: smarty.plugin, type: function, plugin: form_start, method: function_form_start }
 #            - { name: smarty.plugin, type: function, plugin: form_end, method: function_form_end }
+
+    smarty.plugin.asset:
+        class: Module\System\Plugin\AssetPlugin
+        tags:
+            - { name: smarty.plugin, type: function, plugin: style, method: functionStyle }
+            - { name: smarty.plugin, type: function, plugin: js, method: functionJs }

@@ -2,8 +2,8 @@
 <html lang="{$request->getLocale()}">
 <head>
 <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap-theme.min.css" />
+{style file="static/lib/bootstrap/dist/css/bootstrap.min.css"}
+{style file="static/lib/bootstrap/dist/css/bootstrap-theme.min.css"}
 </head>
 <body>
 <div class="container">
@@ -28,8 +28,12 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="/static/lib/jquery/dist/jquery.min.js"></script>
-<script type="text/javascript" src="/static/lib/bootstrap/dist/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/themes/bootstrap/js/script.js"></script>
+{*<script type="text/javascript" src="/static/lib/jquery/dist/jquery.min.js"></script>*}
+{*<script type="text/javascript" src="/static/lib/bootstrap/dist/js/bootstrap.min.js"></script>*}
+{*<script type="text/javascript" src="/themes/bootstrap/js/script.js"></script>*}
+
+{js file="static/lib/jquery/dist/jquery.min.js"}
+{js file="static/lib/bootstrap/dist/js/bootstrap.min.js"}
+{js file="@theme:js/script.js"}
 </body>
 </html>
