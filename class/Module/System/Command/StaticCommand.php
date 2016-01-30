@@ -71,5 +71,19 @@ class StaticCommand extends Command
             $filesistem->dumpFile($rootDir . '/vendor/.htaccess', "deny from all", 0644);
             $output->writeln('<info>Create "vendor/.htaccess" file</info>');
         }
+
+        if (ROOT != SF_PATH) {
+            $files = [
+                '.bowerrc',
+                'bower.json',
+                'package.json',
+                'Gruntfile.js',
+            ];
+            foreach ($files as $file) {
+                if (!$filesistem->exists(ROOT . '/' . $file)) {
+                    $filesistem->copy(SF_PATH . '/' . $file, ROOT . '/' . $file);
+                }
+            }
+        }
     }
 }

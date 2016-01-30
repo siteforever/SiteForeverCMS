@@ -95,12 +95,10 @@ class Admin extends Layout
             ? json_encode($rjsConfig, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_NUMERIC_CHECK)
             : json_encode($rjsConfig, JSON_NUMERIC_CHECK);
 
-        $return[] = '<script type="text/javascript">/* var require = '.$json.'; */</script>';
         $return[] = '<script type="text/javascript">window.controller = "'.$controllerJs.'";</script>';
         $return[] = '<script type="text/javascript">window.use_controller = true;</script>';
-        // $dataMain = $this->app->isDebug() ? '/static/system/app' : '/static/admin.src.js';
-        $dataMain = '/static/admin.min.js';
-        $return[] = "<script type='text/javascript' src='/static/lib/requirejs/require.js' data-main='{$dataMain}'></script>";
+        $dataMain = $this->app->isDebug() ? '/static/system/app' : '/assets/admin/admin.min.js';
+        $return[] = "<script type='text/javascript' src='/assets/require.js' data-main='{$dataMain}'></script>";
 
         return join(PHP_EOL, $return);
     }

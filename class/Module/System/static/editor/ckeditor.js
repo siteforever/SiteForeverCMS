@@ -4,8 +4,6 @@
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-CKEDITOR.basePath = '/static/lib/ckeditor/';
-
 define('system/editor/ckeditor',[
     "module",
     "jquery",
@@ -31,6 +29,7 @@ define('system/editor/ckeditor',[
         "init" : function() {
             $('textarea').not('.plain').each(function(){
                 if (!CKEDITOR.instances[ $(this).attr('id') ]) {
+                    CKEDITOR.basePath = '/static/lib/ckeditor/';
                     $(this).ckeditor({
                         filebrowserBrowseUrl:finderUrl,
                         filebrowserImageBrowseUrl:finderUrl,

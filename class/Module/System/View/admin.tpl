@@ -2,15 +2,7 @@
 <html lang="{$request->getLocale()}">
 <head>
 <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="/static/lib/bootstrap/dist/css/bootstrap-theme.min.css" />
-<link rel="stylesheet" href="/static/lib/jquery-ui/themes/smoothness/jquery-ui.min.css" />
-<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid.css" />
-<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid-bootstrap.css" />
-<link rel="stylesheet" href="/static/lib/jqGrid/css/ui.jqgrid-bootstrap-ui.css" />
-<link rel="stylesheet" href="/static/admin/jquery/elfinder/elfinder.css" />
-<link rel="stylesheet" href="/static/system/icons.css" />
-<link rel="stylesheet" href="/static/system/admin.css" />
+{style file="assets/admin/admin.css"}
 </head>
 <body class="body" id="admin">
 <div class="navbar navbar-inverse">{strip}
@@ -105,3 +97,5 @@
 </div>
 </body>
 </html>
+{style file="static/admin/jquery/elfinder/elfinder.css"}
+{style file="static/system/icons.css"}
