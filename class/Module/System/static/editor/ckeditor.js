@@ -30,6 +30,7 @@ define('system/editor/ckeditor',[
             $('textarea').not('.plain').each(function(){
                 if (!CKEDITOR.instances[ $(this).attr('id') ]) {
                     CKEDITOR.basePath = '/static/lib/ckeditor/';
+                    CKEDITOR.plugPath = '/static/lib/ckeditor/plugins/';
                     $(this).ckeditor({
                         filebrowserBrowseUrl:finderUrl,
                         filebrowserImageBrowseUrl:finderUrl,

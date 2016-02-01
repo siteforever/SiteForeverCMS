@@ -31,7 +31,7 @@
     "chosen": "1.4.*",
     "backbone.model_binder": "https://github.com/theironcook/Backbone.ModelBinder.git",
     "jquery.maskedinput": "~1.4.1",
-    "ckeditor": "~4.5.6"
+    "ckeditor": "#full/4.5.6"
   },
   "resolutions": {
     "underscore": "1.8.*",

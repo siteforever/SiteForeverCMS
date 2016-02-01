@@ -95,6 +95,7 @@ class Admin extends Layout
             ? json_encode($rjsConfig, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_NUMERIC_CHECK)
             : json_encode($rjsConfig, JSON_NUMERIC_CHECK);
 
+        $return[] = '<script type="text/javascript">var CKEDITOR_BASEPATH = "/static/lib/ckeditor/";</script>';
         $return[] = '<script type="text/javascript">window.controller = "'.$controllerJs.'";</script>';
         $return[] = '<script type="text/javascript">window.use_controller = true;</script>';
         $dataMain = $this->app->isDebug() ? '/static/system/app' : '/assets/admin/admin.min.js';
