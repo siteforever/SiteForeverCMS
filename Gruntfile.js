@@ -1,24 +1,17 @@
 module.exports = function(grunt) {
-
-    var assetsPath = 'assets',
-        cssPath = assetsPath + '/css',
-        jsPath = assetsPath + '/js';
-
     // Project configuration.
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         watch: {
-            //less: {
-            //    files: [
-            //        'web/app/less/*.less',
-            //        'web/app/less/blocks/*.less',
-            //        'web/app/less/admin/*.less'
-            //    ],
-            //    tasks: ['less'],
-            //    options: {
-            //        debounceDelay: 1000
-            //    }
-            //},
+            less: {
+                files: [
+                    'static/system/admin.less'
+                ],
+                tasks: ['less', 'cssmin'],
+                options: {
+                    debounceDelay: 1000
+                }
+            },
             configFiles: {
                 files: [ 'Gruntfile.js' ],
                 options: {
@@ -27,40 +20,33 @@ module.exports = function(grunt) {
             }
         },
         less: {
-        //    env: {
-        //        options: {
-        //            compress: false
-        //        },
-        //        files: {
-        //            "web/css/admin.src.css": "web/app/less/admin.less",
-        //            "web/css/style.src.css": 'web/app/less/style.less',
-        //            "web/css/glyphicon.src.css": 'web/app/less/bootstrap-fonts.less'
-        //        }
-        //    }
+            admin: {
+                options: {
+                    compress: false
+                },
+                files: {
+                    "assets/admin/admin.src.css": "static/system/admin.less"
+                }
+            }
         },
         copy: {
-            //fancybox: {expand: true,flatten: true,
-            //    src: [
-            //        'static/lib/fancybox/source/*.gif',
-            //        'static/lib/fancybox/source/*.png'
-            //    ],
-            //    dest: cssPath
-            //},
-            //fancybox_helpers: {expand: true,flatten: true,
-            //    src: 'static/lib/fancybox/source/helpers/fancybox_buttons.png',
-            //    dest: cssPath + '/helpers'
-            //},
             jqueru_ui_theme: {expand: true,flatten: true,
                 src: [
                     'static/lib/jquery-ui/themes/smoothness/images/*'
                 ],
-                dest: assetsPath + '/admin/images'
+                dest: 'assets/admin/images'
+            },
+            system_images: {expand: true,flatten: true,
+                src: [
+                    'static/images/*'
+                ],
+                dest: 'assets/admin/images'
             },
             fonts: {expand: true,flatten: true,
                 src: [
                     'static/lib/bootstrap/fonts/*'
                 ],
-                dest: assetsPath + '/fonts'
+                dest: 'assets/fonts'
             }
         },
         cssmin: {
@@ -73,13 +59,13 @@ module.exports = function(grunt) {
             target: {
                 files: {
                     'assets/admin/admin.css': [
-                        'static/lib/bootstrap/dist/css/bootstrap.css',
-                        'static/lib/bootstrap/dist/css/bootstrap-theme.css',
+                        'assets/admin/admin.src.css',
                         'static/lib/jquery-ui/themes/smoothness/jquery-ui.css',
-                        'static/lib/jqGrid/css/ui.jqgrid.css',
+                        'static/lib/jquery-ui/themes/smoothness/jquery-ui.structure.css',
+                        'static/lib/jquery-ui/themes/smoothness/jquery-ui.theme.css',
                         'static/lib/jqGrid/css/ui.jqgrid-bootstrap.css',
                         'static/lib/jqGrid/css/ui.jqgrid-bootstrap-ui.css',
-                        'static/system/admin.css'
+                        'static/lib/jqGrid/plugins/searchFilter.css'
                     ]
                 }
             }
@@ -117,5 +103,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
     // Default task(s).
-    grunt.registerTask('default', ['copy', /*'less',*/ 'cssmin', 'requirejs', 'uglify']);
+    grunt.registerTask('default', ['copy', 'less', 'cssmin', 'requirejs', 'uglify']);
 };

@@ -29,9 +29,9 @@ abstract class Component implements \ArrayAccess//, Iterator;
     /**
      * @return i18n
      */
-    public function i18n()
+    public static function i18n()
     {
-        return $this->app()->getContainer()->get('i18n');
+        return self::app()->getContainer()->get('i18n');
     }
 
     /**
@@ -41,9 +41,9 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param array $params
      * @return mixed
      */
-    public function t($cat, $text = '', $params = array())
+    public static function t($cat, $text = '', $params = array())
     {
-        return call_user_func_array(array($this->i18n(),'write'), func_get_args());
+        return call_user_func_array([self::i18n(), 'write'], func_get_args());
     }
 
     /**
@@ -51,9 +51,9 @@ abstract class Component implements \ArrayAccess//, Iterator;
      * @param        $message
      * @param string $label
      */
-    public function log($message, $label = '')
+    public static function log($message, $label = '')
     {
-        $this->app()->getLogger()->log($message, $label);
+        self::app()->getLogger()->log($message, $label);
     }
 
     /**
@@ -62,12 +62,14 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public function get($key)
     {
-        $result = null;
+        $result = isset($this->data[$key]) ? $this->data[$key] : null;
         $method = 'get' . ucfirst($key);
-        if (is_callable(array($this, $method)) && 'getId' != $method) {
-            $result = $this->$method();
-        } else if (isset($this->data[$key])) {
-            $result = $this->data[$key];
+        if ('getId' != $method && is_callable(array($this, $method))) {
+            $result = $this->$method($result);
+        }
+
+        if ('_at' == substr($key, -3, 3) && preg_match('@\d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}@', $result)) {
+            return \DateTime::createFromFormat('Y-n-d H-i-s', $result);
         }
 
         return $result;
@@ -81,9 +83,12 @@ abstract class Component implements \ArrayAccess//, Iterator;
     public function set($key, $value)
     {
         $method = 'set' . ucfirst($key);
-        if (is_callable(array($this, $method)) && 'setId' != $method) {
+        if ('setId' != $method && is_callable(array($this, $method))) {
             $this->$method($value);
         } else {
+            if ('_at' == substr($key, -3, 3) && $value instanceof \DateTime) {
+                $value = $value->format('Y-m-d H-i-s');
+            }
             $this->data[$key] = $value;
         }
 

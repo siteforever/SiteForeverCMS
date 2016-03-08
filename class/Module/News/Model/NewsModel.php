@@ -22,12 +22,23 @@ class NewsModel extends Model
     public function relation()
     {
         return array(
-            'Category' => array( self::BELONGS, 'Category', 'cat_id' ),
+            'Category' => array( self::BELONGS, 'NewsCategory', 'cat_id' ),
         );
     }
 
-    public function onSaveSuccess(Model\ModelEvent $e)
+    public static function onSaveStart(Model\ModelEvent $e)
     {
+        /** @var News $obj */
+        $obj = $e->getObject();
+        if (!$obj->created_at) {
+            $obj->created_at = new \DateTime();
+        }
+        $obj->updated_at = new \DateTime();
+    }
+
+    public static function onSaveSuccess(Model\ModelEvent $e)
+    {
+        /** @var News $obj */
         $obj = $e->getObject();
         if (empty($obj->alias) || '0' == $obj->alias{0}) {
             $obj->alias = $obj->name

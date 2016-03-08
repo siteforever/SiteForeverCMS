@@ -1,4 +1,24 @@
-<table class="table table-striped">
+<p>
+    {a controller="news" action="edit" class="btn btn-success newsEdit" title=$this->t('news','Create article')}
+        {t cat="news"}Create article{/t}
+    {/a}
+    <button class="btn btn-warning btn-edit">Редактировать выделенную статью</button>
+</p>
+
+<table class="table table-striped" id="news_grid" data-url="/news/list"></table>
+
+{modal id="newsEdit" title=$this->t('news','News edit')}
+
+<script>
+window.new_categories = {
+    "0": "Все"
+};
+{foreach from=$list item="item"}
+window.new_categories["{$item.id}"] = "{$item.name}";
+{/foreach}
+</script>
+
+{*<table class="table table-striped">
 <thead>
 <tr>
     <th width="20">#</th>
@@ -30,7 +50,7 @@
 </tr>
 {/foreach}
 </table>
-<p></p>
+<p></p>*}
 
 {*{modal id="newsCatEdit" title=$this->t('news','News category edit')}*}
 {*<p><a class="button" {href controller="news" action="catedit" id="0"}>*}

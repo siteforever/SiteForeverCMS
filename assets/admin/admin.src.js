@@ -33526,6 +33526,20 @@ define("system/admin/jquery/jquery.dumper",[
 
 
 
+/**
+ *
+ * @author: keltanas
+ * @link http://siteforever.ru
+ */
+define('system/admin/log',[
+    "backbone",
+    "jquery"
+],function(Backbone, $){
+    return Backbone.View.extend({
+
+    });
+});
+
 /*
 Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.md or http://ckeditor.com/license
@@ -47659,6 +47673,22 @@ define('catalog/admin/prodtype',[
 });
 
 /**
+ * Скрипты для каталога
+ * @author Ermin Nikolay <nikolay@ermin.ru>
+ * @link http://ermin.ru
+ * @link http://siteforever.ru
+ */
+define("catalog/admin/catalogcomment", [
+    "backbone",
+    "jquery"
+],function(Backbone, $){
+
+    return Backbone.View.extend({
+
+    });
+});
+
+/**
  *
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
@@ -48203,6 +48233,157 @@ define("market/admin/payment", [
 });
 
 /**
+ *
+ * @author: Nikolay Ermin <keltanas@gmail.com>
+ */
+define("news/admin/news_model", [
+    'jquery',
+    'backbone'
+], function ($, Backbone) {
+    return Backbone.Model.extend({
+        //"id": "1",
+        //"cat_id": "1",
+        //"author_id": "1",
+        //"alias": "1-sluchainyi-argument-perigeliya-v-xxi-veke",
+        //"name": "Случайный аргумент перигелия в XXI веке",
+        //"image": "",
+        //"main": "0",
+        //"priority": "0",
+        //"date": "1294174800",
+        //"notice": "<p>Проверка работы</p>",
+        //"text": "<p>Проверка работы</p>\r\n<p>Полное описание</p>",
+        //"title": "Случайный аргумент перигелия в XXI веке",
+        //"keywords": "Случайный аргумент перигелия в XXI веке",
+        //"description": "Случайный аргумент перигелия в XXI веке",
+        //"hidden": "0",
+        //"protected": "0",
+        //"deleted": "0"
+
+        defaults: {
+            id: null,
+            category: null,
+            name: null,
+            main: null,
+            date: null,
+            hidden: null,
+            protected: null
+        },
+
+        gridColumns: [
+            { label: "Id", name: "id", width: 50, key: true, search: true },
+            {   label: "Категория",
+                name: "category.name",
+                width: 200,
+                search: true,
+                index: "cat_id",
+                formatter:'select',
+                stype: 'select',
+                searchoptions: {
+                    sopt:['eq'],
+                    value: window.new_categories
+                }
+            },
+            { label: "Название", name: "name", width: 300, search: true },
+            { label: "Дата", name: "date", width: 150, search: false, formatter: "date" },
+            { label: "Создано", name: "created_at", width: 150, search: false, formatter: "date" },
+            { label: "Редакт.", name: "updated_at", width: 150, search: false, formatter: "date" },
+            { label: "Главная", name: "main", width: 50, search: false },
+            { label: "Скрыть", name: "hidden", width: 50, search: false },
+            { label: "Защита", name: "protected", width: 50, search: false }
+        ]
+    });
+});
+
+/**
+ *
+ * @author: Nikolay Ermin <keltanas@gmail.com>
+ */
+define("system/module/grid_view", [
+    "jquery",
+    "underscore",
+    "backbone",
+    "jqgrid/i18n/grid.locale-ru",
+    "jqgrid/grid.filter",
+    "jqgrid/grid.formedit"
+], function ($, _, Backbone) {
+
+    var tableConfig = {
+        url: null,
+        caption: null,
+        mtype: "GET",
+        datatype: "json",
+        jsonReader : {
+            root: "data"
+        },
+        prmNames : {
+            page: "page",
+            rows: "perpage",
+            sort: "order_key",
+            order: "order_dir"
+        },
+        search: true,
+        colModel:[],
+        viewrecords: true,
+        rowList : [10,20,50],
+        rowNum: 20
+    };
+
+    return Backbone.View.extend({
+
+        rowid: null,
+
+        initialize: function(options) {
+            $.jgrid.defaults.width = null;
+            $.jgrid.defaults.height = null;
+            $.jgrid.defaults.autowidth = true;
+            $.jgrid.defaults.autoheight = true;
+            $.jgrid.defaults.responsive = true;
+            $.jgrid.defaults.styleUI = 'Bootstrap';
+
+            options = _.extend(tableConfig, options);
+            options.url = this.$el.data('url');
+            options.caption = this.$el.data('caption');
+            options.colModel = this.model.prototype.gridColumns;
+            if (typeof options.colModel === 'function') {
+                options.colModel = options.colModel.apply(this.model);
+                console.log(options.colModel);
+            }
+
+
+            var $pager, pager = this.$el.data('pager');
+            options.pager = pager || '#' + this.$el.attr('id') + 'Pager';
+            $pager = $(options.pager);
+            if (!$pager.length) {
+                $('<div id="'+options.pager.replace('#', '')+'"></div>').insertAfter(this.$el);
+            }
+
+            this.model.prototype.urlRoot = options.url;
+
+            options.onSelectRow = $.proxy(this.onSelectRow, this);
+            options.gridComplete = $.proxy(this.gridComplete, this);
+
+            this.$el
+                .jqGrid(options)
+                .jqGrid('filterToolbar', {})
+                .navGrid(options.pager, {edit: false, add: false, del: false, search: false});
+        },
+
+        reload: function() {
+            this.$el.trigger("reloadGrid");
+            this.rowid = null;
+        },
+
+        onSelectRow: function(rowid) {
+            this.rowid = rowid;
+        },
+
+        gridComplete: function() {
+            this.rowid = null;
+        }
+    });
+});
+
+/**
  * Модуль для новостей
  * @author Nikolay Ermin <nikolay@ermin.ru>
  * @link   http://siteforever.ru
@@ -48210,74 +48391,113 @@ define("market/admin/payment", [
 
 define("news/admin/news", [
     "jquery",
+    "backbone",
+    "underscore",
     "system/module/modal",
     "i18n",
     "system/module/alert",
+    "news/admin/news_model",
+    "system/module/grid_view",
     "jquery-form"
-],function($, Modal, i18n, $alert){
-    return {
-        "behavior" : {
-            'a.do_delete' : {
-                "click" : function( event, node ){
-                    if ( ! confirm(i18n('Want to delete?')) ) {
-                        return false;
-                    }
-                    try {
-                        $.post( $(node).attr('href'), $.proxy(function(response){
-                            if (!response.error) {
-                                $(node).parents('tr').remove();
-                            }
-                            $alert(response.msg, 1500);
-                        },this), "json");
-                    } catch (e) {
-                        console.error(e.message );
-                    }
+],function($, Backbone, _, Modal, i18n, $alert, NewsModel, GridView) {
+    return Backbone.View.extend({
+
+        grid: null,
+
+        "events" : {
+            'click a.do_delete' : function( event ){
+                var node = this.$(event.target);
+                if ( ! confirm(i18n('Want to delete?')) ) {
                     return false;
                 }
+                try {
+                    $.post( $(node).attr('href'), $.proxy(function(response){
+                        if (!response.error) {
+                            $(node).parents('tr').remove();
+                        }
+                        $alert(response.msg, 1500);
+                    },this), "json");
+                } catch (e) {
+                    console.error(e.message );
+                }
+                return false;
             },
-            'a.catEdit,a.newsEdit' : {
-                /**
-                 * Opening edit dialog with loaded content
-                 * @return {Boolean}
-                 */
-                "click" : function( event, node ) {
-                    try {
-                        $.get($(node).attr('href')).then($.proxy(function (response) {
-                            if ($(node).attr('title')) {
-                                this.newsEdit.title($(node).attr('title'));
-                            }
-                            this.newsEdit.body(response).show();
-                        }, this));
-                    } catch (e) {
-                        console.error(e);
-                    }
+
+            /**
+             * Opening edit dialog with loaded content
+             * @return {Boolean}
+             */
+            'click a.catEdit, a.newsEdit' : function( event ) {
+                var node = this.$(event.target);
+                try {
+                    $.get($(node).attr('href')).then($.proxy(function (response) {
+                        if ($(node).attr('title')) {
+                            this.newsEdit.title($(node).attr('title'));
+                        }
+                        this.newsEdit.body(response).show();
+                    }, this));
+                } catch (e) {
+                    console.error(e);
+                }
+                return false;
+            },
+
+            'click .btn-edit': function() {
+                if (!this.grid.rowid) {
+                    $alert('Укажите статью для редактирования', 2000);
                     return false;
                 }
+                try {
+                    $.get("/news/edit?id=" + this.grid.rowid).then($.proxy(function (response) {
+                        //if ($(node).attr('title')) {
+                        //    this.newsEdit.title($(node).attr('title'));
+                        //}
+                        this.newsEdit.body(response).show();
+                    }, this));
+                } catch (e) {
+                    console.error(e);
+                }
+                return false;
             }
         },
 
-        "init" : function() {
-            this.newsEdit = new Modal('newsEdit');
-            this.newsEdit.onSave(function(){
-                $alert("Сохранение", $('.modal-body', this.domnode));
-                $('form', this.domnode).ajaxSubmit({
-                    dataType:"json",
-                    success: $.proxy(function (response) {
-                        if (!response.error) {
-                            $.get(window.location.href, function(response){
-                                var $workspace = $('#workspace');
-                                $workspace.find(':not(h2)').remove();
-                                $workspace.append(response);
-                            });
-                            this.msgSuccess(response.msg, 1500);
-                        } else {
-                            this.msgError(response.msg);
-                        }
-                    },this)
-                });
+        "initialize" : function() {
+
+            this.grid = new GridView({
+                el: '#news_grid',
+                model: NewsModel
             });
+
+            _.bindAll(this, "onSave", "onSaveSuccess");
+
+
+            this.newsEdit = new Modal('newsEdit');
+            this.newsEdit.onSave(this.onSave);
+        },
+
+        onSave: function(){
+            $alert("Сохранение", $('.modal-body', this.domnode));
+            $('form', this.domnode).ajaxSubmit({
+                dataType:"json",
+                success: this.onSaveSuccess
+            });
+        },
+
+        onSaveSuccess: function (response) {
+            if (!response.error) {
+                //$.get(window.location.href, function(response){
+                //    var $workspace = $('#workspace');
+                //    $workspace.find(':not(h2)').remove();
+                //    $workspace.append(response);
+                //});
+                this.newsEdit.hide();
+                this.grid.reload();
+                this.msgSuccess(response.msg, 1500);
+            } else {
+                this.msgError(response.msg);
+            }
         }
-    };
+    });
 });
 
 /**
@@ -48630,10 +48850,12 @@ require([
     "jquery-ui",
     "system/admin/jquery/jquery.filemanager",
     "system/admin/jquery/jquery.dumper",
+    "system/admin/log",
     "banner/admin/banner",
     "catalog/admin/catalog",
     "catalog/admin/goods",
     "catalog/admin/prodtype",
+    "catalog/admin/catalogcomment",
     "dashboard/admin/dashboard",
     "elfinder/admin/elfinder",
     "gallery/admin/admin",

@@ -2,11 +2,12 @@
 <html lang="{$request->getLocale()}">
 <head>
 <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+{*{style file="assets/admin/admin.src.css"}*}
 {style file="assets/admin/admin.css"}
 </head>
 <body class="body" id="admin">
-<div class="navbar navbar-inverse">{strip}
-    <div class="container-fluid">
+<nav class="navbar navbar-inverse navbar-top">{strip}
+    <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-cms-navbar-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -14,45 +15,48 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a href="/" class="navbar-brand" title="{'Goto site'|trans}" target="_blank"><i class="glyphicon glyphicon-home"></i> {$sitename}</a>
+            <a href="/" class="navbar-brand" title="{'Goto site'|trans} {$sitename}" target="_blank">
+                <i class="glyphicon glyphicon-home"></i> CMS
+            </a>
         </div>
         <div class="collapse navbar-collapse" id="bs-cms-navbar-collapse">
             <ul class="nav navbar-nav">{strip}
-                    {foreach from=$request->get('modules') item="item"}
-                        {if ! isset( $item.class )}{$item.class = ""}{/if}
-                        {if isset($item.sub)}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown">
-                                    {if isset($item.gliph)}<i class="glyphicon glyphicon-{$item.gliph}"></i> {/if}
-                                    {$item.name|trans|ucfirst} <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    {foreach from=$item.sub item="sitem"}
-                                        {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
-                                        <li>{a href=$sitem.url htmlClass=$sitem.class}
-                                            {if isset($sitem.gliph)}<i class="glyphicon glyphicon-{$sitem.gliph}"></i> {/if}
-                                            {$sitem.name|trans|ucfirst}{/a}</li>
-                                    {/foreach}
-                                </ul>
-                            </li>
-                        {else}
-                            <li>
-                                <a href="/{$item.url|default:""}" class="{$item.class}">
-                                    {if isset($item.gliph)}<i class="glyphicon glyphicon-{$item.gliph}"></i> {/if}
-                                    {$item.name|trans|ucfirst}</a>
-                            </li>
-                        {/if}
-                    {/foreach}
-                {/strip}</ul>
+            {foreach from=$request->get('modules') item="item"}
+                {if ! isset( $item.class )}{$item.class = ""}{/if}
+                {if isset($item.sub)}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
+                        <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                        &nbsp;<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {foreach from=$item.sub item="sitem"}
+                            {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
+                            <li>{a href=$sitem.url htmlClass=$sitem.class title=$sitem.name|trans|ucfirst}
+                                <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                                &nbsp;{$sitem.name|trans|ucfirst}
+                            {/a}</li>
+                        {/foreach}
+                    </ul>
+                </li>
+                {else}
+                <li>
+                    <a href="/{$item.url|default:""}" class="{$item.class}" title="{$item.name|trans|ucfirst}">
+                        <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                    </a>
+                </li>
+                {/if}
+            {/foreach}
+            {/strip}</ul>
             <ul class="nav navbar-nav navbar-right">
                 <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
             </ul>
         </div>
     </div>
-{/strip}</div>
+{/strip}</nav>
 <div class="modal-backdrop in" id="loading-application">
     <div>{'Initialisation'|trans}</div>
 </div>
-<div class="container-fluid">
+<div class="wrapper">
     <div class="row">
         <div class="col-md-offset-1 col-md-10" id="workspace">
             <!--[if lt IE 9]>
@@ -93,7 +97,6 @@
     </div>
 
     <div class="l-footer-wrapper"></div>
-
 </div>
 </body>
 </html>

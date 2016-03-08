@@ -37,7 +37,7 @@ class GalleryModel extends Model
         );
     }
 
-    public function onSaveStart(Model\ModelEvent $event)
+    public static function onSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
         $alias = $obj->get('name')

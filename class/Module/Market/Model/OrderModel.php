@@ -37,7 +37,7 @@ class OrderModel extends Model
     /**
      * @param Model\ModelEvent $event
      */
-    public function onSaveSuccess(Model\ModelEvent $event)
+    public static function onSaveSuccess(Model\ModelEvent $event)
     {
         array_map(function(OrderPosition $pos) use ($event) {
             $pos->ord_id = $event->getObject()->id;

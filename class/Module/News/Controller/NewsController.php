@@ -16,6 +16,7 @@ use Module\News\Object\News;
 use Module\News\Object\Category;
 use Sfcms_Http_Exception;
 use Exception;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class NewsController extends Controller
 {
@@ -151,31 +152,81 @@ class NewsController extends Controller
 
     /**
      * Список новостей для админки
-     * @param int $id
      * @return mixed
      */
-    public function listAction($id)
+    public function listAction()
     {
-        $this->request->setTitle($this->t('news','News'));
+        $perPage = $this->request->query->get('perpage', 20);
         $model      = $this->getModel('News');
+        $catModel      = $this->getModel('News');
+        $count  = $model->count('deleted = 0');
+        $paging = $this->paging($count, $perPage, $this->router->createServiceLink('news', 'list', ['deleted' => 0]));
 
-        $count  = $model->count('cat_id = :cat_id', array(':cat_id'=>$id));
-        $paging = $this->paging( $count, 20, $this->router->createServiceLink('news','list',array('id'=>$id)));
+        $orderKey = $this->request->query->get('order_key', 'id');
+        $orderDir = $this->request->query->get('order_dir', 'desc');
+        if (in_array($orderKey, ['id', 'name', 'date', 'created_at', 'updated_at']) && in_array($orderDir, ['asc', 'desc'])) {
+            $order = "`$orderKey` $orderDir";
+        } else {
+            $order = '`date` DESC, `priority` DESC, `id` DESC';
+        }
 
-        $list = $model->findAll(array(
-            'cond'      => 'cat_id = :cat_id AND deleted = 0',
-            'params'    => array(':cat_id'=>$id),
+        $cond = 'deleted = 0';
+        $params = array();
+
+        if ($this->request->query->get('name')) {
+            $cond .= ' AND name LIKE :name';
+            $params[':name'] = '%' . $this->request->query->get('name') . '%';
+        }
+
+        if ($this->request->query->get('cat_id')) {
+            $cond .= ' AND cat_id = :cat_id';
+            $params[':cat_id'] = $this->request->query->get('cat_id');
+        }
+
+        $list = $model->findAll([
+            'cond'      => $cond,
+            'params'    => $params,
             'limit'     => $paging->limit,
-            'order'     => '`date` DESC, `priority` DESC, `id` DESC',
-        ));
+            'order'     => $order,
+        ]);
 
-        $cat    = $this->getModel('NewsCategory')->find( $id );
+        $response = new JsonResponse([
+            'data' => array_map(function(News $news){
+//                id: null,
+//            cat_id: null,
+//            name: null,
+//            main: null,
+//            date: null,
+//            hidden: null,
+//            protected: null
 
-        return array(
-            'paging'    => $paging,
-            'list'      => $list,
-            'cat'       => $cat,
-        );
+                return [
+                    'id' => intval($news->id),
+                    'cat_id' => intval($news->cat_id),
+                    'name' => $news->name,
+                    'category' => $news->Category ? [
+                        'id' => $news->Category->id,
+                        'name' => $news->Category->name,
+                    ] : null,
+                    'main' => $news->main,
+                    'hidden' => $news->hidden,
+                    'protected' => $news->protected,
+                    'date' => (new \DateTime())->setTimestamp($news->date)->format('Y-m-d'),
+                    'created_at' => $news->created_at,
+                    'updated_at' => $news->updated_at,
+                ];
+            }, iterator_to_array($list)),
+            'links'    => $paging,
+            'page' => $paging->page,
+            'records' => $paging->count,
+            'total' => $paging->pages,
+        ]);
+
+//        return array(
+//            'paging'    => $paging,
+//            'list'      => $list,
+//        );
+        return $response;
     }
 
     /**

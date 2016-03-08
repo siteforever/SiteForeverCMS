@@ -21,13 +21,13 @@
             <td>{a href=$item.obj.url}{$item.obj.name}{/a}</td>
             <td>{$item.details|nl2br}</td>
             <td class="right basket-price">{$item.price|number_format}</td>
-            <td class="right span2 basket-count">
-                <div class="input-append">
-                    <input type="text" class="basket-count input-mini" name="basket_counts[{$item.id}]" value="{$item.count}">
-                    <span class="add-on">Шт.</span>
-                </div>
-            </td>{$sum = $item.count*$item.price}
-            <td class="right basket-sum">{$sum|default:"0"|number_format}</td>
+            <td class="right basket-count">
+                <input type="text" class="basket-count form-control input-sm" name="basket_counts[{$item.id}]" value="{$item.count}">
+            </td>
+            <td class="right basket-sum">
+                {$sum = $item.count*$item.price}
+                {$sum|default:"0"|number_format}
+            </td>
             <td class="center">
                 <input type="checkbox" class="checkbox" name="basket_del[{$key}]" value="1" />
             </td>

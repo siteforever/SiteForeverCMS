@@ -4,10 +4,10 @@
  * @link http://siteforever.ru
  */
 define('system/admin/log',[
-    "jquery",
-    "jqgrid"
-],function($){
-    return {
+    "backbone",
+    "jquery"
+],function(Backbone, $){
+    return Backbone.View.extend({
 
-    };
+    });
 });

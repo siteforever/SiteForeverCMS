@@ -28,7 +28,7 @@ class DataManager extends ContainerAware
     {
         $model = strtolower($model);
         if (false !== strpos($model, '.')) {
-            if ('mapper' === strtolower(substr($model, 0, 6))) {
+            if ('mapper' === substr($model, 0, 6)) {
                 return $this->container->get($model);
             } else {
                 return $this->container->get('mapper.' . $model);

@@ -52,7 +52,7 @@ class Pager implements \ArrayAccess
         return $this->request;
     }
 
-    function __construct($count, $perpage, $link = '', $request = null, $template = null, $cacheId = null)
+    function __construct($count, $perpage = 10, $link = '', $request = null, $template = null, $cacheId = null)
     {
         if (null !== $request) {
             $this->setRequest($request);
@@ -60,8 +60,6 @@ class Pager implements \ArrayAccess
         if (null !== $template) {
             $this->template = $template;
         }
-
-        $perpage    = $perpage ? $perpage : 10;
 
         $pages  = ceil( $count / $perpage );
 

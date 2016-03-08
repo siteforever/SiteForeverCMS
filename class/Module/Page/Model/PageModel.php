@@ -212,24 +212,25 @@ class PageModel extends Model
      *
      * @throws \Sfcms\Model\Exception
      */
-    public function onSaveStart(Model\ModelEvent $event)
+    public static function onSaveStart(Model\ModelEvent $event)
     {
-        $this->log('triggered: ' . __METHOD__);
         /** @var $obj Page  */
         $obj = $event->getObject();
+        /** @var PageModel $model */
+        $model = $obj->getModel();
 
         // todo Переделать на использование роутера
-        $pageId = $this->checkAlias($obj->alias);
+        $pageId = $model->checkAlias($obj->alias);
         if ( false !== $pageId && $obj->getId() != $pageId ) {
-            throw new Exception($this->t('The page with this address already exists'));
+            throw new Exception($model->t('The page with this address already exists'));
         }
 
         $obj->alias = $obj->alias ? $obj->alias : strtolower(\Sfcms::i18n()->translit(trim($obj->name, '/ ')));
-        $obj->path = serialize(array_reverse($this->createPath($obj)));
+        $obj->path = serialize(array_reverse($model->createPath($obj)));
 
         // Настраиваем связь с модулями
         // @todo Должно определяться по имени модели, но в странице не указана связанная модель, а только контроллер
-        $this->trigger(sprintf('plugin.page-%s.save.start', $obj->controller), $event);
+        $model->trigger(sprintf('plugin.page-%s.save.start', $obj->controller), $event);
     }
 
     /**

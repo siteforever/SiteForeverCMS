@@ -31,6 +31,9 @@ use Sfcms\Data\Field;
  * @property $hidden
  * @property $protected
  * @property $deleted
+ * @property \DateTime $created_at
+ * @property \DateTime $updated_at
+ * @property Category $Category
  */
 class News extends Object
 {
@@ -67,11 +70,13 @@ class News extends Object
             new Field\Int('id', 11, true, null, true),
             new Field\Int('cat_id'),
             new Field\Int('author_id'),
+
             new Field\Varchar('alias', 250,true,''),
             new Field\Varchar('name', 250),
             new Field\Varchar('image', 250, false, ''),
             new Field\Tinyint('main', 1, false, 0),
             new Field\Tinyint('priority', 1, false, 0),
+
             new Field\Int('date'),
 
             new Field\Text('notice'),
@@ -83,6 +88,10 @@ class News extends Object
 
             new Field\Tinyint('hidden', 1, false, 0),
             new Field\Tinyint('protected', 1, false, 0),
+
+            new Field\Datetime('created_at'),
+            new Field\Datetime('updated_at'),
+
             new Field\Tinyint('deleted', 1, false, 0),
         );
     }

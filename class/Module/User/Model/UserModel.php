@@ -104,44 +104,14 @@ class UserModel extends Model
      * Hide password
      * @param Model\ModelEvent $event
      */
-    public function onSaveStart(Model\ModelEvent $event)
+    public static function onSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
-        if (get_class($obj) == $this->objectClass()) {
+        if (get_class($obj) == $obj->getModel()->objectClass()) {
             if (empty($obj->password)) {
                 unset($obj->password);
             }
         }
-    }
-
-    /**
-     * Вернет массив с корзиной
-     * @deprecated
-     * @return array
-     */
-    public function getBasketArray(Object $user)
-    {
-        $basket = json_decode($user['basket'], true);
-        if ( $basket ) {
-            return $basket;
-        }
-        return array();
-    }
-
-    /**
-     * Установить новые значения для корзины
-     * @param array $array
-     * @param User $obj
-     * @return void
-     * @deprecated
-     */
-    public function setBasketFromArray( $array, User $obj )
-    {
-        $basket = json_encode( $array );
-        $obj->basket    = $basket;
-        //$this->data['basket'] = $basket;
-        $this->save( $obj );
-        //die( $this->data['basket'] );
     }
 
     /**

@@ -6,14 +6,13 @@
 
 namespace Sfcms\Model;
 
-
-use Sfcms\Data\Object;
+use Sfcms\Data\Object as DataObject;
 use Sfcms\Model;
 use Symfony\Component\EventDispatcher\Event;
 
 class ModelEvent extends Event
 {
-    /** @var Object */
+    /** @var DataObject */
     protected $object;
 
     /** @var Model */
@@ -22,7 +21,7 @@ class ModelEvent extends Event
     /** @var bool */
     protected $continue = true;
 
-    public function __construct( Object $object, Model $model )
+    public function __construct( DataObject $object, Model $model )
     {
         $this->object = $object;
         $this->model = $model;
@@ -65,7 +64,7 @@ class ModelEvent extends Event
     }
 
     /**
-     * @param Object $object
+     * @param DataObject $object
      */
     public function setObject( $object )
     {
@@ -73,7 +72,7 @@ class ModelEvent extends Event
     }
 
     /**
-     * @return Object
+     * @return DataObject
      */
     public function getObject()
     {

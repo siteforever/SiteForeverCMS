@@ -44,5 +44,4 @@ class LogController extends Controller
         $provider = $model->getProvider($this->request);
         return $provider->getJsonData();
     }
-
 }

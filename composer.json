@@ -79,5 +79,5 @@
             "dist-file": "app/parameters.yml.dist"
         }
     },
-    "bin": ["bin/console", "bin/pngout", "bin/yuicompressor-2.4.7.jar"]
+    "bin": ["bin/console"]
 }

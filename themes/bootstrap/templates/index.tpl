@@ -11,13 +11,13 @@
         <a class="logo" href="/"></a>
     </header>
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <div class="b-left-menu">
                 <h3>Карта сайта</h3>
                 {menu parent=1 level=3}
             </div>
         </div>
-        <div class="col-sm-8 b-content">
+        <div class="col-sm-6 b-content">
             {block breadcrumbs}{/block}
 
             {if $request->getFeedbackString()}
@@ -25,6 +25,9 @@
             {/if}
 
             {$response->getContent()}
+        </div>
+        <div class="col-sm-3">
+            {basket}
         </div>
     </div>
 </div>

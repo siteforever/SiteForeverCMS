@@ -70,15 +70,15 @@ class CategoryModel extends Model implements EventSubscriberInterface
         $obj->image = $category->getImage();
     }
 
-    public function onSaveSuccess(Model\ModelEvent $event)
+    public static function onSaveSuccess(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
         if ($obj instanceof Category) {
             $image = $obj->getImage();
-            $pageObj = $this->getModel('Page')->find('link = ? and controller = ?', [$obj->id, 'gallery']);
+            $pageObj = $obj->getModel('Page')->find('link = ? and controller = ?', [$obj->id, 'gallery']);
             if ($pageObj && $pageObj->image != $image) {
                 $pageObj->image = $image;
-                $this->getModel('Page')->save($pageObj);
+                $obj->getModel('Page')->save($pageObj);
             }
         }
     }

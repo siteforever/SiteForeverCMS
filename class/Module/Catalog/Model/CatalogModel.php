@@ -167,13 +167,13 @@ class CatalogModel extends Model implements EventSubscriberInterface
      * Вызывается перед сохранением каталога
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onSaveStart( Model\ModelEvent $event )
+    public static function onSaveStart( Model\ModelEvent $event )
     {
         $obj = $event->getObject();
         // If object will update
         /** @var $obj Catalog */
         if ($obj->getId()) {
-            $obj->path = $this->createSerializedPath($obj->getId());
+            $obj->path = $obj->getModel()->createSerializedPath($obj->getId());
         }
 
         if (!$obj->uuid) {
@@ -197,14 +197,15 @@ class CatalogModel extends Model implements EventSubscriberInterface
     /**
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public function onSaveSuccess( Model\ModelEvent $event )
+    public static function onSaveSuccess( Model\ModelEvent $event )
     {
         /** @var $obj Catalog */
         $obj = $event->getObject();
+        $model = $obj->getModel();
 
         // If object was just created
         if (!$obj->path) {
-            $obj->path = $this->createSerializedPath($obj->getId());
+            $obj->path = $model->createSerializedPath($obj->getId());
         }
         $objPage = $obj->Page;
         if (null !== $objPage && !$objPage->link) {
@@ -214,7 +215,7 @@ class CatalogModel extends Model implements EventSubscriberInterface
         if ($obj->cat) {
             // @todo Надо сделать слежение за изменением иерархии
             if (null === $objPage) {
-                $objPage = $this->getModel('Page')->createObject();
+                $objPage = $model->getModel('Page')->createObject();
                 $objPage->markNew();
                 $objPage->name = $obj->name;
                 $objPage->title = $obj->name;
