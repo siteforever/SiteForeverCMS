@@ -47533,6 +47533,12 @@ define('system/jquery/jquery.jqGrid',[
     "jqgrid/grid.formedit"
 ],function($){
     $(document).ready(function () {
+        $.jgrid.defaults.width = null;
+        $.jgrid.defaults.height = null;
+        $.jgrid.defaults.autowidth = true;
+        $.jgrid.defaults.autoheight = true;
+        $.jgrid.defaults.responsive = true;
+        $.jgrid.defaults.styleUI = 'Bootstrap';
         $("table.sfcms-jqgrid").each(function(){
             var $list      = $(this),
                 config     = $list.data('sfcms-config');
@@ -47703,6 +47709,7 @@ define("dashboard/admin/dashboard", [],function () {
  */
 define("elfinder/admin/elfinder", [
     "jquery"
+    //, "admin/jquery/elfinder/elfinder"
     , "wysiwyg"
 ],function( $, wysiwyg ){
     return {
@@ -48284,7 +48291,7 @@ define("news/admin/news_model", [
                 }
             },
             { label: "Название", name: "name", width: 300, search: true },
-            { label: "Дата", name: "date", width: 150, search: false, formatter: "date" },
+            { label: "Дата", name: "date", width: 100, search: false, formatter: "date" },
             { label: "Создано", name: "created_at", width: 150, search: false, formatter: "date" },
             { label: "Редакт.", name: "updated_at", width: 150, search: false, formatter: "date" },
             { label: "Главная", name: "main", width: 50, search: false },
@@ -48490,6 +48497,7 @@ define("news/admin/news", [
                 //    $workspace.find(':not(h2)').remove();
                 //    $workspace.append(response);
                 //});
+                $alert("Сохранено успешно", 2000);
                 this.newsEdit.hide();
                 this.grid.reload();
                 this.msgSuccess(response.msg, 1500);
@@ -48872,7 +48880,7 @@ require([
 
     window.lang = document.getElementsByTagName('html')[0].lang;
 
-    $(document).ajaxError(function(event, xhr){
+    $(document).ajaxError(function(event, jqxhr, settings, exception){
         var errorAjaxDialog = $('#errorAjaxDialog');
         if (0 == errorAjaxDialog.length) {
             errorAjaxDialog = $('<div id="errorAjaxDialog"></div>').appendTo('body');
@@ -48884,7 +48892,7 @@ require([
             });
         }
         $.unblockUI();
-        errorAjaxDialog.html(xhr.responseText)
+        errorAjaxDialog.html(jqxhr.responseText)
             .dialog('option', 'width', $(window).width() - 50)
             .dialog('option', 'height', $(window).height() - 50)
             .dialog('open');
