@@ -50,7 +50,7 @@ define("news/admin/news_model", [
                 }
             },
             { label: "Название", name: "name", width: 300, search: true },
-            { label: "Дата", name: "date", width: 150, search: false, formatter: "date" },
+            { label: "Дата", name: "date", width: 100, search: false, formatter: "date" },
             { label: "Создано", name: "created_at", width: 150, search: false, formatter: "date" },
             { label: "Редакт.", name: "updated_at", width: 150, search: false, formatter: "date" },
             { label: "Главная", name: "main", width: 50, search: false },

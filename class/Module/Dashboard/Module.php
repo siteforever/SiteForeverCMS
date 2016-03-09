@@ -37,7 +37,7 @@ class Module extends SfModule
         return array(
             array(
                 'name'  => 'dashboard',
-                'gliph' => 'dashboard',
+                'glyph' => 'dashboard',
                 'url'   => 'admin',
             )
         );

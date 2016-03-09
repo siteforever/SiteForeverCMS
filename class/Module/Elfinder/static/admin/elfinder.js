@@ -5,6 +5,7 @@
  */
 define("elfinder/admin/elfinder", [
     "jquery"
+    //, "admin/jquery/elfinder/elfinder"
     , "wysiwyg"
 ],function( $, wysiwyg ){
     return {

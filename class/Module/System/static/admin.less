@@ -234,32 +234,33 @@ table.dataset {
     }
 
 .filemanager {
-
-}
-    .filemanager li {
+    li {
         float: left;
         width: 105px;
         height: 150px;
         overflow: hidden;
         margin: 0 20px 20px 0;
-    }
-        .filemanager li img {
+        img {
             border: 1px solid #ddd;
         }
-        .filemanager li div {
+        div {
             text-align: center;
         }
-
-    .tile a {
-        text-decoration: none;
     }
+}
+
+.tile a {
+    text-decoration: none;
+}
 
 .ui-datepicker-trigger {
     cursor:pointer;
 }
 
-.el-paddinginput input, .el-paddinginput select {
-    width: auto;
+.el-paddinginput {
+    input, select {
+        width: auto;
+    }
 }
 
 div.siteforeverModal {
@@ -271,9 +272,9 @@ div.siteforeverModal {
 
 .goods-panel {
     margin-bottom: 10px;
-}
-.goods-panel input, .goods-panel select {
-    margin-bottom: 0;
+    input, select {
+        margin-bottom: 0;
+    }
 }
 
 .blockOverlay {
@@ -294,58 +295,21 @@ fieldset {
     border-radius: 10px;
     padding: 10px;
     margin-bottom: 20px;
+    legend {
+        display: inline-block;
+        width: auto;
+        border: none;
+        margin: 0;
+        font-size: 12px;
+        line-height: normal;
+        padding: 0;
+    }
 }
-
-fieldset legend {
-    display: inline-block;
-    width: auto;
-    border: none;
-    margin: 0;
-    font-size: 12px;
-    line-height: normal;
-    padding: 0;
-}
-
-//.ui-jqgrid .ui-jqgrid-btable th,
-//.ui-jqgrid .ui-jqgrid-btable td,
-//.ui-jqgrid .ui-jqgrid-sortable,
-//.ui-jqgrid .ui-pg-table td {
-//    font: 12px Verdana;
-//}
-//.ui-jqgrid .ui-jqgrid-btable a {
-//    text-decoration: underline;
-//}
-//.ui-jqgrid .ui-jqgrid-htable th {
-//    height: 35px !important;
-//}
-//.ui-jqgrid tr.jqgrow td {
-//    padding: 5px 10px !important;
-//}
-//.ui-jqgrid .ui-pg-table input,
-//.ui-jqgrid .ui-pg-table select {
-//    width: auto;
-//    height: 16px !important;
-//    line-height: 16px;
-//    padding: 0;
-//}
-//.ui-jqgrid .ui-pg-button:hover { padding: 1px 0 0 1px !important; }
-//
-//.ui-search-toolbar input[type=text] {
-//    height: 29px !important;
-//}
-//
-//.ui-widget-overlay {
-//    background: #000;
-//    opacity: .8;
-//    position: fixed;
-//}
 
 #searchcntfbox_products_list select {
     width: 120px;
     margin-bottom: 0;
 }
-
-
 
 div.sfcms-admin-dataset {
     th {
@@ -375,33 +339,13 @@ div.sfcms-admin-dataset {
 
 div.modal {
     z-index: 950;
-}
-div.modal div.modal-header {
-    cursor: pointer;
+    div.modal-header {
+        cursor: pointer;
+    }
 }
 .modal-backdrop {
     z-index: 940;
 }
-
-//.elfinder .elfinder-button {
-//    height: auto;
-//    width: auto;
-//}
-
-//div.elfinder-resize-control input[type="text"] {
-//    border: 1px solid #AAAAAA;
-//    text-align: right;
-//    width: 50px;
-//}
-
-//.elfinder-navbar .ui-state-hover {
-//    color: #000;
-//}
-//
-//.elfinder-navbar .elfinder-navbar-wrapper {
-//    cursor: pointer;
-//    font-size: 10px;
-//}
 
 .sfcms-icon-progress {
     background: url("./images/progress-bar15.gif");

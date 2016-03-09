@@ -178,6 +178,11 @@ class NewsController extends Controller
             $params[':name'] = '%' . $this->request->query->get('name') . '%';
         }
 
+        if ($this->request->query->get('id')) {
+            $cond .= ' AND id = :id';
+            $params[':id'] = $this->request->query->get('id');
+        }
+
         if ($this->request->query->get('cat_id')) {
             $cond .= ' AND cat_id = :cat_id';
             $params[':cat_id'] = $this->request->query->get('cat_id');
@@ -192,14 +197,6 @@ class NewsController extends Controller
 
         $response = new JsonResponse([
             'data' => array_map(function(News $news){
-//                id: null,
-//            cat_id: null,
-//            name: null,
-//            main: null,
-//            date: null,
-//            hidden: null,
-//            protected: null
-
                 return [
                     'id' => intval($news->id),
                     'cat_id' => intval($news->cat_id),
@@ -216,16 +213,12 @@ class NewsController extends Controller
                     'updated_at' => $news->updated_at,
                 ];
             }, iterator_to_array($list)),
-            'links'    => $paging,
+            //'links'    => $paging,
             'page' => $paging->page,
             'records' => $paging->count,
             'total' => $paging->pages,
         ]);
 
-//        return array(
-//            'paging'    => $paging,
-//            'list'      => $list,
-//        );
         return $response;
     }
 
@@ -283,7 +276,7 @@ class NewsController extends Controller
      * @param int $id
      * @return mixed
      */
-    public function cateditAction($id)
+    public function catEditAction($id)
     {
         $this->request->setTitle($this->t('news','News category'));
         /** @var $newsModel NewsModel */
@@ -329,7 +322,7 @@ class NewsController extends Controller
      * @param int $id
      * @return mixed
      */
-    public function catdeleteAction($id)
+    public function catDeleteAction($id)
     {
         /**/
         $this->request->setTitle($this->t('news','News category'));

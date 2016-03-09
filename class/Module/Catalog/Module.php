@@ -192,7 +192,7 @@ class Module extends SfModule
         return array(
             array(
                 'name'  => 'Catalogue',
-                'gliph' => 'th-list',
+                'glyph' => 'th-list',
                 'sub'   => array(
                     array(
                         'name'  => 'Goods',

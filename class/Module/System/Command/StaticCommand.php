@@ -84,6 +84,10 @@ class StaticCommand extends Command
                     $filesistem->copy(SF_PATH . '/' . $file, ROOT . '/' . $file);
                 }
             }
+
+            $filesistem->mirror(SF_PATH . '/assets', ROOT . '/assets', null, [
+                'override' => true
+            ]);
         }
     }
 }

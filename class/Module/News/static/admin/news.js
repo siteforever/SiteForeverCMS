@@ -105,6 +105,7 @@ define("news/admin/news", [
                 //    $workspace.find(':not(h2)').remove();
                 //    $workspace.append(response);
                 //});
+                $alert("Сохранено успешно", 2000);
                 this.newsEdit.hide();
                 this.grid.reload();
                 this.msgSuccess(response.msg, 1500);

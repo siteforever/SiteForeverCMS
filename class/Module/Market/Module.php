@@ -169,7 +169,7 @@ class Module extends SfModule
         return array(
             array(
                 'name'  => 'Интернет магазин',
-                'gliph' => 'euro',
+                'glyph' => 'euro',
                 'sub'   => array(
                     array(
                         'name'  => $this->t('Payment'),

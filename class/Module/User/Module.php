@@ -34,7 +34,7 @@ class Module extends SfModule
             array(
                 'name'  => 'Пользователи',
                 'url'   => 'user/admin',
-                'gliph' => 'user',
+                'glyph' => 'user',
             ),
         );
     }

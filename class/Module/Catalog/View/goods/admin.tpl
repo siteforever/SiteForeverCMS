@@ -1,7 +1,7 @@
-<div class="goods-panel row-fluid">
+<div class="goods-panel row">
     {*{html_options name="category" id="goodsCategory" options=$categories selected=$category}*}
     {*{html_options name="type" id="goodsType" options=$types selected=$type}*}
-    <div class="span3">
+    <div class="col-sm-3">
         {a controller="catalog" action="trade" data-action="add" class="btn edit" title=$this->t('catalog','Add product')}
             {icon name="add"} {t cat="catalog"}Add product{/t}
         {/a}

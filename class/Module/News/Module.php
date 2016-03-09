@@ -70,11 +70,11 @@ class Module extends SfModule
             ));
         $routes->add('news/catedit',
             new Route('/news/catedit',
-                array('_controller'=>'news', '_action'=>'catedit')
+                array('_controller'=>'news', '_action'=>'catEdit')
             ));
         $routes->add('news/catdelete',
             new Route('/news/catdelete',
-                array('_controller'=>'news', '_action'=>'catdelete')
+                array('_controller'=>'news', '_action'=>'catDelete')
             ));
     }
 
@@ -85,7 +85,7 @@ class Module extends SfModule
             array(
                 'name'  => 'Новости/статьи',
                 'url'   => 'news/admin',
-                'gliph' => 'bullhorn',
+                'glyph' => 'bullhorn',
             )
         );
     }

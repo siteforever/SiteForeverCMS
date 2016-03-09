@@ -90,7 +90,7 @@ require([
 
     window.lang = document.getElementsByTagName('html')[0].lang;
 
-    $(document).ajaxError(function(event, xhr){
+    $(document).ajaxError(function(event, jqxhr, settings, exception){
         var errorAjaxDialog = $('#errorAjaxDialog');
         if (0 == errorAjaxDialog.length) {
             errorAjaxDialog = $('<div id="errorAjaxDialog"></div>').appendTo('body');
@@ -102,7 +102,7 @@ require([
             });
         }
         $.unblockUI();
-        errorAjaxDialog.html(xhr.responseText)
+        errorAjaxDialog.html(jqxhr.responseText)
             .dialog('option', 'width', $(window).width() - 50)
             .dialog('option', 'height', $(window).height() - 50)
             .dialog('open');

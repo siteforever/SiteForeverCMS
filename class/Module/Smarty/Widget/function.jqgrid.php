@@ -16,7 +16,7 @@ function smarty_function_jqgrid($params, $smarty)
     $config = $provider->getConfig($name, $params);
 
     return sprintf(
-        '<table id="%s_list" class="sfcms-jqgrid" data-sfcms-module="jquery/jquery.jqGrid" data-sfcms-config=\'%s\'>'
+        '<table id="%s_list" class="table table-striped sfcms-jqgrid" data-sfcms-module="jquery/jquery.jqGrid" data-sfcms-config=\'%s\'>'
             . '</table><div id="%s_pager"></div>',
         $name,
         json_encode($config),

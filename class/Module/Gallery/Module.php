@@ -64,7 +64,7 @@ class Module extends SfModule
             array(
                 'name'  => 'Галерея',
                 'url'   => 'gallery/admin',
-                'gliph' => 'picture',
+                'glyph' => 'picture',
             )
         );
     }

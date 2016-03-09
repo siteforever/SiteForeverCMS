@@ -26,13 +26,13 @@
                 {if isset($item.sub)}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
-                        <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                        <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
                         &nbsp;<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         {foreach from=$item.sub item="sitem"}
                             {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
                             <li>{a href=$sitem.url htmlClass=$sitem.class title=$sitem.name|trans|ucfirst}
-                                <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                                <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
                                 &nbsp;{$sitem.name|trans|ucfirst}
                             {/a}</li>
                         {/foreach}
@@ -41,7 +41,7 @@
                 {else}
                 <li>
                     <a href="/{$item.url|default:""}" class="{$item.class}" title="{$item.name|trans|ucfirst}">
-                        <i class="glyphicon glyphicon-{if isset($item.gliph)}{$item.gliph}{else}folder-close{/if}"></i>
+                        <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
                     </a>
                 </li>
                 {/if}
