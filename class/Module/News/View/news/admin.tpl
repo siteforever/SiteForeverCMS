@@ -1,8 +1,15 @@
 <p>
     {a controller="news" action="edit" class="btn btn-success newsEdit" title=$this->t('news','Create article')}
+        <i class="glyphicon glyphicon-plus"></i>
         {t cat="news"}Create article{/t}
     {/a}
-    <button class="btn btn-warning btn-edit">Редактировать выделенную статью</button>
+    <button class="btn btn-warning btn-edit">
+        <i class="glyphicon glyphicon-pencil"></i>
+        Редактировать выделенную статью</button>
+    {a controller="news" action="delete" class="btn btn-danger btn-delete"}
+        <i class="glyphicon glyphicon-delete"></i>
+        Удалить выделенную статью
+    {/a}
 </p>
 
 <table class="table table-striped" id="news_grid" data-url="/news/list"></table>

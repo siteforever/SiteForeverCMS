@@ -27,14 +27,14 @@ define('system/module/dialog',[
                 open: function (event, ui) {
                     if ( obj.onOpen && typeof obj.onOpen == 'function' ) {
                         obj.onOpen.apply(obj);
-                        $('body, html').css('overflow', 'hidden');
                     }
+                    $('html').addClass('overflow_hidden');
                 },
                 close: function (event, ui) {
                     if ( obj.onClose && typeof obj.onClose == 'function' ) {
                         obj.onClose.apply(obj);
-                        $('body, html').css('overflow', 'visible');
                     }
+                    $('html').removeClass('overflow_hidden');
                 }
             };
 

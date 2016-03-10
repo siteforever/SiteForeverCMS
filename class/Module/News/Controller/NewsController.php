@@ -360,10 +360,9 @@ class NewsController extends Controller
      */
     public function deleteAction($id)
     {
-        $this->request->setTitle($this->t('News'));
-        $model      = $this->getModel('News');
+        $model = $this->getModel('News');
         /** @var $obj News */
-        $obj    = $model->find($id);
+        $obj = $model->find($id);
 //        $catId = $obj->cat_id;
         $obj->deleted = 1;
 //        $this->reload('news/list', array('id'=>$catId));

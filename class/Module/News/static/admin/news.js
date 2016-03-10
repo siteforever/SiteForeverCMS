@@ -20,17 +20,24 @@ define("news/admin/news", [
         grid: null,
 
         "events" : {
-            'click a.do_delete' : function( event ){
+            'click .btn-delete' : function( event ){
+                event.preventDefault();
+                if (!this.grid.rowid) {
+                    $alert('Укажите статью для удаления', 2000);
+                    return false;
+                }
                 var node = this.$(event.target);
                 if ( ! confirm(i18n('Want to delete?')) ) {
                     return false;
                 }
                 try {
-                    $.post( $(node).attr('href'), $.proxy(function(response){
+                    $.post($(node).attr('href') + '?id=' + this.grid.rowid, _.bind(function(response){
                         if (!response.error) {
-                            $(node).parents('tr').remove();
+                            this.grid.reload();
                         }
-                        $alert(response.msg, 1500);
+                        if (response.msg) {
+                            $alert(response.msg, 1500);
+                        }
                     },this), "json");
                 } catch (e) {
                     console.error(e.message );
@@ -91,7 +98,7 @@ define("news/admin/news", [
         },
 
         onSave: function(){
-            $alert("Сохранение", $('.modal-body', this.domnode));
+            $alert("Сохранение", $('.modal-body', this.newsEdit.domnode));
             $('form', this.domnode).ajaxSubmit({
                 dataType:"json",
                 success: this.onSaveSuccess
@@ -99,18 +106,21 @@ define("news/admin/news", [
         },
 
         onSaveSuccess: function (response) {
+            this.$('.form-group').removeClass('has-error');
             if (!response.error) {
-                //$.get(window.location.href, function(response){
-                //    var $workspace = $('#workspace');
-                //    $workspace.find(':not(h2)').remove();
-                //    $workspace.append(response);
-                //});
                 $alert("Сохранено успешно", 2000);
                 this.newsEdit.hide();
                 this.grid.reload();
-                this.msgSuccess(response.msg, 1500);
+                this.newsEdit.msgSuccess(response.msg, 1500);
             } else {
-                this.msgError(response.msg);
+                if (response.msg && _.isString(response.msg)) {
+                    this.newsEdit.msgError(response.msg);
+                }
+                if (response.errors && _.isObject(response.errors)) {
+                    _.mapObject(response.errors, _.bind(function(value, key, list){
+                        this.$('div[data-field-name="' + key + '"]').addClass('has-error');
+                    }, this));
+                }
             }
         }
     });

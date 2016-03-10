@@ -7279,6 +7279,12 @@ fieldset[disabled] .btn-danger.active {
   -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
+html.overflow_hidden {
+  overflow: hidden;
+}
+html.overflow_hidden body {
+  overflow: hidden;
+}
 .growlUI h1 {
   font-size: 150%;
 }

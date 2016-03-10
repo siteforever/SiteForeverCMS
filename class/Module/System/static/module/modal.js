@@ -144,8 +144,9 @@ define('system/module/modal',[
         , msgError : function( msg ) {
             var deferred = new $.Deferred();
             $alert(msg, 1000, $('.modal-body', this.domnode));
-            $('.modal-body', this.domnode).find('.alert').remove().end()
-                .prepend('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>'+msg+'</div>');
+            $('.modal-body', this.domnode)
+                .find('.alert').remove().end()
+                .prepend('<div class="alert alert-danger"><a class="close" data-dismiss="alert" href="#">×</a>'+msg+'</div>');
             deferred.resolve();
             return deferred.promise();
         }
@@ -153,8 +154,8 @@ define('system/module/modal',[
         , show : function(callback) {
             var deferred = new $.Deferred();
             $('.modal-body', this.domnode).scrollTop(0);
-            $('body').css('overflow', 'hidden');
             this.domnode.one("shown.bs.modal", function(){
+                console.log('shown.bs.modal');
                 deferred.resolve();
                 callback && callback();
             });
@@ -165,7 +166,7 @@ define('system/module/modal',[
         , hide : function(callback) {
             var deferred = new $.Deferred();
             this.domnode.one('hidden.bs.modal', function(){
-                $('body').css('overflow', 'auto');
+                console.log('hidden.bs.modal');
                 deferred.resolve();
                 callback && callback();
             });
