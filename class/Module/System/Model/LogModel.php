@@ -52,6 +52,10 @@ class LogModel extends Model
                     'title' => $this->t('log','Object'),
                     'search' => false,
                 ),
+                'object_id'    => array(
+                    'title' => $this->t('log','Object id'),
+                    'search' => false,
+                ),
                 'timestamp'    => array(
                     'title' => $this->t('log','Time'),
                     'search' => false,

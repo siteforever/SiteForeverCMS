@@ -25,9 +25,11 @@
                 {if ! isset( $item.class )}{$item.class = ""}{/if}
                 {if isset($item.sub)}
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
+                    <a href="#" class="dropdown-toggle text-center {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
                         <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
-                        &nbsp;<b class="caret"></b></a>
+                        &nbsp;<b class="caret"></b>
+                        <div class="small">{$item.name|trans|ucfirst}</div>
+                    </a>
                     <ul class="dropdown-menu">
                         {foreach from=$item.sub item="sitem"}
                             {if ! isset( $sitem.class )}{$sitem.class = ""}{/if}
@@ -40,8 +42,9 @@
                 </li>
                 {else}
                 <li>
-                    <a href="/{$item.url|default:""}" class="{$item.class}" title="{$item.name|trans|ucfirst}">
+                    <a href="/{$item.url|default:""}" class="{$item.class} text-center" title="{$item.name|trans|ucfirst}">
                         <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
+                        <div class="small">{$item.name|trans|ucfirst}</div>
                     </a>
                 </li>
                 {/if}
@@ -51,7 +54,6 @@
                 <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
             </ul>
         </div>
-    </div>
 {/strip}</nav>
 <div class="modal-backdrop in" id="loading-application">
     <div>{'Initialisation'|trans}</div>

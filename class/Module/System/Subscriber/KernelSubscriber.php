@@ -100,6 +100,7 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
             $log->markNew();
             $log->user = $this->container->get('auth')->getId() ?: 0;
             $log->object = get_class($obj);
+            $log->object_id = $obj->getId();
             $log->action = 'save';
             $log->timestamp = time();
         }

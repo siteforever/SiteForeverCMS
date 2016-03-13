@@ -16,6 +16,7 @@ use Sfcms\Data\Field;
  * @property $id
  * @property $user
  * @property $object
+ * @property $object_id
  * @property $action
  * @property $timestamp
  */
@@ -33,6 +34,7 @@ class Log extends Object
             new Field\Int( 'id', 11, false, null, true ),
             new Field\Int( 'user', 11, true, null, false ),
             new Field\Varchar( 'object', 250, true, null, false ),
+            new Field\Varchar( 'object_id', 250, true, null, false ),
             new Field\Varchar( 'action', 250, true, null, false ),
             new Field\Int( 'timestamp', 11, true, null, false ),
         );

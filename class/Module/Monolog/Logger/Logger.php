@@ -10,9 +10,10 @@ use Sfcms\LoggerInterface;
 
 class Logger implements LoggerInterface
 {
+    /** @var \Psr\Log\LoggerInterface */
     protected $logger;
 
-    public function __construct($logger)
+    public function __construct(\Psr\Log\LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -20,10 +21,11 @@ class Logger implements LoggerInterface
     /**
      * @param      $message
      * @param null $label
+     * @param array $context
      *
      * @return mixed|void
      */
-    public function log($message, $label = null)
+    public function log($message, $label = null, array $context = [])
     {
         if (is_array($message)) {
             $message = join(", ", $message);
@@ -31,7 +33,7 @@ class Logger implements LoggerInterface
         if ($label) {
             $message = $label . ': ' . $message;
         }
-        $this->logger->addInfo($message);
+        $this->logger->debug($message);
     }
 
     /**
@@ -43,7 +45,7 @@ class Logger implements LoggerInterface
      */
     public function debug($message, array $context = array())
     {
-        return $this->logger->addDebug($message, $context);
+        return $this->logger->debug($message, $context);
     }
 
     /**
@@ -55,7 +57,7 @@ class Logger implements LoggerInterface
      */
     public function info($message, array $context = array())
     {
-        return $this->logger->addInfo($message, $context);
+        return $this->logger->info($message, $context);
     }
 
     /**
@@ -67,7 +69,7 @@ class Logger implements LoggerInterface
      */
     public function warning($message, array $context = array())
     {
-        return $this->logger->addWarning($message, $context);
+        return $this->logger->warning($message, $context);
     }
 
     /**
@@ -79,7 +81,7 @@ class Logger implements LoggerInterface
      */
     public function error($message, array $context = array())
     {
-        return $this->logger->addError($message, $context);
+        return $this->logger->error($message, $context);
     }
 
     /**
@@ -91,7 +93,7 @@ class Logger implements LoggerInterface
      */
     public function critical($message, array $context = array())
     {
-        return $this->logger->addCritical($message, $context);
+        return $this->logger->critical($message, $context);
     }
 
     /**
@@ -103,6 +105,6 @@ class Logger implements LoggerInterface
      */
     public function alert($message, array $context = array())
     {
-        return $this->logger->addAlert($message, $context);
+        return $this->logger->alert($message, $context);
     }
 }
