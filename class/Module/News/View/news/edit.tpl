@@ -10,6 +10,8 @@
 
         {$form->htmlFieldWrapped('cat_id')}
 
+        {$form->htmlFieldWrapped('note')}
+
         {$form->htmlFieldWrapped('notice')}
 
         {$form->htmlFieldWrapped('text')}

@@ -188,7 +188,10 @@ class UsersControllerTest extends WebCase
         $this->getPage()->fillField('login_login', 'admin');
         $this->getPage()->fillField('login_password', 'admin');
         $this->getPage()->pressButton('login_submit');
-        $this->assertEquals('Кабинет пользователя', $this->getPage()->find('css', 'h1')->getText());
+        $this->assertEquals(
+            'Кабинет пользователя',
+            $this->getPage()->find('css', 'h1')->getText()
+        );
 
         $this->visitPage('/user/logout');
         $this->visitPage('/user/login');

@@ -20,7 +20,7 @@ class LogControllerTest extends WebCase
         $this->assertEquals('Просмотр журнала изменений', $crawler->filterXPath('//h1')->text());
         $logList = $crawler->filterXPath('//table[@id="logs_list"]');
         $this->assertEquals(1, $logList->count());
-        $this->assertEquals('sfcms-jqgrid', $logList->attr('class'));
+        $this->assertContains('sfcms-jqgrid', $logList->attr('class'));
         $this->assertEquals('jquery/jquery.jqGrid', $logList->attr('data-sfcms-module'));
         $this->assertInternalType('array', json_decode($logList->attr('data-sfcms-config'), true));
         $this->assertEquals(1, $crawler->filterXPath('//div[@id="logs_pager"]')->count());

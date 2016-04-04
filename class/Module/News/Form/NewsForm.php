@@ -19,12 +19,12 @@ use Sfcms\Model;
  */
 class NewsForm extends \Sfcms\Form\Form
 {
-    public function __construct()
+    public function __construct($options)
     {
         $app    = \App::cms();
 
         $category   = \App::cms()->getDataManager()->getModel('NewsCategory');
-        $cats_data = $category->findAll();
+        $cats_data = $category->findAll('deleted = 0');
 
         $cats   = array(0=>'Ничего не выбрано');
         foreach ( $cats_data as $_cd ) {
@@ -63,6 +63,7 @@ class NewsForm extends \Sfcms\Form\Form
                 'text'      => array('type'=>'textarea', 'value'=>'', 'label'=>'Текст',),
                 'date'      => array('type'=>'date', 'label'=>'Дата',),
                 'image'     => array('type'=>'text', 'class'=>'image', 'label' => 'Изображение'),
+                'note'      => array('type'=>'text', 'value'=>'', 'label'=>'Заметка',),
                 'title'     => array('type'=>'text', 'value'=>'', 'label'=>'Заголовок',),
                 'keywords'  => array('type'=>'text', 'value'=>'', 'label'=>'Ключевые слова',),
                 'description'=> array('type'=>'text', 'value'=>'','label'=>'Описание',),

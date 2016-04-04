@@ -34,7 +34,6 @@
         "behat/mink-browserkit-driver": "1.1.*",
         "behat/mink-goutte-driver": "1.0.*",
         "behat/mink-selenium2-driver": "~1.1",
-        "behat/mink-zombie-driver": "~1.1",
         "phpunit/php-invoker": "1.1.*",
         "phpunit/phpunit": "3.7.*",
         "phpunit/phpunit-mock-objects": "1.2.*",
@@ -52,7 +51,6 @@
         "incenteev/composer-parameter-handler": "~2.0",
         "monolog/monolog": "~1.6",
         "swiftmailer/swiftmailer": "~5.0",
-        "kriswallsmith/assetic": "~1.1",
         "studio-42/elfinder": "~2.1"
     },
     "scripts": {

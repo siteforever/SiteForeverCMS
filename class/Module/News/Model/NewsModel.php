@@ -123,7 +123,7 @@ class NewsModel extends Model
     public function getForm()
     {
         if ( is_null( $this->form ) ) {
-            $this->form = new NewsForm();
+            $this->form = new NewsForm([]);
         }
         return $this->form;
     }

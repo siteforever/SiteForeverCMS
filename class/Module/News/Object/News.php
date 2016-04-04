@@ -24,6 +24,7 @@ use Sfcms\Data\Field;
  * @property $notice
  * @property $text
  * @property $date
+ * @property $note
  * @property $title
  * @property $keywords
  * @property $description
@@ -85,6 +86,8 @@ class News extends Object
             new Field\Varchar('title', 250),
             new Field\Varchar('keywords', 250),
             new Field\Varchar('description', 250),
+
+            new Field\Varchar('note', 250),
 
             new Field\Tinyint('hidden', 1, false, 0),
             new Field\Tinyint('protected', 1, false, 0),

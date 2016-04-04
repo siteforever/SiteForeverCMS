@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('password')->defaultValue('%db_password%')->end()
                 ->arrayNode('options')->prototype('scalar')->end()->end()
                 ->booleanNode('debug')->defaultValue('%db_debug%')->end()
+                ->booleanNode('log')->defaultFalse()->end()
             ->end();
 
         return $treeBuilder;

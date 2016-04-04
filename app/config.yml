@@ -23,6 +23,7 @@ elfinder: ~
 
 database:
     debug: "%debug%"
+    log: true
 
 doctrine:
     debug: %debug%

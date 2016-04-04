@@ -30,6 +30,7 @@ class Module extends SfModule
         return array(
             'controllers' => array(
                 'News'  => array(),
+                'NewsCategory'  => array(),
                 'Rss'   => array(),
             ),
             'models' => array(
@@ -70,14 +71,13 @@ class Module extends SfModule
             ));
         $routes->add('news/catedit',
             new Route('/news/catedit',
-                array('_controller'=>'news', '_action'=>'catEdit')
+                array('_controller'=>'newscategory', '_action'=>'catEdit')
             ));
         $routes->add('news/catdelete',
             new Route('/news/catdelete',
-                array('_controller'=>'news', '_action'=>'catDelete')
+                array('_controller'=>'newscategory', '_action'=>'catDelete')
             ));
     }
-
 
     public function admin_menu()
     {
