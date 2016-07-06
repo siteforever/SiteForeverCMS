@@ -104,7 +104,7 @@ class UserModel extends Model
      * Hide password
      * @param Model\ModelEvent $event
      */
-    public static function onSaveStart(Model\ModelEvent $event)
+    public function onSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
         if (get_class($obj) == $obj->getModel()->objectClass()) {

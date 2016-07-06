@@ -48,7 +48,7 @@ class AppTest extends PHPUnit_Framework_TestCase
      */
     public function testGetModel()
     {
-        $model  = App::cms()->getModel('Page');
+        $model  = App::cms()->getDataManager()->getModel('Page');
         $this->assertTrue( $model instanceof \Module\Page\Model\PageModel, 'Model not correspond type' );
     }
 

@@ -89,10 +89,10 @@ abstract class Model extends Component
         $this->eventDispatcher = $dataManager->getEventDispatcher();
 
         if (method_exists($this, 'onSaveStart')) {
-            $this->on(sprintf('%s.save.start', $alias), [get_class($this), 'onSaveStart']);
+            $this->on(sprintf('%s.save.start', $alias), [$this, 'onSaveStart']);
         }
         if (method_exists($this, 'onSaveSuccess')) {
-            $this->on(sprintf('%s.save.success', $alias), [get_class($this), 'onSaveSuccess']);
+            $this->on(sprintf('%s.save.success', $alias), [$this, 'onSaveSuccess']);
         }
         $this->init();
     }
@@ -671,7 +671,7 @@ abstract class Model extends Component
      *
      * @param ModelEvent $event
      */
-    public static function onSaveSuccess(Model\ModelEvent $event)
+    public function onSaveSuccess(Model\ModelEvent $event)
     {
         // Никогда не вызовется
         // Для вызова надо переоределить в модели

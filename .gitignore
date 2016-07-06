@@ -2,10 +2,7 @@ parameters.yml
 /app/bootstrap.php.cache
 /bin
 !bin/console
-!bin/pngout
-!bin/yuicompressor-*.jar
 /build/release
-/var
 /test/codeCoverage
 /files
 /thumbs

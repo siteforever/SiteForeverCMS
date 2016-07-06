@@ -24,8 +24,8 @@ class TypeModel extends Model
      */
     public function getProvider($request)
     {
-        $provider = new Provider( $request );
-        $provider->setModel( $this );
+        $provider = new Provider($request, $this->app()->get('siteforever_cms.pager'));
+        $provider->setModel($this);
 
         $criteria = $this->createCriteria();
 //        $criteria->condition = 'cat = 0 AND deleted = 0';

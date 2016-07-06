@@ -204,7 +204,7 @@ class PageModel extends Model
      *
      * @throws \Sfcms\Model\Exception
      */
-    public static function onSaveStart(Model\ModelEvent $event)
+    public function onSaveStart(Model\ModelEvent $event)
     {
         /** @var $obj Page  */
         $obj = $event->getObject();
@@ -217,7 +217,7 @@ class PageModel extends Model
             throw new Exception($model->t('The page with this address already exists'));
         }
 
-        $obj->alias = $obj->alias ? $obj->alias : strtolower(\Sfcms::i18n()->translit(trim($obj->name, '/ ')));
+        $obj->alias = $obj->alias ? $obj->alias : strtolower($this->i18n()->translit(trim($obj->name, '/ ')));
         $obj->path = serialize(array_reverse($model->createPath($obj)));
 
         // Настраиваем связь с модулями

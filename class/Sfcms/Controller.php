@@ -250,10 +250,12 @@ abstract class Controller
     public function paging($count, $perpage, $link, $cacheId = null)
     {
         $config = $this->container->getParameter('template');
+        /** @var Pager $pager */
+        $pager = $this->container->get('siteforever_cms.pager');
         if (!empty($config['pager'])) {
-            $pager = new Pager($count, $perpage, $link, $this->request, $config['pager'], $cacheId);
+            $pager->paginate($count, $perpage, $link, $this->request, $config['pager'], $cacheId);
         } else {
-            $pager = new Pager($count, $perpage, $link, $this->request, null, $cacheId);
+            $pager->paginate($count, $perpage, $link, $this->request, null, $cacheId);
         }
         return $pager;
     }

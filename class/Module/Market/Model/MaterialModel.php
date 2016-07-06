@@ -49,7 +49,7 @@ class MaterialModel extends Model
      */
     public function getProvider($request)
     {
-        $provider = new Provider($request);
+        $provider = new Provider($request, $this->app()->get('siteforever_cms.pager'));
         $provider->setModel( $this );
 
         $criteria = $this->createCriteria();

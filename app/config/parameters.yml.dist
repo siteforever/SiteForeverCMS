@@ -14,8 +14,6 @@ parameters:
     db_login: root
     db_password: ~
 
-    use_assetic_controller: true
-    assetic.use_controller: %use_assetic_controller%
     editor: ckeditor
 
     locale: ru

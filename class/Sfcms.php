@@ -11,11 +11,7 @@ use Sfcms\i18n;
 
 class Sfcms
 {
-    static private $instance;
-
     static protected $html = null;
-
-    private function __construct() {}
 
     /**
      * @static
@@ -23,9 +19,7 @@ class Sfcms
      */
     static function getInstance()
     {
-        if ( null === self::$instance ) {
-            self::$instance = new Sfcms();
-        }
+        throw new RuntimeException('User container services');
     }
 
     /**
@@ -35,10 +29,11 @@ class Sfcms
      */
     static function html()
     {
-        if ( null === self::$html ) {
-            self::$html = new Html();
-        }
-        return self::$html;
+        throw new RuntimeException('User container service "siteforever_cms.html"');
+//        if ( null === self::$html ) {
+//            self::$html = new Html();
+//        }
+//        return self::$html;
     }
 
     /**
@@ -46,7 +41,7 @@ class Sfcms
      */
     static function i18n()
     {
-        return App::cms()->getContainer()->get('i18n');
+        throw new RuntimeException('User container service "i18n"');
     }
 
     /**
@@ -55,7 +50,7 @@ class Sfcms
      */
     static function log( $message, $label = '' )
     {
-        App::cms()->getLogger()->log( $message, $label );
+        throw new RuntimeException('User container service "logger"');
     }
 
     /**
@@ -65,6 +60,7 @@ class Sfcms
      */
     static function watermark($sourcePath, $destinationPath=null)
     {
+        throw new RuntimeException('User container service "watermark"');
         /* Проверка - подключена ли библиотека GD - если её нет, вам необходимо либо самому подключить эту библиотеку
         * (В файле php.ini, секция extensions, необходимо прописать либо раскомментировать строку:
         *   extension=php_gd2.dll - в windows. */

@@ -8,11 +8,12 @@ namespace Module\Catalog\Form;
 
 use Sfcms\Form\Exception;
 use Sfcms\Form\Form;
+use Sfcms\i18n;
 use Sfcms\Request;
 
 class CommentForm extends Form
 {
-    public function __construct($options = array(), Request $request = null)
+    public function __construct($options = array(), i18n $i18n, Request $request = null)
     {
         parent::__construct(array(
             'name'  => 'comment',
@@ -23,27 +24,27 @@ class CommentForm extends Form
                     'product_id' => array('type' => 'hidden'),
                     'name' => array(
                         'type' => 'text',
-                        'label' => \Sfcms::i18n()->write('catalog', 'You name'),
+                        'label' => $i18n->write('catalog', 'You name'),
                         'required',
                     ),
                     'email' => array(
                         'type' => 'text',
                         'filter' => 'email',
-                        'label' => \Sfcms::i18n()->write('catalog', 'Email'),
+                        'label' => $i18n->write('catalog', 'Email'),
                     ),
                     'phone' => array(
                         'type' => 'text',
                         'filter' => 'phone',
-                        'label' => \Sfcms::i18n()->write('catalog', 'Phone')
+                        'label' => $i18n->write('catalog', 'Phone')
                     ),
-                    'subject' => array('type' => 'text', 'label' => \Sfcms::i18n()->write('catalog', 'Subject')),
+                    'subject' => array('type' => 'text', 'label' => $i18n->write('catalog', 'Subject')),
                     'content' => array(
                         'type' => 'textarea',
-                        'label' => \Sfcms::i18n()->write('catalog', 'Message'),
+                        'label' => $i18n->write('catalog', 'Message'),
                         'required',
                     ),
-                    'captcha' => array('type' => 'captcha', 'label' => \Sfcms::i18n()->write('catalog', 'Captcha')),
-                    'submit' => array('type' => 'submit', 'value' => \Sfcms::i18n()->write('catalog', 'Send')),
+                    'captcha' => array('type' => 'captcha', 'label' => $i18n->write('catalog', 'Captcha')),
+                    'submit' => array('type' => 'submit', 'value' => $i18n->write('catalog', 'Send')),
                 ),
         ), $request);
     }

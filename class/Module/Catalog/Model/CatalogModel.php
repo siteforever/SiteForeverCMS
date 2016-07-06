@@ -167,7 +167,7 @@ class CatalogModel extends Model implements EventSubscriberInterface
      * Вызывается перед сохранением каталога
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public static function onSaveStart( Model\ModelEvent $event )
+    public function onSaveStart( Model\ModelEvent $event )
     {
         $obj = $event->getObject();
         // If object will update
@@ -197,7 +197,7 @@ class CatalogModel extends Model implements EventSubscriberInterface
     /**
      * @param \Sfcms\Model\ModelEvent $event
      */
-    public static function onSaveSuccess( Model\ModelEvent $event )
+    public function onSaveSuccess( Model\ModelEvent $event )
     {
         /** @var $obj Catalog */
         $obj = $event->getObject();
@@ -712,9 +712,9 @@ class CatalogModel extends Model implements EventSubscriberInterface
      * @param Request $request
      * @return Provider
      */
-    public function getProvider(Request $request)
+    public function getProvider($request)
     {
-        $provider = new Provider($request);
+        $provider = new Provider($request, $this->app()->get('siteforever_cms.pager'));
         $provider->setModel($this);
 
         $criteria = $this->createCriteria();

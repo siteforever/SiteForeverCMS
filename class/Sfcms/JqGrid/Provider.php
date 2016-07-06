@@ -8,6 +8,7 @@ use Sfcms;
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
 use Sfcms\Model;
+use Sfcms\Pager;
 use Sfcms\Db\Criteria;
 use InvalidArgumentException;
 
@@ -17,7 +18,10 @@ use Sfcms\Request;
 class Provider
 {
     /** @var Request */
-    private $request = null;
+    private $request;
+
+    /** @var Pager */
+    private $pager;
 
     /** @var Model */
     private $model = null;
@@ -34,9 +38,10 @@ class Provider
     /** @var string */
     private $url = null;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, Pager $pager)
     {
         $this->request = $request;
+        $this->pager = $pager;
     }
 
     /**
@@ -230,7 +235,8 @@ class Provider
     {
         $criteria = $this->getCriteria();
         $count  = $this->getModel()->count( $criteria );
-        $pager = new Sfcms\Pager($count, $this->getPerpage(), '', $this->request);
+        $pager = clone $this->pager;
+        $pager->paginate($count, $this->getPerpage(), '', $this->request);
 
         $criteria->limit = $pager->limit;
         $criteria->order = $this->getOrder();

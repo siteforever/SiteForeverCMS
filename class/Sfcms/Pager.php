@@ -8,6 +8,7 @@
 namespace Sfcms;
 
 use Sfcms\Request;
+use Sfcms\Tpl\Driver;
 
 class Pager implements \ArrayAccess
 {
@@ -32,6 +33,53 @@ class Pager implements \ArrayAccess
 
     private $template = 'pager';
 
+    /** @var i18n */
+    private $cmsI18n;
+
+    /** @var Html */
+    private $cmsHtml;
+
+    /** @var Driver */
+    private $tpl;
+
+    /**
+     * Pager constructor.
+     *
+     * @param i18n   $cmsI18n
+     * @param Html   $cmsHtml
+     * @param Driver $tpl
+     */
+    public function __construct(i18n $cmsI18n, Html $cmsHtml, Driver $tpl)
+    {
+        $this->cmsI18n = $cmsI18n;
+        $this->cmsHtml = $cmsHtml;
+        $this->tpl = $tpl;
+    }
+
+    /**
+     * @return i18n
+     */
+    public function getCmsI18n()
+    {
+        return $this->cmsI18n;
+    }
+
+    /**
+     * @return Html
+     */
+    public function getCmsHtml()
+    {
+        return $this->cmsHtml;
+    }
+
+    /**
+     * @return Driver
+     */
+    public function getTpl()
+    {
+        return $this->tpl;
+    }
+
     /**
      * @param Request $request
      */
@@ -52,7 +100,7 @@ class Pager implements \ArrayAccess
         return $this->request;
     }
 
-    function __construct($count, $perpage = 10, $link = '', $request = null, $template = null, $cacheId = null)
+    public function paginate($count, $perpage = 10, $link = '', $request = null, $template = null, $cacheId = null)
     {
         if (null !== $request) {
             $this->setRequest($request);
@@ -72,9 +120,9 @@ class Pager implements \ArrayAccess
         $link = preg_replace('/\/page=\d+|\/page\d+/', '', $link);
 
         if ( $page > 1 ) {
-            $pred = \Sfcms::html()->url($link, array('page' => $page - 1));
-            $p[]  = \Sfcms::html()->link(
-                \Sfcms::i18n()->write($this->strPred),
+            $pred = $this->getCmsHtml()->url($link, array('page' => $page - 1));
+            $p[]  = $this->getCmsHtml()->link(
+                $this->getCmsI18n()->write($this->strPred),
                 $link,
                 $page > 2 ? array('page' => $page - 1) : array()
             );
@@ -92,7 +140,7 @@ class Pager implements \ArrayAccess
         }
 
         if ( $page - $radius > 1 ) {
-            $p[]    = \Sfcms::html()->link('1', $link);
+            $p[]    = $this->getCmsHtml()->link('1', $link);
             if ( $page - $radius - 1 > 1 ) {
                 $p[]    = '...';
             }
@@ -102,7 +150,7 @@ class Pager implements \ArrayAccess
             if ( $i == $page ) {
                 $p[]    = $page;
             } else {
-                $p[]    = \Sfcms::html()->link($i, $link, 1==$i ? array() : array('page'=>$i));
+                $p[]    = $this->getCmsHtml()->link($i, $link, 1==$i ? array() : array('page'=>$i));
             }
         }
 
@@ -110,12 +158,12 @@ class Pager implements \ArrayAccess
             if ( $page + $radius + 1 < $pages ) {
                 $p[]    = '...';
             }
-            $p[]    = \Sfcms::html()->link($pages, $link, array('page'=>$pages));
+            $p[]    = $this->getCmsHtml()->link($pages, $link, array('page'=>$pages));
         }
 
         if ( $page < $pages ) {
-            $next   = \Sfcms::html()->url($link,array('page'=>$page+1));
-            $p[]    = \Sfcms::html()->link(\Sfcms::i18n()->write($this->strNext), $link, array('page'=>$page+1));
+            $next   = $this->getCmsHtml()->url($link,array('page'=>$page+1));
+            $p[]    = $this->getCmsHtml()->link($this->getCmsI18n()->write($this->strNext), $link, array('page'=>$page+1));
         }
 
         $this->from     = ($page - 1) * $perpage;
@@ -130,10 +178,9 @@ class Pager implements \ArrayAccess
         $this->page     = $page;
         $this->pages    = $pages;
         $this->count    = $count;
-        $t = \App::cms()->getTpl();
-        $t->assign(array('pager'=>$this, 'p' => $p));
+        $this->getTpl()->assign(array('pager'=>$this, 'p' => $p));
 
-        $this->html = $t->fetch($this->template, $cacheId);
+        $this->html = $this->getTpl()->fetch($this->template, $cacheId);
     }
 
     /**

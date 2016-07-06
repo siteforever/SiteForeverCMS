@@ -24,7 +24,7 @@ class Sfcms_JqGrid_PrividerTest extends PHPUnit_Framework_TestCase
     public function testGetJson()
     {
         $this->request->set('rows',10);
-        $provider = new Provider($this->request);
+        $provider = new Provider($this->request, $this->app()->get('siteforever_cms.pager'));
         $criteria = $this->model->createCriteria();
         $criteria->condition = 'cat = 0 AND deleted = 0 AND hidden = 0 AND protected <= 0';
 

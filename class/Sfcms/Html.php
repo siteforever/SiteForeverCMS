@@ -16,20 +16,6 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class Html
 {
-    static private $counter = 0;
-
-    /**
-     * Позволяет создать только 1 экземпляр
-     * @throws Exception
-     */
-    public function __construct()
-    {
-        self::$counter++;
-        if (self::$counter > 1) {
-            throw new Exception('HTML class singleton');
-        }
-    }
-
     /**
      * @param $tpl
      * @param $params

@@ -9,12 +9,10 @@ defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
 require_once 'vendor/autoload.php';
 
-use Behat\Mink\Driver\ZombieDriver;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
-use Behat\Mink\Driver\NodeJS\Server\ZombieServer;
 use Symfony\Component\Process\Process;
 
 //$capabilities = Selenium2Driver::getDefaultCapabilities();

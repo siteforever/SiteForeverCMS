@@ -70,7 +70,7 @@ class CategoryModel extends Model implements EventSubscriberInterface
         $obj->image = $category->getImage();
     }
 
-    public static function onSaveSuccess(Model\ModelEvent $event)
+    public function onSaveSuccess(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
         if ($obj instanceof Category) {

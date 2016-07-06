@@ -37,11 +37,11 @@ class GalleryModel extends Model
         );
     }
 
-    public static function onSaveStart(Model\ModelEvent $event)
+    public function onSaveStart(Model\ModelEvent $event)
     {
         $obj = $event->getObject();
         $alias = $obj->get('name')
-            ? mb_strtolower(\Sfcms::i18n()->translit($obj->get('name')), 'utf-8')
+            ? mb_strtolower($this->i18n()->translit($obj->get('name')), 'utf-8')
             : $obj->getId();
         if ($obj->alias != $alias) {
             $obj->alias = $alias;

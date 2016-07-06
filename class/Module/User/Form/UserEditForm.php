@@ -10,11 +10,11 @@ use Sfcms\Form\Form;
 
 class UserEditForm extends Form
 {
-    public function __construct()
+    public function __construct($options)
     {
         return  parent::__construct(array(
             'name'      => 'user',
-            'action'    => \App::cms()->getRouter()->createServiceLink('user','save'),
+            'action'    => \App::cms()->get('router')->generate('user/save'),
             'fields'    => array(
                 'id'        => array('type'=>'hidden', 'value'=>'0'),
                 'login'     => array('type'=>'text', 'label'=>'Логин', 'required'),
@@ -37,7 +37,7 @@ class UserEditForm extends Form
                 'last'      => array('type'=>'date', 'label'=>'Последний вход',),
                 'perm'      => array(
                         'type'      => 'select',
-                        'variants'  => \App::cms()->getDataManager()->getModel('User')->getGroups(),
+                        'variants'  => \App::cms()->get('mapper.user.user')->getGroups(),
                         'label'     => 'Группа',
                         'value'     => '3'
                 ),

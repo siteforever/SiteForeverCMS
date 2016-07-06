@@ -1,4 +1,4 @@
-Siteforever CMS - It is opensource CMS on PHP 5.4 and MySql 5.5
+Siteforever CMS - It is opensource CMS on PHP >= 5.6 and MySql 5.*
 
 Distributed under The MIT License
 

@@ -23,7 +23,7 @@ function smarty_function_comment($params, Smarty_Internal_Template $smarty)
     /** @var CommentModel $commentModel */
     $commentModel = App::cms()->getContainer()->get('data.manager')->getModel('CatalogComment');
 
-    $form = new CommentForm();
+    $form = new CommentForm([], App::cms()->get('i18n'));
 
     /** @var \Sfcms\Request $request */
     $request = $smarty->tpl_vars['request']->value;
