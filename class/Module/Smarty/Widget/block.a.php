@@ -5,7 +5,7 @@
  * @link http://ermin.ru
  */
 
-function smarty_block_a( $params, $content )
+function smarty_block_a($params, $content)
 {
     if (isset($params['href'])) {
         $href = $params['href'];
@@ -20,18 +20,19 @@ function smarty_block_a( $params, $content )
     }
 
     $class = '';
-    if ( isset( $params['class'] ) ) {
-        if ( is_string($params['class']) ) {
+    if (isset($params['class'])) {
+        if (is_string($params['class'])) {
             $class = $params['class'];
         }
-        if ( is_array($params['class']) ) {
+        if (is_array($params['class'])) {
             $class = implode(' ', $params['class']);
         }
         unset($params['class']);
     }
 
-    if( null !== $content ) {
-        return Sfcms::html()->link( $content, $href, $params, $class );
+    if (null !== $content) {
+        return Sfcms::html()->link($content, $href, $params, $class);
     }
+
     return '';
 }

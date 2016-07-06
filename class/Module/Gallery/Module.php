@@ -28,7 +28,7 @@ class Module extends SfModule
         return 'GalleryCategory';
     }
 
-    public function loadExtensions(ContainerBuilder $container)
+    public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new GalleryExtension());
     }
@@ -37,7 +37,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -50,12 +50,11 @@ class Module extends SfModule
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
         $locator = new FileLocator(__DIR__);
         $loader = new YamlFileLoader($locator);
-        $routes->addCollection($loader->load('routes.yml'));
+        return $loader->load('routes.yml');
     }
 
     public function admin_menu()

@@ -41,7 +41,7 @@ class RoutesCommand extends Command
         /** @var Route $route */
         $router = \App::cms()->getContainer()->get('symfony_router');
 
-        $this->getPageModel()->fillRoutes($router);
+        $this->getPageModel()->fillRoutes($router->getRouteCollection());
 
         $routes = $router->getRouteCollection()->all();
         $maxNameLength = array_reduce(array_keys($routes), function($total, $el){

@@ -1,0 +1,114 @@
+imports:
+    - { resource: "parameters.yml" }
+
+framework:
+    #esi:             ~
+    translator:      { fallback: en }
+    secret:          %secret%
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+#        assets_version: SomeVersionScheme
+#        assets_version_format: %%2$s/%%1$s
+    default_locale:  "%locale%"
+    trusted_proxies: ~
+    session:         ~
+    fragments:       ~
+    http_method_override: true
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+
+# Smarty Configuration
+#smarty:
+#    options:
+#        debug_tpl: "%kernel.debug%"
+#        debugging: "%kernel.debug%"
+#        debugging_ctrl: "%kernel.debug%"
+#        escape_html: false
+#    assetic: true
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   "pdo_mysql"
+        host:     "%db_host%"
+        port:     "%db_port%"
+        dbname:   "%db_name%"
+        user:     "%db_login%"
+        password: "%db_password%"
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
+
+# Sfcms Database ORM
+database:
+    debug: "%kernel.debug%"
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_username%"
+    password:  "%mailer_password%"
+    spool:     { type: memory }
+
+cmf_routing:
+    chain:
+        routers_by_id:
+            router.default: 100
+            cmf_routing.dynamic_router: 200
+    dynamic:
+        enabled: true
+        route_provider_service_id: siteforever_cms.route_provider
+
+siteforever_cms:
+    editor: ckeditor
+
+system: ~
+page: ~
+news: ~
+market: ~
+elfinder: ~
+
+translator:
+    locale: %locale%
+    fallback: en
+
+template:
+    parameters:
+        theme: %template_theme%
+        compile_check: %kernel.debug%
+        force_compile: false
+
+captcha:
+    width: 100
+    height: 25
+    color: 0x000000
+    bgcolor: 0xFFFFFF
+
+gallery:
+    mime:
+        - 'image/jpeg'
+        - 'image/gif'
+        - 'image/png'
+
+catalog:
+    level: 5
+    order_list:
+        name: name
+        price1: price-a
+        price1-d: price-d
+    onPage: 5
+
+guestbook:
+    email: "%admin%"

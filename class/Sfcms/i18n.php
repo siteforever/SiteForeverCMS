@@ -1,8 +1,7 @@
 <?php
 namespace Sfcms;
 
-use Module\Monolog\Logger\Logger;
-use Symfony\Component\Filesystem\Filesystem;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Translation\Translator;
 
 /**
@@ -90,7 +89,7 @@ class i18n
     }
 
     /**
-     * @param Logger $logger
+     * @param LoggerInterface $logger
      */
     public function setLogger($logger)
     {
@@ -98,7 +97,7 @@ class i18n
     }
 
     /**
-     * @return Logger
+     * @return LoggerInterface
      */
     public function getLogger()
     {
@@ -158,38 +157,6 @@ class i18n
 
         return $message;
     }
-
-    /**
-     * @param       $category
-     * @param       $message
-     * @param array $params
-     *
-     * @deprecated
-     * @return mixed
-     * @throws Exception
-     */
-//    protected function getCategoryTranslate($category, $message, $params = array())
-//    {
-//        $category = strtolower($category);
-//        if ($category && !isset($this->_dictionary[$category])) {
-//            $dictFile = $this->getPath() . '/protected/lang/' . $this->_lang . '/' . $category . '.php';
-//            if (file_exists($dictFile)) {
-//                $this->_dictionary['cat_' . $category] = @include($dictFile);
-//            } else {
-//                $this->_dictionary['cat_' . $category] = array();
-//            }
-//        }
-//        if (null !== $category && isset($this->_dictionary['cat_' . $category][$message])) {
-//            $message = $this->_dictionary['cat_' . $category][$message];
-//        } elseif (isset($this->_dictionary[$message])) {
-//            $message = $this->_dictionary[$message];
-//        }
-//        foreach ($params as $key => $val) {
-//            $message = str_replace($key, $val, $message);
-//        }
-//
-//        return $message;
-//    }
 
     /**
      * Transliteration

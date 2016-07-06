@@ -3,16 +3,16 @@ parameters:
 services:
     page.dashbord.subscriber:
         class: Module\Page\Subscriber\DashboardSubscriber
-        arguments: [ @tpl, @data.manager ]
+        arguments: [ "@tpl", "@data.manager" ]
         tags:
             - { name: event.subscriber }
 
     page.sitemap.subscriber:
         class: Module\Page\Subscriber\SiteMapSubscriber
-        arguments: [ @data.manager ]
+        arguments: [ "@data.manager" ]
         tags:
             - { name: event.subscriber }
 
     page.form.edit:
         class: Module\Page\Form\PageForm
-        arguments: [ @module.manager, @data.manager, %sfcms.root%, %template% ]
+        arguments: [ "@module.manager", "@data.manager", "%kernel.root_dir%", "%template%" ]

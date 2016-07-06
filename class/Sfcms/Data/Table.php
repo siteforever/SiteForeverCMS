@@ -98,12 +98,12 @@ abstract class Table extends Component
      *
      * @param $name
      *
-     * @return null|Field
+     * @return null|AbstractField
      */
     public function field($name)
     {
         $fields = static::fields();
-        /** @var $field Field */
+        /** @var $field AbstractField */
         foreach ($fields as $field) {
             if ($field->getName() == $name) {
                 return $field;

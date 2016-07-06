@@ -1,4 +1,4 @@
-/app/parameters.yml
+parameters.yml
 /app/bootstrap.php.cache
 /bin
 !bin/console
@@ -13,4 +13,5 @@
 /static
 /composer.phar
 /composer.lock
+/bundles
 /node_modules

@@ -12,6 +12,7 @@ use Sfcms\Module as SfModule;
 use Sfcms\Model;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -40,7 +41,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -62,9 +63,9 @@ class Module extends SfModule
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('catalog/delete',
             new Route('/catalog/delete',
                 array('_controller'=>'catalog', '_action'=>'delete')
@@ -185,6 +186,7 @@ class Module extends SfModule
             new Route('/prodtype/deletefield',
                 array('_controller'=>'prodtype', '_action'=>'deletefield')
             ));
+        return $routes;
     }
 
     public function admin_menu()

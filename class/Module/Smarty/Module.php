@@ -5,7 +5,7 @@
  */
 namespace Module\Smarty;
 
-use Module\Smarty\DependencyInjection\Compiler\RegisterPluginsPass;
+use Module\Smarty\DependencyInjection\Compiler\AssetPluginPass;
 use Module\Smarty\DependencyInjection\Compiler\ResolveViewPathPass;
 use Module\Smarty\DependencyInjection\SmartyExtension;
 use Sfcms\Module as SfModule;
@@ -17,6 +17,5 @@ class Module extends SfModule
     {
         $container->registerExtension(new SmartyExtension());
         $container->addCompilerPass(new ResolveViewPathPass());
-        $container->addCompilerPass(new RegisterPluginsPass());
     }
 }

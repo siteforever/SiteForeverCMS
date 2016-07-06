@@ -33,16 +33,16 @@ class Category extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Varchar('name', 250),
-            new Field\Text('description'),
-            new Field\Tinyint('show_content', 1),
-            new Field\Tinyint('show_list', 1),
-            new Field\Tinyint('type_list', 1),
-            new Field\Tinyint('per_page', 1),
-            new Field\Tinyint('hidden', 1),
-            new Field\Tinyint('protected', 1),
-            new Field\Tinyint('deleted', 1, true, 0),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\VarcharField('name', 250),
+            new Field\TextField('description'),
+            new Field\TinyintField('show_content', 1),
+            new Field\TinyintField('show_list', 1),
+            new Field\TinyintField('type_list', 1),
+            new Field\TinyintField('per_page', 1),
+            new Field\TinyintField('hidden', 1),
+            new Field\TinyintField('protected', 1),
+            new Field\TinyintField('deleted', 1, true, 0),
         );
     }
 

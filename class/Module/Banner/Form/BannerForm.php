@@ -13,7 +13,7 @@ class BannerForm extends \Sfcms\Form\Form
         $parents    = $dataManager->getModel('CategoryBanner')->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
-            'action'    => \App::cms()->getRouter()->createLink('banner/save'),
+            'action'    => \App::cms()->get('router')->generate('banner/save'),
             'fields'    => array(
                 'id'                => array('type'=>'int', 'hidden'),
                 'cat_id'    => array(

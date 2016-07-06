@@ -36,8 +36,8 @@ class StaticCommand extends Command
         $this->container = $this->getContainer();
         $staticDir = ROOT . '/static';
         $rootDir = $this->getContainer()->getParameter('root');
-        $cacheDir = $this->getContainer()->getParameter('sfcms.cache_dir');
-        $logsDir = $this->getContainer()->getParameter('sfcms.log_dir');
+        $cacheDir = $this->getContainer()->getParameter('kernel.cache_dir');
+        $logsDir = $this->getContainer()->getParameter('kernel.log_dir');
 
         $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
@@ -51,7 +51,7 @@ class StaticCommand extends Command
 
         if (!$filesistem->exists($staticDir . '/images')) {
             $filesistem->mirror(
-                $this->getContainer()->getParameter('sfcms.path') . '/class/Module/System/static/images',
+                $this->getContainer()->getParameter('kernel.sfcms_dir') . '/class/Module/System/static/images',
                 $staticDir . '/images',
                 null,
                 array('override'=>true)

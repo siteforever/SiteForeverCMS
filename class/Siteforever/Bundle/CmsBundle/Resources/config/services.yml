@@ -1,0 +1,22 @@
+parameters:
+    siteforever_cms.route_provider.class: Siteforever\Bundle\CmsBundle\Repository\RouteProvider
+    siteforever_cms.routing_module_loader.class: Siteforever\Bundle\CmsBundle\Routing\ModuleLoader
+    siteforever_cms.cms_kernel_subscriber.class: Siteforever\Bundle\CmsBundle\EventListener\SfcmsKernelSubscriber
+
+services:
+    siteforever_cms.route_provider:
+        class: %siteforever_cms.route_provider.class%
+        arguments: ["@data.manager"]
+
+    siteforever_cms.routing_module_loader:
+        class: %siteforever_cms.routing_module_loader.class%
+        arguments: ["@kernel"]
+        tags:
+            - { name: routing.loader }
+
+    siteforever_cms.cms_kernel_subscriber:
+        class: %siteforever_cms.cms_kernel_subscriber.class%
+        calls:
+            - ["setContainer", ["@service_container"]]
+        tags:
+            - { name: kernel.event_subscriber }

@@ -29,7 +29,7 @@ class TranslatorCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         /** @var TranslatorComponent $translator */
-        $translator = $this->getContainer()->get('translator');
+        $translator = $this->getContainer()->get('sfcms.translator');
 
         $message = $input->getArgument('message');
         $domain = $input->getOption('domain');

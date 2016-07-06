@@ -35,18 +35,18 @@ class Comment extends Object
     protected static function doFields()
     {
         return array(
-            new DataField\Int('id', 11, true, null, true),
-            new DataField\Int('product_id'),
-            new DataField\Varchar('ip', 15),
-            new DataField\Varchar('name', 100),
-            new DataField\Varchar('email', 100),
-            new DataField\Varchar('phone', 100),
-            new DataField\Varchar('subject', 100),
-            new DataField\Text('content'),
-            new DataField\Datetime('createdAt'),
-            new DataField\Datetime('updatedAt'),
-            new DataField\Tinyint('hidden', 1, true, '0'),
-            new DataField\Tinyint('deleted', 1, true, '0'),
+            new DataField\IntField('id', 11, true, null, true),
+            new DataField\IntField('product_id'),
+            new DataField\VarcharField('ip', 15),
+            new DataField\VarcharField('name', 100),
+            new DataField\VarcharField('email', 100),
+            new DataField\VarcharField('phone', 100),
+            new DataField\VarcharField('subject', 100),
+            new DataField\TextField('content'),
+            new DataField\DatetimeField('createdAt'),
+            new DataField\DatetimeField('updatedAt'),
+            new DataField\TinyintField('hidden', 1, true, '0'),
+            new DataField\TinyintField('deleted', 1, true, '0'),
         );
     }
 

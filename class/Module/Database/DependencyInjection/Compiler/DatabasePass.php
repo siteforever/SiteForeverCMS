@@ -6,10 +6,8 @@
 
 namespace Module\Database\DependencyInjection\Compiler;
 
-
 use Sfcms\Data\DataManager;
-use Sfcms\Kernel\AbstractKernel;
-use Sfcms\Module;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -34,22 +32,62 @@ class DatabasePass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if ($container->hasDefinition('doctrine.connection')) {
-            $container->getDefinition('db')->setArguments([new Reference('doctrine.connection')]);
-        }
+        $dispatcher = $container->getDefinition($container->getAlias('event_dispatcher'));
 
-        $dispatcher = $container->getDefinition('event.dispatcher');
         /** @var DataManager $manager */
-        $manager = $container->get('data.manager');
+        if ($container->hasParameter('kernel.modules')) {
+            $modules = $container->getParameter('kernel.modules');
+            $models = array();
+            /** @var string $moduleClass */
+            foreach($modules as $moduleName => $moduleClass) {
+                $reflectionClass = new \ReflectionClass($moduleClass);
+                if (!$reflectionClass->hasMethod('config')) {
+                    continue;
+                }
 
-        foreach ($manager->getModelList() as $config) {
-            $definition = new Definition($config['class']);
-            $definition->setArguments([new Reference('data.manager')]);
-            $definition->setLazy(true);
-            $container->setDefinition($config['id'], $definition);
-            $reflectionClass = new \ReflectionClass($config['class']);
-            if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
-                $dispatcher->addMethodCall('addSubscriber', array(new Reference($config['id'])));
+                $config = call_user_func(array($moduleClass, 'config'));
+                if (!isset($config['models'])) {
+                    continue;
+                }
+
+                foreach ($config['models'] as $alias => $class) {
+                    if (!preg_match('/(\w+)\\\\Model\\\\(\w+)Model$/', $class, $m)) {
+                        throw new \InvalidArgumentException('Model class '. $class . ' has an inconsistent pattern');
+                    }
+                    $modelId = strtolower(DataManager::getModelId($moduleName, $m['2']));
+                    $models[$modelId] = array(
+                        'id' => $modelId,
+                        'name' => $moduleName,
+                        'alias' => $alias,
+                        'class' => $class,
+                    );
+                }
+
+//                $modelsPath = dirname($reflectionClass->getFileName()) . '/Model';
+//                foreach (glob($modelsPath . '/*Model.php') as $modelFile) {
+//                    if (!preg_match('/(\w+)\/Model\/(\w+)Model\.php$/', $modelFile, $m)) {
+//                        throw new \InvalidArgumentException('Model file '. $modelFile . ' has an inconsistent pattern');
+//                    }
+//                    $modelId = strtolower(DataManager::getModelId($moduleName, $m['2']));
+//                    $models[$modelId] = array(
+//                        'id' => $modelId,
+//                        'name' => $moduleName,
+//                        'alias' => $m[2],
+//                        'class' => preg_replace('/Module$/', 'Model\\' . basename($modelFile, '.php'), $moduleClass),
+//                    );
+//                }
+            }
+
+            $container->getDefinition('data.manager')->setArguments(array($models));
+
+            foreach ($models as $config) {
+                $definition = new Definition($config['class']);
+                $definition->setArguments([new Reference('data.manager')]);
+                $container->setDefinition($config['id'], $definition);
+                $reflectionClass = new \ReflectionClass($config['class']);
+                if ($reflectionClass->implementsInterface('Symfony\Component\EventDispatcher\EventSubscriberInterface')) {
+                    $dispatcher ->addMethodCall('addSubscriber', array(new Reference($config['id'])));
+                }
             }
         }
     }

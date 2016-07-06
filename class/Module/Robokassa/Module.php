@@ -11,7 +11,7 @@ use Module\Robokassa\DependencyInjection\RobokassaExtension;
 
 class Module extends SfModule
 {
-    public function loadExtensions(ContainerBuilder $container)
+    public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new RobokassaExtension());
     }

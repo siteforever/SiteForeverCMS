@@ -1,0 +1,4 @@
+# file for custom routes
+KeltanasCmsBundle_Modules:
+    resource: .
+    type: sfcms_modules

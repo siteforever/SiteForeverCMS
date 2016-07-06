@@ -14,7 +14,7 @@ class ModuleEdit extends Form
     {
         parent::__construct( array(
             'name' => 'ModuleEdit',
-            'action' => \App::cms()->getRouter()->createLink('system/module/save'),
+            'action' => \App::cms()->get('router')->generate('system/module/save'),
         ) );
     }
 

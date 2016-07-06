@@ -3,6 +3,7 @@ namespace Sfcms;
 
 use App;
 use Doctrine\DBAL;
+use Sfcms\Data\AbstractField;
 use Sfcms\Data\DataManager;
 use Sfcms\Data\Object as DomainObject;
 use Sfcms\Data\Collection;
@@ -15,6 +16,8 @@ use Module\User\Object\User;
 use Sfcms\Data\Watcher;
 use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Model interface
@@ -68,7 +71,11 @@ abstract class Model extends Component
      */
     protected $config = array();
 
-    private $dataManager;
+    /** @var \Sfcms\Data\DataManager */
+    protected $dataManager;
+
+    /** @var EventDispatcherInterface */
+    protected $eventDispatcher;
 
     /**
      * Creating model
@@ -78,6 +85,9 @@ abstract class Model extends Component
     final public function __construct(DataManager $dataManager)
     {
         $alias = $this->eventAlias();
+        $this->dataManager = $dataManager;
+        $this->eventDispatcher = $dataManager->getEventDispatcher();
+
         if (method_exists($this, 'onSaveStart')) {
             $this->on(sprintf('%s.save.start', $alias), [get_class($this), 'onSaveStart']);
         }
@@ -85,6 +95,34 @@ abstract class Model extends Component
             $this->on(sprintf('%s.save.success', $alias), [get_class($this), 'onSaveSuccess']);
         }
         $this->init();
+    }
+
+    /**
+     * Dispatch named event
+     *
+     * @param string $eventName
+     * @param ModelEvent $event
+     *
+     * @return ModelEvent
+     */
+    public function trigger($eventName, ModelEvent $event)
+    {
+        return $this->eventDispatcher->dispatch($eventName, $event);
+    }
+
+    /**
+     * @param $eventName
+     * @param $callback
+     * @param $priority
+     *
+     * @throws RuntimeException
+     */
+    public function on($eventName, $callback, $priority = 0)
+    {
+        if (!(is_array($callback) || $callback instanceof \Closure)) {
+            throw new RuntimeException('"$callback" must be Array or Closure');
+        }
+        $this->eventDispatcher->addListener($eventName, $callback, $priority);
     }
 
     /**
@@ -113,14 +151,9 @@ abstract class Model extends Component
      * @deprecated since version 0.7, will be removed on version 0.8
      * @return db
      */
-    static public function getDB()
+    public function getDB()
     {
-        try {
-            return App::cms()->getContainer()->get('db');
-        } catch (\PDOException $e) {
-            static::app()->getLogger()->alert($e->getMessage());
-            die($e->getMessage());
-        }
+        return $this->dataManager->getDB();
     }
 
     /**
@@ -128,7 +161,7 @@ abstract class Model extends Component
      */
     public function getDBAL()
     {
-        return $this->app()->getContainer()->get('doctrine.connection');
+        return $this->app()->getContainer()->get('database_connection');
     }
 
     /**
@@ -169,7 +202,7 @@ abstract class Model extends Component
      */
     final public function getModel($model)
     {
-        return \App::cms()->getDataManager()->getModel($model);
+        return $this->dataManager->getModel($model);
     }
 
     /**
@@ -575,7 +608,7 @@ abstract class Model extends Component
         $idKeys = array_keys($id);
         $saveData = array();
 
-        /** @var Field $field */
+        /** @var AbstractField $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
             if ($state !== DomainObject::STATE_DIRTY
@@ -603,7 +636,7 @@ abstract class Model extends Component
         } else {
             // INSERT
             if (count($id) == 1) {
-                /** @var $field Field */
+                /** @var $field AbstractField */
                 $field   = $obj->field($idKeys[0]);
                 $fieldValue = $obj->get($idKeys[0]);
                 if ($field->isAutoIncrement() && (null === $fieldValue || '' === $fieldValue)) {

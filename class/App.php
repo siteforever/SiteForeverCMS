@@ -10,19 +10,29 @@ if (!defined('SF_PATH')) {
     define('SF_PATH', realpath(__DIR__ . '/..'));
 }
 
-use Sfcms\Kernel\AbstractKernel;
-use Sfcms\Kernel\KernelEvent;
+use Module\Market\Object\Order;
+use Psr\Log\LoggerInterface;
+use Sfcms\Auth;
+use Sfcms\Data\DataManager;
+use Sfcms\DeliveryManager;
 use Sfcms\Model;
+use Sfcms\Module;
 use Sfcms\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Sfcms\Data\Watcher;
+use Sfcms\Tpl\Driver;
+use Symfony\Component\Config\Loader\LoaderInterface;
 use Sfcms\View\Layout;
-use Sfcms\View\Xhr;
-use Sfcms\Model\Exception as ModelException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Debug\Debug;
+use Symfony\Component\DependencyInjection\Compiler\MergeExtensionConfigurationPass;
+use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\Bundle\BundleInterface;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Класс приложение
@@ -31,48 +41,328 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * @link   http://ermin.ru
  * @link   http://siteforever.ru
  */
-class App extends AbstractKernel
+class App extends Kernel
 {
+    /** @var Module[] */
+    protected $modules;
+
+    /** @var array */
+    protected $controllers;
+
+    /** @var ContainerInterface */
+    static protected $containerLocator;
+
+    /**
+     * Constructor.
+     *
+     * @param string  $environment The environment
+     * @param bool    $debug       Whether to enable debugging or not
+     *
+     * @api
+     */
+    public function __construct($environment, $debug)
+    {
+        parent::__construct($environment, $debug);
+    }
+
+    /**
+     * Returns an array of bundles to register.
+     *
+     * @return BundleInterface[] An array of bundle instances.
+     *
+     * @api
+     */
+    public function registerBundles()
+    {
+        $bundles = array(
+            new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
+            new Symfony\Bundle\TwigBundle\TwigBundle(),
+            //new NoiseLabs\Bundle\SmartyBundle\SmartyBundle(),
+            new Symfony\Bundle\MonologBundle\MonologBundle(),
+            new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
+            new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
+            new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
+            new Symfony\Cmf\Bundle\RoutingBundle\CmfRoutingBundle(),
+            new Siteforever\Bundle\CmsBundle\SiteforeverCmsBundle(),
+        );
+
+        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+            $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
+            $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
+            $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
+            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+        }
+
+        return $bundles;
+    }
+
+    /**
+     * Returns an array of modules to register.
+     *
+     * @return Module[] An array of bundle instances.
+     *
+     * @api
+     */
+    public function registerModules()
+    {
+        $locator = new FileLocator(array(ROOT, SF_PATH));
+        $modules = require $locator->locate('app/modules.php');
+        return $modules;
+    }
+
+    /**
+     * Loads the container configuration.
+     *
+     * @param LoaderInterface $loader A LoaderInterface instance
+     *
+     * @api
+     */
+    public function registerContainerConfiguration(LoaderInterface $loader)
+    {
+        $loader->load(sprintf('%s/config/config_%s.yml', $this->getRootDir(), $this->getEnvironment()));
+    }
+
     /**
      * Run application
      * @param $request
      */
     public function run(Request $request = null)
     {
-        static::$start_time = microtime(true);
-
         if (null === $request) {
             Request::enableHttpMethodParameterOverride();
             $request  = Request::createFromGlobals();
         }
 
-        date_default_timezone_set($this->getContainer()->hasParameter('timezone')
-                ? $this->getContainer()->getParameter('timezone') : 'Europe/Moscow');
+        if ($this->isDebug()) {
+            Debug::enable();
+        }
 
-        $response = $this->handleRequest($request);
-
-        $this->flushDebug();
+        $response = $this->handle($request);
         $response->prepare($request);
         $response->send();
-        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_TERMINATE, new KernelEvent($response, $request));
+        $this->terminate($request, $response);
     }
 
     /**
-     * Run under test environment
+     * Boots the current kernel.
+     *
+     * @api
+     */
+    public function boot()
+    {
+        if (true === $this->booted) {
+            return;
+        }
+
+        if ($this->loadClassCache) {
+            $this->doLoadClassCache($this->loadClassCache[0], $this->loadClassCache[1]);
+        }
+
+        // init bundles
+        $this->initializeBundles();
+
+        // init modules
+        $this->initializeModules();
+
+        // init container
+        $this->initializeContainer();
+
+        foreach ($this->getBundles() as $bundle) {
+            $bundle->setContainer($this->container);
+            $bundle->boot();
+        }
+
+        static::$containerLocator = $this->container;
+
+        $this->booted = true;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    protected function initializeModules()
+    {
+        foreach ($this->registerModules() as $module) {
+            if (!isset($module['path'])) {
+                throw new InvalidArgumentException('Directive "path" not defined in modules config');
+            }
+            if (!isset($module['name'])) {
+                throw new InvalidArgumentException('Directive "name" not defined in modules config');
+            }
+            $className = $module['path'] . '\Module';
+            $reflection = new \ReflectionClass($className);
+            $place = dirname($reflection->getFileName());
+            /** @var Module $moduleObj */
+            $moduleObj = new $className($this, $module['name'], $module['path'], $place);
+            if (isset($this->modules[$module['name']])) {
+                throw new LogicException(sprintf('Trying to register two modules with the same name "%s"', $module['name']));
+            }
+            $this->modules[$module['name']] = $moduleObj;
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    protected function prepareContainer(ContainerBuilder $container)
+    {
+        foreach ($this->modules as $moduleName => $moduleObj) {
+            $moduleObj->loadExtensions($container);
+            $moduleObj->build($container);
+            if ($this->debug) {
+                $container->addObjectResource($moduleObj);
+            }
+        }
+        $extensions = array_values(array_map(function(ExtensionInterface $ext){
+                return $ext->getAlias();
+            }, $container->getExtensions()));
+
+        foreach ($this->bundles as $bundle) {
+            if ($extension = $bundle->getContainerExtension()) {
+                $container->registerExtension($extension);
+                $extensions[] = $extension->getAlias();
+            }
+
+            if ($this->debug) {
+                $container->addObjectResource($bundle);
+            }
+        }
+        foreach ($this->bundles as $bundle) {
+            $bundle->build($container);
+        }
+
+        $container->setAlias('app', 'kernel');
+
+        // ensure these extensions are implicitly loaded
+        $container->getCompilerPassConfig()->setMergePass(new MergeExtensionConfigurationPass($extensions));
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    protected function getKernelParameters()
+    {
+        $parameters = parent::getKernelParameters();
+
+        $kernelModules = array();
+        foreach ($this->modules as $module) {
+            $kernelModules[$module->getName()] = get_class($module);
+        }
+        $parameters['kernel.modules'] = $kernelModules;
+        $parameters['kernel.sfcms_dir'] = SF_PATH;
+        $parameters['sf_path'] = SF_PATH;
+
+        return $parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    public function getRootDir()
+    {
+        if (null === $this->rootDir) {
+            $locator = new FileLocator(array(ROOT, __DIR__));
+            $this->rootDir = $locator->locate(sprintf('app'));
+        }
+
+        return $this->rootDir;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    public function getCacheDir()
+    {
+        return realpath($this->getRootDir().'/..') . '/var/cache/'.$this->environment;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @api
+     */
+    public function getLogDir()
+    {
+        return realpath($this->getRootDir().'/..') . '/var/logs';
+    }
+
+    /**
+     * Загружает список известных системе контроллеров
+     * <p>Загружется список установленных модулей.</p>
+     * <p>Из них формируется список контроллеров, которые имеются в системе</p>
+
+     * @return array
+     */
+    public function getControllers()
+    {
+        if (null === $this->controllers) {
+            $this->controllers = array();
+            foreach ($this->getModules() as $name => $module) {
+                $config = $module->config();
+                if (isset($config['controllers'])) {
+                    foreach ($config['controllers'] as $controller => $params) {
+                        $params['module'] = $name;
+                        $this->controllers[strtolower($controller)] = $params;
+                    }
+                }
+            }
+        }
+
+        return $this->controllers;
+    }
+
+
+    /**
+     * @return \Sfcms\Module[]
+     */
+    public function getModules()
+    {
+        return $this->modules;
+    }
+
+    /**
+     * @param $name
+     * @return Module
+     */
+    public function getModule($name)
+    {
+        return $this->modules[$name];
+    }
+
+    /**
      * @static
-     * @return bool
+     * @throws Exception
+     * @deprecated since version 0.7, will be removed from 0.8
+     * @return App
      */
-    static public function isTest()
+    static public function cms()
     {
-        return defined('TEST') && TEST;
+        return static::$containerLocator->get('kernel');
+    }
+
+    public function get($service)
+    {
+      return $this->getContainer()->get($service);
     }
 
     /**
-     * @return string
+     * Получить объект авторизации
+     * @throws Exception
+     * @return Auth
      */
-    public function getContainerCacheFile()
+    public function getAuth()
     {
-        return $this->getCachePath() . sprintf('/container_%s.php', $this->getEnvironment());
+        return $this->getContainer()->get('auth');
     }
 
     /**
@@ -91,6 +381,17 @@ class App extends AbstractKernel
         return ROOT . '/var/cache/' . $this->getEnvironment();
     }
 
+    /**
+     * Вернет объект кэша
+     *
+     * @return CacheInterface
+     * @throws Exception
+     */
+    public function getCacheManager()
+    {
+        $this->getContainer()->get('cache');
+    }
+
     public function redirectListener(KernelEvent $event)
     {
         if ($event->getResponse() instanceof RedirectResponse) {
@@ -99,168 +400,67 @@ class App extends AbstractKernel
     }
 
     /**
-     * Handle request
+     * Вернет доставку
      * @param Request $request
-     *
-     * @return Response
+     * @param Order $order
+     * @return DeliveryManager
+     */
+    public function getDeliveryManager(Request $request, Order $order)
+    {
+        return new DeliveryManager($request, $order, $this->getEventDispatcher());
+    }
+
+    /**
+     * Return template driver
+     * @return Driver
      * @throws Exception
      */
-    public function handleRequest(Request $request = null)
+    public function getTpl()
     {
-        $this->getLogger()->log(str_repeat('-', 80));
-        $this->getLogger()->log(sprintf('---%\'--74s---', $request->getRequestUri()));
-        $this->getLogger()->log(str_repeat('-', 80));
-
-        $this->getContainer()->set('request', $request);
-        $this->getAuth()->setRequest($request);
-        $acceptableContentTypes = $request->getAcceptableContentTypes();
-        $format = null;
-        if ($acceptableContentTypes) {
-            $format = $request->getFormat($acceptableContentTypes[0]);
-        }
-        $request->setRequestFormat($format);
-        $request->setDefaultLocale($this->getContainer()->getParameter('language'));
-
-        static::$init_time = microtime(1) - static::$start_time;
-        static::$controller_time = microtime(1);
-
-        $result = null;
-        /** @var Response $response */
-        $response = null;
-        try {
-            $container = $this->getContainer();
-            $tpl = $this->getTpl();
-            $tpl->assign([
-                    'sitename' => $container->getParameter('sitename'),
-                    'debug' => $container->getParameter('debug'),
-                ]);
-//            $tpl->assign($this->getContainer()->getParameterBag()->all());
-            $this->getRouter()->setRequest($request)->routing();
-            $result = $this->getResolver()->dispatch($request);
-        } catch (HttpException $e) {
-            $this->getLogger()->error($e->getMessage());
-            switch ($request->getContentType()) {
-                case 'json':
-                    $response = new JsonResponse(array('error'=>1, 'msg'=>$e->getMessage()), $e->getStatusCode() ?: 500);
-                    break;
-                default:
-                    $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
-            }
-        } catch (\Exception $e) {
-            $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
-            if ($this->isDebug()) {
-                throw $e;
-            } else {
-                switch ($request->getContentType()) {
-                    case 'json':
-                        return new JsonResponse(array('error'=>1, 'msg'=>'Site error'), 500);
-                }
-                return new Response('Site error', 500);
-            }
-        }
-
-        if (!$response && is_string($result)) {
-            $response = new Response($result);
-        } elseif ($result instanceof Response) {
-            $response = $result;
-        } elseif (!$response) {
-            $response = new Response();
-        }
-
-        static::$controller_time = microtime(1) - static::$controller_time;
-
-        $event = new KernelEvent($response, $request, $result);
-        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_RESPONSE, $event);
-
-        // Выполнение операций по обработке объектов
-        try {
-            Watcher::instance()->performOperations();
-        } catch (ModelException $e) {
-            $this->getLogger()->error($e->getMessage(), $e->getTrace());
-            $response->setStatusCode(500);
-            $response->setContent($e->getMessage());
-        } catch (PDOException $e) {
-            $this->getLogger()->error($e->getMessage(), $e->getTrace());
-            $response->setStatusCode(500);
-            $response->setContent($e->getMessage());
-        }
-
-        return $event->getResponse();
+        return $this->getContainer()->get('tpl');
     }
 
     /**
-     * Если контроллер вернул массив, то преобразует его в строку и сохранит в Response
-     * @param KernelEvent $event
-     * @return string
+     * @return DataManager
      */
-    public function prepareResult(KernelEvent $event)
+    public function getDataManager()
     {
-        $response = $event->getResponse();
-        $result = $event->getResult();
-        $request = $event->getRequest();
-        $format = $request->getRequestFormat();
-        if (is_array($result) && 'json' == $format) {
-            // Если надо вернуть JSON из массива
-            $result = defined('JSON_UNESCAPED_UNICODE')
-                ? json_encode($result, JSON_UNESCAPED_UNICODE)
-                : json_encode($result);
-        }
-        // Имеет больший приоритет, чем данные в Request-Request->content
-        if (is_array($result) && ('html' == $format || null === $format)) {
-            // Если надо отпарсить шаблон с данными из массива
-            $this->getTpl()->assign($result);
-            $template = $request->getController() . '.' . $request->getAction();
-            $this->getTpl()->assign(array(
-                    'request'   => $request,
-                    'auth'      => $this->getAuth(),
-                ));
-            $result   = $this->getTpl()->fetch(strtolower($template));
-        }
-        // Просто установить итоговую строку как контент
-        if (is_string($result)) {
-            $response->setContent($result);
-        }
-        return $event;
+        return $this->getContainer()->get('data.manager');
     }
 
     /**
-     * Перезагрузка страницы
-     * @param KernelEvent $event
-     *
-     * @return KernelEvent
+     * @return LoggerInterface
      */
-    public function prepareReload(KernelEvent $event)
+    public function getLogger()
     {
-        if ($reload = $event->getRequest()->get('reload')) {
-            $event->getResponse()->setContent($event->getResponse()->getContent() . $reload);
-        }
-        return $event;
+        return $this->getContainer()->has('logger') ? $this->getContainer()->get('logger') : null;
     }
 
     /**
-     * Вызвать обертку для представления
-     * @param KernelEvent $event
-     *
-     * @return KernelEvent
+     * @return EventDispatcher
      */
-    public function invokeLayout(KernelEvent $event)
+    public function getEventDispatcher()
     {
-        $watch = (new Stopwatch())->start(__FUNCTION__);
-        if ($event->getResponse() instanceof JsonResponse || $event->getRequest()->getAjax()) {
-            $Layout = new Xhr($this, $this->getContainer()->getParameter('template'));
-        } else {
-            $Layout = new Layout($this, $this->getContainer()->getParameter('template'));
-        }
-        $Layout->view($event);
-
-        $this->getLogger()->info(sprintf('Invoke layout: %.3f sec', $watch->stop(__FUNCTION__)->getDuration() / 1000));
-        return $event;
+        return $this->getContainer()->get('event_dispatcher');
     }
-
+    
     public function createSignature(Sfcms\Kernel\KernelEvent $event)
     {
         if (!$this->getContainer()->hasParameter('silent')) {
             $event->getResponse()->headers->set('X-Powered-By', 'SiteForeverCMS');
         }
     }
+
+
+    /**
+     * Get array for creating menu from modules in admin panel
+     * @return mixed
+     */
+    public function adminMenuModules()
+    {
+        return array_reduce( $this->getModules(), function( $total, Module $module ){
+            return null === $module->admin_menu() ? $total : array_merge_recursive( $total, $module->admin_menu() );
+        }, array() );
+    }
+
 }

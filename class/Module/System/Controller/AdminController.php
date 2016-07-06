@@ -60,17 +60,17 @@ abstract class AdminController extends Controller
 
     protected function dataUrl()
     {
-        return $this->router->createServiceLink($this->alias(), 'list');
+        return $this->router->generate($this->alias() . '/list');
     }
 
     protected function adminUrl()
     {
-        return $this->router->createServiceLink($this->alias(), 'admin');
+        return $this->router->generate($this->alias() . '/admin');
     }
 
     protected function editUrl()
     {
-        return $this->router->createServiceLink($this->alias(), 'edit');
+        return $this->router->generate($this->alias() . '/edit');
     }
 
     /**

@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
                     ->children()
                         ->scalarNode('theme')->isRequired()->end()
                         ->scalarNode('ext')->defaultValue('tpl')->end()
-                        ->booleanNode('compile_check')->defaultValue("%debug%")->end()
+                        ->booleanNode('compile_check')->defaultValue("%kernel.debug%")->end()
                         ->booleanNode('force_compile')->defaultFalse()->end()
                         ->booleanNode('caching')->defaultFalse()->end()
                         ->arrayNode('cache')

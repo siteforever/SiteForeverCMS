@@ -145,7 +145,7 @@ class BasketController extends Controller
             'all_summa'     => $this->getBasket()->getSum(),
             'delivery'      => $deliveryManager,
             'form'          => $form,
-            'host'          => $this->request->getSchemeAndHttpHost() . rawurlencode($this->router->createLink('basket')),
+            'host'          => $this->request->getSchemeAndHttpHost() . rawurlencode($this->router->generate('basket')),
             'auth'          => $this->auth,
         );
     }

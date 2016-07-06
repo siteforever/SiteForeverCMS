@@ -13,8 +13,8 @@
 </style>
 
 <div class="sf_gallery_panel">
-    <div class="sf_gallery_pred">{if $pred}<a {href url=$pred->url}>&laquo; {$pred->name}</a>{else}&nbsp;{/if}</div>
-    <div class="sf_gallery_next">{if $next}<a {href url=$next->url}>{$next->name} &raquo;</a>{else}&nbsp;{/if}</div>
+    <div class="sf_gallery_pred">{if $pred}<a {href url=$pred->url alias=$pred->alias}>&laquo; {$pred->name}</a>{else}&nbsp;{/if}</div>
+    <div class="sf_gallery_next">{if $next}<a {href url=$next->url alias=$next->alias}>{$next->name} &raquo;</a>{else}&nbsp;{/if}</div>
 </div>
 
 <table>

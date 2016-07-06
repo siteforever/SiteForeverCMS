@@ -12,6 +12,7 @@ use App;
 use Sfcms_Image;
 use Sfcms_Image_Exception;
 use Sfcms_Image_Scale;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class Html
 {
@@ -53,7 +54,28 @@ class Html
      */
     public function url($url, $params = array())
     {
-        return App::cms()->getRouter()->createLink($url, $params);
+//        if (isset($params['alias'])) {
+//            $url .= '_alias_';
+//        }
+        $url = trim($url, '/');
+        if ('' == $url) {
+            $url = 'index';
+        }
+
+        $magic = isset($params['magic']) ? filter_var($params['magic'], FILTER_VALIDATE_BOOLEAN) : false;
+        unset($params['magic']);
+
+        //var_dump($href);
+        if ($magic && false !== ($pos = strrpos($url, '/'))) {
+            $params['alias'] = substr($url, $pos + 1);
+            $url = substr($url, 0, $pos) . '__alias';
+        }
+
+        try {
+            return App::cms()->getContainer()->get('router')->generate($url, $params);
+        } catch (RouteNotFoundException $e) {
+            return $url;
+        }
     }
 
     /**
@@ -105,7 +127,7 @@ class Html
         if (isset($params['controller']) && '#' == $url) {
             $url = null;
         }
-        $attributes[] = $this->href($url, $params);
+       $attributes[] = $this->href($url, $params);
 
         return sprintf('<a %s>%s</a>', trim(implode(' ', $attributes)), $text);
     }
@@ -183,7 +205,7 @@ class Html
         }
 
         if (!$src) {
-            $src = '/static/images/no-image-' . App::cms()->getConfig('language') . '.png';
+            $src = '/static/images/no-image-' . App::cms()->getContainer()->getParameter('locale') . '.png';
         }
         $src = $name = urldecode(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $src));
         // Подменное имя для изображения

@@ -8,6 +8,7 @@ namespace Module\Search;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -16,7 +17,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -41,9 +42,9 @@ class Module extends SfModule
 
 
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('search',
             new Route('/search',
                 array('_controller'=>'search', '_action'=>'index')
@@ -56,6 +57,8 @@ class Module extends SfModule
             new Route('/search/indexing',
                 array('_controller'=>'search', '_action'=>'indexing')
             ));
+
+        return $routes;
     }
 
 

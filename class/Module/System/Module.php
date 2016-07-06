@@ -16,6 +16,7 @@ use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -34,7 +35,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         $controllers = array(
             'captcha'   => array(),
@@ -47,25 +48,21 @@ class Module extends SfModule
             'system'    => array(),
         );
         $models = array(
-            'Module'    => 'Module\\System\\Model\\ModuleModel',
             'Routes'    => 'Module\\System\\Model\\RoutesModel',
             'Settings'  => 'Module\\System\\Model\\SettingsModel',
             'Session'   => 'Module\\System\\Model\\SessionModel',
             'Templates' => 'Module\\System\\Model\\TemplatesModel',
             'Log'       => 'Module\\System\\Model\\LogModel',
         );
-        if ($this->app->isDebug()) {
-            $models['Test'] = 'Module\\System\\Model\\TestModel';
-        }
         return array(
             'controllers' => $controllers,
             'models'      => $models,
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
 
         $routes->add('captcha',
             new Route('/captcha',
@@ -113,6 +110,7 @@ class Module extends SfModule
                 array('_controller'=>'system', '_action'=>'assembly')
             ));
 
+        return $routes;
     }
 
     public function admin_menu()

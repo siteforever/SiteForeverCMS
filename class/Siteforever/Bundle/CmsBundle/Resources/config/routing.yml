@@ -1,0 +1,3 @@
+siteforever_cms_homepage:
+    path:  /ping
+    defaults: { _controller: SiteforeverCmsBundle:Default:index }

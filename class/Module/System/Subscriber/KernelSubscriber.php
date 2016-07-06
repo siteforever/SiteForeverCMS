@@ -7,6 +7,7 @@ use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model\ModelEvent;
 use Sfcms\Model;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,8 +16,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  *
  * @author: keltanas <keltanas@gmail.com>
  */
-class KernelSubscriber extends ContainerAware implements EventSubscriberInterface
+class KernelSubscriber implements EventSubscriberInterface
 {
+    use ContainerAwareTrait;
+    
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -57,7 +60,7 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
         $response = $event->getResponse();
         if (!$response instanceof JsonResponse && 403 == $response->getStatusCode()) {
             if (!$this->container->get('auth')->isLogged()) {
-                $response = new RedirectResponse($this->container->get('router')->createLink('user/login'));
+                $response = new RedirectResponse($this->container->get('router')->generate('user/login'));
                 $event->setResponse($response);
                 $event->stopPropagation();
             }

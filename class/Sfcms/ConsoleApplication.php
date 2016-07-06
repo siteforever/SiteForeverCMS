@@ -69,7 +69,7 @@ class ConsoleApplication extends Application
 //        $this->addCommands([
 //                new \Doctrine\DBAL\Migrations\Tools\Console\Command\DiffCommand(),
 //                new \Doctrine\DBAL\Migrations\Tools\Console\Command\ExecuteCommand(),
-//                new \Doctrine\DBAL\Migrations\Tools\Console\Command\GenerateCommand(),
+//                new \Doctrine\DBAL\Migrations\Tools\Console\Command\I18nGenerateCommand(),
 //                new \Doctrine\DBAL\Migrations\Tools\Console\Command\MigrateCommand(),
 //                new \Doctrine\DBAL\Migrations\Tools\Console\Command\StatusCommand(),
 //                new \Doctrine\DBAL\Migrations\Tools\Console\Command\VersionCommand()

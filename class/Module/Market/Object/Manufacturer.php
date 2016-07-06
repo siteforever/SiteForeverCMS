@@ -26,14 +26,14 @@ class Manufacturer extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Varchar( 'name', 250, true, null, false ),
-            new Field\Varchar( 'phone', 250, true, null, false ),
-            new Field\Varchar( 'email', 250, true, null, false ),
-            new Field\Varchar( 'site', 250, true, null, false ),
-            new Field\Text( 'address', 11, true, null, false ),
-            new Field\Varchar( 'image', 250, true, null, false ),
-            new Field\Text( 'description', 11, true, null, false ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\VarcharField( 'name', 250, true, null, false ),
+            new Field\VarcharField( 'phone', 250, true, null, false ),
+            new Field\VarcharField( 'email', 250, true, null, false ),
+            new Field\VarcharField( 'site', 250, true, null, false ),
+            new Field\TextField( 'address', 11, true, null, false ),
+            new Field\VarcharField( 'image', 250, true, null, false ),
+            new Field\TextField( 'description', 11, true, null, false ),
         );
     }
 

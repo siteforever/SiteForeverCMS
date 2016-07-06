@@ -14,7 +14,7 @@ class ManufacturerEditForm extends \Sfcms\Form\Form
         parent::__construct(
             array(
                  'name' => 'manufacturers',
-                 'action'    => \App::cms()->getRouter()->createLink('manufacturers/save'),
+                 'action'    => \App::cms()->get('router')->generate('manufacturers/save'),
                  'fields' => array(
                      'id'   => array('type'=>'hidden'),
                      'name' => array('type'=>'text', 'label' => 'Name', 'required'),

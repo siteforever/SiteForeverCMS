@@ -36,12 +36,12 @@ class Field extends Object
     protected static function doFields()
     {
         return array(
-            new TField\Int( 'id', 11, false, null, true ),
-            new TField\Int( 'product_type_id', 11, false, 0 ),
-            new TField\Varchar( 'type', 250, false, '' ),
-            new TField\Varchar( 'name', 250, false, '' ),
-            new TField\Varchar( 'unit', 250, false, '' ),
-            new TField\Int( 'pos', 11, false, 0 ),
+            new TField\IntField( 'id', 11, false, null, true ),
+            new TField\IntField( 'product_type_id', 11, false, 0 ),
+            new TField\VarcharField( 'type', 250, false, '' ),
+            new TField\VarcharField( 'name', 250, false, '' ),
+            new TField\VarcharField( 'unit', 250, false, '' ),
+            new TField\IntField( 'pos', 11, false, 0 ),
         );
     }
 

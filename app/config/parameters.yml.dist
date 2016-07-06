@@ -1,0 +1,35 @@
+parameters:
+    sitename: "SiteForeverCMS"
+
+    url:
+        rewrite: true
+
+    admin: "keltanas@gmail.com"
+
+    template_theme: bootstrap
+
+    db_name: siteforever
+    db_host: localhost
+    db_port: 3306
+    db_login: root
+    db_password: ~
+
+    use_assetic_controller: true
+    assetic.use_controller: %use_assetic_controller%
+    editor: ckeditor
+
+    locale: ru
+    secret: SomeSecretWord
+
+    mailer_transport: mail
+    mailer_username: ~
+    mailer_password: ~
+    mailer_host: ~
+    mailer_port: ~
+    mailer_security: ~
+
+    email_for_comments: ~
+
+    robokassa_mrch_login: test
+    robokassa_merchant_pass1: test1
+    robokassa_merchant_pass2: test2

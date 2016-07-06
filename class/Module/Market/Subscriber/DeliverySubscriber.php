@@ -7,7 +7,7 @@
  *
  * services:
  *   my.delivery.subscriber:
- *   class: Keltanas\Market\Event\DeliverySubscriber
+ *   class: Siteforever\Market\Event\DeliverySubscriber
  *   tags:
  *     - { name: "delivery.subscriber" }
  *   calls:

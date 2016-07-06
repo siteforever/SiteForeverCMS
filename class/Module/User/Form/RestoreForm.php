@@ -15,7 +15,7 @@ class RestoreForm extends Form
     {
         parent::__construct( array(
             'name' => 'restore',
-            'action' => \App::cms()->getRouter()->createLink('user/restore'),
+            'action' => \App::cms()->get('router')->generate('user/restore'),
             'fields' => array(
                 'email' => array(
                     'type' => 'text',

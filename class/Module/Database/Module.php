@@ -13,14 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class Module extends SfcmsModule
 {
-    public function loadExtensions(ContainerBuilder $container)
-    {
-        $container->registerExtension(new DatabaseExtension());
-    }
-
     public function build(ContainerBuilder $container)
     {
+        $container->registerExtension(new DatabaseExtension());
         $container->addCompilerPass(new DatabasePass());
     }
-
 }

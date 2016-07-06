@@ -116,22 +116,22 @@ class Order extends Object
     {
         return array(
             // field, size, nonull, default, autoincrement
-            new Field\Int('id', 11, true, null, true),
-            new Field\Int('status', 4, true, 0),
-            new Field\Tinyint('person', 4, false),
-            new Field\Int('paid', 11, true, 0),
-            new Field\Int('delivery_id', 11, true, 0),
-            new Field\Int('payment_id', 11, true, 0),
-            new Field\Int('date', 11, true, 0),
-            new Field\Int('user_id', 11, true, 0),
-            new Field\Varchar('fname', 255, true, ""),
-            new Field\Varchar('lname', 255, true, ""),
-            new Field\Varchar('email', 255, true, ""),
-            new Field\Varchar('phone', 255, true, ""),
-            new Field\Text('address'),
-            new Field\Text('details'),
-            new Field\Text('passport'),
-            new Field\Text('comment'),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\IntField('status', 4, true, 0),
+            new Field\TinyintField('person', 4, false),
+            new Field\IntField('paid', 11, true, 0),
+            new Field\IntField('delivery_id', 11, true, 0),
+            new Field\IntField('payment_id', 11, true, 0),
+            new Field\IntField('date', 11, true, 0),
+            new Field\IntField('user_id', 11, true, 0),
+            new Field\VarcharField('fname', 255, true, ""),
+            new Field\VarcharField('lname', 255, true, ""),
+            new Field\VarcharField('email', 255, true, ""),
+            new Field\VarcharField('phone', 255, true, ""),
+            new Field\TextField('address'),
+            new Field\TextField('details'),
+            new Field\TextField('passport'),
+            new Field\TextField('comment'),
         );
     }
 

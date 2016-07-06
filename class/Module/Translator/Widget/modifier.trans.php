@@ -17,7 +17,13 @@
  * Назначение:  Translate message
  * -------------------------------------------------------------
  */
-function smarty_modifier_trans($id, $params = array(), $domain = null)
+function smarty_modifier_trans($id, $params = null, $domain = null)
 {
+    if (is_string($params)) {
+        $domain = $params;
+    }
+    if (!is_array($params)) {
+        $params = [];
+    }
     return Sfcms::i18n()->trans($id, $params, $domain);
 }

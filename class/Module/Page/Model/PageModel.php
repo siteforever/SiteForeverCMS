@@ -9,6 +9,7 @@ use Sfcms\Data\Collection;
 use Sfcms\Model\Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 /**
@@ -43,9 +44,11 @@ class PageModel extends Model
 
     public function relation()
     {
+        $conditionForExists = array('protected'=>0,'hidden'=>0,'deleted'=>0);
+
         return array(
-            'Pages'  => array( self::HAS_MANY, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
-            'Parent' => array( self::BELONGS, 'Page', 'parent', 'where' => array('protected'=>0,'hidden'=>0,'deleted'=>0) ),
+            'Pages'  => array( self::HAS_MANY, 'Page', 'parent', 'where' =>  $conditionForExists),
+            'Parent' => array( self::BELONGS, 'Page', 'parent', 'where' => $conditionForExists),
         );
     }
 
@@ -97,48 +100,37 @@ class PageModel extends Model
     /**
      * Filling route table from database
      *
-     * @param Router $router
+     * @param RouteCollection $routes
      *
      * @return Router
      */
-    public function fillRoutes(Router $router)
+    public function fillRoutes(RouteCollection $routes)
     {
         if (static::$routerFilled) {
-            return $router;
+            return $routes;
         }
         $start = microtime(1);
         /** @var array $page */
-        foreach ($this->getAll() as $page) {
+        foreach ($this->findAll('deleted = ?', array(0), 'alias desc') as $page) {
             $default = array(
-                '_controller' => $page['controller'],
-                '_action' => $page['action'],
-                '_id' => $page['id'],
-                '_template' => $page['template'],
-                '_system' => $page['system'],
-                'alias' => $page['null']
+                '_controller' => 'SiteforeverCmsBundle:Default:index',
+                'controller' => $page['controller'],
+                'action' => $page['action'],
+                'page_id' => $page['id'],
+                'template' => $page['template'],
+                'system' => $page['system'],
+                'alias' => ''
             );
-            $router->getRouteCollection()->add($page['alias'],
-                new Route('/' . $page['alias'], $default));
-        }
-        foreach ($this->getAll() as $page) {
-            if (!in_array($page['controller'], array('news', 'catalog', 'gallery'))) {
-                continue;
+            $url = '/' . ($page['alias'] == 'index' ? '' : $page['alias']);
+            $routes->add($page['alias'], new Route($url, $default));
+            if ('page' != $page['controller']) {
+                $routes->add($page['alias'] . '__alias', new Route($url . '/{alias}', $default));
             }
-            $default = array(
-                '_controller' => $page['controller'],
-                '_action' => $page['action'],
-                '_id' => $page['id'],
-                '_template' => $page['template'],
-                '_system' => $page['system'],
-                'alias' => $page['null']
-            );
-            $router->getRouteCollection()->add($page['alias'].'_alias_',
-                new Route('/' . $page['alias'] . '/{alias}', $default)
-            );
         }
+
         $this->log('Loading aliases: ' . round(microtime(1) - $start, 3) . ' sec');
         static::$routerFilled = true;
-        return $router;
+        return $routes;
     }
 
     /**
@@ -262,8 +254,8 @@ class PageModel extends Model
     {
         if (is_null($this->availableModules)) {
             $locator = new FileLocator(array(
-                $this->app()->getContainer()->getParameter('root'),
-                $this->app()->getContainer()->getParameter('sfcms.path')
+                $this->app()->getContainer()->getParameter('kernel.root_dir'),
+                $this->app()->getContainer()->getParameter('kernel.sfcms_dir')
             ));
 
             $controllersFile = $locator->locate('app/controllers.xml');

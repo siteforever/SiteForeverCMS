@@ -19,10 +19,10 @@ class Templates extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Varchar('name', 100, true),
-            new Field\Varchar('description', 250),
-            new Field\Text('template'),
-            new Field\Int('update'),
+            new Field\VarcharField('name', 100, true),
+            new Field\VarcharField('description', 250),
+            new Field\TextField('template'),
+            new Field\IntField('update'),
         );
     }
 

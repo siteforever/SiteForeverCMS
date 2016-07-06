@@ -11,7 +11,7 @@ use Module\Elfinder\DependencyInjection\ElfinderExtension;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouteCollection;
 
 class Module extends SfModule
 {
@@ -23,7 +23,7 @@ class Module extends SfModule
      * Return array config of module
      * @return array
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -35,19 +35,15 @@ class Module extends SfModule
         );
     }
 
-    public function loadExtensions(ContainerBuilder $container)
-    {
-        $container->registerExtension(new ElfinderExtension());
-    }
-
     public function build(ContainerBuilder $container)
     {
+        $container->registerExtension(new ElfinderExtension());
         $container->addCompilerPass(new ElfinderPass());
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('elfinder',
             new Route('/elfinder',
                 array('_controller'=>'elfinder', '_action'=>'finder')
@@ -60,6 +56,8 @@ class Module extends SfModule
             new Route('/elfinder/connector',
                 array('_controller'=>'elfinder', '_action'=>'connector')
             ));
+
+        return $routes;
     }
 
 

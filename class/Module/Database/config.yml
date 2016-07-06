@@ -1,8 +1,7 @@
 services:
     db:
         class: Sfcms\db
-#        calls:
-#            - [setLoggerClass, ["@db_logger"]]
+        arguments: ["@database_connection"]
 
     data.manager:
         class: Sfcms\Data\DataManager

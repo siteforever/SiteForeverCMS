@@ -26,6 +26,7 @@ use Sfcms_Filter_Group;
 use Sfcms_Filter_Collection;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CatalogController extends Controller
 {
@@ -80,8 +81,14 @@ class CatalogController extends Controller
             throw new HttpException(404, $this->t('Catalogue part not found with id ') . $catId);
         }
 
-        if ( 0 == $item->cat ) {
-            $this->getTpl()->getBreadcrumbs()->addPiece( null, $item->name );
+        if ($item->cat && $this->page) {
+            if ($this->page->link != $item->id) {
+                throw new NotFoundHttpException(sprintf(
+                    'Page [link:%d] not corresponds with item [id:%d]', $this->page->link, $item->id
+                ));
+            }
+        } else {
+            $this->getTpl()->getBreadcrumbs()->addPiece(null, $item->name);
         }
         $this->request->setTitle($item->title);
         $this->tpl->assign('page_number', $this->request->get('page', 1));
@@ -112,8 +119,8 @@ class CatalogController extends Controller
         $level = $config['level'];
         $pageNum = $this->request->query->getDigits('page', 1);
 
-        $manufacturerId = $this->request->get('filter[manufacturer]', false, true);
-        $materialId     = $this->request->get('filter[material]', false, true);
+        $manufacturerId = $this->request->get('filter[manufacturer]', false);
+        $materialId     = $this->request->get('filter[material]', false);
 
         $order = $config['order_default'];
         $orderList = $config['order_list'];
@@ -172,10 +179,12 @@ class CatalogController extends Controller
                 $criteria->order = str_replace(array('-d', '_d'), ' DESC', strtolower($order));
             }
 
+            $this->get('logger')->debug('Parent', $parent->attributes);
+
             $paging = $this->paging(
                 $count,
                 $config['onPage'],
-                $this->router->createLink($parent->url),
+                $this->router->generate(trim($parent->url, '/')),
                 $cacheKey
             );
 

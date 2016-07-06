@@ -22,11 +22,11 @@ class EventSubscriberPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('event.dispatcher')) {
+        if (!$container->hasDefinition('event_dispatcher')) {
             return;
         }
 
-        $definition = $container->getDefinition('event.dispatcher');
+        $definition = $container->getDefinition('event_dispatcher');
         $taggedServices = $container->findTaggedServiceIds('event.subscriber');
         foreach ($taggedServices as $serviceId => $params) {
             $definition->addMethodCall('addSubscriber', array(new Reference($serviceId)));

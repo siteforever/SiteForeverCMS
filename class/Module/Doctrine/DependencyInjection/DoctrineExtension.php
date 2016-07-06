@@ -57,7 +57,7 @@ class DoctrineExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $connection = $container->getDefinition('doctrine.connection');
+        $connection = $container->getDefinition('database_connection');
         $params = $config['connection'];
 
         $className = self::$_driverMap[$params['driver']];

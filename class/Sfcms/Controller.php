@@ -11,7 +11,9 @@ use Sfcms\Router;
 use Sfcms\Model;
 use Sfcms\db;
 use Sfcms\Basket\Base as Basket;
+use Symfony\Cmf\Component\Routing\ChainRouter;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -27,14 +29,15 @@ use Sfcms\Data\Watcher;
  * @property \App $app
  * @property Driver $tpl
  * @property \Sfcms\Auth $auth
- * @property Router $router
- * @property CacheInterface $cache
+ * @property ChainRouter $router
  * @property User $user
  * @property Filesystem $filesystem
  * @property i18n $i18n
  */
-abstract class Controller extends ContainerAware
+abstract class Controller
 {
+    use ContainerAwareTrait;
+
     private static $forms = array();
 
     /** @var array */
@@ -200,7 +203,7 @@ abstract class Controller extends ContainerAware
      */
     public function getEventDispatcher()
     {
-        return $this->get('event.dispatcher');
+        return $this->get('event_dispatcher');
     }
 
     /**
@@ -339,7 +342,7 @@ abstract class Controller extends ContainerAware
     protected function redirect( $url = '', $params = array() )
     {
         if (! preg_match( '@^http@', $url )) {
-            $url = $this->router->createLink($url, $params);
+            $url = $this->router->generate($url, $params);
         }
         return new RedirectResponse($url);
     }
@@ -356,7 +359,7 @@ abstract class Controller extends ContainerAware
     {
         Watcher::instance()->performOperations();
         return $this->render('error.reload', array(
-            'url' => $this->router->createLink( $url, $params ),
+            'url' => $this->router->generate( $url, $params ),
             'timeout' => $timeout,
         ));
     }

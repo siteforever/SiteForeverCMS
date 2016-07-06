@@ -5,7 +5,7 @@ services:
 
     tpl:
         class: Module\Smarty\Component\Driver
-        arguments: ["@smarty", "%template%", "%sfcms.cache_dir%"]
+        arguments: ["@smarty", "%template%", "%kernel.cache_dir%"]
 
     smarty.plugin.form:
         class: Module\Smarty\Plugin\FormPlugin
@@ -16,7 +16,7 @@ services:
 #            - { name: smarty.plugin, type: function, plugin: form_end, method: function_form_end }
 
     smarty.plugin.asset:
-        class: Module\System\Plugin\AssetPlugin
+        class: Module\Smarty\Plugin\AssetPlugin
         tags:
             - { name: smarty.plugin, type: function, plugin: style, method: functionStyle }
             - { name: smarty.plugin, type: function, plugin: js, method: functionJs }

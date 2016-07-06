@@ -8,6 +8,7 @@ namespace Module\Dashboard;
 
 use Sfcms\Module as SfModule;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -20,7 +21,7 @@ class Module extends SfModule
      * Return array config of module
      * @return array
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -43,13 +44,14 @@ class Module extends SfModule
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('admin',
             new Route('/admin',
                 array('_controller'=>'dashboard', '_action'=>'index')
             ));
 
+        return $routes;
     }
 }

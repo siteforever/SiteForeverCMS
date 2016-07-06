@@ -1,0 +1,14 @@
+imports:
+    - { resource: "config_dev.yml" }
+
+parameters:
+    db_name: siteforever_test
+    template_theme: basic
+    template_pager: pager_twbs2
+    template_form: smarty/form_bs2.tpl
+
+catalog:
+    level: 5
+    order_list:
+        name: name
+        bad: bad

@@ -9,6 +9,7 @@ namespace Module\Banner;
 
 use Sfcms\Module as SfModule;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -17,7 +18,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -35,9 +36,9 @@ class Module extends SfModule
         return 'Page';
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('banner/admin',
             new Route('/banner/admin',
                 array('_controller'=>'banner', '_action'=>'admin')
@@ -71,6 +72,7 @@ class Module extends SfModule
             new Route('/banner/save',
                 array('_controller'=>'banner', '_action'=>'save')
             ));
+        return $routes;
     }
 
 

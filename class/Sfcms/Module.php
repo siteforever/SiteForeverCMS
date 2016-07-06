@@ -13,7 +13,8 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 abstract class Module extends Component
 {
@@ -57,9 +58,9 @@ abstract class Module extends Component
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
-        return false;
+        return array();
     }
 
     /**
@@ -172,10 +173,11 @@ abstract class Module extends Component
 
     /**
      * Registering custom routes of module in router component
-     * @param Router $router
+     * @return RouteCollection|Route[]
      */
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
+        return new RouteCollection();
     }
 
     /**

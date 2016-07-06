@@ -12,6 +12,7 @@ use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -25,7 +26,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -40,14 +41,14 @@ class Module extends SfModule
         );
     }
 
-    public function loadExtensions(ContainerBuilder $container)
+    public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new NewsExtension());
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('rss',
             new Route('/rss',
                 array('_controller'=>'rss', '_action'=>'index')
@@ -77,6 +78,8 @@ class Module extends SfModule
             new Route('/news/catdelete',
                 array('_controller'=>'newscategory', '_action'=>'catDelete')
             ));
+
+        return $routes;
     }
 
     public function admin_menu()

@@ -8,8 +8,6 @@
 namespace Sfcms;
 
 use App;
-use Symfony\Component\DependencyInjection\Exception\RuntimeException;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * @property $attributes
@@ -53,7 +51,14 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public static function log($message, $label = '')
     {
-        self::app()->getLogger()->log($message, $label);
+        if (is_array($message)) {
+            $params = $message;
+            $message = $label;
+        } else {
+            $params = [$label];
+        }
+
+        self::app()->getLogger()->debug($message, $params);
     }
 
     /**
@@ -166,36 +171,6 @@ abstract class Component implements \ArrayAccess//, Iterator;
     {
         return $this->offsetExists($name);
     }
-
-    /**
-     * Dispatch named event
-     *
-     * @param string $eventName
-     * @param Event $event
-     *
-     * @return Event
-     */
-    public function trigger($eventName, Event $event)
-    {
-        $this->log(sprintf('trigger: %s (%s)', $eventName, $event->getName()));
-        return $this->app()->getEventDispatcher()->dispatch($eventName, $event);
-    }
-
-    /**
-     * @param $eventName
-     * @param $callback
-     * @param $priority
-     *
-     * @throws RuntimeException
-     */
-    public function on($eventName, $callback, $priority = 0)
-    {
-        if (!(is_array($callback) || $callback instanceof \Closure)) {
-            throw new RuntimeException('"$callback" must be Array or Closure');
-        }
-        $this->app()->getEventDispatcher()->addListener($eventName, $callback, $priority);
-    }
-
 
     /**
      * (PHP 5 &gt;= 5.1.0)<br/>

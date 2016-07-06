@@ -8,6 +8,7 @@ namespace Module\Test;
 
 use Sfcms\Module as SfModule;
 use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Router;
 
 class Module extends SfModule
@@ -20,25 +21,28 @@ class Module extends SfModule
      * Return array config of module
      * @return array
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
                 'testForm' => array( 'class' => 'Controller\Form', ),
             ),
-//            'models' => array(
+            'models' => array(
+                'Test' => 'Module\\System\\Model\\TestModel',
 //                'SomeName' => 'Module\Test\Model\SomeModel',
-//            ),
+            ),
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('test.form/file', new Route('/test.form/file', array(
                 '_controller' => 'testForm',
                 '_action' => 'file',
             )));
+
+        return $routes;
     }
 
 

@@ -27,11 +27,8 @@ services:
         class: %doctrine.configuration.class%
         calls:
 #            - ["setProxyNamespace", [ sfcms ]]
-#            - ["setMetadataDriverImpl", [ @doctrine.driver ]]
-#            - ["setSQLLogger", [ @doctrine.logger ]]
-
-    doctrine.logger:
-        class: Module\Doctrine\Logger\DoctrineLogger
+#            - ["setMetadataDriverImpl", [ "@doctrine.driver" ]]
+#            - ["setSQLLogger", [ "@doctrine.logger" ]]
 
     doctrine.connection:
         class: %doctrine.connection.class%

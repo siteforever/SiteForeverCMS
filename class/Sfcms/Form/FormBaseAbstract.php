@@ -65,9 +65,7 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
                 'method'    => 'post',
                 'enctype'   => null,
             ));
-        $resolver->setAllowedValues(array(
-                'enctype'=> array(null, 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain'),
-            ));
+        $resolver->setAllowedValues('enctype', array(null, 'application/x-www-form-urlencoded', 'multipart/form-data', 'text/plain'));
         $options = $this->options = $resolver->resolve($options);
 
         $this->name   = $options['name'];

@@ -8,6 +8,7 @@
 
 namespace Sfcms\Data\Query;
 
+use Sfcms\Data\AbstractField;
 use Sfcms\Data\Exception;
 use Sfcms\Data\Field;
 use Sfcms\Db\Criteria;
@@ -58,7 +59,7 @@ class Builder
 
         // Заменяем * на список полей
         if ( '*' == $this->_criteria->select ) {
-            $this->_criteria->select = array_map(function(Field $field){
+            $this->_criteria->select = array_map(function(AbstractField $field){
                 return $field->getName();
             },$fields);
         }

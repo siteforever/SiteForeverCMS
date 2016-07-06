@@ -6,10 +6,10 @@
 
 namespace Sfcms\Data;
 
-use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Model;
 use Sfcms\Module;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class DataManager
 {
@@ -17,6 +17,24 @@ class DataManager
 
     /** @var array */
     private $modelList = null;
+
+    function __construct($modelList)
+    {
+        $this->modelList = $modelList;
+    }
+
+    /**
+     * @param $modelId
+     * @return Model
+     */
+    protected function createModel($modelId)
+    {
+        if (!isset($this->modelList[$modelId]['object'])) {
+            $className = $this->modelList[$modelId]['class'];
+            $this->modelList[$modelId]['object'] = new $className($this);
+        }
+        return $this->modelList[$modelId]['object'];
+    }
 
     /**
      * Get appropriate model class
@@ -30,17 +48,18 @@ class DataManager
     {
         $model = strtolower($model);
         if (false !== strpos($model, '.')) {
-            if ('mapper' === substr($model, 0, 6)) {
-                return $this->container->get($model);
-            } else {
-                return $this->container->get('mapper.' . $model);
+            if ('mapper' !== substr($model, 0, 6)) {
+                $model = 'mapper.' . $model;
+            }
+            if (isset($this->modelList[$model])) {
+                return $this->createModel($model);
             }
         }
 
-        $models = $this->getModelList();
+        $models = $this->modelList;
         foreach ($models as $cfg) {
             if ($model == strtolower($cfg['alias'])) {
-                return $this->container->get($cfg['id']);
+                return $this->createModel($cfg['id']);
             }
         }
 
@@ -51,45 +70,37 @@ class DataManager
     }
 
     /**
-     * @param Module $module
-     * @param string $alias
-     *
-     * @return string
-     */
-    public function getModelId(Module $module, $alias)
-    {
-        return sprintf('Mapper.%s.%s', $module->getName(), $alias);
-    }
-
-    /**
      * @return array
      */
     public function getModelList()
     {
-        if (null === $this->modelList) {
-            /** @var AbstractKernel $kernel */
-            $kernel = $this->container->get('kernel');
-
-            $modules = $kernel->getModules();
-            $models = array();
-
-            /** @var Module $module */
-            foreach($modules as $module) {
-                $config = $module->config();
-                if ($config && isset($config['models'])) {
-                    foreach($config['models'] as $alias => $className) {
-                        $models[] = array(
-                            'id' => $this->getModelId($module, $alias),
-                            'alias' => $alias,
-                            'class' => $className,
-                        );
-                    }
-                }
-            }
-
-            $this->modelList = $models;
-        }
-
         return $this->modelList;
+    }
+
+    /**
+     * @param string $moduleName
+     * @param string $alias
+     *
+     * @return string
+     */
+    public static function getModelId($moduleName, $alias)
+    {
+        return sprintf('Mapper.%s.%s', $moduleName, $alias);
+    }
+
+    /**
+     * @return EventDispatcherInterface
+     */
+    public function getEventDispatcher()
+    {
+        return $this->container->get('event_dispatcher');
+    }
+
+    /**
+     * @return \Sfcms\Db\
+     */
+    public function getDB()
+    {
+        return $this->container->get('db');
     }
 }

@@ -49,7 +49,7 @@ class StructureRoute extends Route
     public function route(RouteEvent $event)
     {
         $router = $this->getSymfonyRouter($event->getRequest());
-        $this->getPageModel()->fillRoutes($router);
+        $this->getPageModel()->fillRoutes($router->getRouteCollection());
 
         try {
             $match = $router->match($event->getRoute());

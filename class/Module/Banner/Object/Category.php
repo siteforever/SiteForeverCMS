@@ -34,9 +34,9 @@ class Category extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Varchar('name', 255),
-            new Field\Int('deleted', 1, false, 0),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\VarcharField('name', 255),
+            new Field\IntField('deleted', 1, false, 0),
         );
     }
 }

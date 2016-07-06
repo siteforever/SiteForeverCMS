@@ -13,7 +13,8 @@ if (preg_match('/^\/index/', $_SERVER['REQUEST_URI'])) {
 
 define('ROOT', __DIR__);
 
-require_once 'vendor/autoload.php';
+//require_once 'app/bootstrap.php.cache';
+require_once 'app/autoload.php';
 
 Request::enableHttpMethodParameterOverride();
 $request  = Request::createFromGlobals();

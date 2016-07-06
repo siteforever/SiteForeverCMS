@@ -247,8 +247,7 @@ class Watcher
             return true;
         }
 
-        Model::getDB()->beginTransaction();
-
+        // todo внедрить транзакции
         try {
             if (is_array($this->dirty)) {
                 /** @var Object $obj */
@@ -271,9 +270,7 @@ class Watcher
             $this->dirty  = array();
             $this->new    = array();
             $this->delete = array();
-            Model::getDB()->commit();
         } catch (\PDOException $e) {
-            Model::getDB()->rollBack();
             throw $e;
         }
 

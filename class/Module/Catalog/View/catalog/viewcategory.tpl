@@ -29,12 +29,12 @@
 {foreach from=$list item="item"}
 <div class="row">
     <div class="col-md-3">{strip}
-        {a href=$item->url class="thumbnail"}
+        {a href=$item->url magic=true class="thumbnail"}
             {thumb width=150 height=150 alt=$item.title src=$item.thumb name=$item.image class="img-rounded" color="f6f6f6"}
         {/a}
     {/strip}</div>
     <div class="col-md-9">
-        <h3 class="b-catalog-product-title">{a href=$item->url}{$item.name}{/a}</h3>
+        <h3 class="b-catalog-product-title">{a href=$item->url magic=true}{$item.name}{/a}</h3>
 
         <div class="b-catalog-product-price">{strip}
             <span class="b-product-price">{$item.price|string_format:"%.2f"}</span>

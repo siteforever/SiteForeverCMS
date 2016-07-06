@@ -2,15 +2,15 @@
 <?php
 set_time_limit(0);
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+if (file_exists(__DIR__ . '/../app/autoload.php')) {
     define('ROOT', realpath(__DIR__.'/..'));
-    @include_once __DIR__ . '/../vendor/autoload.php';
+    @include_once __DIR__ . '/../app/autoload.php';
 } else {
     define('ROOT', realpath(__DIR__.'/../../../..'));
-    @include_once __DIR__ . '/../../../autoload.php';
+    @include_once __DIR__ . '/../../../../app/autoload.php';
 }
 
-use Sfcms\ConsoleApplication;
+use Siteforever\Bundle\CmsBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 
@@ -22,9 +22,6 @@ if ($debug) {
     Debug::enable();
 }
 
-$kernel = new \App($env, $debug);
-$kernel->isConsole(true);
-
-$app = new ConsoleApplication($kernel);
-
-$app->run($input);
+$kernel = new App($env, $debug);
+$application = new Application($kernel);
+$application->run($input);

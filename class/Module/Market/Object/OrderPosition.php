@@ -38,17 +38,17 @@ class OrderPosition extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Int('ord_id'),
-            new Field\Int('product_id'),
-            new Field\Varchar('articul', 250),
-            new Field\Text('details'),
-            new Field\Varchar('currency', 10),
-            new Field\Varchar('item', 10),
-            new Field\Int('cat_id'),
-            new Field\Decimal('price'),
-            new Field\Int('count'),
-            new Field\Int('status'),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\IntField('ord_id'),
+            new Field\IntField('product_id'),
+            new Field\VarcharField('articul', 250),
+            new Field\TextField('details'),
+            new Field\VarcharField('currency', 10),
+            new Field\VarcharField('item', 10),
+            new Field\IntField('cat_id'),
+            new Field\DecimalField('price'),
+            new Field\IntField('count'),
+            new Field\IntField('status'),
         );
     }
 

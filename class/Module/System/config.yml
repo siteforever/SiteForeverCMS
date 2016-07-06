@@ -1,7 +1,4 @@
 parameters:
-    pdo_session:
-        db_table: "session"
-
     session_class: Symfony\Component\HttpFoundation\Session\Session
     session_storage_native_class: Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage
     session_storage_mock_class: Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorage
@@ -14,97 +11,83 @@ services:
         calls:
             - [setContainer, ["@service_container"]]
         tags:
-            - { name: event.subscriber }
+            - { name: kernel.event_subscriber }
 
     system.controller.subscriber:
         class: Module\System\Subscriber\ControllerSubscriber
         arguments: ["@data.manager"]
         tags:
-            - { name: event.subscriber }
+            - { name: kernel.event_subscriber }
 
     module.manager:
         class: Module\System\Component\ModuleManager
-        arguments: [ "%sfcms.root%", "%sfcms.path%", "@translator" ]
+        arguments: [ "%kernel.root_dir%", "%kernel.sfcms_dir%", "@translator" ]
 
     auth:
         class: Sfcms\Auth
 
-    app:
-        synthetic: true
-
-    kernel:
-        alias: app
-
-    request:
-        synthetic: true
-
-    session:
-        class: "%session_class%"
-        arguments: ["@session.storage"]
-
-    session.storage.mock:
-        class: "%session_storage_mock_class%"
-
-    session.storage.native:
-        class: "%session_storage_native_class%"
-        arguments: [[], "@session.handler"]
-
-    session.handler.pdo:
-        class: "%session_handler_pdo_class%"
-        arguments: ["@doctrine.connection", "%pdo_session%"]
-
-    session.handler.native:
-        class: "%session_handler_native_class%"
-
-    event.dispatcher:
-        class: Symfony\Component\EventDispatcher\EventDispatcher
-        calls:
-            - [addListener, [ "kernel.response", [@app, "redirectListener"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "prepareResult"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "prepareReload"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "invokeLayout"] ] ]
-            - [addListener, [ "kernel.response", [@app, "createSignature"] ] ]
+#    session:
+#        class: "%session_class%"
+#        arguments: ["@session.storage"]
+#
+#    session.storage.mock:
+#        class: "%session_storage_mock_class%"
+#
+#    session.storage.native:
+#        class: "%session_storage_native_class%"
+#        arguments: [[], "@session.handler"]
+#
+#    session.handler.pdo:
+#        class: "%session_handler_pdo_class%"
+#        arguments: ["@database_connection", "%pdo_session%"]
+#
+#    session.handler.native:
+#        class: "%session_handler_native_class%"
+#
+#    event.dispatcher:
+#        class: Symfony\Component\EventDispatcher\EventDispatcher
+#        calls:
+#            - [addListener, [ "kernel.response", [@app, "redirectListener"], 10 ] ]
+#            - [addListener, [ "kernel.response", [@app, "prepareResult"], 10 ] ]
+#            - [addListener, [ "kernel.response", [@app, "prepareReload"], 10 ] ]
+#            - [addListener, [ "kernel.response", [@app, "invokeLayout"] ] ]
+#            - [addListener, [ "kernel.response", [@app, "createSignature"] ] ]
 
     locator:
         class: Symfony\Component\Config\FileLocator
-        arguments: [["%root%", "%sfcms.path%"]]
+        arguments: [["%kernel.root_dir%", "%kernel.sfcms_dir%"]]
 
     yaml_loader:
         class: Symfony\Component\Routing\Loader\YamlFileLoader
         arguments: ["@locator"]
 
-
     # routing
-    symfony_router:
-        class: Symfony\Component\Routing\Router
-        arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
+#    symfony_router:
+#        class: Symfony\Component\Routing\Router
+#        arguments: ["@yaml_loader", "app/routes.yml", {"debug": %kernel.debug%} ]
+#
+#    route_yaml:
+#        class: Sfcms\Route\YmlRoute
+#        tags:
+#            - { name: event.listener, event: router.route , method: route }
+#
+#    route_structure:
+#        class: Sfcms\Route\StructureRoute
+#        calls:
+#            - [setLogger, ["@logger"]]
+#            - [setDataManager, ["@data.manager"]]
+#        tags:
+#            - { name: event.listener, event: router.route , method: route }
+#
+#    router:
+#        class: Sfcms\Router
+#        arguments: ["%kernel.debug%"]
+#        calls:
+#            - [setEventDispatcher, ["@event_dispatcher"]]
+#            - [setLogger, ["@logger"]]
+#            - [setRewrite, ["%url%"]]
 
-    route_yaml:
-        class: Sfcms\Route\YmlRoute
-        tags:
-            - { name: event.listener, event: router.route , method: route }
-
-    route_structure:
-        class: Sfcms\Route\StructureRoute
-        calls:
-            - [setLogger, ["@logger"]]
-            - [setDataManager, ["@data.manager"]]
-        tags:
-            - { name: event.listener, event: router.route , method: route }
-
-    router:
-        class: Sfcms\Router
-        arguments: ["%debug%"]
-        calls:
-            - [setEventDispatcher, ["@event.dispatcher"]]
-            - [setLogger, ["@logger"]]
-            - [setRewrite, ["%url%"]]
-
-    # other
-    filesystem:
-        class: Symfony\Component\Filesystem\Filesystem
-
-    resolver:
+    sfcms.resolver:
         class: Sfcms\Controller\Resolver
-        arguments: ["@app"]
+        arguments: ["@kernel"]
 

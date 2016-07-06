@@ -53,7 +53,7 @@ class SearchController extends Controller
             'params' => array(':s'=>$search),
         ));
         $count  = $modelPage->count($crit);
-        $paging = $this->paging($count, 10, $this->router->createLink('search', array('query'=>$query)));
+        $paging = $this->paging($count, 10, $this->router->generate('search', array('query'=>$query)));
         $crit->limit = $paging->limit;
         $result = $modelPage->findAll($crit);
 

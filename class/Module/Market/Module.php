@@ -13,7 +13,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Loader\YamlFileLoader;
 use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouteCollection;
 
 class Module extends SfModule
 {
@@ -27,7 +27,7 @@ class Module extends SfModule
         return 'id';
     }
 
-    public function loadExtensions(ContainerBuilder $container)
+    public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new MarketExtension());
     }
@@ -36,7 +36,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -65,9 +65,9 @@ class Module extends SfModule
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
 
         $locator = new FileLocator(__DIR__);
         $loader = new YamlFileLoader($locator);
@@ -161,6 +161,8 @@ class Module extends SfModule
             new Route('/robokassa/fail',
                 array('_controller'=>'robokassa', '_action'=>'fail')
             ));
+
+        return $routes;
     }
 
 
@@ -173,7 +175,7 @@ class Module extends SfModule
                 'sub'   => array(
                     array(
                         'name'  => $this->t('Payment'),
-                        'url'   => 'payment/admin'
+                        'url'   => 'payment'
                     ),
                     array(
                         'name'  => $this->t('delivery','Delivery'),

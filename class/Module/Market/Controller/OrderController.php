@@ -137,7 +137,7 @@ class OrderController extends Controller
         $sum = $positions->sum('sum');
 
         $paymentEvent = new PaymentEvent($delivery, $order);
-        $this->get('event.dispatcher')->dispatch(Event::ORDER_PAYMENT, $paymentEvent);
+        $this->get('event_dispatcher')->dispatch(Event::ORDER_PAYMENT, $paymentEvent);
 
         return $this->render('order.view', array(
             'order'     => $order,

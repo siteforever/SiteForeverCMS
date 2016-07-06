@@ -20,32 +20,6 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('system');
-        $rootNode
-            ->children()
-                ->arrayNode('session')
-                    ->children()
-                        ->scalarNode('handler')
-                            ->isRequired()
-                            ->validate()
-                                ->ifNotInArray(array('native', 'pdo', null))
-                                ->thenInvalid('The %s session handler is not supported')
-                            ->end()
-                        ->end()
-                        ->scalarNode('storage')
-                            ->defaultValue('handler')
-                            ->validate()
-                                ->ifNotInArray(array('native', 'mock', null))
-                                ->thenInvalid('The %s session storage is not supported')
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-                ->enumNode('editor')
-                    ->values(array('ckeditor', 'tinymce', 'elrte'))->defaultValue('ckeditor')
-                ->end()
-            ->end()
-        ->end()
-        ;
 
         return $treeBuilder;
     }

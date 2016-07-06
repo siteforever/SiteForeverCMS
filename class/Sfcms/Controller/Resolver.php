@@ -12,7 +12,6 @@ use Module\System\Event\ControllerEvent;
 use Sfcms\Controller;
 use ReflectionClass;
 use RuntimeException;
-use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Request;
 use Sfcms_Http_Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -26,7 +25,7 @@ class Resolver
     /** @var \App */
     protected $app;
 
-    public function __construct(AbstractKernel $app)
+    public function __construct(\App $app)
     {
         $this->app = $app;
         $this->_controllers = $app->getControllers();
@@ -176,14 +175,14 @@ class Resolver
                         case 'float':
                             $arguments[$param->name] =
                                 $request->attributes->filter($param->name,
-                                    $request->query->filter($param->name, $default, false, FILTER_VALIDATE_FLOAT),
+                                    $request->query->filter($param->name, $default, FILTER_VALIDATE_FLOAT),
                                     false, FILTER_VALIDATE_FLOAT);
                             break;
                         case 'string':
                             $arguments[$param->name] =
                                 $request->attributes->filter($param->name,
-                                $request->query->filter($param->name, $default, false, FILTER_SANITIZE_STRING),
-                                false, FILTER_SANITIZE_STRING);
+                                    $request->query->filter($param->name, $default, FILTER_SANITIZE_STRING),
+                                FILTER_SANITIZE_STRING);
                             break;
                         default:
                             $arguments[$param->name] = $request->get($param->name, $default);

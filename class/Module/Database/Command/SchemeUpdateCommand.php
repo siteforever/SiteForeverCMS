@@ -7,9 +7,9 @@ namespace Module\Database\Command;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
 use Sfcms\Console\Command;
+use Sfcms\Data\AbstractField;
 use Sfcms\Data\DataManager;
 use Sfcms\Data\Field;
-use Sfcms\db;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -38,7 +38,7 @@ class SchemeUpdateCommand extends Command
         $container = $this->getContainer();
 
         /** @var Connection $conn */
-        $conn = $container->get('doctrine.connection');
+        $conn = $container->get('database_connection');
 
         $schemeManager = $conn->getSchemaManager();
 
@@ -55,14 +55,14 @@ class SchemeUpdateCommand extends Command
         foreach ($dataManager->getModelList() as $config) {
             $model = $dataManager->getModel($config['id']);
             $class = $model->objectClass();
-            /** @var Field[] $fields */
+            /** @var AbstractField[] $fields */
             $fields  = call_user_func(array($class, 'fields'));
             $pk = call_user_func(array($class, 'pk'));
             $keys = call_user_func(array($class, 'keys'));
             $tableName = call_user_func(array($class, 'table'));
             $table = $schema->createTable($tableName);
             foreach ($fields as $field) {
-                $column = $table->addColumn($field->getName(), Field::$types[get_class($field)], []);
+                $column = $table->addColumn($field->getName(), AbstractField::$types[get_class($field)], []);
                 if (preg_match('/^(\d+),(\d+)$/', $field->getLength(), $m)) {
                     $column->setPrecision($m[1]);
                     $column->setScale($m[2]);

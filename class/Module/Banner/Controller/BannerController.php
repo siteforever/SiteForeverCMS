@@ -11,6 +11,7 @@ use Module\Banner\Object\Banner;
 use Module\Banner\Model\CategoryModel;
 use Sfcms\Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class BannerController extends Controller
 {
@@ -70,7 +71,7 @@ class BannerController extends Controller
         /** @var $model BannerModel */
         $model = $this->getModel('Banner');
         if (!$id) {
-            return $this->redirect($this->router->createLink('error'));
+            return new NotFoundHttpException();
         }
         /** @var $obj Banner */
         $obj = $model->find($id);

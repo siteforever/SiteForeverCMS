@@ -69,16 +69,16 @@ class Banner extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Int('cat_id'),
-            new Field\Varchar('name', 255),
-            new Field\Varchar('url', 255),
-            new Field\Varchar('path', 255),
-            new Field\Int('count_show'),
-            new Field\Int('count_click'),
-            new Field\Varchar('target', 255),
-            new Field\Text('content'),
-            new Field\Int('deleted', 1, false, 0),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\IntField('cat_id'),
+            new Field\VarcharField('name', 255),
+            new Field\VarcharField('url', 255),
+            new Field\VarcharField('path', 255),
+            new Field\IntField('count_show'),
+            new Field\IntField('count_click'),
+            new Field\VarcharField('target', 255),
+            new Field\TextField('content'),
+            new Field\IntField('deleted', 1, false, 0),
         );
     }
 }

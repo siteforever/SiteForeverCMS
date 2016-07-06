@@ -35,16 +35,11 @@ class TranslatorExtension extends Extension
         $container->setParameter($this->getAlias(), $config);
 
         $locale = $config['locale'];
-        $container->setDefinition(
-            'translator.message.selector',
-            new Definition('Symfony\Component\Translation\MessageSelector')
-        );
-        $transDefinition = new Definition(
-            'Module\Translator\Component\TranslatorComponent',
-            array($locale, new Reference('translator.message.selector'))
-        );
+        $transDefinition = $container->getDefinition('sfcms.translator');
+        $transDefinition->setArguments(array($locale, new Reference('translator.message.selector')));
+
         if (!empty($config['fallback'])) {
-            $transDefinition->addMethodCall('setFallbackLocale', array(array($config['fallback'])));
+            $transDefinition->addMethodCall('setFallbackLocales', array(array($config['fallback'])));
         }
         $i18n = $container->getDefinition('i18n');
         $i18n->addMethodCall('setLocale', array(LC_ALL, "en_US.UTF-8", "en_US", "English", "C"));
@@ -54,7 +49,6 @@ class TranslatorExtension extends Extension
                 $i18n->addMethodCall('setLocale', array(LC_TIME & LC_MONETARY & LC_COLLATE & LC_CTYPE, "rus", "ru_RU.UTF-8", "Russia"));
                 break;
         }
-        $container->setDefinition('translator', $transDefinition);
     }
 
     public function getAlias()

@@ -6,11 +6,10 @@
 
 namespace Module\Smarty\DependencyInjection\Compiler;
 
-
-use Sfcms\Kernel\AbstractKernel;
 use Sfcms\Module;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 
 class ResolveViewPathPass implements CompilerPassInterface
 {
@@ -23,14 +22,11 @@ class ResolveViewPathPass implements CompilerPassInterface
     {
         $config = $container->getParameter('template');
 
-        /** @var AbstractKernel $kernel */
-        $kernel = $container->get('app');
-
-        $modules = $kernel->getModules();
+        $modules = $container->getParameter('kernel.modules');
         $tplDefinition = $container->getDefinition('tpl');
 
         $theme  = $config['theme'];
-        $themeCat = ROOT . "/themes/{$theme}/templates";
+        $themeCat = $container->getParameter('kernel.root_dir') . "/../themes/{$theme}/templates";
 
         if (is_dir($themeCat)) {
             $tplDefinition->addMethodCall('addTplDir', array($themeCat));
@@ -38,9 +34,11 @@ class ResolveViewPathPass implements CompilerPassInterface
             throw new \RuntimeException(sprintf('Theme "%s" not found', $theme));
         }
 
-        /** @var Module $module */
-        foreach($modules as $module) {
-            $path = $module->getPath();
+        /** @var string $moduleClass */
+        foreach($modules as $moduleName => $moduleClass) {
+            $reflectionClass = new \ReflectionClass($moduleClass);
+            $path = dirname($reflectionClass->getFileName());
+
             if (is_dir($path . '/View')) {
                 $tplDefinition->addMethodCall('addTplDir', array($path . '/View'));
             }
@@ -48,5 +46,20 @@ class ResolveViewPathPass implements CompilerPassInterface
                 $tplDefinition->addMethodCall('addWidgetsDir', array($path . '/Widget'));
             }
         }
+
+        // Registering service-plugins
+        $list = $container->findTaggedServiceIds('smarty.plugin');
+        $smartyDifinition = $container->getDefinition('smarty');
+
+        foreach ($list as $serviceId => $tags) {
+            $serviceReference = new Reference($serviceId);
+            foreach ($tags as $tag) {
+                $smartyDifinition->addMethodCall(
+                    'registerPlugin',
+                    array($tag['type'], $tag['plugin'], array($serviceReference, $tag['method']))
+                );
+            }
+        }
+
     }
 }

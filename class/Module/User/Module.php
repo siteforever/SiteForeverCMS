@@ -8,7 +8,7 @@ namespace Module\User;
 use Sfcms\Model;
 use Sfcms\Module as SfModule;
 use Symfony\Component\Routing\Route;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouteCollection;
 
 class Module extends SfModule
 {
@@ -16,7 +16,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => array(
@@ -39,9 +39,9 @@ class Module extends SfModule
         );
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
+        $routes = new RouteCollection();
         $routes->add('user',
             new Route('/user',
                 array('_controller'=>'user', '_action'=>'index')
@@ -86,6 +86,8 @@ class Module extends SfModule
             new Route('/user/password',
                 array('_controller'=>'user', '_action'=>'password')
             ));
+
+        return $routes;
     }
 
 

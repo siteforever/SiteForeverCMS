@@ -8,10 +8,10 @@
     {foreach from=$list item="item"}
     <article>
         <div class="well">
-            <h4>{a href=$item->url}{$item.title|default:$item.name}{/a}</h4>
+            <h4>{a href=$item->url alias=$item->alias}{$item.title|default:$item.name}{/a}</h4>
             <p><strong>{$item.date|date_format:"%x"}</strong></p>
             <div>{$item.notice}</div>
-            <div class="right">{a href=$item->url}подробнее...{/a}</div>
+            <div class="right">{a href=$item->url alias=$item->alias}подробнее...{/a}</div>
         </div>
     </article>
     {foreachelse}

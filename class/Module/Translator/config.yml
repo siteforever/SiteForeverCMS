@@ -1,4 +1,11 @@
 services:
+    translator.message.selector:
+        class: Symfony\Component\Translation\MessageSelector
+
+    sfcms.translator:
+        class: Module\Translator\Component\TranslatorComponent
+        arguments: ['ru']
+
     i18n:
         class: Sfcms\i18n
-        arguments: ["@translator", "%root%/static/i18n", "%debug%"]
+        arguments: ["@sfcms.translator", "%kernel.root_dir%/../static/i18n", "%kernel.debug%"]

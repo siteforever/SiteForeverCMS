@@ -5,8 +5,7 @@
  */
 namespace Sfcms\View;
 
-use Sfcms\Kernel\AbstractKernel as Application;
-use Sfcms\Request;
+use App as Application;
 use Sfcms\Tpl\Driver;
 use Sfcms\Kernel\KernelEvent;
 

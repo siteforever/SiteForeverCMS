@@ -10,6 +10,7 @@ namespace Module\System\Subscriber;
 
 use Module\System\Event\ControllerEvent;
 use Sfcms\Data\DataManager;
+use Sfcms\Data\Object;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ControllerSubscriber implements EventSubscriberInterface
@@ -61,7 +62,7 @@ class ControllerSubscriber implements EventSubscriberInterface
     public function onBefore(ControllerEvent $event)
     {
         $request    = $event->getRequest();
-        $pageId     = $request->get('_id', 0);
+        $pageId     = $request->get('page_id', 0);
         $controller = $request->getController();
         $action     = $request->getAction();
 
@@ -74,7 +75,7 @@ class ControllerSubscriber implements EventSubscriberInterface
             }
         }
 
-        if (null !== $pageObj) {
+        if ($pageObj instanceof Object) {
             // Если страница указана как объект, то в нее нельзя сохранять левые данные
             $request->setTemplate($pageObj->get('template'));
             $request->setTitle($pageObj->get('title'));

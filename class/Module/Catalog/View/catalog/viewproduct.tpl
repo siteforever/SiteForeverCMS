@@ -2,9 +2,9 @@
     <div class="row-fluid">
         {if $item.image}
         <div class="span3">
-            {a title=$item.title href=$item.image rel=$item.id class="photo gallery thumbnail"}
+            <a title={$item.title} href={$item.image} rel=$item.id class="photo gallery thumbnail">
                 {thumb width=200 height=200 alt=$item.title src=$item.thumb name=$item.image class="img-rounded" color="ffffff"}
-            {/a}
+            </a>
             <div class="vspacer5">&nbsp;</div>
             {foreach $item->Gallery as $img}{if not $img.main}<a title="{$item.title}" href="{$img.image}" class="gallery" rel="{$item.id}">{thumb src=$img.thumb name=$img.image width=50 height=50 alt=$item.title}</a>{/if}{/foreach}
         </div>
@@ -21,7 +21,7 @@
 
             <h1>{$item.title}</h1>
 
-            {if $item.articul}<div>{'Article'|trans:[]:'catalog'}: <span>{$item.articul}</span></div>{/if}
+            {if $item.articul}<div>{'Article'|trans:catalog:[]}: <span>{$item.articul}</span></div>{/if}
 
             {if $item->Manufacturer}
             <div class="b-catalog-product-properties-item">

@@ -3,7 +3,7 @@ parameters:
 services:
     market.dashbord.subscriber:
         class: Module\Market\Subscriber\DashboardSubscriber
-        arguments: [ @tpl, @data.manager ]
+        arguments: [ "@tpl", "@data.manager" ]
         tags:
             - { name: event.subscriber }
 
@@ -18,7 +18,7 @@ services:
             - "@data.manager"
             - "@logger"
             - "@tpl"
-            - "@event.dispatcher"
+            - "@event_dispatcher"
             - "%admin%"
             - "%sitename%"
         tags:

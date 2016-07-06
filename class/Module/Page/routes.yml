@@ -6,9 +6,9 @@ sitemap_xml:
     path: /sitemap.xml
     defaults: {controller: page:sitemap:xml}
 
-page/index:
-    path: /
-    defaults: {controller: page:page, _id: 1}
+#page/index:
+#    path: /
+#    defaults: {controller: page:page, _id: 1}
 
 page/admin:
     path: /page/admin

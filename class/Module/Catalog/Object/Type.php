@@ -8,8 +8,8 @@ namespace Module\Catalog\Object;
 
 use Sfcms\Data\Collection;
 use Sfcms\Data\Object;
-use Sfcms\Data\Field\Int;
-use Sfcms\Data\Field\Varchar;
+use Sfcms\Data\Field\IntField;
+use Sfcms\Data\Field\VarcharField;
 
 /**
  * @property int $id
@@ -25,8 +25,8 @@ class Type extends Object
     protected static function doFields()
     {
         return array(
-            new Int('id', 11, false, null, true),
-            new Varchar('name', 250, true, null, false),
+            new IntField('id', 11, false, null, true),
+            new VarcharField('name', 250, true, null, false),
         );
     }
 

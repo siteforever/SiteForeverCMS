@@ -19,5 +19,5 @@ function smarty_function_link( $params )
         $url = $params['url'];
         unset($params['url']);
     }
-    return App::cms()->getRouter()->createLink( $url, $params );
+    return Sfcms::html()->url( $url, $params );
 }

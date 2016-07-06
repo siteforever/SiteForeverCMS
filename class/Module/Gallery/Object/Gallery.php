@@ -66,11 +66,7 @@ class Gallery extends Object
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
         $page = $pageModel->findByControllerLink('gallery', $this->category_id);
-        if ( null !== $page ) {
-            return $page->alias . '/' . $this->alias;
-        } else {
-            return $this->alias;
-        }
+        return $page ? $page->alias : 'gallery';
     }
 
     /**
@@ -102,17 +98,17 @@ class Gallery extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Int( 'category_id', 11, true, null, false ),
-            new Field\Varchar( 'alias', 250, true, null, false ),
-            new Field\Varchar( 'name', 250, true, null, false ),
-            new Field\Varchar( 'link', 250, true, null, false ),
-            new Field\Text( 'description', 11, true, null, false ),
-            new Field\Varchar( 'image', 250, true, null, false ),
-            new Field\Int( 'pos', 11, true, null, false ),
-            new Field\Tinyint( 'main', 1, true, 0 ),
-            new Field\Tinyint( 'hidden', 1, true, 0 ),
-            new Field\Tinyint( 'deleted', 1, true, 0 ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\IntField( 'category_id', 11, true, null, false ),
+            new Field\VarcharField( 'alias', 250, true, null, false ),
+            new Field\VarcharField( 'name', 250, true, null, false ),
+            new Field\VarcharField( 'link', 250, true, null, false ),
+            new Field\TextField( 'description', 11, true, null, false ),
+            new Field\VarcharField( 'image', 250, true, null, false ),
+            new Field\IntField( 'pos', 11, true, null, false ),
+            new Field\TinyintField( 'main', 1, true, 0 ),
+            new Field\TinyintField( 'hidden', 1, true, 0 ),
+            new Field\TinyintField( 'deleted', 1, true, 0 ),
         );
     }
 

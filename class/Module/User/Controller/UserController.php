@@ -484,7 +484,7 @@ class UserController extends Controller
                         'pass'      => $pass,
                         'login'     => $user['login'],
                         'sitename'  => $this->app->getContainer()->getParameter('sitename'),
-                        'loginform' => $this->request->getSchemeAndHttpHost() . $this->router->createLink("user/login")
+                        'loginform' => $this->request->getSchemeAndHttpHost() . $this->router->generate("user/login")
                     ));
 
                     $this->sendmail(

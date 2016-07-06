@@ -1,81 +1,117 @@
 {
-    "name" : "siteforever/site-forever-cms",
-    "description": "Simple CMS for PHP and MySQL",
-    "keywords": [ "siteforever", "cms", "smarty", "php", "keltanas", "firetroop" ],
-    "homepage": "http://siteforever.ru",
-    "license": "MIT",
-    "authors" : [
-        {
-            "name" : "Nikolay A. Ermin",
-            "email" : "keltanas@gmail.com",
-            "homepage": "http://ermin.ru",
-            "role": "Developer"
-        }
+  "name": "siteforever/site-forever-cms",
+  "description": "Simple CMS for PHP and MySQL",
+  "keywords": [
+    "siteforever",
+    "cms",
+    "smarty",
+    "php",
+    "keltanas",
+    "firetroop"
+  ],
+  "homepage": "http://siteforever.ru",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nikolay A. Ermin",
+      "email": "keltanas@gmail.com",
+      "homepage": "http://ermin.ru",
+      "role": "Developer"
+    }
+  ],
+  "support": {
+    "email": "keltanas@gmail.com",
+    "source": "https://github.com/siteforever/SiteForeverCMS",
+    "issues": "https://github.com/siteforever/SiteForeverCMS/issues",
+    "wiki": "http://wiki.siteforever.ru"
+  },
+  "autoload": {
+    "psr-0": {
+      "": [
+        "class/"
+      ],
+      "Sfcms": "class/",
+      "Module": [
+        "class/"
+      ],
+      "Forms": [
+        "class/"
+      ]
+    }
+  },
+  "include-path": [
+    "./",
+    "class/"
+  ],
+  "require-dev": {
+    "behat/behat": "~3.0",
+    "behat/mink-extension": "~2.0",
+    "behat/mink": "~1.5",
+    "behat/mink-browserkit-driver": "1.1.*",
+    "behat/mink-goutte-driver": "1.0.*",
+    "behat/mink-selenium2-driver": "~1.1",
+    "phpunit/php-invoker": "1.1.*",
+    "phpunit/phpunit": "3.7.*",
+    "phpunit/phpunit-mock-objects": "1.2.*",
+    "phpunit/php-code-coverage": "1.2.*",
+    "phpunit/php-file-iterator": "1.3.*"
+  },
+  "require": {
+    "php": ">=5.5",
+    "symfony/symfony": "~2.7",
+    "symfony/proxy-manager-bridge": "~2.5",
+    "doctrine/common": "~2.6",
+    "doctrine/dbal": "~2.5",
+    "doctrine/cache": "~1.6",
+    "doctrine/migrations": "~1.3",
+    "symfony/swiftmailer-bundle": "~2.3",
+    "symfony/monolog-bundle": "~2.4",
+    "symfony-cmf/routing-bundle": "~1.2",
+    "sensio/distribution-bundle": "~5.0",
+    "sensio/framework-extra-bundle": "~3.0",
+    "sensio/generator-bundle": "~2.3",
+    "doctrine/orm": "~2.4",
+    "doctrine/doctrine-bundle": "~1.2",
+    "doctrine/doctrine-migrations-bundle": "~1.0",
+    "noiselabs/smarty-bundle": "~1.3",
+    "smarty/smarty": "3.1.19",
+    "incenteev/composer-parameter-handler": "~2.0",
+    "monolog/monolog": "~1.6",
+    "swiftmailer/swiftmailer": "~5.0",
+    "studio-42/elfinder": "~2.1"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
     ],
-    "support" : {
-        "email" : "keltanas@gmail.com",
-        "source" : "https://github.com/siteforever/SiteForeverCMS",
-        "issues" : "https://github.com/siteforever/SiteForeverCMS/issues",
-        "wiki" : "http://wiki.siteforever.ru"
+    "post-update-cmd": [
+      "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+      "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets"
+    ]
+  },
+  "config": {
+    "bin-dir": "bin"
+  },
+  "minimum-stability": "stable",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.8-dev"
     },
-    "autoload": {
-        "psr-0" : {
-            "" : ["class/"],
-            "Sfcms" : "class/",
-            "Module" : ["class/"],
-            "Forms" : ["class/"]
-        }
-    },
-    "include-path": ["./", "class/"],
-    "require-dev": {
-        "behat/behat": "~3.0",
-        "behat/mink-extension": "~2.0",
-        "behat/mink": "~1.5",
-        "behat/mink-browserkit-driver": "1.1.*",
-        "behat/mink-goutte-driver": "1.0.*",
-        "behat/mink-selenium2-driver": "~1.1",
-        "phpunit/php-invoker": "1.1.*",
-        "phpunit/phpunit": "3.7.*",
-        "phpunit/phpunit-mock-objects": "1.2.*",
-        "phpunit/php-code-coverage": "1.2.*",
-        "phpunit/php-file-iterator": "1.3.*"
-    },
-    "require": {
-        "php": ">=5.5",
-        "symfony/symfony": "~2.7",
-        "doctrine/common": "~2.6",
-        "doctrine/dbal": "~2.5",
-        "doctrine/cache": "~1.6",
-        "doctrine/migrations": "~1.3",
-        "smarty/smarty": "3.1.19",
-        "incenteev/composer-parameter-handler": "~2.0",
-        "monolog/monolog": "~1.6",
-        "swiftmailer/swiftmailer": "~5.0",
-        "studio-42/elfinder": "~2.1"
-    },
-    "scripts": {
-        "post-install-cmd": [
-            "Sfcms\\ComposerHandler::install",
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sfcms\\ComposerHandler::execute"
-        ],
-        "post-update-cmd": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sfcms\\ComposerHandler::execute"
-        ]
-    },
-    "config": {
-        "bin-dir": "bin"
-    },
-    "minimum-stability": "stable",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.7-dev"
-        },
-        "incenteev-parameters": {
-            "file": "app/parameters.yml",
-            "dist-file": "app/parameters.yml.dist"
-        }
-    },
-    "bin": ["bin/console"]
+    "symfony-app-dir": "app",
+    "symfony-web-dir": "./",
+    "symfony-bin-dir": "bin",
+    "symfony-var-dir": "var",
+    "incenteev-parameters": {
+      "file": "app/config/parameters.yml",
+      "dist-file": "app/config/parameters.yml.dist"
+    }
+  },
+  "bin": [
+    "bin/console"
+  ]
 }

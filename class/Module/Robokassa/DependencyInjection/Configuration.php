@@ -25,7 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('MrchLogin')->defaultValue('%robokassa_mrch_login%')->end()
                 ->scalarNode('MerchantPass1')->defaultValue('%robokassa_merchant_pass1%')->end()
                 ->scalarNode('MerchantPass2')->defaultValue('%robokassa_merchant_pass2%')->end()
-                ->booleanNode('debug')->defaultValue('%debug%')->end()
+                ->booleanNode('debug')->defaultValue('%kernel.debug%')->end()
             ->end()
         ;
 

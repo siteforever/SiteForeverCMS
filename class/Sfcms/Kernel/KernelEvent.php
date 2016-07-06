@@ -13,9 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class KernelEvent extends Event
 {
-    const KERNEL_RESPONSE = 'kernel.response';
+    const KERNEL_RESPONSE = 'kernel.sfcms.response';
 
-    const KERNEL_TERMINATE = 'kernel.terminate';
+    const KERNEL_RESPONSE_SENT = 'kernel.sfcms.terminate';
 
     /** @var Response */
     protected $response;

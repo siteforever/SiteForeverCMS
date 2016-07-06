@@ -7,11 +7,11 @@
         <li>{strip}
         {if $category.target != '_none'}
             {if $category.target == '_gallery' && $img.link == ''}
-                <a href="{link url=$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
+                <a href="{$img.image}" class="gallery" title="{$img.name}" rel="gallery" target="_blank">
             {elseif $category.target == '_self'}
-                <a href="{link url=$img->url}">
+                <a href="{link url=$img->url alias=$img->alias}">
             {else}
-                <a href="{link url={$img.link|default:$img.image}}" title="{$img.name}" target="{$category.target}">
+                <a href="{$img.image}" title="{$img.name}" target="{$category.target}">
             {/if}
         {/if}
         {thumb src=$img.image alt=$img.name width=$category.thumb_width height=$category.thumb_height method=$category.thumb_method color=$category.color}

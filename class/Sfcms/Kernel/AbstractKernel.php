@@ -15,6 +15,7 @@ use Sfcms\Model;
 use Sfcms\Module;
 use Sfcms\DeliveryManager;
 use Sfcms\Request;
+use Sfcms\View\Layout;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
@@ -23,15 +24,22 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Sfcms\Router;
 use Sfcms\Auth;
 use Sfcms\Tpl\Driver;
-
 use Sfcms\Basket\Base as Basket;
-
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Sfcms\Data\Watcher;
+use Sfcms\View\Xhr;
+use Sfcms\Model\Exception as ModelException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Stopwatch\Stopwatch;
+
 
 abstract class AbstractKernel
 {
@@ -104,14 +112,6 @@ abstract class AbstractKernel
     }
 
     abstract public function run(Request $request = null);
-
-    abstract public function handleRequest(Request $request);
-
-    abstract public function getContainerCacheFile();
-
-    abstract public function getLogsPath();
-
-    abstract public function getCachePath();
 
     public function __construct($env, $debug = false)
     {
@@ -251,6 +251,127 @@ abstract class AbstractKernel
     }
 
     /**
+     * @return string
+     */
+    public function getContainerCacheFile()
+    {
+        return $this->getCachePath() . sprintf('/container_%s.php', $this->getEnvironment());
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogsPath()
+    {
+        return ROOT . '/runtime/logs';
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePath()
+    {
+        return ROOT . '/runtime/cache/' . $this->getEnvironment();
+    }
+
+    public function redirectListener(KernelEvent $event)
+    {
+        if ($event->getResponse() instanceof RedirectResponse) {
+            $event->stopPropagation();
+        }
+    }
+
+    /**
+     * Handle request
+     * @param Request $request
+     *
+     * @return Response
+     * @throws Exception
+     */
+    public function handleRequest(Request $request = null)
+    {
+        $this->getLogger()->log(str_repeat('-', 80));
+        $this->getLogger()->log(sprintf('---%\'--74s---', $request->getRequestUri()));
+        $this->getLogger()->log(str_repeat('-', 80));
+
+        $this->getContainer()->set('request', $request);
+        $this->getAuth()->setRequest($request);
+        $acceptableContentTypes = $request->getAcceptableContentTypes();
+        $format = null;
+        if ($acceptableContentTypes) {
+            $format = $request->getFormat($acceptableContentTypes[0]);
+        }
+        $request->setRequestFormat($format);
+        $request->setDefaultLocale($this->getContainer()->getParameter('locale'));
+
+        static::$init_time = microtime(1) - static::$start_time;
+        static::$controller_time = microtime(1);
+
+        $result = null;
+        /** @var Response $response */
+        $response = null;
+        try {
+            $container = $this->getContainer();
+            $tpl = $this->getTpl();
+            $tpl->assign([
+                    'sitename' => $container->getParameter('sitename'),
+                    'debug' => $container->getParameter('kernel.debug'),
+                ]);
+            $this->getRouter()->setRequest($request)->routing();
+            $result = $this->getResolver()->dispatch($request);
+        } catch (HttpException $e) {
+            $this->getLogger()->error($e->getMessage());
+            switch ($request->getContentType()) {
+                case 'json':
+                    $response = new JsonResponse(array('error'=>1, 'msg'=>$e->getMessage()), $e->getStatusCode() ?: 500);
+                    break;
+                default:
+                    $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
+            }
+        } catch (\Exception $e) {
+            $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
+            if ($this->isDebug()) {
+                throw $e;
+            } else {
+                switch ($request->getContentType()) {
+                    case 'json':
+                        return new JsonResponse(array('error'=>1, 'msg'=>'Site error'), 500);
+                }
+                return new Response('Site error', 500);
+            }
+        }
+
+        if (!$response && is_string($result)) {
+            $response = new Response($result);
+        } elseif ($result instanceof Response) {
+            $response = $result;
+        } elseif (!$response) {
+            $response = new Response();
+        }
+
+        static::$controller_time = microtime(1) - static::$controller_time;
+
+        $event = new KernelEvent($response, $request, $result);
+        $this->getEventDispatcher()->dispatch(KernelEvent::KERNEL_RESPONSE, $event);
+
+        // Выполнение операций по обработке объектов
+        try {
+            Watcher::instance()->performOperations();
+        } catch (ModelException $e) {
+            $this->getLogger()->error($e->getMessage(), $e->getTrace());
+            $response->setStatusCode(500);
+            $response->setContent($e->getMessage());
+        } catch (PDOException $e) {
+            $this->getLogger()->error($e->getMessage(), $e->getTrace());
+            $response->setStatusCode(500);
+            $response->setContent($e->getMessage());
+        }
+
+        return $event->getResponse();
+    }
+
+
+    /**
      * Защита от ошибок сериализации.
      * Иногда возникают во время тестов.
      * @return array
@@ -266,19 +387,6 @@ abstract class AbstractKernel
     public function getContainer()
     {
         return $this->_container;
-    }
-
-    /**
-     * @static
-     * @throws Exception
-     * @return AbstractKernel
-     */
-    static public function cms()
-    {
-        if (null === self::$instance) {
-            throw new Exception('Application NOT instanced');
-        }
-        return self::$instance;
     }
 
     /**
@@ -378,7 +486,7 @@ abstract class AbstractKernel
      */
     public function getResolver()
     {
-        return $this->getContainer()->get('resolver');
+        return $this->getContainer()->get('sfcms.resolver');
     }
 
     /**

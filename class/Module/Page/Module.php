@@ -21,17 +21,16 @@ class Module extends SfModule
         return 'id';
     }
 
-    public function loadExtensions(ContainerBuilder $container)
+    public function build(ContainerBuilder $container)
     {
         $container->registerExtension(new PageExtension());
     }
 
-    public function registerRoutes(Router $router)
+    public function registerRoutes()
     {
-        $routes = $router->getRouteCollection();
         $locator = new FileLocator(__DIR__);
         $loader = new YamlFileLoader($locator);
-        $routes->addCollection($loader->load('routes.yml'));
+        return $loader->load('routes.yml');
     }
 
 
@@ -39,7 +38,7 @@ class Module extends SfModule
      * Должна вернуть массив конфига для модуля
      * @return mixed
      */
-    public function config()
+    public static function config()
     {
         return array(
             'controllers' => [

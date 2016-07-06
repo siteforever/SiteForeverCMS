@@ -120,19 +120,19 @@ class Category extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Varchar( 'name', 250, true, null, false ),
-            new Field\Tinyint( 'middle_method', 4, false, 1 ),
-            new Field\Int( 'middle_width', 11, false, 200 ),
-            new Field\Int( 'middle_height', 11, false, 200 ),
-            new Field\Tinyint( 'thumb_method', 4, false, 1 ),
-            new Field\Int( 'thumb_width', 11, false, 100 ),
-            new Field\Int( 'thumb_height', 11, false, 100 ),
-            new Field\Varchar('target', 10),
-            new Field\Varchar('image', 250),
-            new Field\Int( 'perpage', 11, true, null, false ),
-            new Field\Varchar( 'color', 20, true, null, false ),
-            new Field\Tinyint( 'deleted', 1, true, 0 ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\VarcharField( 'name', 250, true, null, false ),
+            new Field\TinyintField( 'middle_method', 4, false, 1 ),
+            new Field\IntField( 'middle_width', 11, false, 200 ),
+            new Field\IntField( 'middle_height', 11, false, 200 ),
+            new Field\TinyintField( 'thumb_method', 4, false, 1 ),
+            new Field\IntField( 'thumb_width', 11, false, 100 ),
+            new Field\IntField( 'thumb_height', 11, false, 100 ),
+            new Field\VarcharField('target', 10),
+            new Field\VarcharField('image', 250),
+            new Field\IntField( 'perpage', 11, true, null, false ),
+            new Field\VarcharField( 'color', 20, true, null, false ),
+            new Field\TinyintField( 'deleted', 1, true, 0 ),
         );
     }
 
