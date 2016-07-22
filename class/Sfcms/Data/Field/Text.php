@@ -12,6 +12,8 @@ use Sfcms\Data\Field;
 
 class Text extends Field
 {
+    protected $length = 65535;
+
     /**
      * Проверит значение на правильность
      * @var mixed $value Значение

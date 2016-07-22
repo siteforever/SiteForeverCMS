@@ -8,6 +8,14 @@
 
 namespace Sfcms\Data;
 
+use Sfcms\Data\Field\Blob;
+use Sfcms\Data\Field\Datetime;
+use Sfcms\Data\Field\Decimal;
+use Sfcms\Data\Field\Int;
+use Sfcms\Data\Field\Text;
+use Sfcms\Data\Field\Tinyint;
+use Sfcms\Data\Field\Varchar;
+
 abstract class Field
 {
     protected $name;
@@ -17,13 +25,13 @@ abstract class Field
     protected $autoincrement;
 
     public static $types = [
-        'Sfcms\Data\Field\Datetime' => 'datetime',
-        'Sfcms\Data\Field\Decimal' => 'decimal',
-        'Sfcms\Data\Field\Int' => 'integer',
-        'Sfcms\Data\Field\Tinyint' => 'integer',
-        'Sfcms\Data\Field\Text' => 'text',
-        'Sfcms\Data\Field\Blob' => 'blob',
-        'Sfcms\Data\Field\Varchar' => 'string',
+        Datetime::class => 'datetime',
+        Decimal::class => 'decimal',
+        Int::class => 'integer',
+        Tinyint::class => 'integer',
+        Text::class => 'text',
+        Blob::class => 'blob',
+        Varchar::class => 'string',
     ];
 
     /**
@@ -37,7 +45,9 @@ abstract class Field
     public function __construct($name, $length = 11, $notnull = false, $default = null, $autoincrement = false)
     {
         $this->name     = $name;
-        $this->length   = $length;
+        if (null === $this->length) {
+            $this->length = $length;
+        }
         $this->null     = ! $notnull;
         $this->default  = $default;
         $this->autoincrement    = $autoincrement;
