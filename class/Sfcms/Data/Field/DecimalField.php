@@ -8,10 +8,9 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\AbstractField;
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
-class DecimalField extends AbstractField
+class DecimalField extends AbstractDataField
 {
 
     /**

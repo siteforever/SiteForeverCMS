@@ -15,7 +15,7 @@
 namespace Sfcms\Data;
 
 use Sfcms\Component;
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
 abstract class Table extends Component
 {
@@ -98,12 +98,12 @@ abstract class Table extends Component
      *
      * @param $name
      *
-     * @return null|AbstractField
+     * @return null|AbstractDataField
      */
     public function field($name)
     {
         $fields = static::fields();
-        /** @var $field AbstractField */
+        /** @var $field AbstractDataField */
         foreach ($fields as $field) {
             if ($field->getName() == $name) {
                 return $field;

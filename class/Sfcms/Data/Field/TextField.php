@@ -1,6 +1,6 @@
 <?php
 /**
- * Поле типа Text
+ * Поле типа TextField
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
@@ -8,11 +8,12 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\AbstractField;
 use Sfcms\Data\Field;
 
-class TextField extends AbstractField
+class TextField extends AbstractDataField
 {
+    protected $length = 65535;
+
     /**
      * Проверит значение на правильность
      * @var mixed $value Значение

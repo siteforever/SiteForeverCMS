@@ -1,6 +1,6 @@
 <?php
 /**
- * Поле типа Blob
+ * Поле типа BlobField
  * @author Nikolay Ermin (nikolay@ermin.ru)
  * @link http://ermin.ru
  * @link http://siteforever.ru
@@ -8,10 +8,9 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\AbstractField;
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
-class BlobField extends AbstractField
+class BlobField extends AbstractDataField
 {
     /**
      * Проверит значение на правильность

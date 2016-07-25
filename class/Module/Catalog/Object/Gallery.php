@@ -14,10 +14,10 @@
  */
 namespace Module\Catalog\Object;
 
-use Sfcms\Data\Object;
 use Sfcms\Data\Field\IntField;
-use Sfcms\Data\Field\VarcharField;
 use Sfcms\Data\Field\TinyintField;
+use Sfcms\Data\Field\VarcharField;
+use Sfcms\Data\Object;
 
 class Gallery extends Object
 {

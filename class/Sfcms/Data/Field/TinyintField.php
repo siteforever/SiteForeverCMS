@@ -8,8 +8,6 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\Field;
-
 class TinyintField extends IntField
 {
     /**
