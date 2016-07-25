@@ -31,17 +31,17 @@ class Guestbook extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Int( 'link', 11, true, null, false ),
-            new Field\Varchar( 'name', 250, true, null, false ),
-            new Field\Varchar( 'email', 250, true, null, false ),
-            new Field\Varchar( 'site', 250, true, null, false ),
-            new Field\Varchar( 'city', 250, true, null, false ),
-            new Field\Int( 'date', 11, true, null, false ),
-            new Field\Varchar( 'ip', 15, true, null, false ),
-            new Field\Text( 'message', 11, true, null, false ),
-            new Field\Text( 'answer', 11, true, null, false ),
-            new Field\Tinyint( 'hidden', 1, false, 0 ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\IntField( 'link', 11, true, null, false ),
+            new Field\VarcharField( 'name', 250, true, null, false ),
+            new Field\VarcharField( 'email', 250, true, null, false ),
+            new Field\VarcharField( 'site', 250, true, null, false ),
+            new Field\VarcharField( 'city', 250, true, null, false ),
+            new Field\IntField( 'date', 11, true, null, false ),
+            new Field\VarcharField( 'ip', 15, true, null, false ),
+            new Field\TextField( 'message', 11, true, null, false ),
+            new Field\TextField( 'answer', 11, true, null, false ),
+            new Field\TinyintField( 'hidden', 1, false, 0 ),
         );
     }
 

@@ -22,9 +22,9 @@ class Session extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Varchar('sess_id', 26, true, ''),
-            new Field\Text('sess_data'),
-            new Field\Int('sess_time', 11, true, 0),
+            new Field\VarcharField('sess_id', 26, true, ''),
+            new Field\TextField('sess_data'),
+            new Field\IntField('sess_time', 11, true, 0),
         );
     }
 

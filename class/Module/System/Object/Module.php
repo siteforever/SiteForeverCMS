@@ -28,13 +28,13 @@ class Module extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Varchar( 'name', 250, false, null, false ),
-            new Field\Varchar( 'path', 250, false, null, false ),
-            new Field\Blob( 'config', 11, false, null, false ),
-            new Field\Text( 'desc', 11, false, null, false ),
-            new Field\Int( 'pos', 11, false, null, false ),
-            new Field\Int( 'active', 11, false, null, false ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\VarcharField( 'name', 250, false, null, false ),
+            new Field\VarcharField( 'path', 250, false, null, false ),
+            new Field\BlobField( 'config', 11, false, null, false ),
+            new Field\TextField( 'desc', 11, false, null, false ),
+            new Field\IntField( 'pos', 11, false, null, false ),
+            new Field\IntField( 'active', 11, false, null, false ),
         );
     }
 

@@ -14,7 +14,7 @@
 namespace Module\Catalog\Object;
 
 use Sfcms\Data\Object;
-use Sfcms\Data\Field as TField;
+use Sfcms\Data\Field as DataField;
 
 class Field extends Object
 {
@@ -36,12 +36,12 @@ class Field extends Object
     protected static function doFields()
     {
         return array(
-            new TField\Int( 'id', 11, false, null, true ),
-            new TField\Int( 'product_type_id', 11, false, 0 ),
-            new TField\Varchar( 'type', 250, false, '' ),
-            new TField\Varchar( 'name', 250, false, '' ),
-            new TField\Varchar( 'unit', 250, false, '' ),
-            new TField\Int( 'pos', 11, false, 0 ),
+            new DataField\IntField( 'id', 11, false, null, true ),
+            new DataField\IntField( 'product_type_id', 11, false, 0 ),
+            new DataField\VarcharField( 'type', 250, false, '' ),
+            new DataField\VarcharField( 'name', 250, false, '' ),
+            new DataField\VarcharField( 'unit', 250, false, '' ),
+            new DataField\IntField( 'pos', 11, false, 0 ),
         );
     }
 

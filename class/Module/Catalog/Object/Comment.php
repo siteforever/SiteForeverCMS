@@ -7,7 +7,7 @@
 namespace Module\Catalog\Object;
 
 use Sfcms\Data\Object;
-use Sfcms\Data\Field as DataField;
+use Sfcms\Data\Field;
 
 /**
  * Class Comment
@@ -35,18 +35,18 @@ class Comment extends Object
     protected static function doFields()
     {
         return array(
-            new DataField\Int('id', 11, true, null, true),
-            new DataField\Int('product_id'),
-            new DataField\Varchar('ip', 15),
-            new DataField\Varchar('name', 100),
-            new DataField\Varchar('email', 100),
-            new DataField\Varchar('phone', 100),
-            new DataField\Varchar('subject', 100),
-            new DataField\Text('content'),
-            new DataField\Datetime('createdAt'),
-            new DataField\Datetime('updatedAt'),
-            new DataField\Tinyint('hidden', 1, true, '0'),
-            new DataField\Tinyint('deleted', 1, true, '0'),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\IntField('product_id'),
+            new Field\VarcharField('ip', 15),
+            new Field\VarcharField('name', 100),
+            new Field\VarcharField('email', 100),
+            new Field\VarcharField('phone', 100),
+            new Field\VarcharField('subject', 100),
+            new Field\TextField('content'),
+            new Field\DatetimeField('createdAt'),
+            new Field\DatetimeField('updatedAt'),
+            new Field\TinyintField('hidden', 1, true, '0'),
+            new Field\TinyintField('deleted', 1, true, '0'),
         );
     }
 

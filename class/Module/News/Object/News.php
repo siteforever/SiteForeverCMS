@@ -68,34 +68,34 @@ class News extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Int('cat_id'),
-            new Field\Int('author_id'),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\IntField('cat_id'),
+            new Field\IntField('author_id'),
 
-            new Field\Varchar('alias', 250,true,''),
-            new Field\Varchar('name', 250),
-            new Field\Varchar('image', 250, false, ''),
-            new Field\Tinyint('main', 1, false, 0),
-            new Field\Tinyint('priority', 1, false, 0),
+            new Field\VarcharField('alias', 250,true,''),
+            new Field\VarcharField('name', 250),
+            new Field\VarcharField('image', 250, false, ''),
+            new Field\TinyintField('main', 1, false, 0),
+            new Field\TinyintField('priority', 1, false, 0),
 
-            new Field\Int('date'),
+            new Field\IntField('date'),
 
-            new Field\Text('notice'),
-            new Field\Text('text'),
+            new Field\TextField('notice'),
+            new Field\TextField('text'),
 
-            new Field\Varchar('title', 250),
-            new Field\Varchar('keywords', 250),
-            new Field\Varchar('description', 250),
+            new Field\VarcharField('title', 250),
+            new Field\VarcharField('keywords', 250),
+            new Field\VarcharField('description', 250),
 
-            new Field\Varchar('note', 250),
+            new Field\VarcharField('note', 250),
 
-            new Field\Tinyint('hidden', 1, false, 0),
-            new Field\Tinyint('protected', 1, false, 0),
+            new Field\TinyintField('hidden', 1, false, 0),
+            new Field\TinyintField('protected', 1, false, 0),
 
-            new Field\Datetime('created_at'),
-            new Field\Datetime('updated_at'),
+            new Field\DatetimeField('created_at'),
+            new Field\DatetimeField('updated_at'),
 
-            new Field\Tinyint('deleted', 1, false, 0),
+            new Field\TinyintField('deleted', 1, false, 0),
         );
     }
 

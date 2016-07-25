@@ -60,13 +60,13 @@ class Property extends Object
     protected static function doFields()
     {
         return array(
-            new TField\Int( 'product_id', 11, false, null, false ),
-            new TField\Int( 'product_field_id', 11, false, null, false ),
-            new TField\Varchar( 'value_string', 255, true, null, false ),
-            new TField\Blob( 'value_text', 11, true, null, false ),
-            new TField\Int( 'value_int', 11, true, null, false ),
-            new TField\Datetime( 'value_datetime', 11, true, null, false ),
-            new TField\Int( 'pos', 11, false, 0 ),
+            new TField\IntField( 'product_id', 11, false, null, false ),
+            new TField\IntField( 'product_field_id', 11, false, null, false ),
+            new TField\VarcharField( 'value_string', 255, true, null, false ),
+            new TField\BlobField( 'value_text', 11, true, null, false ),
+            new TField\IntField( 'value_int', 11, true, null, false ),
+            new TField\DatetimeField( 'value_datetime', 11, true, null, false ),
+            new TField\IntField( 'pos', 11, false, 0 ),
         );
     }
 

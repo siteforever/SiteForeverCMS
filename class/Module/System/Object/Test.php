@@ -26,8 +26,8 @@ class Test extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id',11,true,null,true),
-            new Field\Varchar('value'),
+            new Field\IntField('id',11,true,null,true),
+            new Field\VarcharField('value'),
         );
     }
 

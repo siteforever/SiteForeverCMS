@@ -19,10 +19,10 @@ class Settings extends Object
     protected static function doFields()
     {
         return array(
-            //new Field\Int('id', 11, true, null, true),
-            new Field\Varchar('module', 100),
-            new Field\Varchar('property', 100),
-            new Field\Varchar('value', 100),
+            //new Field\IntField('id', 11, true, null, true),
+            new Field\VarcharField('module', 100),
+            new Field\VarcharField('property', 100),
+            new Field\VarcharField('value', 100),
         );
     }
 

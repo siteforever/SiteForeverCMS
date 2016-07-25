@@ -20,8 +20,8 @@ class OrderStatus extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, true, null, true),
-            new Field\Varchar('name', 100),
+            new Field\IntField('id', 11, true, null, true),
+            new Field\VarcharField('name', 100),
         );
     }
 

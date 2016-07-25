@@ -7,9 +7,9 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
-class Datetime extends Field
+class DatetimeField extends AbstractDataField
 {
     /**
      * Вернет строку для вставки в SQL запрос

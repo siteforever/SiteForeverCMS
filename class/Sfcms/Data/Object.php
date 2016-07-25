@@ -8,7 +8,7 @@
 namespace Sfcms\Data;
 
 use Sfcms\Component;
-use Sfcms\Data\Field\Datetime;
+use Sfcms\Data\Field\DatetimeField;
 use Sfcms\Model;
 
 abstract class Object extends Table
@@ -118,7 +118,7 @@ abstract class Object extends Table
         }
 
         $field = $this->field($key);
-        if ($field && $field instanceof Datetime && !$value instanceof \DateTime) {
+        if ($field && $field instanceof DatetimeField && !$value instanceof \DateTime) {
             $value = new \DateTime($value);
         }
 

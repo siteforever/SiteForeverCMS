@@ -31,12 +31,12 @@ class Log extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Int( 'user', 11, true, null, false ),
-            new Field\Varchar( 'object', 250, true, null, false ),
-            new Field\Varchar( 'object_id', 250, true, null, false ),
-            new Field\Varchar( 'action', 250, true, null, false ),
-            new Field\Int( 'timestamp', 11, true, null, false ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\IntField( 'user', 11, true, null, false ),
+            new Field\VarcharField( 'object', 250, true, null, false ),
+            new Field\VarcharField( 'object_id', 250, true, null, false ),
+            new Field\VarcharField( 'action', 250, true, null, false ),
+            new Field\IntField( 'timestamp', 11, true, null, false ),
         );
     }
 

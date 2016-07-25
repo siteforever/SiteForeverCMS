@@ -19,8 +19,8 @@ class Search extends Object
     protected static function doFields()
     {
         return array(
-//            new Field\Int('id'),
-//            new Field\Int('id'),
+//            new Field\IntField('id'),
+//            new Field\IntField('id'),
         );
     }
 

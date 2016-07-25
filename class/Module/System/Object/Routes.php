@@ -19,14 +19,14 @@ class Routes extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int('id', 11, false, null, true),
-            new Field\Int('pos'),
-            new Field\Varchar('alias', 200),
-            new Field\Varchar('controller', 50, true, 'page'),
-            new Field\Varchar('action', 50, true, 'index'),
-            new Field\Tinyint('active'),
-            new Field\Tinyint('protected'),
-            new Field\Tinyint('system'),
+            new Field\IntField('id', 11, false, null, true),
+            new Field\IntField('pos'),
+            new Field\VarcharField('alias', 200),
+            new Field\VarcharField('controller', 50, true, 'page'),
+            new Field\VarcharField('action', 50, true, 'index'),
+            new Field\TinyintField('active'),
+            new Field\TinyintField('protected'),
+            new Field\TinyintField('system'),
         );
     }
 

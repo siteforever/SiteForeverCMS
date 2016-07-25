@@ -575,7 +575,7 @@ abstract class Model extends Component
         $idKeys = array_keys($id);
         $saveData = array();
 
-        /** @var Field $field */
+        /** @var AbstractDataField $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
             if ($state !== DomainObject::STATE_DIRTY
@@ -603,7 +603,7 @@ abstract class Model extends Component
         } else {
             // INSERT
             if (count($id) == 1) {
-                /** @var $field Field */
+                /** @var $field AbstractDataField */
                 $field   = $obj->field($idKeys[0]);
                 $fieldValue = $obj->get($idKeys[0]);
                 if ($field->isAutoIncrement() && (null === $fieldValue || '' === $fieldValue)) {

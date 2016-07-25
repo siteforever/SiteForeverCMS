@@ -25,10 +25,10 @@ class Material extends Object
     protected static function doFields()
     {
         return array(
-            new Field\Int( 'id', 11, false, null, true ),
-            new Field\Varchar( 'name', 255, true, null, false ),
-            new Field\Varchar( 'image', 255, true, null, false ),
-            new Field\Int( 'active', 11, true, null, false ),
+            new Field\IntField( 'id', 11, false, null, true ),
+            new Field\VarcharField( 'name', 255, true, null, false ),
+            new Field\VarcharField( 'image', 255, true, null, false ),
+            new Field\IntField( 'active', 11, true, null, false ),
         );
     }
 
