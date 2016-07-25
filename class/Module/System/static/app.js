@@ -90,21 +90,23 @@ require([
     window.lang = document.getElementsByTagName('html')[0].lang;
 
     $(document).ajaxError(function(event, jqxhr, settings, exception){
-        var errorAjaxDialog = $('#errorAjaxDialog');
-        if (0 == errorAjaxDialog.length) {
-            errorAjaxDialog = $('<div id="errorAjaxDialog"></div>').appendTo('body');
-            errorAjaxDialog.dialog({
-                position: "center",
-                title: "Ajax error",
-                modal: true,
-                autoOpen: false
-            });
+        if (5 == Math.round(event.status / 100)) {
+            var errorAjaxDialog = $('#errorAjaxDialog');
+            if (0 == errorAjaxDialog.length) {
+                errorAjaxDialog = $('<div id="errorAjaxDialog"></div>').appendTo('body');
+                errorAjaxDialog.dialog({
+                    position: "center",
+                    title: "Ajax error",
+                    modal: true,
+                    autoOpen: false
+                });
+            }
+            errorAjaxDialog.html(jqxhr.responseText)
+                .dialog('option', 'width', $(window).width() - 50)
+                .dialog('option', 'height', $(window).height() - 50)
+                .dialog('open');
         }
         $.unblockUI();
-        errorAjaxDialog.html(jqxhr.responseText)
-            .dialog('option', 'width', $(window).width() - 50)
-            .dialog('option', 'height', $(window).height() - 50)
-            .dialog('open');
     });
 
     $.datepicker.regional['ru'] = {

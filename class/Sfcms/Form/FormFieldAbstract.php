@@ -332,7 +332,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
             return true;
         }
 
-        if (!$this->checkValue($this->getValue(), $request)) {
+        if (!$this->checkValue($this->getValue())) {
             $this->error = 3;
             $this->msg   = $this->msg ? : '"%label%" not corresponded specified format';
 

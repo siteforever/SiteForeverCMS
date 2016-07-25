@@ -7,7 +7,6 @@ namespace Sfcms\Kernel;
 
 use App;
 use Module\Market\Object\Order;
-use Sfcms\Cache\CacheInterface;
 use Sfcms\Controller\Resolver;
 use Sfcms\Data\DataManager;
 use Sfcms\LoggerInterface;
@@ -275,6 +274,8 @@ abstract class AbstractKernel
      */
     static public function cms()
     {
+        @trigger_error('Use container for dependencies ejection', E_USER_DEPRECATED);
+
         if (null === self::$instance) {
             throw new Exception('Application NOT instanced');
         }
@@ -289,17 +290,6 @@ abstract class AbstractKernel
     public function getAuth()
     {
         return $this->getContainer()->get('auth');
-    }
-
-    /**
-     * Вернет объект кэша
-     *
-     * @return CacheInterface
-     * @throws Exception
-     */
-    public function getCacheManager()
-    {
-        $this->getContainer()->get('cache');
     }
 
     /**
@@ -333,8 +323,11 @@ abstract class AbstractKernel
      */
     public function getConfig($param)
     {
-        $this->getLogger()->alert('Access to Kernel::getConfig() method');
-        return $this->getContainer()->getParameter($param);
+        @trigger_error('Access to Kernel::getConfig() method', E_USER_DEPRECATED);
+        $this->getLogger()->alert(sprintf('Access to %s(%s) method', __METHOD__, $param));
+        return $this->getContainer()->hasParameter($param)
+            ? $this->getContainer()->getParameter($param)
+            : null;
     }
 
     /**

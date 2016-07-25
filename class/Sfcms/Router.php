@@ -308,6 +308,7 @@ class Router
             $this->getLogger()->info('Start routing', array(
                     'method' => $this->request->getMethod(),
                     'route' => $this->route,
+                    'headers' => $this->request->headers,
                 ));
         }
         // Если контроллер указан явно, то не производить маршрутизацию

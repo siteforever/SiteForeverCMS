@@ -5,16 +5,21 @@
  */
 namespace Module\Page\Controller;
 
+use Module\Page\Form\PageForm;
 use Sfcms\Controller;
 use Module\Page\Model\PageModel;
 use Module\Page\Object\Page;
+use Sfcms\Form\Exception\ValidationException;
 use Sfcms\Form\Form;
 use Sfcms_Http_Exception;
 use Sfcms\Request;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class PageController extends Controller
 {
@@ -47,7 +52,6 @@ class PageController extends Controller
         }
     }
 
-
     /**
      * @return mixed
      * @throws Sfcms_Http_Exception
@@ -56,6 +60,11 @@ class PageController extends Controller
     {
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
+
+        if ('page' != $this->page->controller) {
+            throw new NotFoundHttpException(sprintf('"Page" has not page controller [%s]', $this->page->controller));
+        }
+
         if (!$this->auth->hasPermission($this->page['protected'])) {
             throw new HttpException(403, $this->t('Access denied'));
         }
@@ -64,8 +73,14 @@ class PageController extends Controller
             throw new HttpException(404, $this->t('Page not found'));
         }
 
+        $this->app->getLogger()->debug(__METHOD__, [$this->page->attributes]);
+
         // создаем замыкание страниц (если одна страница указывает на другую)
-        while ($this->page['link']) {
+        $countDown = 3;
+        while ($this->page['link'] && 'page' == $this->page->controller && $countDown) {
+            if ($this->page->id == $this->page->link) {
+                throw new BadRequestHttpException('Page id equals link');
+            }
             $page = $pageModel->find($this->page['link']);
             if (!$this->auth->hasPermission($page['protected'])) {
                 throw new HttpException(403, $this->t('Access denied'));
@@ -74,6 +89,8 @@ class PageController extends Controller
                 return $this->redirect($page['alias']);
             }
             $this->page = $page;
+            $this->app->getLogger()->debug(__METHOD__, [$this->page->attributes]);
+            $countDown--;
         }
 
         if ('page' == $this->page->controller && $this->page['id'] != 1) {
@@ -227,9 +244,11 @@ class PageController extends Controller
         /** @var PageModel $model */
         $model = $this->getModel('Page');
 
+        /** @var PageForm $form */
         $form = $this->get('page.form.edit');
 
         if ($form->handleRequest($this->request)) {
+            $this->app->getLogger()->debug(__FUNCTION__, $form->getData());
             if ($form->validate()) {
                 /** @var $obj Page */
                 if ( $id = $form->getChild('id')->getValue() ) {
@@ -242,9 +261,10 @@ class PageController extends Controller
                     $obj->update = time();
                     $obj->markNew();
                 }
-                return array('error'=>0,'msg'=>$this->t( 'Data save successfully' ));
+                return ['error'=>0,'msg'=>$this->t( 'Data save successfully' )];
             } else {
-                return array('error'=>1,'msg'=>$form->getFeedbackString());
+                $this->app->getLogger()->error('Page Save Validate', $form->getErrors());
+                throw new ValidationException($form->getErrors());
             }
         }
         return array( 'error' => 1, 'msg' => $this->t('Unknown error') );

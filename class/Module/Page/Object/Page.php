@@ -153,6 +153,16 @@ class Page extends Object
         }
     }
 
+    public function getDate()
+    {
+        return isset($this->data['date']) && $this->data['date'] ? $this->data['date'] : time();
+    }
+
+    public function getUpdate()
+    {
+        return isset($this->data['update']) && $this->data['update'] ? $this->data['update'] : time();
+    }
+
     /**
      * Вернет имя таблицы
      * @return string

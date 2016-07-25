@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  *
@@ -39,13 +40,13 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
      */
     public static function getSubscribedEvents()
     {
-        return array(
-            KernelEvent::KERNEL_RESPONSE => array(
-                array('onKernelResponse', 1000),
-                array('onKernelResponseImage', 1000),
-            ),
+        return [
+            KernelEvent::KERNEL_RESPONSE => [
+                ['onKernelResponse', 1000],
+                ['onKernelResponseImage', 1000],
+            ],
             'save.start' => 'onAllSaveStart',
-        );
+        ];
     }
 
     /**
@@ -55,15 +56,16 @@ class KernelSubscriber extends ContainerAware implements EventSubscriberInterfac
     public function onKernelResponse(KernelEvent $event)
     {
         $response = $event->getResponse();
-        if (!$response instanceof JsonResponse && 403 == $response->getStatusCode()) {
+        if (!$response instanceof JsonResponse && Response::HTTP_FORBIDDEN == $response->getStatusCode()) {
             if (!$this->container->get('auth')->isLogged()) {
                 $response = new RedirectResponse($this->container->get('router')->createLink('user/login'));
                 $event->setResponse($response);
                 $event->stopPropagation();
             }
         }
-        if (!$response instanceof JsonResponse && 404 == $response->getStatusCode()) {
+        if (!$response instanceof JsonResponse && Response::HTTP_NOT_FOUND == $response->getStatusCode()) {
             $this->container->get('tpl')->assign('request', $event->getRequest());
+            $this->container->get('tpl')->assign('response', $event->getResponse());
             $response->setContent($this->container->get('tpl')->fetch('error.404'));
         }
     }

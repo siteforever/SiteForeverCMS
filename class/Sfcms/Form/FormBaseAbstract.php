@@ -39,7 +39,7 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
     protected $errorRequired  = 0;
     protected $errorUnType    = 0;
 
-    protected $feedback = array();
+    private $feedback = array();
 
 
     /**
@@ -295,13 +295,13 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
 
     /**
      * Check for valid form values
-     *
      * @return bool
+     * @throws Exception
      */
     public function validate()
     {
         if (null === $this->request) {
-            throw new \RuntimeException('Validation requires an Request');
+            throw new Exception('Validation requires an Request');
         }
         $valid = true;
         foreach ($this->children as $child) {
@@ -342,7 +342,7 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
      */
     public function getFeedbackString($sep = '<br>')
     {
-        return join($sep, $this->feedback);
+        return join($sep, $this->getFeedback());
     }
 
 

@@ -63,15 +63,6 @@ abstract class FormTypeAbstract
     }
 
     /**
-     * Return error list as JSON
-     * @return string
-     */
-    public function getJsonErrors()
-    {
-        return json_encode($this->errors);
-    }
-
-    /**
      * Return all errors as array
      * @return array
      */

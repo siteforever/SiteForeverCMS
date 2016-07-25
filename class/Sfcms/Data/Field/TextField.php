@@ -8,7 +8,7 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
 class TextField extends AbstractDataField
 {

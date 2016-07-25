@@ -21,6 +21,7 @@ use Sfcms\View\Layout;
 use Sfcms\View\Xhr;
 use Sfcms\Model\Exception as ModelException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Sfcms\Form\Exception\ValidationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Stopwatch\Stopwatch;
 
@@ -139,12 +140,22 @@ class App extends AbstractKernel
             $result = $this->getResolver()->dispatch($request);
         } catch (HttpException $e) {
             $this->getLogger()->error($e->getMessage());
-            switch ($request->getContentType()) {
-                case 'json':
-                    $response = new JsonResponse(array('error'=>1, 'msg'=>$e->getMessage()), $e->getStatusCode() ?: 500);
-                    break;
-                default:
-                    $response = new Response($e->getMessage(), $e->getStatusCode() ?: 500);
+            $errors = [];
+            if ($e instanceof ValidationException) {
+                $errors = $e->getErrors();
+            }
+            if ('json' == $request->getContentType() ||
+                'json' == $request->getFormat($request->headers->get('ACCEPT'))
+            ) {
+                $response = new JsonResponse(
+                    ['error' => 1, 'msg' => $e->getMessage(), 'errors' => $errors],
+                    $e->getStatusCode() ?: JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+                );
+            } else {
+                $response = new Response(
+                    $e->getMessage(),
+                    $e->getStatusCode() ?: Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
         } catch (\Exception $e) {
             $this->getLogger()->error($e->getMessage() . ' IN FILE ' . $e->getFile() . ':' . $e->getLine(), $e->getTrace());
@@ -153,9 +164,9 @@ class App extends AbstractKernel
             } else {
                 switch ($request->getContentType()) {
                     case 'json':
-                        return new JsonResponse(array('error'=>1, 'msg'=>'Site error'), 500);
+                        return new JsonResponse(array('error'=>1, 'msg'=>'Site error'), JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
                 }
-                return new Response('Site error', 500);
+                return new Response('Site error', JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
             }
         }
 
@@ -177,11 +188,11 @@ class App extends AbstractKernel
             Watcher::instance()->performOperations();
         } catch (ModelException $e) {
             $this->getLogger()->error($e->getMessage(), $e->getTrace());
-            $response->setStatusCode(500);
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($e->getMessage());
         } catch (PDOException $e) {
             $this->getLogger()->error($e->getMessage(), $e->getTrace());
-            $response->setStatusCode(500);
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
             $response->setContent($e->getMessage());
         }
 
@@ -199,27 +210,21 @@ class App extends AbstractKernel
         $result = $event->getResult();
         $request = $event->getRequest();
         $format = $request->getRequestFormat();
-        if (is_array($result) && 'json' == $format) {
-            // Если надо вернуть JSON из массива
-            $result = defined('JSON_UNESCAPED_UNICODE')
-                ? json_encode($result, JSON_UNESCAPED_UNICODE)
-                : json_encode($result);
-        }
         // Имеет больший приоритет, чем данные в Request-Request->content
         if (is_array($result) && ('html' == $format || null === $format)) {
             // Если надо отпарсить шаблон с данными из массива
             $this->getTpl()->assign($result);
             $template = $request->getController() . '.' . $request->getAction();
-            $this->getTpl()->assign(array(
-                    'request'   => $request,
-                    'auth'      => $this->getAuth(),
-                ));
+            $this->getTpl()->assign('request', $request);
+            $this->getTpl()->assign('response', $response);
+            $this->getTpl()->assign('auth', $this->getAuth());
             $result   = $this->getTpl()->fetch(strtolower($template));
-        }
-        // Просто установить итоговую строку как контент
-        if (is_string($result)) {
             $response->setContent($result);
+        } elseif (is_array($result) && 'json' == $format) {
+            // Если надо вернуть JSON из массива
+            $event->setResponse(new JsonResponse($result, $response->getStatusCode(), $response->headers->all()));
         }
+
         return $event;
     }
 

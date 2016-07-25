@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 
 class Date extends FormFieldAbstract
 {
-    const FILTER_DATE_VALID_VALUES = '/^(?:\d{2}\.\d{2}\.\d{4}|\d+)$/';
+    const FILTER_DATE_VALID_VALUES = '/^[+-]?(?:\d{2}\.\d{2}\.\d{4}|\d+)$/';
 
     protected $type = 'text';
     protected $class = 'datepicker';
@@ -44,6 +44,7 @@ class Date extends FormFieldAbstract
 
     protected function checkValue($value)
     {
+        \App::cms()->getLogger()->debug(__FUNCTION__, [$value]);
         if ($value instanceof \DateTime) {
             return true;
         }

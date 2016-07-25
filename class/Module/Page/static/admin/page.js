@@ -160,8 +160,9 @@ define("page/admin/page", [
                 ajaxDefer = $.Deferred();
             $.blockUI({message: i18n('Saving'), fadeOut: 0});
             $form.ajaxSubmit({
-                dataType:"json",
+                dataType: "json",
                 success: $.proxy(function (response) {
+                    $.growlUI(response.msg);
                     if (!response.error) {
                         $.growlUI(response.msg);
                         $.unblockUI();
@@ -180,9 +181,10 @@ define("page/admin/page", [
                         ajaxDefer.reject();
                     }
                 }, this),
-                'error': $.proxy(function (response){
+                error: $.proxy(function (response){
+                    //$.growlUI('Error', response.msg, 3000);
                     console.log(arguments);
-                    alert(response.responseText);
+                    alert(response.responseJSON.msg || statusText);
                     timoutDefer.reject();
                     ajaxDefer.reject();
                 }, this)
