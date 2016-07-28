@@ -160,8 +160,13 @@ abstract class FormBaseAbstract extends FormTypeAbstract implements \ArrayAccess
             $options['hidden'] = true;
         }
 
+        $options['type'] = ucfirst(strtolower($options['type']));
+        if (in_array(strtolower($options['type']), ['int', 'float'])) {
+            $options['type'] .= 'Field';
+        }
+
         // физический класс обработки поля
-        $fieldClass = '\\Sfcms\\Form\\Field\\' . ucfirst(strtolower($options['type']));
+        $fieldClass = '\\Sfcms\\Form\\Field\\' . $options['type'];
 
         /** @var FormFieldAbstract $fieldObject */
         $fieldObject = new $fieldClass($options);

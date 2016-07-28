@@ -7,7 +7,7 @@ namespace Sfcms\Form\Field;
 
 use Sfcms\Form\Field\Text;
 
-class Float extends Text
+class FloatField extends Text
 {
     protected $class   = 'float';
     protected $filter  = '/^-?\d*[\.|\,]?\d*$/';

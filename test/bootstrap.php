@@ -9,19 +9,17 @@ defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
 require_once 'vendor/autoload.php';
 
-use Behat\Mink\Driver\ZombieDriver;
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
-use Behat\Mink\Driver\NodeJS\Server\ZombieServer;
 use Symfony\Component\Process\Process;
 
 //$capabilities = Selenium2Driver::getDefaultCapabilities();
 //$capabilities['selenium-version'] = '2.41.0';
 //$hubUri = 'http://localhost:4444/wd/hub';
 $host = 'localhost';
-$port = '1888';
+$port = 28080;
 $startUrl = sprintf('http://%s:%s', $host, $port);
 //$travis = false;
 //if (!empty($_SERVER['TRAVIS'])) {
@@ -35,6 +33,7 @@ $startUrl = sprintf('http://%s:%s', $host, $port);
 
 // Command that starts the built-in web server
 $command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!', $host, $port, realpath(__DIR__ . '/..'));
+print $command . PHP_EOL;
 // Execute the command and store the process ID
 $output = array();
 exec($command, $output);
@@ -45,26 +44,26 @@ echo sprintf('%s - Web server started on %s:%d with PID %d', date('r'), $host, $
 
 // Kill the web server when the process ends
 register_shutdown_function(function() use ($pid) {
-        echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
-        exec('kill ' . $pid);
-    });
+    echo sprintf('%s - Killing process with ID %d', date('r'), $pid) . PHP_EOL;
+    exec('kill ' . $pid);
+});
 
 //}
 
 //$mysqlFrom = "mysqldump -u root --add-drop-database=TRUE siteforever";
-$mysqlTo = "mysql -u root siteforever_test";
-
-$process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
-print $process->getCommandLine() . PHP_EOL;
-$process->start();
-while ($process->isRunning()) {
-    print "database restoring...\n";
-    sleep(1);
-}
-if (!$process->isSuccessful()) {
-    print_r($process->getErrorOutput());
-    exit(255);
-}
+//$mysqlTo = "mysql -u root siteforever_test";
+//
+//$process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
+//print $process->getCommandLine() . PHP_EOL;
+//$process->start();
+//while ($process->isRunning()) {
+//    print "database restoring...\n";
+//    sleep(1);
+//}
+//if (!$process->isSuccessful()) {
+//    print_r($process->getErrorOutput());
+//    exit(255);
+//}
 
 $process = new Process("php bin/console --env=test database:scheme:update --force");
 print $process->getCommandLine() . PHP_EOL;

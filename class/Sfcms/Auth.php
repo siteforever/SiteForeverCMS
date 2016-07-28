@@ -76,7 +76,7 @@ class Auth extends ContainerAware
      */
     public function getId()
     {
-        return $this->request->getSession()->get('user_id', null);
+        return $this->request ? $this->request->getSession()->get('user_id', null) : null;
     }
 
     /**

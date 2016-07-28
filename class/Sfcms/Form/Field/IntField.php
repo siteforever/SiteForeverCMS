@@ -7,7 +7,7 @@ namespace Sfcms\Form\Field;
 
 use Sfcms\Form\FormFieldAbstract;
 
-class Int extends Text
+class IntField extends Text
 {
     protected $class   = 'int';
     protected $filter  = '/^-?\d*$/';
