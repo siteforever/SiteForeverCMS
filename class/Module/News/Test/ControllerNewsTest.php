@@ -31,6 +31,7 @@ class ControllerNewsTest extends WebCase
         $response = $this->runRequest('/news/admin');
         $crawler = $this->createCrawler($response);
 
+        $this->assertGreaterThan(0, count($crawler->filter('#workspace h1')));
         $this->assertEquals('Новости', $crawler->filter('#workspace h1')->text());
         $this->assertEquals(1, $crawler->filter('#workspace table.table')->count());
 

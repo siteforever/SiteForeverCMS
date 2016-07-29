@@ -246,10 +246,11 @@ class OrderSubscriber implements EventSubscriberInterface
 
             // Заполняем заказ товарами
             foreach ($event->getBasket()->getAll() as $data) {
+                $product = $products->getById($data['id']);
                 $order->Positions->add($orderPositionModel->createObject(array(
                     'ord_id'    => $order->getId(),
                     'product_id'=> (int) $data['id'],
-                    'articul'   => $products->getById($data['id'])->name,
+                    'articul'   => $product ? $product->name : null,
                     'details'   => $data['details'],
                     'currency'  => isset($data['currency']) ? $data['currency'] : 'RUR',
                     'item'      => isset($data['item']) ? $data['item'] : 'item',

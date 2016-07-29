@@ -43,6 +43,7 @@ class Model_PageTest extends PHPUnit_Framework_TestCase
         Watcher::instance()->performOperations();
         Watcher::instance()->clear();
 
+        $this->assertGreaterThan(0, count($posOld));
         $data2 = $this->db->fetchAll(
             sprintf('SELECT id, pos FROM %s WHERE id IN (%s)', $this->model->getTable(), join(',',$posOld))
         );

@@ -16,6 +16,7 @@ class ElfinderControllerTest extends WebCase
         $response = $this->runController('Elfinder', 'finder');
         $crawler = $this->createCrawler($response);
         $finder = $crawler->filter('#elfinder');
+        $this->assertGreaterThan(0, count($finder));
         $this->assertEquals('Загрузка', $finder->text());
 
 //        $response = $this->runRequest('http://cms.sf/elfinder/finder?CKEditor=structure_notice&CKEditorFuncNum=1&langCode=ru');

@@ -40,6 +40,7 @@ class GuestbookControllerTest extends WebCase
         $response = $this->runRequest('/guestbook/edit?id=7');
         $crawler = $this->createCrawler($response);
         $form = $crawler->filterXPath('//form')->first();
+        $this->assertGreaterThan(0, count($form));
         $this->assertEquals('form_guestbook_edit', $form->attr('id'));
         $this->assertEquals('form_guestbook_edit', $form->attr('name'));
         $this->assertEquals('/guestbook/edit', $form->attr('action'));

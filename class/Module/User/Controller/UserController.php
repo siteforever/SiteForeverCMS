@@ -4,6 +4,7 @@
  */
 namespace Module\User\Controller;
 
+use Module\User\Exception\UserException;
 use Module\User\Form\LoginForm;
 use Module\User\Object\User;
 use Sfcms\Controller;
@@ -365,10 +366,32 @@ class UserController extends Controller
         $form = $model->getRegisterForm();
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
+                /** @var User $user */
                 $user = $model->createObject();
                 $user->attributes = $form->getData();
-                if ($this->register($user)) {
-                    return $this->render('user.register_successfull');
+
+                try {
+                    if ($model->register($user)) {
+                        $tpl    = $this->tpl;
+
+                        $tpl->user = $user;
+                        $tpl->sitename = $this->container->getParameter('sitename');
+                        $tpl->siteurl  = $this->request->getSchemeAndHttpHost();
+
+                        $this->sendmail(
+                            $this->container->getParameter('admin'),
+                            $user->email,
+                            'Подтверждение регистрации',
+                            $tpl->fetch('user.mail.register')
+                        );
+
+                        $this->addFlash('success', "Регистрация прошла успешно. "
+                            . "На Ваш Email отправлена ссылка для подтверждения регистрации.");
+
+                        return $this->render('user.register_successfull');
+                    }
+                } catch (UserException $e) {
+                    $this->addFlash('error', $e->getMessage());
                 }
             } else {
                 foreach ($this->formErrorsToArray($form) as $error) {
@@ -379,75 +402,6 @@ class UserController extends Controller
 
         return $this->render('user.register', array('form'=>$form));
     }
-
-    /**
-     * Регистрация
-     * @param User $user
-     * @return bool
-     */
-    public function register(User $user)
-    {
-        if (strlen($user->login) < 5) {
-            $this->addFlash('error', 'Логин должен быть не короче 5 символов');
-            return false;
-        }
-
-        if (strlen($user->password) < 6) {
-            $this->addFlash('error', 'Пароль должен быть не короче 6 символов');
-            return false;
-        }
-
-        $user->solt    = $user->generateString(8);
-        $user->password= $user->generatePasswordHash($user->password, $user->solt);
-        $user->perm    = USER_GUEST;
-        $user->status  = 0;
-        $user->confirm = md5($user->solt . md5(microtime(1) . $user->solt));
-
-        $user->date = $user->last = time();
-        $model = $user->getModel();
-
-        $userLogin = $model->find(array(
-            'cond'     => 'login = :login',
-            'params'   => array(':login'=>$user->login),
-        ));
-
-        if ($userLogin) {
-            $this->addFlash('error', 'Пользователь с таким логином уже существует');
-            return false;
-        }
-
-        $userEmail = $model->find(array(
-            'cond'     => 'email = :email',
-            'params'   => array(':email'=>$user['email']),
-        ));
-
-        if ($userEmail) {
-            $this->addFlash('error', 'Пользователь с таким адресом уже существует');
-            return false;
-        }
-
-        // Надо сохранить, чтобы знать id
-        if ($model->save($user)) {
-            $tpl    = $this->tpl;
-
-            $tpl->user = $user;
-            $tpl->sitename = $this->container->getParameter('sitename');
-            $tpl->siteurl  = $this->request->getSchemeAndHttpHost();
-
-            $this->sendmail(
-                $this->container->getParameter('admin'),
-                $user->email,
-                'Подтверждение регистрации',
-                $tpl->fetch('user.mail.register')
-            );
-
-            $this->addFlash('success', "Регистрация прошла успешно. "
-                . "На Ваш Email отправлена ссылка для подтверждения регистрации.");
-            return true;
-        }
-        return false;
-    }
-
 
     /**
      * Сюда приходит пользователь по ссылке восстановления пароля

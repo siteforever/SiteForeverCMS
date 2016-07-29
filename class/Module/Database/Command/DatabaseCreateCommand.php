@@ -7,6 +7,8 @@
 namespace Module\Database\Command;
 
 
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\DriverException;
 use Sfcms\Console\Command;
 use Sfcms\db;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +26,25 @@ class DatabaseCreateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /** @var db $db */
-        $db = $this->getContainer()->get('db');
-        $dbConfig = $this->getContainer()->getParameter('database');
-        $dbName = $dbConfig['name'];
-        $db->createDatabase($dbName);
+        $params = $this->getContainer()->getParameter('doctrine.connection');
+        $dbName = $params['dbname'];
+        unset($params['dbname']);
+        $connection = DriverManager::getConnection($params);
+
+        $sm = $connection->getSchemaManager();
+        $databases = $sm->listDatabases();
+        if (in_array($dbName, $databases)) {
+            $output->writeln(sprintf('<error>Database "%s" already exists</error>', $dbName));
+            return;
+        }
+
+        try {
+            $sm->createDatabase($dbName);
+        } catch (DriverException $e) {
+            $output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
+            return;
+        }
+
         $output->writeln(sprintf('<info>Database "%s" created successfully</info>', $dbName));
     }
 }

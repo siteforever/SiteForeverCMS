@@ -102,26 +102,24 @@ class Form_Field_TextTest extends WebCase
 
     public function testHtml()
     {
-        $this->markTestSkipped();
-        $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
+        //$this->markTestSkipped();
+        $this->assertEquals("<div class=\"form-group\" data-field-name=\"test\">"
             ."<label for=\"test_test\" class=\"control-label\">Test</label>" . PHP_EOL
-            ."<div class=\"controls\">"
-                ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" value=\"hello\">"
-            ."</div></div>", trim($this->field->createView()->html()));
+                ."<input id=\"test_test\" type=\"text\" class=\"form-control input-xlarge\" name=\"test[test]\" value=\"hello\">"
+            ."</div>", trim($this->field->createView()->html()));
     }
 
     public function testHtmlCustom()
     {
-        $this->markTestSkipped();
+//        $this->markTestSkipped();
         $this->field->setLabel('Name');
         $this->field->setValue('Nikolay');
         $this->field->setRequired();
 
-        $this->assertEquals("<div class=\"control-group\" data-field-name=\"test\">"
+        $this->assertEquals("<div class=\"form-group\" data-field-name=\"test\">"
                 ."<label for=\"test_test\" class=\"control-label\">Имя&nbsp;<b>*</b></label>" . PHP_EOL
-                ."<div class=\"controls\">"
-                    ."<input id=\"test_test\" type=\"text\" class=\"input-xlarge\" name=\"test[test]\" required=\"required\" value=\"Nikolay\">"
-                ."</div></div>", trim($this->field->createView()->html()));
+                    ."<input id=\"test_test\" type=\"text\" class=\"form-control input-xlarge\" name=\"test[test]\" required=\"required\" value=\"Nikolay\">"
+                ."</div>", trim($this->field->createView()->html()));
     }
 
     public function testHtmlHidden()

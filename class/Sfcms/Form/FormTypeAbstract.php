@@ -135,7 +135,7 @@ abstract class FormTypeAbstract
      */
     public function getType()
     {
-        return $this->type;
+        return strtolower($this->type);
     }
 
     /**

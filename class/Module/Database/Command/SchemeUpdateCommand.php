@@ -99,9 +99,10 @@ class SchemeUpdateCommand extends Command
             if (false !== strpos($sql, ' order ')) {
                 $sql = str_replace(' order ', ' `order` ', $sql);
             }
-            $output->writeln($sql);
             if ($force) {
                 $conn->exec($sql);
+            } else {
+                $output->writeln($sql);
             }
         }
 

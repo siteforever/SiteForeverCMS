@@ -83,6 +83,7 @@ class CatalogControllerTest extends WebCase
 
         $response = $this->runRequest('/catalog/trade', 'GET', array('edit'=>35));
         $crawler = $this->createCrawler($response);
+        $this->assertCount(1, $crawler->filter('h1'));
         $this->assertEquals('Каталог', $crawler->filter('h1')->text());
         $this->assertEquals(1, $crawler->filter('#form_catalog')->count());
 

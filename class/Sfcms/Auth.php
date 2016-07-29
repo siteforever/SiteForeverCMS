@@ -94,15 +94,25 @@ class Auth extends ContainerAware
      */
     public function getPermission()
     {
-        return $this->getId() ? $this->currentUser()->getPermission() : USER_GUEST;
+        return $this->getId() && $this->currentUser()
+            ? $this->currentUser()->getPermission()
+            : USER_GUEST;
     }
 
+    /**
+     * @param $permission
+     *
+     * @return bool
+     */
     public function hasPermission($permission)
     {
         if (!$this->getId()) {
             if (in_array($permission, array(USER_GUEST, USER_ANONIMUS), true)) {
                 return true;
             }
+            return false;
+        }
+        if (!$this->currentUser()) {
             return false;
         }
         return $this->currentUser()->hasPermission($permission);

@@ -48,34 +48,28 @@ register_shutdown_function(function() use ($pid) {
     exec('kill ' . $pid);
 });
 
-//}
+function run_process(Process $process) {
+    print $process->getCommandLine() . PHP_EOL;
+    $process->start();
+    while ($process->isRunning()) {
+        sleep(1);
+    }
+    if (!$process->isSuccessful()) {
+        print_r($process->getErrorOutput());
+        exit(255);
+    }
+    print $process->getOutput();
+}
 
 //$mysqlFrom = "mysqldump -u root --add-drop-database=TRUE siteforever";
 //$mysqlTo = "mysql -u root siteforever_test";
 //
 //$process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
-//print $process->getCommandLine() . PHP_EOL;
-//$process->start();
-//while ($process->isRunning()) {
-//    print "database restoring...\n";
-//    sleep(1);
-//}
-//if (!$process->isSuccessful()) {
-//    print_r($process->getErrorOutput());
-//    exit(255);
-//}
 
-$process = new Process("php bin/console --env=test database:scheme:update --force");
-print $process->getCommandLine() . PHP_EOL;
-$process->start();
-while ($process->isRunning()) {
-    sleep(1);
-}
-if (!$process->isSuccessful()) {
-    print_r($process->getErrorOutput());
-    exit(255);
-}
-print $process->getOutput();
+run_process(new Process("php bin/console --env=test database:drop"));
+run_process(new Process("php bin/console --env=test database:create"));
+run_process(new Process("php bin/console --env=test database:scheme:update --force"));
+run_process(new Process("php bin/console --env=test seed:users"));
 
 $app = new App('test', true);
 
