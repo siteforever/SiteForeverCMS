@@ -20,6 +20,7 @@
 {* Print tree menu *}
 {function tree parent=0 level=0}
 <ul data-parent="{$parent}" class="tree-container">
+    {if $data && isset($data[$parent])}
     {foreach from=$data[$parent] item="branch"}
     <li data-parent="{$branch->parent}" data-id="{$branch->id}" data-pos="{$branch->pos}" class="tree-node clearfix">
         {selectIcon branch=$branch}
@@ -45,6 +46,7 @@
         {if isset($data[$branch->id])}{tree parent=$branch->id level=$level+1}{/if}
     </li>
     {/foreach}
+    {/if}
 </ul>
 {/function}
 

@@ -22,7 +22,7 @@ class UsersFixturesCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('seed:users')
+            ->setName('fixture:users')
             ->setDescription('Load users into database')
         ;
     }

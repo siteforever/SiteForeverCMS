@@ -58,6 +58,10 @@ class PageController extends Controller
      */
     public function indexAction()
     {
+        if (null === $this->page) {
+            return $this->redirect('/user/login');
+        }
+
         /** @var $pageModel PageModel */
         $pageModel = $this->getModel('Page');
 

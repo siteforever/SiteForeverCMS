@@ -84,7 +84,7 @@
         {$form = $form->setRendered()}
     {else}
         <div class="form-group{if $attr.error} has-error{/if}" data-field-name="{$attr.name}">
-        {if in_array($attr.type, ['int', 'float', 'date'])}
+        {if in_array($attr.type, ['int', 'intfield', 'float', 'floatfield', 'date'])}
             {form_label form=$form class="control-label" domain=$domain}
             <div class="row">
                 <div class="col-xs-3">{form_input form=$form class=$class}</div>
