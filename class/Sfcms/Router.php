@@ -7,9 +7,11 @@
 namespace Sfcms;
 
 use Module\System\Event\RouteEvent;
+use Psr\Log\NullLogger;
 use Sfcms\Route;
 use Sfcms\Request;
 use Sfcms\LoggerInterface;
+use Sfcms\Router\RouterException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Router
@@ -48,6 +50,7 @@ class Router
     public function __construct($debug = true)
     {
         static::$debug = $debug;
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -324,22 +327,19 @@ class Router
         }
         $event = new RouteEvent($this->route, $this->request, $this);
         $this->eventDispatcher->dispatch(RouteEvent::ROUTER_ROUTE, $event);
+        $this->getLogger()->debug(sprintf('Routing %.3f sec', microtime(1) - $start));
+
         $routed = $event->getRouted();
-        if (is_array($routed)) {
+        if (is_array($routed) && $routed) {
             $this->request->setController($routed['controller']);
             $this->request->setAction($routed['action']);
-            if (isset($routed['params']) && is_array($routed['params'])) {
+            if (array_key_exists('params', $routed) && is_array($routed['params'])) {
                 $this->_params = array_merge($routed['params'], $this->_params);
             }
             foreach ($this->_params as $key => $val) {
                 $this->request->query->set($key, $val);
             }
-        }
-
-        if (null !== $this->getLogger()) {
-            $this->getLogger()->info('Routing (' . round(microtime(1) - $start, 3) . ' sec)');
-        }
-        if (!$routed) {
+        } else {
             $this->activateError();
         }
 
@@ -347,14 +347,10 @@ class Router
     }
 
     /**
-     * Создать ошибку 404
-     * @param string $error
      */
-    public function activateError($error = '404')
+    public function activateError()
     {
-        $this->request->setController('error');
-        $this->request->setAction('error' . $error);
-        $this->system = 0;
+        throw new RouterException('Route has not resolved');
     }
 
     /**
