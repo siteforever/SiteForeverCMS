@@ -7,7 +7,7 @@
 //корень сайта
 defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
-require_once 'vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Driver\GoutteDriver;
@@ -69,7 +69,8 @@ function run_process(Process $process) {
 run_process(new Process("php bin/console --env=test database:drop"));
 run_process(new Process("php bin/console --env=test database:create"));
 run_process(new Process("php bin/console --env=test database:scheme:update --force"));
-run_process(new Process("php bin/console --env=test seed:users"));
+run_process(new Process("php bin/console --env=test fixture:users"));
+run_process(new Process("php bin/console --env=test fixture:pages"));
 
 $app = new App('test', true);
 

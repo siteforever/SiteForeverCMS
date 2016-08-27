@@ -9,4 +9,3 @@ script: phpunit -c test/phpunit.xml
 before_script:
   - curl -sS https://getcomposer.org/installer | php
   - php composer.phar install --prefer-dist -n
-  - php bin/console --env=test database:create
