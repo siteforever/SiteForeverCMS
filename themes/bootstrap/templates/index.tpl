@@ -28,6 +28,8 @@
         </div>
         <div class="col-sm-3">
             {basket}
+
+            {page alias="index" notice=true}
         </div>
     </div>
 </div>
