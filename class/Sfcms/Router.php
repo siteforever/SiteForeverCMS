@@ -330,11 +330,13 @@ class Router
         $this->getLogger()->debug(sprintf('Routing %.3f sec', microtime(1) - $start));
 
         $routed = $event->getRouted();
-        if (is_array($routed) && $routed) {
-            $this->request->setController($routed['controller']);
-            $this->request->setAction($routed['action']);
-            if (array_key_exists('params', $routed) && is_array($routed['params'])) {
-                $this->_params = array_merge($routed['params'], $this->_params);
+        if ($routed) {
+            if (is_array($routed)) {
+                $this->request->setController($routed['controller']);
+                $this->request->setAction($routed['action']);
+                if (array_key_exists('params', $routed) && is_array($routed['params'])) {
+                    $this->_params = array_merge($routed['params'], $this->_params);
+                }
             }
             foreach ($this->_params as $key => $val) {
                 $this->request->query->set($key, $val);
