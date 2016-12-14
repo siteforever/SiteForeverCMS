@@ -8,6 +8,7 @@
 namespace Module\Guestbook;
 
 use Module\Guestbook\DependencyInjection\GuestbookExtension;
+use Module\Guestbook\Model\GuestbookModel;
 use Sfcms\Module as SfModule;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Route;
@@ -19,7 +20,6 @@ class Module extends SfModule
     {
         $container->registerExtension(new GuestbookExtension());
     }
-
 
     public static function relatedField()
     {
@@ -42,7 +42,7 @@ class Module extends SfModule
                 'Guestbook' => array(),
             ),
             'models' => array(
-                'Guestbook' => 'Module\\Guestbook\\Model\\GuestbookModel',
+                'Guestbook' => GuestbookModel::class,
             ),
         );
     }

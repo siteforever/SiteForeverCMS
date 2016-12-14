@@ -48,6 +48,7 @@ class GuestbookController extends Controller
                 $obj->set('link', $link);
                 $obj->set('date', time());
                 $obj->set('ip', $this->request->getClientIp());
+                $obj->set('sitename', $this->container->getParameter('sitename'));
 
                 $model->save( $obj );
 
@@ -56,7 +57,14 @@ class GuestbookController extends Controller
                     $this->container->getParameter('admin'),
                     $this->container->getParameter('guestbook.email'),
                     'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
-                    $this->getTpl()->fetch('guestbook.letter'),
+                    $this->getTpl()->fetch('guestbook.letter_admin'),
+                    'text/html'
+                );
+                $this->sendmail(
+                    $this->container->getParameter('admin'),
+                    strip_tags($form->getChild('email')->getValue()),
+                    'Сообщение в гостевой '.$this->container->getParameter('sitename').' №'.$obj->getId(),
+                    $this->getTpl()->fetch('guestbook.letter_user'),
                     'text/html'
                 );
             }
