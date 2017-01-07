@@ -34,7 +34,6 @@ class Config
                 $this->set($key, $parameter);
             }
         }
-        return $this;
     }
 
     /**

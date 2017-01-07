@@ -46,10 +46,6 @@ doctrine:
         password: "%db_password%"
         charset:  UTF8
 
-    orm:
-        auto_generate_proxy_classes: "%kernel.debug%"
-        auto_mapping: true
-
 # Sfcms Database ORM
 database:
     debug: "%kernel.debug%"

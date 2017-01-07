@@ -87,7 +87,7 @@ class App extends Kernel
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
-            $bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
+            //$bundles[] = new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
@@ -185,21 +185,30 @@ class App extends Kernel
     protected function initializeModules()
     {
         foreach ($this->registerModules() as $module) {
-            if (!isset($module['path'])) {
-                throw new InvalidArgumentException('Directive "path" not defined in modules config');
+            if (is_string($module)) {
+                $className = $module;
+                $parts = explode('\\', $className);
+                $path = implode('\\', array_slice($parts, 0, count($parts) - 1));
+                $name = $parts[count($parts) - 2];
+            } else {
+                if (!isset($module['path'])) {
+                    throw new InvalidArgumentException('Directive "path" not defined in modules config');
+                }
+                if (!isset($module['name'])) {
+                    throw new InvalidArgumentException('Directive "name" not defined in modules config');
+                }
+                $className = $module['path'] . '\Module';
+                $name = $module['name'];
+                $path = $module['path'];
             }
-            if (!isset($module['name'])) {
-                throw new InvalidArgumentException('Directive "name" not defined in modules config');
-            }
-            $className = $module['path'] . '\Module';
             $reflection = new \ReflectionClass($className);
             $place = dirname($reflection->getFileName());
             /** @var Module $moduleObj */
-            $moduleObj = new $className($this, $module['name'], $module['path'], $place);
-            if (isset($this->modules[$module['name']])) {
+            $moduleObj = new $className($this, $name, $path, $place);
+            if (isset($this->modules[$name])) {
                 throw new LogicException(sprintf('Trying to register two modules with the same name "%s"', $module['name']));
             }
-            $this->modules[$module['name']] = $moduleObj;
+            $this->modules[$name] = $moduleObj;
         }
     }
 
@@ -347,6 +356,7 @@ class App extends Kernel
      */
     static public function cms()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return static::$containerLocator->get('kernel');
     }
 
@@ -362,23 +372,8 @@ class App extends Kernel
      */
     public function getAuth()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return $this->getContainer()->get('auth');
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogsPath()
-    {
-        return ROOT . '/var/logs';
-    }
-
-    /**
-     * @return string
-     */
-    public function getCachePath()
-    {
-        return ROOT . '/var/cache/' . $this->getEnvironment();
     }
 
     /**
@@ -389,14 +384,8 @@ class App extends Kernel
      */
     public function getCacheManager()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         $this->getContainer()->get('cache');
-    }
-
-    public function redirectListener(KernelEvent $event)
-    {
-        if ($event->getResponse() instanceof RedirectResponse) {
-            $event->stopPropagation();
-        }
     }
 
     /**
@@ -407,6 +396,7 @@ class App extends Kernel
      */
     public function getDeliveryManager(Request $request, Order $order)
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return new DeliveryManager($request, $order, $this->getEventDispatcher());
     }
 
@@ -417,6 +407,7 @@ class App extends Kernel
      */
     public function getTpl()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return $this->getContainer()->get('tpl');
     }
 
@@ -425,6 +416,7 @@ class App extends Kernel
      */
     public function getDataManager()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return $this->getContainer()->get('data.manager');
     }
 
@@ -433,7 +425,8 @@ class App extends Kernel
      */
     public function getLogger()
     {
-        return $this->getContainer()->has('logger') ? $this->getContainer()->get('logger') : null;
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
+        return $this->getContainer()->get('logger');
     }
 
     /**
@@ -441,6 +434,7 @@ class App extends Kernel
      */
     public function getEventDispatcher()
     {
+        @trigger_error('You must to call container service', E_USER_DEPRECATED);
         return $this->getContainer()->get('event_dispatcher');
     }
     

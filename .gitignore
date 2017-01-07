@@ -12,3 +12,5 @@ parameters.yml
 /composer.lock
 /bundles
 /node_modules
+
+tests/_output/*

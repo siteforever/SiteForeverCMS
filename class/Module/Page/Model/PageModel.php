@@ -219,6 +219,13 @@ class PageModel extends Model
 
         $obj->alias = $obj->alias ? $obj->alias : strtolower($this->i18n()->translit(trim($obj->name, '/ ')));
         $obj->path = serialize(array_reverse($model->createPath($obj)));
+        $obj->update = time();
+        if (!$obj->pos) {
+            $obj->pos = 0;
+        }
+        if (!$obj->link) {
+            $obj->link = 0;
+        }
 
         // Настраиваем связь с модулями
         // @todo Должно определяться по имени модели, но в странице не указана связанная модель, а только контроллер

@@ -8,7 +8,7 @@
 
 namespace Sfcms\Data\Field;
 
-use Sfcms\Data\Field;
+use Sfcms\Data\AbstractDataField;
 
 class TextField extends AbstractDataField
 {
@@ -19,7 +19,7 @@ class TextField extends AbstractDataField
      * @var mixed $value Значение
      * @return mixed
      */
-    function validate($value)
+    public function validate($value)
     {
         return filter_var($value, FILTER_SANITIZE_STRING);
     }
@@ -28,7 +28,7 @@ class TextField extends AbstractDataField
      * Вернет строку для вставки в SQL запрос
      * @return string
      */
-    function toString()
+    public function toString()
     {
         return sprintf('`%s` text', $this->name);
     }

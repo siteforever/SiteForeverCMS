@@ -12,6 +12,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class DatabasePass
@@ -29,6 +30,8 @@ class DatabasePass implements CompilerPassInterface
      * @param ContainerBuilder $container
      *
      * @api
+     * @throws \Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
     public function process(ContainerBuilder $container)
     {
@@ -78,7 +81,11 @@ class DatabasePass implements CompilerPassInterface
 //                }
             }
 
-            $container->getDefinition('data.manager')->setArguments(array($models));
+            $container->getDefinition('data.manager')->setArguments([
+                new Reference('db'),
+                new Reference('event_dispatcher'),
+                $models
+            ]);
 
             foreach ($models as $config) {
                 $definition = new Definition($config['class']);

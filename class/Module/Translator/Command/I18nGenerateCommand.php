@@ -7,14 +7,14 @@
 namespace Module\Translator\Command;
 
 use Module\Translator\Component\TranslatorComponent;
-use Sfcms\Console\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
-class I18nGenerateCommand extends Command
+class I18nGenerateCommand extends ContainerAwareCommand
 {
     protected $dictionary;
 

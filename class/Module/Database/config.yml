@@ -5,8 +5,7 @@ services:
 
     data.manager:
         class: Sfcms\Data\DataManager
-        calls:
-            - [setContainer, ["@service_container"]]
+        lazy:  true
 
     data.scheme.manager:
         class: Sfcms\Data\SchemeManager

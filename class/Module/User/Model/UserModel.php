@@ -1,6 +1,7 @@
 <?php
 namespace Module\User\Model;
 
+use Module\User\Exception\UserException;
 use Module\User\Form\PasswordForm;
 use Module\User\Form\ProfileForm;
 use Module\User\Form\RegisterForm;
@@ -163,4 +164,54 @@ class UserModel extends Model
 
     }
 
+
+    /**
+     * Регистрация
+     * @param User $user
+     * @param $group
+     * @return bool
+     * @throws UserException
+     */
+    public function register(User $user, $group = USER_GUEST, $status = 0)
+    {
+        if (strlen($user->login) < 5) {
+            throw new UserException('Логин должен быть не короче 5 символов');
+        }
+
+        if (strlen($user->password) < 6) {
+            throw new UserException('Пароль должен быть не короче 6 символов');
+        }
+
+        $user->solt = $user->generateString(8);
+        $user->password = $user->generatePasswordHash($user->password, $user->solt);
+        $user->perm = $group;
+        $user->status = $status;
+        $user->confirm = md5($user->solt . md5(microtime(1) . $user->solt));
+        $user->date = $user->last = time();
+
+        $userLogin = $this->find(array(
+            'cond' => 'login = :login',
+            'params' => array(':login' => $user->login),
+        ));
+
+        if ($userLogin) {
+            throw new UserException(sprintf('Пользователь с логином "%s" уже существует', $user->login));
+        }
+
+        $userEmail = $this->find(array(
+            'cond' => 'email = :email',
+            'params' => array(':email' => $user['email']),
+        ));
+
+        if ($userEmail) {
+            throw new UserException(sprintf('Пользователь с адресом "%s" уже существует', $user->email));
+        }
+
+        // Надо сохранить, чтобы знать id
+        if ($this->save($user)) {
+            return true;
+        }
+
+        return false;
+    }
 }

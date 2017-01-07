@@ -31,6 +31,14 @@
         </div>
     </div>
 </div>
+<div class="container">
+    <hr>
+    <footer>
+        <p class="text-center">
+            <a href="/user/login">Войти на сайт</a>
+        </p>
+    </footer>
+</div>
 {*<script type="text/javascript" src="/static/lib/jquery/dist/jquery.min.js"></script>*}
 {*<script type="text/javascript" src="/static/lib/bootstrap/dist/js/bootstrap.min.js"></script>*}
 {*<script type="text/javascript" src="/themes/bootstrap/js/script.js"></script>*}

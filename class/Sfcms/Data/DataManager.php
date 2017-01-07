@@ -6,20 +6,26 @@
 
 namespace Sfcms\Data;
 
+use Sfcms\db;
 use Sfcms\Model;
-use Sfcms\Module;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class DataManager
 {
-    use ContainerAwareTrait;
-
     /** @var array */
     private $modelList = null;
 
-    function __construct($modelList)
+    /** @var db */
+    private $db;
+
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
+    public function __construct(db $db, EventDispatcherInterface $eventDispatcher, array $modelList)
     {
+        $this->db = $db;
+        $this->eventDispatcher = $eventDispatcher;
         $this->modelList = $modelList;
     }
 
@@ -65,7 +71,7 @@ class DataManager
 
         throw new \RuntimeException(sprintf(
             'Model "%s" not found. Available values (%s)',
-            $model, join(', ', array_map(function($m){ return $m['alias']; }, $models))
+            $model, implode(', ', array_column($models, 'alias'))
         ));
     }
 
@@ -93,14 +99,14 @@ class DataManager
      */
     public function getEventDispatcher()
     {
-        return $this->container->get('event_dispatcher');
+        return $this->eventDispatcher;
     }
 
     /**
-     * @return \Sfcms\Db\
+     * @return db
      */
     public function getDB()
     {
-        return $this->container->get('db');
+        return $this->db;
     }
 }

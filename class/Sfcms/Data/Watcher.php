@@ -5,10 +5,6 @@
  */
 namespace Sfcms\Data;
 
-use Sfcms\Kernel\AbstractKernel;
-use Sfcms\Model;
-use Sfcms\Data\Object;
-
 class Watcher
 {
     private $all = array();

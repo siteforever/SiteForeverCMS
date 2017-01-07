@@ -39,53 +39,6 @@ class UsersControllerTest extends WebCase
     }
 
     /**
-     * Действие по умолчанию
-     */
-    public function testIndexAction()
-    {
-        $response = $this->runRequest('/user');
-        $this->assertEquals(302, $response->getStatusCode());
-        $crawler = $this->createCrawler($response);
-        $this->assertEquals('Redirecting to /user/login', $crawler->filterXPath('//title')->text());
-    }
-
-
-    /**
-     * Действие админа
-     */
-    public function testAdminAction()
-    {
-        $response = $this->runController('user', 'index');
-        $response = $this->followRedirect($response);
-        $crawler = $this->createCrawler($response);
-        $form = $crawler->filterXPath('//form');
-        $this->assertEquals(1, $form->count());
-        $this->assertEquals('form_login', $form->attr('id'));
-    }
-
-    /**
-     * Редактирование пользователя в админке
-     */
-    public function testAdminEditAction()
-    {
-        $this->request->set('id', 1);
-        $response = $this->runController('user', 'admin');
-        $this->assertEquals(302, $response->getStatusCode());
-        $this->assertTrue($response->isRedirection());
-        $crawler = $this->createCrawler($response);
-        $this->assertEquals(1, $crawler->filterXPath('//title')->count());
-        $this->assertEquals('Redirecting to /user/login', $crawler->filterXPath('//title')->text());
-
-//        $this->session->set('user_id', 1);
-//        $response = $this->runController('user', 'admin');
-//        $crawler = $this->createCrawler($response);
-//        $this->assertEquals(200, $response->getStatusCode());
-//        $this->assertEquals('Добавить пользователя / SiteForeverCMS', $crawler->filterXPath('//title')->text());
-//        $form = $crawler->filterXPath('//form');
-//        $this->assertEquals('form_user', $form->attr('id'));
-    }
-
-    /**
      * Сохранение
      */
     public function testSaveAction()
@@ -96,14 +49,6 @@ class UsersControllerTest extends WebCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $this->assertEquals('Data not sent', trim($crawler->filterXPath('//div[@id="workspace"]')->text()));
-    }
-
-    /**
-     * Кабинет
-     */
-    public function testCabinetAction()
-    {
-//        $return = $this->controller->cabinetAction();
     }
 
     /**

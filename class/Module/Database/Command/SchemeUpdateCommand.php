@@ -6,11 +6,9 @@ namespace Module\Database\Command;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema\Schema;
-use Sfcms\Console\Command;
 use Sfcms\Data\AbstractDataField;
 use Sfcms\Data\DataManager;
-use Sfcms\Data\Field;
-use Sfcms\db;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @package Module\Database\Command
  */
-class SchemeUpdateCommand extends Command
+class SchemeUpdateCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
@@ -40,7 +38,7 @@ class SchemeUpdateCommand extends Command
         $container = $this->getContainer();
 
         /** @var Connection $conn */
-        $conn = $container->get('doctrine.connection');
+        $conn = $container->get('database_connection');
 
         $schemeManager = $conn->getSchemaManager();
 

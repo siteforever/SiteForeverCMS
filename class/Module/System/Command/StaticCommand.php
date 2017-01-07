@@ -1,11 +1,8 @@
 <?php
 namespace Module\System\Command;
 
-use Assetic\Asset\AssetCollection;
-use Assetic\AssetWriter;
-use Assetic\Factory\AssetFactory;
 use Module\System\Event\StaticEvent;
-use Sfcms\Console\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +15,7 @@ use Symfony\Component\Filesystem\Filesystem;
  * Install all static resource
  * @author: Nikolay Ermin <keltanas@gmail.com>
  */
-class StaticCommand extends Command
+class StaticCommand extends ContainerAwareCommand
 {
     /** @var Container */
     protected $container;
@@ -34,20 +31,24 @@ class StaticCommand extends Command
     {
         /** @var ContainerBuilder */
         $this->container = $this->getContainer();
-        $staticDir = ROOT . '/static';
-        $rootDir = $this->getContainer()->getParameter('root');
+        $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
+        $staticDir = $rootDir . '/static';
         $cacheDir = $this->getContainer()->getParameter('kernel.cache_dir');
-        $logsDir = $this->getContainer()->getParameter('kernel.log_dir');
+        $logsDir = $this->getContainer()->getParameter('kernel.logs_dir');
 
         $output->writeln('<info>Command Install</info>');
         $output->writeln(sprintf('<info>Static dir is: "%s"</info>', $staticDir));
 
+        $filesistem = new Filesystem();
+
+        if (!$filesistem->exists($staticDir)) {
+            $filesistem->mkdir($staticDir);
+        }
+
         /** @var EventDispatcher $eventDispatcher */
-        $eventDispatcher = $this->getContainer()->get('event.dispatcher');
+        $eventDispatcher = $this->getContainer()->get('event_dispatcher');
         $event = new StaticEvent($staticDir, $input, $output);
         $eventDispatcher->dispatch(StaticEvent::STATIC_INSTALL, $event);
-
-        $filesistem = new Filesystem();
 
         if (!$filesistem->exists($staticDir . '/images')) {
             $filesistem->mirror(

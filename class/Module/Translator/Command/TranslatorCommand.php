@@ -7,13 +7,13 @@
 namespace Module\Translator\Command;
 
 use Module\Translator\Component\TranslatorComponent;
-use Sfcms\Console\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class TranslatorCommand extends Command
+class TranslatorCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
