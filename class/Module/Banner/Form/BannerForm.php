@@ -1,16 +1,16 @@
 <?php
 namespace Module\Banner\Form;
 
-use Sfcms\Data\DataManager;
+use Module\Banner\Model\CategoryModel;
 
 /**
  * Форма для редактирования баннера
  */
 class BannerForm extends \Sfcms\Form\Form
 {
-    public function __construct(DataManager $dataManager)
+    public function __construct(CategoryModel $categoryModel)
     {
-        $parents    = $dataManager->getModel('CategoryBanner')->getCategoryBanner();
+        $parents    = $categoryModel->getCategoryBanner();
         parent::__construct(array(
             'name'      => 'Banner',
             'action'    => \App::cms()->get('router')->generate('banner/save'),

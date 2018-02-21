@@ -185,16 +185,8 @@ abstract class Controller
      * @return Model
      * @throws Exception
      */
-    public function getModel($model='')
+    public function getModel($model)
     {
-        if ('' === $model) {
-            if (preg_match('/Module\\(\w+)\\Controller\\(\w+)Controller/', get_class($this), $m)) {
-                $model = '\\Module\\' . $m[1] . '\\Model\\' . $m[2];
-            } else {
-                throw new Exception(sprintf('Model not defined in class %s', get_class($this)));
-            }
-        }
-
         return $this->get('data.manager')->getModel($model);
     }
 

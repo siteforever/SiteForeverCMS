@@ -4,6 +4,7 @@
  */
 namespace Module\Banner\Controller;
 
+use Module\Banner\Form\BannerForm;
 use Sfcms\Controller;
 use Sfcms\Request;
 use Module\Banner\Model\BannerModel;
@@ -198,7 +199,7 @@ class BannerController extends Controller
         $id = $this->request->get('id');
         /** @var BannerModel $model */
         $model = $this->getModel('Banner');
-        $form  = $model->getForm();
+        $form  = new BannerForm($this->getModel('CategoryBanner'));
         if ($id) {
             /** @var $obj Banner */
             $obj = $model->find($id);
@@ -236,7 +237,7 @@ class BannerController extends Controller
     {
         /** @var BannerModel $model */
         $model = $this->getModel('Banner');
-        $form  = $model->getForm();
+        $form  = new BannerForm($this->getModel('CategoryBanner'));
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
                 $obj = $form['id'] ? $model->find($form['id']) : $model->createObject()->markNew();
