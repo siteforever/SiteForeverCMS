@@ -15,6 +15,7 @@
             <div class="b-left-menu">
                 <h3>Карта сайта</h3>
                 {menu parent=1 level=3}
+                <p>{a href="user/cabinet"}Войти{/a}</p>
             </div>
         </div>
         <div class="col-sm-6 b-content">

@@ -111,11 +111,13 @@
             {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['checkbox'])}
-            <input type="hidden" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="0">
-            <label for="{$attr.id}" class="checkbox col-xs-6">
-                <input type="checkbox" id="{$attr.id}" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="1" {if $attr.value} checked="checked"{/if}>
-                {$attr.label|trans:[]:$domain|ucfirst}{if $attr.required}&nbsp;<b>*</b>{/if}
-            </label>
+            <div class="col-sm-12">
+                <input type="hidden" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="0">
+                <label for="{$attr.id}" class="checkbox col-xs-6">
+                    <input type="checkbox" id="{$attr.id}" name="{$form->parent->vars.attr.name}[{$attr.name}]" value="1" {if $attr.value} checked="checked"{/if}>
+                    {$attr.label|trans:[]:$domain|ucfirst}{if $attr.required}&nbsp;<b>*</b>{/if}
+                </label>
+            </div>
             {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['radio'])}

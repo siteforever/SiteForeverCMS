@@ -210,7 +210,7 @@ class PageModel extends Model
     /**
      * @param \Sfcms\Model\ModelEvent $event
      *
-     * @throws \Sfcms\Model\Exception
+     * @throws Exception
      */
     public static function onSaveStart(Model\ModelEvent $event)
     {
@@ -230,7 +230,7 @@ class PageModel extends Model
 
         // Настраиваем связь с модулями
         // @todo Должно определяться по имени модели, но в странице не указана связанная модель, а только контроллер
-        $model->trigger(sprintf('plugin.page-%s.save.start', $obj->controller), $event);
+        $model->trigger("plugin.page-{$obj->controller}.save.start", $event);
     }
 
     /**
@@ -293,7 +293,7 @@ class PageModel extends Model
      * Искать структуру по маршруту
      * @param  $route
      *
-     * @return array
+     * @return array|boolean
      */
     public function findByRoute( $route )
     {

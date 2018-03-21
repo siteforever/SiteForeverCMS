@@ -10,13 +10,13 @@ namespace Module\Catalog\Subscriber;
 use Module\Catalog\Object\Comment;
 use Sfcms\Model\ModelEvent;
 use Sfcms\Tpl\Driver;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class CommentSwiftMailerSubscriber extends ContainerAware implements EventSubscriberInterface
+class CommentSwiftMailerSubscriber implements EventSubscriberInterface
 {
+    use ContainerAwareTrait;
+
     /** @var string */
     private $email;
 

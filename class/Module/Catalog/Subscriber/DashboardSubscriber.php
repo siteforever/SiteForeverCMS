@@ -6,16 +6,16 @@
 
 namespace Module\Catalog\Subscriber;
 
-
 use Module\Catalog\Model\CatalogModel;
 use Module\Dashboard\Event\DashboardEvent;
-use Sfcms\Model;
 use Sfcms\Tpl\Driver;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class DashboardSubscriber extends ContainerAware implements EventSubscriberInterface
+class DashboardSubscriber implements EventSubscriberInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *

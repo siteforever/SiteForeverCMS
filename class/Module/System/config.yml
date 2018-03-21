@@ -59,11 +59,11 @@ services:
     event.dispatcher:
         class: Symfony\Component\EventDispatcher\EventDispatcher
         calls:
-            - [addListener, [ "kernel.response", [@app, "redirectListener"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "prepareResult"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "prepareReload"], 10 ] ]
-            - [addListener, [ "kernel.response", [@app, "invokeLayout"] ] ]
-            - [addListener, [ "kernel.response", [@app, "createSignature"] ] ]
+            - [addListener, [ "kernel.response", ["@app", "redirectListener"], 10 ] ]
+            - [addListener, [ "kernel.response", ["@app", "prepareResult"], 10 ] ]
+            - [addListener, [ "kernel.response", ["@app", "prepareReload"], 10 ] ]
+            - [addListener, [ "kernel.response", ["@app", "invokeLayout"] ] ]
+            - [addListener, [ "kernel.response", ["@app", "createSignature"] ] ]
 
     locator:
         class: Symfony\Component\Config\FileLocator
@@ -77,7 +77,7 @@ services:
     # routing
     symfony_router:
         class: Symfony\Component\Routing\Router
-        arguments: ["@yaml_loader", "app/routes.yml", {"debug": %debug%} ]
+        arguments: ["@yaml_loader", "app/routes.yml", {"debug": "%debug%"} ]
 
     route_yaml:
         class: Sfcms\Route\YmlRoute

@@ -3,7 +3,8 @@ namespace Sfcms;
 
 use Module\User\Object\User;
 use Sfcms\Data\DataManager;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
  * Интерфейс авторизации
@@ -11,8 +12,10 @@ use Symfony\Component\DependencyInjection\ContainerAware;
  * @link http://ermin.ru
  * @link http://siteforever.ru
  */
-class Auth extends ContainerAware
+class Auth implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /** @var User */
     protected $user;
 

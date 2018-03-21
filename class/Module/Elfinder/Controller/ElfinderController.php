@@ -23,7 +23,6 @@ class ElfinderController extends Controller
         );
     }
 
-
     /**
      * Create layout for elFinder
      * @return Response
@@ -40,6 +39,8 @@ class ElfinderController extends Controller
      */
     public function connectorAction()
     {
+        $request = $this->request->getRequest();
+
         // Documentation for connector options:
         // https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
         $opts = array(
@@ -48,7 +49,7 @@ class ElfinderController extends Controller
                 array(
                     'driver'        => 'LocalFileSystem',   // driver for accessing file system (REQUIRED)
                     'path'          => ROOT . '/files/',         // path to files (REQUIRED)
-                    'URL'           => '/files/', // URL to files (REQUIRED)
+                    'URL'           => $request->getSchemeAndHttpHost() . '/files/', // URL to files (REQUIRED)
                     'accessControl' => array($this, 'elAccess'),  // disable and hide dot starting files (OPTIONAL)
                 )
             )
@@ -63,6 +64,4 @@ class ElfinderController extends Controller
             ? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
             :  null;                                    // else elFinder decide it itself
     }
-
-
 }

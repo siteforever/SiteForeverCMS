@@ -66,7 +66,7 @@ require([
     "system/view/DataGridModal",
     "jquery-ui",
     "system/admin/jquery/jquery.filemanager",
-    "system/admin/jquery/jquery.dumper",
+    // "system/admin/jquery/jquery.dumper",
     "system/admin/log",
     "banner/admin/banner",
     "catalog/admin/catalog",
@@ -194,8 +194,6 @@ require([
                 });
             });
         }
-
-        $('a.dumper').dumper();
     });
 
     /** Placeholder while initialisation */

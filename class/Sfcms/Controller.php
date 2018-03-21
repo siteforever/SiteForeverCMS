@@ -5,23 +5,18 @@
  */
 namespace Sfcms;
 
-use Sfcms\Form\Form;
-use Sfcms\Tpl\Driver;
-use Sfcms\Router;
-use Sfcms\Model;
-use Sfcms\db;
-use Sfcms\Basket\Base as Basket;
-use Symfony\Component\DependencyInjection\ContainerAware;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Module\Page\Object\Page;
 use Module\User\Object\User;
-
+use Sfcms\Basket\Base as Basket;
 use Sfcms\Data\Watcher;
+use Sfcms\Form\Form;
+use Sfcms\Tpl\Driver;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @property \App $app
@@ -33,8 +28,10 @@ use Sfcms\Data\Watcher;
  * @property Filesystem $filesystem
  * @property i18n $i18n
  */
-abstract class Controller extends ContainerAware
+abstract class Controller
 {
+    use ContainerAwareTrait;
+
     private static $forms = array();
 
     /** @var array */
@@ -76,7 +73,7 @@ abstract class Controller extends ContainerAware
     }
 
     /**
-     * @return Driver|\Smarty
+     * @return object|Driver|\Smarty
      */
     public function getTpl()
     {

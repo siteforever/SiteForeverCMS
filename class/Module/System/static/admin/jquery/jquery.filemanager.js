@@ -9,8 +9,8 @@
 define("system/admin/jquery/jquery.filemanager",[
     "jquery",
     "jquery-ui",
-    "admin/jquery/elfinder/elfinder",
-    "admin/jquery/elfinder/i18n/elfinder.ru"
+    "admin/jquery/elfinder/elfinder"
+    // , "admin/jquery/elfinder/i18n/elfinder.ru"
 ], function($){
 
     /** cache for jquery elFinder node */

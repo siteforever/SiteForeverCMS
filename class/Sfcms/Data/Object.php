@@ -74,10 +74,7 @@ abstract class Object extends Table
      */
     public function isChanged($name)
     {
-        if (isset($this->changed[$name])) {
-            return true;
-        }
-        return false;
+        return isset($this->changed[$name]);
     }
 
     /**
@@ -87,11 +84,23 @@ abstract class Object extends Table
      */
     public function get($key)
     {
+        $result = null;
         if (isset($this->relation[$key]) && !isset($this->data[$key])) {
-            return $this->model->findByRelation($key, $this);
+            $result = $this->model->findByRelation($key, $this);
         }
 
-        return parent::get($key);
+        if (null === $result) {
+            $result = parent::get($key);
+        }
+
+        if (null === $result) {
+            $field = $this->field($key);
+            if ($field) {
+                $result = $field->getDefault();
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -12,5 +12,4 @@
 /vendor
 /static
 /composer.phar
-/composer.lock
 /node_modules

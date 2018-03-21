@@ -44,7 +44,7 @@ class TranslatorExtension extends Extension
             array($locale, new Reference('translator.message.selector'))
         );
         if (!empty($config['fallback'])) {
-            $transDefinition->addMethodCall('setFallbackLocale', array(array($config['fallback'])));
+            $transDefinition->addMethodCall('setFallbackLocales', [[$config['fallback']]]);
         }
         $i18n = $container->getDefinition('i18n');
         $i18n->addMethodCall('setLocale', array(LC_ALL, "en_US.UTF-8", "en_US", "English", "C"));

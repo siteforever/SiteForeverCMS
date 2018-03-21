@@ -5,8 +5,7 @@ use Module\System\Object\Log;
 use Module\User\Object\User;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Model\ModelEvent;
-use Sfcms\Model;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,8 +15,10 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author: keltanas <keltanas@gmail.com>
  */
-class KernelSubscriber extends ContainerAware implements EventSubscriberInterface
+class KernelSubscriber implements EventSubscriberInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *

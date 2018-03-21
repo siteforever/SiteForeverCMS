@@ -36,10 +36,11 @@ class StaticListener
         $filesistem = new Filesystem();
         $filesistem->remove($out . '/../img');
         $filesistem->symlink($source . '/img', $out . '/../img');
-        $filesistem->copy($source . '/css/elfinder.min.css', $out . '/elfinder.css');
-        $filesistem->copy($source . '/css/theme.css', $out . '/theme.css');
-        $filesistem->copy($source . '/js/i18n/elfinder.ru.js', $out . '/i18n/elfinder.ru.js');
-        $filesistem->copy($source . '/js/elfinder.min.js', $out . '/elfinder.min.js');
+        $filesistem->copy($source . '/css/elfinder.min.css', $out . '/elfinder.css', true);
+        $filesistem->copy($source . '/css/theme.css', $out . '/theme.css', true);
+        $filesistem->copy($source . '/js/i18n/elfinder.ru.js', $out . '/i18n/elfinder.ru.js', true);
+        $filesistem->copy($source . '/js/elfinder.full.js', $out . '/elfinder.js', true);
+        $filesistem->copy($source . '/js/elfinder.min.js', $out . '/elfinder.min.js', true);
 
         $event->getOutput()->writeln(sprintf('<info>ElFinder img symlink to "%s"</info>', $out . '/../img'));
     }

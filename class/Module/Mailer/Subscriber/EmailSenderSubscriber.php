@@ -8,13 +8,14 @@
 
 namespace Module\Mailer\Subscriber;
 
-
 use Sfcms\Kernel\KernelEvent;
-use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class EmailSenderSubscriber extends ContainerAware implements EventSubscriberInterface
+class EmailSenderSubscriber implements EventSubscriberInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *

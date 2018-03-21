@@ -40,6 +40,8 @@ class PagesFixturesCommand extends Command
             'action' => 'index',
             'title' => 'SiteForeverCMS',
             'content' => '<p>Информационная страница</p>',
+            'pos' => 0,
+            'link' => 0,
         ]);
 
         $pageModel->save($mainPage);

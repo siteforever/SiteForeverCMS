@@ -3,18 +3,17 @@ namespace Sfcms;
 
 use App;
 use Doctrine\DBAL;
+use Module\User\Object\User;
+use RuntimeException;
+use Sfcms\Data\AbstractDataField;
+use Sfcms\Data\Collection;
 use Sfcms\Data\DataManager;
 use Sfcms\Data\Object as DomainObject;
-use Sfcms\Data\Collection;
 use Sfcms\Data\Query\Builder as QueryBuilder;
-use Sfcms\Model\ModelEvent;
-use Sfcms\db;
-use Sfcms\Db\Criteria;
-use RuntimeException;
-use Module\User\Object\User;
-use Sfcms\Data\Watcher;
-use Sfcms\Data\Field;
 use Sfcms\Data\Relation;
+use Sfcms\Data\Watcher;
+use Sfcms\Db\Criteria;
+use Sfcms\Model\ModelEvent;
 
 /**
  * Model interface
@@ -74,15 +73,16 @@ abstract class Model extends Component
      * Creating model
      *
      * @param DataManager $dataManager
+     * @throws \ErrorException
      */
     final public function __construct(DataManager $dataManager)
     {
         $alias = $this->eventAlias();
         if (method_exists($this, 'onSaveStart')) {
-            $this->on(sprintf('%s.save.start', $alias), [get_class($this), 'onSaveStart']);
+            $this->on("{$alias}.save.start", [get_class($this), 'onSaveStart']);
         }
         if (method_exists($this, 'onSaveSuccess')) {
-            $this->on(sprintf('%s.save.success', $alias), [get_class($this), 'onSaveSuccess']);
+            $this->on("{$alias}.save.success", [get_class($this), 'onSaveSuccess']);
         }
         $this->init();
     }
@@ -350,10 +350,9 @@ abstract class Model extends Component
      * Finding data by criteria
      *
      * @param int|array|string|Criteria $crit
-     * @param array                     $params
+     * @param array $params
      *
      * @return DomainObject
-     * @throws Exception
      */
     public function find($crit, $params = array())
     {
@@ -555,6 +554,7 @@ abstract class Model extends Component
      * @param bool $silent Not triggered save events
      *
      * @return bool|int
+     * @throws \ErrorException
      */
     public function save(DomainObject $obj, $forceInsert = false, $silent = false)
     {
@@ -567,7 +567,7 @@ abstract class Model extends Component
         $event = new Model\ModelEvent($obj, $this);
         if (!$silent) {
             $this->trigger('save.start', $event);
-            $this->trigger(sprintf('%s.save.start', $this->eventAlias()), $event);
+            $this->trigger($this->eventAlias() . '.save.start', $event);
         }
 
         $fields = call_user_func(array($this->objectClass(), 'fields'));
@@ -578,8 +578,8 @@ abstract class Model extends Component
         /** @var AbstractDataField $field */
         foreach ($fields as $field) {
             $val = $obj->get($field->getName());
-            if ($state !== DomainObject::STATE_DIRTY
-                || ($state === DomainObject::STATE_DIRTY && $obj->isChanged($field->getName()))
+            if ( $state !== DomainObject::STATE_DIRTY ||
+                ($state === DomainObject::STATE_DIRTY && $obj->isChanged($field->getName()))
             ) {
                 if ($val instanceof \DateTime) {
                     $val = $val->format('Y-m-d H:i:s');

@@ -18,6 +18,7 @@ define("page/admin/page", [
     "jquery-form"
 ], function($, Backbone, Modal, Dialog, i18n, $alert, console, wysiwyg, deleteConfirm) {
 
+    console.log(wysiwyg);
     return Backbone.View.extend({
         "progressTpl": '<div class="progress progress-striped active"><div class="progress-bar" style="width: 100%"></div></div>',
 
