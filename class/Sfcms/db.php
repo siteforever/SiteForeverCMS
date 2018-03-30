@@ -115,6 +115,7 @@ final class db
     {
         if ($dbc instanceof \PDO || $dbc instanceof Connection) {
             $this->resource = $dbc;
+            $dbc->exec('SET NAMES utf8');
             return;
         }
 

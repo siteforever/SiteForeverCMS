@@ -554,6 +554,7 @@ abstract class Model extends Component
      * @param bool $silent Not triggered save events
      *
      * @return bool|int
+     * @throws Data\Exception
      * @throws \ErrorException
      */
     public function save(DomainObject $obj, $forceInsert = false, $silent = false)

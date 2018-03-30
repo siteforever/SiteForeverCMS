@@ -81,6 +81,26 @@ small {
     }
 }
 
+@left-width: 250px;
+.wrapper {
+    position: relative;
+    .left-column {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 200;
+        width: @left-width;
+    }
+    .right-column {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        padding: 0 @grid-gutter-width 0 @left-width + @grid-gutter-width;
+        width: 100%;
+    }
+}
+
 div.l-footer-wrapper {
     height: 50px;
 }
