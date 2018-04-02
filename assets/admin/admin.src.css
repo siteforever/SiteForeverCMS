@@ -7328,6 +7328,24 @@ small {
 .blockMsg div.feedback {
   margin: 0;
 }
+.wrapper {
+  position: relative;
+}
+.wrapper .left-column {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 200px;
+  border-right: 1px #a0c4e4 solid;
+}
+.wrapper .right-column {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 0 30px 0 230px;
+  width: 100%;
+}
 div.l-footer-wrapper {
   height: 50px;
 }

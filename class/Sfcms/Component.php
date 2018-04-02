@@ -59,12 +59,17 @@ abstract class Component implements \ArrayAccess//, Iterator;
     /**
      * @param $key
      * @return mixed
+     * @throws ComponentException
      */
     public function get($key)
     {
+        if (null === $key) {
+            throw new ComponentException('Argument key cannot be null');
+        }
         $result = isset($this->data[$key]) ? $this->data[$key] : null;
         $method = 'get' . ucfirst($key);
-        if ('getId' != $method && is_callable(array($this, $method))) {
+        if ('getId' != $method && is_callable([$this, $method])) {
+            self::app()->getLogger()->debug('method', ['method' => $method, 'key' => $key, 'class' => __CLASS__, 'line' => __LINE__]);
             $result = $this->$method($result);
         }
 

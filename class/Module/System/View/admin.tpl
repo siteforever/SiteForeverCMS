@@ -13,21 +13,23 @@
 
 <nav class="navbar navbar-inverse navbar-top">{strip}
     <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-cms-navbar-collapse">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#sfcms-navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
         <a href="/" class="navbar-brand" title="{'Goto site'|trans} {$sitename}" target="_blank">
-            <i class="glyphicon glyphicon-home"></i> CMS
+            <i class="glyphicon glyphicon-home"></i> Управление сайтом
         </a>
     </div>
-    <div class="collapse navbar-collapse" id="bs-cms-navbar-collapse">
+    <div class="collapse navbar-collapse" id="sfcms-navbar-collapse">
 
         <ul class="nav navbar-nav navbar-right">
-            <li>{$user}</li>
+            {if $auth->isLogged()}
+            <li><a href="#">{$auth->currentUser()->login}</a></li>
             <li>{a href="user/logout"}<i class="glyphicon glyphicon-off"></i> {'Exit'|trans}{/a}</li>
+            {/if}
         </ul>
     </div>
 {/strip}</nav>
@@ -44,10 +46,10 @@
                 {if ! isset( $item.class )}{$item.class = ""}{/if}
                 {if isset($item.sub)}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle text-center {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
-                            <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
-                            &nbsp;<b class="caret"></b>
-                            <div class="small">{$item.name|trans|ucfirst}</div>
+                        <a href="#" class="dropdown-toggle {$item.class}" data-toggle="dropdown" title="{$item.name|trans|ucfirst}">
+                            <b class="caret"></b>
+                            &nbsp;&nbsp;<i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
+                            &nbsp;{$item.name|trans|ucfirst}
                         </a>
                         <ul class="dropdown-menu">
                             {foreach from=$item.sub item="sitem"}
@@ -61,9 +63,9 @@
                     </li>
                 {else}
                     <li>
-                        <a href="/{$item.url|default:""}" class="{$item.class} text-center" title="{$item.name|trans|ucfirst}">
+                        <a href="/{$item.url|default:""}" class="{$item.class}" title="{$item.name|trans|ucfirst}">
                             <i class="glyphicon glyphicon-{if isset($item.glyph)}{$item.glyph}{else}folder-close{/if}"></i>
-                            <div class="small">{$item.name|trans|ucfirst}</div>
+                            &nbsp;{$item.name|trans|ucfirst}
                         </a>
                     </li>
                 {/if}
@@ -71,7 +73,6 @@
         {/strip}</ul>
     </div>
     <div class="right-column" id="workspace">
-
         {if $request->getTitle() && empty($title)}<h1>{$request->getTitle()|trans|ucfirst}</h1>{/if}
 
         {if $this->hasFlash('default')}<div class="alert alert-info">

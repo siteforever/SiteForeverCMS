@@ -5,13 +5,9 @@
  */
 namespace Sfcms\View\Layout;
 
-use Assetic\Asset\FileAsset;
-use Assetic\AssetManager;
-use Assetic\AssetWriter;
-use Assetic\Factory\AssetFactory;
-use Sfcms\View\Layout;
 use Sfcms\Kernel\KernelEvent;
 use Sfcms\Request;
+use Sfcms\View\Layout;
 
 class Admin extends Layout
 {

@@ -9,30 +9,18 @@ defined('ROOT') || define('ROOT', realpath(__DIR__ . '/..'));
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Behat\Mink\Driver\Selenium2Driver;
 use Behat\Mink\Driver\GoutteDriver;
 use Behat\Mink\Mink;
 use Behat\Mink\Session;
 use Symfony\Component\Process\Process;
 
-//$capabilities = Selenium2Driver::getDefaultCapabilities();
-//$capabilities['selenium-version'] = '2.41.0';
-//$hubUri = 'http://localhost:4444/wd/hub';
 $host = 'localhost';
 $port = 28080;
 $startUrl = sprintf('http://%s:%s', $host, $port);
-//$travis = false;
-//if (!empty($_SERVER['TRAVIS'])) {
-//    $travis = true;
-//    $capabilities['tunnel-identifier'] = $_SERVER['TRAVIS_JOB_ID'];
-//    $capabilities['build'] = $_SERVER['TRAVIS_BUILD_NUMBER'];
-//    $capabilities['tags'] = [$_SERVER['TRAVIS_PHP_VERSION'], 'CI'];
-//    $hubUri = sprintf('http://%s:%s@localhost:4445/wd/hub', $_SERVER['SAUCE_USERNAME'], $_SERVER['SAUCE_ACCESS_KEY']);
-//    $startUrl = sprintf('http://%s:%s', $_SERVER['HTTP_HOST'], $_SERVER['SERVER_PORT']);
-//} else {
 
+$php = isset($_SERVER['_']) ? $_SERVER['_'] : 'php';
 // Command that starts the built-in web server
-$command = sprintf('php -S %s:%d -t %s >/dev/null 2>&1 & echo $!', $host, $port, realpath(__DIR__ . '/..'));
+$command = sprintf($php . ' -S %s:%d -t %s >/dev/null 2>&1 & echo $!', $host, $port, realpath(__DIR__ . '/..'));
 print $command . PHP_EOL;
 // Execute the command and store the process ID
 $output = array();
@@ -66,11 +54,11 @@ function run_process(Process $process) {
 //
 //$process = new Process("$mysqlTo < ".__DIR__."/dump.sql");
 
-run_process(new Process("php bin/console --env=test database:drop"));
-run_process(new Process("php bin/console --env=test database:create"));
-run_process(new Process("php bin/console --env=test database:scheme:update --force"));
-run_process(new Process("php bin/console --env=test fixture:users"));
-run_process(new Process("php bin/console --env=test fixture:pages"));
+run_process(new Process("$php bin/console --env=test -vvv database:drop"));
+run_process(new Process("$php bin/console --env=test -vvv database:create"));
+run_process(new Process("$php bin/console --env=test -vvv database:scheme:update --force"));
+run_process(new Process("$php bin/console --env=test -vvv fixture:users"));
+run_process(new Process("$php bin/console --env=test -vvv fixture:pages"));
 
 $app = new App('test', true);
 

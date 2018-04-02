@@ -6,10 +6,8 @@
  */
 namespace Module\User\Object;
 
-use Sfcms\Data\Object;
 use Sfcms\Data\Field;
-use App;
-use Symfony\Component\Security\Core\Util\SecureRandom;
+use Sfcms\Data\Object;
 
 /**
  * Class User
@@ -51,8 +49,7 @@ class User extends Object
      */
     public function generateString($len)
     {
-        $generator = new SecureRandom();
-        return substr(bin2hex($generator->nextBytes($len)), rand(0, $len), $len);
+        return substr(bin2hex(random_bytes($len)), rand(0, $len), $len);
     }
 
     /**

@@ -81,21 +81,22 @@ small {
     }
 }
 
-@left-width: 250px;
+@left-width: 200px;
 .wrapper {
     position: relative;
     .left-column {
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 200;
+        z-index: 2;
         width: @left-width;
+        border-right: 1px lighten(@brand-primary, 30%) solid;
     }
     .right-column {
-        position: absolute;
+        //position: absolute;
         top: 0;
         left: 0;
-        z-index: 100;
+        z-index: 1;
         padding: 0 @grid-gutter-width 0 @left-width + @grid-gutter-width;
         width: 100%;
     }

@@ -207,7 +207,7 @@ class UserModel extends Model
         }
 
         // Надо сохранить, чтобы знать id
-        if ($this->save($user)) {
+        if ($this->save($user) > 0) {
             return true;
         }
 

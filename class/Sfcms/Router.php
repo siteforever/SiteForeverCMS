@@ -303,6 +303,7 @@ class Router
      * Например, контроллер можно указать явно во время запроса.
      *
      * @return bool
+     * @throws RouterException
      */
     public function routing($greedy = false)
     {
@@ -349,6 +350,7 @@ class Router
     }
 
     /**
+     * @throws RouterException
      */
     public function activateError()
     {

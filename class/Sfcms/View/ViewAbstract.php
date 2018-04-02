@@ -24,6 +24,8 @@ abstract class ViewAbstract
         /** @var $theme string */
         $theme = $this->config['theme'];
 
+        $this->getTpl()->assign('auth', $this->app->getAuth());
+
         $this->path = array(
             'theme'  => '/themes/' . $theme,
             'css'    => '/themes/' . $theme . '/css',

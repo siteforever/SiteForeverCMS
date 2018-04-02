@@ -47,6 +47,32 @@ class PagesFixturesCommand extends Command
         $pageModel->save($mainPage);
 
         $page = $pageModel->createObject([
+            'name' => 'Новости',
+            'parent' => $mainPage->getId(),
+            'template' => 'inner',
+            'alias' => 'news',
+            'date' => time(),
+            'controller' => 'news',
+            'action' => 'index',
+            'content' => '<p>Страница новостей</p>',
+        ]);
+
+        $pageModel->save($page);
+
+        $page = $pageModel->createObject([
+            'name' => 'Блог',
+            'parent' => $mainPage->getId(),
+            'template' => 'inner',
+            'alias' => 'blog',
+            'date' => time(),
+            'controller' => 'news',
+            'action' => 'index',
+            'content' => '<p>Журнал</p>',
+        ]);
+
+        $pageModel->save($page);
+
+        $page = $pageModel->createObject([
             'name' => 'О компании',
             'parent' => $mainPage->getId(),
             'template' => 'inner',
@@ -72,6 +98,17 @@ class PagesFixturesCommand extends Command
 
         $pageModel->save($page);
 
+        $page = $pageModel->createObject([
+            'name' => 'Каталог',
+            'parent' => $mainPage->getId(),
+            'template' => 'inner',
+            'alias' => 'catalog',
+            'date' => time(),
+            'controller' => 'catalog',
+            'action' => 'index',
+            'content' => '<p>Каталог</p>',
+        ]);
 
+        $pageModel->save($page);
     }
 }

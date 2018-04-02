@@ -7,6 +7,7 @@
  */
 namespace Module\System\Controller;
 
+use function imagecreatetruecolor;
 use Sfcms\Controller;
 
 class CaptchaController extends Controller

@@ -63,10 +63,10 @@ class OrderControllerTest extends WebCase
     public function testOrderView()
     {
         $response = $this->runRequest('/order/view', 'GET', array('id'=>1));
-        $this->assertEquals(404, $response->getStatusCode(), $response->getContent());
+        $this->assertEquals(404, $response->getStatusCode());
 
         $response = $this->runRequest('/order/view', 'GET', array('id'=>1, 'code'=>'62554daebec73aa3c0850b320ecac5ee'));
-        $this->assertEquals(200, $response->getStatusCode(), $response->getContent());
+        $this->assertEquals(200, $response->getStatusCode());
         $crawler = $this->createCrawler($response);
         $this->assertEquals('Николай Ермин, Ваш заказ №1', $crawler->filter('h1')->html());
     }

@@ -2,8 +2,12 @@
 namespace Sfcms;
 
 use App;
+use function array_keys;
 use Doctrine\DBAL;
+use function get_class;
 use Module\User\Object\User;
+use function reset;
+use function returnArgument;
 use RuntimeException;
 use Sfcms\Data\AbstractDataField;
 use Sfcms\Data\Collection;
@@ -14,6 +18,7 @@ use Sfcms\Data\Relation;
 use Sfcms\Data\Watcher;
 use Sfcms\Db\Criteria;
 use Sfcms\Model\ModelEvent;
+use Sfcms\Data\Field;
 
 /**
  * Model interface
@@ -553,7 +558,7 @@ abstract class Model extends Component
      * @param bool $forceInsert Force inserted data in table
      * @param bool $silent Not triggered save events
      *
-     * @return bool|int
+     * @return int
      * @throws Data\Exception
      * @throws \ErrorException
      */
@@ -572,9 +577,9 @@ abstract class Model extends Component
         }
 
         $fields = call_user_func(array($this->objectClass(), 'fields'));
-        $id = $obj->pkValues();
-        $idKeys = array_keys($id);
-        $saveData = array();
+        $ids = $obj->pkValues();
+        $saveData = [];
+        $saveDataTypes = [];
 
         /** @var AbstractDataField $field */
         foreach ($fields as $field) {
@@ -582,10 +587,28 @@ abstract class Model extends Component
             if ( $state !== DomainObject::STATE_DIRTY ||
                 ($state === DomainObject::STATE_DIRTY && $obj->isChanged($field->getName()))
             ) {
-                if ($val instanceof \DateTime) {
-                    $val = $val->format('Y-m-d H:i:s');
-                }
                 $saveData[$field->getName()] = $val;
+                switch (get_class($field)) {
+                    case Field\IntField::class:
+                    case Field\TinyintField::class:
+                        $saveDataTypes[$field->getName()] = PDO::PARAM_INT;
+                        $saveData[$field->getName()] = (int) $val;
+                        break;
+                    case Field\DatetimeField::class:
+                        if ($val instanceof \DateTime) {
+                            $saveData[$field->getName()] = $val->format('Y-m-d H:i:s');
+                            $saveDataTypes[$field->getName()] = PDO::PARAM_STR;
+                        } else {
+                            $saveDataTypes[$field->getName()] = PDO::PARAM_INT;
+                        }
+                        break;
+                    case Field\DecimalField::class:
+                    case Field\TextField::class:
+                    case Field\BlobField::class:
+                    case Field\VarcharField::class:
+                    default:
+                        $saveDataTypes[$field->getName()] = PDO::PARAM_STR;
+                }
             }
         }
 
@@ -594,33 +617,33 @@ abstract class Model extends Component
             return true;
         }
 
-        $ret = false;
-        if (!$forceInsert && !in_array(null, $id, true) && DomainObject::STATE_DIRTY == $state) {
+        $preparedKeysData = $this->getPreparedKeysData($saveData);
+
+        if (!$forceInsert && !in_array(null, $ids, true) && DomainObject::STATE_DIRTY == $state) {
             // UPDATE
-            $where = array_map(function ($key, $val) {
-                return "`{$key}` = '{$val}'";
-            }, $idKeys, $id);
-            $ret = $this->getDB()->update($this->getTable(), $saveData, join(' AND ', $where));
+            $ret = $this->getDBAL()->update($this->getTable(), $preparedKeysData, $ids, $saveDataTypes);
         } else {
             // INSERT
-            if (count($id) == 1) {
+            if (count($ids) == 1) {
+                $idField = array_keys($ids)[0];
+                $this->app()->getLogger()->debug('ids', ['ids' => $ids]);
                 /** @var $field AbstractDataField */
-                $field   = $obj->field($idKeys[0]);
-                $fieldValue = $obj->get($idKeys[0]);
+                $field   = $obj->field($idField);
+                $fieldValue = $obj->get($idField);
                 if ($field->isAutoIncrement() && (null === $fieldValue || '' === $fieldValue)) {
-                    unset($saveData[$idKeys[0]]);
+                    unset($saveData[$idField]);
                 }
-                if ($field->isAutoIncrement() && $obj->get($idKeys[0])) {
+                if ($field->isAutoIncrement() && $obj->get($idField)) {
                     return false;
                 }
             }
-            $ret = $this->getDB()->insert($this->getTable(), $saveData);
-            if ($ret && 1 == count($id)) {
-                $obj->setId($ret);
+            $ret = $this->getDBAL()->insert($this->getTable(), $preparedKeysData, $saveDataTypes);
+            if ($ret) {
+                $obj->setId($this->getDBAL()->lastInsertId());
             }
             $this->addToMap($obj);
         }
-        if (false !== $ret) {
+        if ($ret > 0) {
             if (!$silent) {
                 $this->trigger('save.success', $event);
                 $this->trigger(sprintf('%s.save.success', $this->eventAlias()), $event);
@@ -631,6 +654,25 @@ abstract class Model extends Component
         }
 
         return $ret;
+    }
+
+    /**
+     * @param array $saveData
+     * @return array
+     */
+    private function getPreparedKeysData(array $saveData)
+    {
+        $preparedKeysData = [];
+        $platform = $this->getDBAL()->getDatabasePlatform();
+        if ($platform instanceof DBAL\Platforms\MySqlPlatform) {
+            foreach ($saveData as $key => $val) {
+                $preparedKeysData["`$key`"] = $val;
+            }
+        } else {
+            $preparedKeysData = $saveData;
+        }
+
+        return $preparedKeysData;
     }
 
     /**
