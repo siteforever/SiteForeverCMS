@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "13e443cd698ed84638240c2ed6948bc3",
+    "content-hash": "f2005934b127112268deab4edc6e2e5c",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -798,16 +798,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.11",
+            "version": "v2.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "5da4d3c796c275c55f057af5a643ae297d96b4d8"
+                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/5da4d3c796c275c55f057af5a643ae297d96b4d8",
-                "reference": "5da4d3c796c275c55f057af5a643ae297d96b4d8",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
                 "shasum": ""
             },
             "require": {
@@ -842,7 +842,7 @@
                 "pseudorandom",
                 "random"
             ],
-            "time": "2017-09-27T21:40:39+00:00"
+            "time": "2018-04-04T21:24:14+00:00"
         },
         {
             "name": "psr/cache",
@@ -1140,16 +1140,16 @@
         },
         {
             "name": "studio-42/elfinder",
-            "version": "2.1.35",
+            "version": "2.1.37",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Studio-42/elFinder.git",
-                "reference": "6ae2d6a826b2bd42035df63857a0ba80c7033baa"
+                "reference": "a2f2bc903ccd9e60e6c4a237f92ddc813adef179"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/6ae2d6a826b2bd42035df63857a0ba80c7033baa",
-                "reference": "6ae2d6a826b2bd42035df63857a0ba80c7033baa",
+                "url": "https://api.github.com/repos/Studio-42/elFinder/zipball/a2f2bc903ccd9e60e6c4a237f92ddc813adef179",
+                "reference": "a2f2bc903ccd9e60e6c4a237f92ddc813adef179",
                 "shasum": ""
             },
             "require": {
@@ -1194,7 +1194,7 @@
             ],
             "description": "File manager for web",
             "homepage": "http://elfinder.org",
-            "time": "2018-03-21T14:17:40+00:00"
+            "time": "2018-03-28T05:39:24+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -1592,16 +1592,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.6",
+            "version": "v3.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "874d4d659774d7bab90538072c83ed532dd17dc5"
+                "reference": "5304a36c5efbb01af7efe2bb5b1953dbaeebc293"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/874d4d659774d7bab90538072c83ed532dd17dc5",
-                "reference": "874d4d659774d7bab90538072c83ed532dd17dc5",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/5304a36c5efbb01af7efe2bb5b1953dbaeebc293",
+                "reference": "5304a36c5efbb01af7efe2bb5b1953dbaeebc293",
                 "shasum": ""
             },
             "require": {
@@ -1742,7 +1742,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2018-03-05T20:02:01+00:00"
+            "time": "2018-04-06T15:20:04+00:00"
         },
         {
             "name": "twig/twig",
@@ -2534,16 +2534,16 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "6.3.0",
+            "version": "6.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699"
+                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/f4db5a78a5ea468d4831de7f0bf9d9415e348699",
-                "reference": "f4db5a78a5ea468d4831de7f0bf9d9415e348699",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/68d0ea14d5a3f42a20e87632a5f84931e2709c90",
+                "reference": "68d0ea14d5a3f42a20e87632a5f84931e2709c90",
                 "shasum": ""
             },
             "require": {
@@ -2553,7 +2553,7 @@
             },
             "require-dev": {
                 "ext-curl": "*",
-                "phpunit/phpunit": "^4.0 || ^5.0",
+                "phpunit/phpunit": "^4.8.35 || ^5.7 || ^6.4",
                 "psr/log": "^1.0"
             },
             "suggest": {
@@ -2562,7 +2562,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "6.2-dev"
+                    "dev-master": "6.3-dev"
                 }
             },
             "autoload": {
@@ -2595,7 +2595,7 @@
                 "rest",
                 "web service"
             ],
-            "time": "2017-06-22T18:50:49+00:00"
+            "time": "2018-03-26T16:33:04+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -4082,7 +4082,11 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.6"
+        "php": ">=5.6,<7.0",
+        "ext-gd": "*",
+        "ext-xml": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*"
     },
     "platform-dev": []
 }
