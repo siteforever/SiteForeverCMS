@@ -36,7 +36,8 @@ class App extends AbstractKernel
 {
     /**
      * Run application
-     * @param $request
+     * @param Request $request
+     * @throws Exception
      */
     public function run(Request $request = null)
     {
@@ -92,6 +93,17 @@ class App extends AbstractKernel
         return ROOT . '/var/cache/' . $this->getEnvironment();
     }
 
+    /**
+     * @return string
+     */
+    public function getConfigPath()
+    {
+        return sprintf('app/config_%s.yml', $this->getEnvironment());
+    }
+
+    /**
+     * @param KernelEvent $event
+     */
     public function redirectListener(KernelEvent $event)
     {
         if ($event->getResponse() instanceof RedirectResponse) {

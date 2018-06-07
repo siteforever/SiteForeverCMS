@@ -8,6 +8,6 @@
 
 namespace Sfcms;
  
-class Exception extends \Exception {
+class Exception extends \RuntimeException {
 
 }

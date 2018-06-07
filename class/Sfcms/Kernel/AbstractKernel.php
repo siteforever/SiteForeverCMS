@@ -108,10 +108,33 @@ abstract class AbstractKernel
 
     abstract public function getContainerCacheFile();
 
+    /**
+     * Location of logs
+     *
+     * @return string
+     */
     abstract public function getLogsPath();
 
+    /**
+     * Location of cache
+     *
+     * @return string
+     */
     abstract public function getCachePath();
 
+    /**
+     * Location of config
+     *
+     * @return string
+     */
+    abstract public function getConfigPath();
+
+    /**
+     * AbstractKernel constructor.
+     * @param string $env
+     * @param bool $debug
+     * @throws Exception
+     */
     public function __construct($env, $debug = false)
     {
         $this->environment = $env;
@@ -200,7 +223,7 @@ abstract class AbstractKernel
 
         $locator = new FileLocator(array($container->getParameter('root'), $container->getParameter('sfcms.path')));
         $loader = new YamlFileLoader($container, $locator);
-        $loader->load(sprintf('app/config_%s.yml', $this->getEnvironment()));
+        $loader->load($this->getConfigPath());
         $container->set('app', $this);
 
         return $container;
@@ -215,22 +238,18 @@ abstract class AbstractKernel
     protected function loadModules(array $modules)
     {
         if (!$this->_modules) {
-            try {
-                array_map(function ($module) {
-                    if (!isset($module['path'])) {
-                        throw new Exception('Directive "path" not defined in modules config');
-                    }
-                    if (!isset($module['name'])) {
-                        throw new Exception('Directive "name" not defined in modules config');
-                    }
-                    $className = $module['path'] . '\Module';
-                    $reflection = new \ReflectionClass($className);
-                    $place = dirname($reflection->getFileName());
-                    $this->setModule(new $className($this, $module['name'], $module['path'], $place));
-                }, $modules);
-            } catch (\Exception $e) {
-                throw $e;
-            }
+            array_map(function ($module) {
+                if (!isset($module['path'])) {
+                    throw new Exception('Directive "path" not defined in modules config');
+                }
+                if (!isset($module['name'])) {
+                    throw new Exception('Directive "name" not defined in modules config');
+                }
+                $className = $module['path'] . '\Module';
+                $reflection = new \ReflectionClass($className);
+                $place = dirname($reflection->getFileName());
+                $this->setModule(new $className($this, $module['name'], $module['path'], $place));
+            }, $modules);
         }
         return $this->_modules;
     }
