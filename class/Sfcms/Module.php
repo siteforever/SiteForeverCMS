@@ -8,6 +8,7 @@
 namespace Sfcms;
 
 use App;
+use Sfcms\Kernel\AbstractKernel;
 use Symfony\Component\Console\Application;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Filesystem;
@@ -35,8 +36,7 @@ abstract class Module extends Component
     /** @var Filesystem */
     protected $fs;
 
-
-    public function __construct(App $app, $name, $ns, $path)
+    public function __construct(AbstractKernel $app, $name, $ns, $path)
     {
         $this->app = $app;
         $this->name = $name;

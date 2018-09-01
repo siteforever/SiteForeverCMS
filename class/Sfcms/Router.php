@@ -7,10 +7,8 @@
 namespace Sfcms;
 
 use Module\System\Event\RouteEvent;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sfcms\Route;
-use Sfcms\Request;
-use Sfcms\LoggerInterface;
 use Sfcms\Router\RouterException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

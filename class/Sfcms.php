@@ -55,7 +55,7 @@ class Sfcms
      */
     static function log( $message, $label = '' )
     {
-        App::cms()->getLogger()->log( $message, $label );
+        App::cms()->getLogger()->debug($label . ': ' . $message);
     }
 
     /**

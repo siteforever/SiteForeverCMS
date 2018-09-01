@@ -10,6 +10,7 @@ namespace Module\System\Component;
 
 use Module\Translator\Component\TranslatorComponent;
 use Symfony\Component\Config\FileLocator;
+use function var_dump;
 
 class ModuleManager
 {
@@ -19,16 +20,19 @@ class ModuleManager
 
     private $availableModules;
 
+    private $systemParams;
+
     /**
      * @var TranslatorComponent
      */
     private $translator;
 
-    function __construct($root, $sfPath, TranslatorComponent $translator)
+    public function __construct($root, $sfPath, $systemParams, TranslatorComponent $translator)
     {
         $this->root = $root;
         $this->sfPath = $sfPath;
         $this->translator = $translator;
+        $this->systemParams = $systemParams;
     }
 
     /**
@@ -39,21 +43,11 @@ class ModuleManager
     public function getAvailableModules()
     {
         if (null === $this->availableModules) {
-            $locator = new FileLocator([$this->root, $this->sfPath]);
+            $adminControllers = $this->systemParams['admin_controllers'];
+            $this->availableModules = [];
 
-            $controllersFile = $locator->locate('app/controllers.xml');
-            $content = file_get_contents($controllersFile);
-
-            if (!$content) {
-                return array();
-            }
-
-            $xmlControllers = new \SimpleXMLElement($content);
-
-            $this->availableModules = array();
-
-            foreach ($xmlControllers->children() as $child) {
-                $this->availableModules[(string)$child['name']] = array('label' => (string)$child->label);
+            foreach ($adminControllers as $child) {
+                $this->availableModules[(string)$child['name']] = ['label' => (string)$child['label']];
             }
         }
 

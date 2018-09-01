@@ -105,6 +105,7 @@ class Driver extends TplDriver
      * @param string $tpl
      * @param int $cache_id
      * @return string
+     * @throws \SmartyException
      */
     public function fetch($tpl, $cache_id = null)
     {

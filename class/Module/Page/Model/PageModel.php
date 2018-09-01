@@ -254,42 +254,6 @@ class PageModel extends Model
     }
 
     /**
-     * Вернет список доступных модулей
-     * Нужны для составления списка создания страницы в админке
-     * @return array|null
-     */
-    public function getAvailableModules()
-    {
-        if (is_null($this->availableModules)) {
-            $locator = new FileLocator(array(
-                $this->app()->getContainer()->getParameter('root'),
-                $this->app()->getContainer()->getParameter('sfcms.path')
-            ));
-
-            $controllersFile = $locator->locate('app/controllers.xml');
-            $content = file_get_contents($controllersFile);
-
-            if (!$content) {
-                return array();
-            }
-
-            $xmlControllers = new SimpleXMLElement( $content );
-
-            $this->availableModules = array();
-
-            foreach ($xmlControllers->children() as $child) {
-                $this->availableModules[(string)$child['name']] = array('label' => (string)$child->label);
-            }
-        }
-
-        $ret = array();
-        foreach ($this->availableModules as $key => $mod) {
-            $ret[$key] = $this->app()->getContainer()->get('translator')->trans($mod['label']);
-        }
-        return $ret;
-    }
-
-    /**
      * Искать структуру по маршруту
      * @param  $route
      *

@@ -5,6 +5,14 @@ system:
     session:
         storage: native
         handler: native
+    admin_controllers:
+        - { name: "page", label: "Page" }
+        - { name: "news", label: "News" }
+        - { name: "guestbook", label: "Guestbook" }
+        - { name: "catalog", label: "Catalogue" }
+        - { name: "manufacturers", label: "Manufacturers" }
+        - { name: "gallery", label: "Gallery" }
+        - { name: "feedback", label: "Feedback" }
 
 translator:
     locale: %language%

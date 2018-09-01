@@ -34,7 +34,6 @@ class MaterialModel extends Model
             . ' GROUP BY m.id', $materialTable, $catalogTable );
         $materialList  = $this->getDB()->fetchAll( $sql );
         $collection = $this->createCollection( $materialList );
-//        $this->log( $collection );
         return $collection;
     }
 

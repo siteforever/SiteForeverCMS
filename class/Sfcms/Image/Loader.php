@@ -50,12 +50,7 @@ class Sfcms_Image_Loader
     {
         $ret = false;
         if( preg_match( '/.*\.([^.]+)$/', $filename, $match ) ) {
-
-            App::cms()->getLogger()->log($match,'match');
-
-            $ext = strtolower( $match[ 1 ] );
-
-            switch ( $ext ) {
+            switch (strtolower( $match[ 1 ] )) {
                 case 'png':
                     $ret = imagepng( $img, $filename );
                     break;

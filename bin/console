@@ -13,6 +13,12 @@ if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
 use Sfcms\ConsoleApplication;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
+use Symfony\Component\Dotenv\Dotenv;
+
+if (file_exists(ROOT.'/.env')) {
+    $dotenv = new Dotenv();
+    $dotenv->load(ROOT.'/.env');
+}
 
 $input = new ArgvInput();
 $env = $input->getParameterOption(array('--env', '-e'), getenv('SYMFONY_ENV') ?: 'dev');

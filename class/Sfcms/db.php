@@ -2,8 +2,7 @@
 namespace Sfcms;
 
 use Doctrine\DBAL\Connection;
-use ErrorException;
-use Sfcms\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use SimpleXMLElement;
 
 /**
@@ -101,7 +100,7 @@ final class db
     protected function log($msg)
     {
         if (null !== $this->logger) {
-            $this->logger->log($msg);
+            $this->logger->debug($msg);
         }
     }
 

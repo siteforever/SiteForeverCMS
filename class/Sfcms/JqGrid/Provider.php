@@ -77,7 +77,6 @@ class Provider
         if ( $this->criteria->condition && $searchCond = $this->createSearchCondition() ) {
             $this->criteria->condition .= " AND {$searchCond}";
         }
-//        $this->request->getLogger()->log($this->criteria->condition, 'condition');
         return $this->criteria;
     }
 
@@ -248,8 +247,6 @@ class Provider
             }
             return false;
         }, $fields));
-
-//        $this->app->getLogger()->log( $with ? '1' : '0','$with' );
 
         /** @var $collection Collection */
         $collection = $this->getModel()->with($with)->findAll( $criteria );

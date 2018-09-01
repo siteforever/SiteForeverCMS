@@ -24,7 +24,7 @@ services:
 
     module.manager:
         class: Module\System\Component\ModuleManager
-        arguments: [ "%sfcms.root%", "%sfcms.path%", "@translator" ]
+        arguments: [ "%sfcms.root%", "%sfcms.path%", "%system%", "@translator" ]
 
     auth:
         class: Sfcms\Auth
@@ -77,7 +77,7 @@ services:
     # routing
     symfony_router:
         class: Symfony\Component\Routing\Router
-        arguments: ["@yaml_loader", "app/routes.yml", {"debug": "%debug%"} ]
+        arguments: ["@yaml_loader", "%sfcms.routes.file%", {"debug": "%debug%"} ]
 
     route_yaml:
         class: Sfcms\Route\YmlRoute

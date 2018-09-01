@@ -23,7 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
  * @property Driver $tpl
  * @property \Sfcms\Auth $auth
  * @property Router $router
- * @property CacheInterface $cache
  * @property User $user
  * @property Filesystem $filesystem
  * @property i18n $i18n

@@ -37,8 +37,12 @@ class Admin extends Layout
     {
         $return = [];
 
+        $sysParams = $this->app->getContainer()->getParameter('system');
+        $staticBaseUrl = $sysParams['static_base_url'];
+        $staticApp = $sysParams['static_app'];
+
         $rjsConfig = [
-            'baseUrl'=> '/static',
+            'baseUrl'=> $staticBaseUrl,
             'config' => [
                 'locale' => $request->getLocale(),
             ],
@@ -94,7 +98,7 @@ class Admin extends Layout
         $return[] = '<script type="text/javascript">var CKEDITOR_BASEPATH = "/static/lib/ckeditor/";</script>';
         $return[] = '<script type="text/javascript">window.controller = "'.$controllerJs.'";</script>';
         $return[] = '<script type="text/javascript">window.use_controller = true;</script>';
-        $dataMain = $this->app->isDebug() ? '/static/system/app' : '/assets/admin/admin.min.js';
+        $dataMain = $this->app->isDebug() ? $staticApp : '/assets/admin/admin.min.js';
         $return[] = "<script type='text/javascript' src='/assets/require.js' data-main='{$dataMain}'></script>";
 
         return join(PHP_EOL, $return);

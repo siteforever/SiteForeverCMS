@@ -4,6 +4,7 @@
  * Entry point SiteForeverCMS
  */
 use Sfcms\Request;
+use Symfony\Component\Dotenv\Dotenv;
 
 if (preg_match('/^\/index/', $_SERVER['REQUEST_URI'])) {
     header('Status: 301');
@@ -14,6 +15,11 @@ if (preg_match('/^\/index/', $_SERVER['REQUEST_URI'])) {
 define('ROOT', __DIR__);
 
 require_once 'vendor/autoload.php';
+
+if (file_exists(__DIR__.'/.env')) {
+    $dotenv = new Dotenv();
+    $dotenv->load(__DIR__.'/.env');
+}
 
 Request::enableHttpMethodParameterOverride();
 $request  = Request::createFromGlobals();

@@ -747,7 +747,6 @@ abstract class Model extends Component
      */
     final public function count($cond = '', $params = array())
     {
-        //$this->log( $cond, 'count' );
         if (is_object($cond) && $cond instanceof Criteria) {
             $params = $cond->params;
             $cond   = $cond->condition;
@@ -779,7 +778,6 @@ abstract class Model extends Component
      */
     final public function sum($column, $cond = '', $params = array())
     {
-        //$this->log( $cond, 'count' );
         if (is_object($cond) && $cond instanceof Criteria) {
             $params = $cond->params;
             $cond   = $cond->condition;

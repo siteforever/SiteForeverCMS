@@ -6,10 +6,9 @@ use Module\Market\Event\OrderEvent;
 use Module\Market\Event\PaymentEvent;
 use Module\Market\Form\OrderForm;
 use Module\Market\Model\OrderPositionModel;
+use Psr\Log\LoggerInterface;
 use Sfcms\Data\Collection;
 use Sfcms\Data\DataManager;
-use Sfcms\LoggerInterface;
-use Sfcms\Model;
 use Sfcms\Tpl\Driver;
 use Sfcms\Yandex\Address;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -62,7 +61,7 @@ class OrderSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @return \Monolog\Logger
+     * @return LoggerInterface
      */
     public function getLogger()
     {

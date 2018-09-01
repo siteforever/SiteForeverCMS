@@ -646,7 +646,6 @@ class CatalogModel extends Model implements EventSubscriberInterface
             }
         }
 
-        //        $this->log( $list );
         return $list;
     }
 

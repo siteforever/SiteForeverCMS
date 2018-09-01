@@ -53,7 +53,7 @@ abstract class Component implements \ArrayAccess//, Iterator;
      */
     public static function log($message, $label = '')
     {
-        self::app()->getLogger()->log($message, $label);
+        self::app()->getLogger()->debug($label . ': ' . $message);
     }
 
     /**

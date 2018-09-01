@@ -17,6 +17,7 @@ use Sfcms\Request;
 use Sfcms_Http_Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Resolver
 {
@@ -102,14 +103,14 @@ class Resolver
         if (!$command) {
             $command = $this->resolveController($request);
             if (!$command) {
-                throw new HttpException(404, 'Controller not resolved');
+                throw new NotFoundHttpException('Controller not resolved');
             }
         }
 
         $this->app->getLogger()->info('Command', $command);
 
         if (!class_exists($command['controller'])) {
-            throw new HttpException(404, sprintf('Controller class "%s" not exists', $command['controller']));
+            throw new NotFoundHttpException(sprintf('Controller class "%s" not exists', $command['controller']));
         }
 
         $reflectionController = new ReflectionClass($command['controller']);
@@ -126,7 +127,7 @@ class Resolver
         try {
             $method = $reflectionController->getMethod($command['action']);
         } catch(\ReflectionException $e) {
-            throw new HttpException(404, $e->getMessage());
+            throw new NotFoundHttpException($e->getMessage());
         }
         $this->app->getTpl()->assign('this', $controller);
         $this->app->getTpl()->assign('request', $request);
@@ -145,7 +146,6 @@ class Resolver
 
         return $result;
     }
-
 
     /**
      * Подотавливает список аргументов для передачи в Action, на основе указанных параметров и проверяет типы

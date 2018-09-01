@@ -32,7 +32,6 @@ class ManufacturerModel extends Model
                 . ' GROUP BY m.id', $manufTable, $catalogTable );
         $manufList  = $this->getDB()->fetchAll( $sql );
         $collection = $this->createCollection( $manufList );
-//        $this->log( $collection );
         return $collection;
     }
 

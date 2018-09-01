@@ -160,6 +160,24 @@ define('system/module/modal',[
                 callback && callback();
             });
             this.domnode.modal('show');
+            // bootstrap-ckeditor-modal-fix.js
+            // hack to fix ckeditor/bootstrap compatiability bug when ckeditor appears in a bootstrap modal dialog
+            //
+            // Include this AFTER both bootstrap and ckeditor are loaded.
+            // From: http://stackoverflow.com/questions/14420300/bootstrap-with-ckeditor-equals-problems
+            // Author: http://stackoverflow.com/users/185839/aaron
+
+            $.fn.modal.Constructor.prototype.enforceFocus = function() {
+                modalThis = this;
+                $(document).on('focusin.modal', function (e) {
+                    if (modalThis.$element[0] !== e.target && !modalThis.$element.has(e.target).length
+                        && !$(e.target.parentNode).hasClass('cke_dialog_ui_input_select')
+                        && !$(e.target.parentNode).hasClass('cke_dialog_ui_input_text')) {
+                        modalThis.$element.focus()
+                    }
+                })
+            };
+
             return deferred.promise();
         }
 
