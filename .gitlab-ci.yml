@@ -1,15 +1,30 @@
 stages:
+  - composer
   - test
 
 image: registry.ermin.ru/keltanas/siteforever-test-runner:5.6
 
-before_script:
-  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-  - php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
-  - php composer-setup.php
-  - php -r "unlink('composer-setup.php');"
-  - php composer.phar install --prefer-dist -o -n
+composer:
+  stage: composer
+  before_script:
+    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php -r "if (hash_file('SHA384', 'composer-setup.php') === '544e09ee996cdf60ece3804abc52599c22b1f40f4323403c44d44fdfdd586475ca9813a858088ffbc1f233e9b180f061') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    - php composer-setup.php
+    - php -r "unlink('composer-setup.php');"
+  script:
+    - php composer.phar install -o -n
+  cache:
+    key: $CI_PROJECT_NAME
+    paths:
+      - ./vendor
+  artifacts:
+    paths:
+      - ./vendor
+    expire_in: 7 day
+    when: on_success
 
 test:
   stage: test
   script: phpunit -c test/phpunit.xml
+  dependencies:
+    - composer
