@@ -5,6 +5,8 @@
  */
 namespace Module\Guestbook\Controller;
 
+use Module\Guestbook\Model\GuestbookModel;
+use Module\Guestbook\Object\Guestbook;
 use Sfcms\Controller;
 
 class GuestbookController extends Controller
@@ -35,11 +37,13 @@ class GuestbookController extends Controller
             return $this->t('Can not be used without page');
         }
         $link  = $this->page->getId();
+        /** @var GuestbookModel $model */
         $model = $this->getModel('Guestbook');
         $form  = $this->getForm('guestbook.guest');
 
         if ($form->handleRequest($this->request)) {
             if ($form->validate()) {
+                /** @var Guestbook $obj */
                 $obj = $model->createObject();
 
                 $obj->set('name', strip_tags($form->getChild('name')->getValue()));
@@ -47,6 +51,9 @@ class GuestbookController extends Controller
                 $obj->set('message', strip_tags($form->getChild('message')->getValue()));
                 $obj->set('link', $link);
                 $obj->set('date', time());
+                $obj->set('site', '');
+                $obj->set('city', '');
+                $obj->set('answer', '');
                 $obj->set('ip', $this->request->getClientIp());
                 $obj->set('sitename', $this->container->getParameter('sitename'));
 
@@ -109,7 +116,7 @@ class GuestbookController extends Controller
 
         $count  = $model->count( $crit->condition, $crit->params );
 
-        $paging = $this->paging( $count, 20, $this->page['alias'] );
+        $paging = $this->paging( $count, 30, 'guestbook/admin' );
 
         $crit->order = ' `date` DESC ';
         $crit->limit = $paging->limit;

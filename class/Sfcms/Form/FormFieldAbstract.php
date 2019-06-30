@@ -328,7 +328,7 @@ abstract class FormFieldAbstract extends FormTypeAbstract
             return false;
         }
 
-        if (!$this->isRequired() && $this->isEmpty()) {
+        if (!$this->isRequired() && $this->isEmpty() && 'captcha' != $this->getType()) {
             return true;
         }
 

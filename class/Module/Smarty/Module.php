@@ -5,6 +5,7 @@
  */
 namespace Module\Smarty;
 
+use Module\Smarty\DependencyInjection\Compiler\CaptchaParamsPass;
 use Module\Smarty\DependencyInjection\Compiler\RegisterPluginsPass;
 use Module\Smarty\DependencyInjection\Compiler\ResolveViewPathPass;
 use Module\Smarty\DependencyInjection\SmartyExtension;
@@ -18,5 +19,6 @@ class Module extends SfModule
         $container->registerExtension(new SmartyExtension());
         $container->addCompilerPass(new ResolveViewPathPass());
         $container->addCompilerPass(new RegisterPluginsPass());
+        $container->addCompilerPass(new CaptchaParamsPass());
     }
 }

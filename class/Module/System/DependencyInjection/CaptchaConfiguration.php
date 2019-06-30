@@ -28,6 +28,8 @@ class CaptchaConfiguration  implements ConfigurationInterface
                 ->integerNode('bgcolor')->defaultValue(0xffffff)->end()
                 ->scalarNode('font')->defaultValue(realpath(__DIR__ . '/../static/captcha/infroman.ttf'))->end()
                 ->integerNode('length')->defaultValue(6)->end()
+                ->scalarNode('html_key')->isRequired()->end()
+                ->scalarNode('backend_key')->isRequired()->end()
             ->end()
         ->end();
 

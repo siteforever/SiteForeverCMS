@@ -21,7 +21,7 @@ class GuestForm extends Form
                     'filter'    => 'email',
                 ),
                 'message'  => array('type'=>'textarea', 'label'=>'Message', 'required'),
-                'captcha' => array('type'=>'captcha', 'label'=>'Captcha', 'required'),
+                'captcha' => array('type'=>'captcha', 'label'=>'Captcha',),
                 'submit'    => array('type'=>'submit', 'class'=>'btn-success', 'value'=>'Send'),
             ),
         ));

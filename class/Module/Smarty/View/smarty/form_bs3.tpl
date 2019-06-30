@@ -141,13 +141,8 @@
             {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             {$form = $form->setRendered()}
         {elseif in_array($attr.type, ['captcha'])}
-            {form_label form=$form class="col-xs-3 control-label" domain=$domain}
-            <div class="col-xs-3">
-                {$class = [$class, "captcha"]|join:" "}
-                {form_input form=$form type="text" class=$class}
-            </div>
-            <img src="{link controller=captcha}" alt="captcha">
-            <span class="captcha-reload">{'Refresh'|trans}</span>
+            <div class="g-recaptcha" data-sitekey="{$captcha.html_key}"></div>
+            {form_input form=$form type="hidden" class=$class value="code"}
             {form_errors form=$form}
             {if $attr.notice}<div class="help-block"><small>{$attr.notice}</small></div>{/if}
             {$form = $form->setRendered()}

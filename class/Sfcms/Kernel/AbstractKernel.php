@@ -49,7 +49,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Stopwatch\Stopwatch;
 use function var_dump;
 
-define('SF_PATH', realpath(__DIR__ . '/..'));
+define('SF_PATH', realpath(__DIR__ . '/../../..'));
 
 // user groups
 define('USER_ANONIMUS', null); // аноним

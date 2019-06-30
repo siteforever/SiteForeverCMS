@@ -36,6 +36,10 @@ class CaptchaExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
         $container->setParameter($this->getAlias(), $config);
+
+        foreach ($config as $key => $value) {
+            $container->setParameter($this->getAlias() . '.' . $key, $value);
+        }
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container)
